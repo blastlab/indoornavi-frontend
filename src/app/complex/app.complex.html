@@ -1,0 +1,31 @@
+<h1>Your building complexes</h1>
+
+<table>
+  <tr>
+    <th colspan="3">Complex name</th>
+  </tr>
+  <tr *ngFor="let complex of complexes; let id = index;">
+    <td class="complex-name">{{complex.name}}</td>
+    <td>
+      <button class="complex-edit-button" (click)="editComplex(complex)">Edit</button>
+    </td>
+    <td>
+      <button class="complex-remove-button" (click)="removeComplex(id)">Remove</button>
+    </td>
+  </tr>
+</table>
+
+<div>
+
+  <input id="complex-name-input" type="text" [(ngModel)]="newComplexName"/>
+
+  <div *ngIf="!editMode">
+    <button id="complex-add-button" (click)="addComplex()">Add</button>
+  </div>
+
+  <div *ngIf="editMode">
+    <button id="complex-edit-save-button" (click)="saveComplex()">Save</button>
+    <button id="complex-edit-cancel-button" (click)="cancelEdit()">Cancel</button>
+  </div>
+
+</div>
