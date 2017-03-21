@@ -1,3 +1,4 @@
 export interface Complex {
-  name:string;
+  id?:number;
+  complex:string;
 }
