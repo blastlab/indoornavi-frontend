@@ -1,6 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewContainerRef} from '@angular/core';
 import {Complex} from './complex.type';
 import {ComplexService} from "./complex.service";
+import {MdDialog, MdDialogConfig, MdDialogRef} from '@angular/material';
+import {ComplexDialog} from './complex.dialog';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +14,7 @@ export class AppComplex implements OnInit {
   public complex: Complex;
   public complexes: Array<Complex> = [];
 
-  public editMode: boolean = false;
+  private dialogRef: MdDialogRef<any>;
 
   ngOnInit(): void {
     this.complex = {
@@ -20,15 +22,29 @@ export class AppComplex implements OnInit {
     };
 
     this.complexService.getComplexes().subscribe((complexes: Array<Complex>) => {
+      console.log(complexes);
       this.complexes = complexes;
     });
   }
 
-  constructor(private complexService: ComplexService) {}
+  constructor(private complexService: ComplexService,
+              public dialog: MdDialog,
+              public viewContainerRef: ViewContainerRef) {}
 
   public editComplex(complex: Complex): void {
-    this.editMode = true;
+    let config = new MdDialogConfig();
+    config.viewContainerRef = this.viewContainerRef;
+    this.dialogRef = this.dialog.open(ComplexDialog, config);
+    this.dialogRef.componentInstance.newComplexName = complex.name;
+
     this.complex = complex;
+
+    this.dialogRef.afterClosed().subscribe(result => {
+      this.complex.name = this.dialogRef.componentInstance.newComplexName;
+      this.dialogRef = null;
+      this.saveComplex();
+    });
+
   }
 
   public removeComplex(index: number): void {
@@ -48,12 +64,8 @@ export class AppComplex implements OnInit {
 
   public saveComplex(): void {
     this.complexService.updateComplex(this.complex).subscribe(() => {
-      this.editMode = false;
+      // TODO: action after edit?
     });
-  }
-
-  public cancelEdit(): void {
-    this.editMode = false;
   }
 
 }

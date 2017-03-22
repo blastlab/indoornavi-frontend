@@ -13,3 +13,4 @@ table tr td{
   margin: 15px 0;
 }
 
+@import '~@angular/material/core/theming/prebuilt/deeppurple-amber.css';
