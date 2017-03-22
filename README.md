@@ -2,6 +2,20 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.0.0-rc.2.
 
+## Install Node.js & npm
+
+Install Node.js® and npm if they are not already on your machine, from here: http://nodejs.org/download/.
+
+Verify that you are running at least node 6.9.x and npm 3.x.x by running node -v and npm -v in a terminal/console window. 
+
+## Install the Angular CLI globally
+
+Run `npm install -g @angular/cli`
+
+## Create new project
+
+Open a terminal window. Run `ng new my-project-name`. Patience please (it takes time).
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
