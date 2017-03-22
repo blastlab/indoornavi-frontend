@@ -5,7 +5,7 @@
     <th colspan="3">Complex name</th>
   </tr>
   <tr *ngFor="let complex of complexes; let id = index;">
-    <td class="complex-name">{{complex.complex}}</td>
+    <td class="complex-name">{{complex.name}}</td>
     <td>
       <button class="complex-edit-button" (click)="editComplex(complex)" md-mini-fab><i class="material-icons">mode_edit</i></button>
     </td>

@@ -36,7 +36,7 @@ describe('AppComplex', () => {
       component.addComplex();
 
       // then
-      chai.expect(component.complexes).to.deep.equal([{complex: newComplexName}]);
+      chai.expect(component.complexes).to.deep.equal([{name: newComplexName}]);
     });
   });
 
@@ -45,13 +45,13 @@ describe('AppComplex', () => {
       // given
       const newComplexName = 'some name';
       const newComplexName2 = 'some different name';
-      component.complexes = [{complex: newComplexName}, {complex: newComplexName2}];
+      component.complexes = [{name: newComplexName}, {name: newComplexName2}];
 
       // when
       component.removeComplex(0);
 
       // then
-      chai.expect(component.complexes).to.deep.equal([{complex: newComplexName2}]);
+      chai.expect(component.complexes).to.deep.equal([{name: newComplexName2}]);
     });
   });
 
@@ -60,7 +60,7 @@ describe('AppComplex', () => {
       // given
       const oldComplexName = 'some name';
       const newComplexName = 'some new name';
-      component.complexes = [{complex: oldComplexName}];
+      component.complexes = [{name: oldComplexName}];
 
       // when
       component.editComplex(component.complexes[0]);
