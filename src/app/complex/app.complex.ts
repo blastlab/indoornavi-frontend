@@ -28,7 +28,7 @@ export class AppComplex {
   public editComplex(complex:Complex):void {
     this.editMode = true;
     this.selectedComplex = complex;
-    this.newComplexName = complex.complex;
+    this.newComplexName = complex.name;
   }
 
   public removeComplex(index:number):void {
@@ -38,7 +38,7 @@ export class AppComplex {
   }
 
   public addComplex():void {
-    this.http.post(Config.API_URL + 'complexes', {complex: this.newComplexName}).subscribe(() => {
+    this.http.post(Config.API_URL + 'complexes', {name: this.newComplexName}).subscribe(() => {
       this.newComplexName = '';
       this.init();
     });
@@ -46,8 +46,8 @@ export class AppComplex {
 
   public saveComplex():void {
     const apiUrl = Config.API_URL + 'complexes/' + this.selectedComplex.id;
-    this.http.put(apiUrl, {complex: this.newComplexName}).subscribe(() => {
-      this.selectedComplex.complex = this.newComplexName;
+    this.http.put(apiUrl, {name: this.newComplexName}).subscribe(() => {
+      this.selectedComplex.name = this.newComplexName;
       this.editMode = false;
     });
   }
