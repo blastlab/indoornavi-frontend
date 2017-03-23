@@ -1,30 +1,30 @@
 import {Injectable} from '@angular/core';
 import {Complex} from "./complex.type";
 import {Observable} from "rxjs";
-import {AppService} from "../app.service";
+import {HttpService} from "../utils/http/http.service";
 
 @Injectable()
 export class ComplexService {
 
   private complexesUrl = 'complexes/';
 
-  constructor(private appService: AppService) {
+  constructor(private httpService: HttpService) {
   }
 
   getComplexes(): Observable<Complex[]> {
-    return this.appService.doGet(this.complexesUrl);
+    return this.httpService.doGet(this.complexesUrl);
   }
 
   addComplex(complex: Complex): Observable<Complex> {
-    return this.appService.doPost(this.complexesUrl, complex);
+    return this.httpService.doPost(this.complexesUrl, complex);
   }
 
   updateComplex(complex: Complex): Observable<Complex> {
-    return this.appService.doPut(this.complexesUrl + complex.id, complex);
+    return this.httpService.doPut(this.complexesUrl + complex.id, complex);
   }
 
   removeComplex(id: number): Observable<any> {
-    return this.appService.doDelete(this.complexesUrl + id);
+    return this.httpService.doDelete(this.complexesUrl + id);
   }
 
 }

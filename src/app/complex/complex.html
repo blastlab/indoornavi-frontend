@@ -1,35 +1,38 @@
 <h1>Your building complexes</h1>
 
-<table cellpadding="10" cellspacing="0">
-  <tr>
-    <th colspan="3">Complex name</th>
-  </tr>
-  <tr *ngFor="let complex of complexes; let i = index">
-    <td class="complex-name">{{complex.name}}</td>
-    <td>
-      <button id="{{complex.id}}" class="complex-edit-button" (click)="editComplex(complex)" md-mini-fab><i
-        class="material-icons">mode_edit</i></button>
-    </td>
-    <td>
-      <button class="complex-remove-button" (click)="removeComplex(i)" md-mini-fab><i class="material-icons">delete</i>
-      </button>
-    </td>
-  </tr>
-</table>
-
 <div class="adding-section">
-  <form #f="ngForm" novalidate>
+  <form #complexForm="ngForm" novalidate>
     <div>
       <md-input-container class="example-full-width">
         <input id="complex-name-input" name="name" [(ngModel)]="complex.name" #name="ngModel" required type="text"
                mdInput
                placeholder="Complex name">
       </md-input-container>
-      <small [hidden]="name.valid || (name.pristine && !f.submitted)">
+      <small [hidden]="name.valid || (name.pristine && !complexForm.submitted)">
         Name is required.
       </small>
     </div>
-    <button id="complex-add-button" type="submit" md-raised-button (click)="addComplex(f.value, f.valid)">Add</button>
+    <button id="complex-add-button" type="submit" md-raised-button (click)="addComplex(complexForm.value, complexForm.valid)">Add</button>
   </form>
-
 </div>
+
+<table cellpadding="10" cellspacing="0">
+  <tr>
+    <th>Complex name</th>
+    <th colspan="2">Actions</th>
+  </tr>
+  <tr *ngFor="let complex of complexes; let i = index">
+    <td class="complex-name">{{complex.name}}</td>
+    <td>
+      <button id="{{complex.id}}" class="complex-edit-button" (click)="editComplex(complex)" md-mini-fab md-tooltip="Edit" mdTooltipPosition="above">
+        <i
+        class="material-icons">mode_edit</i>
+      </button>
+    </td>
+    <td>
+      <button class="complex-remove-button" (click)="removeComplex(i)" md-mini-fab md-mini-fab md-tooltip="Remove" mdTooltipPosition="above">
+        <i class="material-icons">delete</i>
+      </button>
+    </td>
+  </tr>
+</table>

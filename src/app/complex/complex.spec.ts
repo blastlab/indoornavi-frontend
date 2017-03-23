@@ -3,10 +3,15 @@ let chai = require('chai');
 
 import { AppComplex } from './complex';
 import {FormsModule} from "@angular/forms";
+import {ComplexService} from "./complex.service";
+import {Observable} from 'rxjs';
+import Spy = jasmine.Spy;
 
 describe('AppComplex', () => {
 
   let component:AppComplex;
+  let complexService:ComplexService;
+  let spy:Spy;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -14,15 +19,21 @@ describe('AppComplex', () => {
       declarations: [
         AppComplex
       ],
+      providers: [
+        ComplexService
+      ]
     }).compileComponents();
 
     const fixture = TestBed.createComponent(AppComplex);
     component = fixture.debugElement.componentInstance;
+    complexService = fixture.debugElement.injector.get(ComplexService);
 
+    spy = spyOn(complexService, 'getComplexes').and.returnValue(Observable.create([]));
   }));
 
   it('should create component', async(() => {
     expect(component).toBeTruthy();
+    expect(spy.calls.any()).toBe(false);
   }));
 
   describe('when we want to add complex', () => {
@@ -63,7 +74,6 @@ describe('AppComplex', () => {
 
       // when
       component.editComplex({name: newComplexName});
-      component.saveComplex();
 
       // then
       chai.expect(component.complexes).to.deep.equal([{complex: newComplexName}]);

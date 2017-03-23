@@ -6,8 +6,9 @@ import {HttpModule} from '@angular/http';
 import {AppComplex} from './complex/complex';
 import {MaterialModule} from '@angular/material';
 import {ComplexService} from "./complex/complex.service";
-import {AppService} from "./app.service";
 import {ComplexDialog} from './complex/complex.dialog';
+import {ToastService} from "./utils/toast/toast.service";
+import {HttpService} from "./utils/http/http.service";
 
 @NgModule({
   declarations: [
@@ -23,7 +24,7 @@ import {ComplexDialog} from './complex/complex.dialog';
     MaterialModule,
     HttpModule
   ],
-  providers: [AppService, ComplexService],
+  providers: [HttpService, ComplexService, ToastService],
   bootstrap: [AppComplex]
 })
 
