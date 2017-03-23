@@ -7,10 +7,15 @@ import {AppComplex} from './complex/complex';
 import {MaterialModule} from '@angular/material';
 import {ComplexService} from "./complex/complex.service";
 import {AppService} from "./app.service";
+import {ComplexDialog} from './complex/complex.dialog';
 
 @NgModule({
   declarations: [
-    AppComplex
+    AppComplex,
+    ComplexDialog
+  ],
+  entryComponents: [
+    ComplexDialog
   ],
   imports: [
     BrowserModule,

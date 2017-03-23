@@ -7,30 +7,29 @@
   <tr *ngFor="let complex of complexes; let i = index">
     <td class="complex-name">{{complex.name}}</td>
     <td>
-      <button id="{{complex.id}}" class="complex-edit-button" (click)="editComplex(complex)" md-mini-fab><i class="material-icons">mode_edit</i></button>
+      <button id="{{complex.id}}" class="complex-edit-button" (click)="editComplex(complex)" md-mini-fab><i
+        class="material-icons">mode_edit</i></button>
     </td>
     <td>
-      <button class="complex-remove-button" (click)="removeComplex(i)" md-mini-fab><i class="material-icons">delete</i></button>
+      <button class="complex-remove-button" (click)="removeComplex(i)" md-mini-fab><i class="material-icons">delete</i>
+      </button>
     </td>
   </tr>
 </table>
 
 <div class="adding-section">
-  <md-input-container class="example-full-width">
-    <form #f="ngForm" novalidate>
-      <input id="complex-name-input" name="name" [(ngModel)]="complex.name" #name="ngModel" required type="text" mdInput placeholder="Complex name">
+  <form #f="ngForm" novalidate>
+    <div>
+      <md-input-container class="example-full-width">
+        <input id="complex-name-input" name="name" [(ngModel)]="complex.name" #name="ngModel" required type="text"
+               mdInput
+               placeholder="Complex name">
+      </md-input-container>
       <small [hidden]="name.valid || (name.pristine && !f.submitted)">
         Name is required.
       </small>
-      <div *ngIf="!editMode">
-        <button id="complex-add-button" type="submit" md-raised-button (click)="addComplex(f.value, f.valid)">Add</button>
-      </div>
-    </form>
-  </md-input-container>
-
-  <div *ngIf="editMode">
-    <button id="complex-edit-save-button" (click)="saveComplex()" md-raised-button>Save</button>
-    <button id="complex-edit-cancel-button" (click)="cancelEdit()" md-raised-button>Cancel</button>
-  </div>
+    </div>
+    <button id="complex-add-button" type="submit" md-raised-button (click)="addComplex(f.value, f.valid)">Add</button>
+  </form>
 
 </div>
