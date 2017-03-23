@@ -1,8 +1,10 @@
-import {Component, OnInit, ViewContainerRef} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {Complex} from './complex.type';
 import {ComplexService} from "./complex.service";
-import {MdDialog, MdDialogConfig, MdDialogRef} from '@angular/material';
+import {MdDialog, MdDialogRef} from '@angular/material';
 import {ComplexDialog} from './complex.dialog';
+import {ToastService} from "../utils/toast/toast.service";
+import {NgForm} from "@angular/forms";
 
 @Component({
   selector: 'app-root',
@@ -11,61 +13,74 @@ import {ComplexDialog} from './complex.dialog';
 })
 
 export class AppComplex implements OnInit {
-  public complex: Complex;
-  public complexes: Array<Complex> = [];
+  private complex: Complex;
+  complexes: Array<Complex> = [];
 
-  private dialogRef: MdDialogRef<any>;
+  private dialogRef: MdDialogRef<ComplexDialog>;
+
+  @ViewChild('complexForm') complexForm: NgForm;
 
   ngOnInit(): void {
-    this.complex = {
-      name: ''
-    };
+    this.newComplex();
 
     this.complexService.getComplexes().subscribe((complexes: Array<Complex>) => {
-      console.log(complexes);
       this.complexes = complexes;
     });
   }
 
   constructor(private complexService: ComplexService,
-              public dialog: MdDialog,
-              public viewContainerRef: ViewContainerRef) {}
+              private dialog: MdDialog,
+              private toast: ToastService)
+  {}
 
-  public editComplex(complex: Complex): void {
-    let config = new MdDialogConfig();
-    config.viewContainerRef = this.viewContainerRef;
-    this.dialogRef = this.dialog.open(ComplexDialog, config);
-    this.dialogRef.componentInstance.newComplexName = complex.name;
-
-    this.complex = complex;
+  editComplex(complex: Complex): void {
+    this.dialogRef = this.dialog.open(ComplexDialog);
+    this.dialogRef.componentInstance.setName(complex.name);
 
     this.dialogRef.afterClosed().subscribe(result => {
-      this.complex.name = this.dialogRef.componentInstance.newComplexName;
+      if (result === undefined) { // dialog has been closed without save button clicked
+        // TODO: do we do anything here? if not, we should modify this if statement
+      } else { // save button has been clicked and result variable contains new complex name
+        complex.name = result;
+        this.saveComplex(complex);
+      }
       this.dialogRef = null;
-      this.saveComplex();
     });
-
   }
 
-  public removeComplex(index: number): void {
+  removeComplex(index: number): void {
     this.complexService.removeComplex(this.complexes[index].id).subscribe(() => {
       this.complexes.splice(index, 1);
+      this.toast.showSuccess("Complex has been removed.");
+    }, (msg: string) => {
+      this.toast.showFailure(msg);
     });
   }
 
-  public addComplex(model: Complex, isValid: boolean): void {
+  addComplex(model: Complex, isValid: boolean): void {
     if (isValid) {
       this.complexService.addComplex(model).subscribe((newComplex: Complex) => {
         this.complexes.push(newComplex);
-        // TODO: snack bar on success or failure
+        this.complexForm.resetForm();
+        this.toast.showSuccess("Complex has been created.");
+      }, (msg: string) => {
+        this.toast.showFailure(msg);
       });
     }
   }
 
-  public saveComplex(): void {
-    this.complexService.updateComplex(this.complex).subscribe(() => {
-      // TODO: action after edit?
+  saveComplex(complex: Complex): void {
+    this.complexService.updateComplex(complex).subscribe(() => {
+      this.toast.showSuccess("Complex has been saved.");
+    }, (msg: string) => {
+      this.toast.showFailure(msg);
     });
+  }
+
+  private newComplex(): void {
+    this.complex = {
+      name: ''
+    };
   }
 
 }
