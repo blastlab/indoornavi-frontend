@@ -8,7 +8,8 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "i18n": "ng-xi18n"
   },
   "private": true,
   "dependencies": {
@@ -26,10 +27,10 @@
     "zone.js": "^0.7.6"
   },
   "devDependencies": {
-    "@angular/cli": "1.0.0-rc.2",
+    "@angular/cli": "1.0.0-rc.4",
     "@angular/compiler-cli": "^2.4.0",
     "@types/jasmine": "2.5.38",
-    "@types/node": "~6.0.60",
+    "@types/node": "~7.0.10",
     "chai": "^3.5.0",
     "codelyzer": "~2.0.0",
     "jasmine-core": "~2.5.2",
@@ -44,8 +45,8 @@
     "protractor": "~5.1.0",
     "sinon": "^1.17.4",
     "sinon-chai": "^2.8.0",
-    "ts-node": "~2.0.0",
+    "ts-node": "~3.0.2",
     "tslint": "~4.5.0",
-    "typescript": "~2.0.0"
+    "typescript": "~2.2.1"
   }
 }

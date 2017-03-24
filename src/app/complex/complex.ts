@@ -1,10 +1,10 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {Complex} from './complex.type';
-import {ComplexService} from "./complex.service";
+import {ComplexService} from './complex.service';
 import {MdDialog, MdDialogRef} from '@angular/material';
-import {ComplexDialog} from './complex.dialog';
-import {ToastService} from "../utils/toast/toast.service";
-import {NgForm} from "@angular/forms";
+import {ComplexDialogComponent} from './complex.dialog';
+import {ToastService} from '../utils/toast/toast.service';
+import {NgForm} from '@angular/forms';
 
 @Component({
   selector: 'app-root',
@@ -12,11 +12,11 @@ import {NgForm} from "@angular/forms";
   styleUrls: ['complex.css']
 })
 
-export class AppComplex implements OnInit {
-  private complex: Complex;
+export class ComplexComponent implements OnInit {
+  complex: Complex;
   complexes: Array<Complex> = [];
 
-  private dialogRef: MdDialogRef<ComplexDialog>;
+  private dialogRef: MdDialogRef<ComplexDialogComponent>;
 
   @ViewChild('complexForm') complexForm: NgForm;
 
@@ -30,12 +30,12 @@ export class AppComplex implements OnInit {
 
   constructor(private complexService: ComplexService,
               private dialog: MdDialog,
-              private toast: ToastService)
-  {}
+              private toast: ToastService) {
+  }
 
   editComplex(complex: Complex): void {
-    this.dialogRef = this.dialog.open(ComplexDialog);
-    this.dialogRef.componentInstance.setName(complex.name);
+    this.dialogRef = this.dialog.open(ComplexDialogComponent);
+    this.dialogRef.componentInstance.name = complex.name;
 
     this.dialogRef.afterClosed().subscribe(result => {
       if (result === undefined) { // dialog has been closed without save button clicked
@@ -51,7 +51,7 @@ export class AppComplex implements OnInit {
   removeComplex(index: number): void {
     this.complexService.removeComplex(this.complexes[index].id).subscribe(() => {
       this.complexes.splice(index, 1);
-      this.toast.showSuccess("Complex has been removed.");
+      this.toast.showSuccess('Complex has been removed.');
     }, (msg: string) => {
       this.toast.showFailure(msg);
     });
@@ -62,7 +62,7 @@ export class AppComplex implements OnInit {
       this.complexService.addComplex(model).subscribe((newComplex: Complex) => {
         this.complexes.push(newComplex);
         this.complexForm.resetForm();
-        this.toast.showSuccess("Complex has been created.");
+        this.toast.showSuccess('Complex has been created.');
       }, (msg: string) => {
         this.toast.showFailure(msg);
       });
@@ -71,7 +71,7 @@ export class AppComplex implements OnInit {
 
   saveComplex(complex: Complex): void {
     this.complexService.updateComplex(complex).subscribe(() => {
-      this.toast.showSuccess("Complex has been saved.");
+      this.toast.showSuccess('Complex has been saved.');
     }, (msg: string) => {
       this.toast.showFailure(msg);
     });

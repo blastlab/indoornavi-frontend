@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
-import {Complex} from "./complex.type";
-import {Observable} from "rxjs";
-import {HttpService} from "../utils/http/http.service";
+import {Complex} from './complex.type';
+import {Observable} from 'rxjs/Observable';
+import {HttpService} from '../utils/http/http.service';
 
 @Injectable()
 export class ComplexService {

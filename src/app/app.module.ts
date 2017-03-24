@@ -3,20 +3,20 @@ import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {HttpModule} from '@angular/http';
 
-import {AppComplex} from './complex/complex';
+import {ComplexComponent} from './complex/complex';
 import {MaterialModule} from '@angular/material';
-import {ComplexService} from "./complex/complex.service";
-import {ComplexDialog} from './complex/complex.dialog';
-import {ToastService} from "./utils/toast/toast.service";
-import {HttpService} from "./utils/http/http.service";
+import {ComplexService} from './complex/complex.service';
+import {ComplexDialogComponent} from './complex/complex.dialog';
+import {ToastService} from './utils/toast/toast.service';
+import {HttpService} from './utils/http/http.service';
 
 @NgModule({
   declarations: [
-    AppComplex,
-    ComplexDialog
+    ComplexComponent,
+    ComplexDialogComponent
   ],
   entryComponents: [
-    ComplexDialog
+    ComplexDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -25,7 +25,7 @@ import {HttpService} from "./utils/http/http.service";
     HttpModule
   ],
   providers: [HttpService, ComplexService, ToastService],
-  bootstrap: [AppComplex]
+  bootstrap: [ComplexComponent]
 })
 
 export class AppModule {

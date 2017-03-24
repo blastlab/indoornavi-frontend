@@ -1,30 +1,30 @@
-import { TestBed, async } from '@angular/core/testing';
-let chai = require('chai');
+import {TestBed, async} from '@angular/core/testing';
+const chai = require('chai');
 
-import { AppComplex } from './complex';
-import {FormsModule} from "@angular/forms";
-import {ComplexService} from "./complex.service";
-import {Observable} from 'rxjs';
+import {ComplexComponent} from './complex';
+import {FormsModule} from '@angular/forms';
+import {ComplexService} from './complex.service';
+import {Observable} from 'rxjs/Observable';
 import Spy = jasmine.Spy;
 
-describe('AppComplex', () => {
+describe('ComplexComponent', () => {
 
-  let component:AppComplex;
-  let complexService:ComplexService;
-  let spy:Spy;
+  let component: ComplexComponent;
+  let complexService: ComplexService;
+  let spy: Spy;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ FormsModule ],
+      imports: [FormsModule],
       declarations: [
-        AppComplex
+        ComplexComponent
       ],
       providers: [
         ComplexService
       ]
     }).compileComponents();
 
-    const fixture = TestBed.createComponent(AppComplex);
+    const fixture = TestBed.createComponent(ComplexComponent);
     component = fixture.debugElement.componentInstance;
     complexService = fixture.debugElement.injector.get(ComplexService);
 

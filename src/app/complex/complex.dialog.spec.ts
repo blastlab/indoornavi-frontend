@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ComplexDialog } from './complex.dialog';
+import { ComplexDialogComponent } from './complex.dialog';
 
 describe('ComplexComponent', () => {
-  let component: ComplexDialog;
-  let fixture: ComponentFixture<ComplexDialog>;
+  let component: ComplexDialogComponent;
+  let fixture: ComponentFixture<ComplexDialogComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ComplexDialog ]
+      declarations: [ ComplexDialogComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ComplexDialog);
+    fixture = TestBed.createComponent(ComplexDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
