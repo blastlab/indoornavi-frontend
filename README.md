@@ -40,3 +40,14 @@ Before running the tests make sure you are serving the app via `ng serve`.
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+
+## DoD
+
+Definition of Done for issues is as follows:
+
+- Created unit tests where suitable - for code with logic. Unit tests are not required for plain methods without business logic.
+- Created integration tests. For frontend these are user interface, Selenium-like tests.
+- Code passed code review, was integrated with other services (like fronted),
+functionality was accepted by Product Owner (if suitable) and branch was merged to `development`.
+
+Only issue for which code fulfills above rules can be found as done.
