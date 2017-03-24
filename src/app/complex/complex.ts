@@ -5,6 +5,7 @@ import {MdDialog, MdDialogRef} from '@angular/material';
 import {ComplexDialogComponent} from './complex.dialog';
 import {ToastService} from '../utils/toast/toast.service';
 import {NgForm} from '@angular/forms';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-root',
@@ -26,11 +27,14 @@ export class ComplexComponent implements OnInit {
     this.complexService.getComplexes().subscribe((complexes: Array<Complex>) => {
       this.complexes = complexes;
     });
+
+    this.translate.setDefaultLang('en');
   }
 
   constructor(private complexService: ComplexService,
               private dialog: MdDialog,
-              private toast: ToastService) {
+              private toast: ToastService,
+              public translate: TranslateService) {
   }
 
   editComplex(complex: Complex): void {
