@@ -56,7 +56,7 @@ export class ComplexComponent implements OnInit {
   removeComplex(index: number): void {
     this.complexService.removeComplex(this.complexes[index].id).subscribe(() => {
       this.complexes.splice(index, 1);
-      this.toast.showSuccess('Complex has been removed.');
+      this.toast.showSuccess('complex.remove.success');
     }, (msg: string) => {
       this.toast.showFailure(msg);
     });
@@ -67,7 +67,7 @@ export class ComplexComponent implements OnInit {
       this.complexService.addComplex(model).subscribe((newComplex: Complex) => {
         this.complexes.push(newComplex);
         this.complexForm.resetForm();
-        this.toast.showSuccess('Complex has been created.');
+        this.toast.showSuccess('complex.create.success');
       }, (msg: string) => {
         this.toast.showFailure(msg);
       });
@@ -77,7 +77,7 @@ export class ComplexComponent implements OnInit {
   saveComplex(complexToUpdate: Complex): void {
     this.complexService.updateComplex(complexToUpdate).subscribe((complex: Complex) => {
       this.complex = complex;
-      this.toast.showSuccess('Complex has been saved.');
+      this.toast.showSuccess('complex.save.success');
     }, (msg: string) => {
       this.toast.showFailure(msg);
     });

@@ -1,11 +1,14 @@
 {
-	"complex.name.placeholder": "Complex name",
+  "complex.remove.success": "Complex has been removed.",
+  "complex.create.success": "Complex has been created.",
+  "complex.save.success": "Complex has been saved.",
+  "complex.name.placeholder": "Complex name",
 	"save": "Save",
+	"add": "Add",
 	"edit": "Edit",
 	"remove": "Remove",
 	"complex.header": "Your building complexes",
 	"complex.name.required": "Complex name is required.",
-	"add": "Add",
 	"complex.th.name": "Complex name",
 	"th.actions": "Actions"
 }
