@@ -1,5 +1,9 @@
 {
 	"building.name.placeholder": "Building name",
+  "complex.remove.success": "Complex has been removed.",
+  "complex.create.success": "Complex has been created.",
+  "complex.save.success": "Complex has been saved.",
+  "complex.name.placeholder": "Complex name",
 	"save": "Save",
 	"add": "Add",
 	"edit": "Edit",
