@@ -5,6 +5,7 @@ import {MdDialog, MdDialogRef} from '@angular/material';
 import {ComplexDialog} from './complex.dialog';
 import {ToastService} from "../utils/toast/toast.service";
 import {NgForm} from "@angular/forms";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-root',
@@ -13,9 +14,10 @@ import {NgForm} from "@angular/forms";
 })
 
 export class AppComplex implements OnInit {
-  private complex: Complex;
+
   complexes: Array<Complex> = [];
 
+  private complex: Complex;
   private dialogRef: MdDialogRef<ComplexDialog>;
 
   @ViewChild('complexForm') complexForm: NgForm;
@@ -30,7 +32,8 @@ export class AppComplex implements OnInit {
 
   constructor(private complexService: ComplexService,
               private dialog: MdDialog,
-              private toast: ToastService)
+              private toast: ToastService,
+              private router: Router)
   {}
 
   editComplex(complex: Complex): void {
@@ -75,6 +78,10 @@ export class AppComplex implements OnInit {
     }, (msg: string) => {
       this.toast.showFailure(msg);
     });
+  }
+
+  openComplex(complex: Complex): void {
+    this.router.navigate(['building', complex.id]);
   }
 
   private newComplex(): void {

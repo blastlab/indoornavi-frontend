@@ -14,9 +14,9 @@ export class ToastService {
   }
 
   showFailure(msg: string) {
-    // TODO: different styling should be passed here
     this.snackBar.open(msg, null, {
-      duration: 2000
+     duration: 2000,
+     extraClasses: ['error-toast']
     });
   }
 }

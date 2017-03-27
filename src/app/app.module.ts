@@ -9,23 +9,38 @@ import {ComplexService} from "./complex/complex.service";
 import {ComplexDialog} from './complex/complex.dialog';
 import {ToastService} from "./utils/toast/toast.service";
 import {HttpService} from "./utils/http/http.service";
+import {AppBuilding} from "./building/building";
+import {BuildingDialog} from "./building/building.dialog";
+import {Routes, RouterModule} from "@angular/router";
+import {BuildingService} from "./building/building.service";
+import {AppComponent} from "./app.component";
+
+const appRoutes: Routes = [
+  { path: '', component: AppComplex },
+  { path: 'building/:id', component: AppBuilding },
+];
 
 @NgModule({
   declarations: [
     AppComplex,
-    ComplexDialog
+    AppBuilding,
+    BuildingDialog,
+    ComplexDialog,
+    AppComponent
   ],
   entryComponents: [
-    ComplexDialog
+    ComplexDialog,
+    BuildingDialog
   ],
   imports: [
     BrowserModule,
     FormsModule,
     MaterialModule,
-    HttpModule
+    HttpModule,
+    RouterModule.forRoot(appRoutes)
   ],
-  providers: [HttpService, ComplexService, ToastService],
-  bootstrap: [AppComplex]
+  providers: [BuildingService, HttpService, ComplexService, ToastService],
+  bootstrap: [AppComponent]
 })
 
 export class AppModule {
