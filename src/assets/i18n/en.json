@@ -1,0 +1,11 @@
+{
+	"complex.name.placeholder": "Complex name",
+	"save": "Save",
+	"edit": "Edit",
+	"remove": "Remove",
+	"complex.header": "Your building complexes",
+	"complex.name.required": "Complex name is required.",
+	"add": "Add",
+	"complex.th.name": "Complex name",
+	"th.actions": "Actions"
+}

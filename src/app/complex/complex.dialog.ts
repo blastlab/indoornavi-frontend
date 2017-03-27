@@ -2,21 +2,17 @@ import {Component, OnInit} from '@angular/core';
 import {MdDialogRef} from '@angular/material';
 
 @Component({
-  selector: 'complex-dialog',
+  selector: 'app-complex-dialog',
   templateUrl: './complex.dialog.html',
   styleUrls: ['./complex.dialog.css']
 })
-export class ComplexDialog implements OnInit {
-  private name: string = '';
+export class ComplexDialogComponent implements OnInit {
+  public name: string = '';
 
   ngOnInit(): void {
   }
 
-  constructor(private dialogRef: MdDialogRef<ComplexDialog>) {
-  }
-
-  setName(name: string): void {
-    this.name = name;
+  constructor(private dialogRef: MdDialogRef<ComplexDialogComponent>) {
   }
 
   close() {

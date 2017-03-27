@@ -1,99 +1,149 @@
-import { TestBed, async } from '@angular/core/testing';
-let chai = require('chai');
+import {TestBed, async} from '@angular/core/testing';
+import {ComplexComponent} from './complex';
+import {FormsModule} from '@angular/forms';
+import {ComplexService} from './complex.service';
+import {Observable} from 'rxjs/Rx';
+import {TranslateModule} from '@ngx-translate/core';
+import {MaterialModule} from '@angular/material';
+import {HttpService} from '../utils/http/http.service';
+import {ToastService} from '../utils/toast/toast.service';
+import {MdDialog} from '@angular/material';
+import {DialogTestModule} from '../utils/dialog/dialog.test';
 
-import { AppComplex } from './complex';
-import {FormsModule} from "@angular/forms";
-import {ComplexService} from "./complex.service";
-import {Observable} from 'rxjs';
-import Spy = jasmine.Spy;
+describe('ComplexComponent', () => {
 
-describe('AppComplex', () => {
-
-  let component:AppComplex;
-  let complexService:ComplexService;
-  let spy:Spy;
+  let component: ComplexComponent;
+  let complexService: ComplexService;
+  let toastService: ToastService;
+  let dialog: MdDialog;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ FormsModule ],
+      imports: [FormsModule, TranslateModule.forRoot(), MaterialModule, DialogTestModule],
       declarations: [
-        AppComplex
+        ComplexComponent
       ],
       providers: [
-        ComplexService
+        ComplexService, HttpService, ToastService, MdDialog
       ]
     }).compileComponents();
 
-    const fixture = TestBed.createComponent(AppComplex);
+    const fixture = TestBed.createComponent(ComplexComponent);
     component = fixture.debugElement.componentInstance;
     complexService = fixture.debugElement.injector.get(ComplexService);
+    toastService = fixture.debugElement.injector.get(ToastService);
+    dialog = fixture.debugElement.injector.get(MdDialog);
 
-    spy = spyOn(complexService, 'getComplexes').and.returnValue(Observable.create([]));
+    spyOn(toastService, 'showSuccess');
   }));
 
   it('should create component', async(() => {
+    // given
+    spyOn(complexService, 'getComplexes').and.returnValue(Observable.of([{'name': 'test'}]));
+
+    // when
+    component.ngOnInit();
+
+    // then
     expect(component).toBeTruthy();
-    expect(spy.calls.any()).toBe(false);
+    expect(complexService.getComplexes).toHaveBeenCalled();
+
+    expect(component.complexes.length).toEqual(1);
+    expect(component.complexes).toContain({'name': 'test'});
+    expect(component.complex).toEqual({'name': ''}, 'Complex model should be created');
   }));
 
-  describe('when we want to add complex', () => {
-    it('should add it to complex list', () => {
-      // given
-      const newComplexName = 'some name';
-      component.complexes = [];
+  it('should add new complex to list when form is valid', () => {
+    // given
+    const newComplexName = 'some name';
+    spyOn(complexService, 'addComplex').and.returnValue(Observable.of({'name': newComplexName}));
+    const isValid = true;
 
-      // when
-      component.addComplex({name: newComplexName}, true);
+    // when
+    component.addComplex({name: newComplexName}, isValid);
 
-      // then
-      chai.expect(component.complexes).to.deep.equal([{name: newComplexName}]);
-    });
+    // then
+    expect(complexService.addComplex).toHaveBeenCalled();
+    expect(toastService.showSuccess).toHaveBeenCalled();
+
+    expect(component.complexes.length).toEqual(1);
+    expect(component.complexes).toContain({'name': newComplexName});
   });
 
-  describe('when we want to remove complex', () => {
-    it('should remove it from complex list', () => {
-      // given
-      const newComplexName = 'some name';
-      const newComplexName2 = 'some different name';
-      component.complexes = [{name: newComplexName}, {name: newComplexName2}];
+  it('should NOT add new complex to list when form is invalid', () => {
+    // given
+    const isValid = false;
 
-      // when
-      component.removeComplex(0);
+    // when
+    component.addComplex({name: 'someName'}, isValid);
 
-      // then
-      chai.expect(component.complexes).to.deep.equal([{name: newComplexName2}]);
-    });
+    // then
+    expect(component.complexes.length).toEqual(0);
   });
 
-  describe('when we edit and save complex with new name', () => {
-    it('should change complex name on list', () => {
-      // given
-      const oldComplexName = 'some name';
-      const newComplexName = 'some new name';
-      component.complexes = [{name: oldComplexName}];
+  it('should remove complex from list', () => {
+    // given
+    const newComplexName = 'some name';
+    const newComplexName2 = 'some different name';
+    component.complexes = [{name: newComplexName}, {name: newComplexName2}];
+    spyOn(complexService, 'removeComplex').and.returnValue(Observable.of({}));
 
-      // when
-      component.editComplex({name: newComplexName});
+    // when
+    component.removeComplex(0);
 
-      // then
-      chai.expect(component.complexes).to.deep.equal([{complex: newComplexName}]);
-    });
+    // then
+    expect(complexService.removeComplex).toHaveBeenCalled();
+    expect(component.complexes.length).toEqual(1);
+    expect(toastService.showSuccess).toHaveBeenCalled();
   });
 
-  // TODO: jak już będziemy mieli edycję to trzeba będzie to odkomentować i poprawić, sprawdzając czy przypadkiem po anulowaniu edycji nie zaaktualizował się model (ważne)
-  // describe('when we want to cancel complex editing', () => {
-  //   it('disable edit mode and set empty complex name', () => {
-  //     // given
-  //     const newComplexName = 'some new';
-  //     component.editMode = true;
-  //
-  //     // when
-  //     component.cancelEdit();
-  //
-  //     // then
-  //     chai.expect(component.editMode).to.be.false;
-  //     chai.expect(component.newComplexName).to.equal('');
-  //   });
-  // });
+  it('should open dialog to edit complex name', () => {
+    // given
+    const oldComplexName = 'some name';
+    component.complexes = [{name: oldComplexName}];
+    spyOn(dialog, 'open').and.callThrough();
+
+    // when
+    component.editComplex({name: oldComplexName});
+
+    // then
+    expect(component.dialogRef.componentInstance.name).toEqual(oldComplexName);
+    expect(component.complexes.length).toEqual(1);
+    expect(dialog.open).toHaveBeenCalled();
+  });
+
+  it('should set new complex name when dialog closes', () => {
+    // given
+    const oldComplexName = 'some name';
+    const newComplexName = 'some new name';
+    component.complexes = [{name: oldComplexName}];
+    spyOn(dialog, 'open').and.callThrough();
+    spyOn(complexService, 'updateComplex').and.returnValue(Observable.of({name: newComplexName}));
+
+    // when
+    component.editComplex({name: oldComplexName});
+    component.dialogRef.close(newComplexName);
+
+    // then
+    expect(component.complexes.length).toEqual(1);
+    expect(component.complex.name).toEqual(newComplexName);
+    expect(complexService.updateComplex).toHaveBeenCalled();
+  });
+
+  it('should NOT set new complex name when dialog closes without value', () => {
+    // given
+    const oldComplexName = 'some name';
+    component.complex = {name: oldComplexName};
+    spyOn(dialog, 'open').and.callThrough();
+    spyOn(complexService, 'updateComplex');
+
+    // when
+    component.editComplex({name: oldComplexName});
+    component.dialogRef.close();
+
+    // then
+    expect(component.complex.name).toEqual(oldComplexName);
+    expect(complexService.updateComplex).toHaveBeenCalledTimes(0);
+  });
 
 });

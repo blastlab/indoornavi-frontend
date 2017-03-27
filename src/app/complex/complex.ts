@@ -1,10 +1,11 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {Complex} from './complex.type';
-import {ComplexService} from "./complex.service";
+import {ComplexService} from './complex.service';
 import {MdDialog, MdDialogRef} from '@angular/material';
-import {ComplexDialog} from './complex.dialog';
-import {ToastService} from "../utils/toast/toast.service";
-import {NgForm} from "@angular/forms";
+import {ComplexDialogComponent} from './complex.dialog';
+import {ToastService} from '../utils/toast/toast.service';
+import {NgForm} from '@angular/forms';
+import {TranslateService} from '@ngx-translate/core';
 import {Router} from "@angular/router";
 
 @Component({
@@ -13,12 +14,11 @@ import {Router} from "@angular/router";
   styleUrls: ['complex.css']
 })
 
-export class AppComplex implements OnInit {
-
+export class ComplexComponent implements OnInit {
+  complex: Complex;
   complexes: Array<Complex> = [];
 
-  private complex: Complex;
-  private dialogRef: MdDialogRef<ComplexDialog>;
+  dialogRef: MdDialogRef<ComplexDialogComponent>;
 
   @ViewChild('complexForm') complexForm: NgForm;
 
@@ -28,24 +28,26 @@ export class AppComplex implements OnInit {
     this.complexService.getComplexes().subscribe((complexes: Array<Complex>) => {
       this.complexes = complexes;
     });
+
+    this.translate.setDefaultLang('en');
   }
 
   constructor(private complexService: ComplexService,
               private dialog: MdDialog,
               private toast: ToastService,
-              private router: Router)
-  {}
+              public translate: TranslateService,
+              private router: Router) {
+  }
 
   editComplex(complex: Complex): void {
-    this.dialogRef = this.dialog.open(ComplexDialog);
-    this.dialogRef.componentInstance.setName(complex.name);
+    this.dialogRef = this.dialog.open(ComplexDialogComponent);
+    this.dialogRef.componentInstance.name = complex.name;
 
-    this.dialogRef.afterClosed().subscribe(result => {
-      if (result === undefined) { // dialog has been closed without save button clicked
+    this.dialogRef.afterClosed().subscribe(newComplexName => {
+      if (newComplexName === undefined) { // dialog has been closed without save button clicked
         // TODO: do we do anything here? if not, we should modify this if statement
-      } else { // save button has been clicked and result variable contains new complex name
-        complex.name = result;
-        this.saveComplex(complex);
+      } else { // save button has been clicked and newComplexName variable contains new complex name
+        this.saveComplex({name: newComplexName});
       }
       this.dialogRef = null;
     });
@@ -54,7 +56,7 @@ export class AppComplex implements OnInit {
   removeComplex(index: number): void {
     this.complexService.removeComplex(this.complexes[index].id).subscribe(() => {
       this.complexes.splice(index, 1);
-      this.toast.showSuccess("Complex has been removed.");
+      this.toast.showSuccess('Complex has been removed.');
     }, (msg: string) => {
       this.toast.showFailure(msg);
     });
@@ -65,16 +67,17 @@ export class AppComplex implements OnInit {
       this.complexService.addComplex(model).subscribe((newComplex: Complex) => {
         this.complexes.push(newComplex);
         this.complexForm.resetForm();
-        this.toast.showSuccess("Complex has been created.");
+        this.toast.showSuccess('Complex has been created.');
       }, (msg: string) => {
         this.toast.showFailure(msg);
       });
     }
   }
 
-  saveComplex(complex: Complex): void {
-    this.complexService.updateComplex(complex).subscribe(() => {
-      this.toast.showSuccess("Complex has been saved.");
+  saveComplex(complexToUpdate: Complex): void {
+    this.complexService.updateComplex(complexToUpdate).subscribe((complex: Complex) => {
+      this.complex = complex;
+      this.toast.showSuccess('Complex has been saved.');
     }, (msg: string) => {
       this.toast.showFailure(msg);
     });

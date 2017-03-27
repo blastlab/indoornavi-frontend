@@ -1,6 +1,6 @@
-import { IndoorNaviPage } from './app.complex.po';
+import {IndoorNaviPage} from './app.complex.po';
 
-describe('AppComplex', () => {
+describe('ComplexComponent', () => {
   let page: IndoorNaviPage;
 
   beforeEach(() => {
@@ -13,15 +13,15 @@ describe('AppComplex', () => {
   });
 
   it('should be able to add new complex', () => {
-    const newName:string = 'test';
+    const newName = 'test';
     page.navigateToHome();
     page.addComplex(newName);
     expect(page.getLatestAddedComplex()).toEqual(newName);
   });
 
   it('should be able to remove complex', () => {
-    const newName:string = 'test';
-    const newName2:string = 'test2';
+    const newName = 'test';
+    const newName2 = 'test2';
     page.navigateToHome();
     page.addComplex(newName);
     page.addComplex(newName2);
@@ -30,8 +30,8 @@ describe('AppComplex', () => {
   });
 
   it('should be able to edit complex', () => {
-    const newName:string = 'test';
-    const newName2:string = 'test2';
+    const newName = 'test';
+    const newName2 = 'test2';
     page.navigateToHome();
     page.addComplex(newName);
     page.editComplex(0, newName2);
