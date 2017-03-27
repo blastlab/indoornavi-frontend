@@ -6,6 +6,7 @@ import {ComplexDialogComponent} from './complex.dialog';
 import {ToastService} from '../utils/toast/toast.service';
 import {NgForm} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-root',
@@ -34,7 +35,8 @@ export class ComplexComponent implements OnInit {
   constructor(private complexService: ComplexService,
               private dialog: MdDialog,
               private toast: ToastService,
-              public translate: TranslateService) {
+              public translate: TranslateService
+              private router: Router) {
   }
 
   editComplex(complex: Complex): void {
@@ -79,6 +81,10 @@ export class ComplexComponent implements OnInit {
     }, (msg: string) => {
       this.toast.showFailure(msg);
     });
+  }
+
+  openComplex(complex: Complex): void {
+    this.router.navigate(['building', complex.id]);
   }
 
   private newComplex(): void {

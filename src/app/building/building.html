@@ -1,0 +1,37 @@
+<h1>Your buildings</h1>
+
+<div class="adding-section">
+  <form #builingForm="ngForm" novalidate>
+    <div>
+      <md-input-container class="example-full-width">
+        <input id="builing-name-input" name="name" [(ngModel)]="building.name" #name="ngModel" required type="text"
+               mdInput
+               placeholder="Builing name">
+      </md-input-container>
+      <small [hidden]="name.valid || (name.pristine && !builingForm.submitted)">
+        Name is required.
+      </small>
+    </div>
+    <button id="builing-add-button" type="submit" md-raised-button (click)="addBuilding(builingForm.value, builingForm.valid)">Add</button>
+  </form>
+</div>
+
+<table cellpadding="10" cellspacing="0">
+  <tr>
+    <th>Builing name</th>
+    <th colspan="2">Actions</th>
+  </tr>
+  <tr *ngFor="let building of buildings; let i = index">
+    <td class="builing-name">{{building.name}}</td>
+    <td>
+      <button class="builing-edit-button" (click)="editBuilding(building)" md-mini-fab md-tooltip="Edit" mdTooltipPosition="above">
+        <i class="material-icons">mode_edit</i>
+      </button>
+    </td>
+    <td>
+      <button class="builing-remove-button" (click)="removeBuilding(i)" md-mini-fab md-mini-fab md-tooltip="Remove" mdTooltipPosition="above">
+        <i class="material-icons">delete</i>
+      </button>
+    </td>
+  </tr>
+</table>
