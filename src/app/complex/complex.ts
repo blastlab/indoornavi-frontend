@@ -17,7 +17,7 @@ export class ComplexComponent implements OnInit {
   complex: Complex;
   complexes: Array<Complex> = [];
 
-  private dialogRef: MdDialogRef<ComplexDialogComponent>;
+  dialogRef: MdDialogRef<ComplexDialogComponent>;
 
   @ViewChild('complexForm') complexForm: NgForm;
 
@@ -41,12 +41,11 @@ export class ComplexComponent implements OnInit {
     this.dialogRef = this.dialog.open(ComplexDialogComponent);
     this.dialogRef.componentInstance.name = complex.name;
 
-    this.dialogRef.afterClosed().subscribe(result => {
-      if (result === undefined) { // dialog has been closed without save button clicked
+    this.dialogRef.afterClosed().subscribe(newComplexName => {
+      if (newComplexName === undefined) { // dialog has been closed without save button clicked
         // TODO: do we do anything here? if not, we should modify this if statement
-      } else { // save button has been clicked and result variable contains new complex name
-        complex.name = result;
-        this.saveComplex(complex);
+      } else { // save button has been clicked and newComplexName variable contains new complex name
+        this.saveComplex({name: newComplexName});
       }
       this.dialogRef = null;
     });
@@ -73,8 +72,9 @@ export class ComplexComponent implements OnInit {
     }
   }
 
-  saveComplex(complex: Complex): void {
-    this.complexService.updateComplex(complex).subscribe(() => {
+  saveComplex(complexToUpdate: Complex): void {
+    this.complexService.updateComplex(complexToUpdate).subscribe((complex: Complex) => {
+      this.complex = complex;
       this.toast.showSuccess('Complex has been saved.');
     }, (msg: string) => {
       this.toast.showFailure(msg);

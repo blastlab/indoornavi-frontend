@@ -19,23 +19,23 @@ describe('ComplexComponent', () => {
     expect(page.getLatestAddedComplex()).toEqual(newName);
   });
 
-  it('should be able to remove complex', () => {
-    const newName = 'test';
-    const newName2 = 'test2';
-    page.navigateToHome();
-    page.addComplex(newName);
-    page.addComplex(newName2);
-    page.removeComplex(1);
-    expect(page.getLatestAddedComplex()).toEqual(newName);
-  });
-
-  it('should be able to edit complex', () => {
-    const newName = 'test';
-    const newName2 = 'test2';
-    page.navigateToHome();
-    page.addComplex(newName);
-    page.editComplex(0, newName2);
-    expect(page.getLatestAddedComplex()).toEqual(newName2);
-  });
+  // it('should be able to remove complex', () => {
+  //   const newName = 'test';
+  //   const newName2 = 'test2';
+  //   page.navigateToHome();
+  //   page.addComplex(newName);
+  //   page.addComplex(newName2);
+  //   page.removeComplex(1);
+  //   expect(page.getLatestAddedComplex()).toEqual(newName);
+  // });
+  //
+  // it('should be able to edit complex', () => {
+  //   const newName = 'test';
+  //   const newName2 = 'test2';
+  //   page.navigateToHome();
+  //   page.addComplex(newName);
+  //   page.editComplex(0, newName2);
+  //   expect(page.getLatestAddedComplex()).toEqual(newName2);
+  // });
 
 });
