@@ -9,7 +9,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "extract": "ng2-translate-extract --dir ./src/app --output ./src/assets/i18n/en.json --format=json --clean"
+    "extract": "ng2-translate-extract --dir ./src/app --output ./src/assets/i18n/en.json --format=json --sort"
   },
   "private": true,
   "dependencies": {
