@@ -1,4 +1,4 @@
-<h1>Your buildings</h1>
+<h1 [translate]="'building.header'"></h1>
 
 <div class="adding-section">
   <form #builingForm="ngForm" novalidate>
@@ -6,30 +6,29 @@
       <md-input-container class="example-full-width">
         <input id="builing-name-input" name="name" [(ngModel)]="building.name" #name="ngModel" required type="text"
                mdInput
-               placeholder="Builing name">
+               placeholder="{{'building.name.placeholder'|translate}}">
       </md-input-container>
-      <small [hidden]="name.valid || (name.pristine && !builingForm.submitted)">
-        Name is required.
+      <small [hidden]="name.valid || (name.pristine && !builingForm.submitted)" [translate]="'building.name.required'">
       </small>
     </div>
-    <button id="builing-add-button" type="submit" md-raised-button (click)="addBuilding(builingForm.value, builingForm.valid)">Add</button>
+    <button id="builing-add-button" type="submit" md-raised-button (click)="addBuilding(builingForm.value, builingForm.valid)">{{'add'|translate}}</button>
   </form>
 </div>
 
 <table cellpadding="10" cellspacing="0">
   <tr>
-    <th>Builing name</th>
-    <th colspan="2">Actions</th>
+    <th [translate]="'builing.th.name'"></th>
+    <th colspan="2" [translate]="'th.actions'"></th>
   </tr>
   <tr *ngFor="let building of buildings; let i = index">
     <td class="builing-name">{{building.name}}</td>
     <td>
-      <button class="builing-edit-button" (click)="editBuilding(building)" md-mini-fab md-tooltip="Edit" mdTooltipPosition="above">
+      <button class="builing-edit-button" (click)="editBuilding(building)" md-mini-fab md-tooltip="{{'edit'|translate}}" mdTooltipPosition="above">
         <i class="material-icons">mode_edit</i>
       </button>
     </td>
     <td>
-      <button class="builing-remove-button" (click)="removeBuilding(i)" md-mini-fab md-mini-fab md-tooltip="Remove" mdTooltipPosition="above">
+      <button class="builing-remove-button" (click)="removeBuilding(i)" md-mini-fab md-mini-fab md-tooltip="{{'remove'|translate}}" mdTooltipPosition="above">
         <i class="material-icons">delete</i>
       </button>
     </td>

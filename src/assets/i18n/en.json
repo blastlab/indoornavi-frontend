@@ -1,11 +1,16 @@
 {
-	"complex.name.placeholder": "Complex name",
+	"building.name.placeholder": "Building name",
 	"save": "Save",
+	"add": "Add",
 	"edit": "Edit",
 	"remove": "Remove",
+	"building.header": "Your buildings",
+	"building.name.required": "Name is required.",
+	"builing.th.name": "Building name",
+	"th.actions": "Actions",
+	"complex.name.placeholder": "Complex name",
+	"go to buildings": "go to buildings",
 	"complex.header": "Your building complexes",
 	"complex.name.required": "Complex name is required.",
-	"add": "Add",
-	"complex.th.name": "Complex name",
-	"th.actions": "Actions"
+	"complex.th.name": "Complex name"
 }
