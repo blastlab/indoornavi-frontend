@@ -11,7 +11,7 @@
       <small [hidden]="name.valid || (name.pristine && !complexForm.submitted)" [translate]="'complex.name.required'"></small>
     </div>
     <button id="complex-add-button"
-            type="submit" md-raised-button (click)="addComplex(complexForm.value, complexForm.valid)" [translate]="'add'"></button>
+            type="submit" md-raised-button (click)="addComplex(complexForm.value, complexForm.valid)">{{'add'|translate}}</button>
   </form>
 </div>
 

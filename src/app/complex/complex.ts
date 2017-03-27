@@ -35,7 +35,7 @@ export class ComplexComponent implements OnInit {
   constructor(private complexService: ComplexService,
               private dialog: MdDialog,
               private toast: ToastService,
-              public translate: TranslateService
+              public translate: TranslateService,
               private router: Router) {
   }
 
