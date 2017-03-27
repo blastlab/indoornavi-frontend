@@ -24,9 +24,13 @@
   <tr *ngFor="let complex of complexes; let i = index">
     <td class="complex-name">{{complex.name}}</td>
     <td>
-      <button id="{{complex.id}}" class="complex-edit-button" (click)="editComplex(complex)" md-mini-fab md-tooltip="Edit" mdTooltipPosition="above">
-        <i
-        class="material-icons">mode_edit</i>
+      <button class="complex-edit-button" (click)="openComplex(complex)" md-mini-fab md-tooltip="Go to buildings" mdTooltipPosition="above">
+        <i class="material-icons">open_in_browser</i>
+      </button>
+    </td>
+    <td>
+      <button class="complex-edit-button" (click)="editComplex(complex)" md-mini-fab md-tooltip="Edit" mdTooltipPosition="above">
+        <i class="material-icons">mode_edit</i>
       </button>
     </td>
     <td>

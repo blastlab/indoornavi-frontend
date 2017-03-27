@@ -12,5 +12,8 @@ table tr td{
 .adding-section button{
   margin: 15px 0;
 }
+.error-toast {
+  background: red !important;
+}
 
 @import '~@angular/material/core/theming/prebuilt/deeppurple-amber.css';
