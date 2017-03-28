@@ -1,34 +1,34 @@
 <h1 [translate]="'building.header'"></h1>
 
 <div class="adding-section">
-  <form #builingForm="ngForm" novalidate>
+  <form #buildingForm="ngForm" novalidate>
     <div>
       <md-input-container class="example-full-width">
-        <input id="builing-name-input" name="name" [(ngModel)]="building.name" #name="ngModel" required type="text"
+        <input id="building-name-input" name="name" [(ngModel)]="building.name" #name="ngModel" required type="text"
                mdInput
                placeholder="{{'building.name.placeholder'|translate}}">
       </md-input-container>
-      <small [hidden]="name.valid || (name.pristine && !builingForm.submitted)" [translate]="'building.name.required'">
+      <small [hidden]="name.valid || (name.pristine && !buildingForm.submitted)" [translate]="'building.name.required'">
       </small>
     </div>
-    <button id="builing-add-button" type="submit" md-raised-button (click)="addBuilding(builingForm.value, builingForm.valid)">{{'add'|translate}}</button>
+    <button id="building-add-button" type="submit" md-raised-button (click)="addBuilding(buildingForm.value, buildingForm.valid)">{{'add'|translate}}</button>
   </form>
 </div>
 
 <table cellpadding="10" cellspacing="0">
   <tr>
-    <th [translate]="'builing.th.name'"></th>
+    <th [translate]="'building.th.name'"></th>
     <th colspan="2" [translate]="'th.actions'"></th>
   </tr>
   <tr *ngFor="let building of buildings; let i = index">
-    <td class="builing-name">{{building.name}}</td>
+    <td class="building-name">{{building.name}}</td>
     <td>
-      <button class="builing-edit-button" (click)="editBuilding(building)" md-mini-fab md-tooltip="{{'edit'|translate}}" mdTooltipPosition="above">
+      <button class="building-edit-button" (click)="editBuilding(building)" md-mini-fab md-tooltip="{{'edit'|translate}}" mdTooltipPosition="above">
         <i class="material-icons">mode_edit</i>
       </button>
     </td>
     <td>
-      <button class="builing-remove-button" (click)="removeBuilding(i)" md-mini-fab md-mini-fab md-tooltip="{{'remove'|translate}}" mdTooltipPosition="above">
+      <button class="building-remove-button" (click)="removeBuilding(i)" md-mini-fab md-mini-fab md-tooltip="{{'remove'|translate}}" mdTooltipPosition="above">
         <i class="material-icons">delete</i>
       </button>
     </td>
