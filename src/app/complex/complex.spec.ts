@@ -3,12 +3,13 @@ import {ComplexComponent} from './complex';
 import {FormsModule} from '@angular/forms';
 import {ComplexService} from './complex.service';
 import {Observable} from 'rxjs/Rx';
-import {TranslateModule} from '@ngx-translate/core';
 import {MaterialModule} from '@angular/material';
 import {HttpService} from '../utils/http/http.service';
 import {ToastService} from '../utils/toast/toast.service';
 import {MdDialog} from '@angular/material';
 import {DialogTestModule} from '../utils/dialog/dialog.test';
+import {TranslateModule} from '@ngx-translate/core';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('ComplexComponent', () => {
 
@@ -19,7 +20,7 @@ describe('ComplexComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [FormsModule, TranslateModule.forRoot(), MaterialModule, DialogTestModule],
+      imports: [FormsModule, MaterialModule, DialogTestModule, TranslateModule.forRoot(), RouterTestingModule],
       declarations: [
         ComplexComponent
       ],
