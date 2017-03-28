@@ -47,8 +47,7 @@ export class ComplexComponent implements OnInit {
       if (newComplexName === undefined) { // dialog has been closed without save button clicked
         // TODO: do we do anything here? if not, we should modify this if statement
       } else { // save button has been clicked and newComplexName variable contains new complex name
-        complex.name = newComplexName;
-        this.saveComplex(complex);
+        this.saveComplex({name: newComplexName});
       }
       this.dialogRef = null;
     });

@@ -20,7 +20,7 @@ export class ComplexService {
   }
 
   updateComplex(complex: Complex): Observable<Complex> {
-    return this.httpService.doPut(this.complexesUrl + complex.id, {name: complex.name});
+    return this.httpService.doPut(this.complexesUrl + complex.id, complex);
   }
 
   removeComplex(id: number): Observable<any> {
