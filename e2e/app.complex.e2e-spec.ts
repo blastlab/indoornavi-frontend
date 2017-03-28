@@ -25,7 +25,7 @@ describe('ComplexComponent', () => {
     page.navigateToHome();
     page.addComplex(newName);
     page.addComplex(newName2);
-    page.removeComplex(1);
+    page.removeLastComplex();
     expect(page.getLatestAddedComplex()).toEqual(newName);
   });
 
@@ -34,8 +34,18 @@ describe('ComplexComponent', () => {
     const newName2 = 'test2';
     page.navigateToHome();
     page.addComplex(newName);
-    page.editComplex(0, newName2);
+    page.editLastComplex(newName2);
     expect(page.getLatestAddedComplex()).toEqual(newName2);
+  });
+
+  it('should cancel editing', () => {
+    const newName = 'test';
+    const newName2 = 'test2';
+    page.navigateToHome();
+    page.addComplex(newName);
+    page.editLastComplexWithoutSaving(newName2);
+    page.cancelEditingLastComplex();
+    expect(page.getLatestAddedComplex()).toEqual(newName);
   });
 
 });
