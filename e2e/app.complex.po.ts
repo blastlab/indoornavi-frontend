@@ -14,15 +14,25 @@ export class IndoorNaviPage {
     element(by.id('complex-add-button')).click();
   }
 
-  removeComplex(index: number) {
-    element.all(by.css('.complex-remove-button')).get(index).click();
+  removeLastComplex() {
+    element.all(by.css('.complex-remove-button')).last().click();
   }
 
-  editComplex(index: number, name: string) {
-    element.all(by.css('.complex-edit-button')).get(index).click();
-    element(by.id('complex-name-input')).clear();
-    element(by.id('complex-name-input')).sendKeys(name);
+  editLastComplex(name: string) {
+    element.all(by.css('.complex-edit-button')).last().click();
+    element(by.id('new-complex-name-input')).clear();
+    element(by.id('new-complex-name-input')).sendKeys(name);
     element(by.id('complex-edit-save-button')).click();
+  }
+
+  editLastComplexWithoutSaving(name: string) {
+    element.all(by.css('.complex-edit-button')).last().click();
+    element(by.id('new-complex-name-input')).clear();
+    element(by.id('new-complex-name-input')).sendKeys(name);
+  }
+
+  cancelEditingLastComplex() {
+    element(by.css('.cdk-overlay-container')).click();
   }
 
   getLatestAddedComplex() {

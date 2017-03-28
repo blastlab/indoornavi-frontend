@@ -5,6 +5,7 @@ import {MdDialog, MdDialogRef} from '@angular/material';
 import {BuildingDialogComponent} from './building.dialog';
 import {ToastService} from '../utils/toast/toast.service';
 import {NgForm} from '@angular/forms';
+import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute, Params} from '@angular/router';
 
 @Component({
@@ -26,18 +27,20 @@ export class BuildingComponent implements OnInit {
 
     this.route.params
     // (+) converts string 'id' to a number
-      .subscribe((params: Params) => {
-        this.complexId = +params['id'];
-        this.buildingService.getBuildings(this.complexId).subscribe((buildings: Array<Building>) => {
-          this.buildings = buildings;
-        });
-        this.newBuilding();
+    .subscribe((params: Params) => {
+      this.complexId = +params['id'];
+      this.buildingService.getBuildings(this.complexId).subscribe((result: any) => {
+        this.buildings = result.buildings;
       });
+      this.newBuilding();
+    });
+    this.translate.setDefaultLang('en');
   }
 
   constructor(private buildingService: BuildingService,
               private dialog: MdDialog,
               private toast: ToastService,
+              public translate: TranslateService,
               private route: ActivatedRoute) {
   }
 
@@ -57,9 +60,10 @@ export class BuildingComponent implements OnInit {
   }
 
   removeBuilding(index: number): void {
+    console.log(this.buildings[index], index);
     this.buildingService.removeBuilding(this.buildings[index].id).subscribe(() => {
       this.buildings.splice(index, 1);
-      this.toast.showSuccess('Building has been removed.');
+      this.toast.showSuccess('building.remove.success');
     }, (msg: string) => {
       this.toast.showFailure(msg);
     });
@@ -71,7 +75,7 @@ export class BuildingComponent implements OnInit {
       this.buildingService.addBuilding(model).subscribe((newBuilding: Building) => {
         this.buildings.push(newBuilding);
         this.buildingForm.resetForm();
-        this.toast.showSuccess('Building has been created.');
+        this.toast.showSuccess('building.create.success');
       }, (msg: string) => {
         this.toast.showFailure(msg);
       });
@@ -80,7 +84,7 @@ export class BuildingComponent implements OnInit {
 
   saveBuilding(complex: Building): void {
     this.buildingService.updateBuilding(complex).subscribe(() => {
-      this.toast.showSuccess('Building has been saved.');
+      this.toast.showSuccess('building.save.success');
     }, (msg: string) => {
       this.toast.showFailure(msg);
     });

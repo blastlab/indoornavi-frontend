@@ -1,9 +1,12 @@
 {
 	"add": "Add",
+  "building.create.success": "Building has been created.",
 	"building.header": "Your buildings",
 	"building.name.placeholder": "Building name",
 	"building.name.required": "Name is required.",
-	"builing.th.name": "Building name",
+	"building.remove.success": "Building has been removed.",
+	"building.save.success": "Building has been saved.",
+	"building.th.name": "Building name",
 	"complex.create.success": "Complex has been created.",
 	"complex.header": "Your building complexes",
 	"complex.name.placeholder": "Complex name",
