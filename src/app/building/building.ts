@@ -1,11 +1,11 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {Building} from './building.type';
-import {BuildingService} from "./building.service";
+import {BuildingService} from './building.service';
 import {MdDialog, MdDialogRef} from '@angular/material';
-import {BuildingDialog} from './building.dialog';
-import {ToastService} from "../utils/toast/toast.service";
-import {NgForm} from "@angular/forms";
-import {ActivatedRoute, Params} from "@angular/router";
+import {BuildingDialogComponent} from './building.dialog';
+import {ToastService} from '../utils/toast/toast.service';
+import {NgForm} from '@angular/forms';
+import {ActivatedRoute, Params} from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -13,12 +13,12 @@ import {ActivatedRoute, Params} from "@angular/router";
   styleUrls: ['building.css']
 })
 
-export class AppBuilding implements OnInit {
+export class BuildingComponent implements OnInit {
   buildings: Array<Building> = [];
 
-  private building: Building;
-  private dialogRef: MdDialogRef<BuildingDialog>;
-  private complexId:number = 0;
+  public building: Building;
+  private dialogRef: MdDialogRef<BuildingDialogComponent>;
+  private complexId: number = 0;
 
   @ViewChild('buildingForm') buildingForm: NgForm;
 
@@ -38,12 +38,12 @@ export class AppBuilding implements OnInit {
   constructor(private buildingService: BuildingService,
               private dialog: MdDialog,
               private toast: ToastService,
-              private route: ActivatedRoute)
-  {}
+              private route: ActivatedRoute) {
+  }
 
   editBuilding(building: Building): void {
-    this.dialogRef = this.dialog.open(BuildingDialog);
-    this.dialogRef.componentInstance.setName(building.name);
+    this.dialogRef = this.dialog.open(BuildingDialogComponent);
+    this.dialogRef.componentInstance.name = building.name;
 
     this.dialogRef.afterClosed().subscribe(result => {
       if (result === undefined) { // dialog has been closed without save button clicked
@@ -59,7 +59,7 @@ export class AppBuilding implements OnInit {
   removeBuilding(index: number): void {
     this.buildingService.removeBuilding(this.buildings[index].id).subscribe(() => {
       this.buildings.splice(index, 1);
-      this.toast.showSuccess("Building has been removed.");
+      this.toast.showSuccess('Building has been removed.');
     }, (msg: string) => {
       this.toast.showFailure(msg);
     });
@@ -71,7 +71,7 @@ export class AppBuilding implements OnInit {
       this.buildingService.addBuilding(model).subscribe((newBuilding: Building) => {
         this.buildings.push(newBuilding);
         this.buildingForm.resetForm();
-        this.toast.showSuccess("Building has been created.");
+        this.toast.showSuccess('Building has been created.');
       }, (msg: string) => {
         this.toast.showFailure(msg);
       });
@@ -80,7 +80,7 @@ export class AppBuilding implements OnInit {
 
   saveBuilding(complex: Building): void {
     this.buildingService.updateBuilding(complex).subscribe(() => {
-      this.toast.showSuccess("Building has been saved.");
+      this.toast.showSuccess('Building has been saved.');
     }, (msg: string) => {
       this.toast.showFailure(msg);
     });

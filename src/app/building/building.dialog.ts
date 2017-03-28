@@ -2,21 +2,17 @@ import {Component, OnInit} from '@angular/core';
 import {MdDialogRef} from '@angular/material';
 
 @Component({
-  selector: 'building-dialog',
+  selector: 'app-building-dialog',
   templateUrl: './building.dialog.html',
   styleUrls: ['./building.dialog.css']
 })
-export class BuildingDialog implements OnInit {
-  private name: string = '';
+export class BuildingDialogComponent implements OnInit {
+  public name: string = '';
 
   ngOnInit(): void {
   }
 
-  constructor(private dialogRef: MdDialogRef<BuildingDialog>) {
-  }
-
-  setName(name: string): void {
-    this.name = name;
+  constructor(private dialogRef: MdDialogRef<BuildingDialogComponent>) {
   }
 
   close() {

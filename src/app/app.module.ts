@@ -4,21 +4,21 @@ import {FormsModule} from '@angular/forms';
 import {HttpModule, Http} from '@angular/http';
 import {ComplexComponent} from './complex/complex';
 import {MaterialModule} from '@angular/material';
-import {ComplexService} from "./complex/complex.service";
+import {ComplexService} from './complex/complex.service';
 import {ComplexDialogComponent} from './complex/complex.dialog';
-import {ToastService} from "./utils/toast/toast.service";
-import {HttpService} from "./utils/http/http.service";
-import {AppComponent} from "./app.component";
-import {Routes, RouterModule} from "@angular/router";
-import {AppBuilding} from "./building/building";
-import {BuildingDialog} from "./building/building.dialog";
-import {BuildingService} from "./building/building.service";
+import {ToastService} from './utils/toast/toast.service';
+import {HttpService} from './utils/http/http.service';
+import {AppComponent} from './app.component';
+import {Routes, RouterModule} from '@angular/router';
+import {BuildingComponent} from './building/building';
+import {BuildingDialogComponent} from './building/building.dialog';
+import {BuildingService} from './building/building.service';
 import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 
 const appRoutes: Routes = [
   { path: '', component: ComplexComponent },
-  { path: 'building/:id', component: AppBuilding },
+  { path: 'building/:id', component: BuildingComponent },
 ];
 
 export function HttpLoaderFactory(http: Http) {
@@ -29,13 +29,13 @@ export function HttpLoaderFactory(http: Http) {
   declarations: [
     ComplexComponent,
     ComplexDialogComponent,
-    AppBuilding,
-    BuildingDialog,
+    BuildingComponent,
+    BuildingDialogComponent,
     AppComponent
   ],
   entryComponents: [
     ComplexDialogComponent,
-    BuildingDialog
+    BuildingDialogComponent
   ],
   imports: [
     BrowserModule,
