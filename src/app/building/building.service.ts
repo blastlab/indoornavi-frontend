@@ -12,7 +12,7 @@ export class BuildingService {
   }
 
   getBuildings(complexId: number): Observable<Building[]> {
-    return this.httpService.doGet(this.buildingsUrl + complexId);
+    return this.httpService.doGet('complexes/' + complexId + '/' + this.buildingsUrl);
   }
 
   addBuilding(building: Building): Observable<Building> {
