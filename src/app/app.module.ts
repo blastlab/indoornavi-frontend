@@ -19,7 +19,7 @@ import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 
 const appRoutes: Routes = [
   { path: '', component: ComplexComponent },
-  { path: 'building/:id', component: BuildingComponent },
+  { path: 'complexes/:id/buildings', component: BuildingComponent },
 ];
 
 export function HttpLoaderFactory(http: Http) {

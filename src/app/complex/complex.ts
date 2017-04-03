@@ -48,10 +48,9 @@ export class ComplexComponent implements OnInit {
     this.dialogRef.componentInstance.name = complex.name;
 
     this.dialogRef.afterClosed().subscribe(newComplexName => {
-      if (newComplexName === undefined) { // dialog has been closed without save button clicked
-        // TODO: do we do anything here? if not, we should modify this if statement
-      } else { // save button has been clicked and newComplexName variable contains new complex name
-        this.saveComplex({name: newComplexName});
+      if (newComplexName !== undefined) { // dialog has been closed without save button clicked
+        complex.name = newComplexName;
+        this.saveComplex(complex);
       }
       this.dialogRef = null;
     });
@@ -94,7 +93,6 @@ export class ComplexComponent implements OnInit {
 
   saveComplex(complexToUpdate: Complex): void {
     this.complexService.updateComplex(complexToUpdate).subscribe((complex: Complex) => {
-      this.complex = complex;
       this.toast.showSuccess('complex.save.success');
     }, (msg: string) => {
       this.toast.showFailure(msg);
