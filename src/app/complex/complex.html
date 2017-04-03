@@ -6,7 +6,7 @@
       <md-input-container class="example-full-width">
         <input id="complex-name-input" name="name" [(ngModel)]="complex.name" #name="ngModel" required type="text"
                mdInput
-               placeholder="{{'complex.name.placeholder'|translate}}">
+               placeholder="{{'complex.name'|translate}}">
       </md-input-container>
       <small [hidden]="name.valid || (name.pristine && !complexForm.submitted)" [translate]="'complex.name.required'"></small>
     </div>
@@ -17,8 +17,8 @@
 
 <table cellpadding="10" cellspacing="0">
   <tr>
-    <th [translate]="'complex.th.name'"></th>
-    <th colspan="2" [translate]="'th.actions'"></th>
+    <th [translate]="'complex.name'"></th>
+    <th colspan="3" [translate]="'th.actions'"></th>
   </tr>
   <tr *ngFor="let complex of complexes; let i = index">
     <td class="complex-name">{{complex.name}}</td>

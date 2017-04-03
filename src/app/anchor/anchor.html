@@ -1,0 +1,15 @@
+<h1 [translate]="'anchor.header'"></h1>
+
+<div class="row">
+  <button md-raised-button id="new-anchor-button" type="button" (click)="openDialog(null)">{{'add'|translate}}</button>
+</div>
+
+<div class="row">
+  <div id="notVerifiedList" class="anchors-list">
+    <app-anchor-list #notVerified [verified]="false"></app-anchor-list>
+  </div>
+
+  <div id="verifiedList" class="anchors-list verified">
+    <app-anchor-list #verified [verified]="true"></app-anchor-list>
+  </div>
+</div>

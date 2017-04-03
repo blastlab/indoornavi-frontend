@@ -1,0 +1,16 @@
+.anchors-list {
+  float: left;
+  width: 50%;
+}
+
+h3.verified  {
+  color: #77f977
+}
+
+.row {
+  padding: 10px 0;
+}
+
+.drop-zone {
+  min-height: 200px;
+}

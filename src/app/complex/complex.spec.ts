@@ -9,10 +9,10 @@ import {ToastService} from '../utils/toast/toast.service';
 import {MdDialog} from '@angular/material';
 import {DialogTestModule} from '../utils/dialog/dialog.test';
 import {TranslateModule} from '@ngx-translate/core';
-import {RouterTestingModule } from '@angular/router/testing';
-import {BrowserModule} from "@angular/platform-browser";
-import {HttpModule} from "@angular/http";
-import {BuildingService} from "../building/building.service";
+import {RouterTestingModule} from '@angular/router/testing';
+import {BrowserModule} from '@angular/platform-browser';
+import {HttpModule} from '@angular/http';
+import {BuildingService} from '../building/building.service';
 
 describe('ComplexComponent', () => {
 
@@ -24,7 +24,15 @@ describe('ComplexComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [BrowserModule, FormsModule, MaterialModule, HttpModule, DialogTestModule, TranslateModule.forRoot(), RouterTestingModule],
+      imports: [
+        BrowserModule,
+        FormsModule,
+        MaterialModule,
+        HttpModule,
+        DialogTestModule,
+        TranslateModule.forRoot(),
+        RouterTestingModule
+      ],
       declarations: [
         ComplexComponent
       ],
