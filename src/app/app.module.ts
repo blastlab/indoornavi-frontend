@@ -6,6 +6,7 @@ import {ComplexComponent} from './complex/complex';
 import {MaterialModule} from '@angular/material';
 import {ComplexService} from './complex/complex.service';
 import {ComplexDialogComponent} from './complex/complex.dialog';
+import {ComplexConfirmComponent} from './complex/complex.confirm';
 import {ToastService} from './utils/toast/toast.service';
 import {HttpService} from './utils/http/http.service';
 import {AppComponent} from './app.component';
@@ -40,6 +41,7 @@ export function HttpLoaderFactory(http: Http) {
   declarations: [
     ComplexComponent,
     ComplexDialogComponent,
+    ComplexConfirmComponent,
     BuildingComponent,
     BuildingDialogComponent,
     AppComponent,
@@ -49,6 +51,7 @@ export function HttpLoaderFactory(http: Http) {
   ],
   entryComponents: [
     ComplexDialogComponent,
+    ComplexConfirmComponent,
     BuildingDialogComponent,
     AnchorDialogComponent
   ],

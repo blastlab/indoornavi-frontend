@@ -3,21 +3,25 @@ import {Complex} from './complex.type';
 import {ComplexService} from './complex.service';
 import {MdDialog, MdDialogRef} from '@angular/material';
 import {ComplexDialogComponent} from './complex.dialog';
+import {ComplexConfirmComponent} from './complex.confirm';
 import {ToastService} from '../utils/toast/toast.service';
 import {NgForm} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
 import {Router} from '@angular/router';
+import {BuildingService} from '../building/building.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'complex.html',
   styleUrls: ['complex.css']
 })
+
 export class ComplexComponent implements OnInit {
   complex: Complex;
   complexes: Array<Complex> = [];
 
   dialogRef: MdDialogRef<ComplexDialogComponent>;
+  confirmRef: MdDialogRef<ComplexConfirmComponent>;
 
   @ViewChild('complexForm') complexForm: NgForm;
 
@@ -35,7 +39,8 @@ export class ComplexComponent implements OnInit {
               private dialog: MdDialog,
               private toast: ToastService,
               public translate: TranslateService,
-              private router: Router) {
+              private router: Router,
+              private buildingService: BuildingService) {
   }
 
   editComplex(complex: Complex): void {
@@ -43,7 +48,7 @@ export class ComplexComponent implements OnInit {
     this.dialogRef.componentInstance.name = complex.name;
 
     this.dialogRef.afterClosed().subscribe(newComplexName => {
-      if (newComplexName !== undefined) {
+      if (newComplexName !== undefined) { // dialog has been closed without save button clicked
         complex.name = newComplexName;
         this.saveComplex(complex);
       }
@@ -51,12 +56,26 @@ export class ComplexComponent implements OnInit {
     });
   }
 
+  openRemoveConfirmationDialog(index: number): void {
+    this.confirmRef = this.dialog.open(ComplexConfirmComponent);
+    const complexId: number = this.complexes[index].id;
+
+    this.confirmRef.afterClosed().subscribe(state => {
+      if (state) {
+        this.removeComplexRequest(index, complexId);
+      }
+      this.dialogRef = null;
+    });
+  }
+
   removeComplex(index: number): void {
-    this.complexService.removeComplex(this.complexes[index].id).subscribe(() => {
-      this.complexes.splice(index, 1);
-      this.toast.showSuccess('complex.remove.success');
-    }, (msg: string) => {
-      this.toast.showFailure(msg);
+    const complexId: number = this.complexes[index].id;
+    this.buildingService.getBuildings(complexId).subscribe((result: any) => {
+      if (result.buildings && result.buildings.length) {
+        this.openRemoveConfirmationDialog(index);
+      } else {
+        this.removeComplexRequest(index, complexId);
+      }
     });
   }
 
@@ -72,15 +91,22 @@ export class ComplexComponent implements OnInit {
     }
   }
 
+  saveComplex(complexToUpdate: Complex): void {
+    this.complexService.updateComplex(complexToUpdate).subscribe((complex: Complex) => {
+      this.toast.showSuccess('complex.save.success');
+    }, (msg: string) => {
+      this.toast.showFailure(msg);
+    });
+  }
+
   openComplex(complex: Complex): void {
     this.router.navigate(['/complexes', complex.id, 'buildings']);
   }
 
-  private saveComplex(complexToSave): void {
-    this.complexService.updateComplex(complexToSave).subscribe((complex: Complex) => {
-      this.complex = complex;
-      this.complexForm.resetForm();
-      this.toast.showSuccess('complex.save.success');
+  private removeComplexRequest(index: number, complexId: number) {
+    this.complexService.removeComplex(complexId).subscribe(() => {
+      this.complexes.splice(index, 1);
+      this.toast.showSuccess('complex.remove.success');
     }, (msg: string) => {
       this.toast.showFailure(msg);
     });
