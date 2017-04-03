@@ -49,9 +49,8 @@ export class AnchorComponent implements OnInit, OnDestroy {
       this.socketSubscription = stream.subscribe((anchors: Array<Anchor>) => {
         this.ngZone.run(() => {
           anchors.forEach((anchor: Anchor) => {
-            this.verifiedList.anchors.clear();
-            this.notVerifiedList.anchors.clear();
             if (this.verifiedList.isLocked(anchor) || this.notVerifiedList.isLocked(anchor)) { return; }
+            if (this.verifiedList.anchors.containsKey(anchor.id) || this.notVerifiedList.anchors.containsKey(anchor.id)) { return; }
             if (anchor.verified) {
               this.verifiedList.anchors.setValue(anchor.id, anchor);
             } else {
