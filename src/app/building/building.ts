@@ -17,8 +17,9 @@ import {ActivatedRoute, Params} from '@angular/router';
 export class BuildingComponent implements OnInit {
   buildings: Array<Building> = [];
 
-  public building: Building;
-  private dialogRef: MdDialogRef<BuildingDialogComponent>;
+  building: Building;
+  dialogRef: MdDialogRef<BuildingDialogComponent>;
+
   private complexId: number = 0;
 
   @ViewChild('buildingForm') buildingForm: NgForm;
@@ -60,8 +61,7 @@ export class BuildingComponent implements OnInit {
   }
 
   removeBuilding(index: number): void {
-    console.log(this.buildings[index], index);
-    this.buildingService.removeBuilding(this.buildings[index].id).subscribe(() => {
+    this.buildingService.removeBuilding(this.buildings[index].id, this.complexId ).subscribe(() => {
       this.buildings.splice(index, 1);
       this.toast.showSuccess('building.remove.success');
     }, (msg: string) => {

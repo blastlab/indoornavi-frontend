@@ -12,7 +12,7 @@ export class BuildingService {
   }
 
   getBuildings(complexId: number): Observable<Building[]> {
-    return this.httpService.doGet(this.buildingsUrl + complexId);
+    return this.httpService.doGet('complexes/' + complexId + '/' + this.buildingsUrl);
   }
 
   addBuilding(building: Building): Observable<Building> {
@@ -23,7 +23,7 @@ export class BuildingService {
     return this.httpService.doPut(this.buildingsUrl + building.id, building);
   }
 
-  removeBuilding(id: number): Observable<any> {
+  removeBuilding(id: number, complexId: number): Observable<any> {
     return this.httpService.doDelete(this.buildingsUrl + id);
   }
 

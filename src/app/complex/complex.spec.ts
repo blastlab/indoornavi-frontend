@@ -9,29 +9,34 @@ import {ToastService} from '../utils/toast/toast.service';
 import {MdDialog} from '@angular/material';
 import {DialogTestModule} from '../utils/dialog/dialog.test';
 import {TranslateModule} from '@ngx-translate/core';
-import { RouterTestingModule } from '@angular/router/testing';
+import {RouterTestingModule } from '@angular/router/testing';
+import {BrowserModule} from "@angular/platform-browser";
+import {HttpModule} from "@angular/http";
+import {BuildingService} from "../building/building.service";
 
 describe('ComplexComponent', () => {
 
   let component: ComplexComponent;
   let complexService: ComplexService;
+  let buildingService: BuildingService;
   let toastService: ToastService;
   let dialog: MdDialog;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [FormsModule, MaterialModule, DialogTestModule, TranslateModule.forRoot(), RouterTestingModule],
+      imports: [BrowserModule, FormsModule, MaterialModule, HttpModule, DialogTestModule, TranslateModule.forRoot(), RouterTestingModule],
       declarations: [
         ComplexComponent
       ],
       providers: [
-        ComplexService, HttpService, ToastService, MdDialog
+        ComplexService, BuildingService, HttpService, ToastService, MdDialog
       ]
     }).compileComponents();
 
     const fixture = TestBed.createComponent(ComplexComponent);
     component = fixture.debugElement.componentInstance;
     complexService = fixture.debugElement.injector.get(ComplexService);
+    buildingService = fixture.debugElement.injector.get(BuildingService);
     toastService = fixture.debugElement.injector.get(ToastService);
     dialog = fixture.debugElement.injector.get(MdDialog);
 
@@ -87,6 +92,7 @@ describe('ComplexComponent', () => {
     const newComplexName = 'some name';
     const newComplexName2 = 'some different name';
     component.complexes = [{name: newComplexName}, {name: newComplexName2}];
+    spyOn(buildingService, 'getBuildings').and.returnValue(Observable.of({}));
     spyOn(complexService, 'removeComplex').and.returnValue(Observable.of({}));
 
     // when
@@ -122,28 +128,28 @@ describe('ComplexComponent', () => {
     spyOn(complexService, 'updateComplex').and.returnValue(Observable.of({name: newComplexName}));
 
     // when
-    component.editComplex({name: oldComplexName});
+    component.editComplex(component.complexes[0]); // do edycji przekazujemy referencje do jednego z kompleksów na podstawie której kompleks zostanie zmieniony
     component.dialogRef.close(newComplexName);
 
     // then
     expect(component.complexes.length).toEqual(1);
-    expect(component.complex.name).toEqual(newComplexName);
+    expect(component.complexes[0].name).toEqual(newComplexName);
     expect(complexService.updateComplex).toHaveBeenCalled();
   });
 
   it('should NOT set new complex name when dialog closes without value', () => {
     // given
     const oldComplexName = 'some name';
-    component.complex = {name: oldComplexName};
+    component.complexes = [{name: oldComplexName}];
     spyOn(dialog, 'open').and.callThrough();
     spyOn(complexService, 'updateComplex');
 
     // when
-    component.editComplex({name: oldComplexName});
+    component.editComplex(component.complexes[0]);
     component.dialogRef.close();
 
     // then
-    expect(component.complex.name).toEqual(oldComplexName);
+    expect(component.complexes[0].name).toEqual(oldComplexName);
     expect(complexService.updateComplex).toHaveBeenCalledTimes(0);
   });
 
