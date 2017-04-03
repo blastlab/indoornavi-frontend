@@ -15,7 +15,7 @@ export class BuildingDialogComponent implements OnInit {
   constructor(private dialogRef: MdDialogRef<BuildingDialogComponent>) {
   }
 
-  close() {
+  close(): void {
     this.dialogRef.close(this.name);
   }
 

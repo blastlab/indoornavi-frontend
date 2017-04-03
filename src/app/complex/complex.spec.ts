@@ -9,7 +9,7 @@ import {ToastService} from '../utils/toast/toast.service';
 import {MdDialog} from '@angular/material';
 import {DialogTestModule} from '../utils/dialog/dialog.test';
 import {TranslateModule} from '@ngx-translate/core';
-import { RouterTestingModule } from '@angular/router/testing';
+import {RouterTestingModule} from '@angular/router/testing';
 
 describe('ComplexComponent', () => {
 
@@ -20,7 +20,12 @@ describe('ComplexComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [FormsModule, MaterialModule, DialogTestModule, TranslateModule.forRoot(), RouterTestingModule],
+      imports: [
+        FormsModule,
+        MaterialModule,
+        DialogTestModule,
+        TranslateModule.forRoot(),
+        RouterTestingModule],
       declarations: [
         ComplexComponent
       ],

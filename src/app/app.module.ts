@@ -15,10 +15,21 @@ import {BuildingDialogComponent} from './building/building.dialog';
 import {BuildingService} from './building/building.service';
 import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
+import {AnchorComponent} from './anchor/anchor';
+import {AnchorListComponent} from './anchor/anchor.list';
+import {Ng2BreadcrumbModule} from 'ng2-breadcrumb/ng2-breadcrumb';
+import {WebSocketService} from 'angular2-websocket-service';
+import {SocketService} from './utils/socket/socket.service';
+import {DndModule} from 'ng2-dnd';
+import {AnchorService} from './anchor/anchor.service';
+import {AnchorDialogComponent} from './anchor/anchor.dialog';
 
 const appRoutes: Routes = [
-  { path: '', component: ComplexComponent },
-  { path: 'building/:id', component: BuildingComponent },
+  {path: '', redirectTo: '/complexes', pathMatch: 'full'},
+  {path: 'complexes', component: ComplexComponent},
+  {path: 'complexes/:id/buildings', component: BuildingComponent},
+  {path: 'anchors', component: AnchorComponent},
+  {path: '**', redirectTo: '/complexes'}
 ];
 
 export function HttpLoaderFactory(http: Http) {
@@ -31,11 +42,15 @@ export function HttpLoaderFactory(http: Http) {
     ComplexDialogComponent,
     BuildingComponent,
     BuildingDialogComponent,
-    AppComponent
+    AppComponent,
+    AnchorComponent,
+    AnchorListComponent,
+    AnchorDialogComponent
   ],
   entryComponents: [
     ComplexDialogComponent,
-    BuildingDialogComponent
+    BuildingDialogComponent,
+    AnchorDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -49,9 +64,19 @@ export function HttpLoaderFactory(http: Http) {
         deps: [Http]
       }
     }),
-    RouterModule.forRoot(appRoutes)
+    RouterModule.forRoot(appRoutes),
+    Ng2BreadcrumbModule.forRoot(),
+    DndModule.forRoot()
   ],
-  providers: [BuildingService, HttpService, ComplexService, ToastService],
+  providers: [
+    BuildingService,
+    HttpService,
+    ComplexService,
+    ToastService,
+    WebSocketService,
+    SocketService,
+    AnchorService
+  ],
   bootstrap: [AppComponent]
 })
 

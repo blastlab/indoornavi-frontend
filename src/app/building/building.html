@@ -6,7 +6,7 @@
       <md-input-container class="example-full-width">
         <input id="building-name-input" name="name" [(ngModel)]="building.name" #name="ngModel" required type="text"
                mdInput
-               placeholder="{{'building.name.placeholder'|translate}}">
+               placeholder="{{'building.name'|translate}}">
       </md-input-container>
       <small [hidden]="name.valid || (name.pristine && !buildingForm.submitted)" [translate]="'building.name.required'">
       </small>
@@ -17,7 +17,7 @@
 
 <table cellpadding="10" cellspacing="0">
   <tr>
-    <th [translate]="'building.th.name'"></th>
+    <th [translate]="'building.name'"></th>
     <th colspan="2" [translate]="'th.actions'"></th>
   </tr>
   <tr *ngFor="let building of buildings; let i = index">
