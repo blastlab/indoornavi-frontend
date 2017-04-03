@@ -10,9 +10,9 @@ import {MdDialog} from '@angular/material';
 import {DialogTestModule} from '../utils/dialog/dialog.test';
 import {TranslateModule} from '@ngx-translate/core';
 import { RouterTestingModule } from '@angular/router/testing';
-import {BrowserModule} from "@angular/platform-browser";
-import {HttpModule} from "@angular/http";
-import {ActivatedRoute} from "@angular/router";
+import {BrowserModule} from '@angular/platform-browser';
+import {HttpModule} from '@angular/http';
+import {ActivatedRoute} from '@angular/router';
 
 describe('BuildingComponent', () => {
 
