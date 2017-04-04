@@ -1,0 +1,8 @@
+<md-input-container class="example-full-width">
+  <input id="new-floor-name-input" type="text" [(ngModel)]="name" mdInput placeholder="{{'floor.name.placeholder'|translate}}">
+</md-input-container>
+<md-input-container class="example-full-width">
+  <input id="new-floor-level-input" type="text" [(ngModel)]="level" mdInput placeholder="{{'floor.level.placeholder'|translate}}">
+</md-input-container>
+
+<button id="floor-edit-save-button" (click)="close()" md-raised-button>{{'save'|translate}}</button>

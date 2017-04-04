@@ -12,7 +12,9 @@ export class AppComponent {
   constructor(private breadcrumbService: BreadcrumbService) {
     breadcrumbService.addFriendlyNameForRoute('/complexes', 'Complexes');
     breadcrumbService.addFriendlyNameForRouteRegex('/complexes/\\d+/buildings', 'Buildings');
+    breadcrumbService.addFriendlyNameForRouteRegex('/buildings/\\d+/floors', 'Floors');
     breadcrumbService.hideRouteRegex('^/complexes/\\d+$');
+    breadcrumbService.hideRouteRegex('^/buildings/\\d+$');
     breadcrumbService.addFriendlyNameForRoute('/anchors', 'Anchors');
   }
 }

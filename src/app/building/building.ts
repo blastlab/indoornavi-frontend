@@ -3,9 +3,12 @@ import {Building} from './building.type';
 import {BuildingService} from './building.service';
 import {MdDialog, MdDialogRef} from '@angular/material';
 import {BuildingDialogComponent} from './building.dialog';
+import {BuildingConfirmComponent} from './building.confirm';
 import {ToastService} from '../utils/toast/toast.service';
 import {NgForm} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
+import {FloorService} from '../floor/floor.service';
+import {Router} from '@angular/router';
 import {ActivatedRoute, Params} from '@angular/router';
 
 @Component({
@@ -19,6 +22,7 @@ export class BuildingComponent implements OnInit {
 
   building: Building;
   dialogRef: MdDialogRef<BuildingDialogComponent>;
+  confirmRef: MdDialogRef<BuildingConfirmComponent>;
 
   private complexId: number = 0;
 
@@ -42,6 +46,8 @@ export class BuildingComponent implements OnInit {
               private dialog: MdDialog,
               private toast: ToastService,
               public translate: TranslateService,
+              private floorService: FloorService,
+              private router: Router,
               private route: ActivatedRoute) {
   }
 
@@ -60,7 +66,20 @@ export class BuildingComponent implements OnInit {
     });
   }
 
+  openBuildingRemoveConfirmationDialog(index: number): void {
+    this.confirmRef = this.dialog.open(BuildingConfirmComponent);
+    const buildingId: number = this.buildings[index].id;
+
+    this.confirmRef.afterClosed().subscribe(state => {
+      if (state) {
+        this.removeBuildingRequest(index, buildingId);
+      }
+      this.dialogRef = null;
+    });
+  }
+
   removeBuilding(index: number): void {
+    const buildingId: number = this.buildings[index].id;
     this.buildingService.removeBuilding(this.buildings[index].id, this.complexId ).subscribe(() => {
       this.buildings.splice(index, 1);
       this.toast.showSuccess('building.remove.success');
@@ -82,12 +101,25 @@ export class BuildingComponent implements OnInit {
     }
   }
 
-  saveBuilding(complex: Building): void {
-    this.buildingService.updateBuilding(complex).subscribe(() => {
+  saveBuilding(buildingToUpdate: Building): void {
+    this.buildingService.updateBuilding(buildingToUpdate).subscribe((building: Building) => {
       this.toast.showSuccess('building.save.success');
     }, (msg: string) => {
       this.toast.showFailure(msg);
     });
+  }
+
+  openBuilding(building: Building): void {
+    this.router.navigate(['/buildings', building.id, 'floors']);
+  }
+
+  private removeBuildingRequest(index: number, buildingId: number) {
+    // this.buildingService.removeBuilding(buildingId).subscribe(() => {
+    //  this.buildings.splice(index, 1);
+    //  this.toast.showSuccess('building.remove.success');
+    // } , (msg: string) => {
+    //  this.toast.showFailure(msg);
+    // });
   }
 
   private newBuilding(): void {

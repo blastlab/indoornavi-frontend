@@ -13,7 +13,11 @@ import {AppComponent} from './app.component';
 import {Routes, RouterModule} from '@angular/router';
 import {BuildingComponent} from './building/building';
 import {BuildingDialogComponent} from './building/building.dialog';
+import {BuildingConfirmComponent} from './building/building.confirm';
 import {BuildingService} from './building/building.service';
+import {FloorComponent} from './floor/floor';
+import {FloorService} from './floor/floor.service';
+import {FloorDialogComponent} from './floor/floor.dialog';
 import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {AnchorComponent} from './anchor/anchor';
@@ -25,11 +29,13 @@ import {DndModule} from 'ng2-dnd';
 import {AnchorService} from './anchor/anchor.service';
 import {AnchorDialogComponent} from './anchor/anchor.dialog';
 
+
 const appRoutes: Routes = [
   {path: '', redirectTo: '/complexes', pathMatch: 'full'},
   {path: 'complexes', component: ComplexComponent},
   {path: 'complexes/:id/buildings', component: BuildingComponent},
   {path: 'anchors', component: AnchorComponent},
+  {path: 'buildings/:id/floors', component: FloorComponent},
   {path: '**', redirectTo: '/complexes'}
 ];
 
@@ -44,16 +50,21 @@ export function HttpLoaderFactory(http: Http) {
     ComplexConfirmComponent,
     BuildingComponent,
     BuildingDialogComponent,
-    AppComponent,
     AnchorComponent,
     AnchorListComponent,
-    AnchorDialogComponent
+    AnchorDialogComponent,
+    BuildingConfirmComponent,
+    FloorComponent,
+    FloorDialogComponent,
+    AppComponent,
   ],
   entryComponents: [
     ComplexDialogComponent,
     ComplexConfirmComponent,
     BuildingDialogComponent,
-    AnchorDialogComponent
+    AnchorDialogComponent,
+    BuildingConfirmComponent,
+    FloorDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -73,14 +84,14 @@ export function HttpLoaderFactory(http: Http) {
   ],
   providers: [
     BuildingService,
+    FloorService,
     HttpService,
     ComplexService,
     ToastService,
     WebSocketService,
     SocketService,
     AnchorService
-  ],
-  bootstrap: [AppComponent]
+  ], bootstrap: [AppComponent]
 })
 
 export class AppModule {
