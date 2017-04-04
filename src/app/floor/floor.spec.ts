@@ -56,7 +56,7 @@ describe('FloorComponent', () => {
     expect(floorService.getFloors).toHaveBeenCalled();
 
     expect(component.floors.length).toEqual(1);
-    expect(component.floors).toContain({'level': '0', 'name': 'test', buildingId: 1});
+    expect(component.floors).toContain({'level': 0, 'name': 'test', buildingId: 1});
     // expect(component.building).toContain({'name': ''});
   }));
 
