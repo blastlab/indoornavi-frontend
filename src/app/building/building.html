@@ -23,6 +23,11 @@
   <tr *ngFor="let building of buildings; let i = index">
     <td class="building-name">{{building.name}}</td>
     <td>
+      <button class="building-floor-button" (click)="openBuilding(building)" md-mini-fab md-tooltip="{{'go.to.floors'|translate}}" mdTooltipPosition="above">
+        <i class="material-icons">open_in_browser</i>
+      </button>
+    </td>
+    <td>
       <button class="building-edit-button" (click)="editBuilding(building)" md-mini-fab md-tooltip="{{'edit'|translate}}" mdTooltipPosition="above">
         <i class="material-icons">mode_edit</i>
       </button>

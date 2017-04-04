@@ -6,18 +6,21 @@ import {FormsModule} from '@angular/forms';
 import {TranslateModule} from '@ngx-translate/core';
 import {AnchorDialogComponent} from '../../anchor/anchor.dialog';
 import {BuildingDialogComponent} from '../../building/building.dialog';
+import {BuildingConfirmComponent} from "../../building/building.confirm";
+import {FloorDialogComponent} from "../../floor/floor.dialog";
 
 const DIALOGS = [
   ComplexDialogComponent,
   AnchorDialogComponent,
   ComplexConfirmComponent,
-  BuildingDialogComponent
+  BuildingDialogComponent,
+  BuildingConfirmComponent,
+  FloorDialogComponent
 ];
 
 @NgModule({
   imports: [MdDialogModule, FormsModule, MaterialModule, TranslateModule.forRoot()],
   exports: DIALOGS,
   declarations: DIALOGS,
-  entryComponents: DIALOGS,
-})
+  entryComponents: DIALOGS,})
 export class DialogTestModule { }
