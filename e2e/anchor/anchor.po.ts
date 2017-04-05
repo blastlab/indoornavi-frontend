@@ -28,7 +28,7 @@ export class AnchorPage {
   }
 
   static getRowsCount(): promise.Promise<number> {
-    return element.all(by.css('#notVerifiedList tr')).last().all(by.tagName('td')).count();
+    return element.all(by.css('#notVerifiedList tr')).count();
   }
 
   static removeLastAnchor() {

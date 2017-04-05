@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {Http, Response} from '@angular/http';
 import {Observable} from 'rxjs/Rx';
 import {Config} from '../../../config';
+import 'rxjs/add/observable/throw';
 
 @Injectable()
 export class HttpService {
@@ -14,9 +15,12 @@ export class HttpService {
 
   private static errorHandler(err: any): Observable<any> {
     if (err instanceof Response && err.status === 404) {
-      return Observable.throw('Error. Object not found.');
+      return Observable.throw('S_001');
     }
-    return Observable.throw(err);
+    if (err  instanceof Response && err.status === 400) {
+      return Observable.throw(err.json().code);
+    }
+    return Observable.throw('S_000');
   }
 
   constructor(private http: Http) {

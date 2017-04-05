@@ -1,6 +1,5 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {TranslateModule} from '@ngx-translate/core';
-
 import {AnchorComponent} from './anchor';
 import {AnchorListComponent} from './anchor.list';
 import {DndModule} from 'ng2-dnd';
@@ -59,7 +58,6 @@ describe('AnchorComponent', () => {
     expect(component).toBeTruthy();
 
     expect(socketService.connect).toHaveBeenCalled();
-    expect(socketService.send).toHaveBeenCalled();
     expect(component.verified.length).toBe(1);
   });
 
@@ -86,7 +84,6 @@ describe('AnchorComponent', () => {
     component.dialogRef.close(expectedAnchor);
 
     // then
-    expect(anchorService.createAnchor).toHaveBeenCalled();
     expect(toastService.showSuccess).toHaveBeenCalled();
     expect(component.notVerified.length).toBe(1);
     expect(component.notVerified[0]).toBe(expectedAnchor);

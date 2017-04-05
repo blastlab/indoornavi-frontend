@@ -57,7 +57,7 @@ export class AnchorListComponent implements OnInit {
 
     this.dialogRef.afterClosed().subscribe(anchorFromDialog => {
       if (anchorFromDialog !== undefined) {
-        this.saveAnchor(anchorFromDialog);
+        this.toastService.showSuccess('anchor.save.success');
       }
       this.dialogRef = null;
     });
@@ -70,10 +70,4 @@ export class AnchorListComponent implements OnInit {
     });
   }
 
-  private saveAnchor(anchor: Anchor): void {
-    this.anchorService.updateAnchor(anchor).subscribe((savedAnchor: Anchor) => {
-      this.anchors.setValue(savedAnchor.id, savedAnchor);
-      this.toastService.showSuccess('anchor.save.success');
-    });
-  }
 }
