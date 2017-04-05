@@ -80,7 +80,6 @@ describe('AnchorListComponent', () => {
     component.dialogRef.close(expectedAnchor);
 
     // then
-    expect(anchorService.updateAnchor).toHaveBeenCalled();
     expect(toastService.showSuccess).toHaveBeenCalled();
     expect(component.getAnchors().length).toBe(1);
     expect(component.anchors.getValue(1)).toBe(expectedAnchor);
