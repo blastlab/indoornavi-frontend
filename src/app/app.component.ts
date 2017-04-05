@@ -11,6 +11,7 @@ import {BreadcrumbService} from 'ng2-breadcrumb/ng2-breadcrumb';
 export class AppComponent {
   constructor(private breadcrumbService: BreadcrumbService) {
     breadcrumbService.addFriendlyNameForRoute('/complexes', 'Complexes');
+    breadcrumbService.addFriendlyNameForRoute('/buildings', 'Buildings');
     breadcrumbService.addFriendlyNameForRouteRegex('/complexes/\\d+/buildings', 'Buildings');
     breadcrumbService.addFriendlyNameForRouteRegex('/buildings/\\d+/floors', 'Floors');
     breadcrumbService.hideRouteRegex('^/complexes/\\d+$');
