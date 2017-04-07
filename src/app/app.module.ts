@@ -21,13 +21,15 @@ import {FloorDialogComponent} from './floor/floor.dialog';
 import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {AnchorComponent} from './anchor/anchor';
-import {AnchorListComponent} from './anchor/anchor.list';
 import {Ng2BreadcrumbModule} from 'ng2-breadcrumb/ng2-breadcrumb';
 import {WebSocketService} from 'angular2-websocket-service';
 import {SocketService} from './utils/socket/socket.service';
 import {DndModule} from 'ng2-dnd';
-import {AnchorService} from './anchor/anchor.service';
-import {AnchorDialogComponent} from './anchor/anchor.dialog';
+import {TagComponent} from './tag/tag';
+import {DeviceListComponent} from './device/device.list';
+import {DeviceDialogComponent} from './device/device.dialog';
+import {DeviceService} from './device/device.service';
+import {FlexLayoutModule} from '@angular/flex-layout';
 
 
 const appRoutes: Routes = [
@@ -35,6 +37,7 @@ const appRoutes: Routes = [
   {path: 'complexes', component: ComplexComponent},
   {path: 'complexes/:id/buildings', component: BuildingComponent},
   {path: 'anchors', component: AnchorComponent},
+  {path: 'tags', component: TagComponent},
   {path: 'buildings/:id/floors', component: FloorComponent},
   {path: '**', redirectTo: '/complexes'}
 ];
@@ -51,18 +54,19 @@ export function HttpLoaderFactory(http: Http) {
     BuildingComponent,
     BuildingDialogComponent,
     AnchorComponent,
-    AnchorListComponent,
-    AnchorDialogComponent,
+    DeviceListComponent,
+    DeviceDialogComponent,
     BuildingConfirmComponent,
     FloorComponent,
     FloorDialogComponent,
     AppComponent,
+    TagComponent
   ],
   entryComponents: [
     ComplexDialogComponent,
     ComplexConfirmComponent,
     BuildingDialogComponent,
-    AnchorDialogComponent,
+    DeviceDialogComponent,
     BuildingConfirmComponent,
     FloorDialogComponent,
   ],
@@ -80,7 +84,8 @@ export function HttpLoaderFactory(http: Http) {
     }),
     RouterModule.forRoot(appRoutes),
     Ng2BreadcrumbModule.forRoot(),
-    DndModule.forRoot()
+    DndModule.forRoot(),
+    FlexLayoutModule
   ],
   providers: [
     BuildingService,
@@ -90,7 +95,7 @@ export function HttpLoaderFactory(http: Http) {
     ToastService,
     WebSocketService,
     SocketService,
-    AnchorService
+    DeviceService
   ], bootstrap: [AppComponent]
 })
 
