@@ -1,0 +1,30 @@
+<div fxFlexFill fxLayout="column">
+  <header>
+    <div fxFlex="50">
+      <breadcrumb></breadcrumb>
+    </div>
+    <div fxFlex="50" fxLayoutAlign="end">
+      <button md-icon-button [mdMenuTriggerFor]="menu">
+        <md-icon>more_vert</md-icon>
+      </button>
+      <md-menu #menu="mdMenu">
+        <button md-menu-item [routerLink]="['./complexes']">
+          <md-icon>domain</md-icon>
+          <span>Complexes</span>
+        </button>
+        <button md-menu-item [routerLink]="['./anchors']">
+          <md-icon>toll</md-icon>
+          <span>Anchors</span>
+        </button>
+        <button md-menu-item [routerLink]="['./tags']">
+          <md-icon>settings_remote</md-icon>
+          <span>Tags</span>
+        </button>
+      </md-menu>
+    </div>
+  </header>
+  <div fxFlexFill>
+    <router-outlet></router-outlet>
+  </div>
+</div>
+

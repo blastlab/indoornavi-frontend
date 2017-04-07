@@ -4,14 +4,15 @@ import {ComplexDialogComponent} from '../../complex/complex.dialog';
 import {ComplexConfirmComponent} from '../../complex/complex.confirm';
 import {FormsModule} from '@angular/forms';
 import {TranslateModule} from '@ngx-translate/core';
-import {AnchorDialogComponent} from '../../anchor/anchor.dialog';
 import {BuildingDialogComponent} from '../../building/building.dialog';
-import {BuildingConfirmComponent} from "../../building/building.confirm";
-import {FloorDialogComponent} from "../../floor/floor.dialog";
+import {BuildingConfirmComponent} from '../../building/building.confirm';
+import {FloorDialogComponent} from '../../floor/floor.dialog';
+import {DeviceDialogComponent} from '../../device/device.dialog';
+import {CommonModule} from '@angular/common';
 
 const DIALOGS = [
   ComplexDialogComponent,
-  AnchorDialogComponent,
+  DeviceDialogComponent,
   ComplexConfirmComponent,
   BuildingDialogComponent,
   BuildingConfirmComponent,
@@ -19,8 +20,9 @@ const DIALOGS = [
 ];
 
 @NgModule({
-  imports: [MdDialogModule, FormsModule, MaterialModule, TranslateModule.forRoot()],
+  imports: [MdDialogModule, FormsModule, MaterialModule, TranslateModule.forRoot(), CommonModule],
   exports: DIALOGS,
   declarations: DIALOGS,
-  entryComponents: DIALOGS,})
+  entryComponents: DIALOGS,
+})
 export class DialogTestModule { }
