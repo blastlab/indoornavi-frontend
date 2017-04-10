@@ -10,9 +10,10 @@ import {MdDialog} from '@angular/material';
 import {DialogTestModule} from '../utils/dialog/dialog.test';
 import {TranslateModule} from '@ngx-translate/core';
 import {RouterTestingModule } from '@angular/router/testing';
-import {BrowserModule} from "@angular/platform-browser";
-import {HttpModule} from "@angular/http";
-import {ActivatedRoute} from "@angular/router";
+import {BrowserModule} from '@angular/platform-browser';
+import {HttpModule} from '@angular/http';
+import {ActivatedRoute} from '@angular/router';
+import {DndModule} from 'ng2-dnd';
 
 describe('FloorComponent', () => {
 
@@ -21,10 +22,11 @@ describe('FloorComponent', () => {
   let toastService: ToastService;
   let dialog: MdDialog;
   let route: ActivatedRoute;
+  let sortableData: DndModule;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [BrowserModule, FormsModule, MaterialModule, HttpModule, DialogTestModule, TranslateModule.forRoot(), RouterTestingModule],
+      imports: [BrowserModule, FormsModule, MaterialModule, HttpModule, DialogTestModule, TranslateModule.forRoot(), RouterTestingModule, DndModule.forRoot()],
       declarations: [
         FloorComponent
       ],
@@ -39,6 +41,7 @@ describe('FloorComponent', () => {
     toastService = fixture.debugElement.injector.get(ToastService);
     dialog = fixture.debugElement.injector.get(MdDialog);
     route = fixture.debugElement.injector.get(ActivatedRoute);
+    sortableData = fixture.debugElement.injector.get(DndModule);
 
     spyOn(toastService, 'showSuccess');
   }));
@@ -67,7 +70,7 @@ describe('FloorComponent', () => {
     const isValid = true;
 
     // when
-    component.addFloor({'level': 0, name: newFloorName, buildingId: 1}, isValid);
+    component.saveFloor({'level': 0, name: newFloorName, buildingId: 1});
 
     // then
     expect(floorService.addFloor).toHaveBeenCalled();
@@ -82,7 +85,7 @@ describe('FloorComponent', () => {
     const isValid = false;
 
     // when
-    component.addFloor({'level': 0, name: 'someName', buildingId: 1}, isValid);
+    component.saveFloor({'level': 0, name: 'someName', buildingId: 1});
 
     // then
     expect(component.floors.length).toEqual(0);
@@ -114,7 +117,7 @@ describe('FloorComponent', () => {
     component.editFloor(component.floors[0]);
 
     // then
-    expect(component.dialogRef.componentInstance.name).toEqual(oldFloorName);
+    expect(component.dialogRef.componentInstance.floor.name).toEqual(oldFloorName);
     expect(component.floors.length).toEqual(1);
     expect(dialog.open).toHaveBeenCalled();
   });
@@ -129,7 +132,7 @@ describe('FloorComponent', () => {
 
     // when
     component.editFloor(component.floors[0]);
-    component.dialogRef.close(newFloorName);
+    component.dialogRef.close({name: newFloorName, buildingId: 1});
 
     // then
     expect(component.floors.length).toEqual(1);
@@ -151,6 +154,86 @@ describe('FloorComponent', () => {
     // then
     expect(component.floors[0].name).toEqual(oldFloorName);
     expect(floorService.updateFloor).toHaveBeenCalledTimes(0);
+  });
+
+  describe('when we want to update floor numbers', () => {
+    describe('and we moved floor 5 between floors 2 and 4', () => {
+      it('should change floor number 5 to 3', () => {
+        // given
+        component.floors = [
+          {name: 'xxx', level: 2, buildingId: 1},
+          {name: 'xxx', level: 5, buildingId: 1},
+          {name: 'xxx', level: 4, buildingId: 1}
+        ];
+
+        // when
+        component.rearrangeFloors();
+
+        // then
+        expect(component.floors.length).toEqual(3);
+        expect(component.floors[0].level).toEqual(2);
+        expect(component.floors[1].level).toEqual(3);
+        expect(component.floors[2].level).toEqual(4);
+      });
+    });
+    describe('and we moved floor 2 between floors 4 and 7', () => {
+      it('should change floor number 4 to 1', () => {
+        // given
+        component.floors = [
+          {name: 'xxx', level: 4, buildingId: 1},
+          {name: 'xxx', level: 2, buildingId: 1},
+          {name: 'xxx', level: 7, buildingId: 1}
+        ];
+
+        // when
+        component.rearrangeFloors();
+
+        // then
+        expect(component.floors.length).toEqual(3);
+        expect(component.floors[0].level).toEqual(1);
+        expect(component.floors[1].level).toEqual(2);
+        expect(component.floors[2].level).toEqual(7);
+      });
+    });
+    describe('and we moved floor 6 before floor 0 and 3', () => {
+      it('should change floor number 6 to -1', () => {
+        // given
+        component.floors = [
+          {name: 'xxx', level: 6, buildingId: 1},
+          {name: 'xxx', level: 0, buildingId: 1},
+          {name: 'xxx', level: 3, buildingId: 1}
+        ];
+
+        // when
+        component.rearrangeFloors();
+
+        // then
+        expect(component.floors.length).toEqual(3);
+        expect(component.floors[0].level).toEqual(-1);
+        expect(component.floors[1].level).toEqual(0);
+        expect(component.floors[2].level).toEqual(3);
+      });
+    });
+    describe('and we moved floor 2 after floor 7', () => {
+      it('should change floor number 7 to 6 and 2 to 7', () => {
+        // given
+        component.floors = [
+          {name: 'xxx', level: 5, buildingId: 1},
+          {name: 'xxx', level: 7, buildingId: 1},
+          {name: 'xxx', level: 2, buildingId: 1}
+        ];
+
+        // when
+        component.rearrangeFloors();
+
+        // then
+        expect(component.floors.length).toEqual(3);
+        expect(component.floors[0].level).toEqual(5);
+        expect(component.floors[1].level).toEqual(6);
+        expect(component.floors[2].level).toEqual(7);
+      });
+    });
+
   });
 
 });

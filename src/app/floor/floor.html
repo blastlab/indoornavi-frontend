@@ -1,41 +1,27 @@
 <h1 [translate]="'floor.header'"></h1>
 
 <div class="adding-section">
-  <form #floorForm="ngForm" novalidate>
-    <div>
-      <md-input-container class="example-full-width">
-        <input id="floor-name-input" name="name" [(ngModel)]="floor.name" #name="ngModel" required type="text"
-               mdInput
-               placeholder="{{'floor.name.placeholder'|translate}}">
-      </md-input-container>
-      <small [hidden]="name.valid || (name.pristine && !floorForm.submitted)" [translate]="'floor.name.required'"></small>
-      <md-input-container class="example-full-width">
-        <input id="floor-level-input" name="level" [(ngModel)]="floor.level" #level="ngModel" required type="number" min="0"
-               mdInput
-               placeholder="{{'floor.level.placeholder'|translate}}">
-      </md-input-container>
-      <small [hidden]="level.valid || (name.pristine && !floorForm.submitted)" [translate]="'floor.level.required'"></small>
-    </div>
-    <button id="floor-add-button" type="submit" md-raised-button (click)="addFloor(floorForm.value, floorForm.valid)">{{'add'|translate}}</button>
-  </form>
+  <button md-raised-button id="new-floor-button" type="button" (click)="openDialog()">{{'add'|translate}}</button>
 </div>
 
-<table cellpadding="10" cellspacing="0">
+<table cellpadding="10" cellspacing="0" dnd-sortable-container [sortableData]="floors">
   <tr>
     <th [translate]="'floor.th.number'"></th>
     <th [translate]="'floor.th.name'"></th>
     <th colspan="2" [translate]="'th.actions'"></th>
   </tr>
-  <tr *ngFor="let floor of floors; let i = index">
+  <tr *ngFor="let floor of floors; let i = index" dnd-sortable [sortableIndex]="i" (onDropSuccess)="rearrangeFloors()">
     <td class="floor-level">{{floor.level}}</td>
     <td class="floor-name">{{floor.name}}</td>
     <td>
-      <button class="floor-edit-button" (click)="editFloor(floor)" md-mini-fab md-tooltip="{{'edit'|translate}}" mdTooltipPosition="above">
+      <button class="floor-edit-button" (click)="editFloor(floor)" md-mini-fab md-tooltip="{{'edit'|translate}}"
+              mdTooltipPosition="above">
         <i class="material-icons">mode_edit</i>
       </button>
     </td>
     <td>
-      <button class="floor-remove-button" (click)="removeFloor(i)" md-mini-fab md-mini-fab md-tooltip="{{'remove'|translate}}" mdTooltipPosition="above">
+      <button class="floor-remove-button" (click)="removeFloor(i)" md-mini-fab md-mini-fab
+              md-tooltip="{{'remove'|translate}}" mdTooltipPosition="above">
         <i class="material-icons">delete</i>
       </button>
     </td>

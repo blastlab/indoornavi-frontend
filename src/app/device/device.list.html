@@ -1,7 +1,7 @@
 <h3 class="{{verified ? 'verified' : ''}}">{{'device.verified'|translate}}: {{verified}}</h3>
 
 <div class="drop-zone" dnd-droppable (onDropSuccess)="addToList($event)" [dropZones]="['deviceList']">
-  <table>
+  <table cellpadding="10" cellspacing="0">
     <tr>
       <th>{{'device.shortId'|translate}}</th>
       <th>{{'device.longId'|translate}}</th>

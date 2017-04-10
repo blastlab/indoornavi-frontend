@@ -10,7 +10,7 @@ import {DeviceListComponent} from './device.list';
 import {DeviceService} from './device.service';
 import {Device} from './device.type';
 
-describe('DeviceListCompoennt', () => {
+describe('DeviceListComponent', () => {
   let component: DeviceListComponent;
   let fixture: ComponentFixture<DeviceListComponent>;
 
