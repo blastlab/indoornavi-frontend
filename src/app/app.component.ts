@@ -15,7 +15,7 @@ export class AppComponent {
     breadcrumbService.addFriendlyNameForRouteRegex('/complexes/\\d+/buildings', 'Buildings');
     breadcrumbService.addFriendlyNameForRouteRegex('/buildings/\\d+/floors', 'Floors');
     breadcrumbService.hideRouteRegex('^/complexes/\\d+$');
-    breadcrumbService.hideRouteRegex('^/buildings/\\d+$');
+    breadcrumbService.hideRouteRegex('^/complexes/\\d+/buildings/\\d+$');
     breadcrumbService.addFriendlyNameForRoute('/anchors', 'Anchors');
   }
 }

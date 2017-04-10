@@ -53,14 +53,15 @@ export class BuildingComponent implements OnInit {
 
   editBuilding(building: Building): void {
     this.dialogRef = this.dialog.open(BuildingDialogComponent);
-    this.dialogRef.componentInstance.name = building.name;
+    this.dialogRef.componentInstance.building = {
+      name: building.name,
+      complexId: building.complexId,
+    };
 
-    this.dialogRef.afterClosed().subscribe(result => {
-      if (result === undefined) { // dialog has been closed without save button clicked
-        // TODO: do we do anything here? if not, we should modify this if statement
-      } else { // save button has been clicked and result variable contains new complex name
-        building.name = result;
-        this.saveBuilding(building);
+    this.dialogRef.afterClosed().subscribe((newBuilding: Building) => {
+      if (newBuilding === undefined) { // dialog has been closed without save button clicked
+        building.name = newBuilding.name;
+        this.updateBuilding(building);
       }
       this.dialogRef = null;
     });
@@ -80,28 +81,16 @@ export class BuildingComponent implements OnInit {
 
   removeBuilding(index: number): void {
     const buildingId: number = this.buildings[index].id;
-    this.buildingService.removeBuilding(this.buildings[index].id, this.complexId ).subscribe(() => {
-      this.buildings.splice(index, 1);
-      this.toast.showSuccess('building.remove.success');
-    }, (msg: string) => {
-      this.toast.showFailure(msg);
+    this.floorService.getFloors(buildingId).subscribe((result: any) => {
+      if (result.floors && result.floors.length) {
+        this.openBuildingRemoveConfirmationDialog(index);
+      } else {
+        this.removeBuildingRequest(index, buildingId);
+      }
     });
   }
 
-  addBuilding(model: Building, isValid: boolean): void {
-    if (isValid) {
-      model.complexId = this.complexId;
-      this.buildingService.addBuilding(model).subscribe((newBuilding: Building) => {
-        this.buildings.push(newBuilding);
-        this.buildingForm.resetForm();
-        this.toast.showSuccess('building.create.success');
-      }, (msg: string) => {
-        this.toast.showFailure(msg);
-      });
-    }
-  }
-
-  saveBuilding(buildingToUpdate: Building): void {
+  updateBuilding(buildingToUpdate: Building): void {
     this.buildingService.updateBuilding(buildingToUpdate).subscribe((building: Building) => {
       this.toast.showSuccess('building.save.success');
     }, (msg: string) => {
@@ -109,17 +98,39 @@ export class BuildingComponent implements OnInit {
     });
   }
 
+  openDialog(): void {
+    this.dialogRef = this.dialog.open(BuildingDialogComponent);
+    this.dialogRef.componentInstance.building  = {
+      name: '',
+      complexId: this.complexId
+    };
+
+    this.dialogRef.afterClosed().subscribe(building => {
+      if (building !== undefined) {
+        this.saveBuilding(building);
+      }
+      this.dialogRef = null;
+    });
+  }
+
+  saveBuilding(building: Building) {
+    this.buildingService.addBuilding(building).subscribe((newBuilding: Building) => {
+      this.buildings.push(newBuilding);
+      this.toast.showSuccess('building.create.success');
+    });
+  }
+
   openBuilding(building: Building): void {
-    this.router.navigate(['/buildings', building.id, 'floors']);
+    this.router.navigate(['/complexes', this.complexId, 'buildings', building.id, 'floors']);
   }
 
   private removeBuildingRequest(index: number, buildingId: number) {
-    // this.buildingService.removeBuilding(buildingId).subscribe(() => {
-    //  this.buildings.splice(index, 1);
-    //  this.toast.showSuccess('building.remove.success');
-    // } , (msg: string) => {
-    //  this.toast.showFailure(msg);
-    // });
+    this.buildingService.removeBuilding(buildingId, this.complexId).subscribe(() => {
+     this.buildings.splice(index, 1);
+     this.toast.showSuccess('building.remove.success');
+    } , (msg: string) => {
+     this.toast.showFailure(msg);
+    });
   }
 
   private newBuilding(): void {

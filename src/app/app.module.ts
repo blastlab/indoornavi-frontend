@@ -35,7 +35,7 @@ const appRoutes: Routes = [
   {path: 'complexes', component: ComplexComponent},
   {path: 'complexes/:id/buildings', component: BuildingComponent},
   {path: 'anchors', component: AnchorComponent},
-  {path: 'buildings/:id/floors', component: FloorComponent},
+  {path: 'complexes/:complexId/buildings/:id/floors', component: FloorComponent},
   {path: '**', redirectTo: '/complexes'}
 ];
 

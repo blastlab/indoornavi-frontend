@@ -70,14 +70,14 @@ describe('ComplexComponent', () => {
   it('should add new complex to list when form is valid', () => {
     // given
     const newComplexName = 'some name';
-    spyOn(complexService, 'addComplex').and.returnValue(Observable.of({'name': newComplexName}));
+    spyOn(complexService, 'saveComplex').and.returnValue(Observable.of({'name': newComplexName}));
     const isValid = true;
 
     // when
-    component.addComplex({name: newComplexName}, isValid);
+    component.saveComplex({name: newComplexName});
 
     // then
-    expect(complexService.addComplex).toHaveBeenCalled();
+    expect(complexService.saveComplex).toHaveBeenCalled();
     expect(toastService.showSuccess).toHaveBeenCalled();
 
     expect(component.complexes.length).toEqual(1);

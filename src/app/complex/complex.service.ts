@@ -15,7 +15,7 @@ export class ComplexService {
     return this.httpService.doGet(this.complexesUrl);
   }
 
-  addComplex(complex: Complex): Observable<Complex> {
+  createComplex(complex: Complex): Observable<Complex> {
     return this.httpService.doPost(this.complexesUrl, complex);
   }
 

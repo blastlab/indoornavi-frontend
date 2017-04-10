@@ -1,6 +1,11 @@
-
-<md-input-container class="example-full-width">
-  <input id="new-building-name-input" type="text" [(ngModel)]="name" mdInput placeholder="{{'building.name'|translate}}">
-</md-input-container>
-
-<button id="building-edit-save-button" (click)="close()" md-raised-button>{{'save'|translate}}</button>
+<form #buildingForm="ngForm" novalidate>
+  <div>
+    <md-input-container class="example-full-width">
+      <input id="building-name-input" name="name" [(ngModel)]="building.name" #name="ngModel" required type="text"
+             mdInput
+             placeholder="{{'building.name'|translate}}">
+    </md-input-container>
+    <small [hidden]="name.valid || (name.pristine && !buildingForm.submitted)" [translate]="'building.name.required'"></small>
+  </div>
+  <button id="building-save-button" type="submit" md-raised-button (click)="save(buildingForm.valid)">{{'save'|translate}}</button>
+</form>

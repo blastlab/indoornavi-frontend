@@ -1,18 +1,7 @@
 <h1 [translate]="'building.header'"></h1>
 
 <div class="adding-section">
-  <form #buildingForm="ngForm" novalidate>
-    <div>
-      <md-input-container class="example-full-width">
-        <input id="building-name-input" name="name" [(ngModel)]="building.name" #name="ngModel" required type="text"
-               mdInput
-               placeholder="{{'building.name'|translate}}">
-      </md-input-container>
-      <small [hidden]="name.valid || (name.pristine && !buildingForm.submitted)" [translate]="'building.name.required'">
-      </small>
-    </div>
-    <button id="building-add-button" type="submit" md-raised-button (click)="addBuilding(buildingForm.value, buildingForm.valid)">{{'add'|translate}}</button>
-  </form>
+  <button md-raised-button id="new-building-button" type="button" (click)="openDialog()">{{'add'|translate}}</button>
 </div>
 
 <table cellpadding="10" cellspacing="0">

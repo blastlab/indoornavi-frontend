@@ -1,7 +1,7 @@
 <h3 class="{{verified ? 'verified' : ''}}">{{'anchor.verified'|translate}}: {{verified}}</h3>
 
 <div class="drop-zone" dnd-droppable (onDropSuccess)="addToList($event)" [dropZones]="['anchorList']">
-  <table>
+  <table cellpadding="10" cellspacing="0">
     <tr>
       <th>{{'anchor.shortId'|translate}}</th>
       <th>{{'anchor.longId'|translate}}</th>
