@@ -1,13 +1,13 @@
 import {element, by, browser, promise} from 'protractor';
 import {Utils} from '../utils';
 
-export class AnchorPage {
+export class TagPage {
   static navigateToHome() {
-    return browser.get('/anchors');
+    return browser.get('/tags');
   }
 
-  static addAnchor(shortId: string, longId: string, name: string) {
-    element(by.id('new-anchor-button')).click();
+  static addTag(shortId: string, longId: string, name: string) {
+    element(by.id('new-tag-button')).click();
     element(by.id('device-short-id')).sendKeys(shortId);
     element(by.id('device-long-id')).sendKeys(longId);
     element(by.id('device-name')).sendKeys(name);
@@ -31,11 +31,11 @@ export class AnchorPage {
     return element.all(by.css('#notVerifiedList tr')).count();
   }
 
-  static removeLastAnchor() {
+  static removeLastTag() {
     element.all(by.css('#notVerifiedList tr')).last().element(by.className('remove-button')).click();
   }
 
-  static editLastAnchor(shortId: string, longId: string, name: string, doSave: boolean) {
+  static editLastTag(shortId: string, longId: string, name: string, doSave: boolean) {
     element.all(by.css('#notVerifiedList tr')).last().element(by.className('edit-button')).click();
     element(by.id('device-short-id')).clear();
     element(by.id('device-short-id')).sendKeys(shortId);
