@@ -1,20 +1,20 @@
 import {Component, OnInit, ViewChild, NgZone, OnDestroy} from '@angular/core';
 import {Subscription} from 'rxjs/Rx';
 import {SocketService} from '../utils/socket/socket.service';
-import {Anchor} from './anchor.type';
+import {Tag} from './tag.type';
+import {DeviceListComponent} from '../device/device.list';
 import {MdDialogRef, MdDialog} from '@angular/material';
+import {DeviceDialogComponent} from '../device/device.dialog';
 import {Config} from '../../config';
 import {TranslateService} from '@ngx-translate/core';
 import {ToastService} from '../utils/toast/toast.service';
-import {DeviceDialogComponent} from '../device/device.dialog';
-import {DeviceListComponent} from '../device/device.list';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './anchor.html',
+  templateUrl: './tag.html',
   styleUrls: ['../device/device.css']
 })
-export class AnchorComponent implements OnInit, OnDestroy {
+export class TagComponent implements OnInit, OnDestroy {
 
   private socketSubscription: Subscription;
   @ViewChild('verified')
@@ -31,30 +31,30 @@ export class AnchorComponent implements OnInit, OnDestroy {
               private ngZone: NgZone) {
   }
 
-  get verified(): Anchor[] {
+  get verified(): Tag[] {
     return this.verifiedList.getDevices();
   }
 
-  get notVerified(): Anchor[] {
+  get notVerified(): Tag[] {
     return this.notVerifiedList.getDevices();
   }
 
   ngOnInit() {
     this.ngZone.runOutsideAngular(() => {
-      const stream = this.socketService.connect(Config.WEB_SOCKET_URL + 'devices/registration?anchor');
+      const stream = this.socketService.connect(Config.WEB_SOCKET_URL + 'devices/registration?tag');
 
-      this.socketSubscription = stream.subscribe((anchors: Array<Anchor>) => {
+      this.socketSubscription = stream.subscribe((tags: Array<Tag>) => {
         this.ngZone.run(() => {
-          anchors.forEach((anchor: Anchor) => {
-            if (this.verifiedList.isLocked(anchor) || this.notVerifiedList.isLocked(anchor)) {
+          tags.forEach((tag: Tag) => {
+            if (this.verifiedList.isLocked(tag) || this.notVerifiedList.isLocked(tag)) {
               return;
             }
-            if (anchor.verified) {
-              this.verifiedList.devices.setValue(anchor.id, anchor);
-              this.notVerifiedList.devices.remove(anchor.id);
+            if (tag.verified) {
+              this.verifiedList.devices.setValue(tag.id, tag);
+              this.notVerifiedList.devices.remove(tag.id);
             } else {
-              this.notVerifiedList.devices.setValue(anchor.id, anchor);
-              this.verifiedList.devices.remove(anchor.id);
+              this.notVerifiedList.devices.setValue(tag.id, tag);
+              this.verifiedList.devices.remove(tag.id);
             }
           });
         });
@@ -73,7 +73,7 @@ export class AnchorComponent implements OnInit, OnDestroy {
 
   openDialog(): void {
     this.dialogRef = this.dialog.open(DeviceDialogComponent);
-    this.dialogRef.componentInstance.url = 'anchors/';
+    this.dialogRef.componentInstance.url = 'tags/';
     this.dialogRef.componentInstance.device = {
       id: null,
       shortId: null,
@@ -82,8 +82,8 @@ export class AnchorComponent implements OnInit, OnDestroy {
       name: ''
     };
 
-    this.dialogRef.afterClosed().subscribe(anchor => {
-      if (anchor !== undefined) {
+    this.dialogRef.afterClosed().subscribe(tag => {
+      if (tag !== undefined) {
         this.toastService.showSuccess('device.create.success');
       }
       this.dialogRef = null;

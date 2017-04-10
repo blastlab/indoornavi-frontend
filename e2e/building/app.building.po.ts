@@ -6,8 +6,9 @@ export class IndoorNaviPage {
   }
 
   addComplex(name: string) {
+    element(by.id('new-complex-button')).click();
     element(by.id('complex-name-input')).sendKeys(name);
-    element(by.id('complex-add-button')).click();
+    element(by.id('complex-save-button')).click();
   }
 
   getTitle() {
@@ -15,8 +16,9 @@ export class IndoorNaviPage {
   }
 
   addBuilding(name: string) {
+    element(by.id('new-building-button')).click();
     element(by.id('building-name-input')).sendKeys(name);
-    element(by.id('building-add-button')).click();
+    element(by.id('building-save-button')).click();
   }
 
   removeLastBuilding() {
@@ -25,9 +27,9 @@ export class IndoorNaviPage {
 
   editLastBuilding(name: string) {
     element.all(by.css('.building-edit-button')).last().click();
-    element(by.id('new-building-name-input')).clear();
-    element(by.id('new-building-name-input')).sendKeys(name);
-    element(by.id('building-edit-save-button')).click();
+    element(by.id('building-name-input')).clear();
+    element(by.id('building-name-input')).sendKeys(name);
+    element(by.id('building-save-button')).click();
   }
 
   openBuildingsOfLastAddedComplex() {
@@ -36,8 +38,8 @@ export class IndoorNaviPage {
 
   editLastBuildingWithoutSaving(name: string) {
     element.all(by.css('.building-edit-button')).last().click();
-    element(by.id('new-building-name-input')).clear();
-    element(by.id('new-building-name-input')).sendKeys(name);
+    element(by.id('building-name-input')).clear();
+    element(by.id('building-name-input')).sendKeys(name);
   }
 
   cancelEditingLastBuilding() {

@@ -1,12 +1,9 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {BreadcrumbService} from 'ng2-breadcrumb/ng2-breadcrumb';
 
 @Component({
   selector: 'app-root',
-  template: `
-    <breadcrumb></breadcrumb>
-    <router-outlet></router-outlet>
-  `
+  templateUrl: './app.html'
 })
 export class AppComponent {
   constructor(private breadcrumbService: BreadcrumbService) {
@@ -17,5 +14,6 @@ export class AppComponent {
     breadcrumbService.hideRouteRegex('^/complexes/\\d+$');
     breadcrumbService.hideRouteRegex('^/complexes/\\d+/buildings/\\d+$');
     breadcrumbService.addFriendlyNameForRoute('/anchors', 'Anchors');
+    breadcrumbService.addFriendlyNameForRoute('/tags', 'Tags');
   }
 }

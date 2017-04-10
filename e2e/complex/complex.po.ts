@@ -7,8 +7,9 @@ export class ComplexPage {
   }
 
   static addComplex(name: string) {
+    element(by.id('new-complex-button')).click();
     element(by.id('complex-name-input')).sendKeys(name);
-    element(by.id('complex-add-button')).click();
+    element(by.id('complex-save-button')).click();
   }
 
   static removeLastComplex() {
@@ -19,10 +20,10 @@ export class ComplexPage {
 
   static editLastComplex(name: string, doSave: boolean) {
     element.all(by.css('.complex-edit-button')).last().click();
-    element(by.id('new-complex-name-input')).clear();
-    element(by.id('new-complex-name-input')).sendKeys(name);
+    element(by.id('complex-name-input')).clear();
+    element(by.id('complex-name-input')).sendKeys(name);
     if (doSave) {
-      element(by.id('complex-edit-save-button')).click();
+      element(by.id('complex-save-button')).click();
     }
   }
 

@@ -5,11 +5,11 @@
 </div>
 
 <div class="row">
-  <div id="notVerifiedList" class="anchors-list">
-    <app-anchor-list #notVerified [verified]="false"></app-anchor-list>
+  <div id="notVerifiedList" class="devices-list">
+    <app-device-list #notVerified [verified]="false" [deviceUrl]="'anchors/'"></app-device-list>
   </div>
 
-  <div id="verifiedList" class="anchors-list verified">
-    <app-anchor-list #verified [verified]="true"></app-anchor-list>
+  <div id="verifiedList" class="devices-list verified">
+    <app-device-list #verified [verified]="true" [deviceUrl]="'anchors/'"></app-device-list>
   </div>
 </div>

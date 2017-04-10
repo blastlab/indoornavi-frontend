@@ -1,6 +1,5 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {TranslateModule} from '@ngx-translate/core';
-import {AnchorComponent} from './anchor';
 import {DndModule} from 'ng2-dnd';
 import {MaterialModule, MdDialog} from '@angular/material';
 import {SocketService} from '../utils/socket/socket.service';
@@ -9,13 +8,14 @@ import {HttpService} from '../utils/http/http.service';
 import {ToastService} from '../utils/toast/toast.service';
 import {Observable} from 'rxjs/Rx';
 import {DialogTestModule} from '../utils/dialog/dialog.test';
-import {Anchor} from './anchor.type';
 import {DeviceService} from '../device/device.service';
 import {DeviceListComponent} from '../device/device.list';
+import {TagComponent} from './tag';
+import {Tag} from './tag.type';
 
-describe('AnchorComponent', () => {
-  let component: AnchorComponent;
-  let fixture: ComponentFixture<AnchorComponent>;
+describe('DeviceComponent', () => {
+  let component: TagComponent;
+  let fixture: ComponentFixture<TagComponent>;
 
   let socketService: SocketService;
   let dialog: MdDialog;
@@ -29,12 +29,12 @@ describe('AnchorComponent', () => {
         MaterialModule,
         DialogTestModule
       ],
-      declarations: [AnchorComponent, DeviceListComponent],
+      declarations: [TagComponent, DeviceListComponent],
       providers: [SocketService, WebSocketService, DeviceService, HttpService, ToastService, MdDialog]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(AnchorComponent);
+    fixture = TestBed.createComponent(TagComponent);
     component = fixture.debugElement.componentInstance;
     socketService = fixture.debugElement.injector.get(SocketService);
     dialog = fixture.debugElement.injector.get(MdDialog);
@@ -59,7 +59,7 @@ describe('AnchorComponent', () => {
     expect(component.verified.length).toBe(1);
   });
 
-  it('should open dialog to create new anchor', () => {
+  it('should open dialog to create new tag', () => {
     // given
     spyOn(dialog, 'open').and.callThrough();
 
@@ -69,18 +69,18 @@ describe('AnchorComponent', () => {
     // then
     expect(component.dialogRef.componentInstance.device).toBeDefined();
     expect(component.dialogRef.componentInstance.url).toBeDefined();
-    expect(component.dialogRef.componentInstance.url).toBe('anchors/');
+    expect(component.dialogRef.componentInstance.url).toBe('tags/');
     expect(dialog.open).toHaveBeenCalled();
   });
 
-  it('should create new anchor when dialog closes with value', () => {
+  it('should create new tag when dialog closes with value', () => {
     // given
-    const expectedAnchor: Anchor = {id: 1, shortId: 1, longId: 11, verified: false};
+    const expectedTag: Tag = {id: 1, shortId: 1, longId: 11, verified: false};
     spyOn(dialog, 'open').and.callThrough();
 
     // when
     component.openDialog();
-    component.dialogRef.close(expectedAnchor);
+    component.dialogRef.close(expectedTag);
 
     // then
     expect(toastService.showSuccess).toHaveBeenCalled();
