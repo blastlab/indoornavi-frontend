@@ -19,6 +19,7 @@ describe('BuildingComponent', () => {
 
   let component: BuildingComponent;
   let buildingService: BuildingService;
+  let floorService:FloorService;
   let toastService: ToastService;
   let dialog: MdDialog;
   let route: ActivatedRoute;
@@ -37,6 +38,7 @@ describe('BuildingComponent', () => {
     const fixture = TestBed.createComponent(BuildingComponent);
     component = fixture.debugElement.componentInstance;
     buildingService = fixture.debugElement.injector.get(BuildingService);
+    floorService = fixture.debugElement.injector.get(FloorService);
     toastService = fixture.debugElement.injector.get(ToastService);
     dialog = fixture.debugElement.injector.get(MdDialog);
     route = fixture.debugElement.injector.get(ActivatedRoute);
@@ -68,7 +70,7 @@ describe('BuildingComponent', () => {
     const isValid = true;
 
     // when
-    component.addBuilding({name: newBuildingName, complexId: 1}, isValid);
+    component.saveBuilding({name: newBuildingName, complexId: 1});
 
     // then
     expect(buildingService.addBuilding).toHaveBeenCalled();
@@ -83,7 +85,7 @@ describe('BuildingComponent', () => {
     const isValid = false;
 
     // when
-    component.addBuilding({name: 'someName', complexId: 1}, isValid);
+    component.saveBuilding({name: 'someName', complexId: 1});
 
     // then
     expect(component.buildings.length).toEqual(0);
@@ -95,6 +97,7 @@ describe('BuildingComponent', () => {
     const newBuildingName2 = 'some different name';
     component.buildings = [{name: newBuildingName, complexId: 1}, {name: newBuildingName2, complexId: 1}];
     spyOn(buildingService, 'removeBuilding').and.returnValue(Observable.of({}));
+    spyOn(floorService, 'getFloors').and.returnValue(Observable.of({}));
 
     // when
     component.removeBuilding(0);
@@ -115,7 +118,7 @@ describe('BuildingComponent', () => {
     component.editBuilding(component.buildings[0]);
 
     // then
-    expect(component.dialogRef.componentInstance.name).toEqual(oldBuildingName);
+    expect(component.dialogRef.componentInstance.building.name).toEqual(oldBuildingName);
     expect(component.buildings.length).toEqual(1);
     expect(dialog.open).toHaveBeenCalled();
   });
@@ -130,7 +133,7 @@ describe('BuildingComponent', () => {
 
     // when
     component.editBuilding(component.buildings[0]);
-    component.dialogRef.close(newBuildingName);
+    component.dialogRef.close({name: newBuildingName, complexId: 1});
 
     // then
     expect(component.buildings.length).toEqual(1);

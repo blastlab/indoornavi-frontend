@@ -25,7 +25,7 @@ export class BuildingDialogComponent implements OnInit {
   }
 
   close(): void {
-    this.dialogRef.close(this.name);
+    this.dialogRef.close();
   }
 
 }

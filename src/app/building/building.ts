@@ -59,7 +59,7 @@ export class BuildingComponent implements OnInit {
     };
 
     this.dialogRef.afterClosed().subscribe((newBuilding: Building) => {
-      if (newBuilding === undefined) { // dialog has been closed without save button clicked
+      if (newBuilding !== undefined) { // dialog has been closed without save button clicked
         building.name = newBuilding.name;
         this.updateBuilding(building);
       }
@@ -82,7 +82,7 @@ export class BuildingComponent implements OnInit {
   removeBuilding(index: number): void {
     const buildingId: number = this.buildings[index].id;
     this.floorService.getFloors(buildingId).subscribe((result: any) => {
-      if (result.floors && result.floors.length) {
+      if (result && result.floors && result.floors.length) {
         this.openBuildingRemoveConfirmationDialog(index);
       } else {
         this.removeBuildingRequest(index, buildingId);
