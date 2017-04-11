@@ -26,7 +26,7 @@ export class FloorDialogComponent implements OnInit {
   }
 
   close() {
-    this.dialogRef.close(this.name);
+    this.dialogRef.close(this.floor);
   }
 
 }
