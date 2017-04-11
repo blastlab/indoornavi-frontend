@@ -17,9 +17,12 @@ export class IndoorNaviPage {
     element(by.id('building-save-button')).click();
   }
 
-  addFloor(name: string) {
+  addFloor(name: string, level: string) {
     element(by.id('new-floor-button')).click();
+    element(by.id('floor-name-input')).clear();
+    element(by.id('floor-level-input')).clear();
     element(by.id('floor-name-input')).sendKeys(name);
+    element(by.id('floor-level-input')).sendKeys(level);
     element(by.id('floor-save-button')).click();
   }
 
@@ -27,10 +30,12 @@ export class IndoorNaviPage {
     element.all(by.css('.floor-remove-button')).last().click();
   }
 
-  editLastFloor(name: string) {
+  editLastFloor(name: string, level: string) {
     element.all(by.css('.floor-edit-button')).last().click();
     element(by.id('floor-name-input')).clear();
+    element(by.id('floor-level-input')).clear();
     element(by.id('floor-name-input')).sendKeys(name);
+    element(by.id('floor-level-input')).sendKeys(level);
     element(by.id('floor-save-button')).click();
   }
 
@@ -42,10 +47,12 @@ export class IndoorNaviPage {
     element.all(by.css('.building-floor-button')).last().click();
   }
 
-  editLastFloorWithoutSaving(name: string) {
+  editLastFloorWithoutSaving(name: string, level: string) {
     element.all(by.css('.floor-edit-button')).last().click();
     element(by.id('floor-name-input')).clear();
+    element(by.id('floor-level-input')).clear();
     element(by.id('floor-name-input')).sendKeys(name);
+    element(by.id('floor-level-input')).sendKeys(level);
   }
 
   cancelEditingLastFloor() {
@@ -54,6 +61,10 @@ export class IndoorNaviPage {
 
   getLatestAddedFloor() {
     return element.all(by.css('.floor-name')).last().getText();
+  }
+
+  getLatestAddedFloorLevel() {
+    return element.all(by.css('.floor-level')).last().getText();
   }
 
 }
