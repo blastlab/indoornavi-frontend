@@ -3,19 +3,19 @@
     <md-input-container class="example-full-width">
       <input id="floor-name-input" name="name" [(ngModel)]="floor.name" #name="ngModel" required type="text"
              mdInput
-             placeholder="{{'floor.name.placeholder'|translate}}">
+             placeholder="{{'floor.name'|translate}}">
     </md-input-container>
     <small [hidden]="name.valid || (name.pristine && !floorForm.submitted)"
            [translate]="'floor.name.required'"></small>
     <md-input-container class="example-full-width">
-      <input id="floor-level-input" name="level" [(ngModel)]="floor.level" #level="ngModel" required type="number"
+      <input id="floor-level-input"(keyup)="updateLevelValue()" name="level" [(ngModel)]="floor.level" #level="ngModel" required type="number"
              mdInput
-             placeholder="{{'floor.level.placeholder'|translate}}">
+             placeholder="{{'floor.level'|translate}}">
     </md-input-container>
     <small [hidden]="level.valid || (name.pristine && !floorForm.submitted)"
            [translate]="'floor.level.required'"></small>
   </div>
   <button id="floor-save-button" type="submit" md-raised-button (click)="save(floorForm.valid)">
-    {{'add'|translate}}
+    {{'save'|translate}}
   </button>
 </form>

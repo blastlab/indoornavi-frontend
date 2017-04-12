@@ -6,8 +6,8 @@
 
 <table cellpadding="10" cellspacing="0" dnd-sortable-container [sortableData]="floors">
   <tr>
-    <th [translate]="'floor.th.number'"></th>
-    <th [translate]="'floor.th.name'"></th>
+    <th [translate]="'floor.level'"></th>
+    <th [translate]="'floor.name'"></th>
     <th colspan="2" [translate]="'th.actions'"></th>
   </tr>
   <tr *ngFor="let floor of floors; let i = index" dnd-sortable [sortableIndex]="i" (onDropSuccess)="rearrangeFloors()">

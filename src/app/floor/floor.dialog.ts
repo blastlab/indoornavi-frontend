@@ -25,6 +25,12 @@ export class FloorDialogComponent implements OnInit {
     }
   }
 
+  updateLevelValue(): void {
+    if (this.floor && this.floor.level) {
+      this.floor.level = parseInt(this.floor.level.toString(), 10);
+    }
+  }
+
   close() {
     this.dialogRef.close(this.floor);
   }
