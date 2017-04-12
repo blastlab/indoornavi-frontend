@@ -54,7 +54,7 @@ export class FloorComponent implements OnInit {
     };
 
     this.dialogRef.afterClosed().subscribe((newFloor: Floor) => {
-      if (newFloor !== undefined) { // dialog has been closed without save button clicked
+      if (newFloor !== undefined) {
         floor.name = newFloor.name;
         floor.level = newFloor.level;
         this.updateFloor(floor);

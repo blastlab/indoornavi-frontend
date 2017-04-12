@@ -8,7 +8,7 @@
     <small [hidden]="name.valid || (name.pristine && !floorForm.submitted)"
            [translate]="'floor.name.required'"></small>
     <md-input-container class="example-full-width">
-      <input id="floor-level-input"(keyup)="updateLevelValue()" name="level" [(ngModel)]="floor.level" #level="ngModel" required type="number"
+      <input id="floor-level-input" (keyup)="updateLevelValue()" name="level" [(ngModel)]="floor.level" #level="ngModel" required type="number"
              mdInput
              placeholder="{{'floor.level'|translate}}">
     </md-input-container>

@@ -8,8 +8,7 @@ import {ToastService} from '../utils/toast/toast.service';
 import {NgForm} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
 import {FloorService} from '../floor/floor.service';
-import {Router} from '@angular/router';
-import {ActivatedRoute, Params} from '@angular/router';
+import {ActivatedRoute, Params, Router} from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -125,7 +124,7 @@ export class BuildingComponent implements OnInit {
   }
 
   private removeBuildingRequest(index: number, buildingId: number) {
-    this.buildingService.removeBuilding(buildingId, this.complexId).subscribe(() => {
+    this.buildingService.removeBuilding(buildingId).subscribe(() => {
      this.buildings.splice(index, 1);
      this.toast.showSuccess('building.remove.success');
     } , (msg: string) => {

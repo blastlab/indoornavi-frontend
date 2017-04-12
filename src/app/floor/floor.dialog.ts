@@ -10,8 +10,6 @@ import {Floor} from './floor.type';
 })
 export class FloorDialogComponent implements OnInit {
   floor: Floor;
-  public level: number = 0;
-  public name: string = '';
 
   constructor(private dialogRef: MdDialogRef<FloorDialogComponent>, public translate: TranslateService) {
   }

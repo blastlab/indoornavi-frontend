@@ -23,7 +23,7 @@ export class BuildingService {
     return this.httpService.doPut(this.buildingsUrl + building.id, building);
   }
 
-  removeBuilding(id: number, complexId: number): Observable<any> {
+  removeBuilding(id: number): Observable<any> {
     return this.httpService.doDelete(this.buildingsUrl + id);
   }
 

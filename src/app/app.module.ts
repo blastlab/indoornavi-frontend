@@ -1,7 +1,7 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {HttpModule, Http} from '@angular/http';
+import {Http, HttpModule} from '@angular/http';
 import {ComplexComponent} from './complex/complex';
 import {MaterialModule} from '@angular/material';
 import {ComplexService} from './complex/complex.service';
@@ -10,7 +10,7 @@ import {ComplexConfirmComponent} from './complex/complex.confirm';
 import {ToastService} from './utils/toast/toast.service';
 import {HttpService} from './utils/http/http.service';
 import {AppComponent} from './app.component';
-import {Routes, RouterModule} from '@angular/router';
+import {RouterModule, Routes} from '@angular/router';
 import {BuildingComponent} from './building/building';
 import {BuildingDialogComponent} from './building/building.dialog';
 import {BuildingConfirmComponent} from './building/building.confirm';
@@ -18,7 +18,7 @@ import {BuildingService} from './building/building.service';
 import {FloorComponent} from './floor/floor';
 import {FloorService} from './floor/floor.service';
 import {FloorDialogComponent} from './floor/floor.dialog';
-import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
+import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {AnchorComponent} from './anchor/anchor';
 import {Ng2BreadcrumbModule} from 'ng2-breadcrumb/ng2-breadcrumb';
@@ -38,7 +38,8 @@ const appRoutes: Routes = [
   {path: 'complexes/:id/buildings', component: BuildingComponent},
   {path: 'anchors', component: AnchorComponent},
   {path: 'complexes/:complexId/buildings/:id/floors', component: FloorComponent},
-  {path: 'tags', component: TagComponent},  {path: '**', redirectTo: '/complexes'}
+  {path: 'tags', component: TagComponent},
+  {path: '**', redirectTo: '/complexes'}
 ];
 
 export function HttpLoaderFactory(http: Http) {

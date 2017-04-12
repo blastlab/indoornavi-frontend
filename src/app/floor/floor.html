@@ -10,7 +10,7 @@
     <th [translate]="'floor.name'"></th>
     <th colspan="2" [translate]="'th.actions'"></th>
   </tr>
-  <tr *ngFor="let floor of floors; let i = index" dnd-sortable [sortableIndex]="i" (onDropSuccess)="rearrangeFloors()">
+  <tr class="sortable" *ngFor="let floor of floors; let i = index" dnd-sortable [sortableIndex]="i" (onDropSuccess)="rearrangeFloors()">
     <td class="floor-level">{{floor.level}}</td>
     <td class="floor-name">{{floor.name}}</td>
     <td>
