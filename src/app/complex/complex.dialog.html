@@ -1,6 +1,11 @@
-
-<md-input-container class="example-full-width">
-  <input mdInput id="new-complex-name-input" type="text" [(ngModel)]="name" mdInput placeholder="{{'complex.name'|translate}}">
-</md-input-container>
-
-<button id="complex-edit-save-button" (click)="close()" md-raised-button>{{'save'|translate}}</button>
+<form #complexForm="ngForm" novalidate>
+  <div>
+    <md-input-container class="example-full-width">
+      <input id="complex-name-input" name="name" [(ngModel)]="complex.name" #name="ngModel" required type="text"
+             mdInput
+             placeholder="{{'complex.name'|translate}}">
+    </md-input-container>
+    <small [hidden]="name.valid || (name.pristine && !complexForm.submitted)" [translate]="'complex.name.required'"></small>
+  </div>
+  <button id="complex-save-button" type="submit" md-raised-button (click)="save(complexForm.valid)">{{'save'|translate}}</button>
+</form>

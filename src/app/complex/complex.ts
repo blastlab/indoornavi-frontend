@@ -45,12 +45,14 @@ export class ComplexComponent implements OnInit {
 
   editComplex(complex: Complex): void {
     this.dialogRef = this.dialog.open(ComplexDialogComponent);
-    this.dialogRef.componentInstance.name = complex.name;
+    this.dialogRef.componentInstance.complex = {
+      name: complex.name
+    };
 
-    this.dialogRef.afterClosed().subscribe(newComplexName => {
-      if (newComplexName !== undefined) { // dialog has been closed without save button clicked
-        complex.name = newComplexName;
-        this.saveComplex(complex);
+    this.dialogRef.afterClosed().subscribe((newComplex: Complex) => {
+      if (newComplex !== undefined) { // dialog has been closed without save button clicked
+        complex.name = newComplex.name;
+        this.updateComplex(complex);
       }
       this.dialogRef = null;
     });
@@ -79,28 +81,38 @@ export class ComplexComponent implements OnInit {
     });
   }
 
-  addComplex(model: Complex, isValid: boolean): void {
-    if (isValid) {
-      this.complexService.addComplex(model).subscribe((newComplex: Complex) => {
-        this.complexes.push(newComplex);
-        this.complexForm.resetForm();
-        this.toast.showSuccess('complex.create.success');
-      }, (msg: string) => {
-        this.toast.showFailure(msg);
-      });
-    }
-  }
-
-  saveComplex(complexToUpdate: Complex): void {
-    this.complexService.updateComplex(complexToUpdate).subscribe((complex: Complex) => {
-      this.toast.showSuccess('complex.save.success');
-    }, (msg: string) => {
-      this.toast.showFailure(msg);
-    });
+  updateComplex(complexToUpdate: Complex): void {
+   this.complexService.updateComplex(complexToUpdate).subscribe((complex: Complex) => {
+     this.toast.showSuccess('complex.save.success');
+   }, (msg: string) => {
+     this.toast.showFailure(msg);
+   });
   }
 
   openComplex(complex: Complex): void {
     this.router.navigate(['/complexes', complex.id, 'buildings']);
+  }
+
+  openDialog(): void {
+    this.dialogRef = this.dialog.open(ComplexDialogComponent);
+    this.dialogRef.componentInstance.complex = {
+      id: null,
+      name: ''
+    };
+
+    this.dialogRef.afterClosed().subscribe(complex => {
+      if (complex !== undefined) {
+        this.saveComplex(complex);
+      }
+      this.dialogRef = null;
+    });
+  }
+
+  saveComplex(complex: Complex) {
+    this.complexService.createComplex(complex).subscribe((newComplex: Complex) => {
+      this.complexes.push(newComplex);
+      this.toast.showSuccess('complex.create.success');
+    });
   }
 
   private removeComplexRequest(index: number, complexId: number) {

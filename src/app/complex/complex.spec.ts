@@ -70,14 +70,14 @@ describe('ComplexComponent', () => {
   it('should add new complex to list when form is valid', () => {
     // given
     const newComplexName = 'some name';
-    spyOn(complexService, 'addComplex').and.returnValue(Observable.of({'name': newComplexName}));
+    spyOn(complexService, 'createComplex').and.returnValue(Observable.of({'name': newComplexName}));
     const isValid = true;
 
     // when
-    component.addComplex({name: newComplexName}, isValid);
+    component.saveComplex({name: newComplexName});
 
     // then
-    expect(complexService.addComplex).toHaveBeenCalled();
+    expect(complexService.createComplex).toHaveBeenCalled();
     expect(toastService.showSuccess).toHaveBeenCalled();
 
     expect(component.complexes.length).toEqual(1);
@@ -89,7 +89,7 @@ describe('ComplexComponent', () => {
     const isValid = false;
 
     // when
-    component.addComplex({name: 'someName'}, isValid);
+    component.saveComplex({name: 'someName'});
 
     // then
     expect(component.complexes.length).toEqual(0);
@@ -122,7 +122,7 @@ describe('ComplexComponent', () => {
     component.editComplex({name: oldComplexName});
 
     // then
-    expect(component.dialogRef.componentInstance.name).toEqual(oldComplexName);
+    expect(component.dialogRef.componentInstance.complex.name).toEqual(oldComplexName);
     expect(component.complexes.length).toEqual(1);
     expect(dialog.open).toHaveBeenCalled();
   });
@@ -137,7 +137,7 @@ describe('ComplexComponent', () => {
 
     // when
     component.editComplex(component.complexes[0]); // do edycji przekazujemy referencje do jednego z kompleksów na podstawie której kompleks zostanie zmieniony
-    component.dialogRef.close(newComplexName);
+    component.dialogRef.close({name: newComplexName});
 
     // then
     expect(component.complexes.length).toEqual(1);
