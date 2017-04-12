@@ -25,6 +25,7 @@
     "@angular/router": "^3.4.0",
     "@ngx-translate/core": "^6.0.1",
     "@ngx-translate/http-loader": "0.0.3",
+    "angular2-image-upload": "^0.5.1",
     "angular2-websocket-service": "^0.5.3",
     "core-js": "^2.4.1",
     "ng2-breadcrumb": "^0.5.6",

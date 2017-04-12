@@ -1,7 +1,7 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {HttpModule, Http} from '@angular/http';
+import {Http, HttpModule} from '@angular/http';
 import {ComplexComponent} from './complex/complex';
 import {MaterialModule} from '@angular/material';
 import {ComplexService} from './complex/complex.service';
@@ -10,7 +10,7 @@ import {ComplexConfirmComponent} from './complex/complex.confirm';
 import {ToastService} from './utils/toast/toast.service';
 import {HttpService} from './utils/http/http.service';
 import {AppComponent} from './app.component';
-import {Routes, RouterModule} from '@angular/router';
+import {RouterModule, Routes} from '@angular/router';
 import {BuildingComponent} from './building/building';
 import {BuildingDialogComponent} from './building/building.dialog';
 import {BuildingConfirmComponent} from './building/building.confirm';
@@ -18,7 +18,7 @@ import {BuildingService} from './building/building.service';
 import {FloorComponent} from './floor/floor';
 import {FloorService} from './floor/floor.service';
 import {FloorDialogComponent} from './floor/floor.dialog';
-import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
+import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {AnchorComponent} from './anchor/anchor';
 import {Ng2BreadcrumbModule} from 'ng2-breadcrumb/ng2-breadcrumb';
@@ -30,15 +30,18 @@ import {DeviceListComponent} from './device/device.list';
 import {DeviceDialogComponent} from './device/device.dialog';
 import {DeviceService} from './device/device.service';
 import {FlexLayoutModule} from '@angular/flex-layout';
+import {MapComponent} from './floor/map';
+import {ImageUploadModule} from 'angular2-image-upload';
 
 
 const appRoutes: Routes = [
   {path: '', redirectTo: '/complexes', pathMatch: 'full'},
   {path: 'complexes', component: ComplexComponent},
-  {path: 'complexes/:id/buildings', component: BuildingComponent},
+  {path: 'complexes/:complexId/buildings', component: BuildingComponent},
   {path: 'anchors', component: AnchorComponent},
   {path: 'tags', component: TagComponent},
-  {path: 'buildings/:id/floors', component: FloorComponent},
+  {path: 'complexes/:complexId/buildings/:buildingId/floors', component: FloorComponent},
+  {path: 'complexes/:complexId/buildings/:buildingId/floors/:floorId/map', component: MapComponent},
   {path: '**', redirectTo: '/complexes'}
 ];
 
@@ -60,7 +63,8 @@ export function HttpLoaderFactory(http: Http) {
     FloorComponent,
     FloorDialogComponent,
     AppComponent,
-    TagComponent
+    TagComponent,
+    MapComponent
   ],
   entryComponents: [
     ComplexDialogComponent,
@@ -85,7 +89,8 @@ export function HttpLoaderFactory(http: Http) {
     RouterModule.forRoot(appRoutes),
     Ng2BreadcrumbModule.forRoot(),
     DndModule.forRoot(),
-    FlexLayoutModule
+    FlexLayoutModule,
+    ImageUploadModule.forRoot()
   ],
   providers: [
     BuildingService,

@@ -24,11 +24,16 @@
   <tr>
     <th [translate]="'floor.th.number'"></th>
     <th [translate]="'floor.th.name'"></th>
-    <th colspan="2" [translate]="'th.actions'"></th>
+    <th colspan="3" [translate]="'th.actions'"></th>
   </tr>
   <tr *ngFor="let floor of floors; let i = index">
     <td class="floor-level">{{floor.level}}</td>
     <td class="floor-name">{{floor.name}}</td>
+    <td>
+      <button class="" (click)="openMap(floor)" md-mini-fab md-tooltip="{{'go.to.map'|translate}}" mdTooltipPosition="above">
+        <i class="material-icons">map</i>
+      </button>
+    </td>
     <td>
       <button class="floor-edit-button" (click)="editFloor(floor)" md-mini-fab md-tooltip="{{'edit'|translate}}" mdTooltipPosition="above">
         <i class="material-icons">mode_edit</i>

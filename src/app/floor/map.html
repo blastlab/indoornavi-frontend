@@ -1,0 +1,14 @@
+<image-upload #imageUpload
+  [max]="1"
+  (onFileUploadFinish)="imageLoaded($event)"
+  [hidden]="imageUploaded"
+  [buttonCaption]="buttonCaption"
+  [dropBoxMessage]="dropBoxMessage"
+  [maxFileSize]="maxFileSize"
+  [fileTooLargeMessage]="fileTooLargeMessage"
+  [preview]="false"
+></image-upload>
+
+<canvas #canvas
+  [hidden]="!imageUploaded"
+></canvas>

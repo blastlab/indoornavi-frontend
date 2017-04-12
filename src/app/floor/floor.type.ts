@@ -3,4 +3,10 @@ export interface Floor {
   level: number;
   name: string;
   buildingId: number;
+  imageId?: number;
+}
+
+export interface ImageConfiguration {
+  maxFileSize: number;
+  allowedTypes: string[];
 }
