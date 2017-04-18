@@ -23,6 +23,10 @@ export class FloorService {
     return this.httpService.doPut(this.floorsUrl + floor.id, floor);
   }
 
+  updateFloors(floors: Floor[]): Observable<Floor[]> {
+    return this.httpService.doPut(this.floorsUrl, floors);
+  }
+
   removeFloor(id: number, buildingId: number): Observable<any> {
     return this.httpService.doDelete(this.floorsUrl + id);
   }

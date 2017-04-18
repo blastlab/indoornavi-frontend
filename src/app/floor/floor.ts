@@ -122,6 +122,9 @@ export class FloorComponent implements OnInit {
         this.floors[i].level = parseInt(<any>this.floors[i - 1].level, 10) + 1;
       }
     }
+    this.floorService.updateFloors(this.floors).subscribe(() => {
+      this.toast.showSuccess('floor.order.success');
+    });
   }
 
   private getCurrentMaxLevel(): number {

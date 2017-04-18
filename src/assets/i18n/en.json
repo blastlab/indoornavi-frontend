@@ -40,6 +40,7 @@
 	"floor.name.required": "Floor name is required.",
 	"floor.remove.success": "Floor has been removed.",
 	"floor.save.success": "Floor has been saved.",
+  "floor.order.success": "New order has been saved.",
 	"go.to.buildings": "Go to buildings",
 	"go.to.floors": "Go to floors",
 	"remove": "Remove",
