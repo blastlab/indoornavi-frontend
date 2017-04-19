@@ -14,6 +14,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {HttpModule} from '@angular/http';
 import {ActivatedRoute} from '@angular/router';
 import {DndModule} from 'ng2-dnd';
+import {Floor} from './floor.type';
 
 describe('FloorComponent', () => {
 
@@ -124,6 +125,31 @@ describe('FloorComponent', () => {
     // then
     expect(component.floors[0].name).toEqual(oldFloorName);
     expect(floorService.updateFloor).toHaveBeenCalledTimes(0);
+  });
+
+  it('should open dialog to create new floor', () => {
+    // given
+    spyOn(dialog, 'open').and.callThrough();
+
+    // when
+    component.openDialog();
+
+    // then
+    expect(component.dialogRef.componentInstance.floor).toBeDefined();
+    expect(dialog.open).toHaveBeenCalled();
+  });
+
+  it('should create new floor when dialog closes with value', () => {
+    // given
+    const expectedFloor: Floor = {id: 1, level: 1, name: "test", buildingId: 1};
+    spyOn(dialog, 'open').and.callThrough();
+
+    // when
+    component.openDialog();
+    component.dialogRef.close(expectedFloor);
+
+    // then
+    expect(toastService.showSuccess).toHaveBeenCalled();
   });
 
   describe('when we want to update floor numbers', () => {
