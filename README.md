@@ -12,17 +12,13 @@ Verify that you are running at least node 6.9.x and npm 3.x.x by running node -v
 
 Run `npm install -g @angular/cli`
 
-## Create new project
+## Run project
 
-Open a terminal window. Run `ng new my-project-name`. Patience please (it takes time).
+Open a terminal in `frontend` directory. Run `npm install` to install all dependencies.
 
 ## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
-
-## Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive/pipe/service/class/module`.
+Run `ng serve -o` for a dev server. Note that this app needs [backend application](http://gitlab.blastlab.local/indoornavi/backend) running in order to work properly.
 
 ## Build
 
