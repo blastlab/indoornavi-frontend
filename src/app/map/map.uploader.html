@@ -1,0 +1,9 @@
+<image-upload #imageUpload
+              [max]="1"
+              (onFileUploadFinish)="imageLoaded($event)"
+              [buttonCaption]="buttonCaption"
+              [dropBoxMessage]="dropBoxMessage"
+              [maxFileSize]="maxFileSize"
+              [fileTooLargeMessage]="fileTooLargeMessage"
+              [preview]="false"
+></image-upload>

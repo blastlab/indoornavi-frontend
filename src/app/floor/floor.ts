@@ -9,7 +9,6 @@ import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 
 @Component({
-  selector: 'app-root',
   templateUrl: 'floor.html',
   styleUrls: ['floor.css']
 })

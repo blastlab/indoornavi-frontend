@@ -5,8 +5,3 @@ export interface Floor {
   buildingId: number;
   imageId?: number;
 }
-
-export interface ImageConfiguration {
-  maxFileSize: number;
-  allowedTypes: string[];
-}

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Floor, ImageConfiguration} from './floor.type';
+import {Floor} from './floor.type';
 import {Observable} from 'rxjs/Rx';
 import {HttpService} from '../utils/http/http.service';
 
@@ -29,13 +29,5 @@ export class FloorService {
 
   removeFloor(id: number, buildingId: number): Observable<any> {
     return this.httpService.doDelete(this.floorsUrl + id);
-  }
-
-  uploadImage(id: number, formData: FormData): Observable<Floor> {
-    return this.httpService.doPost('images/' + id, formData);
-  }
-
-  getImageConfiguration(): Observable<ImageConfiguration> {
-    return this.httpService.doGet('images/configuration');
   }
 }

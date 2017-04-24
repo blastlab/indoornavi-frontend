@@ -30,8 +30,11 @@ import {DeviceListComponent} from './device/device.list';
 import {DeviceDialogComponent} from './device/device.dialog';
 import {DeviceService} from './device/device.service';
 import {FlexLayoutModule} from '@angular/flex-layout';
-import {MapComponent} from './floor/map';
 import {ImageUploadModule} from 'angular2-image-upload';
+import {MapControllerComponent} from './map/map.controller';
+import {MapViewerComponent} from './map/map.viewer';
+import {MapUploaderComponent} from './map/map.uploader';
+import {MapService} from './map/map.service';
 
 
 const appRoutes: Routes = [
@@ -41,7 +44,7 @@ const appRoutes: Routes = [
   {path: 'anchors', component: AnchorComponent},
   {path: 'tags', component: TagComponent},
   {path: 'complexes/:complexId/buildings/:buildingId/floors', component: FloorComponent},
-  {path: 'complexes/:complexId/buildings/:buildingId/floors/:floorId/map', component: MapComponent},
+  {path: 'complexes/:complexId/buildings/:buildingId/floors/:floorId/map', component: MapControllerComponent},
   {path: '**', redirectTo: '/complexes'}
 ];
 
@@ -64,7 +67,9 @@ export function HttpLoaderFactory(http: Http) {
     FloorDialogComponent,
     AppComponent,
     TagComponent,
-    MapComponent
+    MapControllerComponent,
+    MapViewerComponent,
+    MapUploaderComponent
   ],
   entryComponents: [
     ComplexDialogComponent,
@@ -100,7 +105,8 @@ export function HttpLoaderFactory(http: Http) {
     ToastService,
     WebSocketService,
     SocketService,
-    DeviceService
+    DeviceService,
+    MapService
   ], bootstrap: [AppComponent]
 })
 
