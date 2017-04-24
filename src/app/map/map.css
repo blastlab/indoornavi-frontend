@@ -1,0 +1,6 @@
+.floor-map {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: rgba(132,0,13,.2);
+}
