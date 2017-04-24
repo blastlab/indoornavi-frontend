@@ -141,7 +141,7 @@ describe('FloorComponent', () => {
 
   it('should create new floor when dialog closes with value', () => {
     // given
-    const expectedFloor: Floor = {id: 1, level: 1, name: "test", buildingId: 1};
+    const expectedFloor: Floor = {id: 1, level: 1, name: 'test', buildingId: 1};
     spyOn(dialog, 'open').and.callThrough();
 
     // when

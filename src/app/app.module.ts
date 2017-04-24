@@ -30,6 +30,7 @@ import {DeviceListComponent} from './device/device.list';
 import {DeviceDialogComponent} from './device/device.dialog';
 import {DeviceService} from './device/device.service';
 import {FlexLayoutModule} from '@angular/flex-layout';
+import {MapComponent} from './map/map';
 
 
 const appRoutes: Routes = [
@@ -39,6 +40,7 @@ const appRoutes: Routes = [
   {path: 'anchors', component: AnchorComponent},
   {path: 'complexes/:complexId/buildings/:id/floors', component: FloorComponent},
   {path: 'tags', component: TagComponent},
+  {path: 'map', component: MapComponent},
   {path: '**', redirectTo: '/complexes'}
 ];
 
@@ -60,7 +62,8 @@ export function HttpLoaderFactory(http: Http) {
     FloorComponent,
     FloorDialogComponent,
     AppComponent,
-    TagComponent
+    TagComponent,
+    MapComponent
   ],
   entryComponents: [
     ComplexDialogComponent,
