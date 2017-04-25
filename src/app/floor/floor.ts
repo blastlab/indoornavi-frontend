@@ -27,14 +27,15 @@ export class FloorComponent implements OnInit {
     this.newFloor();
     this.route.params
     // (+) converts string 'id' to a number
-    .subscribe((params: Params) => {
-      this.buildingId = +params['buildingId'];
+      .subscribe((params: Params) => {
+        this.buildingId = +params['buildingId'];
         this.complexId = +params['complexId'];
-      this.floorService.getFloors(this.buildingId).subscribe((result: any) => {
-        this.floors = result.floors;
+        this.floorService.getFloors(this.buildingId).subscribe((result: any) => {
+          this.floors = result.floors;
 
-      this.newFloor();
-    });});
+          this.newFloor();
+        });
+      });
     this.translate.setDefaultLang('en');
   }
 
@@ -89,12 +90,6 @@ export class FloorComponent implements OnInit {
       this.dialogRef = null;
     });
   }
-
-  saveFloor(floor: Floor): void {
-    this.floorService.updateFloor(floor).subscribe(() => {
-      this.toast.showSuccess('floor.save.success');
-    }, (msg: string) => {
-      this.toast.showFailure(msg);
 
   rearrangeFloors(): void {
     for (let i = 0; i < this.floors.length; i++) {

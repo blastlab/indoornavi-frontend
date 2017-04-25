@@ -42,7 +42,6 @@ const appRoutes: Routes = [
   {path: 'complexes', component: ComplexComponent},
   {path: 'complexes/:complexId/buildings', component: BuildingComponent},
   {path: 'anchors', component: AnchorComponent},
-  {path: 'complexes/:complexId/buildings/:id/floors', component: FloorComponent},
   {path: 'tags', component: TagComponent},
   {path: 'complexes/:complexId/buildings/:buildingId/floors', component: FloorComponent},
   {path: 'complexes/:complexId/buildings/:buildingId/floors/:floorId/map', component: MapControllerComponent},

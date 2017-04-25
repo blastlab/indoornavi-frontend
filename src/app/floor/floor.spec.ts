@@ -12,10 +12,6 @@ import {RouterTestingModule} from '@angular/router/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {HttpModule} from '@angular/http';
 import {ActivatedRoute} from '@angular/router';
-import {RouterTestingModule } from '@angular/router/testing';
-import {BrowserModule} from '@angular/platform-browser';
-import {HttpModule} from '@angular/http';
-import {ActivatedRoute} from '@angular/router';
 import {DndModule} from 'ng2-dnd';
 import {Floor} from './floor.type';
 
@@ -144,7 +140,7 @@ describe('FloorComponent', () => {
 
   it('should create new floor when dialog closes with value', () => {
     // given
-    const expectedFloor: Floor = {id: 1, level: 1, name: "test", buildingId: 1};
+    const expectedFloor: Floor = {id: 1, level: 1, name: 'test', buildingId: 1};
     spyOn(dialog, 'open').and.callThrough();
 
     // when

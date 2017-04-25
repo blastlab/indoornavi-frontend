@@ -8,6 +8,7 @@ import {ToastService} from '../utils/toast/toast.service';
 import {NgForm} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
+import {FloorService} from '../floor/floor.service';
 
 @Component({
   selector: 'app-root',
@@ -44,6 +45,7 @@ export class BuildingComponent implements OnInit {
               private toast: ToastService,
               public translate: TranslateService,
               private router: Router,
+              private floorService: FloorService,
               private route: ActivatedRoute) {
   }
 
