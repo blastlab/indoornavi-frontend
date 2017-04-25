@@ -29,6 +29,19 @@ export class MapComponent implements OnInit {
   }
 
   private initMap(): void {
-    let floorMap = d3.select("svg.floor-map").on("click", () => { console.log(d3.event)});
+    let floorMap = d3.select("svg.floor-map").on("click", () => {
+      this.drawPoint(15, 'red');
+    });
+  }
+
+  drawPoint(size: number, color: string): void {
+    let floorMap = d3.select("svg.floor-map");
+    let x: number = d3.event.offsetX;
+    let y: number = d3.event.offsetY;
+    floorMap.append("circle")
+      .attr("cx", x)
+      .attr("cy", y)
+      .attr("r", size)
+      .style("fill", color);
   }
 }
