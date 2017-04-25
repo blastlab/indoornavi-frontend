@@ -12,8 +12,11 @@ export class MapComponent implements OnInit {
 
   private w = window.innerWidth;
   private h = window.innerHeight;
+  public jsonTable = [];
+  public circlesTable = [];
   private holder = d3.select("body")
     .append("svg")
+    .datum(this.jsonTable)
     .attr("class", "floor-map")
     .attr("width", this.w)
     .attr("height", this.h);
@@ -29,9 +32,16 @@ export class MapComponent implements OnInit {
   }
 
   private initMap(): void {
-    let floorMap = d3.select("svg.floor-map").on("click", () => {
-      this.drawPoint(15, 'red');
-    });
+    let floorMap = d3.select("svg.floor-map")
+      .on("click", () => {
+      this.drawPoint(10, 'rgba(150,50,235,0.6)');
+      console.log('floorMap click event'); // CLDD in action
+      // Work in progress - here decision what to draw
+      });
+    floorMap
+      .style("position", "absolute")
+      .style("top", 0)
+      .style("left", 0);
   }
 
   drawPoint(size: number, color: string): void {
@@ -39,9 +49,15 @@ export class MapComponent implements OnInit {
     let x: number = d3.event.offsetX;
     let y: number = d3.event.offsetY;
     floorMap.append("circle")
+      .datum(this.circlesTable)
       .attr("cx", x)
       .attr("cy", y)
       .attr("r", size)
-      .style("fill", color);
+      .style("fill", color)
+      .on("click", (datum) => {
+        d3.drag(this);
+        console.log('appended circle click/drag event'); // CLDD in action
+        console.log(datum);
+      });
   }
 }
