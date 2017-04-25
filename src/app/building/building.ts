@@ -7,7 +7,6 @@ import {BuildingConfirmComponent} from './building.confirm';
 import {ToastService} from '../utils/toast/toast.service';
 import {NgForm} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
-import {FloorService} from '../floor/floor.service';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 
 @Component({
@@ -15,7 +14,6 @@ import {ActivatedRoute, Params, Router} from '@angular/router';
   templateUrl: 'building.html',
   styleUrls: ['building.css']
 })
-
 export class BuildingComponent implements OnInit {
   buildings: Array<Building> = [];
 
@@ -32,7 +30,7 @@ export class BuildingComponent implements OnInit {
     this.route.params
     // (+) converts string 'id' to a number
     .subscribe((params: Params) => {
-      this.complexId = +params['id'];
+      this.complexId = +params['complexId'];
       this.buildingService.getBuildings(this.complexId).subscribe((result: any) => {
         this.buildings = result.buildings;
       });
@@ -45,7 +43,6 @@ export class BuildingComponent implements OnInit {
               private dialog: MdDialog,
               private toast: ToastService,
               public translate: TranslateService,
-              private floorService: FloorService,
               private router: Router,
               private route: ActivatedRoute) {
   }

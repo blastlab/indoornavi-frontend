@@ -8,11 +8,16 @@
   <tr>
     <th [translate]="'floor.level'"></th>
     <th [translate]="'floor.name'"></th>
-    <th colspan="2" [translate]="'th.actions'"></th>
+    <th colspan="3" [translate]="'th.actions'"></th>
   </tr>
   <tr class="sortable" *ngFor="let floor of floors; let i = index" dnd-sortable [sortableIndex]="i" (onDropSuccess)="rearrangeFloors()">
     <td class="floor-level">{{floor.level}}</td>
     <td class="floor-name">{{floor.name}}</td>
+    <td>
+      <button class="" (click)="openMap(floor)" md-mini-fab md-tooltip="{{'go.to.map'|translate}}" mdTooltipPosition="above">
+        <i class="material-icons">map</i>
+      </button>
+    </td>
     <td>
       <button class="floor-edit-button" (click)="editFloor(floor)" md-mini-fab md-tooltip="{{'edit'|translate}}"
               mdTooltipPosition="above">

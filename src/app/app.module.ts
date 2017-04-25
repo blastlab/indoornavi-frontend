@@ -30,15 +30,22 @@ import {DeviceListComponent} from './device/device.list';
 import {DeviceDialogComponent} from './device/device.dialog';
 import {DeviceService} from './device/device.service';
 import {FlexLayoutModule} from '@angular/flex-layout';
+import {ImageUploadModule} from 'angular2-image-upload';
+import {MapControllerComponent} from './map/map.controller';
+import {MapViewerComponent} from './map/map.viewer';
+import {MapUploaderComponent} from './map/map.uploader';
+import {MapService} from './map/map.service';
 
 
 const appRoutes: Routes = [
   {path: '', redirectTo: '/complexes', pathMatch: 'full'},
   {path: 'complexes', component: ComplexComponent},
-  {path: 'complexes/:id/buildings', component: BuildingComponent},
+  {path: 'complexes/:complexId/buildings', component: BuildingComponent},
   {path: 'anchors', component: AnchorComponent},
   {path: 'complexes/:complexId/buildings/:id/floors', component: FloorComponent},
   {path: 'tags', component: TagComponent},
+  {path: 'complexes/:complexId/buildings/:buildingId/floors', component: FloorComponent},
+  {path: 'complexes/:complexId/buildings/:buildingId/floors/:floorId/map', component: MapControllerComponent},
   {path: '**', redirectTo: '/complexes'}
 ];
 
@@ -60,7 +67,10 @@ export function HttpLoaderFactory(http: Http) {
     FloorComponent,
     FloorDialogComponent,
     AppComponent,
-    TagComponent
+    TagComponent,
+    MapControllerComponent,
+    MapViewerComponent,
+    MapUploaderComponent
   ],
   entryComponents: [
     ComplexDialogComponent,
@@ -85,7 +95,8 @@ export function HttpLoaderFactory(http: Http) {
     RouterModule.forRoot(appRoutes),
     Ng2BreadcrumbModule.forRoot(),
     DndModule.forRoot(),
-    FlexLayoutModule
+    FlexLayoutModule,
+    ImageUploadModule.forRoot()
   ],
   providers: [
     BuildingService,
@@ -95,7 +106,8 @@ export function HttpLoaderFactory(http: Http) {
     ToastService,
     WebSocketService,
     SocketService,
-    DeviceService
+    DeviceService,
+    MapService
   ], bootstrap: [AppComponent]
 })
 

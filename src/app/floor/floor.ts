@@ -6,21 +6,20 @@ import {FloorDialogComponent} from './floor.dialog';
 import {ToastService} from '../utils/toast/toast.service';
 import {NgForm} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
-import {ActivatedRoute, Params} from '@angular/router';
+import {ActivatedRoute, Params, Router} from '@angular/router';
 
 @Component({
-  selector: 'app-root',
   templateUrl: 'floor.html',
   styleUrls: ['floor.css']
 })
-
 export class FloorComponent implements OnInit {
   floors: Array<Floor> = [];
 
   floor: Floor;
   dialogRef: MdDialogRef<FloorDialogComponent>;
 
-  private buildingId: number = 0;
+  private buildingId: number;
+  private complexId: number;
 
   @ViewChild('floorForm') floorForm: NgForm;
 
@@ -28,13 +27,14 @@ export class FloorComponent implements OnInit {
     this.newFloor();
     this.route.params
     // (+) converts string 'id' to a number
-      .subscribe((params: Params) => {
-        this.buildingId = +params['id'];
-        this.floorService.getFloors(this.buildingId).subscribe((result: any) => {
-          this.floors = result.floors;
-          this.newFloor();
-        });
-      });
+    .subscribe((params: Params) => {
+      this.buildingId = +params['buildingId'];
+        this.complexId = +params['complexId'];
+      this.floorService.getFloors(this.buildingId).subscribe((result: any) => {
+        this.floors = result.floors;
+
+      this.newFloor();
+    });});
     this.translate.setDefaultLang('en');
   }
 
@@ -42,7 +42,8 @@ export class FloorComponent implements OnInit {
               private dialog: MdDialog,
               private toast: ToastService,
               public translate: TranslateService,
-              private route: ActivatedRoute) {
+              private route: ActivatedRoute,
+              private router: Router) {
   }
 
   editFloor(floor: Floor): void {
@@ -89,6 +90,11 @@ export class FloorComponent implements OnInit {
     });
   }
 
+  saveFloor(floor: Floor): void {
+    this.floorService.updateFloor(floor).subscribe(() => {
+      this.toast.showSuccess('floor.save.success');
+    }, (msg: string) => {
+      this.toast.showFailure(msg);
 
   rearrangeFloors(): void {
     for (let i = 0; i < this.floors.length; i++) {
@@ -124,6 +130,10 @@ export class FloorComponent implements OnInit {
       }
     }
     return result;
+  }
+
+  openMap(floor: Floor): void {
+    this.router.navigate(['/complexes', this.complexId, 'buildings', this.buildingId, 'floors', floor.id, 'map']);
   }
 
   private newFloor(): void {

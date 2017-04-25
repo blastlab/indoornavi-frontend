@@ -3,4 +3,5 @@ export interface Floor {
   level: number;
   name: string;
   buildingId: number;
+  imageId?: number;
 }

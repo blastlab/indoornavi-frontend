@@ -15,6 +15,10 @@ export class FloorService {
     return this.httpService.doGet('buildings/' + buildingId + '/' + this.floorsUrl);
   }
 
+  getFloor(floorId: number): Observable<Floor> {
+    return this.httpService.doGet(this.floorsUrl + floorId);
+  }
+
   addFloor(floor: Floor): Observable<Floor> {
     return this.httpService.doPost(this.floorsUrl, floor);
   }
@@ -30,5 +34,4 @@ export class FloorService {
   removeFloor(id: number, buildingId: number): Observable<any> {
     return this.httpService.doDelete(this.floorsUrl + id);
   }
-
 }
