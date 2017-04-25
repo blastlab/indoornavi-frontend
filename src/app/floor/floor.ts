@@ -57,7 +57,7 @@ export class FloorComponent implements OnInit {
       if (newFloor !== undefined) {
         floor.name = newFloor.name;
         floor.level = newFloor.level;
-        this.updateFloor(floor);
+        this.toast.showSuccess('floor.create.success');
       }
       this.dialogRef = null;
     });
@@ -67,14 +67,6 @@ export class FloorComponent implements OnInit {
     this.floorService.removeFloor(this.floors[index].id, this.buildingId).subscribe(() => {
       this.floors.splice(index, 1);
       this.toast.showSuccess('floor.remove.success');
-    }, (msg: string) => {
-      this.toast.showFailure(msg);
-    });
-  }
-
-  updateFloor(floorToUpdate: Floor): void {
-    this.floorService.updateFloor(floorToUpdate).subscribe((floor: Floor) => {
-      this.toast.showSuccess('floor.save.success');
     }, (msg: string) => {
       this.toast.showFailure(msg);
     });
@@ -90,18 +82,13 @@ export class FloorComponent implements OnInit {
 
     this.dialogRef.afterClosed().subscribe(floor => {
       if (floor !== undefined) {
-        this.saveFloor(floor);
+        this.floors.push(floor);
+        this.toast.showSuccess('floor.create.success');
       }
       this.dialogRef = null;
     });
   }
 
-  saveFloor(floor: Floor) {
-    this.floorService.addFloor(floor).subscribe((newFloor: Floor) => {
-      this.floors.push(newFloor);
-      this.toast.showSuccess('floor.create.success');
-    });
-  }
 
   rearrangeFloors(): void {
     for (let i = 0; i < this.floors.length; i++) {
@@ -122,10 +109,13 @@ export class FloorComponent implements OnInit {
         this.floors[i].level = parseInt(<any>this.floors[i - 1].level, 10) + 1;
       }
     }
+    this.floorService.updateFloors(this.floors).subscribe(() => {
+      this.toast.showSuccess('floor.order.success');
+    });
   }
 
   private getCurrentMaxLevel(): number {
-    let result = 0;
+    let result = -1;
     let floorLevel: number;
     for (const floorData of this.floors) {
       floorLevel = parseInt(<any>floorData.level, 10);

@@ -14,6 +14,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {HttpModule} from '@angular/http';
 import {ActivatedRoute} from '@angular/router';
 import {DndModule} from 'ng2-dnd';
+import {Floor} from './floor.type';
 
 describe('FloorComponent', () => {
 
@@ -63,34 +64,6 @@ describe('FloorComponent', () => {
     // expect(component.building).toContain({'name': ''});
   }));
 
-  it('should add new floor to list when form is valid', () => {
-    // given
-    const newFloorName = 'some name';
-    spyOn(floorService, 'addFloor').and.returnValue(Observable.of({'name': newFloorName}));
-    const isValid = true;
-
-    // when
-    component.saveFloor({'level': 0, name: newFloorName, buildingId: 1});
-
-    // then
-    expect(floorService.addFloor).toHaveBeenCalled();
-    expect(toastService.showSuccess).toHaveBeenCalled();
-
-    expect(component.floors.length).toEqual(1);
-    expect(component.floors).toContain({'name': newFloorName});
-  });
-
-  it('should NOT add new floor to list when form is invalid', () => {
-    // given
-    const isValid = false;
-
-    // when
-    component.saveFloor({'level': 0, name: 'someName', buildingId: 1});
-
-    // then
-    expect(component.floors.length).toEqual(0);
-  });
-
   it('should remove floor from list', () => {
     // given
     const newFloorName = 'some name';
@@ -128,7 +101,6 @@ describe('FloorComponent', () => {
     const newFloorName = 'some new name';
     component.floors = [{'level': 0, name: oldFloorName, buildingId: 1}];
     spyOn(dialog, 'open').and.callThrough();
-    spyOn(floorService, 'updateFloor').and.returnValue(Observable.of({name: newFloorName}));
 
     // when
     component.editFloor(component.floors[0]);
@@ -137,7 +109,6 @@ describe('FloorComponent', () => {
     // then
     expect(component.floors.length).toEqual(1);
     expect(component.floors[0].name).toEqual(newFloorName);
-    expect(floorService.updateFloor).toHaveBeenCalled();
   });
 
   it('should NOT set new floor name when dialog closes without value', () => {
@@ -154,6 +125,31 @@ describe('FloorComponent', () => {
     // then
     expect(component.floors[0].name).toEqual(oldFloorName);
     expect(floorService.updateFloor).toHaveBeenCalledTimes(0);
+  });
+
+  it('should open dialog to create new floor', () => {
+    // given
+    spyOn(dialog, 'open').and.callThrough();
+
+    // when
+    component.openDialog();
+
+    // then
+    expect(component.dialogRef.componentInstance.floor).toBeDefined();
+    expect(dialog.open).toHaveBeenCalled();
+  });
+
+  it('should create new floor when dialog closes with value', () => {
+    // given
+    const expectedFloor: Floor = {id: 1, level: 1, name: "test", buildingId: 1};
+    spyOn(dialog, 'open').and.callThrough();
+
+    // when
+    component.openDialog();
+    component.dialogRef.close(expectedFloor);
+
+    // then
+    expect(toastService.showSuccess).toHaveBeenCalled();
   });
 
   describe('when we want to update floor numbers', () => {
