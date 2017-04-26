@@ -32,7 +32,6 @@ export class FloorComponent implements OnInit {
         this.complexId = +params['complexId'];
         this.floorService.getFloors(this.buildingId).subscribe((result: any) => {
           this.floors = result.floors;
-
           this.newFloor();
         });
       });
