@@ -2,8 +2,9 @@
   position: absolute;
   top: 0;
   left: 0;
-  background: rgba(132,0,13,.2);
+  background: rgba(132, 0, 13, .2);
 }
+
 .svg-container {
   display: inline-block;
   position: relative;
@@ -12,6 +13,7 @@
   vertical-align: top;
   overflow: hidden;
 }
+
 .svg-content-responsive {
   display: inline-block;
   position: absolute;

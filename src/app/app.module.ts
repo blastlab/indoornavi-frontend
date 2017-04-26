@@ -33,6 +33,7 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 import {ImageUploadModule} from 'angular2-image-upload';
 import {MapControllerComponent} from './map/map.controller';
 import {MapViewerComponent} from './map/map.viewer';
+import {MapEditorComponent} from './map/map.editor';
 import {MapUploaderComponent} from './map/map.uploader';
 import {MapService} from './map/map.service';
 
@@ -69,6 +70,7 @@ export function HttpLoaderFactory(http: Http) {
     TagComponent,
     MapControllerComponent,
     MapViewerComponent,
+    MapEditorComponent,
     MapUploaderComponent
   ],
   entryComponents: [

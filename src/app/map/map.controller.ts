@@ -4,10 +4,12 @@ import {FloorService} from '../floor/floor.service';
 import {Floor} from '../floor/floor.type';
 
 @Component({
-  templateUrl: 'map.controller.html'
+  templateUrl: 'map.controller.html',
+  styleUrls: ['./map.css']
 })
 export class MapControllerComponent implements OnInit {
   imageUploaded: boolean;
+  editing: boolean;
   floor: Floor;
 
   constructor(private route: ActivatedRoute,
@@ -28,5 +30,9 @@ export class MapControllerComponent implements OnInit {
   onImageUploaded(floor: Floor): void {
     this.imageUploaded = true;
     this.floor = floor;
+  }
+
+  toggleEdit(): void {
+    this.editing = !this.editing;
   }
 }

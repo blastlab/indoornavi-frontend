@@ -14,18 +14,19 @@
     <td class="floor-level">{{floor.level}}</td>
     <td class="floor-name">{{floor.name}}</td>
     <td>
-      <button class="" (click)="openMap(floor)" md-mini-fab md-tooltip="{{'go.to.map'|translate}}" mdTooltipPosition="above">
+      <button class="open-map-button" (click)="openMap(floor)" md-mini-fab md-tooltip="{{'go.to.map'|translate}}"
+              mdTooltipPosition="above">
         <i class="material-icons">map</i>
       </button>
     </td>
     <td>
-      <button class="floor-edit-button" (click)="editFloor(floor)" md-mini-fab md-tooltip="{{'edit'|translate}}"
-              mdTooltipPosition="above">
+      <button class="floor-edit-button" (click)="editFloor(floor)" md-mini-fab
+              md-tooltip="{{'edit'|translate}}" mdTooltipPosition="above">
         <i class="material-icons">mode_edit</i>
       </button>
     </td>
     <td>
-      <button class="floor-remove-button" (click)="removeFloor(i)" md-mini-fab md-mini-fab
+      <button class="floor-remove-button" (click)="removeFloor(i)" md-mini-fab
               md-tooltip="{{'remove'|translate}}" mdTooltipPosition="above">
         <i class="material-icons">delete</i>
       </button>

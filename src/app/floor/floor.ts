@@ -23,6 +23,14 @@ export class FloorComponent implements OnInit {
 
   @ViewChild('floorForm') floorForm: NgForm;
 
+  constructor(private floorService: FloorService,
+              private dialog: MdDialog,
+              private toast: ToastService,
+              public translate: TranslateService,
+              private route: ActivatedRoute,
+              private router: Router) {
+  }
+
   ngOnInit(): void {
     this.newFloor();
     this.route.params
@@ -36,14 +44,6 @@ export class FloorComponent implements OnInit {
         });
       });
     this.translate.setDefaultLang('en');
-  }
-
-  constructor(private floorService: FloorService,
-              private dialog: MdDialog,
-              private toast: ToastService,
-              public translate: TranslateService,
-              private route: ActivatedRoute,
-              private router: Router) {
   }
 
   editFloor(floor: Floor): void {
@@ -65,7 +65,7 @@ export class FloorComponent implements OnInit {
   }
 
   removeFloor(index: number): void {
-    this.floorService.removeFloor(this.floors[index].id, this.buildingId).subscribe(() => {
+    this.floorService.removeFloor(this.floors[index].id).subscribe(() => {
       this.floors.splice(index, 1);
       this.toast.showSuccess('floor.remove.success');
     }, (msg: string) => {

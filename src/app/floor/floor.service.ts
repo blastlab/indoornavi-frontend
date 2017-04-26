@@ -31,12 +31,7 @@ export class FloorService {
     return this.httpService.doPut(this.floorsUrl, floors);
   }
 
-  removeFloor(id: number, buildingId: number): Observable<any> {
+  removeFloor(id: number): Observable<any> {
     return this.httpService.doDelete(this.floorsUrl + id);
   }
-
-  openFloor(floor: Floor): Observable<Floor> {
-    return this.httpService.doGet(this.floorsUrl + '/map');
-  }
-
 }

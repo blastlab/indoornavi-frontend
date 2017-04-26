@@ -1,4 +1,13 @@
 <div *ngIf="floor">
-  <app-map-viewer [floor]="floor" *ngIf="imageUploaded"></app-map-viewer>
+  <button class="view-map-button" *ngIf="editing" (click)="toggleEdit()" md-mini-fab
+          md-tooltip="{{'go.to.view'|translate}}" mdTooltipPosition="above">
+    <i class="material-icons">map</i>
+  </button>
+  <button class="edit-map-button" *ngIf="!editing" (click)="toggleEdit()" md-mini-fab
+          md-tooltip="{{'go.to.edit'|translate}}" mdTooltipPosition="above">
+    <i class="material-icons">edit</i>
+  </button>
+  <app-map-editor [floor]="floor" *ngIf="imageUploaded && editing"></app-map-editor>
+  <app-map-viewer [floor]="floor" *ngIf="imageUploaded && !editing"></app-map-viewer>
   <app-map-uploader [floor]="floor" *ngIf="!imageUploaded" (imageUploaded)="onImageUploaded($event)"></app-map-uploader>
 </div>
