@@ -12,12 +12,11 @@ export class MapEditorComponent extends MapViewerComponent implements OnInit {
   @Input() floor: Floor;
 
   constructor(public translate: TranslateService) {
-    super();
+    super();  // call to default constructor added implicitly
   }
 
   ngOnInit(): void {
-    this.drawImageOnCanvas(); // call to default constructor added implicitly
+    this.drawImageOnCanvas();
     this.translate.setDefaultLang('en');
   }
-
 }
