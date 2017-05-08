@@ -2,7 +2,7 @@ import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {Config} from '../../config';
 import * as d3 from 'd3';
 import {Floor} from '../floor/floor.type';
-import {Point} from './map.type';
+import {Point, Line} from './map.type';
 
 @Component({
   selector: 'app-map-viewer',
@@ -44,9 +44,12 @@ export class MapViewerComponent implements OnInit {
       .attr('width', width)
       .attr('height', height)
       .on('click', this.SvgClick);
-    this.redraw();
+    this.redrawMap();
   }
-  private redraw = (): void => {
+  private redrawMap = (): void => {
+    this.drawPoints();
+  }
+  private drawPoints = (): void => {
     const points = d3.select('#map').selectAll('circle');
     points.data(this.pointsTable).enter()
       .append('svg:circle')
@@ -54,19 +57,20 @@ export class MapViewerComponent implements OnInit {
       })
       .attr('cy', function(d){return d.y;
       })
-      .attr('r', 7)
+      .attr('r', 10)
       .style('fill', 'black')
-      .style('stroke', 'yellow');
+      .style('stroke', 'yellow')
+      .style('opacity', 0.6);
     points.exit()
       .remove();
   }
   private SvgClick = (): void => {
     const coords = [d3.event.offsetX, d3.event.offsetY];
-    this.drawPoints(coords[0], coords[1]);
+    this.addPoint(coords[0], coords[1]);
   }
-  private drawPoints(x, y): void {
+  private addPoint(x, y): void {
     const coords = <Point>{x: x, y: y};
     this.pointsTable.push(coords);
-    this.redraw();
+    this.drawPoints();
   }
 }
