@@ -14,12 +14,12 @@ export class MapViewerComponent implements OnInit {
   @Input() floor: Floor;
   private w: Array<number> = [window.innerWidth];
   private h: Array<number> = [window.innerHeight];
-  protected pointsTable: Array<Point> = [{x: 100, y: 100},
+  protected pointsTable: Array<Point> = [/*{x: 100, y: 100},
     {x: 110, y: 150},
     {x: 120, y: 140},
     {x: 230, y: 130},
     {x: 140, y: 220},
-    {x: 150, y: 110}];
+    {x: 150, y: 110}*/];
 
   ngOnInit(): void {
     this.drawImageOnCanvas();
@@ -42,8 +42,8 @@ export class MapViewerComponent implements OnInit {
     d3.select('#map-container').append('svg')
       .attr('id', 'map')
       .attr('width', width)
-      .attr('height', height)
-      .on('click', this.SvgClick);
+      .attr('height', height);
+      // .on('click', this.SvgClick);
     this.redrawMap();
   }
   private redrawMap = (): void => {
@@ -64,7 +64,7 @@ export class MapViewerComponent implements OnInit {
     points.exit()
       .remove();
   }
-  private SvgClick = (): void => {
+  /*private SvgClick = (): void => {
     const coords = [d3.event.offsetX, d3.event.offsetY];
     this.addPoint(coords[0], coords[1]);
   }
@@ -72,5 +72,5 @@ export class MapViewerComponent implements OnInit {
     const coords = <Point>{x: x, y: y};
     this.pointsTable.push(coords);
     this.drawPoints();
-  }
+  }*/
 }

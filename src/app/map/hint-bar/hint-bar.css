@@ -9,9 +9,9 @@
   left: 20%;
 }
 .message p {
-  text-align: left;
+  float: left;
   vertical-align: middle;
 }
-#coords .message p {
-  text-align: right;
+.message #coords p {
+  float: right;
 }

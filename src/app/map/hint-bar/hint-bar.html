@@ -1,0 +1,9 @@
+<div id="hint-bar">
+  <div class="message">
+    <p *ngIf="toolName != 'NONE'">{{toolName}}: {{toolMsg}}</p>
+    <p *ngIf="toolName === 'NONE'">{{hintMsg}}</p>
+  <span id="coords">
+    <p>({{tool}}, {{tool}})</p>
+  </span>
+  </div>
+</div>

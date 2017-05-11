@@ -1,4 +1,4 @@
-export const enum ToolsEnum {
+export enum ToolsEnum {
   NONE = 0,
   SCALE,
   DEVICE,
