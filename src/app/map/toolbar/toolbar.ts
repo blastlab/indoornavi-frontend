@@ -1,5 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {ToolsEnum} from './tools/tools.enum';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {Tool} from './tools/tool';
 
 @Component({
@@ -8,22 +7,31 @@ import {Tool} from './tools/tool';
   styleUrls: ['./toolbar.css']
 })
 export class ToolbarComponent implements OnInit {
-  @Output() selectedTool: EventEmitter<ToolsEnum> = new EventEmitter<ToolsEnum>();
+  @Output() selectedTool: EventEmitter<Tool> = new EventEmitter<Tool>();
+  @Output() hint: EventEmitter<String> = new EventEmitter<String>();
   activeTool: Tool;
-  constructor() { }
+
+  constructor() {
+  }
 
   ngOnInit() {
   }
+
   public setTool(eventTool: Tool): void {
+    const activate: boolean = (this.activeTool !== eventTool);
     if (!!this.activeTool) {
-      // eventTool.setInactive();
-      // this.activeTool = null;
-      if (this.activeTool === eventTool) {
-      } else {
-      }
+      eventTool.setInactive();
+      this.activeTool = null;
+    }
+    if (activate) {
+      eventTool.setActive();
+      this.activeTool = eventTool;
+    }
+    if (!!this.activeTool) {
+      this.selectedTool.emit(eventTool);
+      this.hint.emit(eventTool.hintMessage);
     } else {
-      // eventTool.setActive();
-      // this.activeTool = eventTool;
+      this.selectedTool.emit(null);
     }
   }
 }

@@ -2,14 +2,14 @@ import {Component, Input, OnInit} from '@angular/core';
 import {ActivatedRoute, Params} from '@angular/router';
 import {FloorService} from '../floor/floor.service';
 import {Floor} from '../floor/floor.type';
-import {ToolsEnum} from './toolbar/tools/tools.enum';
+import {Tool} from './toolbar/tools/tool';
 
 @Component({
   templateUrl: 'map.controller.html',
   styleUrls: ['./map.css']
 })
 export class MapControllerComponent implements OnInit {
-  @Input() activeTool: ToolsEnum = ToolsEnum.NONE;
+  @Input() activeTool: Tool;
   imageUploaded: boolean;
   editing: boolean;
   floor: Floor;
@@ -34,10 +34,7 @@ export class MapControllerComponent implements OnInit {
     this.floor = floor;
   }
 
-  /*toggleEdit(): void {
-    this.editing = !this.editing;
-  }*/
-  setTool(eventData: ToolsEnum): void {
+  setTool(eventData: Tool): void {
     this.activeTool = eventData;
   }
 }

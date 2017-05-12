@@ -1,14 +1,5 @@
 <div *ngIf="floor">
-  <!--<button class="view-map-button" *ngIf="editing" (click)="toggleEdit()" md-mini-fab
-          md-tooltip="{{'go.to.view'|translate}}" mdTooltipPosition="above">
-    <i class="material-icons">map</i>
-  </button>
-  <button class="edit-map-button" *ngIf="!editing" (click)="toggleEdit()" md-mini-fab
-          md-tooltip="{{'go.to.edit'|translate}}" mdTooltipPosition="above">
-    <i class="material-icons">edit</i>
-  </button>-->
   <app-toolbar (selectedTool)="setTool($event)" *ngIf="imageUploaded"></app-toolbar>
-  <!--<app-map-editor [floor]="floor" *ngIf="imageUploaded && editing"></app-map-editor>-->
   <app-map-viewer [floor]="floor" *ngIf="imageUploaded && !editing"></app-map-viewer>
   <app-hint-bar [tool]="activeTool" *ngIf="imageUploaded"></app-hint-bar>
   <app-map-uploader [floor]="floor" *ngIf="!imageUploaded" (imageUploaded)="onImageUploaded($event)"></app-map-uploader>

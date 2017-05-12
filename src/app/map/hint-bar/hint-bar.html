@@ -1,9 +1,8 @@
 <div id="hint-bar">
   <div class="message">
-    <p *ngIf="toolName != 'NONE'">{{toolName}}: {{toolMsg}}</p>
-    <p *ngIf="toolName === 'NONE'">{{hintMsg}}</p>
+    <p><strong *ngIf="toolName != 'NONE'">{{toolName}}: </strong>{{hintMsg}}</p>
   <span id="coords">
-    <p>({{tool}}, {{tool}})</p>
+    <!--<p>({{mousePos.x}}, {{mousePos.y}})</p>-->
   </span>
   </div>
 </div>
