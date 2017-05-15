@@ -21,6 +21,7 @@ export class ScaleComponent implements Tool {
   }
 
   public toolClicked(): void {
+    this.setTranslations();
     this.clickedTool.emit(this);
   }
 
@@ -32,6 +33,13 @@ export class ScaleComponent implements Tool {
   public setInactive(): void {
     this.hideScale();
     this.active = false;
+  }
+
+  private setTranslations() {
+    this.translate.setDefaultLang('en');
+    this.translate.get('click.at.map.to.set.scale').subscribe((value: string) => {
+      this.hintMessage = value;
+    });
   }
 
   private startDrawingScale(): void {
