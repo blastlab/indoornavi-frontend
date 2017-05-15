@@ -36,8 +36,9 @@ import {MapViewerComponent} from './map/map.viewer';
 import {MapUploaderComponent} from './map/map.uploader';
 import {MapService} from './map/map.service';
 import {HintBarComponent} from './map/hint-bar/hint-bar';
-import { ToolbarComponent } from './map/toolbar/toolbar';
-import { ScaleComponent } from './map/toolbar/tools/scale/scale';
+import {ToolbarComponent} from './map/toolbar/toolbar';
+import {ScaleComponent} from './map/toolbar/tools/scale/scale';
+import {WizardComponent} from './map/toolbar/tools/wizard/wizard';
 
 
 const appRoutes: Routes = [
@@ -76,6 +77,7 @@ export function HttpLoaderFactory(http: Http) {
     HintBarComponent,
     ToolbarComponent,
     ScaleComponent,
+    WizardComponent,
   ],
   entryComponents: [
     ComplexDialogComponent,

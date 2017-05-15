@@ -11,8 +11,8 @@ import {TranslateService} from '@ngx-translate/core';
   styleUrls: ['./scale.css']
 })
 export class ScaleComponent implements Tool {
-  @Output() clickedTool: EventEmitter<Tool> = new EventEmitter<Tool>();
-  public hintMessage: String = 'Click at map to set scale.';
+  @Output() clickedScale: EventEmitter<Tool> = new EventEmitter<Tool>();
+  public hintMessage: String;
   // private scale: Scale;  // use for scale data
   public active: boolean = false;
   public toolEnum: ToolsEnum = ToolsEnum.SCALE; // used in hint-bar component as a toolName
@@ -22,7 +22,7 @@ export class ScaleComponent implements Tool {
 
   public toolClicked(): void {
     this.setTranslations();
-    this.clickedTool.emit(this);
+    this.clickedScale.emit(this);
   }
 
   public setActive(): void {
@@ -37,7 +37,7 @@ export class ScaleComponent implements Tool {
 
   private setTranslations() {
     this.translate.setDefaultLang('en');
-    this.translate.get('click.at.map.to.set.scale').subscribe((value: string) => {
+    this.translate.get('scale.basic.msg').subscribe((value: string) => {
       this.hintMessage = value;
     });
   }
@@ -55,7 +55,9 @@ export class ScaleComponent implements Tool {
   }
 
   private hideScale(): void {
-    d3.select('#map').style('cursor', 'default');
-    d3.select('#map').select('#scale').remove();
+    const map = d3.select('#map');
+    map.style('cursor', 'default');
+    map.select('#scale').remove();
+    map.on('click', null);
   }
 }

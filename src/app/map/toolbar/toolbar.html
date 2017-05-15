@@ -2,7 +2,10 @@
   <h2>Tools</h2>
   <ul class="tools-list">
     <li class="tool">
-      <app-scale (clickedTool)="setTool($event)"></app-scale>
+      <app-scale (clickedScale)="setTool($event)"></app-scale>
+    </li>
+    <li>
+      <app-wizard (clickedWizard)="setTool($event)"></app-wizard>
     </li>
   </ul>
 </div>

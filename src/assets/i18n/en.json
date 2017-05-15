@@ -14,7 +14,6 @@
 	"building.save.success": "Building has been saved.",
 	"cancel": "Cancel",
 	"choose.a.tool": "Choose a tool.",
-  "click.at.map.to.set.scale": "Click at map to set scale.",
 	"complex.confirm.to.remove": "Are you sure you want to remove the complex along with the buildings?",
 	"complex.create.success": "Complex has been created.",
 	"complex.header": "Your building complexes",
@@ -59,7 +58,10 @@
 	"S_000": "Unknown error occurred. Please contact support.",
 	"S_001": "Error. Object not found.",
 	"save": "Save",
-	"scale": "",
+	"scale.tooltip": "Scale",
+	"scale.basic.msg": "Click at map to set scale.",
 	"tag.header": "Tags",
-	"th.actions": "Actions"
+	"th.actions": "Actions",
+	"wizard.tooltip": "Wizard",
+	"wizard.first.message": "Place first sink and two anchors on the map."
 }
