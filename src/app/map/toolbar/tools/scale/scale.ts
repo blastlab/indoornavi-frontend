@@ -8,7 +8,7 @@ import {TranslateService} from '@ngx-translate/core';
 @Component({
   selector: 'app-scale',
   templateUrl: './scale.html',
-  styleUrls: ['./scale.css']
+  styleUrls: ['../tool.css', ]
 })
 export class ScaleComponent implements Tool {
   @Output() clickedScale: EventEmitter<Tool> = new EventEmitter<Tool>();

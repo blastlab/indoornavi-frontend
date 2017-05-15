@@ -7,7 +7,7 @@ import {TranslateService} from '@ngx-translate/core';
 @Component({
   selector: 'app-wizard',
   templateUrl: './wizard.html',
-  styleUrls: ['./wizard.css']
+  styleUrls: ['../tool.css']
 })
 export class WizardComponent implements Tool {
   @Output() clickedWizard: EventEmitter<Tool> = new EventEmitter<Tool>();
@@ -19,18 +19,17 @@ export class WizardComponent implements Tool {
   }
 
   public toolClicked(): void {
-    // connect to webSocket
     this.setTranslations();
     this.clickedWizard.emit(this);
   }
 
   public setActive(): void {
+    // connect to webSocket
     this.active = true;
-    console.log('wizard tool ON');
   }
 
   public setInactive(): void {
-    console.log('wizard tool OFF');
+    // save or break connection
     this.active = false;
   }
 
