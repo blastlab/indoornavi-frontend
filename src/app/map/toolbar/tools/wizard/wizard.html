@@ -1,4 +1,51 @@
 <button class="wizard-button" [ngClass]="{'active-tool' : active}" (click)="toolClicked()" md-mini-fab
         md-tooltip="{{'wizard.tooltip'|translate}}" mdTooltipPosition="left">
-  <i class="material-icons">power</i>
+  <i class="material-icons">device_hub</i>
 </button>
+
+<template>
+  <h3>{{wizardMsg}}</h3>
+  <md-spinner *ngIf="isLoading" mode="indeterminate" color="accent"></md-spinner>
+  <span *ngIf="wizardStep === 1">
+    <div class="dialog-select">
+      <md-select *ngIf="!isLoading" placeholder="{{'select.sink'|translate}}" [(ngModel)]="selected.sink" floatPlaceholder="never">
+        <md-option *ngFor="let sink of sinks" [value]="sink">{{ sink.name }} id:{{ sink.shortId }}</md-option>
+      </md-select>
+    </div>
+    <div class="dialog-action">
+      <button *ngIf="!selected.sink" class="dialog-cancel-button" (click)="wizardCanceled()" md-button>{{'cancel'|translate}}</button>
+      <button *ngIf="selected.sink" class="dialog-place-button" (click)="placeSink(selected.sink)" md-raised-button>{{'go.to.map'|translate}}</button>
+    </div>
+  </span>
+  <span *ngIf="wizardStep === 2">
+    <div class="dialog-select">
+      <md-select *ngIf="!isLoading" placeholder="{{'select.anchor'|translate}}" [(ngModel)]="selected.anchor1" floatPlaceholder="never">
+        <md-option *ngFor="let anchor of anchors" [value]="anchor">{{ anchor.name }} id:{{ anchor.shortId }}</md-option>
+      </md-select>
+    </div>
+    <div class="dialog-action">
+      <button *ngIf="!selected.anchor1" class="dialog-cancel-button" (click)="wizardCanceled()" md-button>{{'cancel'|translate}}</button>
+      <button *ngIf="selected.anchor1" class="dialog-place-button" (click)="placeAnchor(selected.anchor1)" md-raised-button>{{'go.to.map'|translate}}</button>
+    </div>
+  </span>
+  <span *ngIf="wizardStep === 3">
+    <div class="dialog-select">
+      <md-select *ngIf="!isLoading" placeholder="{{'select.anchor'|translate}}" [(ngModel)]="selected.anchor2" floatPlaceholder="never">
+        <md-option *ngFor="let anchor of anchors" [value]="anchor" [disabled]="anchor === selected.anchor1">{{ anchor.name }} id:{{ anchor.shortId }}</md-option>
+      </md-select>
+    </div>
+    <div class="dialog-action">
+      <button *ngIf="!selected.anchor2" class="dialog-cancel-button" (click)="wizardCanceled()" md-button>{{'cancel'|translate}}</button>
+      <button *ngIf="selected.anchor2" class="dialog-place-button" (click)="placeAnchor(selected.anchor2)" md-raised-button>{{'go.to.map'|translate}}</button>
+    </div>
+  </span>
+  <span *ngIf="wizardStep === 4">
+    <div class="dialog-action">
+      <!--<button class="dialog-wizard-button" (click)="manualAnchors()" md-raised-button>{{'set.manual'|translate}}</button>
+      <button class="dialog-wizard-button" (click)="wizardAnchors()" md-button>{{'let.wizard.place'|translate}}</button>-->
+    </div>
+  </span>
+
+</template>
+
+<app-accept-buttons <!--(decision)="decide($event)"--> [position]="{x: 100, y: 100}"></app-accept-buttons>

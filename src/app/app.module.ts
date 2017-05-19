@@ -3,7 +3,7 @@ import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {Http, HttpModule} from '@angular/http';
 import {ComplexComponent} from './complex/complex';
-import {MaterialModule} from '@angular/material';
+import {MaterialModule, MdDialogModule} from '@angular/material';
 import {ComplexService} from './complex/complex.service';
 import {ComplexDialogComponent} from './complex/complex.dialog';
 import {ComplexConfirmComponent} from './complex/complex.confirm';
@@ -39,6 +39,8 @@ import {HintBarComponent} from './map/hint-bar/hint-bar';
 import {ToolbarComponent} from './map/toolbar/toolbar';
 import {ScaleComponent} from './map/toolbar/tools/scale/scale';
 import {WizardComponent} from './map/toolbar/tools/wizard/wizard';
+import {DialogComponent} from './utils/dialog/dialog.component';
+import {AcceptButtonsComponent} from './utils/accept-buttons/accept-buttons';
 
 
 const appRoutes: Routes = [
@@ -78,6 +80,8 @@ export function HttpLoaderFactory(http: Http) {
     ToolbarComponent,
     ScaleComponent,
     WizardComponent,
+    DialogComponent,
+    AcceptButtonsComponent
   ],
   entryComponents: [
     ComplexDialogComponent,
@@ -86,9 +90,11 @@ export function HttpLoaderFactory(http: Http) {
     DeviceDialogComponent,
     BuildingConfirmComponent,
     FloorDialogComponent,
+    DialogComponent
   ],
   imports: [
     BrowserModule,
+    MdDialogModule,
     FormsModule,
     MaterialModule,
     HttpModule,
