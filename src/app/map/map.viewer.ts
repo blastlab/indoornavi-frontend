@@ -31,6 +31,7 @@ export class MapViewerComponent implements OnInit {
     };
     image.src = imageUrl;
   }
+
   private setupSVG = (width: number, height: number): void => {
     d3.select('#map-container').append('svg')
       .attr('id', 'map')
@@ -45,9 +46,11 @@ export class MapViewerComponent implements OnInit {
     const points = d3.select('#map').selectAll('circle');
     points.data(this.pointsTable).enter()
       .append('svg:circle')
-      .attr('cx', function(d){return d.x;
+      .attr('cx', function (d) {
+        return d.x;
       })
-      .attr('cy', function(d){return d.y;
+      .attr('cy', function (d) {
+        return d.y;
       })
       .attr('r', 10)
       .style('fill', 'black')

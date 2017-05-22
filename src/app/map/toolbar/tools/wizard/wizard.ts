@@ -12,7 +12,7 @@ import {ToastService} from '../../../../utils/toast/toast.service';
 import {DialogComponent} from '../../../../utils/dialog/dialog.component';
 import * as d3 from 'd3';
 import {Point} from '../../../map.type';
-import {AcceptButtonsComponent} from 'app/utils/accept-buttons/accept-buttons';
+import {AcceptButtonsService} from '../../../../utils/accept-buttons/accept-buttons.service';
 
 @Component({
   selector: 'app-wizard',
@@ -35,15 +35,14 @@ export class WizardComponent implements Tool {
 
   @ViewChild(TemplateRef) dialogTemplate: TemplateRef<any>;
 
-  @ViewChild(AcceptButtonsComponent) accButtons: AcceptButtonsComponent;
-
   dialogRef: MdDialogRef<DialogComponent>;
 
   constructor(private socketService: SocketService,
               public dialog: MdDialog,
               public translate: TranslateService,
               private toastService: ToastService,
-              private ngZone: NgZone) {
+              private ngZone: NgZone,
+              private _accButtons: AcceptButtonsService) {
   }
 
   private initSocket() {
@@ -94,6 +93,7 @@ export class WizardComponent implements Tool {
   }
   private wizardNextStep(decision: boolean) {
                                                                                   (decision) ? this.wizardStep++ : console.log('next step: ' + decision);
+    console.log(this.wizardStep);
     if (this.wizardStep <= 4 ) {
       this.isLoading = (this.wizardStep < 3);
       this.openDialog(); // cancellation possible -> after timeout shows list and lets place a device
@@ -113,18 +113,11 @@ export class WizardComponent implements Tool {
           });
           this.isLoading = false;
         } else {
-                                                                                                      console.log('Wizard was canceled');
         }
       }, (this.rdm(3000) + 2000));
     } else {
-                                                                                                          console.log('this was last step! all DONE, ready steady... 4br4(4d4br4');
       this.toolClicked();
     }
-    this.whichStep(); // like comment below
-  }
-  // for verification TODO delete this
-  protected whichStep() {
-                                                                                                          console.log('wizard step: ' + this.wizardStep);
   }
 
   private openDialog() {
@@ -152,8 +145,8 @@ export class WizardComponent implements Tool {
         .attr('id', ('sink' + selectedAnchor.shortId))
         .attr('class', 'wizardSink');
       const id = '#sink' + selectedAnchor.shortId;
-      map.select(id)
-        .append('circle')
+      const sink = map.select(id);
+      sink.append('circle')
         .attr('class', 'sinkMarker')
         .attr('cx', d3.event.offsetX)
         .attr('cy', d3.event.offsetY)
@@ -162,8 +155,7 @@ export class WizardComponent implements Tool {
       .style('opacity', 0.6);
       map.on('click', null);
       map.style('cursor', 'default');
-      // here append AcceptButtons component and set dependency on wizardNextStep
-      this.makeDecision();
+      this.makeDecision(d3.event.offsetX, d3.event.offsetY);
     });
   }
   public placeAnchor(selectedAnchor: AnchorDist) {
@@ -219,12 +211,24 @@ export class WizardComponent implements Tool {
         console.log(map.select('.suggestedPosition'));
         map.selectAll('.suggestedPosition').remove();
       }
-      this.makeDecision();
+      this.makeDecision(d3.event.offsetX, d3.event.offsetY);
+      console.log('anchor decision');
     });
   }
-  private makeDecision(): void {
-    this.accButtons.show({x: 100, y: 200}); // change to input and outpu data
-    this.wizardNextStep(true);
+  private makeDecision(eX, eY): void {
+    this._accButtons.publishCoordinates({x: eX, y: eY});
+    this._accButtons.publishVisibility(true);
+    this._accButtons.decision$.first().subscribe(
+      data => {
+        this.wizardNextStep(data);
+        console.log(data);
+      });
+  }
+  public manualAnchors() {
+    console.log('manualAnchors');
+  }
+  public wizardAnchors() {
+    console.log('wizardAnchors');
   }
 
 // below are 'protected' methods used to generate response as websocket // TODO delete comments

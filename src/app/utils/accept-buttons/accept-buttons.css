@@ -1,0 +1,17 @@
+#accept-buttons {
+  visibility: hidden;
+  position: absolute;
+}
+#accept-buttons.visible {
+  visibility: visible;
+}
+.decision {
+  position: relative;
+  top: 25px;
+}
+.positive {
+  left: -39px;
+}
+.negative {
+  left: -34px;
+}

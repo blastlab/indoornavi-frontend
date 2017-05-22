@@ -1,35 +1,36 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component} from '@angular/core';
 import {Point} from '../../map/map.type';
-import {AcceptButtons} from './accept-buttons.type';
+import {AcceptButtonsService} from './accept-buttons.service';
 
 @Component({
   selector: 'app-accept-buttons',
   templateUrl: './accept-buttons.html',
   styleUrls: ['./accept-buttons.css']
 })
-export class AcceptButtonsComponent implements AcceptButtons {
-  @Input() position: Point;
-  @Output() decision: EventEmitter<boolean> = new EventEmitter<boolean>();
-  public visibility: boolean;
+export class AcceptButtonsComponent {
+  public visible: boolean = false;
+  private coords$: Point;
 
-  constructor() {
-  }
-
-  public show(position: Point): void {
-    this.visibility = true;
-    console.log('showButtons');
-    console.log(position.x + 'btnsX: ' + this.position.x);
-    console.log(position.y + 'btnsY: ' + this.position.y);
+  constructor(private _accButtons: AcceptButtonsService) {
+    this._accButtons.coordinates$.subscribe(
+      data => {
+        this.coords$ = data;
+        const buttons = document.getElementById('accept-buttons');
+        buttons.style.top = this.coords$.y + 'px';
+        buttons.style.left = this.coords$.x + 'px';
+      });
+    this._accButtons.visibility$.subscribe(
+      data => {
+        this.visible = data;
+      });
   }
 
   public decide(decision: boolean): void {
-    this.decision.emit(decision);
-    console.log('decision: ' + this.decision);
+    this._accButtons.publishDecision(decision);
     this.hide();
   }
 
-  public hide(): void {
-    this.visibility = false;
-    console.log('hideButtons');
+  private hide(): void {
+    this.visible = false;
   }
 }

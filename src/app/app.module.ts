@@ -41,6 +41,7 @@ import {ScaleComponent} from './map/toolbar/tools/scale/scale';
 import {WizardComponent} from './map/toolbar/tools/wizard/wizard';
 import {DialogComponent} from './utils/dialog/dialog.component';
 import {AcceptButtonsComponent} from './utils/accept-buttons/accept-buttons';
+import {AcceptButtonsService} from './utils/accept-buttons/accept-buttons.service';
 
 
 const appRoutes: Routes = [
@@ -120,7 +121,8 @@ export function HttpLoaderFactory(http: Http) {
     WebSocketService,
     SocketService,
     DeviceService,
-    MapService
+    MapService,
+    AcceptButtonsService
   ], bootstrap: [AppComponent]
 })
 

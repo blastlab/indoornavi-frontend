@@ -41,11 +41,9 @@
   </span>
   <span *ngIf="wizardStep === 4">
     <div class="dialog-action">
-      <!--<button class="dialog-wizard-button" (click)="manualAnchors()" md-raised-button>{{'set.manual'|translate}}</button>
-      <button class="dialog-wizard-button" (click)="wizardAnchors()" md-button>{{'let.wizard.place'|translate}}</button>-->
+      <button class="dialog-wizard-button" (click)="manualAnchors()" md-raised-button>{{'set.manual'|translate}}</button>
+      <button class="dialog-wizard-button" (click)="wizardAnchors()" md-button>{{'let.wizard.place'|translate}}</button>
     </div>
   </span>
 
 </template>
-
-<app-accept-buttons <!--(decision)="decide($event)"--> [position]="{x: 100, y: 100}"></app-accept-buttons>

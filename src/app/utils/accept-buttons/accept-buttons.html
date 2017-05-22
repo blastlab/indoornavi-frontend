@@ -1,5 +1,4 @@
-<span>
- <!-- <button (click)="decide(true)">OK</button>
-  <button (click)="decide(false)">NO</button>-->
-  <p *ngIf="visibility">visi bleeeeeeeeee</p>
+<span id="accept-buttons"  [ngClass]="{'visible' : visible}">
+  <button class="decision positive" (click)="decide(true)" *ngIf="visible">OK</button>
+  <button class="decision negative" (click)="decide(false)" *ngIf="visible">NO</button>
 </span>
