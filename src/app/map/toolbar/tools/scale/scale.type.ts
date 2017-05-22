@@ -7,6 +7,6 @@ export enum MeasureEnum {
 export interface Scale {
   start: Point;
   stop: Point;
-  scale: number;
+  realDistance: number;
   measure: MeasureEnum;
 }

@@ -1,10 +1,14 @@
-import {Component, EventEmitter, Output} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {ToolsEnum} from '../tools.enum';
 import * as d3 from 'd3';
 import {Tool} from '../tool';
 import {TranslateService} from '@ngx-translate/core';
 import {MeasureEnum, Scale} from './scale.type';
 import {Line, Point} from '../../../map.type';
+import {FloorService} from '../../../../floor/floor.service';
+import {Floor} from '../../../../floor/floor.type';
+import {ActivatedRoute, Params} from '@angular/router';
+import {logger} from "codelyzer/util/logger";
 // import {Scale} from './scale.type';
 
 @Component({
@@ -12,7 +16,7 @@ import {Line, Point} from '../../../map.type';
   templateUrl: './scale.html',
   styleUrls: ['./scale.css']
 })
-export class ScaleComponent implements Tool {
+export class ScaleComponent implements Tool, OnInit {
   @Output() clickedTool: EventEmitter<Tool> = new EventEmitter<Tool>();
   public hintMessage: String = 'Click at map to set scale.';
   private scale: Scale;  // use for scale data
@@ -25,9 +29,31 @@ export class ScaleComponent implements Tool {
   private line;
   private start;
   private stop;
+  /*private buildingId;
+   private complexId;*/
+  private floorId;
+  private floor: Floor;
 
 
-  constructor(private translate: TranslateService) {
+  constructor(private translate: TranslateService,
+              private floorService: FloorService,
+              private route: ActivatedRoute) {
+  }
+
+  ngOnInit(): void {
+    this.route.params
+    // (+) converts string 'id' to a number
+      .subscribe((params: Params) => {
+        this.floorId = +params['floorId'];
+        console.log(this.floorId);
+        this.floorService.getFloor(this.floorId).subscribe((result: any) => {
+          // console.log(result);
+          this.scale = result.scale;
+          if (this.scale != null) {
+            this.drawInitialScale();
+          }
+        });
+      });
   }
 
   public toolClicked(): void {
@@ -83,6 +109,18 @@ export class ScaleComponent implements Tool {
 
   private onScroll = (): void => {
     this.setInputPosition();
+  }
+
+  private drawInitialScale() {
+    console.log(this.scale);
+    this.pointsArray.push(this.scale.start);
+    this.start = this.redrawPoints();
+    console.log(this.start);
+    this.pointsArray.push(this.scale.stop);
+    this.stop = this.redrawPoints();
+    // this.isScalaDisplayed = true;
+    this.linesArray.push(this.createLine());
+    this.createInput();
   }
 
   private addPoint = (): void => {
@@ -220,7 +258,6 @@ export class ScaleComponent implements Tool {
     } else if (unit === 'm') {
       measure = MeasureEnum.METERS;
     }
-    console.log(measure);
     const length: string = (<HTMLInputElement>document.getElementById('scaleInput')).value;
     const p1 = <Point>{
       x: this.start.attr('cx'),
@@ -231,33 +268,22 @@ export class ScaleComponent implements Tool {
       y: this.stop.attr('cy')
     };
     this.scale = this.createScale(p1, p2, length, measure);
-    console.log(this.scale);
     this.isScalaSet = true;
+    // I'm sending Scale but receiving whole Floor
+    this.floorService.setScale(this.floorId, this.scale).subscribe((floor: Floor) => {
+      alert('Scala saved');
+    });
     this.redrawInput();
-    // this.replaceInputWithText();
   };
 
   private createScale = (p1: Point, p2: Point, num: string, unit: number): Scale => {
     return <Scale>{
       start: p1,
       stop: p2,
-      scale: parseFloat(num),
+      realDistance: parseFloat(num),
       measure: unit
     };
   };
-
-  /*private replaceInputWithText = (): void => {
-   const scaleInputParent = document.getElementById('scaleInput').parentNode;
-   const scaleInput = document.getElementById('scaleInput');
-   // document.get
-   console.log(d3.select(scaleInputParent));
-   let text = document.createTextNode('Siema');
-   console.log(text);
-   console.log(d3.select(text));
-   // console.log(document.getElem('#text'));
-
-   scaleInputParent.replaceChild(text, scaleInput);
-   };*/
 
   private redrawInput = (): void => {
     this.setInputPosition();
@@ -265,19 +291,10 @@ export class ScaleComponent implements Tool {
 
   private setInputPosition = (): void => {
     let scale;
-    if (!this.isScalaSet) {
-      console.log('scala is not set');
-      scale = (<HTMLInputElement>document.getElementById('scaleInput'));
-    } else {
-      console.log('scala is set');
-      scale = document.getElementById('scaleText');
-      d3.select(scale).attr('textContent', 'siema')
-      console.log(d3.select(scale));
-    }
-
+    scale = (<HTMLInputElement>document.getElementById('scaleInput'));
     const unitSelect = (<HTMLInputElement>document.getElementById('unit'));
     const mapToolbar = document.getElementsByClassName('map-toolbar');
-    const canvas = document.getElementById('map-container');
+    const canvas = document.getElementById('map-container');//fin by id map toolbar
 
     const x = (parseInt(this.linesArray[0].p1.x.toString(), 10) + parseInt(this.linesArray[0].p2.x.toString(), 10)) / 2 + 110 - 30 - canvas.scrollLeft;
     const y = (parseInt(this.linesArray[0].p1.y.toString(), 10) + parseInt(this.linesArray[0].p2.y.toString(), 10)) / 2 - 30 - canvas.scrollTop;

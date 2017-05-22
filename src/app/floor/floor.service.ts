@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {Floor} from './floor.type';
 import {Observable} from 'rxjs/Rx';
 import {HttpService} from '../utils/http/http.service';
+import {Scale} from '../map/toolbar/tools/scale/scale.type';
 
 @Injectable()
 export class FloorService {
@@ -33,5 +34,9 @@ export class FloorService {
 
   removeFloor(id: number): Observable<any> {
     return this.httpService.doDelete(this.floorsUrl + id);
+  }
+
+  setScale(floorId: number, scale: Scale): Observable<Floor> {
+    return this.httpService.doPut(this.floorsUrl + floorId + '/scale', scale);
   }
 }
