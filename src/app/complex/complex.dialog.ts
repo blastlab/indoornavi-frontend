@@ -19,7 +19,7 @@ export class ComplexDialogComponent implements OnInit {
 
   save(valid: boolean): void {
     if (valid) {
-      this.dialogRef.close(this.complex);
+      this.close();
     }
   }
 
