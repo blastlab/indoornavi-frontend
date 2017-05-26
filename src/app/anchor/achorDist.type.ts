@@ -6,3 +6,7 @@ export interface AnchorDist extends Anchor {
   coords: Point;
   altCoords: Point;
 }
+export interface AnchorDistance {
+  anchorId: number;
+  distance: number;
+}

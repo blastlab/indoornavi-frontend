@@ -1,9 +1,9 @@
 #accept-buttons {
-  visibility: hidden;
+  display: none;
   position: absolute;
 }
 #accept-buttons.visible {
-  visibility: visible;
+  display: inline-block;
 }
 .decision {
   position: relative;

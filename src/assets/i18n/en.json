@@ -65,7 +65,7 @@
   "select.sink": "Select a sink.",
 	"tag.header": "Tags",
 	"th.actions": "Actions",
-  "wizard.dialog.before.step1": "Connect device.",
+  "wizard.dialog.before.step1": "Searching for devices.",
   "wizard.dialog.before.step2": "Waiting for list of anchors.",
   "wizard.dialog.before.step3": "Calculating last anchor position.",
   "wizard.dialog.before.step4": "Step 4",
