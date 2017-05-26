@@ -2,10 +2,14 @@
   position: absolute;
 }
 
-#scaleInput{
-  background-color: rgba(255,255,255,0.6);
+#scaleInput {
+  background-color: rgba(255, 255, 255, 0.6);
 }
 
 .hide-scale-input {
   display: none;
+}
+
+.select {
+  width: 140px;
 }

@@ -36,20 +36,28 @@ export class ScaleComponent implements Tool, OnInit {
   @Input() floor: Floor;
 
   constructor(private translate: TranslateService,
-              private floorService: FloorService,
-              private route: ActivatedRoute,
               private _scaleInput: ScaleInputService) {
   }
 
   ngOnInit(): void {
-    this._scaleInput.scale$.first().subscribe(
-      data => {
-        const scale = data;
-        scale.start = this.pointsArray[0];
-        scale.stop = this.pointsArray[1];
-        console.log(this.pointsArray);
-        this._scaleInput.publishScale(scale);
-      });
+    if (!!this.floor.scale) {
+      this.drawInitialScale();
+      this.isScalaSet = true;
+    } else {
+      this.isScalaSet = false;
+    }
+    console.log(this.floor.scale);
+  }
+
+  private drawInitialScale(): void {
+    this.pointsArray[0] = (this.floor.scale.start)
+    this.pointsArray[1] = this.floor.scale.stop;
+    const l = this.createLine();
+    this.linesArray[0] = l;
+    this.redrawInput();
+
+    this._scaleInput.publishScale(this.floor.scale);
+    console.log('skala istnieje');
   }
 
   public toolClicked(): void {
@@ -88,9 +96,12 @@ export class ScaleComponent implements Tool, OnInit {
 
     const mapBg = d3.select('#mapBg');
     mapBg.style('cursor', 'crosshair');
-    mapBg.on('click', function () {
-      scaleComponent.addPoint();
-    });
+
+    if (!this.isScalaSet) {
+      mapBg.on('click', function () {
+        scaleComponent.addPoint();
+      });
+    }
 
     const map = d3.select('#map')
       .append('g')
@@ -109,12 +120,15 @@ export class ScaleComponent implements Tool, OnInit {
     if (this.start == null) {
       this.pointsArray.push(p);
       this.start = this.redrawPoints();
+      // this.redrawEndings();
     } else if (this.stop == null) {
       this.pointsArray.push(p);
       const l = this.createLine();
       this.linesArray.push(l);
       this.stop = this.redrawPoints();
       this.redrawLine();
+      this.redrawInput();
+      // this.redrawEndings();
     }
   };
 
@@ -133,10 +147,11 @@ export class ScaleComponent implements Tool, OnInit {
     const newCircle = points.data(this.pointsArray).enter()
       .append('svg:circle')
       .attr('id', 'point')
-      .datum(function (d) {
-        d.lines = [];
-        return d;
-      })
+      .style('cursor', 'all-scroll')
+      /*.datum(function (d) {
+       // d.lines = [];
+       return d;
+       })*/
       .attr('cx', function (d) {
         return d.x;
       })
@@ -145,13 +160,13 @@ export class ScaleComponent implements Tool, OnInit {
       })
       .attr('r', 14)
       .style('fill', 'black')
-      .style('stroke', 'yellow')
-      .on('mouseover', function () {
-        d3.select(this).attr('fill-opacity', 0.3);
-      })
-      .on('mouseout', function () {
-        d3.select(this).attr('fill-opacity', 1);
-      })
+      .attr('fill-opacity', 0.1)
+      /*.on('mouseover', function () {
+       d3.select(this).attr('fill-opacity', 0.3);
+       })
+       .on('mouseout', function () {
+       d3.select(this).attr('fill-opacity', 1);
+       })*/
       .call(d3.drag()
         .on('drag', function () {
           scaleComponent.pointDrag(d3.select(this));
@@ -166,11 +181,12 @@ export class ScaleComponent implements Tool, OnInit {
     const scaleComponent = this;
     const group = d3.select('#pointGroup');
 
-    const lines = group.selectAll('line');
+    const lines = group.selectAll('#connectLine');
     lines.data(this.linesArray).enter()
       .append('svg:line')
+      .attr('id', 'connectLine')
+      .style('cursor', 'crosshair')
       .attr('x1', function (d) {
-        scaleComponent.isScalaDisplayed = true;
         return d.p1.x;
       })
       .attr('y1', function (d) {
@@ -182,8 +198,8 @@ export class ScaleComponent implements Tool, OnInit {
       .attr('y2', function (d) {
         return d.p2.y;
       })
-      .attr('stroke-width', 5)
-      .attr('stroke', 'green');
+      .attr('stroke-width', 1)
+      .attr('stroke', 'black');
 
     // update positions of old lines
     lines
@@ -201,6 +217,49 @@ export class ScaleComponent implements Tool, OnInit {
       });
   };
 
+  private redrawEndings = (): void => {
+    const group = d3.select('#pointGroup');
+
+    const endings = group.selectAll('#endings');
+    endings.data(this.pointsArray).enter()
+      .append('svg:line')
+      .attr('id', 'endings')
+      .style('cursor', 'crosshair')
+      .attr('x1', function (d) {
+        return d.x ;
+      })
+      .attr('y1', function (d) {
+        return d.y - 20;
+      })
+      .attr('x2', function (d) {
+        return d.x ;
+      })
+      .attr('y2', function (d) {
+        return d.y + 20;
+      })
+      .attr('transform', 'rotate(45 50 50)')
+      .attr('stroke-width', 1)
+      .attr('stroke', 'black');
+
+    endings
+      .attr('x1', function (d) {
+        return d.x ;
+      })
+      .attr('y1', function (d) {
+        return d.y - 20;
+      })
+      .attr('x2', function (d) {
+        return d.x ;
+      })
+      .attr('y2', function (d) {
+        return d.y + 20;
+      })
+      .attr('transform', 'rotate(1 [100 100])')
+
+  };
+
+
+
   private pointDrag = (circle): void => {
     circle
       .attr('cx', function (d) {
@@ -211,6 +270,7 @@ export class ScaleComponent implements Tool, OnInit {
       });
     this.redrawLine();
     this.redrawInput();
+    // this.redrawEndings();
   };
 
   private redrawInput = (): void => {

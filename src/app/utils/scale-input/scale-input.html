@@ -2,8 +2,8 @@
   <md-input-container class="example-full-width">
     <input mdInput placeholder="?" [(ngModel)]="scale.realDistance"/>
   </md-input-container>
-  <md-select placeholder="unit" [(ngModel)]="scale.measure">
+  <md-select placeholder="unit" [(ngModel)]="scale.measure" class="select">
     <md-option *ngFor="let measure of measures" [value]="measure">{{measure}}</md-option>
   </md-select>
-  <button md-button class="submitButton" (click)="submit()">OK</button>
+  <button md-button class="submitButton" (click)="submit()">Submit</button>
 </div>
