@@ -33,6 +33,7 @@ export class ScaleComponent implements Tool, OnInit {
   private line;
   private start;
   private stop;
+  private END_SIZE: number = 5;
   @Input() floor: Floor;
 
   constructor(private translate: TranslateService,
@@ -50,14 +51,13 @@ export class ScaleComponent implements Tool, OnInit {
   }
 
   private drawInitialScale(): void {
-    this.pointsArray[0] = (this.floor.scale.start)
+    this.pointsArray[0] = this.floor.scale.start;
     this.pointsArray[1] = this.floor.scale.stop;
-    const l = this.createLine();
-    this.linesArray[0] = l;
+    this.linesArray[0] = this.createLine();
     this.redrawInput();
+    this.redrawEndings();
 
     this._scaleInput.publishScale(this.floor.scale);
-    console.log('skala istnieje');
   }
 
   public toolClicked(): void {
@@ -109,6 +109,7 @@ export class ScaleComponent implements Tool, OnInit {
 
     this.redrawPoints();
     this.redrawLine();
+    this.redrawEndings();
   };
 
   private addPoint = (): void => {
@@ -120,7 +121,7 @@ export class ScaleComponent implements Tool, OnInit {
     if (this.start == null) {
       this.pointsArray.push(p);
       this.start = this.redrawPoints();
-      // this.redrawEndings();
+      this.redrawEndings();
     } else if (this.stop == null) {
       this.pointsArray.push(p);
       const l = this.createLine();
@@ -128,7 +129,7 @@ export class ScaleComponent implements Tool, OnInit {
       this.stop = this.redrawPoints();
       this.redrawLine();
       this.redrawInput();
-      // this.redrawEndings();
+      this.redrawEndings();
     }
   };
 
@@ -148,10 +149,6 @@ export class ScaleComponent implements Tool, OnInit {
       .append('svg:circle')
       .attr('id', 'point')
       .style('cursor', 'all-scroll')
-      /*.datum(function (d) {
-       // d.lines = [];
-       return d;
-       })*/
       .attr('cx', function (d) {
         return d.x;
       })
@@ -161,13 +158,8 @@ export class ScaleComponent implements Tool, OnInit {
       .attr('r', 14)
       .style('fill', 'black')
       .attr('fill-opacity', 0.1)
-      /*.on('mouseover', function () {
-       d3.select(this).attr('fill-opacity', 0.3);
-       })
-       .on('mouseout', function () {
-       d3.select(this).attr('fill-opacity', 1);
-       })*/
       .call(d3.drag()
+      // .clickDistance
         .on('drag', function () {
           scaleComponent.pointDrag(d3.select(this));
         })
@@ -178,7 +170,6 @@ export class ScaleComponent implements Tool, OnInit {
   };
 
   private redrawLine = (): void => {
-    const scaleComponent = this;
     const group = d3.select('#pointGroup');
 
     const lines = group.selectAll('#connectLine');
@@ -218,47 +209,71 @@ export class ScaleComponent implements Tool, OnInit {
   };
 
   private redrawEndings = (): void => {
+    const scaleComponent = this;
     const group = d3.select('#pointGroup');
 
     const endings = group.selectAll('#endings');
     endings.data(this.pointsArray).enter()
       .append('svg:line')
       .attr('id', 'endings')
-      .style('cursor', 'crosshair')
+      .attr('stroke-width', 1)
+      .attr('stroke', 'black')
       .attr('x1', function (d) {
-        return d.x ;
+        return d.x + scaleComponent.getVerticalEndingOffset();
       })
       .attr('y1', function (d) {
-        return d.y - 20;
+        return d.y + scaleComponent.getHorizontalEndingOffset();
       })
       .attr('x2', function (d) {
-        return d.x ;
+        return d.x - scaleComponent.getVerticalEndingOffset();
       })
       .attr('y2', function (d) {
-        return d.y + 20;
+        return d.y - scaleComponent.getHorizontalEndingOffset();
       })
-      .attr('transform', 'rotate(45 50 50)')
-      .attr('stroke-width', 1)
-      .attr('stroke', 'black');
+      .attr('transform', function (d) {
+        const rotation = 90;
+        return 'rotate(' + rotation + ' ' + d.x + ' ' + d.y + ')';
+      });
 
     endings
       .attr('x1', function (d) {
-        return d.x ;
+        return d.x + scaleComponent.getVerticalEndingOffset();
       })
       .attr('y1', function (d) {
-        return d.y - 20;
+        return d.y + scaleComponent.getHorizontalEndingOffset();
       })
       .attr('x2', function (d) {
-        return d.x ;
+        return d.x - scaleComponent.getVerticalEndingOffset();
       })
       .attr('y2', function (d) {
-        return d.y + 20;
+        return d.y - scaleComponent.getHorizontalEndingOffset();
       })
-      .attr('transform', 'rotate(1 [100 100])')
+      .attr('transform', function (d) {
+        const rotation = 90;
+        return 'rotate(' + rotation + ' ' + d.x + ' ' + d.y + ')';
+      });
+
 
   };
 
+  private getLineSlope = (): number => {
+    const x1 = this.linesArray[0].p1.x;
+    const y1 = this.linesArray[0].p1.y;
+    const x2 = this.linesArray[0].p2.x;
+    const y2 = this.linesArray[0].p2.y;
 
+    return (y1 - y2) / (x1 - x2);
+  };
+
+  private getHorizontalEndingOffset = (): number =>{
+    const slope = this.getLineSlope();
+    return this.END_SIZE * Math.sin(Math.atan(slope));
+  }
+
+  private getVerticalEndingOffset = (): number =>{
+    const slope = this.getLineSlope();
+    return this.END_SIZE * Math.cos(Math.atan(slope));
+  }
 
   private pointDrag = (circle): void => {
     circle
@@ -270,7 +285,7 @@ export class ScaleComponent implements Tool, OnInit {
       });
     this.redrawLine();
     this.redrawInput();
-    // this.redrawEndings();
+    this.redrawEndings();
   };
 
   private redrawInput = (): void => {

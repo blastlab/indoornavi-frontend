@@ -55,7 +55,6 @@ export class ScaleInputComponent implements OnInit {
 
   public submit() {
     console.log(this.scale);
-    console.log(this.scale.realDistance);
     this.floorService.setScale(this.floorId, this.scale).subscribe((floor: Floor) => {
     })
   }
