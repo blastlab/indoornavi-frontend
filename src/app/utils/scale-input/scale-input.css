@@ -1,9 +1,11 @@
 .show-scale-input {
   position: absolute;
+  display: flex;
+  transform: scale(0.75);
 }
 
 #scaleInput {
-  background-color: rgba(255, 255, 255, 0.6);
+  background-color: rgba(255, 255, 255, 0.8);
 }
 
 .hide-scale-input {
@@ -12,4 +14,16 @@
 
 .select {
   width: 140px;
+  padding-top: 10px;
+}
+
+.input {
+  width: 100px;
+}
+
+.submitButton{
+  width: 10px;
+}
+.md-button {
+  width: 10px;
 }

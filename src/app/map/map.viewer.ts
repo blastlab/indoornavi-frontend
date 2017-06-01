@@ -12,7 +12,9 @@ import {Point, Line} from './map.type';
 export class MapViewerComponent implements OnInit {
   @ViewChild('canvas') canvas: ElementRef;
   @Input() floor: Floor;
+  imageLoaded: boolean = false;
   protected pointsTable: Array<Point> = [];
+
 
   ngOnInit(): void {
     this.drawImageOnCanvas();
@@ -28,11 +30,13 @@ export class MapViewerComponent implements OnInit {
       canvas.height = image.height;
       ctx.drawImage(image, 0, 0);
       this.setupSVG(image.width, image.height);
+      this.imageLoaded = true;
     };
     image.src = imageUrl;
   }
 
   private setupSVG = (width: number, height: number): void => {
+    console.log('setup svg');
     d3.select('#map-container').append('svg')
       .attr('id', 'map')
       .attr('width', width)
@@ -43,6 +47,9 @@ export class MapViewerComponent implements OnInit {
       .attr('width', width)
       .attr('height', height)
       .attr('opacity', 0);
+
+    this.prepareScaleHint();
+
     this.redrawMap();
   };
   private redrawMap = (): void => {
@@ -64,5 +71,16 @@ export class MapViewerComponent implements OnInit {
       .style('opacity', 0.6);
     points.exit()
       .remove();
-  }
+  };
+
+  private prepareScaleHint = (): void => {
+    const scaleHint = d3.select('#scaleHint');
+    scaleHint
+      .on('mouseover', function () {
+        d3.select('#scaleGroup').style('display', 'flex');
+      })
+      .on('mouseout', function () {
+        d3.select('#scaleGroup').style('display', 'none');
+      })
+  };
 }

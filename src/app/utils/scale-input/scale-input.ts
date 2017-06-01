@@ -2,9 +2,12 @@ import {Component, OnInit} from '@angular/core';
 import {Point} from '../../map/map.type';
 import {ScaleInputService} from './scale-input.service';
 import {MeasureEnum, Scale} from '../../map/toolbar/tools/scale/scale.type';
-import {ActivatedRoute, Params} from "@angular/router";
-import {FloorService} from "../../floor/floor.service";
-import {Floor} from "../../floor/floor.type";
+import {ActivatedRoute, Params} from '@angular/router';
+import {FloorService} from '../../floor/floor.service';
+import {Floor} from '../../floor/floor.type';
+import {logger} from 'codelyzer/util/logger';
+import {ToastService} from '../toast/toast.service';
+import {ScaleHintService} from '../scale-hint/scale-hint.service';
 
 @Component({
   selector: 'app-scale-input',
@@ -25,8 +28,10 @@ export class ScaleInputComponent implements OnInit {
   public measures = [];
 
   constructor(private _scaleInput: ScaleInputService,
+              private _scaleHint: ScaleHintService,
               private route: ActivatedRoute,
-              private floorService: FloorService) {
+              private floorService: FloorService,
+              private toast: ToastService) {
     this._scaleInput.coordinates$.subscribe(
       data => {
         this.coords$ = data;
@@ -49,13 +54,25 @@ export class ScaleInputComponent implements OnInit {
     this.measures = objValues.filter(v => typeof v === 'string') as string[];
     this.route.params.subscribe((params: Params) => {
       this.floorId = +params['floorId'];
-      console.log(this.floorId);
     });
   }
 
-  public submit() {
-    console.log(this.scale);
-    this.floorService.setScale(this.floorId, this.scale).subscribe((floor: Floor) => {
-    })
+  public save(valid: boolean) {
+    if (valid) {
+      if (!this.scale.measure) {
+        this.toast.showFailure('scale.measureNotSet');
+        return;
+      }
+      this.floorService.setScale(this.floorId, this.scale).subscribe((floor: Floor) => {
+      },
+        (errorCode: string) => {
+          console.log(errorCode);
+          this.toast.showFailure(errorCode);
+        });
+      this.toast.showSuccess('scale.set.success');
+      this._scaleHint.publishScale(this.scale);
+    } else {
+      this.toast.showFailure('scale.mustBeInteger');
+    }
   }
 }

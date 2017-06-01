@@ -40,6 +40,8 @@ import { ToolbarComponent } from './map/toolbar/toolbar';
 import { ScaleComponent } from './map/toolbar/tools/scale/scale';
 import { ScaleInputComponent } from './utils/scale-input/scale-input';
 import {ScaleInputService} from './utils/scale-input/scale-input.service';
+import { ScaleHintComponent } from './utils/scale-hint/scale-hint';
+import { ScaleHintService } from './utils/scale-hint/scale-hint.service';
 
 
 const appRoutes: Routes = [
@@ -79,6 +81,7 @@ export function HttpLoaderFactory(http: Http) {
     ToolbarComponent,
     ScaleComponent,
     ScaleInputComponent,
+    ScaleHintComponent,
   ],
   entryComponents: [
     ComplexDialogComponent,
@@ -116,7 +119,8 @@ export function HttpLoaderFactory(http: Http) {
     SocketService,
     DeviceService,
     MapService,
-    ScaleInputService
+    ScaleInputService,
+    ScaleHintService
   ], bootstrap: [AppComponent]
 })
 

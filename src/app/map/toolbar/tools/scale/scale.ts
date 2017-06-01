@@ -9,6 +9,8 @@ import {FloorService} from '../../../../floor/floor.service';
 import {Floor} from '../../../../floor/floor.type';
 import {ActivatedRoute, Params} from '@angular/router';
 import {ScaleInputService} from '../../../../utils/scale-input/scale-input.service';
+import {logger} from 'codelyzer/util/logger';
+import {ScaleHintService} from '../../../../utils/scale-hint/scale-hint.service';
 
 @Component({
   selector: 'app-scale',
@@ -27,8 +29,8 @@ export class ScaleComponent implements Tool, OnInit {
   private pointsArray: Array<Point> = [];
   private linesArray: Array<Line> = [];
   public active: boolean = false;
-  public isScalaDisplayed: boolean = false;
-  public isScalaSet: boolean = false;
+  public isScaleDisplayed: boolean = false;
+  public isScaleSet: boolean = false;
   public toolEnum: ToolsEnum = ToolsEnum.SCALE; // used in hint-bar component as a toolName
   private line;
   private start;
@@ -37,26 +39,34 @@ export class ScaleComponent implements Tool, OnInit {
   @Input() floor: Floor;
 
   constructor(private translate: TranslateService,
-              private _scaleInput: ScaleInputService) {
+              private _scaleInput: ScaleInputService,
+              private _scaleHint: ScaleHintService) {
   }
 
   ngOnInit(): void {
-    if (!!this.floor.scale) {
-      this.drawInitialScale();
-      this.isScalaSet = true;
-    } else {
-      this.isScalaSet = false;
-    }
-    console.log(this.floor.scale);
+    const scaleComponent = this;
+    window.onload = function () {
+      if (!!scaleComponent.floor.scale) {
+        console.log('init with scale');
+        scaleComponent.isScaleSet = true;
+        scaleComponent.scale = scaleComponent.floor.scale;
+        const map = d3.select('#map')
+          .append('g')
+          .attr('id', 'scaleGroup')
+          .style('display', 'none');
+        scaleComponent.drawInitialScale();
+        scaleComponent._scaleHint.publishScale(scaleComponent.floor.scale);
+      }
+    };
   }
 
   private drawInitialScale(): void {
     this.pointsArray[0] = this.floor.scale.start;
     this.pointsArray[1] = this.floor.scale.stop;
     this.linesArray[0] = this.createLine();
-    this.redrawInput();
+    this.redrawLine();
     this.redrawEndings();
-
+    this.redrawInput();
     this._scaleInput.publishScale(this.floor.scale);
   }
 
@@ -86,30 +96,48 @@ export class ScaleComponent implements Tool, OnInit {
     this._scaleInput.publishVisibility(false);
 
     d3.select('#map').style('cursor', 'default');
-    d3.select('#pointGroup').remove();
+    d3.select('#scaleGroup').style('display', 'none');
     d3.select('#mapBg').on('click', null);
+    d3.select('#scaleHint')
+      .on('mouseover', function () {
+        d3.select('#scaleGroup').style('display', 'flex');
+      })
+      .on('mouseout', function () {
+        d3.select('#scaleGroup').style('display', 'none');
+      })
   }
 
   private startDrawingScale = (): void => {
-    this._scaleInput.publishVisibility(true);
     const scaleComponent = this;
+
+    d3.select('#scaleHint')
+      .on('mouseover', null)
+      .on('mouseout', null);
 
     const mapBg = d3.select('#mapBg');
     mapBg.style('cursor', 'crosshair');
 
-    if (!this.isScalaSet) {
+    if (!this.isScaleSet) {
       mapBg.on('click', function () {
         scaleComponent.addPoint();
       });
     }
 
+    (!this.isScaleSet) ? this._scaleInput.publishVisibility(false) : this._scaleInput.publishVisibility(true);
+    if (this.isScaleDisplayed) {
+      this._scaleInput.publishVisibility(true);
+    }
+
+
+    // this.drawInitialScale();
     const map = d3.select('#map')
       .append('g')
-      .attr('id', 'pointGroup');
+      .attr('id', 'scaleGroup');
+    d3.select('#scaleGroup').style('display', 'flex');
 
-    this.redrawPoints();
     this.redrawLine();
     this.redrawEndings();
+    this.redrawPoints();
   };
 
   private addPoint = (): void => {
@@ -121,12 +149,13 @@ export class ScaleComponent implements Tool, OnInit {
     if (this.start == null) {
       this.pointsArray.push(p);
       this.start = this.redrawPoints();
-      this.redrawEndings();
     } else if (this.stop == null) {
       this.pointsArray.push(p);
-      const l = this.createLine();
-      this.linesArray.push(l);
+      this.linesArray.push(this.createLine());
       this.stop = this.redrawPoints();
+      this.isScaleDisplayed = true;
+      this._scaleInput.publishVisibility(this.isScaleDisplayed);
+      this.setScalePoints();
       this.redrawLine();
       this.redrawInput();
       this.redrawEndings();
@@ -142,35 +171,38 @@ export class ScaleComponent implements Tool, OnInit {
 
   private redrawPoints = (): any => {
     const scaleComponent = this;
-    const group = d3.select('#pointGroup');
+    const group = d3.select('#scaleGroup');
+
+    const drag = d3.drag()
+      .on('drag', function () {
+        scaleComponent.pointDrag(d3.select(this));
+      })
+      .on('end', function () {
+        scaleComponent.setScalePoints();
+      });
 
     const points = group.selectAll('circle');
     const newCircle = points.data(this.pointsArray).enter()
       .append('svg:circle')
       .attr('id', 'point')
       .style('cursor', 'all-scroll')
+      .style('z-index', 0)
       .attr('cx', function (d) {
         return d.x;
       })
       .attr('cy', function (d) {
         return d.y;
       })
-      .attr('r', 14)
+      .attr('r', 10)
       .style('fill', 'black')
-      .attr('fill-opacity', 0.1)
-      .call(d3.drag()
-      // .clickDistance
-        .on('drag', function () {
-          scaleComponent.pointDrag(d3.select(this));
-        })
-        .on('end', function () {
-          scaleComponent.pointDragEnd();
-        }));
+      .attr('fill-opacity', 0)
+      .call(drag);
     return newCircle;
   };
 
   private redrawLine = (): void => {
-    const group = d3.select('#pointGroup');
+    const group = d3.select('#scaleGroup');
+    const scaleComponent = this;
 
     const lines = group.selectAll('#connectLine');
     lines.data(this.linesArray).enter()
@@ -210,7 +242,7 @@ export class ScaleComponent implements Tool, OnInit {
 
   private redrawEndings = (): void => {
     const scaleComponent = this;
-    const group = d3.select('#pointGroup');
+    const group = d3.select('#scaleGroup');
 
     const endings = group.selectAll('#endings');
     endings.data(this.pointsArray).enter()
@@ -252,8 +284,16 @@ export class ScaleComponent implements Tool, OnInit {
         const rotation = 90;
         return 'rotate(' + rotation + ' ' + d.x + ' ' + d.y + ')';
       });
+  };
 
+  private getHorizontalEndingOffset = (): number => {
+    const slope = this.getLineSlope();
+    return this.END_SIZE * Math.sin(Math.atan(slope));
+  };
 
+  private getVerticalEndingOffset = (): number => {
+    const slope = this.getLineSlope();
+    return this.END_SIZE * Math.cos(Math.atan(slope));
   };
 
   private getLineSlope = (): number => {
@@ -264,16 +304,6 @@ export class ScaleComponent implements Tool, OnInit {
 
     return (y1 - y2) / (x1 - x2);
   };
-
-  private getHorizontalEndingOffset = (): number =>{
-    const slope = this.getLineSlope();
-    return this.END_SIZE * Math.sin(Math.atan(slope));
-  }
-
-  private getVerticalEndingOffset = (): number =>{
-    const slope = this.getLineSlope();
-    return this.END_SIZE * Math.cos(Math.atan(slope));
-  }
 
   private pointDrag = (circle): void => {
     circle
@@ -289,9 +319,12 @@ export class ScaleComponent implements Tool, OnInit {
   };
 
   private redrawInput = (): void => {
-    const x = (parseInt(this.linesArray[0].p1.x.toString(), 10) + parseInt(this.linesArray[0].p2.x.toString(), 10)) / 2;
-    const y = (parseInt(this.linesArray[0].p1.y.toString(), 10) + parseInt(this.linesArray[0].p2.y.toString(), 10)) / 2;
+    let x1 = (this.linesArray[0].p1.x + this.linesArray[0].p2.x) / 2;
+    //let x1 = (parseInt(this.linesArray[0].p1.x.toString(), 10) + parseInt(this.linesArray[0].p2.x.toString(), 10)) / 2;
+    let y1 = (this.linesArray[0].p1.y + this.linesArray[0].p2.y) / 2;
 
+    const x = Math.max(0, Math.min(x1, d3.select('#map').attr('width') - 290));
+    const y = Math.max(0, Math.min(y1, d3.select('#map').attr('height') - 50));
     const p = <Point>{
       x: x,
       y: y
@@ -300,9 +333,10 @@ export class ScaleComponent implements Tool, OnInit {
     this._scaleInput.publishCoordinates(p);
   };
 
-  private pointDragEnd(): void {
+  private setScalePoints(): void {
     this.scale.start = this.pointsArray[0];
     this.scale.stop = this.pointsArray[1];
     this._scaleInput.publishScale(this.scale);
   };
+
 }

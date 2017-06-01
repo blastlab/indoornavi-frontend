@@ -1,9 +1,12 @@
-<div id="scaleInput" [ngClass]="visible ? 'show-scale-input' : 'hide-scale-input'">
-  <md-input-container class="example-full-width">
-    <input mdInput placeholder="?" [(ngModel)]="scale.realDistance"/>
-  </md-input-container>
-  <md-select placeholder="unit" [(ngModel)]="scale.measure" class="select">
-    <md-option *ngFor="let measure of measures" [value]="measure">{{measure}}</md-option>
-  </md-select>
-  <button md-button class="submitButton" (click)="submit()">Submit</button>
-</div>
+<form #scaleForm="ngForm" novalidate>
+  <div id="scaleInput" [ngClass]="visible ? 'show-scale-input' : 'hide-scale-input'">
+    <md-input-container class="example-full-width">
+      <input mdInput placeholder="?" pattern="\-?[\d]+" name="realDistance" [(ngModel)]="scale.realDistance"
+             required type="text" class="input">
+    </md-input-container>
+    <md-select placeholder="unit" [(ngModel)]="scale.measure" name="unit" class="select">
+      <md-option *ngFor="let measure of measures" [value]="measure">{{measure}}</md-option>
+    </md-select>
+    <button  md-button class="submitButton" (click)="save(scaleForm.valid)">{{'save'|translate}}</button>
+  </div>
+</form>
