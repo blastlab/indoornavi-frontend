@@ -3,6 +3,7 @@ import {Config} from '../../config';
 import * as d3 from 'd3';
 import {Floor} from '../floor/floor.type';
 import {Point, Line} from './map.type';
+import {MapLoaderInformerService} from '../utils/map-loader-informer/map-loader-informer.service';
 
 @Component({
   selector: 'app-map-viewer',
@@ -15,6 +16,9 @@ export class MapViewerComponent implements OnInit {
   imageLoaded: boolean = false;
   protected pointsTable: Array<Point> = [];
 
+  constructor(private _mapLoaderInformer: MapLoaderInformerService) {
+
+  }
 
   ngOnInit(): void {
     this.drawImageOnCanvas();
@@ -47,6 +51,7 @@ export class MapViewerComponent implements OnInit {
       .attr('width', width)
       .attr('height', height)
       .attr('opacity', 0);
+    this._mapLoaderInformer.publishIsLoaded(true);
 
     this.prepareScaleHint();
 

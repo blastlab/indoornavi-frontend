@@ -1,23 +1,22 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {ToolsEnum} from '../tools.enum';
 import * as d3 from 'd3';
 import {Tool} from '../tool';
 import {TranslateService} from '@ngx-translate/core';
 import {MeasureEnum, Scale} from './scale.type';
 import {Line, Point} from '../../../map.type';
-import {FloorService} from '../../../../floor/floor.service';
 import {Floor} from '../../../../floor/floor.type';
-import {ActivatedRoute, Params} from '@angular/router';
 import {ScaleInputService} from '../../../../utils/scale-input/scale-input.service';
-import {logger} from 'codelyzer/util/logger';
 import {ScaleHintService} from '../../../../utils/scale-hint/scale-hint.service';
+import {MapLoaderInformerService} from '../../../../utils/map-loader-informer/map-loader-informer.service';
+import {Subscription} from 'rxjs/Subscription';
 
 @Component({
   selector: 'app-scale',
   templateUrl: './scale.html',
   styleUrls: ['./scale.css']
 })
-export class ScaleComponent implements Tool, OnInit {
+export class ScaleComponent implements Tool, OnInit, OnDestroy {
   @Output() clickedTool: EventEmitter<Tool> = new EventEmitter<Tool>();
   public hintMessage: String = 'Click at map to set scale.';
   public scale: Scale = <Scale>{
@@ -37,27 +36,35 @@ export class ScaleComponent implements Tool, OnInit {
   private stop;
   private END_SIZE: number = 5;
   @Input() floor: Floor;
+  private subscription: Subscription;
 
   constructor(private translate: TranslateService,
               private _scaleInput: ScaleInputService,
-              private _scaleHint: ScaleHintService) {
+              private _scaleHint: ScaleHintService,
+              private _mapLoaderInformer: MapLoaderInformerService) {
+    this.subscription = this._mapLoaderInformer.isLoaded$.subscribe(
+      data => {
+        if (data) {
+          if (!!this.floor.scale) {
+            this.isScaleSet = true;
+            this.scale = this.floor.scale;
+            const map = d3.select('#map')
+              .append('g')
+              .attr('id', 'scaleGroup')
+              .style('display', 'none');
+            this.drawInitialScale();
+
+          }
+          this._scaleHint.publishScale(this.floor.scale);
+        }
+      });
   }
 
   ngOnInit(): void {
-    const scaleComponent = this;
-    window.onload = function () {
-      if (!!scaleComponent.floor.scale) {
-        console.log('init with scale');
-        scaleComponent.isScaleSet = true;
-        scaleComponent.scale = scaleComponent.floor.scale;
-        const map = d3.select('#map')
-          .append('g')
-          .attr('id', 'scaleGroup')
-          .style('display', 'none');
-        scaleComponent.drawInitialScale();
-        scaleComponent._scaleHint.publishScale(scaleComponent.floor.scale);
-      }
-    };
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
   private drawInitialScale(): void {
@@ -109,7 +116,7 @@ export class ScaleComponent implements Tool, OnInit {
 
   private startDrawingScale = (): void => {
     const scaleComponent = this;
-
+    d3.select('#scaleGroup').style('display', 'flex');
     d3.select('#scaleHint')
       .on('mouseover', null)
       .on('mouseout', null);
@@ -128,12 +135,15 @@ export class ScaleComponent implements Tool, OnInit {
       this._scaleInput.publishVisibility(true);
     }
 
+    const scaleGroup = d3.select('#scaleGroup');
+    if (!scaleGroup.empty()) {
 
-    // this.drawInitialScale();
-    const map = d3.select('#map')
-      .append('g')
-      .attr('id', 'scaleGroup');
-    d3.select('#scaleGroup').style('display', 'flex');
+      scaleGroup.style('display', 'flex');
+    } else {
+      d3.select('#map').append('g')
+        .attr('id', 'scaleGroup')
+        .style('display', 'flex');
+    }
 
     this.redrawLine();
     this.redrawEndings();
@@ -155,6 +165,7 @@ export class ScaleComponent implements Tool, OnInit {
       this.stop = this.redrawPoints();
       this.isScaleDisplayed = true;
       this._scaleInput.publishVisibility(this.isScaleDisplayed);
+      d3.select('#scaleGroup').style('display', 'flex');
       this.setScalePoints();
       this.redrawLine();
       this.redrawInput();
@@ -202,7 +213,6 @@ export class ScaleComponent implements Tool, OnInit {
 
   private redrawLine = (): void => {
     const group = d3.select('#scaleGroup');
-    const scaleComponent = this;
 
     const lines = group.selectAll('#connectLine');
     lines.data(this.linesArray).enter()
@@ -319,9 +329,8 @@ export class ScaleComponent implements Tool, OnInit {
   };
 
   private redrawInput = (): void => {
-    let x1 = (this.linesArray[0].p1.x + this.linesArray[0].p2.x) / 2;
-    //let x1 = (parseInt(this.linesArray[0].p1.x.toString(), 10) + parseInt(this.linesArray[0].p2.x.toString(), 10)) / 2;
-    let y1 = (this.linesArray[0].p1.y + this.linesArray[0].p2.y) / 2;
+    const x1 = (this.linesArray[0].p1.x + this.linesArray[0].p2.x) / 2;
+    const y1 = (this.linesArray[0].p1.y + this.linesArray[0].p2.y) / 2;
 
     const x = Math.max(0, Math.min(x1, d3.select('#map').attr('width') - 290));
     const y = Math.max(0, Math.min(y1, d3.select('#map').attr('height') - 50));
