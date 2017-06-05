@@ -1,16 +1,18 @@
+
 <template>
   <h3>{{title}}</h3>
-  <md-spinner mode="indeterminate" color="accent"></md-spinner>
-  <!--<span>
-    <div class="dialog-select">
-      <md-select *ngIf="!isLoading" placeholder="{{'select.sink'|translate}}" [(ngModel)]="selected.sink" floatPlaceholder="never">
-        <md-option *ngFor="let sink of sinks.toArray()" [value]="sink">{{ sink.name }} id:{{ sink.shortId }}</md-option>
+  <md-spinner *ngIf="isLoading" mode="indeterminate" color="warn"></md-spinner>
+  <span>
+    <div class="dialog-select" *ngIf="!isLoading">
+      <md-select placeholder="{{'select.data'|translate}}" [(ngModel)]="data" floatPlaceholder="never">
+        <md-option *ngFor="let data of socketData.toArray()" [value]="data">{{ data.name }} id:{{ data.shortId }}{{ data.anchorId }}</md-option>
+        <md-spinner id="select-spinner" *ngIf="!isLoading" mode="indeterminate" color="accent"></md-spinner>
       </md-select>
     </div>
     <div class="dialog-action">
-      <button *ngIf="!selected.sink" class="dialog-cancel-button" (click)="wizardCanceled()" md-button>{{'cancel'|translate}}</button>
-      <button *ngIf="selected.sink" class="dialog-place-button" (click)="placeSink(selected.sink)" md-raised-button>{{'go.to.map'|translate}}</button>
+      <button *ngIf="isLoading" class="dialog-cancel-button" (click)="closeWizard()" md-button>{{'cancel'|translate}}</button>
+      <button *ngIf="!isLoading" class="dialog-place-button" (click)="placeOnMap(data)" [disabled]="!data" md-raised-button>{{'go.to.map'|translate}}</button>
     </div>
-  </span>-->
+  </span>
 </template>
 

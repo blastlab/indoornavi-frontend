@@ -1,6 +1,11 @@
 md-spinner, .dialog-cancel-button, .dialog-place-button, .dialog-wizard-button, md-select {
   margin: 0 auto;
 }
+#select-spinner {
+  max-height: 40px;
+  max-width: 40px;
+  margin-bottom: 10px;
+}
 .dialog-cancel-button {
   background-color: firebrick;
 }

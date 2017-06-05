@@ -2,3 +2,6 @@
         md-tooltip="{{'wizard.tooltip'|translate}}" mdTooltipPosition="left">
   <i class="material-icons">device_hub</i>
 </button>
+<app-first-step #firstStep (clearView)="closeWizard($event)" (nextStepIndex)="wizardNextStep($event)"></app-first-step>
+<app-second-step #secondStep (clearView)="closeWizard($event)" (nextStepIndex)="wizardNextStep($event)"></app-second-step>
+<app-third-step #thirdStep (clearView)="closeWizard($event)" (nextStepIndex)="wizardNextStep($event)"></app-third-step>

@@ -43,6 +43,8 @@ import {DialogComponent} from './utils/dialog/dialog.component';
 import {AcceptButtonsComponent} from './utils/accept-buttons/accept-buttons';
 import {AcceptButtonsService} from './utils/accept-buttons/accept-buttons.service';
 import {FirstStepComponent} from './map/toolbar/tools/wizard/first-step/first-step';
+import {SecondStepComponent} from './map/toolbar/tools/wizard/second-step/second-step';
+import { ThirdStepComponent } from './map/toolbar/tools/wizard/third-step/third-step';
 
 
 const appRoutes: Routes = [
@@ -85,6 +87,8 @@ export function HttpLoaderFactory(http: Http) {
     DialogComponent,
     AcceptButtonsComponent,
     FirstStepComponent,
+    SecondStepComponent,
+    ThirdStepComponent,
   ],
   entryComponents: [
     ComplexDialogComponent,
@@ -125,7 +129,8 @@ export function HttpLoaderFactory(http: Http) {
     DeviceService,
     MapService,
     AcceptButtonsService,
-    FirstStepComponent
+    FirstStepComponent,
+    SecondStepComponent
   ], bootstrap: [AppComponent]
 })
 
