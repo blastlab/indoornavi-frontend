@@ -36,13 +36,13 @@ import {MapViewerComponent} from './map/map.viewer';
 import {MapUploaderComponent} from './map/map.uploader';
 import {MapService} from './map/map.service';
 import {HintBarComponent} from './map/hint-bar/hint-bar';
-import { ToolbarComponent } from './map/toolbar/toolbar';
-import { ScaleComponent } from './map/toolbar/tools/scale/scale';
-import { ScaleInputComponent } from './utils/scale-input/scale-input';
+import {ToolbarComponent} from './map/toolbar/toolbar';
+import {ScaleComponent} from './map/toolbar/tools/scale/scale';
+import {ScaleInputComponent} from './utils/scale-input/scale-input';
 import {ScaleInputService} from './utils/scale-input/scale-input.service';
-import { ScaleHintComponent } from './utils/scale-hint/scale-hint';
-import { ScaleHintService } from './utils/scale-hint/scale-hint.service';
-import { MapLoaderInformerComponent } from './utils/map-loader-informer/map-loader-informer';
+import {ScaleHintComponent} from './utils/scale-hint/scale-hint';
+import {ScaleHintService} from './utils/scale-hint/scale-hint.service';
+import {MapLoaderInformerComponent} from './utils/map-loader-informer/map-loader-informer';
 import {MapLoaderInformerService} from './utils/map-loader-informer/map-loader-informer.service';
 
 

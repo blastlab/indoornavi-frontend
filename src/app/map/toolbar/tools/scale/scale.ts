@@ -47,7 +47,7 @@ export class ScaleComponent implements Tool, OnInit, OnDestroy {
         if (data) {
           if (!!this.floor.scale) {
             this.isScaleSet = true;
-            this.scale = this.floor.scale;
+            this.scale = (JSON.parse(JSON.stringify(this.floor.scale)));
             const map = d3.select('#map')
               .append('g')
               .attr('id', 'scaleGroup')
@@ -68,8 +68,8 @@ export class ScaleComponent implements Tool, OnInit, OnDestroy {
   }
 
   private drawInitialScale(): void {
-    this.pointsArray[0] = this.floor.scale.start;
-    this.pointsArray[1] = this.floor.scale.stop;
+    this.pointsArray[0] = this.scale.start;
+    this.pointsArray[1] = this.scale.stop;
     this.linesArray[0] = this.createLine();
     this.redrawLine();
     this.redrawEndings();
@@ -111,7 +111,7 @@ export class ScaleComponent implements Tool, OnInit, OnDestroy {
       })
       .on('mouseout', function () {
         d3.select('#scaleGroup').style('display', 'none');
-      })
+      });
   }
 
   private startDrawingScale = (): void => {
@@ -137,7 +137,6 @@ export class ScaleComponent implements Tool, OnInit, OnDestroy {
 
     const scaleGroup = d3.select('#scaleGroup');
     if (!scaleGroup.empty()) {
-
       scaleGroup.style('display', 'flex');
     } else {
       d3.select('#map').append('g')
@@ -151,7 +150,7 @@ export class ScaleComponent implements Tool, OnInit, OnDestroy {
   };
 
   private addPoint = (): void => {
-    const p = <Point>{
+    let p = <Point>{
       x: d3.event.offsetX,
       y: d3.event.offsetY
     };
@@ -159,9 +158,14 @@ export class ScaleComponent implements Tool, OnInit, OnDestroy {
     if (this.start == null) {
       this.pointsArray.push(p);
       this.start = this.redrawPoints();
+      this.redrawEndings();
     } else if (this.stop == null) {
       this.pointsArray.push(p);
       this.linesArray.push(this.createLine());
+      const mouseEvent = window.event as MouseEvent;
+      if (mouseEvent.shiftKey) {
+        p = this.blockOneDimension(p);
+      }
       this.stop = this.redrawPoints();
       this.isScaleDisplayed = true;
       this._scaleInput.publishVisibility(this.isScaleDisplayed);
@@ -173,12 +177,25 @@ export class ScaleComponent implements Tool, OnInit, OnDestroy {
     }
   };
 
+  private blockOneDimension = (point): Point => {
+    const slope = this.getLineSlope();
+    console.log(slope);
+    if (slope < 1 && slope > -1) {
+      point.y = this.pointsArray[0].y;
+    } else {
+      point.x = this.pointsArray[0].x;
+    }
+
+    return point;
+  };
+
   private createLine = (): Line => {
     return <Line>{
       p1: this.pointsArray[0],
       p2: this.pointsArray[1]
     };
   };
+
 
   private redrawPoints = (): any => {
     const scaleComponent = this;
@@ -307,6 +324,10 @@ export class ScaleComponent implements Tool, OnInit, OnDestroy {
   };
 
   private getLineSlope = (): number => {
+    if (this.linesArray.length === 0) {
+      return 0;
+    }
+
     const x1 = this.linesArray[0].p1.x;
     const y1 = this.linesArray[0].p1.y;
     const x2 = this.linesArray[0].p2.x;
