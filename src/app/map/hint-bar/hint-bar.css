@@ -1,9 +1,10 @@
 #hint-bar {
   position: fixed;
-  height: 50px;
+  height: 40px;
   width: 69%;
   background-color: lightgray;
-  padding: 5px 10px;
+  padding-left:10px;
+  padding-bottom: 8px;
   border: 1px dashed;
   bottom: 0;
   left: 20%;

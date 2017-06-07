@@ -1,8 +1,21 @@
-p {
-  right: 0;
-  position: absolute;
-  bottom: -16px;
-  display: block;
+div {
+  position: fixed;
+  left: 20%;
+  height: 40px;
+  width: 70%;
+  overflow: hidden;
+  bottom: 55px;
+  /*position: absolute;*/
+  /*bottom: -16px;*/
+  /*display: block;*/
   background-color: burlywood;
   cursor: default;
+  /*text-align: right;*/
+}
+
+p{
+  font-size: 20px;
+  display: inline-block;
+  margin: 10px;
+  /*width: 10%;*/
 }
