@@ -1,6 +1,5 @@
 <div *ngIf="floor">
   <app-toolbar [floor]="floor" (selectedTool)="setTool($event)" *ngIf="imageUploaded"></app-toolbar>
-  <app-scale-hint *ngIf="imageUploaded"></app-scale-hint>
   <app-map-viewer [floor]="floor" *ngIf="imageUploaded"></app-map-viewer>
   <app-hint-bar [tool]="activeTool" *ngIf="imageUploaded"></app-hint-bar>
   <app-map-uploader [floor]="floor" *ngIf="!imageUploaded" (imageUploaded)="onImageUploaded($event)"></app-map-uploader>

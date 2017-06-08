@@ -35,8 +35,11 @@ export class ScaleHintComponent implements OnInit, OnDestroy {
       d3.select('#scaleHint')
         .text(msg);
     } else {
-      d3.select('#scaleHint')
-        .text('Scale is not set');
+      this.translate.get('scale.is.not.set').subscribe((value: string) => {
+        d3.select('#scaleHint')
+          .text(value);
+      });
+
     }
   }
 }
