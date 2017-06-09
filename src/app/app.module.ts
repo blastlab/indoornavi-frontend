@@ -3,7 +3,10 @@ import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {Http, HttpModule} from '@angular/http';
 import {ComplexComponent} from './complex/complex';
-import {MaterialModule, MdDialogModule} from '@angular/material';
+import {
+  MaterialModule, MdDialogModule, MdCardModule, MdButtonModule, MdIconRegistry,
+  MdIconModule
+} from '@angular/material';
 import {ComplexService} from './complex/complex.service';
 import {ComplexDialogComponent} from './complex/complex.dialog';
 import {ComplexConfirmComponent} from './complex/complex.confirm';
@@ -39,12 +42,14 @@ import {HintBarComponent} from './map/hint-bar/hint-bar';
 import {ToolbarComponent} from './map/toolbar/toolbar';
 import {ScaleComponent} from './map/toolbar/tools/scale/scale';
 import {WizardComponent} from './map/toolbar/tools/wizard/wizard';
-import {DialogComponent} from './utils/dialog/dialog.component';
 import {AcceptButtonsComponent} from './utils/accept-buttons/accept-buttons';
 import {AcceptButtonsService} from './utils/accept-buttons/accept-buttons.service';
 import {FirstStepComponent} from './map/toolbar/tools/wizard/first-step/first-step';
 import {SecondStepComponent} from './map/toolbar/tools/wizard/second-step/second-step';
-import { ThirdStepComponent } from './map/toolbar/tools/wizard/third-step/third-step';
+import {ThirdStepComponent} from './map/toolbar/tools/wizard/third-step/third-step';
+import {DrawingService} from './utils/drawing/drawing.service';
+import {Hammer} from 'hammerjs/hammer';
+import {IconService, NaviIcons} from './utils/drawing/icon.service';
 
 
 const appRoutes: Routes = [
@@ -84,7 +89,6 @@ export function HttpLoaderFactory(http: Http) {
     ToolbarComponent,
     ScaleComponent,
     WizardComponent,
-    DialogComponent,
     AcceptButtonsComponent,
     FirstStepComponent,
     SecondStepComponent,
@@ -97,11 +101,13 @@ export function HttpLoaderFactory(http: Http) {
     DeviceDialogComponent,
     BuildingConfirmComponent,
     FloorDialogComponent,
-    DialogComponent
   ],
   imports: [
     BrowserModule,
     MdDialogModule,
+    MdCardModule,
+    MdButtonModule,
+    MdIconModule,
     FormsModule,
     MaterialModule,
     HttpModule,
@@ -129,8 +135,9 @@ export function HttpLoaderFactory(http: Http) {
     DeviceService,
     MapService,
     AcceptButtonsService,
-    FirstStepComponent,
-    SecondStepComponent
+    DrawingService,
+    MdIconRegistry,
+    IconService
   ], bootstrap: [AppComponent]
 })
 

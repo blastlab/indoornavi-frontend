@@ -2,14 +2,12 @@ import {Component, EventEmitter, Output, TemplateRef, ViewChild} from '@angular/
 import {WizardStep} from '../wizard-step';
 import {MdDialog, MdDialogRef} from '@angular/material';
 import {TranslateService} from '@ngx-translate/core';
-import {DialogComponent} from '../../../../../utils/dialog/dialog.component';
 import * as d3 from 'd3';
 import * as Collections from 'typescript-collections';
 import {Anchor} from '../../../../../anchor/anchor.type';
 import {AcceptButtonsService} from '../../../../../utils/accept-buttons/accept-buttons.service';
 import {Point} from '../../../../map.type';
 import {StepMsg, WizardData} from '../wizard';
-import {Subject} from 'rxjs/Subject';
 
 @Component({
   selector: 'app-first-step',
@@ -29,7 +27,7 @@ export class FirstStepComponent implements WizardStep {
   public coords: Array<Point>;
   @ViewChild(TemplateRef) dialogTemplate: TemplateRef<any>;
 
-  dialogRef: MdDialogRef<DialogComponent>;
+  dialogRef: MdDialogRef<MdDialog>;
 
   constructor(public translate: TranslateService,
               public dialog: MdDialog,

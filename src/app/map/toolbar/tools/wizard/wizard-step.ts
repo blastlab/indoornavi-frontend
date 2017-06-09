@@ -1,12 +1,11 @@
 import {Point} from '../../../map.type';
 import {EventEmitter} from '@angular/core';
 import {StepMsg, WizardData} from './wizard';
-import {MdDialogRef} from '@angular/material';
-import {DialogComponent} from '../../../../utils/dialog/dialog.component';
+import {MdDialog, MdDialogRef} from '@angular/material';
 export interface WizardStep {
   nextStepIndex: EventEmitter<number>;
   clearView: EventEmitter<boolean>;
-  dialogRef: MdDialogRef<DialogComponent>;
+  dialogRef: MdDialogRef<MdDialog>;
   stepIndex: number;
   load(msg: String): void;
   openDialog(): void;

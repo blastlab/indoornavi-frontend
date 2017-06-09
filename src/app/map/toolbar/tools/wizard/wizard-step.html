@@ -5,7 +5,7 @@
   <span>
     <div class="dialog-select" *ngIf="!isLoading">
       <md-select placeholder="{{'select.data'|translate}}" [(ngModel)]="data" floatPlaceholder="never">
-        <md-option *ngFor="let data of socketData.toArray()" [value]="data">{{ data.name }} id:{{ data.shortId }}{{ data.anchorId }}</md-option>
+        <md-option *ngFor="let data of socketData.toArray()" [value]="data">id:{{ data.shortId }}{{ data.anchorId }}</md-option>
         <md-spinner id="select-spinner" *ngIf="!isLoading" mode="indeterminate" color="accent"></md-spinner>
       </md-select>
     </div>

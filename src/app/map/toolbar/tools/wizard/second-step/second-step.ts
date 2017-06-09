@@ -2,7 +2,6 @@ import {Component, EventEmitter, Output, TemplateRef, ViewChild} from '@angular/
 import {WizardStep} from '../wizard-step';
 import {MdDialog, MdDialogRef} from '@angular/material';
 import {TranslateService} from '@ngx-translate/core';
-import {DialogComponent} from '../../../../../utils/dialog/dialog.component';
 import * as d3 from 'd3';
 import * as Collections from 'typescript-collections';
 import {AnchorDistance} from '../../../../../anchor/anchor.type';
@@ -28,7 +27,7 @@ export class SecondStepComponent implements WizardStep {
   public coords: Array<Point> = [];
   @ViewChild(TemplateRef) dialogTemplate: TemplateRef<any>;
 
-  dialogRef: MdDialogRef<DialogComponent>;
+  dialogRef: MdDialogRef<MdDialog>;
 
   constructor(public translate: TranslateService,
               public dialog: MdDialog,
@@ -165,7 +164,6 @@ export class SecondStepComponent implements WizardStep {
   private calculateDegree(sinkPosition: Point, anchorPosition: Point): number {
     const rad2deg = 180 / Math.PI;
     const degree = Math.atan2((sinkPosition.y - anchorPosition.y), (anchorPosition.x - sinkPosition.x)) * rad2deg;
-    console.log(degree);
     return ((degree < 0) ? 360 + degree : degree);
   }
 

@@ -5,3 +5,15 @@
 <app-first-step #firstStep (clearView)="closeWizard($event)" (nextStepIndex)="wizardNextStep($event)"></app-first-step>
 <app-second-step #secondStep (clearView)="closeWizard($event)" (nextStepIndex)="wizardNextStep($event)"></app-second-step>
 <app-third-step #thirdStep (clearView)="closeWizard($event)" (nextStepIndex)="wizardNextStep($event)"></app-third-step>
+
+<template>
+  <h3>{{'basic.configuration.complete'|translate}}</h3>
+  <h4>{{'left.over.anchors?'|translate}}</h4>
+  <span>
+    <div class="dialog-action">
+     <button class="dialog-wizard-button" (click)="manualAnchors()" md-raised-button>{{'set.manual'|translate}}</button>
+      <button class="dialog-wizard-button" (click)="wizardAnchors()" md-raised-button>{{'let.wizard.place'|translate}}</button>
+    </div>
+  </span>
+</template>
+

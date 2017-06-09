@@ -2,7 +2,6 @@ import {Component, EventEmitter, Output, TemplateRef, ViewChild} from '@angular/
 import {WizardStep} from '../wizard-step';
 import {MdDialog, MdDialogRef} from '@angular/material';
 import {TranslateService} from '@ngx-translate/core';
-import {DialogComponent} from '../../../../../utils/dialog/dialog.component';
 import * as d3 from 'd3';
 import * as Collections from 'typescript-collections';
 import {AnchorSuggestedPositions} from '../../../../../anchor/anchor.type';
@@ -19,7 +18,7 @@ export class ThirdStepComponent implements WizardStep {
   @Output() nextStepIndex: EventEmitter<number> = new EventEmitter<number>();
   @Output() clearView: EventEmitter<boolean> = new EventEmitter<boolean>();
   public stepIndex: number = 2;
-  public title = 'Select an anchor and place on dashed circle.';
+  public title = 'Select an anchor and place on suggested place.';
   public socketData = new Collections.Set<AnchorSuggestedPositions>((positions: AnchorSuggestedPositions) => {
     return '' + positions.anchorId;
   });
@@ -28,7 +27,7 @@ export class ThirdStepComponent implements WizardStep {
   public coords: Array<Point>;
   @ViewChild(TemplateRef) dialogTemplate: TemplateRef<any>;
 
-  dialogRef: MdDialogRef<DialogComponent>;
+  dialogRef: MdDialogRef<MdDialog>;
 
   constructor(public translate: TranslateService,
               public dialog: MdDialog,
@@ -123,7 +122,6 @@ export class ThirdStepComponent implements WizardStep {
   public drawSuggestedPositions(positions: Array<Point>) {
     const secondAnchor = d3.select('#map').select('.wizardFirstAnchor')
       .data(positions);
-    console.log(positions);
     for (let i = 0 ; i < positions.length ; i++) {
 
       secondAnchor.append('circle')

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, NgZone, Output, ViewChild} from '@angular/core';
+import {Component, EventEmitter, NgZone, Output, TemplateRef, ViewChild} from '@angular/core';
 import {ToolsEnum} from '../tools.enum';
 import {Tool} from '../tool';
 import {TranslateService} from '@ngx-translate/core';
@@ -11,6 +11,7 @@ import {Point} from '../../../map.type';
 import {FirstStepComponent} from './first-step/first-step';
 import {SecondStepComponent} from './second-step/second-step';
 import {ThirdStepComponent} from './third-step/third-step';
+import {MdDialog, MdDialogRef} from '@angular/material';
 
 @Component({
   selector: 'app-wizard',
@@ -29,9 +30,13 @@ export class WizardComponent implements Tool {
   @ViewChild('firstStep') firstStep: FirstStepComponent;
   @ViewChild('secondStep') secondStep: SecondStepComponent;
   @ViewChild('thirdStep') thirdStep: ThirdStepComponent;
+  @ViewChild(TemplateRef) dialogTemplate: TemplateRef<any>;
+
+  dialogRef: MdDialogRef<MdDialog>;
 
   constructor(private socketService: SocketService,
               public translate: TranslateService,
+              public dialog: MdDialog,
               private toastService: ToastService,
               private ngZone: NgZone) {
   }
@@ -93,7 +98,8 @@ export class WizardComponent implements Tool {
 
   public wizardNextStep(nextStepIndex: number): void {
     if (nextStepIndex === this.steps.length) {
-      this.toolClicked();
+      this.dialogRef = this.dialog.open(this.dialogTemplate, {disableClose: true});
+      // this.toolClicked(); -> wizard was completed, warn user (need to save state)
     } else {
       const message: StepMsg = this.activeStep.prepareToSend(this.wizardData);
       this.socketService.send(this.handleMessage(message));
@@ -102,9 +108,20 @@ export class WizardComponent implements Tool {
     }
   }
 
+  public manualAnchors() {
+    console.log('manualAnchors');
+    this.dialogRef.close();
+    this.toolClicked();
+  }
+
+  public wizardAnchors() {
+    console.log('wizardAnchors');
+    this.dialogRef.close();
+    this.toolClicked();
+  }
+
   private handleMessage(msg): SocketMsg {
     this.wizardData = msg.wizardData;
-    console.log(msg.socketData);
     return msg.socketData;
   }
 
