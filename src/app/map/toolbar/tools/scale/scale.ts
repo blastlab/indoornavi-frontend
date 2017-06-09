@@ -146,7 +146,7 @@ export class ScaleComponent implements Tool, OnDestroy {
   }
 
   private addPoint = (): void => {
-    let point = <Point>{
+    const point = <Point>{
       x: d3.event.offsetX,
       y: d3.event.offsetY
     };
@@ -160,27 +160,31 @@ export class ScaleComponent implements Tool, OnDestroy {
       this.linesArray.push(this.createLine());
       const mouseEvent = window.event as MouseEvent;
       if (mouseEvent.shiftKey) {
-        point = this.blockOneDimension(point);
+        this.blockOneDimension(point);
       }
+      this.setScalePoints();
       this.stop = this.redrawPoints();
+      this.redrawSvgObjects();
       this.isScaleDisplayed = true;
       this._scaleInput.publishVisibility(this.isScaleDisplayed);
       d3.select('#scaleGroup').style('display', 'flex');
-      this.setScalePoints();
-      this.redrawLine();
-      this.redrawInput();
-      this.redrawEndings();
     }
   }
 
-  private blockOneDimension = (point): Point => {
+  private redrawSvgObjects = (): void => {
+    this.redrawLine();
+    this.redrawInput();
+    this.redrawEndings();
+    this.redrawPoints();
+  }
+
+  private blockOneDimension = (point): void => {
     const slope: number = this.getLineSlope();
     if (slope < 1 && slope > -1) {
       point.y = this.pointsArray[0].y;
     } else {
       point.x = this.pointsArray[0].x;
     }
-    return point;
   }
 
   private getLineSlope = (): number => {
@@ -354,16 +358,14 @@ export class ScaleComponent implements Tool, OnDestroy {
           return d.y = Math.max(0, Math.min(d3.select('#map').attr('height'), d3.event.y));
         });
     }
-    this.redrawLine();
-    this.redrawInput();
-    this.redrawEndings();
+    this.redrawSvgObjects();
   }
 
   private dragPointWithShift = (circle): void => {
     const secondPoint = this.chooseNotDraggedPoint(circle);
     const potentialSlope: number = this.getPotentialLineSlope(secondPoint.x, secondPoint.y, d3.event.x, d3.event.y);
     const upperBound = 3;
-    const lowerBound = 0.558; // arctan(22.5)
+    const lowerBound = 0.558; // arctan(22.5°)
     if (Math.abs(potentialSlope) < lowerBound) {
       circle
         .attr('cx', function (d) {
@@ -383,21 +385,18 @@ export class ScaleComponent implements Tool, OnDestroy {
     } else if (potentialSlope < upperBound && potentialSlope > lowerBound) {
       circle
         .attr('cx', function (d) {
-          return d.x = secondPoint.x + ( d3.event.y - secondPoint.y);
-          // return d.x = Math.max(0, Math.min(d3.select('#map').attr('width'), d3.event.x));
+          return d.x = Math.max(0, Math.min(d3.select('#map').attr('width'), secondPoint.x + ( d3.event.y - secondPoint.y)));
         })
         .attr('cy', function (d) {
           return d.y = Math.max(0, Math.min(d3.select('#map').attr('height'), d3.event.y));
-          // return d.y = secondPoint.y + ( d3.event.x - secondPoint.x);
         });
     } else if (potentialSlope > -upperBound && potentialSlope < -lowerBound) {
       circle
         .attr('cx', function (d) {
-          return d.x = secondPoint.x - ( d3.event.y - secondPoint.y);
+          return d.x = Math.max(0, Math.min(d3.select('#map').attr('width'), secondPoint.x - ( d3.event.y - secondPoint.y)));
         })
         .attr('cy', function (d) {
           return d.y = Math.max(0, Math.min(d3.select('#map').attr('height'), d3.event.y));
-          // return d.y = secondPoint.y - ( d3.event.x - secondPoint.x);
         });
     }
   }

@@ -2,7 +2,7 @@ import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Floor} from '../../floor/floor.type';
 import * as d3 from 'd3';
 import {TranslateService} from '@ngx-translate/core';
-import {Scale} from '../../map/toolbar/tools/scale/scale.type';
+import {Scale, MeasureEnum} from '../../map/toolbar/tools/scale/scale.type';
 import {ScaleHintService} from './scale-hint.service';
 
 @Component({
@@ -31,15 +31,17 @@ export class ScaleHintComponent implements OnInit, OnDestroy {
 
   private showScaleValue = (): void => {
     if (!!this.scale) {
-      const msg: string = this.scale.realDistance + ' ' + this.scale.measure;
-      d3.select('#scaleHint')
-        .text(msg);
+      let unit: String;
+      (this.scale.measure.toString() === MeasureEnum[0]) ? unit = 'cm' : unit = 'm';
+      this.translate.get('scale').subscribe((value: string) => {
+        d3.select('#scaleHint')
+          .text(value + ': ' + this.scale.realDistance + ' ' + unit);
+      });
     } else {
       this.translate.get('scale.is.not.set').subscribe((value: string) => {
         d3.select('#scaleHint')
           .text(value);
       });
-
     }
   }
 }
