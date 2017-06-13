@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ScaleInputComponent } from './scale-input.component';
+import { ScaleInputComponent } from './scale-input';
+import {TranslateModule} from '@ngx-translate/core';
+import {ScaleInputService} from './scale-input.service';
 
 describe('ScaleInputComponent', () => {
   let component: ScaleInputComponent;
@@ -8,7 +10,13 @@ describe('ScaleInputComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ScaleInputComponent ]
+      declarations: [ ScaleInputComponent ],
+      imports: [
+        TranslateModule.forRoot(),
+      ],
+      providers: [
+        ScaleInputService
+      ]
     })
     .compileComponents();
   }));

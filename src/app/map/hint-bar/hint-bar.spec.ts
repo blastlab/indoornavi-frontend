@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { HintBarComponent } from './hint-bar';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {TranslateStore} from '@ngx-translate/core/src/translate.store';
 
 describe('HintBarComponent', () => {
   let component: HintBarComponent;
@@ -8,7 +10,10 @@ describe('HintBarComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ HintBarComponent ]
+      declarations: [ HintBarComponent ],
+      imports: [
+        TranslateModule.forRoot(),
+      ]
     })
     .compileComponents();
   }));
