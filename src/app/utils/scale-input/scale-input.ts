@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {Point} from '../../map/map.type';
 import {ScaleInputService} from './scale-input.service';
 import {MeasureEnum, Scale} from '../../map/toolbar/tools/scale/scale.type';
@@ -26,6 +26,7 @@ export class ScaleInputComponent implements OnInit {
   };
   private floorId: number;
   public measures = [];
+  @Input() scale2: Scale;
 
   constructor(private _scaleInput: ScaleInputService,
               private _scaleHint: ScaleHintService,

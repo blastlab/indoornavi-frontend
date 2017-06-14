@@ -16,7 +16,8 @@ import {Subscription} from 'rxjs/Subscription';
   templateUrl: './scale.html',
   styleUrls: ['./scale.css']
 })
-export class ScaleComponent implements Tool, OnDestroy {
+export class ScaleComponent implements Tool, OnDestroy, OnInit {
+
   @Output() clickedTool: EventEmitter<Tool> = new EventEmitter<Tool>();
   public hintMessage: String;
   public scale: Scale = <Scale>{
@@ -52,11 +53,17 @@ export class ScaleComponent implements Tool, OnDestroy {
               .append('g')
               .attr('id', 'scaleGroup')
               .style('display', 'none');
+            console.log(d3.select('#scaleGroup'));
             this.drawInitialScale();
           }
+          console.log(d3.select('#scaleGroup'));
+          console.log(this.floor);
           this._scaleHint.publishScale(this.floor.scale);
         }
       });
+  }
+
+  ngOnInit(): void {
   }
 
   ngOnDestroy() {
@@ -215,7 +222,7 @@ export class ScaleComponent implements Tool, OnDestroy {
     };
   }
 
-  private redrawPoints = (): any => {
+  redrawPoints = (): any => {
     const scaleComponent = this;
     const group = d3.select('#scaleGroup');
 

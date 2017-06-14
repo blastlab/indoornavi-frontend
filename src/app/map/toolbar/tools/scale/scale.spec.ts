@@ -6,6 +6,8 @@ import {MaterialModule} from '@angular/material';
 import {ScaleHintService} from '../../../../utils/scale-hint/scale-hint.service';
 import {ScaleInputService} from '../../../../utils/scale-input/scale-input.service';
 import {MapLoaderInformerService} from '../../../../utils/map-loader-informer/map-loader-informer.service';
+import {Scale} from 'app/map/toolbar/tools/scale/scale.type';
+
 
 describe('Scale', () => {
   let component: ScaleComponent;

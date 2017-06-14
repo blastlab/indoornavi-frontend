@@ -44,6 +44,7 @@ import {ScaleHintComponent} from './utils/scale-hint/scale-hint';
 import {ScaleHintService} from './utils/scale-hint/scale-hint.service';
 import {MapLoaderInformerComponent} from './utils/map-loader-informer/map-loader-informer';
 import {MapLoaderInformerService} from './utils/map-loader-informer/map-loader-informer.service';
+import {Floor} from './floor/floor.type';
 
 
 const appRoutes: Routes = [
@@ -84,7 +85,7 @@ export function HttpLoaderFactory(http: Http) {
     ScaleComponent,
     ScaleInputComponent,
     ScaleHintComponent,
-    MapLoaderInformerComponent,
+    MapLoaderInformerComponent
   ],
   entryComponents: [
     ComplexDialogComponent,
@@ -125,7 +126,8 @@ export function HttpLoaderFactory(http: Http) {
     ScaleInputService,
     ScaleHintService,
     MapLoaderInformerService
-  ], bootstrap: [AppComponent]
+  ],
+  bootstrap: [AppComponent]
 })
 
 export class AppModule {
