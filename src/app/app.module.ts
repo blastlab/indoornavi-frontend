@@ -50,6 +50,7 @@ import {ThirdStepComponent} from './map/toolbar/tools/wizard/third-step/third-st
 import {DrawingService} from './utils/drawing/drawing.service';
 import {Hammer} from 'hammerjs/hammer';
 import {IconService} from './utils/drawing/icon.service';
+import {HintBarService} from './map/hint-bar/hint-bar.service';
 
 
 const appRoutes: Routes = [
@@ -137,7 +138,8 @@ export function HttpLoaderFactory(http: Http) {
     AcceptButtonsService,
     DrawingService,
     MdIconRegistry,
-    IconService
+    IconService,
+    HintBarService
   ], bootstrap: [AppComponent]
 })
 

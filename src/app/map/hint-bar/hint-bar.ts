@@ -3,6 +3,7 @@ import {ToolsEnum} from '../toolbar/tools/tools.enum';
 import {Point} from '../map.type';
 import {Tool} from '../toolbar/tools/tool';
 import {TranslateService} from '@ngx-translate/core';
+import {HintBarService} from './hint-bar.service';
 
 @Component({
   selector: 'app-hint-bar',
@@ -16,27 +17,26 @@ export class HintBarComponent implements OnInit, OnChanges {
   public hintMsg: String;
   public mousePos: Point = {x: 0, y: 0};
 
-  constructor(private translate: TranslateService) {
+  constructor(private translate: TranslateService,
+              private _hintBar: HintBarService) {
   }
 
   ngOnInit(): void {
     this.setTranslations();
+    this._hintBar.hint$.subscribe((message: string) => {
+      this.hintMsg = (message) ? message : this.toolMsg;
+    });
   }
 
   ngOnChanges(): void {
     this.toolName = (this.tool) ? ToolsEnum[this.tool.toolEnum] : ToolsEnum[ToolsEnum.NONE];
-    this.getHintMsg();
   }
 
   private setTranslations() {
     this.translate.setDefaultLang('en');
     this.translate.get('choose.a.tool').subscribe((value: string) => {
       this.toolMsg = value;
-      this.getHintMsg();
     });
   }
 
-  private getHintMsg() {
-    this.hintMsg = (this.tool) ? this.tool.hintMessage : this.toolMsg;
-  }
 }

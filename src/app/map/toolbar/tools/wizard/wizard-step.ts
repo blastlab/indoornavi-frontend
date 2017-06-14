@@ -5,6 +5,7 @@ import {MdDialog, MdDialogRef} from '@angular/material';
 export interface WizardStep {
   nextStepIndex: EventEmitter<number>;
   clearView: EventEmitter<boolean>;
+  title: string;
   dialogRef: MdDialogRef<MdDialog>;
   stepIndex: number;
   load(msg: String): void;

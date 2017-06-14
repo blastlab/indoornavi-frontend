@@ -10,6 +10,7 @@ import {Point} from '../../../../map.type';
 import {StepMsg, WizardData} from '../wizard';
 import {DrawingService} from '../../../../../utils/drawing/drawing.service';
 import {NaviIcons} from '../../../../../utils/drawing/icon.service';
+import {HintBarService} from '../../../../hint-bar/hint-bar.service';
 
 @Component({
   selector: 'app-first-step',
@@ -20,7 +21,7 @@ export class FirstStepComponent implements WizardStep {
   @Output() nextStepIndex: EventEmitter<number> = new EventEmitter<number>();
   @Output() clearView: EventEmitter<boolean> = new EventEmitter<boolean>();
   public stepIndex: number = 0;
-  public title = 'Select a sink from list of connected devices.';
+  public title = 'wizard.title.step1';
   public socketData = new Collections.Set<Anchor>((sink: Anchor) => {
     return '' + sink.shortId;
   });
@@ -34,7 +35,8 @@ export class FirstStepComponent implements WizardStep {
   constructor(public translate: TranslateService,
               public dialog: MdDialog,
               private _accButtons: AcceptButtonsService,
-              private _draw: DrawingService) {
+              private _draw: DrawingService,
+              private _hintBar: HintBarService) {
 
   }
 
@@ -46,6 +48,9 @@ export class FirstStepComponent implements WizardStep {
   }
 
   public openDialog(): void {
+    this.translate.get('wizard.dialog.select.sink').subscribe((text: string) => {
+      this._hintBar.publishHint(text);
+    });
     this.dialogRef = this.dialog.open(this.dialogTemplate, {disableClose: true});
   }
 
@@ -54,6 +59,9 @@ export class FirstStepComponent implements WizardStep {
     this.data = data;
     const map: d3.selector = d3.select('#map');
     map.style('cursor', 'crosshair');
+    this.translate.get('wizard.click.place.sink').subscribe((text: string) => {
+      this._hintBar.publishHint(text + this.data.shortId + '.');
+    });
     this.dialogRef.close();
     map.on('click', () => {
       const coordinates: Point = {x: d3.event.offsetX, y: d3.event.offsetY};
@@ -67,6 +75,14 @@ export class FirstStepComponent implements WizardStep {
   }
 
   public makeDecision(coordinates: Point): void {
+    this.translate.get('wizard.confirm.sink.1/2').subscribe((textStart: string) => {
+      let buffer = '';
+      this.translate.get('wizard.confirm.sink.2/2').subscribe((textEnd: string) => {
+        buffer = textEnd;
+      });
+      const message = textStart + this.data.shortId + buffer;
+      this._hintBar.publishHint(message);
+    });
     this._accButtons.publishCoordinates(coordinates);
     this._accButtons.publishVisibility(true);
     this._accButtons.decision$.first().subscribe(
@@ -84,6 +100,8 @@ export class FirstStepComponent implements WizardStep {
   }
 
   public prepareToSend(data: WizardData): StepMsg {
+    /*this._hintBar.publishHint('Sink' + this.data.shortId +
+     ' has been positioned into [' + this.coords[0].x + ',' + this.coords[0].y + ']');*/
     return {
       socketData: {
         sinkShortId: this.data.shortId,

@@ -2,7 +2,10 @@ import {MdIconRegistry} from '@angular/material/icon/icon';
 import {DomSanitizer} from '@angular/platform-browser/src/security/dom_sanitization_service';
 import {Injectable} from '@angular/core';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
-import {Observable} from 'rxjs/Rx';
+
+/**
+ * /assets/material-icons/svg-sprites
+ */
 
 @Injectable()
 export class IconService {
@@ -29,8 +32,8 @@ export class IconService {
     }
   }
 
-  public getIcon(iconName: string): Observable<string> {
-   return Observable.of(this.materialIcons.getValue(iconName));
+  public getIcon(iconName: string): string {
+    return this.materialIcons.getValue(iconName);
   }
 }
 

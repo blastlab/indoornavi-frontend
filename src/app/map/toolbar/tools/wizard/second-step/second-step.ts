@@ -10,6 +10,7 @@ import {Point} from '../../../../map.type';
 import {StepMsg, WizardData} from '../wizard';
 import {NaviIcons} from '../../../../../utils/drawing/icon.service';
 import {DrawingService} from '../../../../../utils/drawing/drawing.service';
+import {HintBarService} from '../../../../hint-bar/hint-bar.service';
 
 @Component({
   selector: 'app-second-step',
@@ -20,7 +21,7 @@ export class SecondStepComponent implements WizardStep {
   @Output() nextStepIndex: EventEmitter<number> = new EventEmitter<number>();
   @Output() clearView: EventEmitter<boolean> = new EventEmitter<boolean>();
   public stepIndex: number = 1;
-  public title = 'Select an anchor and place on dashed circle.';
+  public title = 'wizard.title.step2';
   public socketData = new Collections.Set<AnchorDistance>((distance: AnchorDistance) => {
     return '' + distance.anchorId;
   });
@@ -34,7 +35,8 @@ export class SecondStepComponent implements WizardStep {
   constructor(public translate: TranslateService,
               public dialog: MdDialog,
               private _accButtons: AcceptButtonsService,
-              private _draw: DrawingService) {
+              private _draw: DrawingService,
+              private _hintBar: HintBarService) {
   }
 
   public load(msg: any): void {
@@ -43,6 +45,9 @@ export class SecondStepComponent implements WizardStep {
     }
 
   public openDialog(): void {
+    this.translate.get(this.title).subscribe((text: string) => {
+      this._hintBar.publishHint(text);
+    });
     this.dialogRef = this.dialog.open(this.dialogTemplate, {disableClose: true});
   }
 
@@ -51,6 +56,9 @@ export class SecondStepComponent implements WizardStep {
     this.data = data;
     const map: d3.selector = d3.select('#map');
     map.style('cursor', 'crosshair');
+    this.translate.get('wizard.click.place.anchor').subscribe((text: string) => {
+      this._hintBar.publishHint(text + this.data.anchorId + '.');
+    });
     this.dialogRef.close();
     this.drawSinkDistance(this.data.distance);
     map.on('click', () => {
@@ -65,6 +73,14 @@ export class SecondStepComponent implements WizardStep {
   }
 
   public makeDecision(coordinates: Point): void {
+    this.translate.get('wizard.confirm.anchor.1/2').subscribe((textStart: string) => {
+      let buffer = '';
+      this.translate.get('wizard.confirm.anchor.2/2').subscribe((textEnd: string) => {
+        buffer = textEnd;
+      });
+      const message = textStart + this.data.anchorId + buffer;
+      this._hintBar.publishHint(message);
+    });
     this._accButtons.publishCoordinates(coordinates);
     this._accButtons.publishVisibility(true);
     this._accButtons.decision$.first().subscribe(

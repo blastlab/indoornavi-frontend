@@ -12,6 +12,7 @@ import {FirstStepComponent} from './first-step/first-step';
 import {SecondStepComponent} from './second-step/second-step';
 import {ThirdStepComponent} from './third-step/third-step';
 import {MdDialog, MdDialogRef} from '@angular/material';
+import {HintBarService} from '../../../hint-bar/hint-bar.service';
 
 @Component({
   selector: 'app-wizard',
@@ -38,7 +39,8 @@ export class WizardComponent implements Tool {
               public translate: TranslateService,
               public dialog: MdDialog,
               private toastService: ToastService,
-              private ngZone: NgZone) {
+              private ngZone: NgZone,
+              private _hintBar: HintBarService) {
   }
 
   private initSocket(): void {
@@ -73,6 +75,7 @@ export class WizardComponent implements Tool {
 
   public setInactive(): void {
     this.cleanAll();
+    this._hintBar.publishHint(null);
     this.active = false;
     this.destroySocket();
   }

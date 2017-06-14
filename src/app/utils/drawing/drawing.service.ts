@@ -24,19 +24,15 @@ public static boxSize: number = 100;
       .attr('class', classes[0])
       .attr('x', where.x - boxMargin)
       .attr('y', where.y - boxMargin);
-    this._icons.getIcon(NaviIcons.POINTER).subscribe((pointerIcon: string) => {
-      objectGroup.append('svg').attr('class', 'pointer')
+    objectGroup.append('svg').attr('class', 'pointer')
         .attr('x', (boxMargin - iconHalfSize)).attr('y', (boxMargin - iconHalfSize))
-      .html(pointerIcon)
+      .html(this._icons.getIcon(NaviIcons.POINTER))
         .attr('fill', 'red');
-    });
-    this._icons.getIcon(objectParams.iconName).subscribe((objectIcon: string) => {
-      objectGroup.append('svg').attr('class', classes[1])
+    objectGroup.append('svg').attr('class', classes[1])
         .attr('x', boxMargin).attr('y', boxMargin)
-        .html(objectIcon)
+      .html(this._icons.getIcon(objectParams.iconName))
         .attr('stroke', objectParams.fill)
         .attr('fill', objectParams.fill);
-    });
     objectGroup.append('text').attr('x', (boxMargin + iconHalfSize)).attr('y', boxMargin)
       .attr('class', id + 'name').attr('fill', objectParams.fill).text(id);
     objectGroup.append('circle').attr('class', 'objectArea')
