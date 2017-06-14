@@ -8,6 +8,8 @@ import {AnchorDistance} from '../../../../../anchor/anchor.type';
 import {AcceptButtonsService} from '../../../../../utils/accept-buttons/accept-buttons.service';
 import {Point} from '../../../../map.type';
 import {StepMsg, WizardData} from '../wizard';
+import {NaviIcons} from '../../../../../utils/drawing/icon.service';
+import {DrawingService} from '../../../../../utils/drawing/drawing.service';
 
 @Component({
   selector: 'app-second-step',
@@ -31,7 +33,8 @@ export class SecondStepComponent implements WizardStep {
 
   constructor(public translate: TranslateService,
               public dialog: MdDialog,
-              private _accButtons: AcceptButtonsService) {
+              private _accButtons: AcceptButtonsService,
+              private _draw: DrawingService) {
   }
 
   public load(msg: any): void {
@@ -53,49 +56,12 @@ export class SecondStepComponent implements WizardStep {
     map.on('click', () => {
       const coordinates: Point = {x: d3.event.offsetX, y: d3.event.offsetY};
       this.coords.push(coordinates);
+      this._draw.drawObject('anchor' + this.data.anchorId,
+        {iconName: NaviIcons.ANCHOR, fill: 'green'}, coordinates , ['wizardAnchor', 'anchorMarker']);
       map.on('click', null);
       map.style('cursor', 'default');
-      this.updateAnchorMarker();
       this.makeDecision(coordinates);
     });
-  }
-
-  private updateAnchorMarker() {
-    const anchorDist = d3.select('#map').append('g')
-      .attr('id', ('anchor' + this.data.anchorId))
-      .attr('class', 'wizardAnchor wizardFirstAnchor');
-    const marker = anchorDist.selectAll('circle').data(this.coords).enter().append('circle')
-      .attr('class', 'anchorMarker')
-      .attr('cx', function (d) {
-        return d.x;
-      })
-      .attr('cy', function (d) {
-        return d.y;
-      })
-      .attr('r', 7)
-      .style('fill', 'blue')
-      .style('opacity', 0.6);
-    const anchorDrag = d3.drag()
-      .on('start', dragStarted)
-      .on('drag', dragged)
-      .on('end', dragEnded);
-    function dragStarted() {
-      d3.select(this).raise().classed('active', true);
-    }
-    function dragged() {
-      d3.select(this).attr('cx', (d) => {
-        return d.x = Math.max(0, Math.min(d3.select('#map').attr('width'), d3.event.x));
-      })
-        .attr('cy', (d) => {
-          return d.y = Math.max(0, Math.min(d3.select('#map').attr('height'), d3.event.y));
-        });
-      d3.select('#accept-buttons').style('top', Math.max(0, Math.min((d3.select('#map').attr('height') - 100 ), d3.event.y)) + 'px');
-      d3.select('#accept-buttons').style('left', Math.max(75, Math.min((d3.select('#map').attr('width') - 75 ), d3.event.x)) + 'px');
-    }
-    function dragEnded() {
-      d3.select(this).classed('active', false);
-    }
-    marker.call(anchorDrag);
   }
 
   public makeDecision(coordinates: Point): void {
@@ -105,7 +71,9 @@ export class SecondStepComponent implements WizardStep {
       data => {
         this.removeSinkDistance();
         if (data) {
-          d3.select('#map').select('#anchor' + this.data.anchorId).select('.anchorMarker').on('.drag', null);
+          const anchorGroup = d3.select('#map').select('#anchor' + this.data.anchorId);
+          anchorGroup.on('.drag', null);
+          anchorGroup.select('.pointer').attr('fill', 'rgba(0,0,0,0.7)');
           this.nextStepIndex.emit(this.stepIndex + 1);
         } else {
           this.clean();
@@ -115,13 +83,14 @@ export class SecondStepComponent implements WizardStep {
   }
 
   public drawSinkDistance(distance: number) {
-    const sink = d3.select('#map').select('.wizardSink');
-    const sinkX = sink.select('.sinkMarker').attr('cx');
-    const sinkY = sink.select('.sinkMarker').attr('cy');
-      sink.append('circle')
-        .attr('class', 'sinkDistance')
-        .attr('cx', sinkX)
-        .attr('cy', sinkY)
+    const map = d3.select('#map');
+    const boxMargin = DrawingService.boxSize / 2;
+    const sinkX = map.select('.wizardSink').attr('x');
+    const sinkY = map.select('.wizardSink').attr('y');
+      map.append('circle')
+        .attr('id', 'sinkDistance')
+        .attr('cx', parseInt(sinkX, null) + boxMargin)
+        .attr('cy', parseInt(sinkY, null) + boxMargin)
         .attr('r', distance)
         .style('stroke', 'green')
         .style('stroke-dasharray', '10,3')
@@ -129,15 +98,15 @@ export class SecondStepComponent implements WizardStep {
         .style('fill', 'none');
   }
   private removeSinkDistance() {
-    d3.select('#map').select('.wizardSink').select('.sinkDistance').remove();
+    d3.select('#map').select('#sinkDistance').remove();
   }
 
   public showSinkDistance() {
-   d3.select('#map').select('.wizardSink').select('.sinkDistance').style('display', 'flex');
+   d3.select('#map').select('#sinkDistance').style('display', 'flex');
   }
 
   public hideSinkDistance() {
-   d3.select('#map').select('.wizardSink').select('.sinkDistance').style('display', 'none');
+   d3.select('#map').select('#sinkDistance').style('display', 'none');
   }
 
   public prepareToSend(data: WizardData): StepMsg {

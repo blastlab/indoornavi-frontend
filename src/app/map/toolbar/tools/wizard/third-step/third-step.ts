@@ -8,6 +8,8 @@ import {AnchorSuggestedPositions} from '../../../../../anchor/anchor.type';
 import {AcceptButtonsService} from '../../../../../utils/accept-buttons/accept-buttons.service';
 import {Point} from '../../../../map.type';
 import {StepMsg, WizardData} from '../wizard';
+import {NaviIcons} from '../../../../../utils/drawing/icon.service';
+import {DrawingService} from '../../../../../utils/drawing/drawing.service';
 
 @Component({
   selector: 'app-third-step',
@@ -31,7 +33,8 @@ export class ThirdStepComponent implements WizardStep {
 
   constructor(public translate: TranslateService,
               public dialog: MdDialog,
-              private _accButtons: AcceptButtonsService) {
+              private _accButtons: AcceptButtonsService,
+              private _draw: DrawingService) {
   }
 
   public load(msg: any): void {
@@ -58,49 +61,12 @@ export class ThirdStepComponent implements WizardStep {
     map.on('click', () => {
       const coordinates: Point = {x: d3.event.offsetX, y: d3.event.offsetY};
       this.coords.push(coordinates);
+      this._draw.drawObject('anchor' + this.data.anchorId,
+        {iconName: NaviIcons.ANCHOR, fill: 'green'}, coordinates , ['wizardAnchor', 'anchorMarker']);
       map.on('click', null);
       map.style('cursor', 'default');
-      this.updateAnchorMarker();
       this.makeDecision(coordinates);
     });
-  }
-
-  private updateAnchorMarker() {
-    const anchorDist = d3.select('#map').append('g')
-      .attr('id', ('anchor' + this.data.anchorId))
-      .attr('class', 'wizardAnchor wizardSecondAnchor');
-    const marker = anchorDist.selectAll('circle').data(this.coords).enter().append('circle')
-      .attr('class', 'anchorMarker')
-      .attr('cx', function (d) {
-        return d.x;
-      })
-      .attr('cy', function (d) {
-        return d.y;
-      })
-      .attr('r', 7)
-      .style('fill', 'blue')
-      .style('opacity', 0.6);
-    const anchorDrag = d3.drag()
-      .on('start', dragStarted)
-      .on('drag', dragged)
-      .on('end', dragEnded);
-    function dragStarted() {
-      d3.select(this).raise().classed('active', true);
-    }
-    function dragged() {
-      d3.select(this).attr('cx', (d) => {
-        return d.x = Math.max(0, Math.min(d3.select('#map').attr('width'), d3.event.x));
-      })
-        .attr('cy', (d) => {
-          return d.y = Math.max(0, Math.min(d3.select('#map').attr('height'), d3.event.y));
-        });
-      d3.select('#accept-buttons').style('top', Math.max(0, Math.min((d3.select('#map').attr('height') - 100 ), d3.event.y)) + 'px');
-      d3.select('#accept-buttons').style('left', Math.max(75, Math.min((d3.select('#map').attr('width') - 75 ), d3.event.x)) + 'px');
-    }
-    function dragEnded() {
-      d3.select(this).classed('active', false);
-    }
-    marker.call(anchorDrag);
   }
 
   public makeDecision(coordinates: Point): void {
@@ -110,7 +76,9 @@ export class ThirdStepComponent implements WizardStep {
       data => {
         this.removeSuggestedPositions();
         if (data) {
-          d3.select('#map').select('#anchor' + this.data.anchorId).select('.anchorMarker').on('.drag', null);
+          const anchorGroup = d3.select('#map').select('#anchor' + this.data.anchorId).select('.anchorMarker');
+          anchorGroup.on('.drag', null);
+          anchorGroup.select('.pointer').attr('fill', 'rgba(0,0,0,0.7)');
           this.nextStepIndex.emit(this.stepIndex + 1);
         } else {
           this.clean();
@@ -120,7 +88,7 @@ export class ThirdStepComponent implements WizardStep {
   }
 
   public drawSuggestedPositions(positions: Array<Point>) {
-    const secondAnchor = d3.select('#map').select('.wizardFirstAnchor')
+    const secondAnchor = d3.select('#map')
       .data(positions);
     for (let i = 0 ; i < positions.length ; i++) {
 
@@ -133,7 +101,7 @@ export class ThirdStepComponent implements WizardStep {
     }
   }
   private removeSuggestedPositions() {
-    d3.select('#map').select('.wizardFirstAnchor').selectAll('.suggested-position').remove();
+    d3.select('#map').selectAll('.suggested-position').remove();
   }
 
   public prepareToSend(data: WizardData): StepMsg {

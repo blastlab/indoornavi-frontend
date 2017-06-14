@@ -1,55 +1,77 @@
 import {Injectable} from '@angular/core';
-import {IconService} from './icon.service';
+import {IconService, NaviIcons} from './icon.service';
 import * as d3 from 'd3';
+import {Point} from '../../map/map.type';
 
 @Injectable()
 export class DrawingService {
-
-  constructor (private _icons: IconService) {
+public static boxSize: number = 100;
+  constructor(private _icons: IconService) {
   }
 
-  /**
-  */
   public drawObject(id: string,
-                    markerParams: MarkerParams,
-                    data: object[] = [],
+                    objectParams: ObjectParams,
+                    where: Point,
                     classes: string[] = []): d3.selection {
+    if (!objectParams.size) {
+      objectParams.size = 24;
+    }
+    const boxMargin = DrawingService.boxSize / 2;
     const map = d3.select('#map');
-    const objectGroup = map.append('svg').attr('id', id);
-    const iconSvg = objectGroup.append('svg')
-      .attr('x', markerParams.x - 12)
-      .attr('y', markerParams.y - 12);
-    iconSvg.append('path')
-      .attr('d', this._icons.getIcon(markerParams.markerType))
-      .attr('stroke', 'red')
-      .attr('fill', 'green');
+    const iconHalfSize = (objectParams.size / 2);
+    const objectGroup = map.append('svg')
+      .attr('id', id)
+      .attr('class', classes[0])
+      .attr('x', where.x - boxMargin)
+      .attr('y', where.y - boxMargin);
+    this._icons.getIcon(NaviIcons.POINTER).subscribe((pointerIcon: string) => {
+      objectGroup.append('svg').attr('class', 'pointer')
+        .attr('x', (boxMargin - iconHalfSize)).attr('y', (boxMargin - iconHalfSize))
+      .html(pointerIcon)
+        .attr('fill', 'red');
+    });
+    this._icons.getIcon(objectParams.iconName).subscribe((objectIcon: string) => {
+      objectGroup.append('svg').attr('class', classes[1])
+        .attr('x', boxMargin).attr('y', boxMargin)
+        .html(objectIcon)
+        .attr('stroke', objectParams.fill)
+        .attr('fill', objectParams.fill);
+    });
+    objectGroup.append('text').attr('x', (boxMargin + iconHalfSize)).attr('y', boxMargin)
+      .attr('class', id + 'name').attr('fill', objectParams.fill).text(id);
+    objectGroup.append('circle').attr('class', 'objectArea')
+      .attr('transform', 'translate(' + (boxMargin + iconHalfSize) + ',' + (boxMargin + iconHalfSize) + ')')
+      .attr('r', iconHalfSize).attr('fill', 'rgba(255,255,255,0.1)');
+    const dragGroup = d3.drag()
+      .on('drag', this.dragGroupBehavior);
+    objectGroup.call(dragGroup);
     return objectGroup;
-  };
+  }
+
+  public dragGroupBehavior() {
+    const boxMargin = DrawingService.boxSize / 2;
+    let dx = parseInt(d3.select(this).attr('x'), null);
+    let dy = parseInt(d3.select(this).attr('y'), null);
+    dx += d3.event.dx;
+    dy += d3.event.dy;
+    d3.select(this)
+      .attr('x', Math.max(-boxMargin, Math.min(d3.select('#map').attr('width') - boxMargin, dx)))
+      .attr('y', Math.max(-boxMargin, Math.min(d3.select('#map').attr('height') - boxMargin, dy)));
+    const buttons = d3.select('#accept-buttons');
+    let bx = parseInt(buttons.style('left'), null);
+    let by = parseInt(buttons.style('top'), null);
+    bx += d3.event.dx;
+    by += d3.event.dy;
+    buttons.style('top', Math.max(0, Math.min((d3.select('#map').attr('height') - 100 ), by)) + 'px');
+    buttons.style('left', Math.max(boxMargin, Math.min((d3.select('#map').attr('width') - boxMargin ), bx)) + 'px');
+  }
+
 }
 
-export interface MarkerParams {
-  x: number;
-  y: number;
-  markerType: string;
+export interface ObjectParams {
+  iconName: string;
+  size?: number;
+  stroke?: string;
+  fill?: string;
+  opacity?: string;
 }
-
-
-/** @example usage in other component
- *
- * import {NaviIcons} from '../../../../utils/drawing/icon.service';
- * private _draw: DrawingService in constructor
- *
- * const map = d3.select('#map');
- * map.style('cursor', 'crosshair');
- * map.on('click', () => {
- *          let icon = this._draw.drawObject(
- *            'tagOne',
- *            {x: d3.event.offsetX, y: d3.event.offsetY, markerType: NaviIcons.TAG});
- * icon.on('mouseover', function () {
- *   d3.select(this).select('path').transition().duration(2000)
- *   .attr('stroke', 'blue').transition().duration(2000)
- *   .attr('stroke', 'yellow').transition().duration(2000)
- *   .attr('stroke', 'green');
- * });
- * });
- */

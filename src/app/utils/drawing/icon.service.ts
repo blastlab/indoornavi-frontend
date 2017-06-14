@@ -2,32 +2,41 @@ import {MdIconRegistry} from '@angular/material/icon/icon';
 import {DomSanitizer} from '@angular/platform-browser/src/security/dom_sanitization_service';
 import {Injectable} from '@angular/core';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
+import {Observable} from 'rxjs/Rx';
 
 @Injectable()
 export class IconService {
   materialIcons: Dictionary<string, string> = new Dictionary<string, string>();
+
   constructor(private mdIconRegistry: MdIconRegistry,
               private _sanitizer: DomSanitizer) {
-
-    // makes a dictionary with icon name and path(string) from Material Icons 'Action' category only (now) - add other categories
-    mdIconRegistry
-      .addSvgIcon('action',
-        _sanitizer.bypassSecurityTrustResourceUrl('/assets/material-icons/svg-sprites/svg-sprite-action-symbol.svg'));
-    this.mdIconRegistry.getNamedSvgIcon('action').subscribe((svgCollection: SVGElement) => {
-      const symbolsList = svgCollection.getElementsByTagName('symbol');
-      for (let i = 0; i < symbolsList.length; i++) {
-        this.materialIcons.setValue(symbolsList[i].getAttribute('id').slice(3, -5), symbolsList[i].getElementsByTagName('path')[0].getAttribute('d'));
-      }
-    });
+    this.loadCollections(['action', 'alert', 'av', 'communication',  'content', 'device', 'editor', 'file',
+      'hardware', 'image', 'maps', 'navigation', 'notification', 'places', 'social', 'toggle']);
   }
 
-  public getIcon(iconName: string): string {
-    return this.materialIcons.getValue(iconName);
+  public loadCollections(collection: string[]) {
+    for (let i = 0; i < collection.length; i++) {
+      this.mdIconRegistry
+        .addSvgIcon(collection[i], this._sanitizer
+          .bypassSecurityTrustResourceUrl('/assets/material-icons/svg-sprites/svg-sprite-' + collection[i] + '-symbol.svg'));
+      this.mdIconRegistry
+        .getNamedSvgIcon(collection[i]).subscribe((svgCollection: SVGElement) => {
+        const symbolsList = svgCollection.getElementsByTagName('symbol');
+        for (let j = 0; j < symbolsList.length; j++) {
+          this.materialIcons.setValue(symbolsList[j].getAttribute('id').slice(3, -5), symbolsList[j].innerHTML);
+        }
+      });
+    }
   }
 
+  public getIcon(iconName: string): Observable<string> {
+   return Observable.of(this.materialIcons.getValue(iconName));
+  }
 }
 
 export class NaviIcons {
   public static ANCHOR: string = 'toll';
+  public static SINK: string = 'fiber_smart_record';
   public static TAG: string = 'settings_remote';
+  public static POINTER: string = 'add';
 }

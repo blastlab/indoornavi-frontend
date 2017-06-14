@@ -8,6 +8,8 @@ import {Anchor} from '../../../../../anchor/anchor.type';
 import {AcceptButtonsService} from '../../../../../utils/accept-buttons/accept-buttons.service';
 import {Point} from '../../../../map.type';
 import {StepMsg, WizardData} from '../wizard';
+import {DrawingService} from '../../../../../utils/drawing/drawing.service';
+import {NaviIcons} from '../../../../../utils/drawing/icon.service';
 
 @Component({
   selector: 'app-first-step',
@@ -31,7 +33,8 @@ export class FirstStepComponent implements WizardStep {
 
   constructor(public translate: TranslateService,
               public dialog: MdDialog,
-              private _accButtons: AcceptButtonsService) {
+              private _accButtons: AcceptButtonsService,
+              private _draw: DrawingService) {
 
   }
 
@@ -54,60 +57,14 @@ export class FirstStepComponent implements WizardStep {
     this.dialogRef.close();
     map.on('click', () => {
       const coordinates: Point = {x: d3.event.offsetX, y: d3.event.offsetY};
+      this._draw.drawObject('sink' + this.data.shortId,
+        {iconName: NaviIcons.SINK, fill: 'blue'}, coordinates , ['wizardSink', 'sinkMarker']);
       this.coords.push(coordinates);
       map.on('click', null);
       map.style('cursor', 'default');
       this.makeDecision(coordinates);
-      this.updateSinkMarker();
     });
   }
-
-  private updateSinkMarker() {
-    const sink = d3.select('#map').append('g')
-      .attr('id', ('sink' + this.data.shortId))
-      .attr('class', 'wizardSink');
-    const marker = sink.selectAll('circle').data(this.coords).enter().append('circle')
-      .attr('class', 'sinkMarker')
-      .attr('cx', function (d) {
-        return d.x;
-      })
-      .attr('cy', function (d) {
-        return d.y;
-      })
-      .attr('r', 12)
-      .style('fill', 'green')
-      .style('opacity', 0.6);
-    /*marker.append('i')
-     .attr('class', 'material-icons')
-     .html('linear_scale');*/ // TODO make some icon in here!
-    const sinkDrag = d3.drag()
-      .on('start', dragStarted)
-      .on('drag', dragged)
-      .on('end', dragEnded);
-
-    function dragStarted() {
-      d3.select(this).raise().classed('active', true);
-    }
-
-    function dragged() {
-      d3.select(this).attr('cx', (d) => {
-        return d.x = Math.max(0, Math.min(d3.select('#map').attr('width'), d3.event.x));
-      })
-        .attr('cy', (d) => {
-          return d.y = Math.max(0, Math.min(d3.select('#map').attr('height'), d3.event.y));
-        });
-      d3.select('#accept-buttons').style('top', Math.max(0, Math.min((d3.select('#map').attr('height') - 100 ), d3.event.y)) + 'px');
-      d3.select('#accept-buttons').style('left', Math.max(75, Math.min((d3.select('#map').attr('width') - 75 ), d3.event.x)) + 'px');
-    }
-
-    function dragEnded() {
-      d3.select(this).classed('active', false);
-    }
-
-    marker.classed('draggable', true);
-    marker.call(sinkDrag);
-  }
-
 
   public makeDecision(coordinates: Point): void {
     this._accButtons.publishCoordinates(coordinates);
@@ -115,9 +72,9 @@ export class FirstStepComponent implements WizardStep {
     this._accButtons.decision$.first().subscribe(
       data => {
         if (data) {
-          const sinkMarker = d3.select('#map').select('#sink' + this.data.shortId).select('.sinkMarker');
-          sinkMarker.on('.drag', null);
-          sinkMarker.classed('draggable', false);
+          const sinkGroup = d3.select('#map').select('#sink' + this.data.shortId);
+          sinkGroup.on('.drag', null);
+          sinkGroup.select('.pointer').attr('fill', 'rgba(0,0,0,0.7)');
           this.nextStepIndex.emit(this.stepIndex + 1);
         } else {
           this.clean();

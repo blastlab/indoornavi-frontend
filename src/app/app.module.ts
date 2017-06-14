@@ -49,7 +49,7 @@ import {SecondStepComponent} from './map/toolbar/tools/wizard/second-step/second
 import {ThirdStepComponent} from './map/toolbar/tools/wizard/third-step/third-step';
 import {DrawingService} from './utils/drawing/drawing.service';
 import {Hammer} from 'hammerjs/hammer';
-import {IconService, NaviIcons} from './utils/drawing/icon.service';
+import {IconService} from './utils/drawing/icon.service';
 
 
 const appRoutes: Routes = [

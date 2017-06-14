@@ -109,13 +109,13 @@ export class WizardComponent implements Tool {
   }
 
   public manualAnchors() {
-    console.log('manualAnchors');
+    // console.log('manualAnchors');
     this.dialogRef.close();
     this.toolClicked();
   }
 
   public wizardAnchors() {
-    console.log('wizardAnchors');
+    // console.log('wizardAnchors');
     this.dialogRef.close();
     this.toolClicked();
   }
