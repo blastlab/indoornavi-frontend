@@ -26,7 +26,6 @@ export class ScaleInputComponent implements OnInit {
   };
   private floorId: number;
   public measures = [];
-  @Input() scale2: Scale;
 
   constructor(private _scaleInput: ScaleInputService,
               private _scaleHint: ScaleHintService,
