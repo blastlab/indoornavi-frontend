@@ -21,7 +21,7 @@ export class ToolbarComponent implements OnInit {
     const activate: boolean = (this.activeTool !== eventTool);
     if (!!this.activeTool) {
       this.activeTool.setInactive();
-      this.activeTool = null;
+      this.activeTool = undefined;
     }
     if (activate) {
       eventTool.setActive();

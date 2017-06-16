@@ -1,6 +1,12 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { SecondStepComponent } from './second-step';
+import {TranslateModule} from '@ngx-translate/core';
+import {MaterialModule, MdDialog} from '@angular/material';
+import {FormsModule} from '@angular/forms';
+import {HintBarService} from '../../../../hint-bar/hint-bar.service';
+import {DrawingService} from '../../../../../utils/drawing/drawing.service';
+import {AcceptButtonsService} from '../../../../../utils/accept-buttons/accept-buttons.service';
+import {IconService} from '../../../../../utils/drawing/icon.service';
 
 describe('SecondStepComponent', () => {
   let component: SecondStepComponent;
@@ -8,7 +14,9 @@ describe('SecondStepComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SecondStepComponent ]
+      imports: [TranslateModule.forRoot(), MaterialModule, FormsModule],
+      declarations: [SecondStepComponent],
+      providers: [AcceptButtonsService, IconService, DrawingService, HintBarService, MdDialog]
     })
     .compileComponents();
   }));
@@ -19,7 +27,7 @@ describe('SecondStepComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create SecondStepComponent', () => {
     expect(component).toBeTruthy();
   });
 });

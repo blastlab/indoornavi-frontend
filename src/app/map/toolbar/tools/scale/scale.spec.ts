@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ScaleComponent } from './scale';
+import {TranslateModule} from '@ngx-translate/core';
+import {MaterialModule} from '@angular/material';
 
 describe('ScaleComponent', () => {
   let component: ScaleComponent;
@@ -8,6 +10,7 @@ describe('ScaleComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
+      imports: [MaterialModule, TranslateModule.forRoot()],
       declarations: [ ScaleComponent ]
     })
     .compileComponents();
@@ -19,7 +22,7 @@ describe('ScaleComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create ScaleComponent', () => {
     expect(component).toBeTruthy();
   });
 });

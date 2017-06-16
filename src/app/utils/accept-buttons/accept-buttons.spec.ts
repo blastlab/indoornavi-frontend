@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { AcceptButtonsComponent } from './accept-buttons';
+import {AcceptButtonsService} from './accept-buttons.service';
 
 describe('AcceptButtonsComponent', () => {
   let component: AcceptButtonsComponent;
@@ -8,7 +8,8 @@ describe('AcceptButtonsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AcceptButtonsComponent ]
+      declarations: [AcceptButtonsComponent],
+      providers: [AcceptButtonsService]
     })
     .compileComponents();
   }));
@@ -19,7 +20,7 @@ describe('AcceptButtonsComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create AcceptButtonsComponent', () => {
     expect(component).toBeTruthy();
   });
 });

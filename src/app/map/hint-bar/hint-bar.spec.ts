@@ -1,14 +1,21 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { HintBarComponent } from './hint-bar';
+import {TranslateModule} from '@ngx-translate/core';
+import {HintBarService} from './hint-bar.service';
 
 describe('HintBarComponent', () => {
+
   let component: HintBarComponent;
   let fixture: ComponentFixture<HintBarComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ HintBarComponent ]
+      imports: [TranslateModule.forRoot()],
+      declarations: [HintBarComponent],
+      providers: [
+        HintBarService
+      ]
     })
     .compileComponents();
   }));
@@ -19,7 +26,7 @@ describe('HintBarComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create HintBarComponent', () => {
     expect(component).toBeTruthy();
   });
 });
