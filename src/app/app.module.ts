@@ -42,9 +42,7 @@ import {ScaleInputComponent} from './utils/scale-input/scale-input';
 import {ScaleInputService} from './utils/scale-input/scale-input.service';
 import {ScaleHintComponent} from './utils/scale-hint/scale-hint';
 import {ScaleHintService} from './utils/scale-hint/scale-hint.service';
-import {MapLoaderInformerComponent} from './utils/map-loader-informer/map-loader-informer';
 import {MapLoaderInformerService} from './utils/map-loader-informer/map-loader-informer.service';
-import {Floor} from './floor/floor.type';
 
 
 const appRoutes: Routes = [
@@ -84,8 +82,7 @@ export function HttpLoaderFactory(http: Http) {
     ToolbarComponent,
     ScaleComponent,
     ScaleInputComponent,
-    ScaleHintComponent,
-    MapLoaderInformerComponent
+    ScaleHintComponent
   ],
   entryComponents: [
     ComplexDialogComponent,

@@ -1,25 +1,29 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {MapLoaderInformerService} from './map-loader-informer.service';
 
-import {MapLoaderInformerComponent} from './map-loader-informer';
-
-describe('MapLoaderInformerComponent', () => {
-  let component: MapLoaderInformerComponent;
-  let fixture: ComponentFixture<MapLoaderInformerComponent>;
-
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [MapLoaderInformerComponent]
-    })
-      .compileComponents();
-  }));
+describe('MapLoaderInformerService', () => {
+  let service: MapLoaderInformerService;
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MapLoaderInformerComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    service = new MapLoaderInformerService();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(service).toBeTruthy();
+  });
+
+
+
+  it('Should inform that svg is NOT loaded', () => {
+    service.isLoaded$.subscribe(loaded => {
+      expect(loaded).toBeFalsy();
+    });
+    service.publishIsLoaded(false);
+  });
+
+  it('Should inform that svg is loaded', () => {
+    service.publishIsLoaded(true);
+    service.isLoaded$.subscribe(loaded => {
+      expect(loaded).toBeTruthy();
+    });
   });
 });

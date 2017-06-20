@@ -43,31 +43,32 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
               private _scaleInput: ScaleInputService,
               private _scaleHint: ScaleHintService,
               private _mapLoaderInformer: MapLoaderInformerService) {
-    this.subscription = this._mapLoaderInformer.isLoaded$.subscribe(
-      data => {
-        if (data) {
-          if (!!this.floor.scale) {
-            this.isScaleSet = true;
-            this.scale = (JSON.parse(JSON.stringify(this.floor.scale)));
-            const map = d3.select('#map')
-              .append('g')
-              .attr('id', 'scaleGroup')
-              .style('display', 'none');
-            console.log(d3.select('#scaleGroup'));
-            this.drawInitialScale();
-          }
-          console.log(d3.select('#scaleGroup'));
-          console.log(this.floor);
-          this._scaleHint.publishScale(this.floor.scale);
-        }
-      });
-  }
-
-  ngOnInit(): void {
   }
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
+  }
+
+  ngOnInit(): void {
+    this.subscription = this._mapLoaderInformer.isLoaded$.subscribe(
+      isSvgLoaded => {
+        if (isSvgLoaded) {
+         this.createSvgGroupWithScale();
+        }
+      });
+  }
+
+  private createSvgGroupWithScale(){
+    if (!!this.floor.scale) {
+      this.isScaleSet = true;
+      this.scale = (JSON.parse(JSON.stringify(this.floor.scale)));
+      const map = d3.select('#map')
+        .append('g')
+        .attr('id', 'scaleGroup')
+        .style('display', 'none');
+      this.drawInitialScale();
+    }
+    this._scaleHint.publishScale(this.floor.scale);
   }
 
   private drawInitialScale(): void {

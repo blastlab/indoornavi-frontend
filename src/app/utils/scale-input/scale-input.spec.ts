@@ -23,18 +23,9 @@ describe('ScaleInputComponent', () => {
   let route: ActivatedRoute;
   let toastService: ToastService;
   let scaleHintService: ScaleHintService;
-  let scale = <Scale>{
-    start: <Point>{
-      x: 123,
-      y: 234
-    },
-    stop: <Point>{
-      x: 567,
-      y: 789
-    },
-    realDistance: 234,
-    measure: MeasureEnum.METERS
-  };
+  let scaleInputService: ScaleInputComponent;
+  let floorService: FloorService;
+  let scale: Scale;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -55,57 +46,71 @@ describe('ScaleInputComponent', () => {
     route = fixture.debugElement.injector.get(ActivatedRoute);
     toastService = fixture.debugElement.injector.get(ToastService);
     scaleHintService = fixture.debugElement.injector.get(ScaleHintService);
+    scaleInputService = fixture.debugElement.injector.get(ScaleInputService);
+    floorService = fixture.debugElement.injector.get(FloorService);
     fixture.detectChanges();
     spyOn(toastService, 'showSuccess');
     spyOn(toastService, 'showFailure');
-
+    scale = <Scale>{
+      start: <Point>{
+        x: 123,
+        y: 456
+      },
+      stop: <Point>{
+        x: 789,
+        y: 101
+      },
+      realDistance: 112,
+      measure: MeasureEnum.METERS
+    };
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('Saves scale in DB and checks if scale is properly created', () => {
-    it('should save scale in DB', () => {
-      // given
-      spyOn(scaleHintService, 'publishScale');
-      component.scale = scale;
-      const valid = true;
+  it('should save scale in DB', () => {
+    // given
+    spyOn(scaleHintService, 'publishScale');
+    spyOn(floorService, 'setScale').and.callThrough();
+    component.scale = scale;
+    // component.s
+    const valid = true;
 
-      // when
-      component.save(valid);
+    // when
+    component.save(valid);
 
-      // then
-      expect(scaleHintService.publishScale).toHaveBeenCalled();
-      expect(toastService.showSuccess).toHaveBeenCalled();
-      expect(toastService.showFailure).not.toHaveBeenCalled();
-    });
+    // then
+    expect(floorService.setScale).toHaveBeenCalled();
+    expect(scaleHintService.publishScale).toHaveBeenCalled();
+    expect(toastService.showSuccess).toHaveBeenCalled();
+    expect(toastService.showFailure).not.toHaveBeenCalled();
+  });
 
-    it('should NOT save scale in DB because of Measure unit not set', () => {
-      // given
-      component.scale = scale;
-      component.scale.measure = null;
-      const valid = true;
+  it('should NOT save scale in DB because of Measure unit not set', () => {
+    // given
+    component.scale = scale;
+    component.scale.measure = null;
+    const valid = true;
 
-      // when
-      component.save(valid);
+    // when
+    component.save(valid);
 
-      // then
-      expect(toastService.showSuccess).not.toHaveBeenCalled();
-      expect(toastService.showFailure).toHaveBeenCalled();
-    });
+    // then
+    expect(toastService.showSuccess).not.toHaveBeenCalled();
+    expect(toastService.showFailure).toHaveBeenCalled();
+  });
 
-    it('should NOT save scale in DB because of invalid real distance', () => {
-      // given
-      component.scale = scale;
-      const valid = false;
+  it('should NOT save scale in DB because of invalid real distance', () => {
+    // given
+    component.scale = scale;
+    const valid = false;
 
-      // when
-      component.save(valid);
+    // when
+    component.save(valid);
 
-      // then
-      expect(toastService.showSuccess).not.toHaveBeenCalled();
-      expect(toastService.showFailure).toHaveBeenCalled();
-    });
+    // then
+    expect(toastService.showSuccess).not.toHaveBeenCalled();
+    expect(toastService.showFailure).toHaveBeenCalled();
   });
 });

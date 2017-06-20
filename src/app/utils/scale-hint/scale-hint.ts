@@ -10,11 +10,14 @@ import {ScaleHintService} from './scale-hint.service';
   templateUrl: './scale-hint.html',
   styleUrls: ['./scale-hint.css']
 })
-export class ScaleHintComponent implements OnInit, OnDestroy {
+export class ScaleHintComponent implements OnDestroy, OnInit {
   @Input() scale: Scale;
 
   constructor(private translate: TranslateService,
               private _scaleHint: ScaleHintService) {
+  }
+
+  ngOnInit(): void {
     this._scaleHint.scale$.subscribe(
       data => {
         this.scale = data;
@@ -22,14 +25,7 @@ export class ScaleHintComponent implements OnInit, OnDestroy {
       });
   }
 
-  ngOnInit() {
-  }
-
-  ngOnDestroy() {
-    this.scale = null;
-  }
-
-  private showScaleValue = (): void => {
+  public showScaleValue() {
     if (!!this.scale) {
       let unit: String;
       (this.scale.measure.toString() === MeasureEnum[0]) ? unit = 'cm' : unit = 'm';
@@ -43,5 +39,9 @@ export class ScaleHintComponent implements OnInit, OnDestroy {
           .text(value);
       });
     }
+  }
+
+  ngOnDestroy() {
+    this.scale = null;
   }
 }
