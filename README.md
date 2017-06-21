@@ -27,10 +27,19 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 ## Running unit tests
 
 Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+In order to execute only one unit test, go to `test.ts` file and change line
+```javascript
+const context = require.context('./', true, /\.spec\.ts$/);
+```
+to
+```javascript
+const context = require.context('./', true, /TESTFILE\.spec\.ts$/);
+```
 
 ## Running end-to-end tests
 
 Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+To execute only one e2e test run `ng e2e --specs e2e/path/to/file/testfile.ts`
 Before running the tests make sure you are serving the app via `ng serve`.
 
 ## Adding new translations to the en.json file (you can also access the value manually)
