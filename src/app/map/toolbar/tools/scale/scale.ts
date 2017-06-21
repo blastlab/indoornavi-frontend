@@ -66,12 +66,12 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
         .append('g')
         .attr('id', 'scaleGroup')
         .style('display', 'none');
-      this.drawInitialScale();
+      this.drawScaleFromDB();
     }
     this._scaleHint.publishScale(this.floor.scale);
   }
 
-  private drawInitialScale(): void {
+  private drawScaleFromDB(): void {
     this.pointsArray[0] = this.scale.start;
     this.pointsArray[1] = this.scale.stop;
     this.linesArray[0] = this.createLine();
@@ -86,6 +86,13 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.clickedTool.emit(this);
   }
 
+  private setTranslations() {
+    this.translate.setDefaultLang('en');
+    this.translate.get('click.at.map.to.set.scale').subscribe((value: string) => {
+      this.hintMessage = value;
+    });
+  }
+
   public setActive(): void {
     this.active = true;
     this.startDrawingScale();
@@ -94,28 +101,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   public setInactive(): void {
     this.hideScale();
     this.active = false;
-  }
-
-  private setTranslations() {
-    this.translate.setDefaultLang('en');
-    this.translate.get('click.at.map.to.set.scale').subscribe((value: string) => {
-      this.hintMessage = value;
-    });
-  }
-
-  private hideScale(): void {
-    this._scaleInput.publishVisibility(false);
-
-    d3.select('#map').style('cursor', 'default');
-    d3.select('#scaleGroup').style('display', 'none');
-    d3.select('#mapBg').on('click', null);
-    d3.select('#scaleHint')
-      .on('mouseover', function () {
-        d3.select('#scaleGroup').style('display', 'flex');
-      })
-      .on('mouseout', function () {
-        d3.select('#scaleGroup').style('display', 'none');
-      });
   }
 
   private startDrawingScale = (): void => {
@@ -151,6 +136,21 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.redrawLine();
     this.redrawEndings();
     this.redrawPoints();
+  }
+
+  private hideScale(): void {
+    this._scaleInput.publishVisibility(false);
+
+    d3.select('#map').style('cursor', 'default');
+    d3.select('#scaleGroup').style('display', 'none');
+    d3.select('#mapBg').on('click', null);
+    d3.select('#scaleHint')
+      .on('mouseover', function () {
+        d3.select('#scaleGroup').style('display', 'flex');
+      })
+      .on('mouseout', function () {
+        d3.select('#scaleGroup').style('display', 'none');
+      });
   }
 
   private addPoint = (): void => {
