@@ -1,0 +1,36 @@
+<form #userForm="ngForm" novalidate>
+  <div class="form-control">
+    <md-input-container>
+      <input id="user-name-input" name="username" [(ngModel)]="user.username" #username="ngModel" required type="text"
+             mdInput
+             placeholder="{{'user.username'|translate}}">
+      <md-hint>
+        <small [hidden]="username.valid || (username.pristine && !userForm.submitted)" [translate]="'user.username.required'"></small>
+      </md-hint>
+    </md-input-container>
+  </div>
+
+  <div class="form-control">
+    <md-input-container>
+      <input id="user-password-input" name="password" [(ngModel)]="user.password" #password="ngModel" required type="password"
+             mdInput
+             placeholder="{{'user.password'|translate}}">
+      <md-hint>
+        <small [hidden]="password.valid || (password.pristine && !userForm.submitted)" [translate]="'user.password.required'"></small>
+      </md-hint>
+    </md-input-container>
+  </div>
+
+  <div class="form-control">
+    <md-input-container>
+      <input id="user-repeat-password-input" name="repeatPassword" [(ngModel)]="repeatPassword" #repeatPasswordInput="ngModel" required type="password"
+             mdInput
+             placeholder="{{'user.repeatPassword'|translate}}">
+      <md-hint>
+        <small [hidden]="repeatPasswordInput.valid || (repeatPasswordInput.pristine && !userForm.submitted)" [translate]="'user.repeatPassword.required'"></small>
+      </md-hint>
+    </md-input-container>
+  </div>
+
+  <button id="user-save-button" type="submit" md-raised-button (click)="save(userForm.valid)">{{'save'|translate}}</button>
+</form>

@@ -10,7 +10,6 @@ import {Building} from './building.type';
 })
 export class BuildingDialogComponent implements OnInit {
   building: Building;
-  public name: string = '';
 
   constructor(private dialogRef: MdDialogRef<BuildingDialogComponent>, public translate: TranslateService) {
   }

@@ -35,6 +35,9 @@ import {MapControllerComponent} from './map/map.controller';
 import {MapViewerComponent} from './map/map.viewer';
 import {MapUploaderComponent} from './map/map.uploader';
 import {MapService} from './map/map.service';
+import {UserComponent} from './user/user';
+import {UserDialogComponent} from './user/user.dialog';
+import {UserService} from './user/user.service';
 
 
 const appRoutes: Routes = [
@@ -43,6 +46,7 @@ const appRoutes: Routes = [
   {path: 'complexes/:complexId/buildings', component: BuildingComponent},
   {path: 'anchors', component: AnchorComponent},
   {path: 'tags', component: TagComponent},
+  {path: 'users', component: UserComponent},
   {path: 'complexes/:complexId/buildings/:buildingId/floors', component: FloorComponent},
   {path: 'complexes/:complexId/buildings/:buildingId/floors/:floorId/map', component: MapControllerComponent},
   {path: '**', redirectTo: '/complexes'}
@@ -69,7 +73,9 @@ export function HttpLoaderFactory(http: Http) {
     TagComponent,
     MapControllerComponent,
     MapViewerComponent,
-    MapUploaderComponent
+    MapUploaderComponent,
+    UserComponent,
+    UserDialogComponent
   ],
   entryComponents: [
     ComplexDialogComponent,
@@ -78,6 +84,7 @@ export function HttpLoaderFactory(http: Http) {
     DeviceDialogComponent,
     BuildingConfirmComponent,
     FloorDialogComponent,
+    UserDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -106,7 +113,8 @@ export function HttpLoaderFactory(http: Http) {
     WebSocketService,
     SocketService,
     DeviceService,
-    MapService
+    MapService,
+    UserService
   ], bootstrap: [AppComponent]
 })
 

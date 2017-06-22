@@ -1,4 +1,4 @@
-import {MdDialogModule, MaterialModule} from '@angular/material';
+import {MaterialModule, MdDialogModule} from '@angular/material';
 import {NgModule} from '@angular/core';
 import {ComplexDialogComponent} from '../../complex/complex.dialog';
 import {ComplexConfirmComponent} from '../../complex/complex.confirm';
@@ -9,6 +9,7 @@ import {BuildingConfirmComponent} from '../../building/building.confirm';
 import {FloorDialogComponent} from '../../floor/floor.dialog';
 import {DeviceDialogComponent} from '../../device/device.dialog';
 import {CommonModule} from '@angular/common';
+import {UserDialogComponent} from '../../user/user.dialog';
 
 const DIALOGS = [
   ComplexDialogComponent,
@@ -16,7 +17,8 @@ const DIALOGS = [
   ComplexConfirmComponent,
   BuildingDialogComponent,
   BuildingConfirmComponent,
-  FloorDialogComponent
+  FloorDialogComponent,
+  UserDialogComponent
 ];
 
 @NgModule({
