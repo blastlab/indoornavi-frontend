@@ -11,18 +11,18 @@ import {TranslateService} from '@ngx-translate/core';
   styleUrls: ['../tool.css', ]
 })
 export class ScaleComponent implements Tool {
-  @Output() clickedScale: EventEmitter<Tool> = new EventEmitter<Tool>();
+  @Output() clicked: EventEmitter<Tool> = new EventEmitter<Tool>();
   public hintMessage: String;
   // private scale: Scale;  // use for scale data
   public active: boolean = false;
   public toolEnum: ToolsEnum = ToolsEnum.SCALE; // used in hint-bar component as a toolName
 
   constructor(private translate: TranslateService) {
+    this.setTranslations();
   }
 
   public toolClicked(): void {
-    this.setTranslations();
-    this.clickedScale.emit(this);
+    this.clicked.emit(this);
   }
 
   public setActive(): void {

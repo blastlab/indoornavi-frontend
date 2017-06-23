@@ -7,7 +7,6 @@ import {MaterialModule} from '@angular/material';
 import {FirstStepComponent} from './tools/wizard/first-step/first-step';
 import {SecondStepComponent} from './tools/wizard/second-step/second-step';
 import {ThirdStepComponent} from './tools/wizard/third-step/third-step';
-import {Tool} from './tools/tool';
 import {FormsModule} from '@angular/forms';
 import {SocketService} from '../../utils/socket/socket.service';
 import {WebSocketService} from 'angular2-websocket-service';
@@ -16,8 +15,6 @@ import {HintBarService} from '../hint-bar/hint-bar.service';
 import {AcceptButtonsService} from '../../utils/accept-buttons/accept-buttons.service';
 import {DrawingService} from '../../utils/drawing/drawing.service';
 import {IconService} from '../../utils/drawing/icon.service';
-import {ToolsEnum} from './tools/tools.enum';
-import {isNullOrUndefined} from 'util';
 
 describe('ToolbarComponent', () => {
   let component: ToolbarComponent;

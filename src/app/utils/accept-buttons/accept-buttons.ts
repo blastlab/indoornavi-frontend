@@ -25,9 +25,10 @@ export class AcceptButtonsComponent {
       });
   }
 
-  public decide(decision: boolean): void {
+  public decide(decision: boolean): boolean {
     this._accButtons.publishDecision(decision);
     this.hide();
+    return decision;
   }
 
   private hide(): void {

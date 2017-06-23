@@ -48,18 +48,23 @@ export class SecondStepComponent implements WizardStep {
     this.translate.get(this.title).subscribe((text: string) => {
       this._hintBar.publishHint(text);
     });
-    this.dialogRef = this.dialog.open(this.dialogTemplate, {disableClose: true});
+    this.dialogRef = this.dialog.open(this.dialogTemplate);
+    this.dialogRef.afterClosed().subscribe((place: boolean) => {
+      if (place === true) {
+        this.placeOnMap(this.data);
+      } else {
+        this.closeWizard(place);
+      }
+    });
   }
 
   public placeOnMap(data: AnchorDistance): void {
     this.coords = [];
-    this.data = data;
     const map: d3.selector = d3.select('#map');
     map.style('cursor', 'crosshair');
     this.translate.get('wizard.click.place.anchor').subscribe((text: string) => {
       this._hintBar.publishHint(text + this.data.anchorId + '.');
     });
-    this.dialogRef.close();
     this.drawSinkDistance(this.data.distance);
     map.on('click', () => {
       const coordinates: Point = {x: d3.event.offsetX, y: d3.event.offsetY};
@@ -155,12 +160,14 @@ export class SecondStepComponent implements WizardStep {
   public clean(): void {
     this.coords = [];
     if (!!this.data) {
-      d3.select('#map').select('#anchor' + this.data.anchorId).remove();
+      const map = d3.select('#map');
+      map.select('#anchor' + this.data.anchorId).remove();
+      map.select('#sinkDistance').remove();
       this.data = null;
     }
-    this.dialogRef.close();
   }
-  public closeWizard(): void {
-    this.clearView.emit(true);
+
+  public closeWizard(clean): void {
+    this.clearView.emit(clean);
   }
 }

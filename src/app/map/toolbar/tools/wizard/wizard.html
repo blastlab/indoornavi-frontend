@@ -1,19 +1,35 @@
-<button class="wizard-button" [ngClass]="{'active-tool' : active}" (click)="toolClicked()" md-mini-fab
+<button class="wizard-button" [ngClass]="{'active-tool' : active}" (click)="emitToggleActive()" md-mini-fab
         md-tooltip="{{'wizard.tooltip'|translate}}" mdTooltipPosition="left">
   <i class="material-icons">device_hub</i>
 </button>
-<app-first-step #firstStep (clearView)="closeWizard($event)" (nextStepIndex)="wizardNextStep($event)"></app-first-step>
-<app-second-step #secondStep (clearView)="closeWizard($event)" (nextStepIndex)="wizardNextStep($event)"></app-second-step>
-<app-third-step #thirdStep (clearView)="closeWizard($event)" (nextStepIndex)="wizardNextStep($event)"></app-third-step>
+<app-first-step #firstStep (clearView)="wizardStopped($event)"
+                (nextStepIndex)="wizardNextStep($event)"></app-first-step>
+<app-second-step #secondStep (clearView)="wizardStopped($event)"
+                 (nextStepIndex)="wizardNextStep($event)"></app-second-step>
+<app-third-step #thirdStep (clearView)="wizardStopped($event)"
+                (nextStepIndex)="wizardNextStep($event)"></app-third-step>
 
 <template>
-  <h3>{{'basic.configuration.complete'|translate}}</h3>
-  <h4>{{'left.over.anchors?'|translate}}</h4>
-  <span>
+  <span class="wizard-dialog" *ngIf="!wizardCompleted">
+    <h3>{{'basic.configuration.not.complete'|translate}}</h3>
+    <span>
     <div class="dialog-action">
-     <button class="dialog-wizard-button" (click)="manualAnchors()" md-raised-button>{{'set.manual'|translate}}</button>
-      <button class="dialog-wizard-button" (click)="wizardAnchors()" md-raised-button>{{'let.wizard.place'|translate}}</button>
+      <button class="dialog-wizard-button" (click)="backToWizard()"
+              md-raised-button>{{'back.to.wizard'|translate}}</button>
+      <button class="dialog-wizard-button" (click)="wizardStopped(true)"
+              md-raised-button>{{'exit.wizard'|translate}}</button>
     </div>
+    </span>
+  </span>
+  <span class="wizard-dialog" *ngIf="wizardCompleted">
+    <h3>{{'basic.configuration.complete'|translate}}</h3>
+    <!--<h4>{{'left.over.anchors?'|translate}}</h4>-->
+    <!--<span>
+      <div class="dialog-action">
+       <button class="dialog-wizard-button" (click)="manualAnchors()" md-raised-button>{{'set.manual'|translate}}</button>
+        <button class="dialog-wizard-button" (click)="wizardAnchors()" md-raised-button>{{'let.wizard.place'|translate}}</button>
+      </div>
+    </span>-->
   </span>
 </template>
 

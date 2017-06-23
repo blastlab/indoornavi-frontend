@@ -11,6 +11,7 @@ import {IconService} from '../../../../../utils/drawing/icon.service';
 describe('SecondStepComponent', () => {
   let component: SecondStepComponent;
   let fixture: ComponentFixture<SecondStepComponent>;
+  let dialog: MdDialog;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -18,16 +19,22 @@ describe('SecondStepComponent', () => {
       declarations: [SecondStepComponent],
       providers: [AcceptButtonsService, IconService, DrawingService, HintBarService, MdDialog]
     })
-    .compileComponents();
-  }));
+      .compileComponents();
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(SecondStepComponent);
     component = fixture.componentInstance;
+    dialog = fixture.debugElement.injector.get(MdDialog);
     fixture.detectChanges();
-  });
+  }));
 
   it('should create SecondStepComponent', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should open a dialog box', () => {
+    spyOn(dialog, 'open').and.callThrough();
+    expect(dialog.open).not.toHaveBeenCalled();
+    component.openDialog();
+    expect(dialog.open).toHaveBeenCalled();
   });
 });

@@ -23,4 +23,10 @@ describe('AcceptButtonsComponent', () => {
   it('should create AcceptButtonsComponent', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should publish next value for decision$ observable', () => {
+    expect(component.decide(false)).toEqual(false);
+    expect(component.decide(true)).toEqual(true);
+  });
+
 });

@@ -12,7 +12,6 @@ import {HintBarService} from './hint-bar.service';
 })
 export class HintBarComponent implements OnInit, OnChanges {
   @Input() tool: Tool;
-  public toolMsg: String;
   public toolName: String;
   public hintMsg: String;
   public mousePos: Point = {x: 0, y: 0};
@@ -23,20 +22,24 @@ export class HintBarComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.setTranslations();
-    this._hintBar.hint$.subscribe((message: string) => {
-      this.hintMsg = (message) ? message : this.toolMsg;
+    this.translate.get('choose.a.tool').subscribe((value: string) => {
+      this.setHint(value);
     });
   }
 
   ngOnChanges(): void {
     this.toolName = (this.tool) ? ToolsEnum[this.tool.toolEnum] : ToolsEnum[ToolsEnum.NONE];
+    this._hintBar.hint$.subscribe((message: string) => {
+      this.setHint(message);
+    });
   }
 
   private setTranslations() {
     this.translate.setDefaultLang('en');
-    this.translate.get('choose.a.tool').subscribe((value: string) => {
-      this.toolMsg = value;
-    });
+  }
+
+  public setHint(defaultMsg: string) {
+    this.hintMsg = defaultMsg;
   }
 
 }

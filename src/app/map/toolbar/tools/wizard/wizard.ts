@@ -20,11 +20,13 @@ import {HintBarService} from '../../../hint-bar/hint-bar.service';
   styleUrls: ['../tool.css']
 })
 export class WizardComponent implements Tool {
-  @Output() clickedWizard: EventEmitter<Tool> = new EventEmitter<Tool>();
+
+  @Output() clicked: EventEmitter<Tool> = new EventEmitter<Tool>();
   public toolEnum: ToolsEnum = ToolsEnum.WIZARD; // used in hint-bar component as a toolName
   public hintMessage: string;
   public active: boolean = false;
   public activeStep: WizardStep;
+  public wizardCompleted: boolean;
   private socketSubscription: Subscription;
   private wizardData: WizardData;
   private steps: Array<WizardStep> = [];
@@ -41,9 +43,27 @@ export class WizardComponent implements Tool {
               private toastService: ToastService,
               private ngZone: NgZone,
               private _hintBar: HintBarService) {
+    this.setTranslations();
   }
 
-  private initSocket(): void {
+  public emitToggleActive(): void {
+    this.clicked.emit(this);
+  }
+
+  public setActive(): void {
+    this.active = true;
+    this.initWizard();
+    this.wizardCompleted = false;
+  }
+
+  private setTranslations(): void {
+    this.translate.setDefaultLang('en');
+    this.translate.get('wizard.first.message').subscribe((value: string) => {
+      this.hintMessage = value;
+    });
+  }
+
+  private initWizard(): void {
     this.steps = [this.firstStep, this.secondStep, this.thirdStep];
     this.activeStep = this.firstStep;
     this.activeStep.openDialog();
@@ -57,31 +77,13 @@ export class WizardComponent implements Tool {
     });
   }
 
-  private destroySocket(): void {
-    if (this.socketSubscription) {
-      this.socketSubscription.unsubscribe();
-    }
-  }
-
-  public toolClicked(): void {
-    this.clickedWizard.emit(this);
-  }
-
-  public setActive(): void {
-    this.setTranslations();
-    this.active = true;
-    this.initSocket();
-  }
-
   public setInactive(): void {
-    this.cleanAll();
+    if (!this.wizardCompleted) {
+      this.cleanAll();
+    }
     this._hintBar.publishHint(null);
     this.active = false;
     this.destroySocket();
-  }
-
-  public closeWizard(): void {
-    this.toolClicked();
   }
 
   private cleanAll(): void {
@@ -92,17 +94,19 @@ export class WizardComponent implements Tool {
     }
   }
 
-  private setTranslations(): void {
-    this.translate.setDefaultLang('en');
-    this.translate.get('wizard.first.message').subscribe((value: string) => {
-      this.hintMessage = value;
-    });
+  private destroySocket(): void {
+    if (this.socketSubscription) {
+      this.socketSubscription.unsubscribe();
+    }
   }
 
   public wizardNextStep(nextStepIndex: number): void {
     if (nextStepIndex === this.steps.length) {
-      this.dialogRef = this.dialog.open(this.dialogTemplate, {disableClose: true});
-      // this.toolClicked(); -> wizard was completed, warn user (need to save state)
+      this.wizardCompleted = true;
+      this.dialogRef = this.dialog.open(this.dialogTemplate);
+      this.dialogRef.afterClosed().subscribe(() => {
+        this.emitToggleActive();
+      });
     } else {
       const message: StepMsg = this.activeStep.prepareToSend(this.wizardData);
       this.socketService.send(this.handleMessage(message));
@@ -111,16 +115,34 @@ export class WizardComponent implements Tool {
     }
   }
 
+  public wizardStopped(endWizard: boolean) {
+    if (endWizard === true) {
+      this.cleanAll();
+      this.dialogRef.close();
+      this.emitToggleActive();
+    } else {
+      this.dialogRef = this.dialog.open(this.dialogTemplate, {disableClose: true});
+      this.dialogRef.afterClosed().subscribe(() => {
+        this.dialogRef = null;
+      });
+    }
+  }
+
+  public backToWizard() {
+    this.dialogRef.close();
+    this.activeStep.openDialog();
+  }
+
   public manualAnchors() {
     // console.log('manualAnchors');
     this.dialogRef.close();
-    this.toolClicked();
+    this.emitToggleActive();
   }
 
   public wizardAnchors() {
     // console.log('wizardAnchors');
     this.dialogRef.close();
-    this.toolClicked();
+    this.emitToggleActive();
   }
 
   private handleMessage(msg): SocketMsg {

@@ -37,7 +37,6 @@ export class FirstStepComponent implements WizardStep {
               private _accButtons: AcceptButtonsService,
               private _draw: DrawingService,
               private _hintBar: HintBarService) {
-
   }
 
   public load(msg: any): void {
@@ -51,18 +50,23 @@ export class FirstStepComponent implements WizardStep {
     this.translate.get('wizard.dialog.select.sink').subscribe((text: string) => {
       this._hintBar.publishHint(text);
     });
-    this.dialogRef = this.dialog.open(this.dialogTemplate, {disableClose: true});
+    this.dialogRef = this.dialog.open(this.dialogTemplate);
+    this.dialogRef.afterClosed().subscribe((place: boolean) => {
+      if (place === true) {
+        this.placeOnMap(this.data);
+      } else {
+        this.closeWizard(place);
+      }
+    });
   }
 
   public placeOnMap(data: Anchor): void {
     this.coords = [];
-    this.data = data;
     const map: d3.selector = d3.select('#map');
     map.style('cursor', 'crosshair');
     this.translate.get('wizard.click.place.sink').subscribe((text: string) => {
       this._hintBar.publishHint(text + this.data.shortId + '.');
     });
-    this.dialogRef.close();
     map.on('click', () => {
       const coordinates: Point = {x: d3.event.offsetX, y: d3.event.offsetY};
       this._draw.drawObject('sink' + this.data.shortId,
@@ -88,7 +92,9 @@ export class FirstStepComponent implements WizardStep {
     this._accButtons.decision$.first().subscribe(
       data => {
         if (data) {
-          const sinkGroup = d3.select('#map').select('#sink' + this.data.shortId);
+          const map = d3.select('#map');
+          const sinkGroup = map.select('#sink' + this.data.shortId);
+          map.style('cursor', 'default');
           sinkGroup.on('.drag', null);
           sinkGroup.select('.pointer').attr('fill', 'rgba(0,0,0,0.7)');
           this.nextStepIndex.emit(this.stepIndex + 1);
@@ -100,8 +106,6 @@ export class FirstStepComponent implements WizardStep {
   }
 
   public prepareToSend(data: WizardData): StepMsg {
-    /*this._hintBar.publishHint('Sink' + this.data.shortId +
-     ' has been positioned into [' + this.coords[0].x + ',' + this.coords[0].y + ']');*/
     return {
       socketData: {
         sinkShortId: this.data.shortId,
@@ -124,13 +128,13 @@ export class FirstStepComponent implements WizardStep {
     this.coords = [];
     if (!!this.data) {
       d3.select('#map').select('#sink' + this.data.shortId).remove();
+      d3.select('#map').style('cursor', 'default');
       this._accButtons.publishVisibility(false);
       this.data = null;
     }
-    this.dialogRef.close();
   }
 
-  public closeWizard(): void {
-    this.clearView.emit(true);
+  public closeWizard(clean): void {
+    this.clearView.emit(clean);
   }
 }

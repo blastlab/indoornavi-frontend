@@ -12,7 +12,7 @@ export interface WizardStep {
   openDialog(): void;
   placeOnMap(data: any): void;
   clean(): void;
-  closeWizard(): void;
+  closeWizard(clean: boolean): void;
   prepareToSend(wizardData: WizardData): StepMsg;
   makeDecision(where: Point): void;
 }
