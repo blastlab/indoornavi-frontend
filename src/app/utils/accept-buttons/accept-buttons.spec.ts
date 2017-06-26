@@ -5,6 +5,7 @@ import {AcceptButtonsService} from './accept-buttons.service';
 describe('AcceptButtonsComponent', () => {
   let component: AcceptButtonsComponent;
   let fixture: ComponentFixture<AcceptButtonsComponent>;
+  let acceptButtons: AcceptButtonsService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -17,6 +18,7 @@ describe('AcceptButtonsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AcceptButtonsComponent);
     component = fixture.componentInstance;
+    acceptButtons = fixture.debugElement.injector.get(AcceptButtonsService);
     fixture.detectChanges();
   });
 
@@ -24,9 +26,33 @@ describe('AcceptButtonsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should publish next value for decision$ observable', () => {
-    expect(component.decide(false)).toEqual(false);
-    expect(component.decide(true)).toEqual(true);
+  it('should set o visible when service observable `visibility$` changed to true', () => {
+    acceptButtons.visibility$.subscribe(async (visibility) => {
+      expect(visibility).toBeTruthy();
+    });
+    acceptButtons.publishVisibility(true);
+  });
+
+  it('should have found `#accept-buttons` element', () => {
+    expect(fixture.nativeElement.querySelector('#accept-buttons')).toBeTruthy();
+  });
+
+  it('should publish next value for decision$ observable and hide (false)', () => {
+    spyOn(component, 'decide').and.callThrough();
+    component.decide(false);
+    acceptButtons.decision$.subscribe(async (decision) => {
+      expect(decision).toBeFalsy();
+    });
+    expect(component.visible).toEqual(false);
+  });
+
+  it('should publish next value for decision$ observable and hide (true)', () => {
+    spyOn(component, 'decide').and.callThrough();
+    component.decide(true);
+    acceptButtons.decision$.subscribe(async (decision) => {
+      expect(decision).toBeTruthy();
+    });
+    expect(component.visible).toEqual(false);
   });
 
 });

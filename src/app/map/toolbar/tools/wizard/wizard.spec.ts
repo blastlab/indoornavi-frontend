@@ -166,5 +166,10 @@ describe('WizardComponent', () => {
     spyOn(component.dialogRef, 'close').and.callThrough();
     component.manualAnchors();
     expect(component.dialogRef.close).toHaveBeenCalled();
+    component.wizardNextStep(3);
+    expect(component.dialogRef).toBeDefined();
+    spyOn(component.dialogRef, 'close').and.callThrough();
+    component.wizardAnchors();
+    expect(component.dialogRef.close).toHaveBeenCalled();
   });
 });

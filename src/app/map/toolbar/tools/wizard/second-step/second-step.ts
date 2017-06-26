@@ -40,9 +40,15 @@ export class SecondStepComponent implements WizardStep {
   }
 
   public load(msg: any): void {
-    this.socketData.add(msg);
+    if (this.isDistanceType(msg)) {
+      this.socketData.add(msg);
+    }
     this.isLoading = (!this.socketData.size());
     }
+
+  protected isDistanceType(checkType: any): boolean {
+    return (<AnchorDistance>checkType.distance) !== undefined;
+  }
 
   public openDialog(): void {
     this.translate.get(this.title).subscribe((text: string) => {
@@ -120,14 +126,6 @@ export class SecondStepComponent implements WizardStep {
   }
   private removeSinkDistance() {
     d3.select('#map').select('#sinkDistance').remove();
-  }
-
-  public showSinkDistance() {
-   d3.select('#map').select('#sinkDistance').style('display', 'flex');
-  }
-
-  public hideSinkDistance() {
-   d3.select('#map').select('#sinkDistance').style('display', 'none');
   }
 
   public prepareToSend(data: WizardData): StepMsg {

@@ -1,5 +1,5 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { FirstStepComponent } from './first-step';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {FirstStepComponent} from './first-step';
 import {TranslateModule} from '@ngx-translate/core';
 import {MaterialModule, MdDialog} from '@angular/material';
 import {FormsModule} from '@angular/forms';
@@ -8,11 +8,14 @@ import {DrawingService} from '../../../../../utils/drawing/drawing.service';
 import {AcceptButtonsService} from '../../../../../utils/accept-buttons/accept-buttons.service';
 import {IconService} from '../../../../../utils/drawing/icon.service';
 import {Anchor} from '../../../../../anchor/anchor.type';
+import createSpy = jasmine.createSpy;
+import {SocketMsg, WizardData} from '../wizard';
 
 describe('FirstStepComponent', () => {
   let component: FirstStepComponent;
   let fixture: ComponentFixture<FirstStepComponent>;
   let dialog: MdDialog;
+  let acceptButtons: AcceptButtonsService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -25,6 +28,7 @@ describe('FirstStepComponent', () => {
     fixture = TestBed.createComponent(FirstStepComponent);
     component = fixture.componentInstance;
     dialog = fixture.debugElement.injector.get(MdDialog);
+    acceptButtons = fixture.debugElement.injector.get(AcceptButtonsService);
     fixture.detectChanges();
   }));
 
@@ -56,14 +60,57 @@ describe('FirstStepComponent', () => {
     expect(component.socketData.size()).toEqual(2);
   });
 
-  // test TODO placing on map (coords and DOM should be equal)
-  it('should place sink on map', () => {
-
+  it('should set sinkShortId into StepMsg and sinkPosition in wizardData', () => {
+    const anchor: Anchor = {shortId: 339, longId: 42152, verified: true};
+    component.data = anchor;
+    component.coords = [{x: 543, y: 623}];
+    const givenWizardData: WizardData = {
+      sinkShortId: null,
+      sinkPosition: null,
+      anchorShortId: null,
+      degree: null,
+      firstAnchorPosition: null,
+      secondAnchorPosition: null
+    };
+    const expectedSocketData: SocketMsg = {
+      sinkShortId: 339,
+      sinkPosition: null,
+      anchorShortId: null,
+      degree: null
+    };
+    const expectedStepMsg = {
+      socketData: expectedSocketData,
+      wizardData: {
+        sinkShortId: 339,
+        sinkPosition: {x: 543, y: 623},
+        anchorShortId: null,
+        degree: null,
+        firstAnchorPosition: null,
+        secondAnchorPosition: null
+      }
+    };
+    const message = component.prepareToSend(givenWizardData);
+    expect(message).toEqual(expectedStepMsg);
   });
-  // test TODO makeDecision -> accButtons tests...
 
-  // test TODO message validity
+  it('should clean data in FirstStep', () => {
+    component.coords = [{x: 543, y: 623}];
+    component.data = {shortId: 937, longId: 172542, verified: false};
+    component.clean();
+    expect(component.coords.length).toEqual(0);
+    expect(component.data).toBe(null);
+    acceptButtons.visibility$.subscribe(async (visible) => {
+      expect(visible).toBeFalsy();
+    });
+  });
 
-  // test TODO cleaning
+  it('could emit setting tool to inactive with a `clear` flag', () => {
+    spyOn(component.clearView, 'emit').and.callThrough();
+    expect(component.clearView.emit).not.toHaveBeenCalled();
+    component.closeWizard(true);
+    expect(component.clearView.emit).toHaveBeenCalledWith(true);
+    component.closeWizard(false);
+    expect(component.clearView.emit).toHaveBeenCalledWith(false);
+  });
 
 });

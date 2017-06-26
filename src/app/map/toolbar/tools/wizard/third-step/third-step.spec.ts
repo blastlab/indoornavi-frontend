@@ -7,10 +7,14 @@ import {AcceptButtonsService} from '../../../../../utils/accept-buttons/accept-b
 import {TranslateModule} from '@ngx-translate/core';
 import {FormsModule} from '@angular/forms';
 import {IconService} from '../../../../../utils/drawing/icon.service';
+import {AnchorDistance, AnchorSuggestedPositions} from '../../../../../anchor/anchor.type';
+import {Point} from '../../../../map.type';
+import {SocketMsg, WizardData} from '../wizard';
 
 describe('ThirdStepComponent', () => {
   let component: ThirdStepComponent;
   let fixture: ComponentFixture<ThirdStepComponent>;
+  let dialog: MdDialog;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -19,15 +23,82 @@ describe('ThirdStepComponent', () => {
       providers: [AcceptButtonsService, IconService, DrawingService, HintBarService, MdDialog]
     })
     .compileComponents();
-  }));
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(ThirdStepComponent);
     component = fixture.componentInstance;
+    dialog = fixture.debugElement.injector.get(MdDialog);
     fixture.detectChanges();
-  });
+  }));
 
   it('should create ThirdStepComponent', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('could open a dialog box', () => {
+    spyOn(dialog, 'open').and.callThrough();
+    expect(dialog.open).not.toHaveBeenCalled();
+    component.openDialog();
+    expect(dialog.open).toHaveBeenCalled();
+  });
+
+  it('should load sink into collection', () => {
+    spyOn(component.socketData, 'add').and.callThrough();
+    const anchorPositions: AnchorSuggestedPositions = {anchorId: 16, points: [{x: 150, y: 450}, {x: 100, y: 200}]};
+    const anchorPositions2: AnchorSuggestedPositions = {anchorId: 23, points: [{x: 250, y: 350}, {x: 200, y: 100}]};
+    const anchorDist: AnchorDistance = {anchorId: 31, distance: 350};
+    const anAnchor: Object = {shortId: 'text', name: 'not anchor', verified: false};
+    expect(component.socketData.size()).toEqual(0);
+    component.load(anchorPositions);
+    expect(component.socketData.add).toHaveBeenCalled();
+    expect(component.socketData.size()).toEqual(1);
+    component.load(anAnchor);
+    expect(component.socketData.size()).toEqual(1);
+    component.load(anchorPositions2);
+    expect(component.socketData.size()).toEqual(2);
+    component.load(anchorDist);
+    expect(component.socketData.size()).toEqual(2);
+  });
+
+  it('should set sinkShortId into StepMsg and sinkPosition in wizardData', () => {
+    const anchor: AnchorSuggestedPositions = {anchorId: 23, points: [{x: 150, y: 250}, {x: 250, y: 150}]};
+    component.data = anchor;
+    const sinkPos: Point = {x: 150, y: 450};
+    const anchorPos: Point = {x: 300, y: 300};
+    component.coords = [{x: 525, y: 175}];
+    const degree = 45;
+    const givenWizardData: WizardData = {
+      sinkShortId: 7245,
+      sinkPosition: sinkPos,
+      anchorShortId: 36,
+      degree: degree,
+      firstAnchorPosition: anchorPos,
+      secondAnchorPosition: null
+    };
+    const expectedSocketData: SocketMsg = {
+      sinkShortId: 7245,
+      sinkPosition: sinkPos,
+      anchorShortId: 36,
+      degree: degree
+    };
+    const expectedStepMsg = {
+      socketData: expectedSocketData,
+      wizardData: {
+        sinkShortId: 7245,
+        sinkPosition: sinkPos,
+        anchorShortId: 36,
+        degree: degree,
+        firstAnchorPosition: anchorPos,
+        secondAnchorPosition: {x: 525, y: 175}
+      }
+    };
+    const message = component.prepareToSend(givenWizardData);
+    expect(message).toEqual(expectedStepMsg);
+  });
+
+  it('should clean data in ThirdStep', () => {
+    component.coords = [{x: 543, y: 623}];
+    component.data = {anchorId: 23, points: [{x: 250, y: 350}, {x: 200, y: 100}]};
+    component.clean();
+    expect(component.coords.length).toEqual(0);
+    expect(component.data).toBe(null);
   });
 });
