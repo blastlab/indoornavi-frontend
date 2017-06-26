@@ -22,8 +22,9 @@
   width: 100px;
 }
 
-.submitButton{
+.button{
   width: 10px;
+  font-size: 17px;
 }
 .md-button {
   width: 10px;

@@ -42,6 +42,7 @@ export class ScaleInputComponent implements OnInit {
     this._scaleInput.visibility$.subscribe(
       data => {
         this.visible = data;
+        console.log('           ' + data);
       });
     this._scaleInput.scale$.subscribe(
       data => {
@@ -64,15 +65,30 @@ export class ScaleInputComponent implements OnInit {
         return;
       }
       this.floorService.setScale(this.floorId, this.scale).subscribe((floor: Floor) => {
-      },
+        },
         (errorCode: string) => {
-          console.log(errorCode);
           this.toast.showFailure(errorCode);
         });
       this.toast.showSuccess('scale.set.success');
       this._scaleHint.publishScale(this.scale);
+      this._scaleInput.publishSaveClicked(true);
     } else {
       this.toast.showFailure('scale.mustBeInteger');
     }
+  }
+
+  public removeScale() {
+    this.scale = <Scale>{
+      start: null,
+      stop: null,
+      realDistance: null,
+      measure: null
+    };
+    console.log(this.scale);
+    this._scaleHint.publishScale(null);
+    this._scaleInput.publishScale(this.scale);
+    document.getElementById('scaleGroup').remove();
+    this._scaleInput.publishRemoveClicked(this.scale);
+    this.visible = false;
   }
 }

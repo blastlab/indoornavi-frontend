@@ -10,6 +10,8 @@ import {ScaleInputService} from '../../../../utils/scale-input/scale-input.servi
 import {ScaleHintService} from '../../../../utils/scale-hint/scale-hint.service';
 import {MapLoaderInformerService} from '../../../../utils/map-loader-informer/map-loader-informer.service';
 import {Subscription} from 'rxjs/Subscription';
+import {promise} from 'selenium-webdriver';
+import fullyResolved = promise.fullyResolved;
 
 @Component({
   selector: 'app-scale',
@@ -50,15 +52,32 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
-    this.subscription = this._mapLoaderInformer.isLoaded$.subscribe(
-      isSvgLoaded => {
-        if (isSvgLoaded) {
-         this.createSvgGroupWithScale();
-        }
-      });
+    this.subscription = this._mapLoaderInformer.isLoaded$.subscribe(isSvgLoaded => {
+      if (isSvgLoaded) {
+        this.createSvgGroupWithScale();
+      }
+    });
+
+    this._scaleInput.saveClicked$.subscribe(isSaveClicked => {
+      if (isSaveClicked) {
+        this.clickedTool.emit(this);
+      }
+    });
+
+    this._scaleInput.removeClicked$.subscribe(nullScale => {
+      this.isScaleSet = false;
+      this.isScaleDisplayed = false;
+      this.scale = nullScale;
+      this.pointsArray = [];
+      this.linesArray = [];
+      this.line = null;
+      this.start = null;
+      this.stop = null;
+      this.startCreatingScale();
+    });
   }
 
-  private createSvgGroupWithScale(){
+  private createSvgGroupWithScale() {
     if (!!this.floor.scale) {
       this.isScaleSet = true;
       this.scale = (JSON.parse(JSON.stringify(this.floor.scale)));
@@ -95,7 +114,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   public setActive(): void {
     this.active = true;
-    this.startDrawingScale();
+    this.startCreatingScale();
   }
 
   public setInactive(): void {
@@ -103,7 +122,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.active = false;
   }
 
-  private startDrawingScale = (): void => {
+  private startCreatingScale = (): void => {
     const scaleComponent = this;
     d3.select('#scaleGroup').style('display', 'flex');
     d3.select('#scaleHint')
@@ -120,6 +139,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     }
 
     (!this.isScaleSet) ? this._scaleInput.publishVisibility(false) : this._scaleInput.publishVisibility(true);
+
     if (this.isScaleDisplayed) {
       this._scaleInput.publishVisibility(true);
     }
@@ -141,7 +161,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private hideScale(): void {
     this._scaleInput.publishVisibility(false);
 
-    d3.select('#map').style('cursor', 'default');
+    d3.select('#mapBg').style('cursor', 'default');
     d3.select('#scaleGroup').style('display', 'none');
     d3.select('#mapBg').on('click', null);
     d3.select('#scaleHint')
@@ -245,7 +265,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
         return d.x;
       })
       .attr('cy', function (d, i) {
-        console.log(i);
         return d.y;
       })
       .attr('r', 10)
@@ -253,6 +272,12 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       .attr('fill-opacity', 0)
       .call(drag);
     return newCircle;
+  }
+
+  private setScalePoints(): void {
+    this.scale.start = this.pointsArray[0];
+    this.scale.stop = this.pointsArray[1];
+    this._scaleInput.publishScale(this.scale);
   }
 
   private redrawLine = (): void => {
@@ -419,7 +444,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       x: 0,
       y: 0
     };
-    if (this.scale.start.x == circle.attr('cx') && this.scale.start.y == circle.attr('cy')) {
+    if (this.scale.start.x === Number(circle.attr('cx')) && this.scale.start.y === Number(circle.attr('cy'))) {
       point.x = this.scale.stop.x;
       point.y = this.scale.stop.y;
     } else {
@@ -433,18 +458,25 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     const tempX = (this.linesArray[0].p1.x + this.linesArray[0].p2.x) / 2;
     const tempY = (this.linesArray[0].p1.y + this.linesArray[0].p2.y) / 2;
 
-    const x = Math.max(0, Math.min(tempX, d3.select('#map').attr('width') - 290));
-    const y = Math.max(0, Math.min(tempY, d3.select('#map').attr('height') - 50));
+    const inputHeight = 50;
+    const inputWidth = 370;
+
+    const x = Math.max(0, Math.min(tempX, d3.select('#map').attr('width') - inputWidth));
+    const y = Math.max(inputHeight, Math.min(tempY, d3.select('#map').attr('height') - inputHeight));
     const p = <Point>{
       x: x,
       y: y
     };
+    this.checkIfInputEclipsesPoints(p, inputHeight, inputWidth);
     this._scaleInput.publishCoordinates(p);
   }
 
-  private setScalePoints(): void {
-    this.scale.start = this.pointsArray[0];
-    this.scale.stop = this.pointsArray[1];
-    this._scaleInput.publishScale(this.scale);
+  private checkIfInputEclipsesPoints = (inputCoords: Point, inputHeight: number, inputWidth: number): void => {
+    const scaleComponent = this;
+    this.pointsArray.forEach(function (point) {
+      if (point.x >= inputCoords.x && point.x <= inputCoords.x + inputWidth && point.y >= inputCoords.y && point.y <= inputCoords.y + inputHeight) {
+        inputCoords.y -= (inputHeight + scaleComponent.END_SIZE);
+      }
+    });
   }
 }
