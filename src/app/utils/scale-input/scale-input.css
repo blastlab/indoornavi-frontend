@@ -22,10 +22,19 @@
   width: 100px;
 }
 
-.button{
+.button {
   width: 10px;
   font-size: 17px;
 }
+
+.remove-button {
+  background-color: #d92020;
+}
+
+.save-button {
+  background-color: #77f977;
+}
+
 .md-button {
   width: 10px;
 }

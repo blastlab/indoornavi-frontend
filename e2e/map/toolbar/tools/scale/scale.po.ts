@@ -37,4 +37,16 @@ export class IndoorNaviPage {
   openMapOfFirstFloor() {
     element.all(by.css('.floor-map-button')).first().click();
   }
+
+  activateScaleTool() {
+    element.all(by.css('.scale-button')).click();
+  }
+
+  clickMap(svg, x, y) {
+    browser.actions().mouseMove(svg, {x: x, y: y}).click().perform();
+  }
+
+  clickSave() {
+    element.all(by.css('save-button')).click();
+  }
 }
