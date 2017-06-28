@@ -1,4 +1,4 @@
-import {browser, element, by} from 'protractor';
+import {browser, element, by, promise} from 'protractor';
 import {Utils} from '../utils';
 
 export class ComplexPage {
@@ -27,12 +27,16 @@ export class ComplexPage {
     }
   }
 
-  static cancelEditingLastComplex() {
-    element(by.css('.cdk-overlay-container')).click();
+  static getComplexesCount(): promise.Promise<number> {
+    return element.all(by.css('tr.complex')).count();
   }
 
   static getLatestAddedComplex() {
     return element.all(by.css('.complex-name')).last().getText();
+  }
+
+  static openLatestAddedComplex() {
+    return element.all(by.css('.complex-building-button')).last().click();
   }
 
 }

@@ -1,5 +1,5 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { SecondStepComponent } from './second-step';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {SecondStepComponent} from './second-step';
 import {TranslateModule} from '@ngx-translate/core';
 import {MaterialModule, MdDialog} from '@angular/material';
 import {FormsModule} from '@angular/forms';
@@ -22,8 +22,7 @@ describe('SecondStepComponent', () => {
       imports: [TranslateModule.forRoot(), MaterialModule, FormsModule],
       declarations: [SecondStepComponent],
       providers: [AcceptButtonsService, IconService, DrawingService, HintBarService, MdDialog]
-    })
-      .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(SecondStepComponent);
     component = fixture.componentInstance;

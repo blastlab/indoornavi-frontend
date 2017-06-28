@@ -1,5 +1,5 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { ThirdStepComponent } from './third-step';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ThirdStepComponent} from './third-step';
 import {MaterialModule, MdDialog} from '@angular/material';
 import {HintBarService} from '../../../../hint-bar/hint-bar.service';
 import {DrawingService} from '../../../../../utils/drawing/drawing.service';
@@ -15,17 +15,19 @@ describe('ThirdStepComponent', () => {
   let component: ThirdStepComponent;
   let fixture: ComponentFixture<ThirdStepComponent>;
   let dialog: MdDialog;
+  let acceptButtons: AcceptButtonsService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [TranslateModule.forRoot(), MaterialModule, FormsModule],
       declarations: [ThirdStepComponent],
       providers: [AcceptButtonsService, IconService, DrawingService, HintBarService, MdDialog]
-    })
-    .compileComponents();
+    }).compileComponents();
+
     fixture = TestBed.createComponent(ThirdStepComponent);
     component = fixture.componentInstance;
     dialog = fixture.debugElement.injector.get(MdDialog);
+    acceptButtons = fixture.debugElement.injector.get(AcceptButtonsService);
     fixture.detectChanges();
   }));
 
@@ -100,5 +102,18 @@ describe('ThirdStepComponent', () => {
     component.clean();
     expect(component.coords.length).toEqual(0);
     expect(component.data).toBe(null);
+    acceptButtons.visibility$.subscribe(async (visible) => {
+      expect(visible).toBeFalsy();
+    });
   });
+
+  it('could emit setting tool to inactive with a `clear` flag', () => {
+    spyOn(component.clearView, 'emit').and.callThrough();
+    expect(component.clearView.emit).not.toHaveBeenCalled();
+    component.closeWizard(true);
+    expect(component.clearView.emit).toHaveBeenCalledWith(true);
+    component.closeWizard(false);
+    expect(component.clearView.emit).toHaveBeenCalledWith(false);
+  });
+
 });

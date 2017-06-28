@@ -22,8 +22,7 @@ describe('FirstStepComponent', () => {
       imports: [TranslateModule.forRoot(), MaterialModule, FormsModule],
       declarations: [FirstStepComponent],
       providers: [AcceptButtonsService, IconService, DrawingService, HintBarService, MdDialog]
-    })
-    .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(FirstStepComponent);
     component = fixture.componentInstance;

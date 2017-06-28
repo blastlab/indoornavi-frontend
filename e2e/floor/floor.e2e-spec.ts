@@ -1,12 +1,11 @@
 import {AppPage} from '../app.po';
-import {IndoorNaviPage} from './app.floor.po';
-import {browser, element, by} from 'protractor';
+import {FloorPage} from './floor.po';
 
 describe('FloorComponent', () => {
-  let page: IndoorNaviPage;
+  let page: FloorPage;
 
   beforeEach(() => {
-    page = new IndoorNaviPage();
+    page = new FloorPage();
   });
 
   it('should have title', () => {
@@ -77,6 +76,5 @@ describe('FloorComponent', () => {
     expect(page.getLatestAddedFloor()).toEqual(newName);
     expect(page.getLatestAddedFloorLevel()).toEqual(newLevel);
   });
-
 
 });

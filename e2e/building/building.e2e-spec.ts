@@ -1,10 +1,26 @@
-import {IndoorNaviPage} from './app.building.po';
+import {ComplexPage} from '../complex/complex.po';
+import {BuildingPage} from './building.po';
+import {browser} from 'protractor';
+import {AppPage} from '../app.po';
 
 describe('BuildingComponent', () => {
-  let page: IndoorNaviPage;
 
+  beforeAll((done: DoneFn) => {
+    BuildingPage.navigateToHome();
+    ComplexPage.addComplex('testBuilding');
+    ComplexPage.openLatestAddedComplex();
+    done();
+  });
+
+  it('should have title', () => {
+    expect(AppPage.getTitle()).toEqual('Your buildings');
+  });
+
+});
+
+/*
   beforeEach(() => {
-    page = new IndoorNaviPage();
+ page = new BuildingPage();
   });
 
   it('should have title', () => {
@@ -56,6 +72,8 @@ describe('BuildingComponent', () => {
     page.editLastBuildingWithoutSaving(newName2);
     page.cancelEditingLastBuilding();
     expect(page.getLatestAddedBuilding()).toEqual(newName);
+ browser.pause();
   });
 
 });
+ */

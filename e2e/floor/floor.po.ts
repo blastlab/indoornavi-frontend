@@ -1,6 +1,6 @@
 import {browser, element, by} from 'protractor';
 
-export class IndoorNaviPage {
+export class FloorPage {
   navigateToHome() {
     return browser.get('/');
   }
