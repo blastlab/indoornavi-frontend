@@ -11,6 +11,8 @@ import {TranslateModule} from '@ngx-translate/core';
 import {RouterTestingModule} from '@angular/router/testing';
 import {HttpService} from '../utils/http/http.service';
 import {Observable} from 'rxjs/Observable';
+import {SharedModule} from '../utils/shared/shared.module';
+import {AuthGuard} from '../auth/auth.guard';
 
 describe('User component', () => {
   let component: UserComponent;
@@ -27,13 +29,14 @@ describe('User component', () => {
         HttpModule,
         DialogTestModule,
         TranslateModule.forRoot(),
-        RouterTestingModule
+        RouterTestingModule,
+        SharedModule
       ],
       declarations: [
         UserComponent
       ],
       providers: [
-        UserService, HttpService, ToastService, MdDialog
+        UserService, HttpService, ToastService, MdDialog, AuthGuard
       ]
     }).compileComponents();
 

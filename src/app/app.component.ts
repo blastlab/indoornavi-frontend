@@ -1,12 +1,19 @@
 import {Component} from '@angular/core';
 import {BreadcrumbService} from 'ng2-breadcrumb/ng2-breadcrumb';
+import {AuthGuard} from './auth/auth.guard';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.html'
 })
 export class AppComponent {
-  constructor(private breadcrumbService: BreadcrumbService) {
+  public isUserLoggedIn: boolean;
+
+  constructor(private breadcrumbService: BreadcrumbService, private authGuard: AuthGuard) {
+    this.isUserLoggedIn = !!localStorage.getItem('currentUser');
+    this.authGuard.userLoggedIn().subscribe((loggedIn: boolean) => {
+      this.isUserLoggedIn = loggedIn;
+    });
     breadcrumbService.addFriendlyNameForRoute('/complexes', 'Complexes');
     breadcrumbService.addFriendlyNameForRoute('/buildings', 'Buildings');
     breadcrumbService.addFriendlyNameForRoute('/floors', 'Floors');
@@ -16,11 +23,15 @@ export class AppComponent {
     breadcrumbService.addFriendlyNameForRoute('/anchors', 'Anchors');
     breadcrumbService.addFriendlyNameForRoute('/tags', 'Tags');
     breadcrumbService.addFriendlyNameForRoute('/users', 'Users');
+    breadcrumbService.addFriendlyNameForRoute('/changePassword', 'Change password');
 
     breadcrumbService.hideRouteRegex('^/complexes/\\d+$');
     breadcrumbService.hideRouteRegex('^/complexes/\\d+/buildings/\\d+$');
     breadcrumbService.hideRouteRegex('^/complexes/\\d+/buildings/\\d+/floors/\\d+$');
     breadcrumbService.hideRouteRegex('^/buildings/\\d+$');
     breadcrumbService.hideRouteRegex('^/floors/\\d+$');
+    breadcrumbService.hideRouteRegex('^/login');
+    breadcrumbService.hideRouteRegex('^/unauthorized');
   }
+
 }

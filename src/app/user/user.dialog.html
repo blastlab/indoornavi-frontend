@@ -12,7 +12,7 @@
 
   <div class="form-control">
     <md-input-container>
-      <input id="user-password-input" name="password" [(ngModel)]="user.password" #password="ngModel" required type="password"
+      <input id="user-password-input" name="password" [(ngModel)]="user.password" #password="ngModel" [required]="!isEditMode" type="password"
              mdInput
              placeholder="{{'user.password'|translate}}">
       <md-hint>
@@ -23,13 +23,17 @@
 
   <div class="form-control">
     <md-input-container>
-      <input id="user-repeat-password-input" name="repeatPassword" [(ngModel)]="repeatPassword" #repeatPasswordInput="ngModel" required type="password"
+      <input id="user-repeat-password-input" name="repeatPassword" [(ngModel)]="repeatPassword" #repeatPasswordInput="ngModel" [required]="!isEditMode" type="password"
              mdInput
              placeholder="{{'user.repeatPassword'|translate}}">
       <md-hint>
         <small [hidden]="repeatPasswordInput.valid || (repeatPasswordInput.pristine && !userForm.submitted)" [translate]="'user.repeatPassword.required'"></small>
       </md-hint>
     </md-input-container>
+  </div>
+
+  <div class="validation-errors">
+    <small [ngClass]="{'hidden' : !validatePasswords()}" [translate]="'user.passwords.mustEqual'"></small>
   </div>
 
   <button id="user-save-button" type="submit" md-raised-button (click)="save(userForm.valid)">{{'save'|translate}}</button>

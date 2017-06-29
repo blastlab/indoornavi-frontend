@@ -1,5 +1,6 @@
 import {AppPage} from '../app.po';
-import {TagPage, TableRow} from './tag.po';
+import {TagPage} from './tag.po';
+import {ElementArrayFinder} from 'protractor';
 
 describe('TagComponent', () => {
   it('should have title', () => {
@@ -7,57 +8,40 @@ describe('TagComponent', () => {
     expect(AppPage.getTitle()).toEqual('Tags');
   });
 
-  it('should be able to add new tag', () => {
-    const shortId = '100';
-    const longId = '10000';
-    const name = 'name';
-
-    TagPage.navigateToHome();
-    TagPage.addTag(shortId, longId, name);
-
-    TagPage.getLatestFromNotVerified().then((tagRow: TableRow) => {
-      expect(tagRow.shortId).toEqual(shortId);
-      expect(tagRow.longId).toEqual(longId);
-      expect(tagRow.name).toEqual(name);
-    });
-
-    TagPage.removeLastTag();
-  });
-
-  it('should be able to remove tag', () => {
-    const shortId = '100';
-    const longId = '10000';
-    const name = 'name';
-    TagPage.navigateToHome();
-    TagPage.getRowsCount().then((rowsCount: number) => {
-      TagPage.addTag(shortId, longId, name);
-      TagPage.getLatestFromNotVerified().then((tagRow: TableRow) => {
-        expect(tagRow.shortId).toEqual(shortId);
-      });
-
-      TagPage.removeLastTag();
-      expect(TagPage.getRowsCount()).toEqual(rowsCount);
-    });
-  });
-
-  it('should be able to edit tag', () => {
+  it('should be able to add new tag, edit it and then remove it', (done: DoneFn) => {
     const shortId = '100';
     const longId = '10000';
     const name = 'name';
     const newShortId = '101';
 
     TagPage.navigateToHome();
-    TagPage.addTag(shortId, longId, name);
-    TagPage.getLatestFromNotVerified().then((tagRow: TableRow) => {
-      expect(tagRow.shortId).toEqual(shortId);
-    });
+    TagPage.prepareToAddTag(shortId);
 
-    TagPage.editLastTag(newShortId, longId, name, true);
-    TagPage.getLatestFromNotVerified().then((tagRow: TableRow) => {
-      expect(tagRow.shortId).toEqual(newShortId);
-    });
+    TagPage.getRowsCount().then((initialCount: number) => {
+      TagPage.addTag(shortId, longId, name);
 
-    TagPage.removeLastTag();
+      TagPage.getRowsCount().then((afterAddCount: number) => {
+        let row: ElementArrayFinder = TagPage.getLatestFromNotVerified();
+        expect(row.get(0).getText()).toBe(shortId);
+        expect(row.get(1).getText()).toBe(longId);
+        expect(row.get(2).getText()).toBe(name);
+        expect(afterAddCount).toBe(initialCount + 1);
+
+        TagPage.editLastTag(newShortId, longId, name, true);
+        row = TagPage.getLatestFromNotVerified();
+        expect(row.get(0).getText()).toBe(newShortId);
+        expect(row.get(1).getText()).toBe(longId);
+        expect(row.get(2).getText()).toBe(name);
+        expect(afterAddCount).toBe(initialCount + 1);
+
+        TagPage.removeTag(newShortId);
+
+        TagPage.getRowsCount().then((afterRemoveCount: number) => {
+          expect(afterRemoveCount).toBe(initialCount);
+          done();
+        });
+      });
+    });
   });
 
   it('should cancel editing', () => {
@@ -67,16 +51,20 @@ describe('TagComponent', () => {
     const newShortId = '101';
 
     TagPage.navigateToHome();
+    TagPage.prepareToAddTag(shortId);
+
     TagPage.addTag(shortId, longId, name);
-    TagPage.getLatestFromNotVerified().then((tagRow: TableRow) => {
-      expect(tagRow.shortId).toEqual(shortId);
-    });
+    let row: ElementArrayFinder = TagPage.getLatestFromNotVerified();
+    expect(row.get(0).getText()).toBe(shortId);
+    expect(row.get(1).getText()).toBe(longId);
+    expect(row.get(2).getText()).toBe(name);
 
     TagPage.editLastTag(newShortId, longId, name, false);
     AppPage.cancelEditingFromModal();
-    TagPage.getLatestFromNotVerified().then((tagRow: TableRow) => {
-      expect(tagRow.shortId).toEqual(shortId);
-    });
+    row = TagPage.getLatestFromNotVerified();
+    expect(row.get(0).getText()).toBe(shortId);
+    expect(row.get(1).getText()).toBe(longId);
+    expect(row.get(2).getText()).toBe(name);
   });
 
 });

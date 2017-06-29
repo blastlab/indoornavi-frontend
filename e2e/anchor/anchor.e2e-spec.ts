@@ -1,5 +1,7 @@
+///<reference path="anchor.po.ts"/>
 import {AppPage} from '../app.po';
-import {AnchorPage, TableRow} from './anchor.po';
+import {AnchorPage} from './anchor.po';
+import {ElementArrayFinder} from 'protractor';
 
 describe('AnchorComponent', () => {
   it('should have title', () => {
@@ -7,57 +9,41 @@ describe('AnchorComponent', () => {
     expect(AppPage.getTitle()).toEqual('Anchors');
   });
 
-  it('should be able to add new anchor', () => {
-    const shortId = '123';
-    const longId = '12345';
-    const name = 'name';
 
-    AnchorPage.navigateToHome();
-    AnchorPage.addAnchor(shortId, longId, name);
-
-    AnchorPage.getLatestFromNotVerified().then((anchorRow: TableRow) => {
-      expect(anchorRow.shortId).toEqual(shortId);
-      expect(anchorRow.longId).toEqual(longId);
-      expect(anchorRow.name).toEqual(name);
-    });
-
-    AnchorPage.removeLastAnchor();
-  });
-
-  it('should be able to remove anchor', () => {
-    const shortId = '123';
-    const longId = '12345';
-    const name = 'name';
-    AnchorPage.navigateToHome();
-    AnchorPage.getRowsCount().then((rowsCount: number) => {
-      AnchorPage.addAnchor(shortId, longId, name);
-      AnchorPage.getLatestFromNotVerified().then((anchorRow: TableRow) => {
-        expect(anchorRow.shortId).toEqual(shortId);
-      });
-
-      AnchorPage.removeLastAnchor();
-      expect(AnchorPage.getRowsCount()).toEqual(rowsCount);
-    });
-  });
-
-  it('should be able to edit anchor', () => {
+  it('should be able to add new anchor, edit it and then remove it', (done: DoneFn) => {
     const shortId = '123';
     const longId = '12345';
     const name = 'name';
     const newShortId = '321';
 
     AnchorPage.navigateToHome();
-    AnchorPage.addAnchor(shortId, longId, name);
-    AnchorPage.getLatestFromNotVerified().then((anchorRow: TableRow) => {
-      expect(anchorRow.shortId).toEqual(shortId);
-    });
+    AnchorPage.prepareToAddAnchor(shortId);
 
-    AnchorPage.editLastAnchor(newShortId, longId, name, true);
-    AnchorPage.getLatestFromNotVerified().then((anchorRow: TableRow) => {
-      expect(anchorRow.shortId).toEqual(newShortId);
-    });
+    AnchorPage.getRowsCount().then((initialRowsCount: number) => {
 
-    AnchorPage.removeLastAnchor();
+      AnchorPage.addAnchor(shortId, longId, name);
+
+      AnchorPage.getRowsCount().then((afterAddCount: number) => {
+        let row: ElementArrayFinder = AnchorPage.getLatestFromNotVerified();
+        expect(row.get(0).getText()).toBe(shortId);
+        expect(row.get(1).getText()).toBe(longId);
+        expect(row.get(2).getText()).toBe(name);
+        expect(afterAddCount).toBe(initialRowsCount + 1);
+
+        AnchorPage.editLastAnchor(newShortId, longId, name, true);
+        row = AnchorPage.getLatestFromNotVerified();
+        expect(row.get(0).getText()).toBe(newShortId);
+        expect(row.get(1).getText()).toBe(longId);
+        expect(row.get(2).getText()).toBe(name);
+        expect(afterAddCount).toBe(initialRowsCount + 1);
+
+        AnchorPage.removeAnchor(newShortId);
+        AnchorPage.getRowsCount().then((afterRemoveCount: number) => {
+          expect(afterRemoveCount).toBe(initialRowsCount);
+          done();
+        });
+      });
+    });
   });
 
   it('should cancel editing', () => {
@@ -67,16 +53,21 @@ describe('AnchorComponent', () => {
     const newShortId = '321';
 
     AnchorPage.navigateToHome();
+    AnchorPage.prepareToAddAnchor(shortId);
+
     AnchorPage.addAnchor(shortId, longId, name);
-    AnchorPage.getLatestFromNotVerified().then((anchorRow: TableRow) => {
-      expect(anchorRow.shortId).toEqual(shortId);
-    });
+    let row: ElementArrayFinder = AnchorPage.getLatestFromNotVerified();
+    expect(row.get(0).getText()).toBe(shortId);
+    expect(row.get(1).getText()).toBe(longId);
+    expect(row.get(2).getText()).toBe(name);
 
     AnchorPage.editLastAnchor(newShortId, longId, name, false);
     AppPage.cancelEditingFromModal();
-    AnchorPage.getLatestFromNotVerified().then((anchorRow: TableRow) => {
-      expect(anchorRow.shortId).toEqual(shortId);
-    });
+
+    row = AnchorPage.getLatestFromNotVerified();
+    expect(row.get(0).getText()).toBe(shortId);
+    expect(row.get(1).getText()).toBe(longId);
+    expect(row.get(2).getText()).toBe(name);
   });
 
 });

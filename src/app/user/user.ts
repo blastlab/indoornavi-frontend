@@ -30,6 +30,7 @@ export class UserComponent implements OnInit {
 
   editUser(user: User): void {
     this.dialogRef = this.dialog.open(UserDialogComponent);
+    this.dialogRef.componentInstance.setEditMode(true);
     this.dialogRef.componentInstance.user = {
       username: user.username,
       id: user.id
@@ -55,6 +56,7 @@ export class UserComponent implements OnInit {
 
   openDialog(): void {
     this.dialogRef = this.dialog.open(UserDialogComponent);
+    this.dialogRef.componentInstance.setEditMode(false);
     this.dialogRef.componentInstance.user = {
       username: '',
       password: ''

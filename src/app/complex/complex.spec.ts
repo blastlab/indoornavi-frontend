@@ -1,18 +1,19 @@
-import {TestBed, async} from '@angular/core/testing';
+import {async, TestBed} from '@angular/core/testing';
 import {ComplexComponent} from './complex';
 import {FormsModule} from '@angular/forms';
 import {ComplexService} from './complex.service';
 import {Observable} from 'rxjs/Rx';
-import {MaterialModule} from '@angular/material';
+import {MaterialModule, MdDialog} from '@angular/material';
 import {HttpService} from '../utils/http/http.service';
 import {ToastService} from '../utils/toast/toast.service';
-import {MdDialog} from '@angular/material';
 import {DialogTestModule} from '../utils/dialog/dialog.test';
 import {TranslateModule} from '@ngx-translate/core';
 import {RouterTestingModule} from '@angular/router/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {HttpModule} from '@angular/http';
 import {BuildingService} from '../building/building.service';
+import {SharedModule} from '../utils/shared/shared.module';
+import {AuthGuard} from '../auth/auth.guard';
 
 describe('ComplexComponent', () => {
 
@@ -31,13 +32,14 @@ describe('ComplexComponent', () => {
         HttpModule,
         DialogTestModule,
         TranslateModule.forRoot(),
-        RouterTestingModule
+        RouterTestingModule,
+        SharedModule
       ],
       declarations: [
         ComplexComponent
       ],
       providers: [
-        ComplexService, BuildingService, HttpService, ToastService, MdDialog
+        ComplexService, BuildingService, HttpService, ToastService, MdDialog, AuthGuard
       ]
     }).compileComponents();
 
@@ -86,7 +88,7 @@ describe('ComplexComponent', () => {
 
   it('should NOT add new complex to list when form is invalid', () => {
     // given
-    const isValid = false;
+    spyOn(complexService, 'createComplex').and.returnValue(Observable.throw('ERROR'));
 
     // when
     component.saveComplex({name: 'someName'});

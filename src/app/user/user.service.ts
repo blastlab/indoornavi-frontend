@@ -25,4 +25,8 @@ export class UserService {
   remove(id: number): Observable<void> {
     return this.httpService.doDelete(this.url + id);
   }
+
+  changePassword(passwords: { oldPassword: string; newPassword: string }): Observable<void> {
+    return this.httpService.doPut(this.url + 'changePassword', passwords);
+  }
 }

@@ -1,7 +1,7 @@
 <h1 [translate]="'complex.header'"></h1>
 
 <div class="adding-section">
-  <button md-raised-button id="new-complex-button" type="button" (click)="openDialog()">{{'add'|translate}}</button>
+  <button [appHasPermission]="'COMPLEX_CREATE'" md-raised-button id="new-complex-button" type="button" (click)="openDialog()">{{'add'|translate}}</button>
 </div>
 
 <table cellpadding="10" cellspacing="0">
@@ -17,12 +17,12 @@
       </button>
     </td>
     <td>
-      <button class="complex-edit-button" (click)="editComplex(complex)" md-mini-fab md-tooltip="{{'edit'|translate}}" mdTooltipPosition="above">
+      <button [appHasPermission]="'COMPLEX_UPDATE'" class="complex-edit-button" (click)="editComplex(complex)" md-mini-fab md-tooltip="{{'edit'|translate}}" mdTooltipPosition="above">
         <i class="material-icons">mode_edit</i>
       </button>
     </td>
     <td>
-      <button class="complex-remove-button" (click)="removeComplex(i)" md-mini-fab md-mini-fab md-tooltip="{{'remove'|translate}}" mdTooltipPosition="above">
+      <button [appHasPermission]="'COMPLEX_DELETE'" class="complex-remove-button" (click)="removeComplex(i)" md-mini-fab md-mini-fab md-tooltip="{{'remove'|translate}}" mdTooltipPosition="above">
         <i class="material-icons">delete</i>
       </button>
     </td>

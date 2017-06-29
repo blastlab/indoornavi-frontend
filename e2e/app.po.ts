@@ -1,4 +1,4 @@
-import {element, by} from 'protractor';
+import {by, element} from 'protractor';
 
 export class AppPage {
   static getTitle() {
@@ -7,5 +7,13 @@ export class AppPage {
 
   static cancelEditingFromModal() {
     element(by.css('.cdk-overlay-container')).click();
+  }
+
+  static getValidationErrors() {
+    return element(by.className('validation-errors'));
+  }
+
+  static getToast() {
+    return element(by.className('mat-simple-snackbar-message'));
   }
 }

@@ -1,4 +1,4 @@
-import {Component, OnInit, Input} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import * as Collections from 'typescript-collections';
 import {MdDialog, MdDialogRef} from '@angular/material';
 import {ToastService} from '../utils/toast/toast.service';
@@ -17,7 +17,7 @@ export class DeviceListComponent implements OnInit {
   verified: boolean;
 
   @Input()
-  deviceUrl: string;
+  public deviceType: string;
 
   devices: Collections.Dictionary<number, Device> = new Collections.Dictionary<number, Device>();
 
@@ -28,7 +28,7 @@ export class DeviceListComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.deviceService.setUrl(this.deviceUrl);
+    this.deviceService.setUrl(this.deviceType + '/');
   }
 
   getDevices(): Device[] {
@@ -57,7 +57,7 @@ export class DeviceListComponent implements OnInit {
   openDialog(device: Device): void {
     this.dialogRef = this.dialog.open(DeviceDialogComponent);
     this.dialogRef.componentInstance.device = {...device}; // copy
-    this.dialogRef.componentInstance.url = this.deviceUrl;
+    this.dialogRef.componentInstance.url = this.deviceType;
 
     this.dialogRef.afterClosed().subscribe(anchorFromDialog => {
       if (anchorFromDialog !== undefined) {

@@ -3,7 +3,7 @@
     <div fxFlex="50">
       <breadcrumb></breadcrumb>
     </div>
-    <div fxFlex="50" fxLayoutAlign="end">
+    <div fxFlex="50" fxLayoutAlign="end" *ngIf="isUserLoggedIn">
       <button md-icon-button [mdMenuTriggerFor]="menu">
         <md-icon>more_vert</md-icon>
       </button>
@@ -24,6 +24,14 @@
           <md-icon>account_circle</md-icon>
           <span>Users</span>
         </button>
+        <button md-menu-item [routerLink]="['./changePassword']">
+          <md-icon>lock_outline</md-icon>
+          <span>Change Password</span>
+        </button>
+        <button md-menu-item [routerLink]="['./logout']">
+          <md-icon>directions_run</md-icon>
+          <span>Logout</span>
+        </button>
       </md-menu>
     </div>
   </header>
@@ -31,4 +39,3 @@
     <router-outlet></router-outlet>
   </div>
 </div>
-

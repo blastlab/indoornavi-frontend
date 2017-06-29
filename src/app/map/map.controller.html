@@ -1,4 +1,4 @@
 <div *ngIf="floor">
   <app-map-viewer [floor]="floor" *ngIf="imageUploaded"></app-map-viewer>
-  <app-map-uploader [floor]="floor" *ngIf="!imageUploaded" (imageUploaded)="onImageUploaded($event)"></app-map-uploader>
+  <app-map-uploader [appHasPermission]="'FLOOR_UPDATE'" [floor]="floor" *ngIf="!imageUploaded" (imageUploaded)="onImageUploaded($event)"></app-map-uploader>
 </div>

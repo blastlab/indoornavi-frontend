@@ -24,4 +24,10 @@ export class ToastService {
       });
     });
   }
+
+  forceHide() {
+    if (this.snackBar._openedSnackBarRef) {
+      this.snackBar._openedSnackBarRef.dismiss();
+    }
+  }
 }

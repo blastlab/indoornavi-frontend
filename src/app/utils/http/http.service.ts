@@ -1,11 +1,17 @@
 import {Injectable} from '@angular/core';
-import {Headers, Http, Response} from '@angular/http';
+import {Headers, Http, RequestOptions, Response} from '@angular/http';
 import {Observable} from 'rxjs/Rx';
 import {Config} from '../../../config';
 import 'rxjs/add/observable/throw';
+import {Router} from '@angular/router';
+import {AuthGuard} from '../../auth/auth.guard';
 
 @Injectable()
 export class HttpService {
+
+  private static router: Router;
+  private headers: Headers = new Headers();
+  private options: RequestOptions = new RequestOptions({ headers: this.headers });
 
   private static extractData(res: Response) {
     if (res.status === 200) {
@@ -14,6 +20,9 @@ export class HttpService {
   }
 
   private static errorHandler(err: any): Observable<any> {
+    if (err instanceof Response && err.status === 401) {
+      HttpService.router.navigate(['/login'], {queryParams: {returnUrl: HttpService.router.routerState.snapshot.url}});
+    }
     if (err instanceof Response && err.status === 404) {
       return Observable.throw('S_001');
     }
@@ -23,29 +32,37 @@ export class HttpService {
     return Observable.throw('S_000');
   }
 
-  private static createAuthorizationHeader(): Headers {
-    const headers = new Headers();
-    headers.append('Authorization', 'Bearer TestToken'); // TODO: get real token here
-    return headers;
-  }
-
-  constructor(private http: Http) {
+  constructor(private http: Http, private router: Router, private authGuard: AuthGuard) {
+    HttpService.router = router;
+    if (localStorage.getItem('currentUser')) {
+      this.prepareAuthHeader();
+    }
+    authGuard.userLoggedIn().subscribe((loggedIn: boolean) => {
+      (loggedIn) ?
+        this.prepareAuthHeader()
+        :
+        this.options.headers.delete('Authorization');
+    });
   }
 
   doGet(url: string): Observable<any> {
-    return this.http.get(Config.API_URL + url, {headers: HttpService.createAuthorizationHeader()}).map(HttpService.extractData).catch(HttpService.errorHandler);
+    return this.http.get(Config.API_URL + url, this.options).map(HttpService.extractData).catch(HttpService.errorHandler).first();
   }
 
   doPost(url: string, body: any): Observable<any> {
-    return this.http.post(Config.API_URL + url, body, {headers: HttpService.createAuthorizationHeader()}).map(HttpService.extractData).catch(HttpService.errorHandler);
+    return this.http.post(Config.API_URL + url, body, this.options).map(HttpService.extractData).catch(HttpService.errorHandler).first();
   }
 
   doPut(url: string, body: any): Observable<any> {
-    return this.http.put(Config.API_URL + url, body, {headers: HttpService.createAuthorizationHeader()}).map(HttpService.extractData).catch(HttpService.errorHandler);
+    return this.http.put(Config.API_URL + url, body, this.options).map(HttpService.extractData).catch(HttpService.errorHandler).first();
   }
 
   doDelete(url: string): Observable<any> {
-    return this.http.delete(Config.API_URL + url, {headers: HttpService.createAuthorizationHeader()}).map(HttpService.extractData).catch(HttpService.errorHandler);
+    return this.http.delete(Config.API_URL + url, this.options).map(HttpService.extractData).catch(HttpService.errorHandler).first();
+  }
+
+  private prepareAuthHeader() {
+    this.options.headers.set('Authorization', 'Bearer ' + JSON.parse(localStorage.getItem('currentUser'))['token']);
   }
 
 }

@@ -38,17 +38,27 @@ import {MapService} from './map/map.service';
 import {UserComponent} from './user/user';
 import {UserDialogComponent} from './user/user.dialog';
 import {UserService} from './user/user.service';
+import {AuthComponent} from './auth/auth';
+import {AuthGuard, CanRead} from './auth/auth.guard';
+import {AuthService} from './auth/auth.service';
+import {ChangePasswordComponent} from './user/changePassword';
+import {SharedModule} from './utils/shared/shared.module';
+import {UnauthorizedComponent} from './utils/unauthorized/unauthorized';
 
 
 const appRoutes: Routes = [
   {path: '', redirectTo: '/complexes', pathMatch: 'full'},
-  {path: 'complexes', component: ComplexComponent},
-  {path: 'complexes/:complexId/buildings', component: BuildingComponent},
-  {path: 'anchors', component: AnchorComponent},
-  {path: 'tags', component: TagComponent},
-  {path: 'users', component: UserComponent},
-  {path: 'complexes/:complexId/buildings/:buildingId/floors', component: FloorComponent},
-  {path: 'complexes/:complexId/buildings/:buildingId/floors/:floorId/map', component: MapControllerComponent},
+  {path: 'login', component: AuthComponent},
+  {path: 'logout', component: AuthComponent},
+  {path: 'complexes', component: ComplexComponent, canActivate: [CanRead], data: {permission: 'COMPLEX'}},
+  {path: 'complexes/:complexId/buildings', component: BuildingComponent, canActivate: [CanRead], data: {permission: 'BUILDING'}},
+  {path: 'anchors', component: AnchorComponent, canActivate: [CanRead], data: {permission: 'ANCHOR'}},
+  {path: 'tags', component: TagComponent, canActivate: [CanRead], data: {permission: 'TAG'}},
+  {path: 'users', component: UserComponent, canActivate: [CanRead], data: {permission: 'USER'}},
+  {path: 'changePassword', component: ChangePasswordComponent, canActivate: [CanRead]},
+  {path: 'complexes/:complexId/buildings/:buildingId/floors', component: FloorComponent, canActivate: [CanRead], data: {permission: 'FLOOR'}},
+  {path: 'complexes/:complexId/buildings/:buildingId/floors/:floorId/map', component: MapControllerComponent, canActivate: [CanRead], data: {permission: 'FLOOR'}},
+  {path: 'unauthorized', component: UnauthorizedComponent},
   {path: '**', redirectTo: '/complexes'}
 ];
 
@@ -75,7 +85,10 @@ export function HttpLoaderFactory(http: Http) {
     MapViewerComponent,
     MapUploaderComponent,
     UserComponent,
-    UserDialogComponent
+    UserDialogComponent,
+    AuthComponent,
+    ChangePasswordComponent,
+    UnauthorizedComponent
   ],
   entryComponents: [
     ComplexDialogComponent,
@@ -102,7 +115,8 @@ export function HttpLoaderFactory(http: Http) {
     Ng2BreadcrumbModule.forRoot(),
     DndModule.forRoot(),
     FlexLayoutModule,
-    ImageUploadModule.forRoot()
+    ImageUploadModule.forRoot(),
+    SharedModule
   ],
   providers: [
     BuildingService,
@@ -114,7 +128,10 @@ export function HttpLoaderFactory(http: Http) {
     SocketService,
     DeviceService,
     MapService,
-    UserService
+    UserService,
+    AuthService,
+    CanRead,
+    AuthGuard
   ], bootstrap: [AppComponent]
 })
 
