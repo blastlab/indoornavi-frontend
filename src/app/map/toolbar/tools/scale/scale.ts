@@ -258,7 +258,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     const points = group.selectAll('circle');
     const newCircle = points.data(this.pointsArray).enter()
       .append('svg:circle')
-      .attr('id', 'point')
+      .classed('point', true)
       .style('cursor', 'all-scroll')
       .style('z-index', 0)
       .attr('cx', function (d) {
@@ -283,10 +283,10 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private redrawLine = (): void => {
     const group = d3.select('#scaleGroup');
 
-    const lines = group.selectAll('#connectLine');
+    const lines = group.selectAll('.connectLine');
     lines.data(this.linesArray).enter()
       .append('svg:line')
-      .attr('id', 'connectLine')
+      .classed('connectLine', true)
       .style('cursor', 'crosshair')
       .attr('x1', function (d) {
         return d.p1.x;
@@ -323,10 +323,10 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     const scaleComponent = this;
     const group = d3.select('#scaleGroup');
 
-    const endings = group.selectAll('#endings');
+    const endings = group.selectAll('.endings');
     endings.data(this.pointsArray).enter()
       .append('svg:line')
-      .attr('id', 'endings')
+      .classed('endings', true)
       .attr('stroke-width', 1)
       .attr('stroke', 'black')
       .attr('x1', function (d) {
