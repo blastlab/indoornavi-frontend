@@ -77,7 +77,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     });
   }
 
-  private createSvgGroupWithScale() {
+  private createSvgGroupWithScale(): void {
     if (!!this.floor.scale) {
       this.isScaleSet = true;
       this.scale = (JSON.parse(JSON.stringify(this.floor.scale)));
@@ -122,7 +122,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.active = false;
   }
 
-  private startCreatingScale = (): void => {
+  private startCreatingScale(): void {
     const scaleComponent = this;
     d3.select('#scaleGroup').style('display', 'flex');
     d3.select('#scaleHint')
@@ -173,7 +173,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       });
   }
 
-  private addPoint = (): void => {
+  private addPoint(): void {
     const point = <Point>{
       x: d3.event.offsetX,
       y: d3.event.offsetY
@@ -198,7 +198,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     }
   }
 
-  private blockOneDimension = (point): void => {
+  private blockOneDimension(point): void {
     const slope: number = this.getLineSlope();
     if (slope < 1 && slope > -1) {
       point.y = this.pointsArray[0].y;
@@ -207,20 +207,20 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     }
   }
 
-  private redrawSvgObjects = (): void => {
+  private redrawSvgObjects(): void {
     this.redrawLine();
     this.redrawInput();
     this.redrawEndings();
     this.redrawPoints();
   }
 
-  private setScaleVisible = (): void => {
+  private setScaleVisible(): void {
     this.isScaleDisplayed = true;
     this._scaleInput.publishVisibility(this.isScaleDisplayed);
   }
 
 
-  private getLineSlope = (): number => {
+  private getLineSlope(): number {
     if (this.linesArray.length === 0) {
       return 0;
     }
@@ -232,18 +232,18 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     return (y1 - y2) / (x1 - x2);
   }
 
-  private getPotentialLineSlope = (x1, y1, x2, y2): number => {
+  private getPotentialLineSlope(x1, y1, x2, y2): number {
     return (y1 - y2) / (x1 - x2);
   }
 
-  private createLine = (): Line => {
+  private createLine(): Line {
     return <Line>{
       p1: this.pointsArray[0],
       p2: this.pointsArray[1]
     };
   }
 
-  redrawPoints = (): any => {
+  redrawPoints(): any {
     const scaleComponent = this;
     const group = d3.select('#scaleGroup');
 
@@ -280,7 +280,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this._scaleInput.publishScale(this.scale);
   }
 
-  private redrawLine = (): void => {
+  private redrawLine(): void {
     const group = d3.select('#scaleGroup');
 
     const lines = group.selectAll('.connectLine');
@@ -319,7 +319,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       });
   }
 
-  private redrawEndings = (): void => {
+  private redrawEndings(): void {
     const scaleComponent = this;
     const group = d3.select('#scaleGroup');
 
@@ -363,7 +363,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       });
   }
 
-  private getHorizontalEndingOffset = (): number => {
+  private getHorizontalEndingOffset(): number {
     const slope = this.getLineSlope();
     if (isNaN(slope)) {
       return;
@@ -371,7 +371,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     return this.END_SIZE * Math.sin(Math.atan(slope));
   }
 
-  private getVerticalEndingOffset = (): number => {
+  private getVerticalEndingOffset(): number {
     const slope = this.getLineSlope();
     if (isNaN(slope)) {
       return;
@@ -379,7 +379,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     return this.END_SIZE * Math.cos(Math.atan(slope));
   }
 
-  private pointDrag = (circle): void => {
+  private pointDrag(circle): void {
     if (this.pointsArray.length < 2) {
       return;
     }
@@ -399,7 +399,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.redrawSvgObjects();
   }
 
-  private dragPointWithShift = (circle): void => {
+  private dragPointWithShift(circle): void {
     const secondPoint = this.chooseNotDraggedPoint(circle);
     const potentialSlope: number = this.getPotentialLineSlope(secondPoint.x, secondPoint.y, d3.event.x, d3.event.y);
     const upperSlope = 3;
@@ -439,7 +439,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     }
   }
 
-  private chooseNotDraggedPoint = (circle): Point => {
+  private chooseNotDraggedPoint(circle): Point {
     const point: Point = <Point>{
       x: 0,
       y: 0
@@ -454,7 +454,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     return point;
   }
 
-  private redrawInput = (): void => {
+  private redrawInput(): void {
     const tempX = (this.linesArray[0].p1.x + this.linesArray[0].p2.x) / 2;
     const tempY = (this.linesArray[0].p1.y + this.linesArray[0].p2.y) / 2;
 
@@ -471,7 +471,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this._scaleInput.publishCoordinates(p);
   }
 
-  private checkIfInputEclipsesPoints = (inputCoords: Point, inputHeight: number, inputWidth: number): void => {
+  private checkIfInputEclipsesPoints(inputCoords: Point, inputHeight: number, inputWidth: number): void {
     const scaleComponent = this;
     this.pointsArray.forEach(function (point) {
       if (point.x >= inputCoords.x && point.x <= inputCoords.x + inputWidth && point.y >= inputCoords.y && point.y <= inputCoords.y + inputHeight) {
