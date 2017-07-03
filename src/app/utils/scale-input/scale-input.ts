@@ -42,7 +42,6 @@ export class ScaleInputComponent implements OnInit {
     this._scaleInput.visibility$.subscribe(
       data => {
         this.visible = data;
-        console.log('           ' + data);
       });
     this._scaleInput.scale$.subscribe(
       data => {
@@ -84,7 +83,6 @@ export class ScaleInputComponent implements OnInit {
       realDistance: null,
       measure: null
     };
-    console.log(this.scale);
     this._scaleHint.publishScale(null);
     this._scaleInput.publishScale(this.scale);
     document.getElementById('scaleGroup').remove();

@@ -40,7 +40,6 @@ export class MapViewerComponent implements OnInit {
   }
 
   private setupSVG = (width: number, height: number): void => {
-    console.log('setup svg');
     d3.select('#map-container').append('svg')
       .attr('id', 'map')
       .attr('width', width)

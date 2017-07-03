@@ -12,6 +12,7 @@ import {MapLoaderInformerService} from '../../../../utils/map-loader-informer/ma
 import {Subscription} from 'rxjs/Subscription';
 import {promise} from 'selenium-webdriver';
 import fullyResolved = promise.fullyResolved;
+import {logger} from 'codelyzer/util/logger';
 
 @Component({
   selector: 'app-scale',
@@ -181,8 +182,9 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
     if (this.start == null) {
       this.pointsArray.push(point);
-      this.start = this.redrawPoints();
       this.redrawEndings();
+      this.start = this.redrawPoints();
+
     } else if (this.stop == null) {
       this.pointsArray.push(point);
       this.linesArray.push(this.createLine());
@@ -229,10 +231,10 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     const x2 = this.linesArray[0].p2.x;
     const y2 = this.linesArray[0].p2.y;
 
-    return (y1 - y2) / (x1 - x2);
+    return this.getSlope(x1, y1, x2, y2);
   }
 
-  private getPotentialLineSlope(x1, y1, x2, y2): number {
+  private getSlope(x1, y1, x2, y2): number {
     return (y1 - y2) / (x1 - x2);
   }
 
@@ -401,7 +403,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   private dragPointWithShift(circle): void {
     const secondPoint = this.chooseNotDraggedPoint(circle);
-    const potentialSlope: number = this.getPotentialLineSlope(secondPoint.x, secondPoint.y, d3.event.x, d3.event.y);
+    const potentialSlope: number = this.getSlope(secondPoint.x, secondPoint.y, d3.event.x, d3.event.y);
     const upperSlope = 3;
     const lowerSlope = 0.558; // arctan(22.5°)
     if (Math.abs(potentialSlope) < lowerSlope) {
@@ -458,23 +460,23 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     const tempX = (this.linesArray[0].p1.x + this.linesArray[0].p2.x) / 2;
     const tempY = (this.linesArray[0].p1.y + this.linesArray[0].p2.y) / 2;
 
-    const inputHeight = 50;
-    const inputWidth = 370;
+    const inputHeight = 53;
+    const inputWidth = 313.5;
 
-    const x = Math.max(0, Math.min(tempX, d3.select('#map').attr('width') - inputWidth));
+    const x = Math.max(0, Math.min(tempX, d3.select('#map').attr('width') - inputWidth - 50));
     const y = Math.max(inputHeight, Math.min(tempY, d3.select('#map').attr('height') - inputHeight));
     const p = <Point>{
       x: x,
       y: y
     };
-    this.checkIfInputEclipsesPoints(p, inputHeight, inputWidth);
+    this.MoveInputIfItEclipsesPoint(p, inputHeight, inputWidth);
     this._scaleInput.publishCoordinates(p);
   }
 
-  private checkIfInputEclipsesPoints(inputCoords: Point, inputHeight: number, inputWidth: number): void {
+  private MoveInputIfItEclipsesPoint(inputCoords: Point, inputHeight: number, inputWidth: number): void {
     const scaleComponent = this;
     this.pointsArray.forEach(function (point) {
-      if (point.x >= inputCoords.x && point.x <= inputCoords.x + inputWidth && point.y >= inputCoords.y && point.y <= inputCoords.y + inputHeight) {
+      if (point.x - 50 >= inputCoords.x && point.x - 55 <= inputCoords.x + inputWidth && point.y >= inputCoords.y && point.y <= inputCoords.y + inputHeight) {
         inputCoords.y -= (inputHeight + scaleComponent.END_SIZE);
       }
     });
