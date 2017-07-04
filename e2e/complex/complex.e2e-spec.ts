@@ -24,7 +24,6 @@ describe('ComplexComponent', () => {
         expect(ComplexPage.getLatestAddedComplex()).toEqual(newName);
         ComplexPage.openLatestAddedComplex();
         AppPage.getCurrentUrl().then(pageUrl => {
-          console.log('pageUrl: ' + pageUrl);
           expect(pageUrl).toMatch(/complexes\/.*\/buildings/g);
           ComplexPage.navigateToHome();
           done();

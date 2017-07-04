@@ -1,14 +1,16 @@
-import {ComplexPage} from '../complex/complex.po';
 import {BuildingPage} from './building.po';
-import {browser} from 'protractor';
 import {AppPage} from '../app.po';
 
 describe('BuildingComponent', () => {
 
   beforeAll((done: DoneFn) => {
+    BuildingPage.prepareComplex('testBuilding');
+    done();
+  });
+
+  afterAll((done: DoneFn) => {
     BuildingPage.navigateToHome();
-    ComplexPage.addComplex('testBuilding');
-    ComplexPage.openLatestAddedComplex();
+    BuildingPage.destroyLastComplex();
     done();
   });
 
@@ -16,64 +18,32 @@ describe('BuildingComponent', () => {
     expect(AppPage.getTitle()).toEqual('Your buildings');
   });
 
-});
-
-/*
-  beforeEach(() => {
- page = new BuildingPage();
-  });
-
-  it('should have title', () => {
-    page.navigateToHome();
-    page.addComplex('Test');
-    page.openBuildingsOfLastAddedComplex();
-    expect(page.getTitle()).toEqual('Your buildings');
-  });
-
-  it('should be able to add new building', () => {
-    const newName = 'test';
-    page.navigateToHome();
-    page.addComplex('Test');
-    page.openBuildingsOfLastAddedComplex();
-    page.addBuilding(newName);
-    expect(page.getLatestAddedBuilding()).toEqual(newName);
-  });
-
-  it('should be able to remove building', () => {
-    const newName = 'test';
-    const newName2 = 'test2';
-    page.navigateToHome();
-    page.addComplex('Test');
-    page.openBuildingsOfLastAddedComplex();
-    page.addBuilding(newName);
-    page.addBuilding(newName2);
-    page.removeLastBuilding();
-    expect(page.getLatestAddedBuilding()).toEqual(newName);
-  });
-
-  it('should be able to edit building', () => {
-    const newName = 'test';
-    const newName2 = 'test2';
-    page.navigateToHome();
-    page.addComplex('Test');
-    page.openBuildingsOfLastAddedComplex();
-    page.addBuilding(newName);
-    page.editLastBuilding(newName2);
-    expect(page.getLatestAddedBuilding()).toEqual(newName2);
-  });
-
-  it('should cancel editing', () => {
-    const newName = 'test';
-    const newName2 = 'test2';
-    page.navigateToHome();
-    page.addComplex('Test');
-    page.openBuildingsOfLastAddedComplex();
-    page.addBuilding(newName);
-    page.editLastBuildingWithoutSaving(newName2);
-    page.cancelEditingLastBuilding();
-    expect(page.getLatestAddedBuilding()).toEqual(newName);
- browser.pause();
+  it('should be able to add new, and remove building', (done: DoneFn) => {
+    const name = 'testAddBuilding';
+    const newName = 'testRename';
+    BuildingPage.getBuildingsCount().then(initCount => {
+      BuildingPage.addBuilding(name);
+      expect(BuildingPage.getLatestAddedBuilding()).toEqual(name);
+      BuildingPage.getBuildingsCount().then(count => {
+        expect(count).toEqual(initCount + 1);
+        BuildingPage.editLastBuilding(newName, true);
+        expect(BuildingPage.getLatestAddedBuilding()).toEqual(newName);
+        BuildingPage.openLatestAddedBuilding();
+        AppPage.getCurrentUrl().then(pageUrl => {
+          expect(pageUrl).toMatch(/complexes\/.*\/buildings\/.*\/floors/g);
+          AppPage.navigateTo(BuildingPage.getBackUrl(pageUrl));
+          done();
+        });
+        BuildingPage.editLastBuilding(name, false);
+        expect(BuildingPage.getLatestAddedBuilding()).toEqual(newName);
+        AppPage.cancelEditingWithESC();
+        BuildingPage.removeLastBuilding();
+        BuildingPage.getBuildingsCount().then(finalCount => {
+          expect(finalCount).toEqual(initCount);
+          done();
+        });
+      });
+    });
   });
 
 });
- */

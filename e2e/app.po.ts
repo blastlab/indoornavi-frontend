@@ -18,4 +18,8 @@ export class AppPage {
   static cancelEditingWithESC() {
     browser.actions().sendKeys(protractor.Key.ESCAPE).perform();
   }
+
+  static navigateTo(path: string) {
+    return browser.get(path);
+  }
 }
