@@ -1,7 +1,8 @@
 .show-scale-input {
   position: absolute;
   display: flex;
-  transform: scale(0.75);
+  transform-origin: 20% 20%;
+  transform: scale(0.7);
 }
 
 #scaleInput {

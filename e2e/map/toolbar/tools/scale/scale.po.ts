@@ -46,7 +46,7 @@ export class IndoorNaviPage {
       if (!present) {
         return;
       }
-    })
+    });
     element(by.id('hintBar')).getText().then(function (text) {
       if (text === 'Choose a tool.') {
         return;
@@ -54,10 +54,6 @@ export class IndoorNaviPage {
         scaleTest.clickScaleTool();
       }
     });
-  }
-
-  uploadImage(path) {
-    element(by.tagName('input')).sendKeys(path);
   }
 
   clickScaleTool() {
@@ -77,7 +73,7 @@ export class IndoorNaviPage {
   }
 
   clickRemove() {
-    element(by.id('removeButton')).click()
+    element(by.id('removeButton')).click();
   }
 
   fillInScaleInput(distance, unit) {

@@ -12,7 +12,6 @@ import {MapLoaderInformerService} from '../../../../utils/map-loader-informer/ma
 import {Subscription} from 'rxjs/Subscription';
 import {promise} from 'selenium-webdriver';
 import fullyResolved = promise.fullyResolved;
-import {logger} from 'codelyzer/util/logger';
 
 @Component({
   selector: 'app-scale',
@@ -39,7 +38,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private start;
   private stop;
   private END_SIZE: number = 5;
-  private subscription: Subscription;
+  private mapLoaderSubscription: Subscription;
   @Input() floor: Floor;
 
   constructor(private translate: TranslateService,
@@ -49,11 +48,11 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   ngOnDestroy() {
-    this.subscription.unsubscribe();
+    this.mapLoaderSubscription.unsubscribe();
   }
 
   ngOnInit(): void {
-    this.subscription = this._mapLoaderInformer.isLoaded$.subscribe(isSvgLoaded => {
+    this.mapLoaderSubscription = this._mapLoaderInformer.isLoaded$.subscribe(isSvgLoaded => {
       if (isSvgLoaded) {
         this.createSvgGroupWithScale();
       }
@@ -194,7 +193,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       }
       this.setScalePoints();
       this.stop = this.redrawPoints();
-      this.redrawSvgObjects();
+      this.redrawAllObjectsOnMap();
       this.setScaleVisible();
       d3.select('#scaleGroup').style('display', 'flex');
     }
@@ -209,7 +208,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     }
   }
 
-  private redrawSvgObjects(): void {
+  private redrawAllObjectsOnMap(): void {
     this.redrawLine();
     this.redrawInput();
     this.redrawEndings();
@@ -258,7 +257,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       });
 
     const points = group.selectAll('circle');
-    const newCircle = points.data(this.pointsArray).enter()
+    return points.data(this.pointsArray).enter()
       .append('svg:circle')
       .classed('point', true)
       .style('cursor', 'all-scroll')
@@ -266,14 +265,13 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       .attr('cx', function (d) {
         return d.x;
       })
-      .attr('cy', function (d, i) {
+      .attr('cy', function (d) {
         return d.y;
       })
       .attr('r', 10)
       .style('fill', 'black')
       .attr('fill-opacity', 0)
       .call(drag);
-    return newCircle;
   }
 
   private setScalePoints(): void {
@@ -398,7 +396,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
           return d.y = Math.max(0, Math.min(d3.select('#map').attr('height'), d3.event.y));
         });
     }
-    this.redrawSvgObjects();
+    this.redrawAllObjectsOnMap();
   }
 
   private dragPointWithShift(circle): void {
@@ -460,10 +458,10 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     const tempX = (this.linesArray[0].p1.x + this.linesArray[0].p2.x) / 2;
     const tempY = (this.linesArray[0].p1.y + this.linesArray[0].p2.y) / 2;
 
-    const inputHeight = 53;
-    const inputWidth = 313.5;
+    const inputHeight = 50;
+    const inputWidth = 295;
 
-    const x = Math.max(0, Math.min(tempX, d3.select('#map').attr('width') - inputWidth - 50));
+    const x = Math.max(0, Math.min(tempX, d3.select('#map').attr('width') - inputWidth - 25));
     const y = Math.max(inputHeight, Math.min(tempY, d3.select('#map').attr('height') - inputHeight));
     const p = <Point>{
       x: x,
@@ -476,7 +474,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private MoveInputIfItEclipsesPoint(inputCoords: Point, inputHeight: number, inputWidth: number): void {
     const scaleComponent = this;
     this.pointsArray.forEach(function (point) {
-      if (point.x - 50 >= inputCoords.x && point.x - 55 <= inputCoords.x + inputWidth && point.y >= inputCoords.y && point.y <= inputCoords.y + inputHeight) {
+      if (point.x - 22 >= inputCoords.x && point.x - 25 <= inputCoords.x + inputWidth && point.y >= inputCoords.y && point.y <= inputCoords.y + inputHeight) {
         inputCoords.y -= (inputHeight + scaleComponent.END_SIZE);
       }
     });

@@ -17,6 +17,10 @@ describe('Scale', () => {
   let mapLoaderInformer: MapLoaderInformerService;
   let floor: Floor;
   let scale: Scale;
+  let x1;
+  let y1;
+  let x2;
+  let y2;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -51,6 +55,10 @@ describe('Scale', () => {
     floor = <Floor>{
       scale: this.scale
     };
+     x1 = 523.0;
+     y1 = 294.0;
+     x2 = 361.0;
+     y2 = 363.0;
     fixture.detectChanges();
   });
 
@@ -59,10 +67,6 @@ describe('Scale', () => {
   });
 
   it('should calculate scale line slope', () => {
-    const x1 = 523.0;
-    const y1 = 294.0;
-    const x2 = 361.0;
-    const y2 = 363.0;
     const exemplarySlope = (y1 - y2) / (x1 - x2);
 
     const testedSlope = (component as any).getSlope(x1, y1, x2, y2);
@@ -75,21 +79,19 @@ describe('Scale', () => {
 
     testedComponent.linesArray.push(<Line>{
       p1: <Point>{
-        x: 523.0,
-        y: 294.0
+        x: x1,
+        y: y1
       },
       p2: <Point>{
-        x: 361.0,
-        y: 363.0
+        x: x2,
+        y: y2
       }
     });
     const testedVerticalOffset: number = testedComponent.getVerticalEndingOffset();
     const testedHorizontalOffset: number = testedComponent.getHorizontalEndingOffset();
-    const x1 = testedComponent.linesArray[0].p1.x;
-    const y1 = testedComponent.linesArray[0].p1.y;
-    const x2 = testedComponent.linesArray[0].p2.x;
-    const y2 = testedComponent.linesArray[0].p2.y;
-    const exemplarySlope = (y1 - y2) / (x1 - x2);
+    const p1 = testedComponent.linesArray[0].p1;
+    const p2 = testedComponent.linesArray[0].p2;
+    const exemplarySlope = (p1.y - p2.y) / (p1.x - p2.x);
 
     const exemplaryVerticalOffset = testedComponent.END_SIZE * Math.cos(Math.atan(exemplarySlope));
     const exemplaryHorizontalOffset = testedComponent.END_SIZE * Math.sin(Math.atan(exemplarySlope));

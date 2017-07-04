@@ -70,7 +70,6 @@ describe('ScaleComponent', () => {
     expect(element(by.id('hintBar')).getText()).toEqual('Choose a tool.');
     DrawingChecker.expectScaleNotToBeVisible();
   });
-
   it('should change scale with shift pressed', () => {
     const distance = '543';
     const unit = 'CENTIMETERS';
@@ -117,7 +116,8 @@ describe('ScaleComponent', () => {
           points.first().getAttribute('cx').then(function (cx) {
             const pointCxInt = parseInt(cx, 10);
 
-            const isNotOccurred: boolean = (pointCxInt < scaleInputLeftInt || pointCxInt > scaleInputLeftInt + 313) || (pointCyInt < scaleInputTopInt || pointCyInt > scaleInputTopInt + 43);
+            const isNotOccurred: boolean = (pointCxInt < scaleInputLeftInt || pointCxInt > scaleInputLeftInt + 313)
+              || (pointCyInt < scaleInputTopInt || pointCyInt > scaleInputTopInt + 43);
             expect(isNotOccurred).toBeTruthy();
           });
         });
@@ -148,8 +148,8 @@ describe('ScaleComponent', () => {
   });
 
   it('should not be able to type in text instead of number in scale input', () => {
-    const distance = '54ter';
-    const unit = 'CENTIMETERS';
+    const distance = 'NaN';
+    const unit = 'METERS';
     page.fillInScaleInput(distance, unit);
     page.clickSave();
     expect(element(by.id('hintBar')).getText()).toEqual('SCALE: Click at map to set scale.');
@@ -178,6 +178,13 @@ describe('ScaleComponent', () => {
     DrawingChecker.expectScaleNotToBeVisible();
     page.moveMouseTo(scaleHint);
     DrawingChecker.expectScaleToBeVisible();
+  });
+
+  it('should not draw scale outside of canvas', () => {
+    const points = element.all(by.className('point'));
+    page.dragEnding(points.first(), {x: 0, y: -100});
+
+    expect(points.first().getAttribute('cy')).toEqual('0');
   });
 
   it('should temporarily remove scale only from map view', () => {
