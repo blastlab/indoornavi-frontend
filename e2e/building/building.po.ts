@@ -6,7 +6,7 @@ export class BuildingPage {
     return browser.get('/');
   }
 
-  static prepareComplex(name: string) {
+  static prepareAndOpenComplex(name: string) {
     BuildingPage.navigateToHome();
     ComplexPage.addComplex(name);
     ComplexPage.openLatestAddedComplex();
@@ -15,13 +15,13 @@ export class BuildingPage {
   static getBackUrl(url: string): string {
     url = url.substring(url.indexOf('//') + 2, url.lastIndexOf('/'));
     url = url.substring(url.indexOf('/'), url.lastIndexOf('/') + 1);
-    console.log(url);
     return url;
   }
 
   static destroyLastComplex() {
+    ComplexPage.navigateToHome();
     ComplexPage.removeLastComplex();
-    ComplexPage.editLastComplex('cleaning', false);
+    (!!element(by.id('complex-confirm-remove-button'))) ? element(by.id('complex-confirm-remove-button')).click() : ComplexPage.editLastComplex('cleaning', false);
   }
 
   static addBuilding(name: string) {

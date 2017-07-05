@@ -3,15 +3,12 @@ import {AppPage} from '../app.po';
 
 describe('BuildingComponent', () => {
 
-  beforeAll((done: DoneFn) => {
-    BuildingPage.prepareComplex('testBuilding');
-    done();
+  beforeAll(() => {
+    BuildingPage.prepareAndOpenComplex('testBuilding');
   });
 
-  afterAll((done: DoneFn) => {
-    BuildingPage.navigateToHome();
+  afterAll(() => {
     BuildingPage.destroyLastComplex();
-    done();
   });
 
   it('should have title', () => {
@@ -35,8 +32,8 @@ describe('BuildingComponent', () => {
           done();
         });
         BuildingPage.editLastBuilding(name, false);
-        expect(BuildingPage.getLatestAddedBuilding()).toEqual(newName);
         AppPage.cancelEditingWithESC();
+        expect(BuildingPage.getLatestAddedBuilding()).toEqual(newName);
         BuildingPage.removeLastBuilding();
         BuildingPage.getBuildingsCount().then(finalCount => {
           expect(finalCount).toEqual(initCount);

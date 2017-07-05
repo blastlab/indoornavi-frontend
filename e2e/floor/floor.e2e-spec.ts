@@ -2,79 +2,47 @@ import {AppPage} from '../app.po';
 import {FloorPage} from './floor.po';
 
 describe('FloorComponent', () => {
-  let page: FloorPage;
 
-  beforeEach(() => {
-    page = new FloorPage();
+  beforeAll(() => {
+    FloorPage.prepareAndOpenBuilding('testFloor');
+  });
+
+  afterAll(() => {
+    FloorPage.destroyLastComplex();
   });
 
   it('should have title', () => {
-    page.navigateToHome();
-    page.addComplex('Test');
-    page.openBuildingsOfLastAddedComplex();
-    page.addBuilding('Test');
-    page.openFloorOfLastAddedBuilding();
     expect(AppPage.getTitle()).toEqual('Floors');
   });
 
-  it('should be able to add new floor', () => {
-    const newName = 'test';
-    const newLevel = '3';
-    page.navigateToHome();
-    page.addComplex('Test');
-    page.openBuildingsOfLastAddedComplex();
-    page.addBuilding('Test');
-    page.openFloorOfLastAddedBuilding();
-    page.addFloor(newName, newLevel);
-    expect(page.getLatestAddedFloor()).toEqual(newName);
+  it('should be able to add new, and remove floor', (done: DoneFn) => {
+    const name = 'testAddFloor';
+    const newName = 'testRename';
+    FloorPage.getFloorsCount().then(initCount => {
+      FloorPage.addFloor(name, 0);
+      expect(FloorPage.getLatestAddedFloor()).toEqual(name);
+      expect(FloorPage.getLatestAddedFloorLevel()).toBe('0');
+      FloorPage.getFloorsCount().then(count => {
+        expect(count).toEqual(initCount + 1);
+        FloorPage.editLastFloor(newName, 1, true);
+        expect(FloorPage.getLatestAddedFloor()).toEqual(newName);
+        FloorPage.openLatestAddedFloor();
+        AppPage.getCurrentUrl().then(pageUrl => {
+          expect(pageUrl).toMatch(/complexes\/.*\/buildings\/.*\/floors\/.*\/map/g);
+          AppPage.navigateTo(FloorPage.getBackUrl(pageUrl));
+          done();
+        });
+        FloorPage.editLastFloor(name, 7, false);
+        AppPage.cancelEditingWithESC();
+        expect(FloorPage.getLatestAddedFloor()).toEqual(newName);
+        expect(FloorPage.getLatestAddedFloorLevel()).toBe('1');
+        FloorPage.removeLastFloor();
+        console.log('removal');
+        FloorPage.getFloorsCount().then(finalCount => {
+          expect(finalCount).toEqual(initCount);
+          done();
+        });
+      });
+    });
   });
-
-  it('should be able to remove foor', () => {
-    const newName = 'test';
-    const newName2 = 'test2';
-    const newLevel = '4';
-    const newLevel2 = '5';
-    page.navigateToHome();
-    page.addComplex('Test');
-    page.openBuildingsOfLastAddedComplex();
-    page.addBuilding('Test');
-    page.openFloorOfLastAddedBuilding();
-    page.addFloor(newName, newLevel);
-    page.addFloor(newName2, newLevel2);
-    page.removeLastFloor();
-    expect(page.getLatestAddedFloor()).toEqual(newName);
-  });
-
-  it('should be able to edit floor', () => {
-    const newName = 'test';
-    const newName2 = 'test2';
-    const newLevel = '4';
-    const newLevel2 = '5';
-    page.navigateToHome();
-    page.addComplex('Test');
-    page.openBuildingsOfLastAddedComplex();
-    page.addBuilding('Test');
-    page.openFloorOfLastAddedBuilding();
-    page.addFloor(newName, newLevel);
-    page.editLastFloor(newName2, newLevel2);
-    expect(page.getLatestAddedFloor()).toEqual(newName2);
-  });
-
-  it('should cancel editing', () => {
-    const newName = 'test';
-    const newName2 = 'test2';
-    const newLevel = '4';
-    const newLevel2 = '5';
-    page.navigateToHome();
-    page.addComplex('Test');
-    page.openBuildingsOfLastAddedComplex();
-    page.addBuilding('Test');
-    page.openFloorOfLastAddedBuilding();
-    page.addFloor(newName, newLevel);
-    page.editLastFloorWithoutSaving(newName2, newLevel2);
-    page.cancelEditingLastFloor();
-    expect(page.getLatestAddedFloor()).toEqual(newName);
-    expect(page.getLatestAddedFloorLevel()).toEqual(newLevel);
-  });
-
 });

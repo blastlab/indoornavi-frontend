@@ -3,7 +3,7 @@ import {AppPage} from '../app.po';
 
 describe('ComplexComponent', () => {
 
-  beforeEach((done: DoneFn) => {
+  beforeAll((done: DoneFn) => {
     ComplexPage.navigateToHome();
     done();
   });
