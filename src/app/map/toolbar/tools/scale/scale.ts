@@ -41,6 +41,10 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private mapLoaderSubscription: Subscription;
   @Input() floor: Floor;
 
+  private static getSlope(x1, y1, x2, y2): number {
+    return (y1 - y2) / (x1 - x2);
+  }
+
   constructor(private translate: TranslateService,
               private _scaleInput: ScaleInputService,
               private _scaleHint: ScaleHintService,
@@ -230,11 +234,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     const x2 = this.linesArray[0].p2.x;
     const y2 = this.linesArray[0].p2.y;
 
-    return this.getSlope(x1, y1, x2, y2);
-  }
-
-  private getSlope(x1, y1, x2, y2): number {
-    return (y1 - y2) / (x1 - x2);
+    return ScaleComponent.getSlope(x1, y1, x2, y2);
   }
 
   private createLine(): Line {
@@ -401,7 +401,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   private dragPointWithShift(circle): void {
     const secondPoint = this.chooseNotDraggedPoint(circle);
-    const potentialSlope: number = this.getSlope(secondPoint.x, secondPoint.y, d3.event.x, d3.event.y);
+    const potentialSlope: number = ScaleComponent.getSlope(secondPoint.x, secondPoint.y, d3.event.x, d3.event.y);
     const upperSlope = 3;
     const lowerSlope = 0.558; // arctan(22.5°)
     if (Math.abs(potentialSlope) < lowerSlope) {

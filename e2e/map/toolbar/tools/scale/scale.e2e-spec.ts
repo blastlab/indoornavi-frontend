@@ -1,19 +1,19 @@
-import {IndoorNaviPage} from './scale.po';
+import {ScaleTool} from './scale.po';
 import {browser, element, by, ElementFinder, protractor} from 'protractor';
 
 describe('ScaleComponentInit', () => {
-  let page: IndoorNaviPage;
+  let page: ScaleTool;
   let svg: ElementFinder;
 
   beforeAll(() => {
-    page = new IndoorNaviPage();
-    page.navigateToHome();
-    page.addComplex('Test');
-    page.openBuildingsOfLastAddedComplex();
-    page.addBuilding('Test');
-    page.openFloorOfLastAddedBuilding();
-    page.addFloor('Test', '1');
-    page.openMapOfLastAddedFloor();
+    page = new ScaleTool();
+    ScaleTool.navigateToHome();
+    ScaleTool.addComplex('Test');
+    ScaleTool.openBuildingsOfLastAddedComplex();
+    ScaleTool.addBuilding('Test');
+    ScaleTool.openFloorOfLastAddedBuilding();
+    ScaleTool.addFloor('Test', '1');
+    ScaleTool.openMapOfLastAddedFloor();
     this.svg = element(by.id('mapBg'));
   });
 
@@ -39,19 +39,19 @@ describe('ScaleComponentInit', () => {
 });
 
 describe('ScaleComponent', () => {
-  let page: IndoorNaviPage;
+  let page: ScaleTool;
   let svg: ElementFinder;
 
   beforeEach(() => {
-    page = new IndoorNaviPage();
+    page = new ScaleTool();
     page.turnOffScaleTool();
-    page.clickScaleTool();
+    ScaleTool.clickScaleTool();
     this.svg = element(by.id('mapBg'));
   });
 
   afterAll(() => {
-    page.navigateToHome();
-    page.deleteLastAddedComplex();
+    ScaleTool.navigateToHome();
+    ScaleTool.deleteLastAddedComplex();
   });
 
   it('should be able to activate scale tool', () => {
@@ -61,11 +61,11 @@ describe('ScaleComponent', () => {
   it('should draw first scale and type in distance and unit', () => {
     const distance = '314';
     const unit = 'CENTIMETERS';
-    page.clickMap(this.svg, 126, 125);
-    page.clickMap(this.svg, 241, 342);
+    ScaleTool.clickMap(this.svg, 126, 125);
+    ScaleTool.clickMap(this.svg, 241, 342);
     DrawingChecker.expectScaleToExist();
-    page.fillInScaleInput(distance, unit);
-    page.clickSave();
+    ScaleTool.fillInScaleInput(distance, unit);
+    ScaleTool.clickSave();
     expect(element(by.id('scaleHint')).getText()).toEqual('Scale: ' + distance + ' cm');
     expect(element(by.id('hintBar')).getText()).toEqual('Choose a tool.');
     DrawingChecker.expectScaleNotToBeVisible();
@@ -76,23 +76,23 @@ describe('ScaleComponent', () => {
     const points = element.all(by.className('point'));
 
     browser.actions().keyDown(protractor.Key.SHIFT).perform();
-    page.dragEnding(points.first(), {x: 100, y: 0});
+    ScaleTool.dragEnding(points.first(), {x: 100, y: 0});
     expect(points.first().getAttribute('cx')).toEqual(points.last().getAttribute('cx'));
     expect(points.first().getAttribute('cy')).not.toEqual(points.last().getAttribute('cy'));
     browser.actions().keyUp(protractor.Key.SHIFT).perform();
 
-    page.dragEnding(points.first(), {x: 50, y: 0});
+    ScaleTool.dragEnding(points.first(), {x: 50, y: 0});
 
     browser.actions().keyDown(protractor.Key.SHIFT).perform();
-    page.dragEnding(points.first(), {x: 0, y: 200});
+    ScaleTool.dragEnding(points.first(), {x: 0, y: 200});
     expect(points.first().getAttribute('cx')).not.toEqual(points.last().getAttribute('cx'));
     expect(points.first().getAttribute('cy')).toEqual(points.last().getAttribute('cy'));
     browser.actions().keyUp(protractor.Key.SHIFT).perform();
 
-    page.fillInScaleInput(distance, unit);
+    ScaleTool.fillInScaleInput(distance, unit);
     DrawingChecker.expectScaleToBeVisible();
 
-    page.clickSave();
+    ScaleTool.clickSave();
     expect(element(by.id('scaleHint')).getText()).toEqual('Scale: ' + distance + ' cm');
     expect(element(by.id('hintBar')).getText()).toEqual('Choose a tool.');
     DrawingChecker.expectScaleNotToBeVisible();
@@ -100,7 +100,7 @@ describe('ScaleComponent', () => {
 
   it('should not hide point under the scale input', () => {
     const points = element.all(by.className('point'));
-    page.dragEnding(points.first(), {x: 110, y: 30});
+    ScaleTool.dragEnding(points.first(), {x: 110, y: 30});
     element(by.id('scaleInput')).getCssValue('top').then(function (topPx) {
       const topString = topPx.toString();
       const top = topString.substring(0, topString.length - 2);
@@ -131,9 +131,9 @@ describe('ScaleComponent', () => {
     const points = element.all(by.className('point'));
     const line = element(by.className('connectLine'));
 
-    page.dragEnding(points.first(), {x: 100, y: 100});
-    page.dragEnding(points.last(), {x: 34, y: -100});
-    page.fillInScaleInput(distance, unit);
+    ScaleTool.dragEnding(points.first(), {x: 100, y: 100});
+    ScaleTool.dragEnding(points.last(), {x: 34, y: -100});
+    ScaleTool.fillInScaleInput(distance, unit);
     DrawingChecker.expectScaleToBeVisible();
 
     expect(points.first().getAttribute('cx')).toEqual(line.getAttribute('x1'));
@@ -141,7 +141,7 @@ describe('ScaleComponent', () => {
     expect(points.last().getAttribute('cx')).toEqual(line.getAttribute('x2'));
     expect(points.last().getAttribute('cy')).toEqual(line.getAttribute('y2'));
 
-    page.clickSave();
+    ScaleTool.clickSave();
     expect(element(by.id('scaleHint')).getText()).toEqual('Scale: ' + distance + ' cm');
     expect(element(by.id('hintBar')).getText()).toEqual('Choose a tool.');
     DrawingChecker.expectScaleNotToBeVisible();
@@ -150,8 +150,8 @@ describe('ScaleComponent', () => {
   it('should not be able to type in text instead of number in scale input', () => {
     const distance = 'NaN';
     const unit = 'METERS';
-    page.fillInScaleInput(distance, unit);
-    page.clickSave();
+    ScaleTool.fillInScaleInput(distance, unit);
+    ScaleTool.clickSave();
     expect(element(by.id('hintBar')).getText()).toEqual('SCALE: Click at map to set scale.');
     DrawingChecker.expectScaleToBeVisible();
   });
@@ -159,14 +159,14 @@ describe('ScaleComponent', () => {
   it('should create new scale after removing old one', () => {
     const distance = '765';
     const unit = 'CENTIMETERS';
-    page.clickRemove();
+    ScaleTool.clickRemove();
     DrawingChecker.expectScaleNotToExist();
-    page.clickMap(this.svg, 54, 34);
-    page.clickMap(this.svg, 345, 82);
+    ScaleTool.clickMap(this.svg, 54, 34);
+    ScaleTool.clickMap(this.svg, 345, 82);
     DrawingChecker.expectScaleToExist();
     DrawingChecker.expectScaleToBeVisible();
-    page.fillInScaleInput(distance, unit);
-    page.clickSave();
+    ScaleTool.fillInScaleInput(distance, unit);
+    ScaleTool.clickSave();
     expect(element(by.id('scaleHint')).getText()).toEqual('Scale: ' + distance + ' cm');
     expect(element(by.id('hintBar')).getText()).toEqual('Choose a tool.');
     DrawingChecker.expectScaleNotToBeVisible();
@@ -174,21 +174,21 @@ describe('ScaleComponent', () => {
 
   it('should show scale on mouse over scale hint', () => {
     const scaleHint = element(by.id('scaleHint'));
-    page.clickScaleTool();
+    ScaleTool.clickScaleTool();
     DrawingChecker.expectScaleNotToBeVisible();
-    page.moveMouseTo(scaleHint);
+    ScaleTool.moveMouseTo(scaleHint);
     DrawingChecker.expectScaleToBeVisible();
   });
 
   it('should not draw scale outside of canvas', () => {
     const points = element.all(by.className('point'));
-    page.dragEnding(points.first(), {x: 0, y: -100});
+    ScaleTool.dragEnding(points.first(), {x: 0, y: -100});
 
     expect(points.first().getAttribute('cy')).toEqual('0');
   });
 
   it('should temporarily remove scale only from map view', () => {
-    page.clickRemove();
+    ScaleTool.clickRemove();
     DrawingChecker.expectScaleNotToExist();
 
     expect(element(by.id('scaleHint')).getText()).toEqual('Scale is not set');

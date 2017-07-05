@@ -1,5 +1,4 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {Floor} from '../../floor/floor.type';
 import * as d3 from 'd3';
 import {TranslateService} from '@ngx-translate/core';
 import {Scale, MeasureEnum} from '../../map/toolbar/tools/scale/scale.type';

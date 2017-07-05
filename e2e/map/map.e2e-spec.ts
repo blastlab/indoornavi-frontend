@@ -1,20 +1,30 @@
-import {IndoorNaviPage} from './map.po';
+import {MapComponent} from './map.po';
 import {browser, element, by} from 'protractor';
 
 describe('MapComponent', () => {
-  let page: IndoorNaviPage;
+  let page: MapComponent;
 
   beforeEach(() => {
-    page = new IndoorNaviPage();
+    page = new MapComponent();
+  });
+
+  beforeAll(() => {
+    page = new MapComponent();
+    MapComponent.navigateToHome();
+    MapComponent.addComplex('Test');
+    MapComponent.openBuildingsOfLastAddedComplex();
+    MapComponent.addBuilding('Test');
+    MapComponent.openFloorOfLastAddedBuilding();
+    MapComponent.addFloor('Test', '1');
+    MapComponent.openMapOfLastAddedFloor();
+  });
+
+  afterAll(() => {
+    MapComponent.navigateToHome();
+    MapComponent.deleteLastAddedComplex();
   });
 
   it('should open map', () => {
-   page.navigateToHome();
-   // page.addComplex('Test');
-   page.openBuildingsOfFirstComplex();
-   // page.addBuilding('Test');
-   page.openFloorOfFirstBuilding();
-   page.openMapOfFirstFloor();
-    expect(element.all(by.css('p')).getText()).toContain('Choose a tool.');
+    expect(element.all(by.className('file-upload'))).toBeTruthy();
   });
 });

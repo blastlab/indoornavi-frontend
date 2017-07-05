@@ -69,7 +69,7 @@ describe('Scale', () => {
   it('should calculate scale line slope', () => {
     const exemplarySlope = (y1 - y2) / (x1 - x2);
 
-    const testedSlope = (component as any).getSlope(x1, y1, x2, y2);
+    const testedSlope = ScaleComponent.getSlope(x1, y1, x2, y2);
     expect(testedSlope).toEqual(exemplarySlope);
   });
 
