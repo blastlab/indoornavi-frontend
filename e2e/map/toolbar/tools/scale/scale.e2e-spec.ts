@@ -1,9 +1,8 @@
 import {ScaleTool} from './scale.po';
-import {browser, element, by, ElementFinder, protractor} from 'protractor';
+import {browser, element, by, protractor} from 'protractor';
 
 describe('ScaleComponentInit', () => {
   let page: ScaleTool;
-  let svg: ElementFinder;
 
   beforeAll(() => {
     page = new ScaleTool();
@@ -12,7 +11,7 @@ describe('ScaleComponentInit', () => {
     ScaleTool.openBuildingsOfLastAddedComplex();
     ScaleTool.addBuilding('Test');
     ScaleTool.openFloorOfLastAddedBuilding();
-    ScaleTool.addFloor('Test', '1');
+    ScaleTool.addFloor('Test', 1);
     ScaleTool.openMapOfLastAddedFloor();
     this.svg = element(by.id('mapBg'));
   });
@@ -40,7 +39,6 @@ describe('ScaleComponentInit', () => {
 
 describe('ScaleComponent', () => {
   let page: ScaleTool;
-  let svg: ElementFinder;
 
   beforeEach(() => {
     page = new ScaleTool();
@@ -70,6 +68,7 @@ describe('ScaleComponent', () => {
     expect(element(by.id('hintBar')).getText()).toEqual('Choose a tool.');
     DrawingChecker.expectScaleNotToBeVisible();
   });
+
   it('should change scale with shift pressed', () => {
     const distance = '543';
     const unit = 'CENTIMETERS';

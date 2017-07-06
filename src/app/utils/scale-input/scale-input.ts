@@ -1,11 +1,10 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Point} from '../../map/map.type';
 import {ScaleInputService} from './scale-input.service';
 import {MeasureEnum, Scale} from '../../map/toolbar/tools/scale/scale.type';
 import {ActivatedRoute, Params} from '@angular/router';
 import {FloorService} from '../../floor/floor.service';
 import {Floor} from '../../floor/floor.type';
-import {logger} from 'codelyzer/util/logger';
 import {ToastService} from '../toast/toast.service';
 import {ScaleHintService} from '../scale-hint/scale-hint.service';
 

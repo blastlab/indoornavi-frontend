@@ -15,7 +15,7 @@ describe('MapComponent', () => {
     MapComponent.openBuildingsOfLastAddedComplex();
     MapComponent.addBuilding('Test');
     MapComponent.openFloorOfLastAddedBuilding();
-    MapComponent.addFloor('Test', '1');
+    MapComponent.addFloor('Test', 1);
     MapComponent.openMapOfLastAddedFloor();
   });
 

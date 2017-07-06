@@ -17,10 +17,7 @@ describe('Scale', () => {
   let mapLoaderInformer: MapLoaderInformerService;
   let floor: Floor;
   let scale: Scale;
-  let x1;
-  let y1;
-  let x2;
-  let y2;
+  let x1, y1, x2, y2;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -55,10 +52,10 @@ describe('Scale', () => {
     floor = <Floor>{
       scale: this.scale
     };
-     x1 = 523.0;
-     y1 = 294.0;
-     x2 = 361.0;
-     y2 = 363.0;
+    x1 = 523.0;
+    y1 = 294.0;
+    x2 = 361.0;
+    y2 = 363.0;
     fixture.detectChanges();
   });
 

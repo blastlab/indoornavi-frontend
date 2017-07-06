@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
 import {Point} from '../../map/map.type';
-import {MeasureEnum, Scale} from '../../map/toolbar/tools/scale/scale.type';
+import {Scale} from '../../map/toolbar/tools/scale/scale.type';
 
 @Injectable()
 export class ScaleInputService {

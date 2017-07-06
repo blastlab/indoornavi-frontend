@@ -41,7 +41,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private mapLoaderSubscription: Subscription;
   @Input() floor: Floor;
 
-  private static getSlope(x1, y1, x2, y2): number {
+  static getSlope(x1, y1, x2, y2): number {
     return (y1 - y2) / (x1 - x2);
   }
 

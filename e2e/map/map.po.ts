@@ -17,7 +17,7 @@ export class MapComponent {
     element(by.id('building-save-button')).click();
   }
 
-  static addFloor(name: string, level: string) {
+  static addFloor(name: string, level: number) {
     element(by.id('new-floor-button')).click();
     element(by.id('floor-name-input')).clear();
     element(by.id('floor-level-input')).clear();
