@@ -43,4 +43,13 @@ table tr td{
   padding: 5px 0;
 }
 
+.validation-errors {
+  padding: 5px 0 15px 0;
+  color: #d92020;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
 @import '~@angular/material/core/theming/prebuilt/deeppurple-amber.css';

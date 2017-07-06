@@ -11,11 +11,9 @@ import {Router} from '@angular/router';
 import {BuildingService} from '../building/building.service';
 
 @Component({
-  selector: 'app-root',
   templateUrl: 'complex.html',
   styleUrls: ['complex.css']
 })
-
 export class ComplexComponent implements OnInit {
   complex: Complex;
   complexes: Array<Complex> = [];
@@ -82,11 +80,11 @@ export class ComplexComponent implements OnInit {
   }
 
   updateComplex(complexToUpdate: Complex): void {
-   this.complexService.updateComplex(complexToUpdate).subscribe((complex: Complex) => {
-     this.toast.showSuccess('complex.save.success');
-   }, (msg: string) => {
-     this.toast.showFailure(msg);
-   });
+    this.complexService.updateComplex(complexToUpdate).subscribe((complex: Complex) => {
+      this.toast.showSuccess('complex.save.success');
+    }, (msg: string) => {
+      this.toast.showFailure(msg);
+    });
   }
 
   openComplex(complex: Complex): void {
@@ -112,6 +110,8 @@ export class ComplexComponent implements OnInit {
     this.complexService.createComplex(complex).subscribe((newComplex: Complex) => {
       this.complexes.push(newComplex);
       this.toast.showSuccess('complex.create.success');
+    }, (msg: string) => {
+      this.toast.showFailure(msg);
     });
   }
 

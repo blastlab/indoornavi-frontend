@@ -3,6 +3,8 @@
 
 const { SpecReporter } = require('jasmine-spec-reporter');
 
+const baseUrl =  'http://localhost:4200/';
+
 exports.config = {
   allScriptsTimeout: 11000,
   specs: [
@@ -12,7 +14,7 @@ exports.config = {
     'browserName': 'chrome'
   },
   directConnect: true,
-  baseUrl: 'http://localhost:4200/',
+  baseUrl: baseUrl,
   framework: 'jasmine',
   jasmineNodeOpts: {
     showColors: true,
@@ -25,6 +27,19 @@ exports.config = {
     });
   },
   onPrepare() {
+    browser.driver.manage().window().maximize();
     jasmine.getEnv().addReporter(new SpecReporter({ spec: { displayStacktrace: true } }));
+
+    browser.driver.get(baseUrl + 'login');
+
+    browser.driver.findElement(by.id('user-name-input')).sendKeys('admin');
+    browser.driver.findElement(by.id('user-password-input')).sendKeys('admin');
+    browser.driver.findElement(by.id('login-button')).click();
+
+    return browser.driver.wait(() => {
+      return browser.driver.getCurrentUrl((url) => {
+        return url.indexOf('/complexes') >= 0;
+      });
+    }, 5000);
   }
 };

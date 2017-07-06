@@ -1,9 +1,9 @@
-import {browser, element, by} from 'protractor';
+import {browser, by, element} from 'protractor';
 import {Utils} from '../utils';
 
 export class ComplexPage {
   static navigateToHome() {
-    return browser.get('/complexes');
+    return browser.get(Utils.baseUrl + 'complexes');
   }
 
   static addComplex(name: string) {

@@ -9,6 +9,9 @@ import {Observable} from 'rxjs/Rx';
 import {DeviceListComponent} from './device.list';
 import {DeviceService} from './device.service';
 import {Device} from './device.type';
+import {Router, RouterModule} from '@angular/router';
+import {AuthGuard} from '../auth/auth.guard';
+import {SharedModule} from '../utils/shared/shared.module';
 
 describe('DeviceListComponent', () => {
   let component: DeviceListComponent;
@@ -24,10 +27,11 @@ describe('DeviceListComponent', () => {
         TranslateModule.forRoot(),
         DndModule.forRoot(),
         MaterialModule,
-        DialogTestModule
+        DialogTestModule,
+        SharedModule
       ],
       declarations: [DeviceListComponent],
-      providers: [DeviceService, HttpService, ToastService, MdDialog]
+      providers: [DeviceService, HttpService, ToastService, MdDialog, {provide: Router, useClass: RouterModule}, AuthGuard]
     }).compileComponents();
 
     fixture = TestBed.createComponent(DeviceListComponent);

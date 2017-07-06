@@ -1,15 +1,15 @@
 <h1 [translate]="'tag.header'"></h1>
 
 <div class="row">
-  <button md-raised-button id="new-tag-button" type="button" (click)="openDialog(null)">{{'add'|translate}}</button>
+  <button [appHasPermission]="'TAG_CREATE'" md-raised-button id="new-tag-button" type="button" (click)="openDialog(null)">{{'add'|translate}}</button>
 </div>
 
 <div class="row">
   <div id="notVerifiedList" class="devices-list">
-    <app-device-list #notVerified [verified]="false" [deviceUrl]="'tags/'"></app-device-list>
+    <app-device-list #notVerified [verified]="false" [deviceType]="'tags'"></app-device-list>
   </div>
 
   <div id="verifiedList" class="devices-list verified">
-    <app-device-list #verified [verified]="true" [deviceUrl]="'tags/'"></app-device-list>
+    <app-device-list #verified [verified]="true" [deviceType]="'tags'"></app-device-list>
   </div>
 </div>

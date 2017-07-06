@@ -1,0 +1,20 @@
+<form #authForm="ngForm" novalidate>
+  <div class="form-control">
+    <md-input-container>
+      <input id="user-name-input" name="username" #username type="text"
+             mdInput
+             autofocus
+             placeholder="{{'user.username'|translate}}">
+    </md-input-container>
+  </div>
+
+  <div class="form-control">
+    <md-input-container>
+      <input id="user-password-input" name="password" #password type="password"
+             mdInput
+             placeholder="{{'user.password'|translate}}">
+    </md-input-container>
+  </div>
+
+  <button id="login-button" type="submit" md-raised-button (click)="login(username.value, password.value)">{{'login'|translate}}</button>
+</form>
