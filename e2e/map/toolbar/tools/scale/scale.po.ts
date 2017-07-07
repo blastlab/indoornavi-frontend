@@ -76,7 +76,7 @@ export class ScaleTool {
     element(by.id('complex-confirm-remove-button')).click();
   }
 
-  turnOffScaleTool() {
+  static turnOffScaleTool() {
     element(by.id('hintBar')).isPresent().then(function (present) {
       if (!present) {
         return;

@@ -8,7 +8,7 @@ export class ScaleInputService {
   private visibility = new Subject<boolean>();
   private coordinates = new Subject<Point>();
   private scale = new Subject<Scale>();
-  private saveClicked = new Subject<boolean>();
+  private saveClicked = new Subject<any>();
   private removeClicked = new Subject<Scale>();
 
   public visibility$ = this.visibility.asObservable();
@@ -29,11 +29,11 @@ export class ScaleInputService {
     this.scale.next(val);
   }
 
-  publishSaveClicked(val: boolean) {
-    this.saveClicked.next(val);
+  publishSaveClicked() {
+    this.saveClicked.next();
   }
 
-  publishRemoveClicked(val: Scale) {
-    this.removeClicked.next(val);
+  publishRemoveClicked() {
+    this.removeClicked.next();
   }
 }

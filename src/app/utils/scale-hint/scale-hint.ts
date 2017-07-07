@@ -33,7 +33,7 @@ export class ScaleHintComponent implements OnDestroy, OnInit {
           .text(value + ': ' + this.scale.realDistance + ' ' + unit);
       });
     } else {
-      this.translate.get('scale.is.not.set').subscribe((value: string) => {
+      this.translate.get('scale.isNotSet').subscribe((value: string) => {
         d3.select('#scaleHint')
           .text(value);
       });

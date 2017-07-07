@@ -7,7 +7,7 @@ export class MapLoaderInformerService {
 
   public isLoaded$ = this.isLoaded.asObservable();
 
-  publishIsLoaded(val: boolean) {
-    this.isLoaded.next(val);
+  publishIsLoaded() {
+    this.isLoaded.next();
   }
 }

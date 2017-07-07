@@ -18,9 +18,9 @@ import {Floor} from '../floor/floor.type';
 describe('MapViewerComponent', () => {
   let component: MapViewerComponent;
   let fixture: ComponentFixture<MapViewerComponent>;
-  let floor: Floor = <Floor>{
+  const floor: Floor = <Floor> {
     imageId: 23
-    };
+  };
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({

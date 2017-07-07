@@ -1,11 +1,10 @@
 import {ScaleTool} from './scale.po';
-import {browser, element, by, protractor} from 'protractor';
+import {browser, element, by, protractor, ElementFinder} from 'protractor';
 
 describe('ScaleComponentInit', () => {
-  let page: ScaleTool;
+  let path: any;
 
   beforeAll(() => {
-    page = new ScaleTool();
     ScaleTool.navigateToHome();
     ScaleTool.addComplex('Test');
     ScaleTool.openBuildingsOfLastAddedComplex();
@@ -13,11 +12,10 @@ describe('ScaleComponentInit', () => {
     ScaleTool.openFloorOfLastAddedBuilding();
     ScaleTool.addFloor('Test', 1);
     ScaleTool.openMapOfLastAddedFloor();
-    this.svg = element(by.id('mapBg'));
+    path = require('path');
   });
 
   it('should not be able to upload wrong type of image', () => {
-    const path = require('path');
     const file = '../../../../resources/wrongFile.txt';
     const absolutePath = path.resolve(__dirname, file);
     element(by.tagName('input')).sendKeys(absolutePath);
@@ -25,7 +23,6 @@ describe('ScaleComponentInit', () => {
   });
 
   it('should upload image', () => {
-    const path = require('path');
     const file = '../../../../resources/map.jpg';
     const absolutePath = path.resolve(__dirname, file);
     element(by.tagName('input')).sendKeys(absolutePath);
@@ -39,12 +36,13 @@ describe('ScaleComponentInit', () => {
 
 describe('ScaleComponent', () => {
   let page: ScaleTool;
+  let svg: ElementFinder;
 
   beforeEach(() => {
     page = new ScaleTool();
-    page.turnOffScaleTool();
+    ScaleTool.turnOffScaleTool();
     ScaleTool.clickScaleTool();
-    this.svg = element(by.id('mapBg'));
+    svg = element(by.id('mapBackground'));
   });
 
   afterAll(() => {
@@ -59,8 +57,8 @@ describe('ScaleComponent', () => {
   it('should draw first scale and type in distance and unit', () => {
     const distance = '314';
     const unit = 'CENTIMETERS';
-    ScaleTool.clickMap(this.svg, 126, 125);
-    ScaleTool.clickMap(this.svg, 241, 342);
+    ScaleTool.clickMap(svg, 126, 125);
+    ScaleTool.clickMap(svg, 241, 342);
     DrawingChecker.expectScaleToExist();
     ScaleTool.fillInScaleInput(distance, unit);
     ScaleTool.clickSave();
@@ -100,19 +98,19 @@ describe('ScaleComponent', () => {
   it('should not hide point under the scale input', () => {
     const points = element.all(by.className('point'));
     ScaleTool.dragEnding(points.first(), {x: 110, y: 30});
-    element(by.id('scaleInput')).getCssValue('top').then(function (topPx) {
+    element(by.id('scaleInput')).getCssValue('top').then((topPx) => {
       const topString = topPx.toString();
       const top = topString.substring(0, topString.length - 2);
       const scaleInputTopInt = parseInt(top, 10);
 
-      element(by.id('scaleInput')).getCssValue('left').then(function (leftPx) {
+      element(by.id('scaleInput')).getCssValue('left').then((leftPx) => {
         const leftString = leftPx.toString();
         const left = leftString.substring(0, leftString.length - 2);
         const scaleInputLeftInt = parseInt(left, 10);
 
-        points.first().getAttribute('cy').then(function (cy) {
+        points.first().getAttribute('cy').then((cy: string) => {
           const pointCyInt = parseInt(cy, 10);
-          points.first().getAttribute('cx').then(function (cx) {
+          points.first().getAttribute('cx').then((cx: string) => {
             const pointCxInt = parseInt(cx, 10);
 
             const isNotOccurred: boolean = (pointCxInt < scaleInputLeftInt || pointCxInt > scaleInputLeftInt + 313)
@@ -160,8 +158,8 @@ describe('ScaleComponent', () => {
     const unit = 'CENTIMETERS';
     ScaleTool.clickRemove();
     DrawingChecker.expectScaleNotToExist();
-    ScaleTool.clickMap(this.svg, 54, 34);
-    ScaleTool.clickMap(this.svg, 345, 82);
+    ScaleTool.clickMap(svg, 54, 34);
+    ScaleTool.clickMap(svg, 345, 82);
     DrawingChecker.expectScaleToExist();
     DrawingChecker.expectScaleToBeVisible();
     ScaleTool.fillInScaleInput(distance, unit);
@@ -203,17 +201,17 @@ class DrawingChecker {
     expect(element.all(by.className('point')).first().isPresent()).toBeTruthy();
   }
 
-  public static expectScaleNotToExist() {
+  static expectScaleNotToExist() {
     expect(element.all(by.className('connectLine')).isPresent()).not.toBeTruthy();
     expect(element.all(by.className('endings')).first().isPresent()).not.toBeTruthy();
     expect(element.all(by.className('point')).first().isPresent()).not.toBeTruthy();
   }
 
-  public static expectScaleToBeVisible() {
+  static expectScaleToBeVisible() {
     expect(element(by.id('scaleGroup')).getAttribute('style')).toEqual('display: flex;');
   }
 
-  public static expectScaleNotToBeVisible() {
+  static expectScaleNotToBeVisible() {
     expect(element(by.id('scaleGroup')).getAttribute('style')).toEqual('display: none;');
   }
 }

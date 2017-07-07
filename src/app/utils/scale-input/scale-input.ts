@@ -69,7 +69,7 @@ export class ScaleInputComponent implements OnInit {
         });
       this.toast.showSuccess('scale.set.success');
       this._scaleHint.publishScale(this.scale);
-      this._scaleInput.publishSaveClicked(true);
+      this._scaleInput.publishSaveClicked();
     } else {
       this.toast.showFailure('scale.mustBeInteger');
     }
@@ -85,7 +85,7 @@ export class ScaleInputComponent implements OnInit {
     this._scaleHint.publishScale(null);
     this._scaleInput.publishScale(this.scale);
     document.getElementById('scaleGroup').remove();
-    this._scaleInput.publishRemoveClicked(this.scale);
+    this._scaleInput.publishRemoveClicked();
     this.visible = false;
   }
 }

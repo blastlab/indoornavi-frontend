@@ -2,7 +2,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {ToolbarComponent} from './toolbar';
 import {TranslateModule} from '@ngx-translate/core';
-import {ScaleComponent} from "app/map/toolbar/tools/scale/scale";
+import {ScaleComponent} from 'app/map/toolbar/tools/scale/scale';
 import {MaterialModule} from '@angular/material';
 import {FormsModule} from '@angular/forms';
 import {ScaleInputService} from '../../utils/scale-input/scale-input.service';

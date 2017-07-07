@@ -1,7 +1,7 @@
 import {Point} from '../../../map.type';
 
 export enum MeasureEnum {
-  CENTIMETERS = 0,
+  CENTIMETERS,
   METERS
 }
 export interface Scale {

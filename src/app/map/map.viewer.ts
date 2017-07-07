@@ -16,8 +16,7 @@ export class MapViewerComponent implements OnInit {
   imageLoaded: boolean = false;
   protected pointsTable: Array<Point> = [];
 
-  constructor(private _mapLoaderInformer: MapLoaderInformerService) {
-
+  constructor(private mapLoaderInformer: MapLoaderInformerService) {
   }
 
   ngOnInit(): void {
@@ -46,11 +45,11 @@ export class MapViewerComponent implements OnInit {
       .attr('height', height);
 
     d3.select('#map').append('rect')
-      .attr('id', 'mapBg')
+      .attr('id', 'mapBackground')
       .attr('width', width)
       .attr('height', height)
       .attr('opacity', 0);
-    this._mapLoaderInformer.publishIsLoaded(true);
+    this.mapLoaderInformer.publishIsLoaded();
 
     this.prepareScaleHint();
 

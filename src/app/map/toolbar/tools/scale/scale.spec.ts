@@ -17,7 +17,8 @@ describe('Scale', () => {
   let mapLoaderInformer: MapLoaderInformerService;
   let floor: Floor;
   let scale: Scale;
-  let x1, y1, x2, y2;
+  let point1: Point;
+  let point2: Point;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -37,25 +38,23 @@ describe('Scale', () => {
     fixture = TestBed.createComponent(ScaleComponent);
     component = fixture.componentInstance;
     mapLoaderInformer = fixture.debugElement.injector.get(MapLoaderInformerService);
+    point1 = <Point>{
+      x: 861.0,
+      y: 300.0
+    };
+    point2 = <Point>{
+      x: 361.0,
+      y: 50.0
+    };
     scale = <Scale>{
-      start: <Point>{
-        x: 123,
-        y: 456
-      },
-      stop: <Point>{
-        x: 789,
-        y: 101
-      },
+      start: point1,
+      stop: point2,
       realDistance: 112,
       measure: MeasureEnum.METERS
     };
     floor = <Floor>{
       scale: this.scale
     };
-    x1 = 523.0;
-    y1 = 294.0;
-    x2 = 361.0;
-    y2 = 363.0;
     fixture.detectChanges();
   });
 
@@ -64,9 +63,9 @@ describe('Scale', () => {
   });
 
   it('should calculate scale line slope', () => {
-    const exemplarySlope = (y1 - y2) / (x1 - x2);
+    const exemplarySlope = 0.5;
 
-    const testedSlope = ScaleComponent.getSlope(x1, y1, x2, y2);
+    const testedSlope = ScaleComponent.getSlope(point1, point2);
     expect(testedSlope).toEqual(exemplarySlope);
   });
 
@@ -75,14 +74,8 @@ describe('Scale', () => {
     testedComponent.linesArray = [];
 
     testedComponent.linesArray.push(<Line>{
-      p1: <Point>{
-        x: x1,
-        y: y1
-      },
-      p2: <Point>{
-        x: x2,
-        y: y2
-      }
+      p1: point1,
+      p2: point1
     });
     const testedVerticalOffset: number = testedComponent.getVerticalEndingOffset();
     const testedHorizontalOffset: number = testedComponent.getHorizontalEndingOffset();

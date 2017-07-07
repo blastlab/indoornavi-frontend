@@ -60,11 +60,10 @@
 	"S_001": "Error. Object not found.",
 	"save": "Save",
 	"scale": "Scale",
-  "scale.is.not.set": "Scale is not set",
+  "scale.isNotSet": "Scale is not set",
   "scale.mustBeInteger": "Real distance must be integer",
   "scale.measureNotSet": "Please set the measure unit",
   "scale.set.success": "Scale has been saved",
-  "show.scale": "Show scale",
 	"tag.header": "Tags",
 	"th.actions": "Actions"
 }

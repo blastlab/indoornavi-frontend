@@ -9,7 +9,7 @@ import {BrowserModule, DOCUMENT} from '@angular/platform-browser';
 describe('ScaleHintComponent', () => {
   let component: ScaleHintComponent;
   let fixture: ComponentFixture<ScaleHintComponent>;
-  let scale: Scale;
+  // let scale: Scale;
   let scaleHintService: ScaleHintService;
   let translateService: TranslateService;
   let document;
@@ -34,7 +34,41 @@ describe('ScaleHintComponent', () => {
     scaleHintService = fixture.debugElement.injector.get(ScaleHintService);
     translateService = fixture.debugElement.injector.get(TranslateService);
     document = fixture.debugElement.injector.get(DOCUMENT);
-    scale = <Scale>{
+ /*   scale = <Scale>{
+      start: <Point>{
+        x: 123,
+        y: 456
+      },
+      stop: <Point>{
+        x: 789,
+        y: 101
+      },
+      realDistance: 112,
+      measure: MeasureEnum.METERS
+    };*/
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('Should show \'Scale is not set\'', () => {
+    // given
+    let translation = '';
+    spyOn(component, 'showScaleValue').and.callThrough();
+    translateService.get('scale.isNotSet').subscribe((value: string) => {
+      translation = value;
+    });
+    // when
+    scaleHintService.publishScale(null);
+    // then
+    expect(document.getElementById('scaleHint').innerText).toEqual(translation);
+    expect(component.showScaleValue).toHaveBeenCalled();
+  });
+
+  it('Should show scale value', () => {
+    // given
+    const scale = <Scale>{
       start: <Point>{
         x: 123,
         y: 456
@@ -46,29 +80,6 @@ describe('ScaleHintComponent', () => {
       realDistance: 112,
       measure: MeasureEnum.METERS
     };
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('Should show \'Scale is not set\'', () => {
-    // given
-    scale = null;
-    let translation = '';
-    spyOn(component, 'showScaleValue').and.callThrough();
-    translateService.get('scale.is.not.set').subscribe((value: string) => {
-      translation = value;
-    });
-    // when
-    scaleHintService.publishScale(scale);
-    // then
-    expect(document.getElementById('scaleHint').innerText).toEqual(translation);
-    expect(component.showScaleValue).toHaveBeenCalled();
-  });
-
-  it('Should show scale value', () => {
-    // given
     let translation = '';
     spyOn(component, 'showScaleValue').and.callThrough();
     translateService.get('scale').subscribe((value: string) => {
