@@ -1,4 +1,4 @@
-import {browser, element, by} from 'protractor';
+import {element, by} from 'protractor';
 import {FloorPage} from '../floor/floor.po';
 
 export class MapPage {
@@ -11,4 +11,16 @@ export class MapPage {
   static destroyLastComplex() {
     FloorPage.destroyLastComplex();
   }
+
+  static uploadFile(fileName: string): void {
+    const path = require('path');
+    const file = '../resources/' + fileName;
+    const absolutePath = path.resolve(__dirname, file);
+    element(by.css('input[type="file"]')).sendKeys(absolutePath);
+  }
+
+  static getUploader() {
+    return element(by.css('input[type="file"]'));
+  }
+
 }

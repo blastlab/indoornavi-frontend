@@ -3,7 +3,7 @@ import {MapPage} from './map.po';
 
 describe('MapComponent', () => {
   beforeAll(() => {
-    MapPage.prepareAndOpenFloor('testBuilding');
+    MapPage.prepareAndOpenFloor('testMap');
   });
 
   afterAll(() => {
@@ -16,4 +16,16 @@ describe('MapComponent', () => {
       done();
     });
   });
+
+  it('should not upload not image file as map', () => {
+    MapPage.uploadFile('wrongFile.txt');
+    expect(MapPage.getUploader().getAttribute('accept')).toEqual('image/*');
+  });
+
+  it('should upload an image file as map', () => {
+    expect(MapPage.getUploader().getAttribute('accept')).toEqual('image/*');
+    MapPage.uploadFile('map.jpg');
+    expect(AppPage.getById('map').getTagName()).toEqual('svg');
+  });
+
 });

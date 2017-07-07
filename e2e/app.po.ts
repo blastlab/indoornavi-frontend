@@ -22,4 +22,9 @@ export class AppPage {
   static navigateTo(path: string) {
     return browser.get(path);
   }
+
+  static getById(id: string) {
+    return element(by.id(id));
+  }
+
 }

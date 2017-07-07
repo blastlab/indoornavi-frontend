@@ -1,13 +1,32 @@
 import {WizardTool} from './wizard.po';
+import {AppPage} from '../../../../app.po';
 
-describe('MapComponent', () => {
-  let page: WizardTool;
+/**
+ * webSocket connection in app MUST be closed before running this test
+ */
+describe('WizardTool', () => {
 
-  beforeEach(() => {
-    page = new WizardTool();
+  beforeAll(() => {
+    WizardTool.prepareMap('testWizardTool');
   });
 
-  // should...
-  it('should be able to enter to map', () => {
+  afterAll(() => {
+    WizardTool.destroyLastComplex();
   });
+
+  it('should have map uploaded', () => {
+    expect(AppPage.getById('map').getTagName()).toEqual('svg');
+  });
+
+  it('should start wizard', () => {
+    WizardTool.clickWizardTool();
+    expect(WizardTool.getDialogContent().getTagName()).toEqual('div');
+    // expect first dialog, and `go to map` button disabled
+  });
+
+  it('should select a sink', () => {
+    // expect selected sink and button enabled
+  });
+
+
 });

@@ -37,7 +37,6 @@ describe('FloorComponent', () => {
         expect(FloorPage.getLatestAddedFloor()).toEqual(newName);
         expect(FloorPage.getLatestAddedFloorLevel()).toBe('1');
         FloorPage.removeLastFloor();
-        console.log('removal');
         FloorPage.getFloorsCount().then(finalCount => {
           expect(finalCount).toEqual(initCount);
           done();
