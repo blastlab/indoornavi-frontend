@@ -1,21 +1,21 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {ScaleInputComponent} from './scale-input';
+import {ScaleInputComponent} from './input';
 import {TranslateModule} from '@ngx-translate/core';
-import {ScaleInputService} from './scale-input.service';
+import {ScaleInputService} from './input.service';
 import {FormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
 import {HttpModule} from '@angular/http';
 import {MaterialModule} from '@angular/material';
-import {ScaleHintService} from '../scale-hint/scale-hint.service';
+import {ScaleHintService} from '../hint/hint.service';
 import {ActivatedRoute} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
 import {DndModule} from 'ng2-dnd';
-import {FloorService} from '../../floor/floor.service';
-import {ToastService} from '../toast/toast.service';
-import {HttpService} from '../http/http.service';
-import {MeasureEnum, Scale} from '../../map/toolbar/tools/scale/scale.type';
-import {Point} from '../../map/map.type';
+import {FloorService} from '../../../../../floor/floor.service';
+import {ToastService} from '../../../../../utils/toast/toast.service';
+import {HttpService} from '../../../../../utils/http/http.service';
+import {MeasureEnum, Scale} from '../scale.type';
+import {Point} from '../../../../map.type';
 
 describe('ScaleInputComponent', () => {
   let component: ScaleInputComponent;

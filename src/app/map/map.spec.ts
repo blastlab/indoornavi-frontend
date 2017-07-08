@@ -1,12 +1,12 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {MapViewerComponent} from './map.viewer';
-import {ScaleInputComponent} from '../utils/scale-input/scale-input';
+import {ScaleInputComponent} from './toolbar/tools/scale/input/input';
 import {MaterialModule} from '@angular/material';
-import {ScaleHintService} from '../utils/scale-hint/scale-hint.service';
-import {ScaleInputService} from '../utils/scale-input/scale-input.service';
+import {ScaleHintService} from './toolbar/tools/scale/hint/hint.service';
+import {ScaleInputService} from './toolbar/tools/scale/input/input.service';
 import {FormsModule} from '@angular/forms';
-import {ScaleHintComponent} from '../utils/scale-hint/scale-hint';
+import {ScaleHintComponent} from './toolbar/tools/scale/hint/hint';
 import {TranslateModule} from '@ngx-translate/core';
 import {MapLoaderInformerService} from '../utils/map-loader-informer/map-loader-informer.service';
 import {RouterTestingModule} from '@angular/router/testing';

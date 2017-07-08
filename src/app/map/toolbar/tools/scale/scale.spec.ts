@@ -3,12 +3,13 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {ScaleComponent} from './scale';
 import {TranslateModule} from '@ngx-translate/core';
 import {MaterialModule} from '@angular/material';
-import {ScaleHintService} from '../../../../utils/scale-hint/scale-hint.service';
-import {ScaleInputService} from '../../../../utils/scale-input/scale-input.service';
+import {ScaleHintService} from './hint/hint.service';
+import {ScaleInputService} from './input/input.service';
 import {MapLoaderInformerService} from '../../../../utils/map-loader-informer/map-loader-informer.service';
 import {MeasureEnum, Scale} from 'app/map/toolbar/tools/scale/scale.type';
 import {Floor} from '../../../../floor/floor.type';
 import {Line, Point} from '../../../map.type';
+import {Geometry} from '../../../utils/geometry';
 
 
 describe('Scale', () => {
@@ -39,12 +40,12 @@ describe('Scale', () => {
     component = fixture.componentInstance;
     mapLoaderInformer = fixture.debugElement.injector.get(MapLoaderInformerService);
     point1 = <Point>{
-      x: 861.0,
+      x: 300.0,
       y: 300.0
     };
     point2 = <Point>{
-      x: 361.0,
-      y: 50.0
+      x: 100.0,
+      y: 100.0
     };
     scale = <Scale>{
       start: point1,
@@ -63,30 +64,24 @@ describe('Scale', () => {
   });
 
   it('should calculate scale line slope', () => {
-    const exemplarySlope = 0.5;
+    const exemplarySlope = 1;
 
-    const testedSlope = ScaleComponent.getSlope(point1, point2);
+    const testedSlope = Geometry.getSlope(point1, point2);
     expect(testedSlope).toEqual(exemplarySlope);
   });
 
   it('should calculate vertical and horizontal endings offset', () => {
-    const testedComponent = component as any;
-    testedComponent.linesArray = [];
-
-    testedComponent.linesArray.push(<Line>{
+    const line = <Line>{
       p1: point1,
-      p2: point1
-    });
-    const testedVerticalOffset: number = testedComponent.getVerticalEndingOffset();
-    const testedHorizontalOffset: number = testedComponent.getHorizontalEndingOffset();
-    const p1 = testedComponent.linesArray[0].p1;
-    const p2 = testedComponent.linesArray[0].p2;
-    const exemplarySlope = (p1.y - p2.y) / (p1.x - p2.x);
+      p2: point2
+    };
+    const testedVerticalOffset: number = Geometry.getVerticalEndingOffset(line, 5);
+    const testedHorizontalOffset: number = Geometry.getHorizontalEndingOffset(line, 5);
 
-    const exemplaryVerticalOffset = testedComponent.END_SIZE * Math.cos(Math.atan(exemplarySlope));
-    const exemplaryHorizontalOffset = testedComponent.END_SIZE * Math.sin(Math.atan(exemplarySlope));
+    const exemplaryVerticalOffset = 3.5355339059327378;
+    const exemplaryHorizontalOffset = 3.5355339059327373;
 
-    expect(exemplaryVerticalOffset).toEqual(testedVerticalOffset);
-    expect(exemplaryHorizontalOffset).toEqual(testedHorizontalOffset);
+    expect(testedHorizontalOffset).toEqual(exemplaryHorizontalOffset);
+    expect(testedVerticalOffset).toEqual(exemplaryVerticalOffset);
   });
 });

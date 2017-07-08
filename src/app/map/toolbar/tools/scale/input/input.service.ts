@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
-import {Point} from '../../map/map.type';
-import {Scale} from '../../map/toolbar/tools/scale/scale.type';
+import {Point} from '../../../../map.type';
+import {Scale} from '../scale.type';
 
 @Injectable()
 export class ScaleInputService {

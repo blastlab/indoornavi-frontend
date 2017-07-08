@@ -28,7 +28,6 @@ describe('ScaleComponentInit', () => {
     element(by.tagName('input')).sendKeys(absolutePath);
 
     expect(element(by.className('map-toolbar'))).toBeTruthy();
-    expect(element(by.id('hint-bar'))).toBeTruthy();
     expect(element(by.id('hint-bar')).getText()).toEqual('Choose a tool.');
     expect(element(by.id('scaleHint')).getText()).toEqual('Scale is not set');
   });
@@ -68,6 +67,7 @@ describe('ScaleComponent', () => {
   });
 
   it('should change scale with shift pressed', () => {
+    browser.driver.sleep(4000);
     const distance = '543';
     const unit = 'CENTIMETERS';
     const points = element.all(by.className('point'));
@@ -99,15 +99,9 @@ describe('ScaleComponent', () => {
     const points = element.all(by.className('point'));
     ScaleTool.dragEnding(points.first(), {x: 110, y: 30});
     element(by.id('scaleInput')).getCssValue('top').then((topPx) => {
-      const topString = topPx.toString();
-      const top = topString.substring(0, topString.length - 2);
-      const scaleInputTopInt = parseInt(top, 10);
-
+      const scaleInputTopInt = parseInt(topPx, 10);
       element(by.id('scaleInput')).getCssValue('left').then((leftPx) => {
-        const leftString = leftPx.toString();
-        const left = leftString.substring(0, leftString.length - 2);
-        const scaleInputLeftInt = parseInt(left, 10);
-
+        const scaleInputLeftInt = parseInt(leftPx, 10);
         points.first().getAttribute('cy').then((cy: string) => {
           const pointCyInt = parseInt(cy, 10);
           points.first().getAttribute('cx').then((cx: string) => {
@@ -121,7 +115,6 @@ describe('ScaleComponent', () => {
       });
     });
   });
-
   it('should change scale', () => {
     const distance = '543';
     const unit = 'CENTIMETERS';

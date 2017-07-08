@@ -1,13 +1,13 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import * as d3 from 'd3';
 import {TranslateService} from '@ngx-translate/core';
-import {Scale, MeasureEnum} from '../../map/toolbar/tools/scale/scale.type';
-import {ScaleHintService} from './scale-hint.service';
+import {Scale, MeasureEnum} from '../scale.type';
+import {ScaleHintService} from './hint.service';
 
 @Component({
   selector: 'app-scale-hint',
-  templateUrl: './scale-hint.html',
-  styleUrls: ['./scale-hint.css']
+  templateUrl: './hint.html',
+  styleUrls: ['./hint.css']
 })
 export class ScaleHintComponent implements OnDestroy, OnInit {
   @Input() scale: Scale;

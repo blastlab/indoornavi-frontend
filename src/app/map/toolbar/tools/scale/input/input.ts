@@ -1,17 +1,17 @@
 import {Component, OnInit} from '@angular/core';
-import {Point} from '../../map/map.type';
-import {ScaleInputService} from './scale-input.service';
-import {MeasureEnum, Scale} from '../../map/toolbar/tools/scale/scale.type';
+import {Point} from '../../../../map.type';
+import {ScaleInputService} from './input.service';
+import {MeasureEnum, Scale} from '../scale.type';
 import {ActivatedRoute, Params} from '@angular/router';
-import {FloorService} from '../../floor/floor.service';
-import {Floor} from '../../floor/floor.type';
-import {ToastService} from '../toast/toast.service';
-import {ScaleHintService} from '../scale-hint/scale-hint.service';
+import {FloorService} from '../../../../../floor/floor.service';
+import {Floor} from '../../../../../floor/floor.type';
+import {ToastService} from '../../../../../utils/toast/toast.service';
+import {ScaleHintService} from '../hint/hint.service';
 
 @Component({
   selector: 'app-scale-input',
-  templateUrl: './scale-input.html',
-  styleUrls: ['./scale-input.css']
+  templateUrl: './input.html',
+  styleUrls: ['./input.css']
 })
 export class ScaleInputComponent implements OnInit {
 
@@ -67,7 +67,7 @@ export class ScaleInputComponent implements OnInit {
         (errorCode: string) => {
           this.toast.showFailure(errorCode);
         });
-      this.toast.showSuccess('scale.set.success');
+      this.toast.showSuccess('scale.setSuccess');
       this._scaleHint.publishScale(this.scale);
       this._scaleInput.publishSaveClicked();
     } else {

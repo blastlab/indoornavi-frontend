@@ -55,9 +55,11 @@ export class MapViewerComponent implements OnInit {
 
     this.redrawMap();
   };
+
   private redrawMap = (): void => {
     this.drawPoints();
   };
+
   private drawPoints = (): void => {
     const points = d3.select('#map').selectAll('circle');
     points.data(this.pointsTable).enter()

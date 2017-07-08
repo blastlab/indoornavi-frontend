@@ -38,10 +38,10 @@ import {MapService} from './map/map.service';
 import {HintBarComponent} from './map/hint-bar/hint-bar';
 import {ToolbarComponent} from './map/toolbar/toolbar';
 import {ScaleComponent} from './map/toolbar/tools/scale/scale';
-import {ScaleInputComponent} from './utils/scale-input/scale-input';
-import {ScaleInputService} from './utils/scale-input/scale-input.service';
-import {ScaleHintComponent} from './utils/scale-hint/scale-hint';
-import {ScaleHintService} from './utils/scale-hint/scale-hint.service';
+import {ScaleInputComponent} from './map/toolbar/tools/scale/input/input';
+import {ScaleInputService} from './map/toolbar/tools/scale/input/input.service';
+import {ScaleHintComponent} from './map/toolbar/tools/scale/hint/hint';
+import {ScaleHintService} from './map/toolbar/tools/scale/hint/hint.service';
 import {MapLoaderInformerService} from './utils/map-loader-informer/map-loader-informer.service';
 
 

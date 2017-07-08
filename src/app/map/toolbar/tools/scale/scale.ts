@@ -6,12 +6,13 @@ import {TranslateService} from '@ngx-translate/core';
 import {Scale} from './scale.type';
 import {Line, Point} from '../../../map.type';
 import {Floor} from '../../../../floor/floor.type';
-import {ScaleInputService} from '../../../../utils/scale-input/scale-input.service';
-import {ScaleHintService} from '../../../../utils/scale-hint/scale-hint.service';
+import {ScaleInputService} from './input/input.service';
+import {ScaleHintService} from './hint/hint.service';
 import {MapLoaderInformerService} from '../../../../utils/map-loader-informer/map-loader-informer.service';
 import {Subscription} from 'rxjs/Subscription';
 import {promise} from 'selenium-webdriver';
 import fullyResolved = promise.fullyResolved;
+import {Geometry} from '../../../utils/geometry';
 
 @Component({
   selector: 'app-scale',
@@ -30,15 +31,13 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private isFirstPointDrawn: boolean = false;
   private END_SIZE: number = 5;
   private mapLoaderSubscription: Subscription;
+  private saveButtonSubscription: Subscription;
+  private removeButtonSubscription: Subscription;
   private scaleGroup = d3.select('#scaleGroup');
   private mapWidth: number;
   private mapHeight: number;
   public toolEnum: ToolsEnum = ToolsEnum.SCALE; // used in hint-bar component as a toolName
   @Input() floor: Floor;
-
-  static getSlope(p1, p2): number {
-    return (p1.y - p2.y) / (p1.x - p2.x);
-  }
 
   constructor(private translate: TranslateService,
               private scaleInput: ScaleInputService,
@@ -48,22 +47,24 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   ngOnDestroy() {
     this.mapLoaderSubscription.unsubscribe();
+    this.saveButtonSubscription.unsubscribe();
+    this.removeButtonSubscription.unsubscribe();
   }
 
   ngOnInit(): void {
     this.mapLoaderSubscription = this.mapLoaderInformer.isLoaded$.subscribe(() => {
-      this.createSvgGroupWithScale();
       this.mapWidth = d3.select('#map').attr('width');
       this.mapHeight = d3.select('#map').attr('height');
-      this.scaleGroup = d3.select('#scaleGroup');
+      this.createSvgGroupWithScale();
+      this.updateScaleGroup();
     });
 
-    this.scaleInput.saveClicked$.subscribe(() => {
+    this.saveButtonSubscription = this.scaleInput.saveClicked$.subscribe(() => {
       this.clickedTool.emit(this);
       this.isScaleSet = true;
     });
 
-    this.scaleInput.removeClicked$.subscribe(() => {
+    this.removeButtonSubscription = this.scaleInput.removeClicked$.subscribe(() => {
       this.isScaleSet = false;
       this.isScaleDisplayed = false;
       this.floor.scale = <Scale>{
@@ -76,14 +77,17 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.linesArray = [];
       this.isFirstPointDrawn = false;
       this.startCreatingScale();
-      this.scaleGroup = d3.select('#scaleGroup');
+      this.updateScaleGroup();
     });
+  }
+
+  private updateScaleGroup() {
+    this.scaleGroup = d3.select('#scaleGroup');
   }
 
   private createSvgGroupWithScale(): void {
     this.scaleHint.publishScale(this.floor.scale);
     if (!!this.floor.scale) {
-      console.log(d3.select('#map'));
       this.isScaleSet = true;
       d3.select('#map')
         .append('g')
@@ -141,27 +145,28 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     const mapBackground = d3.select('#mapBackground');
     mapBackground.style('cursor', 'crosshair');
 
-    if (!this.isScaleSet) {
+    if (this.linesArray.length !== 1) {
       mapBackground.on('click', () => {
         this.addPoint();
       });
       this.scaleInput.publishVisibility(false);
-    } else if (this.isScaleSet || this.isScaleDisplayed) {
+    }
+    if (this.isScaleSet || this.isScaleDisplayed) {
       this.scaleInput.publishVisibility(true);
     }
-    this.scaleGroup = d3.select('#scaleGroup');
 
     if (!d3.select('#scaleGroup').empty()) {
       d3.select('#scaleGroup').style('display', 'flex');
+      this.redrawLine();
+      this.redrawEndings();
+      this.redrawPoints();
     } else {
       d3.select('#map').append('g')
         .attr('id', 'scaleGroup')
         .style('display', 'flex');
     }
-    this.redrawLine();
-    this.redrawEndings();
-    this.redrawPoints();
-    this.scaleGroup = d3.select('#scaleGroup');
+
+    this.updateScaleGroup();
   }
 
   private hideScale(): void {
@@ -188,7 +193,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     if (!this.isFirstPointDrawn) {
       this.isFirstPointDrawn = true;
       this.pointsArray.push(point);
-      this.redrawEndings();
       this.redrawPoints();
 
     } else {
@@ -203,7 +207,8 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.setScaleVisible();
       this.scaleGroup.style('display', 'flex');
       d3.select('#mapBackground').on('click', null);
-
+      d3.select('#scaleGroup').selectAll('circle')
+        .style('fill-opacity', 0);
     }
   }
 
@@ -226,7 +231,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private setScaleVisible(): void {
     this.isScaleDisplayed = true;
     this.scaleInput.publishVisibility(this.isScaleDisplayed);
-    console.log(this.isScaleDisplayed);
   }
 
 
@@ -234,7 +238,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     if (this.linesArray.length === 0) {
       return 0;
     }
-    return ScaleComponent.getSlope(this.linesArray[0].p1, this.linesArray[0].p2);
+    return Geometry.getSlope(this.linesArray[0].p1, this.linesArray[0].p2);
   }
 
   private createLine(): Line {
@@ -245,22 +249,21 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   redrawPoints(): any {
-    const group = d3.select('#scaleGroup');
-
     const drag = d3.drag()
-      .on('drag',  (_, i, circleSelections) => {
+      .on('drag', (_, i, circleSelections) => {
         this.pointDrag(d3.select(circleSelections[i]));
       })
       .on('end', () => {
         this.setScalePoints();
       });
 
-    const points = group.selectAll('circle');
+    const points = this.scaleGroup.selectAll('circle');
     points.data(this.pointsArray).enter()
       .append('svg:circle')
       .classed('point', true)
       .style('cursor', 'all-scroll')
       .style('z-index', 0)
+      // .style('opacity', 0.5)
       .attr('cx', (d) => {
         return d.x;
       })
@@ -269,7 +272,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       })
       .attr('r', 10)
       .style('fill', 'black')
-      .attr('fill-opacity', 0)
+      .attr('fill-opacity', 0.3)
       .call(drag);
   }
 
@@ -280,8 +283,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   private redrawLine(): void {
-    // const lines = this.scaleGroup.selectAll('.connectLine');
-    const lines = d3.select('#scaleGroup').selectAll('.connectLine');
+    const lines = this.scaleGroup.selectAll('.connectLine');
     lines.data(this.linesArray).enter()
       .append('svg:line')
       .classed('connectLine', true)
@@ -318,24 +320,23 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   private redrawEndings(): void {
-    // const endings = this.scaleGroup.selectAll('.endings');
-    const endings = d3.select('#scaleGroup').selectAll('.endings');
+    const endings = this.scaleGroup.selectAll('.endings');
     endings.data(this.pointsArray).enter()
       .append('svg:line')
       .classed('endings', true)
       .attr('stroke-width', 1)
       .attr('stroke', 'black')
       .attr('x1', (d) => {
-        return d.x + this.getVerticalEndingOffset();
+        return d.x + Geometry.getVerticalEndingOffset(this.linesArray[0], this.END_SIZE);
       })
       .attr('y1', (d) => {
-        return d.y + this.getHorizontalEndingOffset();
+        return d.y + Geometry.getHorizontalEndingOffset(this.linesArray[0], this.END_SIZE);
       })
       .attr('x2', (d) => {
-        return d.x - this.getVerticalEndingOffset();
+        return d.x - Geometry.getVerticalEndingOffset(this.linesArray[0], this.END_SIZE);
       })
       .attr('y2', (d) => {
-        return d.y - this.getHorizontalEndingOffset();
+        return d.y - Geometry.getHorizontalEndingOffset(this.linesArray[0], this.END_SIZE);
       })
       .attr('transform', (d) => {
         return 'rotate(' + 90 + ' ' + d.x + ' ' + d.y + ')';
@@ -343,36 +344,20 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
     endings
       .attr('x1', (d) => {
-        return d.x + this.getVerticalEndingOffset();
+        return d.x + Geometry.getVerticalEndingOffset(this.linesArray[0], this.END_SIZE);
       })
       .attr('y1', (d) => {
-        return d.y + this.getHorizontalEndingOffset();
+        return d.y + Geometry.getHorizontalEndingOffset(this.linesArray[0], this.END_SIZE);
       })
       .attr('x2', (d) => {
-        return d.x - this.getVerticalEndingOffset();
+        return d.x - Geometry.getVerticalEndingOffset(this.linesArray[0], this.END_SIZE);
       })
       .attr('y2', (d) => {
-        return d.y - this.getHorizontalEndingOffset();
+        return d.y - Geometry.getHorizontalEndingOffset(this.linesArray[0], this.END_SIZE);
       })
       .attr('transform', (d) => {
         return 'rotate(' + 90 + ' ' + d.x + ' ' + d.y + ')';
       });
-  }
-
-  private getHorizontalEndingOffset(): number {
-    const slope = this.getLineSlope();
-    if (isNaN(slope)) {
-      return 0;
-    }
-    return this.END_SIZE * Math.sin(Math.atan(slope));
-  }
-
-  private getVerticalEndingOffset(): number {
-    const slope = this.getLineSlope();
-    if (isNaN(slope)) {
-      return 0;
-    }
-    return this.END_SIZE * Math.cos(Math.atan(slope));
   }
 
   private pointDrag(circleSelection: d3.selection): void {
@@ -400,7 +385,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       x: d3.event.x,
       y: d3.event.y
     };
-    const potentialSlope: number = ScaleComponent.getSlope(secondPoint, mousePosition);
+    const potentialSlope: number = Geometry.getSlope(secondPoint, mousePosition);
     const upperSlope = 3;
     const lowerSlope = 0.558; // arctan(22.5°)
     if (Math.abs(potentialSlope) < lowerSlope) {
@@ -459,7 +444,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
     const inputHeight = 50;
     const inputWidth = 295;
-
     const x = Math.max(0, Math.min(tempX, this.mapWidth - inputWidth - 25));
     const y = Math.max(inputHeight, Math.min(tempY, this.mapHeight - inputHeight));
     const p = <Point>{

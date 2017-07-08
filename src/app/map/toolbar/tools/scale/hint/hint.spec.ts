@@ -1,15 +1,14 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {ScaleHintComponent} from './scale-hint';
+import {ScaleHintComponent} from './hint';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
-import {ScaleHintService} from './scale-hint.service';
-import {MeasureEnum, Scale} from '../../map/toolbar/tools/scale/scale.type';
-import {Point} from '../../map/map.type';
+import {ScaleHintService} from './hint.service';
+import {MeasureEnum, Scale} from '../scale.type';
+import {Point} from '../../../../map.type';
 import {BrowserModule, DOCUMENT} from '@angular/platform-browser';
 
 describe('ScaleHintComponent', () => {
   let component: ScaleHintComponent;
   let fixture: ComponentFixture<ScaleHintComponent>;
-  // let scale: Scale;
   let scaleHintService: ScaleHintService;
   let translateService: TranslateService;
   let document;
@@ -34,18 +33,6 @@ describe('ScaleHintComponent', () => {
     scaleHintService = fixture.debugElement.injector.get(ScaleHintService);
     translateService = fixture.debugElement.injector.get(TranslateService);
     document = fixture.debugElement.injector.get(DOCUMENT);
- /*   scale = <Scale>{
-      start: <Point>{
-        x: 123,
-        y: 456
-      },
-      stop: <Point>{
-        x: 789,
-        y: 101
-      },
-      realDistance: 112,
-      measure: MeasureEnum.METERS
-    };*/
   });
 
   it('should create', () => {
