@@ -93,6 +93,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
         .append('g')
         .attr('id', 'scaleGroup')
         .style('display', 'none');
+      this.updateScaleGroup();
       this.drawScaleFromDB();
     } else {
       this.floor.scale = <Scale>{
@@ -193,8 +194,8 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     if (!this.isFirstPointDrawn) {
       this.isFirstPointDrawn = true;
       this.pointsArray.push(point);
+      this.redrawEndings();
       this.redrawPoints();
-
     } else {
       this.pointsArray.push(point);
       this.linesArray.push(this.createLine());
@@ -207,8 +208,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.setScaleVisible();
       this.scaleGroup.style('display', 'flex');
       d3.select('#mapBackground').on('click', null);
-      d3.select('#scaleGroup').selectAll('circle')
-        .style('fill-opacity', 0);
     }
   }
 
@@ -248,7 +247,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     };
   }
 
-  redrawPoints(): any {
+  redrawPoints(): void {
     const drag = d3.drag()
       .on('drag', (_, i, circleSelections) => {
         this.pointDrag(d3.select(circleSelections[i]));
@@ -262,8 +261,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       .append('svg:circle')
       .classed('point', true)
       .style('cursor', 'all-scroll')
-      .style('z-index', 0)
-      // .style('opacity', 0.5)
       .attr('cx', (d) => {
         return d.x;
       })
@@ -271,8 +268,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
         return d.y;
       })
       .attr('r', 10)
-      .style('fill', 'black')
-      .attr('fill-opacity', 0.3)
+      .attr('fill-opacity', 0)
       .call(drag);
   }
 
@@ -327,15 +323,27 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       .attr('stroke-width', 1)
       .attr('stroke', 'black')
       .attr('x1', (d) => {
+        if (this.linesArray.length === 0) {
+          return d.x + this.END_SIZE;
+        }
         return d.x + Geometry.getVerticalEndingOffset(this.linesArray[0], this.END_SIZE);
       })
       .attr('y1', (d) => {
+        if (this.linesArray.length === 0) {
+          return d.y;
+        }
         return d.y + Geometry.getHorizontalEndingOffset(this.linesArray[0], this.END_SIZE);
       })
       .attr('x2', (d) => {
+        if (this.linesArray.length === 0) {
+          return d.x - this.END_SIZE;
+        }
         return d.x - Geometry.getVerticalEndingOffset(this.linesArray[0], this.END_SIZE);
       })
       .attr('y2', (d) => {
+        if (this.linesArray.length === 0) {
+          return d.y;
+        }
         return d.y - Geometry.getHorizontalEndingOffset(this.linesArray[0], this.END_SIZE);
       })
       .attr('transform', (d) => {

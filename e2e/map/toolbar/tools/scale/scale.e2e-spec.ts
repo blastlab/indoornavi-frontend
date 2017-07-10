@@ -67,7 +67,6 @@ describe('ScaleComponent', () => {
   });
 
   it('should change scale with shift pressed', () => {
-    browser.driver.sleep(4000);
     const distance = '543';
     const unit = 'CENTIMETERS';
     const points = element.all(by.className('point'));
@@ -172,7 +171,7 @@ describe('ScaleComponent', () => {
 
   it('should not draw scale outside of canvas', () => {
     const points = element.all(by.className('point'));
-    ScaleTool.dragEnding(points.first(), {x: 0, y: -100});
+    ScaleTool.dragEnding(points.first(), {x: 0, y: -200});
 
     expect(points.first().getAttribute('cy')).toEqual('0');
   });
