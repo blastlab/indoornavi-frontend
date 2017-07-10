@@ -16,6 +16,8 @@ import {ToastService} from '../../../../../utils/toast/toast.service';
 import {HttpService} from '../../../../../utils/http/http.service';
 import {MeasureEnum, Scale} from '../scale.type';
 import {Point} from '../../../../map.type';
+import {Floor} from '../../../../../floor/floor.type';
+import {Observable} from 'rxjs/Rx';
 
 describe('ScaleInputComponent', () => {
   let component: ScaleInputComponent;
@@ -69,12 +71,19 @@ describe('ScaleInputComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should save scale in DB', () => {
+  it('should save scale in DB', (done: DoneFn) => {
     // given
+    const expectedFloor: Floor = {
+        id: 6,
+        level: 0,
+        name: '',
+        buildingId: 4,
+        imageId: 1,
+        scale: scale
+      };
+    spyOn(floorService, 'setScale').and.returnValue(Observable.of(expectedFloor));
     spyOn(scaleHintService, 'publishScale');
-    spyOn(floorService, 'setScale').and.callThrough();
     component.scale = scale;
-    // component.s
     const valid = true;
 
     // when
@@ -84,14 +93,16 @@ describe('ScaleInputComponent', () => {
     expect(floorService.setScale).toHaveBeenCalled();
     expect(scaleHintService.publishScale).toHaveBeenCalled();
     expect(toastService.showSuccess).toHaveBeenCalled();
-    expect(toastService.showFailure).not.toHaveBeenCalled();
+    done();
   });
 
   it('should NOT save scale in DB because of Measure unit not set', () => {
     // given
     component.scale = scale;
     component.scale.measure = null;
+    const errorCode = 'Please set the measure unit';
     const valid = true;
+    spyOn(floorService, 'setScale').and.returnValue(Observable.of(errorCode));
 
     // when
     component.save(valid);
@@ -105,6 +116,8 @@ describe('ScaleInputComponent', () => {
     // given
     component.scale = scale;
     const valid = false;
+    const errorCode = 'Real distance must be integer';
+    spyOn(floorService, 'setScale').and.returnValue(Observable.of(errorCode));
 
     // when
     component.save(valid);

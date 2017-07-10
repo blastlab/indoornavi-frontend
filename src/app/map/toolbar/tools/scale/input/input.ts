@@ -63,13 +63,14 @@ export class ScaleInputComponent implements OnInit {
         return;
       }
       this.floorService.setScale(this.floorId, this.scale).subscribe((floor: Floor) => {
+          this.scale = floor.scale;
+          this.toast.showSuccess('scale.setSuccess');
+          this._scaleHint.publishScale(this.scale);
+          this._scaleInput.publishSaveClicked();
         },
         (errorCode: string) => {
           this.toast.showFailure(errorCode);
         });
-      this.toast.showSuccess('scale.setSuccess');
-      this._scaleHint.publishScale(this.scale);
-      this._scaleInput.publishSaveClicked();
     } else {
       this.toast.showFailure('scale.mustBeInteger');
     }

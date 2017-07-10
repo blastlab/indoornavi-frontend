@@ -50,13 +50,7 @@ export class MapViewerComponent implements OnInit {
       .attr('height', height)
       .attr('opacity', 0);
     this.mapLoaderInformer.publishIsLoaded();
-
     this.prepareScaleHint();
-
-    this.redrawMap();
-  };
-
-  private redrawMap = (): void => {
     this.drawPoints();
   };
 

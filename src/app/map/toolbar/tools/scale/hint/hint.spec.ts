@@ -11,7 +11,7 @@ describe('ScaleHintComponent', () => {
   let fixture: ComponentFixture<ScaleHintComponent>;
   let scaleHintService: ScaleHintService;
   let translateService: TranslateService;
-  let document;
+  let document: Document;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -39,12 +39,13 @@ describe('ScaleHintComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('Should show \'Scale is not set\'', () => {
+  it('Should show \'Scale is not set\'', (done: DoneFn) => {
     // given
     let translation = '';
     spyOn(component, 'showScaleValue').and.callThrough();
     translateService.get('scale.isNotSet').subscribe((value: string) => {
       translation = value;
+      done();
     });
     // when
     scaleHintService.publishScale(null);
@@ -53,7 +54,7 @@ describe('ScaleHintComponent', () => {
     expect(component.showScaleValue).toHaveBeenCalled();
   });
 
-  it('Should show scale value', () => {
+  it('Should show scale value', (done: DoneFn) => {
     // given
     const scale = <Scale>{
       start: <Point>{
@@ -71,6 +72,7 @@ describe('ScaleHintComponent', () => {
     spyOn(component, 'showScaleValue').and.callThrough();
     translateService.get('scale').subscribe((value: string) => {
       translation = value;
+      done();
     });
     // when
     scaleHintService.publishScale(scale);

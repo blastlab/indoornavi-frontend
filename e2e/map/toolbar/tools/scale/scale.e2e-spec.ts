@@ -34,11 +34,9 @@ describe('ScaleComponentInit', () => {
 });
 
 describe('ScaleComponent', () => {
-  let page: ScaleTool;
   let svg: ElementFinder;
 
   beforeEach(() => {
-    page = new ScaleTool();
     ScaleTool.turnOffScaleTool();
     ScaleTool.clickScaleTool();
     svg = element(by.id('mapBackground'));
@@ -94,7 +92,7 @@ describe('ScaleComponent', () => {
     DrawingChecker.expectScaleNotToBeVisible();
   });
 
-  it('should not hide point under the scale input', () => {
+  it('should not hide point under the scale input', (done: DoneFn) => {
     const points = element.all(by.className('point'));
     ScaleTool.dragEnding(points.first(), {x: 110, y: 30});
     element(by.id('scaleInput')).getCssValue('top').then((topPx) => {
@@ -109,6 +107,7 @@ describe('ScaleComponent', () => {
             const isNotOccurred: boolean = (pointCxInt < scaleInputLeftInt || pointCxInt > scaleInputLeftInt + 313)
               || (pointCyInt < scaleInputTopInt || pointCyInt > scaleInputTopInt + 43);
             expect(isNotOccurred).toBeTruthy();
+            done();
           });
         });
       });
@@ -187,7 +186,7 @@ describe('ScaleComponent', () => {
 
 class DrawingChecker {
 
-  public static expectScaleToExist() {
+  static expectScaleToExist() {
     expect(element.all(by.className('connectLine')).isPresent()).toBeTruthy();
     expect(element.all(by.className('endings')).first().isPresent()).toBeTruthy();
     expect(element.all(by.className('point')).first().isPresent()).toBeTruthy();

@@ -78,15 +78,12 @@ export class ScaleTool {
 
   static turnOffScaleTool() {
     element(by.id('hintBar')).isPresent().then(function (present) {
-      if (!present) {
-        return;
-      }
-    });
-    element(by.id('hintBar')).getText().then(function (text) {
-      if (text === 'Choose a tool.') {
-        return;
-      } else {
-        ScaleTool.clickScaleTool();
+      if (present) {
+        element(by.id('hintBar')).getText().then(function (text) {
+          if (text !== 'Choose a tool.') {
+            ScaleTool.clickScaleTool();
+          }
+        });
       }
     });
   }
