@@ -1,16 +1,15 @@
-import {Component, OnInit, ViewChild, NgZone, OnDestroy} from '@angular/core';
+import {Component, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Subscription} from 'rxjs/Rx';
 import {SocketService} from '../utils/socket/socket.service';
 import {Tag} from './tag.type';
 import {DeviceListComponent} from '../device/device.list';
-import {MdDialogRef, MdDialog} from '@angular/material';
+import {MdDialog, MdDialogRef} from '@angular/material';
 import {DeviceDialogComponent} from '../device/device.dialog';
 import {Config} from '../../config';
 import {TranslateService} from '@ngx-translate/core';
 import {ToastService} from '../utils/toast/toast.service';
 
 @Component({
-  selector: 'app-root',
   templateUrl: './tag.html',
   styleUrls: ['../device/device.css']
 })

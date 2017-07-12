@@ -1,8 +1,8 @@
-import {Component, OnInit, ViewChild, NgZone, OnDestroy} from '@angular/core';
+import {Component, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Subscription} from 'rxjs/Rx';
 import {SocketService} from '../utils/socket/socket.service';
 import {Anchor} from './anchor.type';
-import {MdDialogRef, MdDialog} from '@angular/material';
+import {MdDialog, MdDialogRef} from '@angular/material';
 import {Config} from '../../config';
 import {TranslateService} from '@ngx-translate/core';
 import {ToastService} from '../utils/toast/toast.service';
@@ -10,12 +10,11 @@ import {DeviceDialogComponent} from '../device/device.dialog';
 import {DeviceListComponent} from '../device/device.list';
 
 @Component({
-  selector: 'app-root',
   templateUrl: './anchor.html',
   styleUrls: ['../device/device.css']
 })
-export class AnchorComponent implements OnInit, OnDestroy {
 
+export class AnchorComponent implements OnInit, OnDestroy {
   private socketSubscription: Subscription;
   @ViewChild('verified')
   private verifiedList: DeviceListComponent;

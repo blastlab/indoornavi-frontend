@@ -57,7 +57,7 @@ export class DeviceListComponent implements OnInit {
   openDialog(device: Device): void {
     this.dialogRef = this.dialog.open(DeviceDialogComponent);
     this.dialogRef.componentInstance.device = {...device}; // copy
-    this.dialogRef.componentInstance.url = this.deviceType;
+    this.dialogRef.componentInstance.url = this.deviceType + '/';
 
     this.dialogRef.afterClosed().subscribe(anchorFromDialog => {
       if (anchorFromDialog !== undefined) {

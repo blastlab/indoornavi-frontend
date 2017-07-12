@@ -19,14 +19,14 @@
       </button>
     </td>
     <td>
-      <button [appHasPermission]="'FLOOR_UPDATE'" class="floor-edit-button" (click)="editFloor(floor)" md-mini-fab md-tooltip="{{'edit'|translate}}"
+      <button md-tooltip="{{'edit'|translate}}" [appHasPermission]="'FLOOR_UPDATE'" class="floor-edit-button" (click)="editFloor(floor)" md-mini-fab
               mdTooltipPosition="above">
         <i class="material-icons">mode_edit</i>
       </button>
     </td>
     <td>
-      <button [appHasPermission]="'FLOOR_DELETE'" class="floor-remove-button" (click)="removeFloor(i)" md-mini-fab md-mini-fab
-              md-tooltip="{{'remove'|translate}}" mdTooltipPosition="above">
+      <button md-tooltip="{{'remove'|translate}}" [appHasPermission]="'FLOOR_DELETE'" class="floor-remove-button" (click)="removeFloor(i)" md-mini-fab md-mini-fab
+              mdTooltipPosition="above">
         <i class="material-icons">delete</i>
       </button>
     </td>

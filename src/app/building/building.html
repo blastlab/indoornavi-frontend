@@ -17,12 +17,12 @@
       </button>
     </td>
     <td>
-      <button [appHasPermission]="'BUILDING_UPDATE'" class="building-edit-button" (click)="editBuilding(building)" md-mini-fab md-tooltip="{{'edit'|translate}}" mdTooltipPosition="above">
+      <button md-tooltip="{{'edit'|translate}}"  [appHasPermission]="'BUILDING_UPDATE'" class="building-edit-button" (click)="editBuilding(building)" md-mini-fab mdTooltipPosition="above">
         <i class="material-icons">mode_edit</i>
       </button>
     </td>
     <td>
-      <button [appHasPermission]="'BUILDING_DELETE'" class="building-remove-button" (click)="removeBuilding(i)" md-mini-fab md-mini-fab md-tooltip="{{'remove'|translate}}" mdTooltipPosition="above">
+      <button md-tooltip="{{'remove'|translate}}"  [appHasPermission]="'BUILDING_DELETE'" class="building-remove-button" (click)="removeBuilding(i)" md-mini-fab md-mini-fab mdTooltipPosition="above">
         <i class="material-icons">delete</i>
       </button>
     </td>

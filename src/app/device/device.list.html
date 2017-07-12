@@ -14,12 +14,12 @@
       <td id="longId-{{device.shortId}}">{{device.longId}}</td>
       <td id="name-{{device.shortId}}">{{device.name}}</td>
       <td>
-        <button [appHasPermission]="deviceType === 'anchors' ? 'ANCHOR_UPDATE' : 'TAG_UPDATE'" id="edit-{{device.shortId}}" class="edit-button" (click)="openDialog(device)" md-mini-fab md-tooltip="{{'edit'|translate}}" mdTooltipPosition="above">
+        <button md-tooltip="{{'edit'|translate}}" [appHasPermission]="deviceType === 'anchors' ? 'ANCHOR_UPDATE' : 'TAG_UPDATE'" id="edit-{{device.shortId}}" class="edit-button" (click)="openDialog(device)" md-mini-fab mdTooltipPosition="above">
           <i class="material-icons">mode_edit</i>
         </button>
       </td>
       <td>
-        <button [appHasPermission]="deviceType === 'anchors' ? 'ANCHOR_DELETE' : 'TAG_DELETE'" id="remove-{{device.shortId}}" class="remove-button" (click)="remove(device)" md-mini-fab md-mini-fab md-tooltip="{{'remove'|translate}}" mdTooltipPosition="above">
+        <button md-tooltip="{{'remove'|translate}}" [appHasPermission]="deviceType === 'anchors' ? 'ANCHOR_DELETE' : 'TAG_DELETE'" id="remove-{{device.shortId}}" class="remove-button" (click)="remove(device)" md-mini-fab md-mini-fab mdTooltipPosition="above">
           <i class="material-icons">delete</i>
         </button>
       </td>

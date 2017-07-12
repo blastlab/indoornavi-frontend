@@ -44,6 +44,9 @@ import {AuthService} from './auth/auth.service';
 import {ChangePasswordComponent} from './user/changePassword';
 import {SharedModule} from './utils/shared/shared.module';
 import {UnauthorizedComponent} from './utils/unauthorized/unauthorized';
+import {PermissionGroupComponent} from './user/permissionGroup';
+import {PermissionGroupService} from './user/permissionGroup.service';
+import {AngularMultiSelectModule} from 'angular2-multiselect-dropdown/angular2-multiselect-dropdown';
 
 
 const appRoutes: Routes = [
@@ -56,8 +59,14 @@ const appRoutes: Routes = [
   {path: 'tags', component: TagComponent, canActivate: [CanRead], data: {permission: 'TAG'}},
   {path: 'users', component: UserComponent, canActivate: [CanRead], data: {permission: 'USER'}},
   {path: 'changePassword', component: ChangePasswordComponent, canActivate: [CanRead]},
+  {path: 'permissionGroups', component: PermissionGroupComponent, canActivate: [CanRead], data: {permission: 'PERMISSION_GROUP'}},
   {path: 'complexes/:complexId/buildings/:buildingId/floors', component: FloorComponent, canActivate: [CanRead], data: {permission: 'FLOOR'}},
-  {path: 'complexes/:complexId/buildings/:buildingId/floors/:floorId/map', component: MapControllerComponent, canActivate: [CanRead], data: {permission: 'FLOOR'}},
+  {
+    path: 'complexes/:complexId/buildings/:buildingId/floors/:floorId/map',
+    component: MapControllerComponent,
+    canActivate: [CanRead],
+    data: {permission: 'FLOOR'}
+  },
   {path: 'unauthorized', component: UnauthorizedComponent},
   {path: '**', redirectTo: '/complexes'}
 ];
@@ -88,7 +97,8 @@ export function HttpLoaderFactory(http: Http) {
     UserDialogComponent,
     AuthComponent,
     ChangePasswordComponent,
-    UnauthorizedComponent
+    UnauthorizedComponent,
+    PermissionGroupComponent
   ],
   entryComponents: [
     ComplexDialogComponent,
@@ -116,7 +126,8 @@ export function HttpLoaderFactory(http: Http) {
     DndModule.forRoot(),
     FlexLayoutModule,
     ImageUploadModule.forRoot(),
-    SharedModule
+    SharedModule,
+    AngularMultiSelectModule
   ],
   providers: [
     BuildingService,
@@ -131,8 +142,10 @@ export function HttpLoaderFactory(http: Http) {
     UserService,
     AuthService,
     CanRead,
-    AuthGuard
-  ], bootstrap: [AppComponent]
+    AuthGuard,
+    PermissionGroupService
+  ],
+  bootstrap: [AppComponent]
 })
 
 export class AppModule {
