@@ -21,7 +21,9 @@ export class BuildingPage {
   static destroyLastComplex() {
     ComplexPage.navigateToHome();
     ComplexPage.removeLastComplex();
-    (!!element(by.id('complex-confirm-remove-button'))) ? element(by.id('complex-confirm-remove-button')).click() : ComplexPage.editLastComplex('cleaning', false);
+    if (!!element(by.id('complex-confirm-remove-button'))) {
+      element(by.id('complex-confirm-remove-button')).click();
+    }
   }
 
   static addBuilding(name: string) {

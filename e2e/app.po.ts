@@ -1,4 +1,4 @@
-import {browser, element, by, protractor} from 'protractor';
+import {browser, element, promise, by, protractor} from 'protractor';
 
 export class AppPage {
   static getTitle() {
@@ -25,6 +25,14 @@ export class AppPage {
 
   static getById(id: string) {
     return element(by.id(id));
+  }
+
+  static getByClass(className: string) {
+    return element(by.className(className));
+  }
+
+  static getElementsCount(selector: string): promise.Promise<number> {
+    return element.all(by.css(selector)).count();
   }
 
 }

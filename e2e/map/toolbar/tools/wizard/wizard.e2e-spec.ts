@@ -1,5 +1,6 @@
 import {WizardTool} from './wizard.po';
 import {AppPage} from '../../../../app.po';
+import {browser} from 'protractor';
 
 /**
  * webSocket connection in app MUST be closed before running this test
@@ -18,15 +19,126 @@ describe('WizardTool', () => {
     expect(AppPage.getById('map').getTagName()).toEqual('svg');
   });
 
-  it('should start wizard', () => {
+  it('should start wizard', (done: DoneFn) => {
     WizardTool.clickWizardTool();
-    expect(WizardTool.getDialogContent().getTagName()).toEqual('div');
-    // expect first dialog, and `go to map` button disabled
+    expect(AppPage.getByClass('cdk-focus-trap-content').getTagName()).toEqual('div');
+    WizardTool.waitForElement('md-select.mat-select');
+    expect(AppPage.getByClass('dialog-place-button').isDisplayed()).toBeTruthy();
+    expect(AppPage.getByClass('dialog-place-button').getAttribute('disabled')).toBeTruthy();
+    done();
   });
 
-  it('should select a sink', () => {
-    // expect selected sink and button enabled
+  it('should select a sink', (done: DoneFn) => {
+    WizardTool.openSelectChoices();
+    WizardTool.chooseFirstSelectOption();
+    expect(AppPage.getByClass('dialog-place-button').getAttribute('disabled')).toBeFalsy();
+    done();
   });
 
+  it('should place sink on map', () => {
+    AppPage.getByClass('dialog-place-button').click();
+    const testedSink = AppPage.getByClass('wizardSink');
+    const testCoords = {x: 199, y: 273};
+    expect(testedSink.isPresent()).toBeFalsy();
+    WizardTool.clickOnMap(testCoords);
+    expect(testedSink.isPresent()).toBeTruthy();
+    testedSink.getAttribute('x').then((attrString) => {
+      expect(parseInt(attrString, 10)).toEqual(149);
+    });
+    testedSink.getAttribute('y').then((attrString) => {
+      expect(parseInt(attrString, 10)).toEqual(223);
+    });
+  });
+
+  it('should drag sink (to correct its position)', () => {
+    const testSink = AppPage.getByClass('wizardSink');
+    const translation = {x: 1, y: -23};
+    WizardTool.dragElementBy(testSink, translation);
+    testSink.getAttribute('x').then((attrString) => {
+      expect(parseInt(attrString, 10)).toEqual(150);
+    });
+    testSink.getAttribute('y').then((attrString) => {
+      expect(parseInt(attrString, 10)).toEqual(200);
+    });
+  });
+
+  it('should try to decline position', () => {
+    WizardTool.clickDecisionButton(false);
+    expect(AppPage.getByClass('cdk-focus-trap-content').getTagName()).toEqual('div');
+    WizardTool.waitForElement('md-select.mat-select');
+    expect(AppPage.getByClass('dialog-place-button').isDisplayed()).toBeTruthy();
+    expect(AppPage.getByClass('dialog-place-button').getAttribute('disabled')).toBeTruthy();
+  });
+
+  it('should place sink again and accept new position', () => {
+    const sink = AppPage.getByClass('wizardSink');
+    const testCoords = {x: 250, y: 520};
+    WizardTool.openSelectChoices();
+    WizardTool.chooseFirstSelectOption();
+    expect(AppPage.getByClass('dialog-place-button').getAttribute('disabled')).toBeFalsy();
+    AppPage.getByClass('dialog-place-button').click();
+    expect(sink.isPresent()).toBeFalsy();
+    WizardTool.clickOnMap(testCoords);
+    expect(sink.isPresent()).toBeTruthy();
+    WizardTool.clickDecisionButton(true);
+  });
+
+  it('should have secondStep dialog opened now', () => {
+    expect(AppPage.getByClass('cdk-focus-trap-content').getTagName()).toEqual('div');
+    WizardTool.waitForElement('md-select.mat-select');
+    expect(AppPage.getByClass('dialog-place-button').isDisplayed()).toBeTruthy();
+    expect(AppPage.getByClass('dialog-place-button').getAttribute('disabled')).toBeTruthy();
+  });
+
+  it('should have visible distance, then place anchor and drag, finally accept', () => {
+    const anchor = AppPage.getByClass('wizardAnchor');
+    const testCoords = {x: 564, y: 27};
+    const translation = {x: -114, y: 213};
+    WizardTool.openSelectChoices();
+    WizardTool.chooseFirstSelectOption();
+    expect(AppPage.getByClass('dialog-place-button').getAttribute('disabled')).toBeFalsy();
+    AppPage.getByClass('dialog-place-button').click();
+    expect(AppPage.getById('sinkDistance').getTagName()).toEqual('circle');
+    expect(anchor.isPresent()).toBeFalsy();
+    WizardTool.clickOnMap(testCoords);
+    expect(anchor.isPresent()).toBeTruthy();
+    WizardTool.dragElementBy(anchor, translation);
+    anchor.getAttribute('x').then((attrString) => {
+      expect(parseInt(attrString, 10)).toEqual(400);
+    });
+    anchor.getAttribute('y').then((attrString) => {
+      expect(parseInt(attrString, 10)).toEqual(190);
+    });
+    WizardTool.clickDecisionButton(true);
+  });
+
+  it('should show warning (with close on overlayClick disabled) when all steps has not been completed ', () => {
+    WizardTool.waitForElement('md-select.mat-select');
+    AppPage.cancelEditingWithESC();
+    expect(AppPage.getByClass('wizard-not-complete').getTagName()).toEqual('h3');
+    AppPage.cancelEditingWithESC(); // this shouldn't close warning window
+    expect(AppPage.getByClass('wizard-not-complete').getTagName()).toEqual('h3');
+    AppPage.getByClass('warning-back-button').click();
+    expect(AppPage.getByClass('cdk-focus-trap-content').getTagName()).toEqual('div');
+  });
+
+  it('should go through third step easily', (done: DoneFn) => {
+    const testCoords = {x: 123, y: 456};
+    WizardTool.waitForElement('md-select.mat-select');
+    WizardTool.openSelectChoices();
+    WizardTool.chooseFirstSelectOption();
+    AppPage.getByClass('dialog-place-button').click();
+    AppPage.getElementsCount('.suggested-position').then(count => {
+      expect(count).toEqual(2);
+      WizardTool.clickOnMap(testCoords);
+      WizardTool.clickDecisionButton(true);
+      AppPage.getElementsCount('.suggested-position').then(zero => {
+        expect(zero).toEqual(0);
+        expect(AppPage.getByClass('wizard-complete').getTagName()).toEqual('h3');
+        AppPage.getByClass('dialog-exit-button').click();
+        done();
+      });
+    });
+  });
 
 });

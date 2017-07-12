@@ -1,5 +1,4 @@
 import {browser, element, by, promise} from 'protractor';
-import {Utils} from '../utils';
 
 export class ComplexPage {
   static navigateToHome() {
@@ -13,9 +12,7 @@ export class ComplexPage {
   }
 
   static removeLastComplex() {
-    Utils.waitForToastToDisappear(() => {
       element.all(by.css('.complex-remove-button')).last().click();
-    });
   }
 
   static editLastComplex(name: string, doSave: boolean) {

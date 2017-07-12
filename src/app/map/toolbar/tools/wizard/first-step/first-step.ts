@@ -96,6 +96,7 @@ export class FirstStepComponent implements WizardStep {
           const sinkGroup = map.select('#sink' + this.data.shortId);
           map.style('cursor', 'default');
           sinkGroup.on('.drag', null);
+          sinkGroup.style('cursor', 'default');
           sinkGroup.select('.pointer').attr('fill', 'rgba(0,0,0,0.7)');
           this.nextStepIndex.emit(this.stepIndex + 1);
         } else {

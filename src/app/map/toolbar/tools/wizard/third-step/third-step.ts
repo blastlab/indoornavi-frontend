@@ -99,6 +99,7 @@ export class ThirdStepComponent implements WizardStep {
         if (data) {
           const anchorGroup = d3.select('#map').select('#anchor' + this.data.anchorId);
           anchorGroup.on('.drag', null);
+          anchorGroup.style('cursor', 'default');
           anchorGroup.select('.pointer').attr('fill', 'rgba(0,0,0,0.7)');
           this.nextStepIndex.emit(this.stepIndex + 1);
         } else {

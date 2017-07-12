@@ -17,6 +17,7 @@
 	"building.save.success": "Building has been saved.",
 	"cancel": "Cancel",
 	"choose.a.tool": "Choose a tool.",
+  "close": "Close",
 	"complex.confirm.to.remove": "Are you sure you want to remove the complex along with the buildings?",
 	"complex.create.success": "Complex has been created.",
 	"complex.header": "Your building complexes",

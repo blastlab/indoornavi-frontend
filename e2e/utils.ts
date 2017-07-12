@@ -17,4 +17,9 @@ export module Utils {
       browser.wait(EC.presenceOf(elem));
     });
   }
+
+  export function waitForElement(element: ElementFinder) {
+    const EC = protractor.ExpectedConditions;
+    browser.wait(EC.presenceOf(element));
+  }
 }

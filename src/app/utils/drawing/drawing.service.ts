@@ -23,7 +23,8 @@ public static boxSize: number = 100;
       .attr('id', id)
       .attr('class', classes[0])
       .attr('x', where.x - boxMargin)
-      .attr('y', where.y - boxMargin);
+      .attr('y', where.y - boxMargin)
+      .style('cursor', 'move');
     objectGroup.append('svg').attr('class', 'pointer')
         .attr('x', (boxMargin - iconHalfSize)).attr('y', (boxMargin - iconHalfSize))
       .html(this._icons.getIcon(NaviIcons.POINTER))
@@ -46,16 +47,16 @@ public static boxSize: number = 100;
 
   public dragGroupBehavior() {
     const boxMargin = DrawingService.boxSize / 2;
-    let dx = parseInt(d3.select(this).attr('x'), null);
-    let dy = parseInt(d3.select(this).attr('y'), null);
+    let dx = parseInt(d3.select(this).attr('x'), 10);
+    let dy = parseInt(d3.select(this).attr('y'), 10);
     dx += d3.event.dx;
     dy += d3.event.dy;
     d3.select(this)
       .attr('x', Math.max(-boxMargin, Math.min(d3.select('#map').attr('width') - boxMargin, dx)))
       .attr('y', Math.max(-boxMargin, Math.min(d3.select('#map').attr('height') - boxMargin, dy)));
     const buttons = d3.select('#accept-buttons');
-    let bx = parseInt(buttons.style('left'), null);
-    let by = parseInt(buttons.style('top'), null);
+    let bx = parseInt(buttons.style('left'), 10);
+    let by = parseInt(buttons.style('top'), 10);
     bx += d3.event.dx;
     by += d3.event.dy;
     buttons.style('top', Math.max(0, Math.min((d3.select('#map').attr('height') - 100 ), by)) + 'px');
