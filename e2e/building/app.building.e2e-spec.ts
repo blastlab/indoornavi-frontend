@@ -8,54 +8,54 @@ describe('BuildingComponent', () => {
   });
 
   it('should have title', () => {
-    page.navigateToHome();
-    page.addComplex('Test');
-    page.openBuildingsOfLastAddedComplex();
-    expect(page.getTitle()).toEqual('Your buildings');
+    IndoorNaviPage.navigateToHome();
+    IndoorNaviPage.addComplex('Test');
+    IndoorNaviPage.openBuildingsOfLastAddedComplex();
+    expect(IndoorNaviPage.getTitle()).toEqual('Your buildings');
   });
 
   it('should be able to add new building', () => {
     const newName = 'test';
-    page.navigateToHome();
-    page.addComplex('Test');
-    page.openBuildingsOfLastAddedComplex();
-    page.addBuilding(newName);
-    expect(page.getLatestAddedBuilding()).toEqual(newName);
+    IndoorNaviPage.navigateToHome();
+    IndoorNaviPage.addComplex('Test');
+    IndoorNaviPage.openBuildingsOfLastAddedComplex();
+    IndoorNaviPage.addBuilding(newName);
+    expect(IndoorNaviPage.getLatestAddedBuilding()).toEqual(newName);
   });
 
   it('should be able to remove building', () => {
     const newName = 'test';
     const newName2 = 'test2';
-    page.navigateToHome();
-    page.addComplex('Test');
-    page.openBuildingsOfLastAddedComplex();
-    page.addBuilding(newName);
-    page.addBuilding(newName2);
-    page.removeLastBuilding();
-    expect(page.getLatestAddedBuilding()).toEqual(newName);
+    IndoorNaviPage.navigateToHome();
+    IndoorNaviPage.addComplex('Test');
+    IndoorNaviPage.openBuildingsOfLastAddedComplex();
+    IndoorNaviPage.addBuilding(newName);
+    IndoorNaviPage.addBuilding(newName2);
+    IndoorNaviPage.removeLastBuilding();
+    expect(IndoorNaviPage.getLatestAddedBuilding()).toEqual(newName);
   });
 
   it('should be able to edit building', () => {
     const newName = 'test';
     const newName2 = 'test2';
-    page.navigateToHome();
-    page.addComplex('Test');
-    page.openBuildingsOfLastAddedComplex();
-    page.addBuilding(newName);
-    page.editLastBuilding(newName2);
-    expect(page.getLatestAddedBuilding()).toEqual(newName2);
+    IndoorNaviPage.navigateToHome();
+    IndoorNaviPage.addComplex('Test');
+    IndoorNaviPage.openBuildingsOfLastAddedComplex();
+    IndoorNaviPage.addBuilding(newName);
+    IndoorNaviPage.editLastBuilding(newName2);
+    expect(IndoorNaviPage.getLatestAddedBuilding()).toEqual(newName2);
   });
 
   it('should cancel editing', () => {
     const newName = 'test';
     const newName2 = 'test2';
-    page.navigateToHome();
-    page.addComplex('Test');
-    page.openBuildingsOfLastAddedComplex();
-    page.addBuilding(newName);
-    page.editLastBuildingWithoutSaving(newName2);
-    page.cancelEditingLastBuilding();
-    expect(page.getLatestAddedBuilding()).toEqual(newName);
+    IndoorNaviPage.navigateToHome();
+    IndoorNaviPage.addComplex('Test');
+    IndoorNaviPage.openBuildingsOfLastAddedComplex();
+    IndoorNaviPage.addBuilding(newName);
+    IndoorNaviPage.editLastBuildingWithoutSaving(newName2);
+    IndoorNaviPage.cancelEditingLastBuilding();
+    expect(IndoorNaviPage.getLatestAddedBuilding()).toEqual(newName);
   });
 
 });

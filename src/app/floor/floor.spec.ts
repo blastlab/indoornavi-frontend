@@ -14,6 +14,8 @@ import {HttpModule} from '@angular/http';
 import {ActivatedRoute} from '@angular/router';
 import {DndModule} from 'ng2-dnd';
 import {Floor} from './floor.type';
+import {AuthGuard} from '../auth/auth.guard';
+import {SharedModule} from '../utils/shared/shared.module';
 
 describe('FloorComponent', () => {
 
@@ -26,12 +28,12 @@ describe('FloorComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [BrowserModule, FormsModule, MaterialModule, HttpModule, DialogTestModule, TranslateModule.forRoot(), RouterTestingModule, DndModule.forRoot()],
+      imports: [BrowserModule, FormsModule, MaterialModule, HttpModule, DialogTestModule, TranslateModule.forRoot(), RouterTestingModule, DndModule.forRoot(), SharedModule],
       declarations: [
         FloorComponent
       ],
       providers: [
-        FloorService, HttpService, ToastService, MdDialog
+        FloorService, HttpService, ToastService, MdDialog, AuthGuard
       ]
     }).compileComponents();
 
@@ -44,6 +46,7 @@ describe('FloorComponent', () => {
     sortableData = fixture.debugElement.injector.get(DndModule);
 
     spyOn(toastService, 'showSuccess');
+    spyOn(floorService, 'updateFloors').and.returnValue(Observable.of({}));
   }));
 
   it('should create floor', async(() => {

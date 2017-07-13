@@ -1,9 +1,18 @@
-import {element, by, browser, promise} from 'protractor';
+import {browser, by, element, ElementArrayFinder, promise} from 'protractor';
 import {Utils} from '../utils';
 
 export class TagPage {
   static navigateToHome() {
-    return browser.get('/tags');
+    return browser.get(Utils.baseUrl + 'tags');
+  }
+
+  static prepareToAddTag(shortId: string) {
+    // first, we check that tag with shortId already exists, if so we remove him
+    element(by.id('remove-' + shortId)).isPresent().then((isPresent: boolean) => {
+      if (isPresent) {
+        element(by.id('remove-' + shortId)).click();
+      }
+    });
   }
 
   static addTag(shortId: string, longId: string, name: string) {
@@ -14,25 +23,16 @@ export class TagPage {
     element(by.id('save-button')).click();
   }
 
-  static getLatestFromNotVerified(): Promise<TableRow> {
-    const row = element.all(by.css('#notVerifiedList tr')).last().all(by.tagName('td'));
-
-    return new Promise((resolve) => {
-      Utils.waitForElements(row);
-      resolve({
-        shortId: row.get(0).getText(),
-        longId: row.get(1).getText(),
-        name: row.get(2).getText()
-      });
-    });
+  static getLatestFromNotVerified(): ElementArrayFinder {
+    return element.all(by.css('#notVerifiedList tr')).last().all(by.tagName('td'));
   }
 
   static getRowsCount(): promise.Promise<number> {
     return element.all(by.css('#notVerifiedList tr')).count();
   }
 
-  static removeLastTag() {
-    element.all(by.css('#notVerifiedList tr')).last().element(by.className('remove-button')).click();
+  static removeTag(shortId: string) {
+    element(by.id('remove-' + shortId)).click();
   }
 
   static editLastTag(shortId: string, longId: string, name: string, doSave: boolean) {

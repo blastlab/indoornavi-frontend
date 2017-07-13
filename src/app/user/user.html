@@ -1,0 +1,27 @@
+<h1 [translate]="'user.header'"></h1>
+
+<div class="adding-section">
+  <button [appHasPermission]="'USER_CREATE'" md-raised-button id="new-user-button" type="button" (click)="openDialog()">{{'add'|translate}}</button>
+</div>
+
+<table cellpadding="10" cellspacing="0">
+  <tr>
+    <th [translate]="'user.username'"></th>
+    <th [translate]="'user.superuser'"></th>
+    <th colspan="2" [translate]="'th.actions'"></th>
+  </tr>
+  <tr *ngFor="let user of users; let i = index">
+    <td id="{{user.username}}">{{user.username}}</td>
+    <td><md-checkbox [checked]=user.superUser [disabled]="true"></md-checkbox></td>
+    <td>
+      <button [appHasPermission]="'USER_UPDATE'" id="edit-{{user.username}}" class="edit-button" (click)="editUser(user)" md-mini-fab md-tooltip="{{'edit'|translate}}" mdTooltipPosition="above">
+        <i class="material-icons">mode_edit</i>
+      </button>
+    </td>
+    <td>
+      <button [appHasPermission]="'USER_DELETE'" id="remove-{{user.username}}" class="remove-button" *ngIf="!user.superUser" (click)="removeUser(i)" md-mini-fab md-mini-fab md-tooltip="{{'remove'|translate}}" mdTooltipPosition="above">
+        <i class="material-icons">delete</i>
+      </button>
+    </td>
+  </tr>
+</table>

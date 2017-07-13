@@ -1,9 +1,15 @@
-import {element, by, browser, promise} from 'protractor';
+import {browser, by, element, promise} from 'protractor';
 import {Utils} from '../utils';
 
 export class AnchorPage {
-  static navigateToHome() {
-    return browser.get('/anchors');
+
+  static prepareToAddAnchor(shortId: string) {
+    // first, we check that anchor with shortId already exists, if so we remove him
+    element(by.id('remove-' + shortId)).isPresent().then((isPresent: boolean) => {
+      if (isPresent) {
+        element(by.id('remove-' + shortId)).click();
+      }
+    });
   }
 
   static addAnchor(shortId: string, longId: string, name: string) {
@@ -14,25 +20,20 @@ export class AnchorPage {
     element(by.id('save-button')).click();
   }
 
-  static getLatestFromNotVerified(): Promise<TableRow> {
-    const row = element.all(by.css('#notVerifiedList tr')).last().all(by.tagName('td'));
+  static navigateToHome() {
+    return browser.get(Utils.baseUrl + 'anchors');
+  }
 
-    return new Promise((resolve) => {
-      Utils.waitForElements(row);
-      resolve({
-        shortId: row.get(0).getText(),
-        longId: row.get(1).getText(),
-        name: row.get(2).getText()
-      });
-    });
+  static getLatestFromNotVerified() {
+    return element.all(by.css('#notVerifiedList tr')).last().all(by.tagName('td'));
   }
 
   static getRowsCount(): promise.Promise<number> {
     return element.all(by.css('#notVerifiedList tr')).count();
   }
 
-  static removeLastAnchor() {
-    element.all(by.css('#notVerifiedList tr')).last().element(by.className('remove-button')).click();
+  static removeAnchor(shortId: string) {
+    element(by.id('remove-' + shortId)).click();
   }
 
   static editLastAnchor(shortId: string, longId: string, name: string, doSave: boolean) {
@@ -48,10 +49,4 @@ export class AnchorPage {
     }
   }
 
-}
-
-export interface TableRow {
-  shortId: promise.Promise<string>;
-  longId: promise.Promise<string>;
-  name?: promise.Promise<string>;
 }

@@ -12,6 +12,9 @@ import {DialogTestModule} from '../utils/dialog/dialog.test';
 import {Anchor} from './anchor.type';
 import {DeviceService} from '../device/device.service';
 import {DeviceListComponent} from '../device/device.list';
+import {Router, RouterModule} from '@angular/router';
+import {SharedModule} from '../utils/shared/shared.module';
+import {AuthGuard} from '../auth/auth.guard';
 
 describe('AnchorComponent', () => {
   let component: AnchorComponent;
@@ -27,10 +30,11 @@ describe('AnchorComponent', () => {
         TranslateModule.forRoot(),
         DndModule.forRoot(),
         MaterialModule,
-        DialogTestModule
+        DialogTestModule,
+        SharedModule
       ],
       declarations: [AnchorComponent, DeviceListComponent],
-      providers: [SocketService, WebSocketService, DeviceService, HttpService, ToastService, MdDialog]
+      providers: [SocketService, WebSocketService, DeviceService, HttpService, ToastService, MdDialog, {provide: Router, useClass: RouterModule}, AuthGuard]
     })
     .compileComponents();
 

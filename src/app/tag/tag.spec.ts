@@ -12,8 +12,11 @@ import {DeviceService} from '../device/device.service';
 import {DeviceListComponent} from '../device/device.list';
 import {TagComponent} from './tag';
 import {Tag} from './tag.type';
+import {Router, RouterModule} from '@angular/router';
+import {AuthGuard} from '../auth/auth.guard';
+import {SharedModule} from '../utils/shared/shared.module';
 
-describe('DeviceComponent', () => {
+describe('TagComponent', () => {
   let component: TagComponent;
   let fixture: ComponentFixture<TagComponent>;
 
@@ -27,10 +30,11 @@ describe('DeviceComponent', () => {
         TranslateModule.forRoot(),
         DndModule.forRoot(),
         MaterialModule,
-        DialogTestModule
+        DialogTestModule,
+        SharedModule
       ],
       declarations: [TagComponent, DeviceListComponent],
-      providers: [SocketService, WebSocketService, DeviceService, HttpService, ToastService, MdDialog]
+      providers: [SocketService, WebSocketService, DeviceService, HttpService, ToastService, MdDialog, {provide: Router, useClass: RouterModule}, AuthGuard]
     })
     .compileComponents();
 

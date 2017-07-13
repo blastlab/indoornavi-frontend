@@ -18,6 +18,7 @@ import {MeasureEnum, Scale} from '../scale.type';
 import {Point} from '../../../../map.type';
 import {Floor} from '../../../../../floor/floor.type';
 import {Observable} from 'rxjs/Rx';
+import {AuthGuard} from '../../../../../auth/auth.guard';
 
 describe('ScaleInputComponent', () => {
   let component: ScaleInputComponent;
@@ -36,7 +37,7 @@ describe('ScaleInputComponent', () => {
         TranslateModule.forRoot(), BrowserModule, FormsModule, MaterialModule, HttpModule, RouterTestingModule, DndModule.forRoot()
       ],
       providers: [
-        ScaleInputService, ScaleHintService, FloorService, ToastService, HttpService
+        ScaleInputService, ScaleHintService, FloorService, ToastService, HttpService, AuthGuard
       ]
     })
       .compileComponents();

@@ -4,6 +4,8 @@ import * as d3 from 'd3';
 import {Floor} from '../floor/floor.type';
 import {Point, Line} from './map.type';
 import {MapLoaderInformerService} from '../utils/map-loader-informer/map-loader-informer.service';
+import {ImageService} from 'angular2-image-upload/lib/image.service';
+import {MapService} from './map.service';
 
 @Component({
   selector: 'app-map-viewer',
@@ -16,7 +18,8 @@ export class MapViewerComponent implements OnInit {
   imageLoaded: boolean = false;
   protected pointsTable: Array<Point> = [];
 
-  constructor(private mapLoaderInformer: MapLoaderInformerService) {
+  constructor(private mapLoaderInformer: MapLoaderInformerService,
+              private mapService: MapService) {
   }
 
   ngOnInit(): void {
@@ -24,7 +27,6 @@ export class MapViewerComponent implements OnInit {
   }
 
   drawImageOnCanvas(): void {
-    const imageUrl = Config.API_URL + 'images/' + this.floor.imageId;
     const canvas = this.canvas.nativeElement;
     const ctx = canvas.getContext('2d');
     const image = new Image();
@@ -35,7 +37,9 @@ export class MapViewerComponent implements OnInit {
       this.setupSVG(image.width, image.height);
       this.imageLoaded = true;
     };
-    image.src = imageUrl;
+    this.mapService.getImage(this.floor.imageId).subscribe((blob: Blob) => {
+      image.src = URL.createObjectURL(blob);
+    });
   }
 
   private setupSVG = (width: number, height: number): void => {
@@ -80,6 +84,6 @@ export class MapViewerComponent implements OnInit {
       })
       .on('mouseout', function () {
         d3.select('#scaleGroup').style('display', 'none');
-      })
+      });
   };
 }

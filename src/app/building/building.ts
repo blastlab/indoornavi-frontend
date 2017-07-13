@@ -30,13 +30,13 @@ export class BuildingComponent implements OnInit {
 
     this.route.params
     // (+) converts string 'id' to a number
-    .subscribe((params: Params) => {
-      this.complexId = +params['complexId'];
-      this.buildingService.getBuildings(this.complexId).subscribe((result: any) => {
-        this.buildings = result.buildings;
+      .subscribe((params: Params) => {
+        this.complexId = +params['complexId'];
+        this.buildingService.getBuildings(this.complexId).subscribe((result: any) => {
+          this.buildings = result.buildings;
+        });
+        this.newBuilding();
       });
-      this.newBuilding();
-    });
     this.translate.setDefaultLang('en');
   }
 
@@ -98,7 +98,7 @@ export class BuildingComponent implements OnInit {
 
   openDialog(): void {
     this.dialogRef = this.dialog.open(BuildingDialogComponent);
-    this.dialogRef.componentInstance.building  = {
+    this.dialogRef.componentInstance.building = {
       name: '',
       complexId: this.complexId
     };
@@ -115,6 +115,8 @@ export class BuildingComponent implements OnInit {
     this.buildingService.addBuilding(building).subscribe((newBuilding: Building) => {
       this.buildings.push(newBuilding);
       this.toast.showSuccess('building.create.success');
+    }, (err: string) => {
+      this.toast.showFailure(err);
     });
   }
 
@@ -124,10 +126,10 @@ export class BuildingComponent implements OnInit {
 
   private removeBuildingRequest(index: number, buildingId: number) {
     this.buildingService.removeBuilding(buildingId).subscribe(() => {
-     this.buildings.splice(index, 1);
-     this.toast.showSuccess('building.remove.success');
-    } , (msg: string) => {
-     this.toast.showFailure(msg);
+      this.buildings.splice(index, 1);
+      this.toast.showSuccess('building.remove.success');
+    }, (msg: string) => {
+      this.toast.showFailure(msg);
     });
   }
 

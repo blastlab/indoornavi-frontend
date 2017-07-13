@@ -1,9 +1,10 @@
 import {browser, element, by} from 'protractor';
+import {Utils} from '../../../../utils';
 
 
 export class ScaleTool {
   static navigateToHome() {
-    return browser.get('/');
+    return browser.get(Utils.baseUrl + 'complexes');
   }
 
   static addComplex(name: string) {

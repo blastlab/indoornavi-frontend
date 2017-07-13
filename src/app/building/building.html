@@ -1,7 +1,7 @@
 <h1 [translate]="'building.header'"></h1>
 
 <div class="adding-section">
-  <button md-raised-button id="new-building-button" type="button" (click)="openDialog()">{{'add'|translate}}</button>
+  <button [appHasPermission]="'BUILDING_CREATE'" md-raised-button id="new-building-button" type="button" (click)="openDialog()">{{'add'|translate}}</button>
 </div>
 
 <table cellpadding="10" cellspacing="0">
@@ -17,12 +17,12 @@
       </button>
     </td>
     <td>
-      <button class="building-edit-button" (click)="editBuilding(building)" md-mini-fab md-tooltip="{{'edit'|translate}}" mdTooltipPosition="above">
+      <button [appHasPermission]="'BUILDING_UPDATE'" class="building-edit-button" (click)="editBuilding(building)" md-mini-fab md-tooltip="{{'edit'|translate}}" mdTooltipPosition="above">
         <i class="material-icons">mode_edit</i>
       </button>
     </td>
     <td>
-      <button class="building-remove-button" (click)="removeBuilding(i)" md-mini-fab md-mini-fab md-tooltip="{{'remove'|translate}}" mdTooltipPosition="above">
+      <button [appHasPermission]="'BUILDING_DELETE'" class="building-remove-button" (click)="removeBuilding(i)" md-mini-fab md-mini-fab md-tooltip="{{'remove'|translate}}" mdTooltipPosition="above">
         <i class="material-icons">delete</i>
       </button>
     </td>

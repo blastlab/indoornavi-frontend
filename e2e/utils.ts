@@ -1,6 +1,8 @@
-import {element, by, protractor, browser, ElementArrayFinder, ElementFinder} from 'protractor';
+import {browser, by, element, ElementArrayFinder, ElementFinder, protractor} from 'protractor';
 
 export module Utils {
+  export const baseUrl = 'http://localhost:4200/';
+
   export function waitForToastToDisappear(func: () => void) {
     const EC = protractor.ExpectedConditions;
     const el = element(by.css('.cdk-global-overlay-wrapper'));

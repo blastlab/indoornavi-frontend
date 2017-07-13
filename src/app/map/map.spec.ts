@@ -14,6 +14,8 @@ import {FloorService} from '../floor/floor.service';
 import {HttpService} from '../utils/http/http.service';
 import {ToastService} from '../utils/toast/toast.service';
 import {Floor} from '../floor/floor.type';
+import {MapService} from './map.service';
+import {AuthGuard} from '../auth/auth.guard';
 
 describe('MapViewerComponent', () => {
   let component: MapViewerComponent;
@@ -29,7 +31,7 @@ describe('MapViewerComponent', () => {
       ],
       declarations: [MapViewerComponent, ScaleInputComponent, ScaleHintComponent],
       providers: [
-        ScaleInputService, ScaleHintService, MapLoaderInformerService, FloorService, HttpService, ToastService
+        ScaleInputService, ScaleHintService, MapLoaderInformerService, FloorService, HttpService, ToastService, MapService, AuthGuard
       ]
     })
       .compileComponents();

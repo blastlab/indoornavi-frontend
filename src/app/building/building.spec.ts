@@ -13,6 +13,8 @@ import {RouterTestingModule} from '@angular/router/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {HttpModule} from '@angular/http';
 import {ActivatedRoute} from '@angular/router';
+import {SharedModule} from '../utils/shared/shared.module';
+import {AuthGuard} from '../auth/auth.guard';
 
 describe('BuildingComponent', () => {
 
@@ -25,12 +27,12 @@ describe('BuildingComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [BrowserModule, FormsModule, MaterialModule, HttpModule, DialogTestModule, TranslateModule.forRoot(), RouterTestingModule],
+      imports: [BrowserModule, FormsModule, MaterialModule, HttpModule, DialogTestModule, TranslateModule.forRoot(), RouterTestingModule, SharedModule],
       declarations: [
         BuildingComponent
       ],
       providers: [
-        BuildingService, FloorService, HttpService, ToastService, MdDialog
+        BuildingService, FloorService, HttpService, ToastService, MdDialog, AuthGuard
       ]
     }).compileComponents();
 
@@ -81,7 +83,7 @@ describe('BuildingComponent', () => {
 
   it('should NOT add new building to list when form is invalid', () => {
     // given
-    const isValid = false;
+    spyOn(buildingService, 'addBuilding').and.returnValue(Observable.throw('ERROR'));
 
     // when
     component.saveBuilding({name: 'someName', complexId: 1});

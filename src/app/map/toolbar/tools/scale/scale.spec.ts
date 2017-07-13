@@ -10,6 +10,7 @@ import {MeasureEnum, Scale} from 'app/map/toolbar/tools/scale/scale.type';
 import {Floor} from '../../../../floor/floor.type';
 import {Line, Point} from '../../../map.type';
 import {Geometry} from '../../../utils/geometry';
+import {AuthGuard} from '../../../../auth/auth.guard';
 
 
 describe('Scale', () => {
@@ -29,7 +30,7 @@ describe('Scale', () => {
         TranslateModule.forRoot(),
       ],
       providers: [
-        ScaleHintService, ScaleInputService, MapLoaderInformerService
+        ScaleHintService, ScaleInputService, MapLoaderInformerService, AuthGuard
       ]
     })
       .compileComponents();

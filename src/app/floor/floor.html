@@ -1,7 +1,9 @@
 <h1 [translate]="'floor.header'"></h1>
 
 <div class="adding-section">
-  <button md-raised-button id="new-floor-button" type="button" (click)="openDialog()">{{'add'|translate}}</button>
+  <button [appHasPermission]="'FLOOR_CREATE'" md-raised-button id="new-floor-button" type="button"
+          (click)="openDialog()">{{'add'|translate}}
+  </button>
 </div>
 
 <table cellpadding="10" cellspacing="0" dnd-sortable-container [sortableData]="floors">
@@ -10,7 +12,8 @@
     <th [translate]="'floor.name'"></th>
     <th colspan="3" [translate]="'th.actions'"></th>
   </tr>
-  <tr class="sortable" *ngFor="let floor of floors; let i = index" dnd-sortable [sortableIndex]="i" (onDropSuccess)="rearrangeFloors()">
+  <tr class="sortable" *ngFor="let floor of floors; let i = index" dnd-sortable [sortableIndex]="i"
+      (onDropSuccess)="rearrangeFloors()">
     <td class="floor-level">{{floor.level}}</td>
     <td class="floor-name">{{floor.name}}</td>
     <td>
@@ -20,13 +23,14 @@
       </button>
     </td>
     <td>
-      <button class="floor-edit-button" (click)="editFloor(floor)" md-mini-fab
-              md-tooltip="{{'edit'|translate}}" mdTooltipPosition="above">
+      <button [appHasPermission]="'FLOOR_UPDATE'" class="floor-edit-button" (click)="editFloor(floor)" md-mini-fab
+              md-tooltip="{{'edit'|translate}}"
+              mdTooltipPosition="above">
         <i class="material-icons">mode_edit</i>
       </button>
     </td>
     <td>
-      <button class="floor-remove-button" (click)="removeFloor(i)" md-mini-fab
+      <button [appHasPermission]="'FLOOR_DELETE'" class="floor-remove-button" (click)="removeFloor(i)" md-mini-fab
               md-tooltip="{{'remove'|translate}}" mdTooltipPosition="above">
         <i class="material-icons">delete</i>
       </button>
