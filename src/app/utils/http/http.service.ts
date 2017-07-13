@@ -53,6 +53,12 @@ export class HttpService {
     return this.http.get(Config.API_URL + url, this.options).map(HttpService.extractData).catch(HttpService.errorHandler).first();
   }
 
+  doGetImage(url: string): Observable<any> {
+    const extendedOptions = {...this.options};
+    extendedOptions.responseType = ResponseContentType.Blob;
+    return this.http.get(Config.API_URL + url, extendedOptions).map(HttpService.extractData).catch(HttpService.errorHandler).first();
+  }
+
   doPost(url: string, body: any): Observable<any> {
     return this.http.post(Config.API_URL + url, body, this.options).map(HttpService.extractData).catch(HttpService.errorHandler).first();
   }

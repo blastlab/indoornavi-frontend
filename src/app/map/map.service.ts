@@ -19,9 +19,6 @@ export class MapService {
   }
 
   getImage(id: number): Observable<Blob> {
-    this.httpService.setResponseType(ResponseContentType.Blob);
-    const x =  this.httpService.doGet('images/' + id);
-    this.httpService.setResponseType(null);
-    return x;
+    return this.httpService.doGetImage('images/' + id);
   }
 }
