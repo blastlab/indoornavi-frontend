@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Headers, Http, RequestOptions, Response} from '@angular/http';
+import {Headers, Http, RequestOptions, Response, ResponseContentType} from '@angular/http';
 import {Observable} from 'rxjs/Rx';
 import {Config} from '../../../config';
 import 'rxjs/add/observable/throw';
@@ -11,15 +11,19 @@ export class HttpService {
 
   private static router: Router;
   private headers: Headers = new Headers();
-  private options: RequestOptions = new RequestOptions({ headers: this.headers });
+  private options: RequestOptions = new RequestOptions({headers: this.headers});
 
   private static extractData(res: Response) {
+    if (res.headers.has('content-type') && res.headers.get('content-type') === 'application/octet-stream') {
+      return res.blob();
+    }
     if (res.status === 200) {
       return res.json();
     }
   }
 
   private static errorHandler(err: any): Observable<any> {
+    console.log(err);
     if (err instanceof Response && err.status === 401) {
       HttpService.router.navigate(['/login'], {queryParams: {returnUrl: HttpService.router.routerState.snapshot.url}});
     }
@@ -49,6 +53,12 @@ export class HttpService {
     return this.http.get(Config.API_URL + url, this.options).map(HttpService.extractData).catch(HttpService.errorHandler).first();
   }
 
+  doGetImage(url: string): Observable<any> {
+    const extendedOptions = {...this.options};
+    extendedOptions.responseType = ResponseContentType.Blob;
+    return this.http.get(Config.API_URL + url, extendedOptions).map(HttpService.extractData).catch(HttpService.errorHandler).first();
+  }
+
   doPost(url: string, body: any): Observable<any> {
     return this.http.post(Config.API_URL + url, body, this.options).map(HttpService.extractData).catch(HttpService.errorHandler).first();
   }
@@ -59,6 +69,10 @@ export class HttpService {
 
   doDelete(url: string): Observable<any> {
     return this.http.delete(Config.API_URL + url, this.options).map(HttpService.extractData).catch(HttpService.errorHandler).first();
+  }
+
+  setResponseType(type: ResponseContentType): void {
+    this.options.responseType = type;
   }
 
   private prepareAuthHeader() {

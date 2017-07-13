@@ -28,6 +28,7 @@
     "angular2-image-upload": "^0.5.1",
     "angular2-websocket-service": "^0.5.3",
     "core-js": "^2.4.1",
+    "d3": "^4.4.0",
     "ng2-breadcrumb": "^0.5.6",
     "ng2-dnd": "^2.2.2",
     "queueing-subject": "^0.1.1",

@@ -1,0 +1,19 @@
+.map-toolbar {
+  position: absolute;
+  float: right;
+  right: 80%;
+  width: 8%;
+  height: 80%;
+  top: 10%;
+  background-color: burlywood;
+}
+ul {
+  -webkit-padding-start: 0;
+  text-align: center;
+}
+h2, h3, p {
+  text-align: center;
+}
+li {
+  list-style-type: none;
+}

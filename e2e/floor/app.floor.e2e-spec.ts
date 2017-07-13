@@ -29,7 +29,7 @@ describe('FloorComponent', () => {
     expect(IndoorNaviPage.getLatestAddedFloor()).toEqual(newName);
   });
 
-  it('should be able to remove foor', () => {
+  it('should be able to remove floor', () => {
     const newName = 'test';
     const newName2 = 'test2';
     const newLevel = '4';
@@ -76,6 +76,4 @@ describe('FloorComponent', () => {
     expect(IndoorNaviPage.getLatestAddedFloor()).toEqual(newName);
     expect(IndoorNaviPage.getLatestAddedFloorLevel()).toEqual(newLevel);
   });
-
-
 });
