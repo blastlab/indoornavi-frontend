@@ -52,7 +52,7 @@ describe('ScaleComponent', () => {
   });
 
   it('should draw first scale and type in distance and unit', () => {
-    const distance = '314';
+    const distance = 314;
     const unit = 'CENTIMETERS';
     ScaleTool.clickMap(svg, 126, 125);
     ScaleTool.clickMap(svg, 241, 342);
@@ -65,7 +65,7 @@ describe('ScaleComponent', () => {
   });
 
   it('should change scale with shift pressed', () => {
-    const distance = '543';
+    const distance = 543;
     const unit = 'CENTIMETERS';
     const points = element.all(by.className('point'));
 
@@ -114,7 +114,7 @@ describe('ScaleComponent', () => {
     });
   });
   it('should change scale', () => {
-    const distance = '543';
+    const distance = 543;
     const unit = 'CENTIMETERS';
     const points = element.all(by.className('point'));
     const line = element(by.className('connectLine'));
@@ -145,7 +145,7 @@ describe('ScaleComponent', () => {
   });
 
   it('should create new scale after removing old one', () => {
-    const distance = '765';
+    const distance = 765;
     const unit = 'CENTIMETERS';
     ScaleTool.clickRemove();
     DrawingChecker.expectScaleNotToExist();
