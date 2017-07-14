@@ -12,12 +12,6 @@ export class BuildingPage {
     ComplexPage.openLatestAddedComplex();
   }
 
-  static getBackUrl(url: string): string {
-    url = url.substring(url.indexOf('//') + 2, url.lastIndexOf('/'));
-    url = url.substring(url.indexOf('/'), url.lastIndexOf('/') + 1);
-    return url;
-  }
-
   static destroyLastComplex() {
     ComplexPage.navigateToHome();
     ComplexPage.removeLastComplex();
@@ -30,10 +24,6 @@ export class BuildingPage {
     element(by.id('new-building-button')).click();
     element(by.id('building-name-input')).sendKeys(name);
     element(by.id('building-save-button')).click();
-  }
-
-  static getBuildingsCount(): promise.Promise<number> {
-    return element.all(by.css('tr.building')).count();
   }
 
   static removeLastBuilding() {
@@ -53,7 +43,7 @@ export class BuildingPage {
     return element.all(by.css('.building-floor-button')).last().click();
   }
 
-  static getLatestAddedBuilding() {
+  static getLatestAddedBuildingName() {
     return element.all(by.css('.building-name')).last().getText();
   }
 

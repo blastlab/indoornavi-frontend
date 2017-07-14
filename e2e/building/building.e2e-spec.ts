@@ -18,24 +18,24 @@ describe('BuildingComponent', () => {
   it('should be able to add new, and remove building', (done: DoneFn) => {
     const name = 'testAddBuilding';
     const newName = 'testRename';
-    BuildingPage.getBuildingsCount().then(initCount => {
+    AppPage.getElementsCount('tr.building').then(initCount => {
       BuildingPage.addBuilding(name);
-      expect(BuildingPage.getLatestAddedBuilding()).toEqual(name);
-      BuildingPage.getBuildingsCount().then(count => {
+      expect(BuildingPage.getLatestAddedBuildingName()).toEqual(name);
+      AppPage.getElementsCount('tr.building').then(count => {
         expect(count).toEqual(initCount + 1);
         BuildingPage.editLastBuilding(newName, true);
-        expect(BuildingPage.getLatestAddedBuilding()).toEqual(newName);
+        expect(BuildingPage.getLatestAddedBuildingName()).toEqual(newName);
         BuildingPage.openLatestAddedBuilding();
         AppPage.getCurrentUrl().then(pageUrl => {
           expect(pageUrl).toMatch(/complexes\/.*\/buildings\/.*\/floors/g);
-          AppPage.navigateTo(BuildingPage.getBackUrl(pageUrl));
+          AppPage.navigateBack();
           done();
         });
         BuildingPage.editLastBuilding(name, false);
         AppPage.cancelEditingWithESC();
-        expect(BuildingPage.getLatestAddedBuilding()).toEqual(newName);
+        expect(BuildingPage.getLatestAddedBuildingName()).toEqual(newName);
         BuildingPage.removeLastBuilding();
-        BuildingPage.getBuildingsCount().then(finalCount => {
+        AppPage.getElementsCount('tr.building').then(finalCount => {
           expect(finalCount).toEqual(initCount);
           done();
         });

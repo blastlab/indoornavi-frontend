@@ -1,6 +1,5 @@
 import {WizardTool} from './wizard.po';
 import {AppPage} from '../../../../app.po';
-import {browser} from 'protractor';
 
 /**
  * webSocket connection in app MUST be closed before running this test
@@ -19,23 +18,21 @@ describe('WizardTool', () => {
     expect(AppPage.getById('map').getTagName()).toEqual('svg');
   });
 
-  it('should start wizard', (done: DoneFn) => {
+  it('should start wizard', () => {
     WizardTool.clickWizardTool();
     expect(AppPage.getByClass('cdk-focus-trap-content').getTagName()).toEqual('div');
     WizardTool.waitForElement('md-select.mat-select');
     expect(AppPage.getByClass('dialog-place-button').isDisplayed()).toBeTruthy();
     expect(AppPage.getByClass('dialog-place-button').getAttribute('disabled')).toBeTruthy();
-    done();
   });
 
-  it('should select a sink', (done: DoneFn) => {
+  it('should select a sink', () => {
     WizardTool.openSelectChoices();
     WizardTool.chooseFirstSelectOption();
     expect(AppPage.getByClass('dialog-place-button').getAttribute('disabled')).toBeFalsy();
-    done();
   });
 
-  it('should place sink on map', () => {
+  it('should place sink on map', (done: DoneFn) => {
     AppPage.getByClass('dialog-place-button').click();
     const testedSink = AppPage.getByClass('wizardSink');
     const testCoords = {x: 199, y: 273};
@@ -44,21 +41,23 @@ describe('WizardTool', () => {
     expect(testedSink.isPresent()).toBeTruthy();
     testedSink.getAttribute('x').then((attrString) => {
       expect(parseInt(attrString, 10)).toEqual(149);
-    });
-    testedSink.getAttribute('y').then((attrString) => {
-      expect(parseInt(attrString, 10)).toEqual(223);
+      testedSink.getAttribute('y').then((attr) => {
+        expect(parseInt(attr, 10)).toEqual(223);
+        done();
+      });
     });
   });
 
-  it('should drag sink (to correct its position)', () => {
+  it('should drag sink (to correct its position)', (done: DoneFn) => {
     const testSink = AppPage.getByClass('wizardSink');
     const translation = {x: 1, y: -23};
     WizardTool.dragElementBy(testSink, translation);
     testSink.getAttribute('x').then((attrString) => {
       expect(parseInt(attrString, 10)).toEqual(150);
-    });
-    testSink.getAttribute('y').then((attrString) => {
-      expect(parseInt(attrString, 10)).toEqual(200);
+      testSink.getAttribute('y').then((attr) => {
+        expect(parseInt(attr, 10)).toEqual(200);
+        done();
+      });
     });
   });
 
@@ -90,7 +89,7 @@ describe('WizardTool', () => {
     expect(AppPage.getByClass('dialog-place-button').getAttribute('disabled')).toBeTruthy();
   });
 
-  it('should have visible distance, then place anchor and drag, finally accept', () => {
+  it('should have visible distance, then place anchor and drag, finally accept', (done: DoneFn) => {
     const anchor = AppPage.getByClass('wizardAnchor');
     const testCoords = {x: 564, y: 27};
     const translation = {x: -114, y: 213};
@@ -105,11 +104,12 @@ describe('WizardTool', () => {
     WizardTool.dragElementBy(anchor, translation);
     anchor.getAttribute('x').then((attrString) => {
       expect(parseInt(attrString, 10)).toEqual(400);
+      anchor.getAttribute('y').then((attr) => {
+        expect(parseInt(attr, 10)).toEqual(190);
+        WizardTool.clickDecisionButton(true);
+        done();
+      });
     });
-    anchor.getAttribute('y').then((attrString) => {
-      expect(parseInt(attrString, 10)).toEqual(190);
-    });
-    WizardTool.clickDecisionButton(true);
   });
 
   it('should show warning (with close on overlayClick disabled) when all steps has not been completed ', () => {

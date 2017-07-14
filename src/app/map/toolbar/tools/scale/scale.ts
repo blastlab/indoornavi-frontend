@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Output} from '@angular/core';
-import {ToolsEnum} from '../tools.enum';
+import {ToolName} from '../tools.enum';
 import * as d3 from 'd3';
 import {Tool} from '../tool';
 import {TranslateService} from '@ngx-translate/core';
@@ -15,7 +15,7 @@ export class ScaleComponent implements Tool {
   public hintMessage: String;
   // private scale: Scale;  // use for scale data
   public active: boolean = false;
-  public toolEnum: ToolsEnum = ToolsEnum.SCALE; // used in hint-bar component as a toolName
+  public toolEnum: ToolName = ToolName.SCALE; // used in hint-bar component as a toolName
 
   constructor(private translate: TranslateService) {
     this.setTranslations();

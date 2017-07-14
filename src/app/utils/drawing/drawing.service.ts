@@ -5,7 +5,8 @@ import {Point} from '../../map/map.type';
 
 @Injectable()
 export class DrawingService {
-public static boxSize: number = 100;
+  static boxSize: number = 100;
+
   constructor(private _icons: IconService) {
   }
 
@@ -26,14 +27,14 @@ public static boxSize: number = 100;
       .attr('y', where.y - boxMargin)
       .style('cursor', 'move');
     objectGroup.append('svg').attr('class', 'pointer')
-        .attr('x', (boxMargin - iconHalfSize)).attr('y', (boxMargin - iconHalfSize))
+      .attr('x', (boxMargin - iconHalfSize)).attr('y', (boxMargin - iconHalfSize))
       .html(this._icons.getIcon(NaviIcons.POINTER))
-        .attr('fill', 'red');
+      .attr('fill', 'red');
     objectGroup.append('svg').attr('class', classes[1])
-        .attr('x', boxMargin).attr('y', boxMargin)
+      .attr('x', boxMargin).attr('y', boxMargin)
       .html(this._icons.getIcon(objectParams.iconName))
-        .attr('stroke', objectParams.fill)
-        .attr('fill', objectParams.fill);
+      .attr('stroke', objectParams.fill)
+      .attr('fill', objectParams.fill);
     objectGroup.append('text').attr('x', (boxMargin + iconHalfSize)).attr('y', boxMargin)
       .attr('class', id + 'name').attr('fill', objectParams.fill).text(id);
     objectGroup.append('circle').attr('class', 'objectArea')

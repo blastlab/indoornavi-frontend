@@ -26,12 +26,8 @@ describe('HintBarComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create HintBarComponent', () => {
+  it('should create HintBarComponent and set hintMsg', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should set hintMsg to default', () => {
-    // translations called onInit
     expect(component.hintMsg).toBeDefined();
   });
 

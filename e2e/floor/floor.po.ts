@@ -12,10 +12,6 @@ export class FloorPage {
     BuildingPage.destroyLastComplex();
   }
 
-  static getBackUrl(url: string): string {
-    return BuildingPage.getBackUrl(url);
-  }
-
   static addFloor(name: string, level: number): void {
     element(by.id('new-floor-button')).click();
     element(by.id('floor-name-input')).clear();
@@ -40,11 +36,7 @@ export class FloorPage {
     }
   }
 
-  static getFloorsCount(): promise.Promise<number> {
-    return element.all(by.css('tr.floor')).count();
-  }
-
-  static getLatestAddedFloor(): promise.Promise<string> {
+  static getLatestAddedFloorName(): promise.Promise<string> {
     return element.all(by.css('.floor-name')).last().getText();
   }
 

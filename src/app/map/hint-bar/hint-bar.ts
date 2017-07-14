@@ -1,5 +1,5 @@
 import {Component, Input, OnChanges, OnInit} from '@angular/core';
-import {ToolsEnum} from '../toolbar/tools/tools.enum';
+import {ToolName} from '../toolbar/tools/tools.enum';
 import {Point} from '../map.type';
 import {Tool} from '../toolbar/tools/tool';
 import {TranslateService} from '@ngx-translate/core';
@@ -28,7 +28,7 @@ export class HintBarComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(): void {
-    this.toolName = (this.tool) ? ToolsEnum[this.tool.toolEnum] : ToolsEnum[ToolsEnum.NONE];
+    this.toolName = (this.tool) ? ToolName[this.tool.toolEnum] : ToolName[ToolName.NONE];
     this._hintBar.hint$.subscribe((message: string) => {
       this.setHint(message);
     });

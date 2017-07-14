@@ -24,11 +24,7 @@ export class ComplexPage {
     }
   }
 
-  static getComplexesCount(): promise.Promise<number> {
-    return element.all(by.css('tr.complex')).count();
-  }
-
-  static getLatestAddedComplex() {
+  static getLatestAddedComplexName() {
     return element.all(by.css('.complex-name')).last().getText();
   }
 

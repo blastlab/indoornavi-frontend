@@ -1,6 +1,5 @@
-export enum ToolsEnum {
-  NONE = 0,
+export enum ToolName {
+  NONE,
   SCALE,
   WIZARD,
-  DEVICE,
 }

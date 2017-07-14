@@ -1,5 +1,5 @@
 import {Component, EventEmitter, NgZone, Output, TemplateRef, ViewChild} from '@angular/core';
-import {ToolsEnum} from '../tools.enum';
+import {ToolName} from '../tools.enum';
 import {Tool} from '../tool';
 import {TranslateService} from '@ngx-translate/core';
 import {Subscription} from 'rxjs/Rx';
@@ -22,7 +22,7 @@ import {HintBarService} from '../../../hint-bar/hint-bar.service';
 export class WizardComponent implements Tool {
 
   @Output() clicked: EventEmitter<Tool> = new EventEmitter<Tool>();
-  public toolEnum: ToolsEnum = ToolsEnum.WIZARD; // used in hint-bar component as a toolName
+  public toolEnum: ToolName = ToolName.WIZARD; // used in hint-bar component as a toolName
   public hintMessage: string;
   public active: boolean = false;
   public activeStep: WizardStep;
@@ -42,7 +42,7 @@ export class WizardComponent implements Tool {
               public dialog: MdDialog,
               private toastService: ToastService,
               private ngZone: NgZone,
-              private _hintBar: HintBarService) {
+              private hintBar: HintBarService) {
     this.setTranslations();
   }
 
@@ -81,7 +81,7 @@ export class WizardComponent implements Tool {
     if (!this.wizardCompleted) {
       this.cleanAll();
     }
-    this._hintBar.publishHint(null);
+    this.hintBar.publishHint(null);
     this.active = false;
     this.destroySocket();
   }
@@ -134,13 +134,11 @@ export class WizardComponent implements Tool {
   }
 
   public manualAnchors() {
-    // console.log('manualAnchors');
     this.dialogRef.close();
     this.emitToggleActive();
   }
 
   public wizardAnchors() {
-    // console.log('wizardAnchors');
     this.dialogRef.close();
     this.emitToggleActive();
   }
@@ -162,6 +160,7 @@ export interface WizardData extends SocketMsg {
   firstAnchorPosition: Point;
   secondAnchorPosition: Point;
 }
+
 export interface StepMsg {
   socketData: SocketMsg;
   wizardData: WizardData;

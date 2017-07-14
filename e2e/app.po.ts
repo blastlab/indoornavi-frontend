@@ -19,10 +19,6 @@ export class AppPage {
     browser.actions().sendKeys(protractor.Key.ESCAPE).perform();
   }
 
-  static navigateTo(path: string) {
-    return browser.get(path);
-  }
-
   static getById(id: string) {
     return element(by.id(id));
   }
@@ -33,6 +29,10 @@ export class AppPage {
 
   static getElementsCount(selector: string): promise.Promise<number> {
     return element.all(by.css(selector)).count();
+  }
+
+  static navigateBack() {
+    browser.navigate().back();
   }
 
 }

@@ -38,19 +38,16 @@ describe('ToolbarComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ToolbarComponent);
     component = fixture.componentInstance;
+
     fixture.detectChanges();
     mockScaleTool = fixture.debugElement.injector.get(ScaleComponent);
-    mockScaleTool.setActive = () => {
-      component.activeTool = mockScaleTool;
-    };
     mockWizardTool = fixture.debugElement.injector.get(WizardComponent);
-    mockWizardTool.setActive = () => {
-      component.activeTool = mockWizardTool;
-    };
-    mockWizardTool.setInactive = () => {
-      // changes variable inside specific tool (active: boolean)
-      // setting wizard inactive clears view - test in wizard.spec
-    };
+    spyOn(mockScaleTool, 'setActive').and.callFake(() => {
+    });
+    spyOn(mockWizardTool, 'setActive').and.callFake(() => {
+    });
+    spyOn(mockWizardTool, 'setInactive').and.callFake(() => {
+    });
   });
 
 
@@ -67,7 +64,6 @@ describe('ToolbarComponent', () => {
   });
 
   it('should set clicked tool as active if other tool was active', () => {
-    // don't expect here that activeTool is undefined
     component.activeTool = mockScaleTool;
     expect(component.activeTool).toBeDefined();
     expect(component.activeTool).toEqual(mockScaleTool);

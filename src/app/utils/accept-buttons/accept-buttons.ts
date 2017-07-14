@@ -9,15 +9,15 @@ import {AcceptButtonsService} from './accept-buttons.service';
 })
 export class AcceptButtonsComponent {
   public visible: boolean = false;
-  private coords$: Point;
+  private coords: Point;
 
   constructor(private _accButtons: AcceptButtonsService) {
     this._accButtons.coordinates$.subscribe(
       data => {
-        this.coords$ = data;
+        this.coords = data;
         const buttons = document.getElementById('accept-buttons');
-        buttons.style.top = this.coords$.y + 'px';
-        buttons.style.left = this.coords$.x + 'px';
+        buttons.style.top = this.coords.y + 'px';
+        buttons.style.left = this.coords.x + 'px';
       });
     this._accButtons.visibility$.subscribe(
       data => {

@@ -1,8 +1,8 @@
-import {ToolsEnum} from './tools.enum';
+import {ToolName} from './tools.enum';
 import {EventEmitter} from '@angular/core';
 
 export interface Tool {
-  toolEnum: ToolsEnum;
+  toolEnum: ToolName;
   hintMessage: String;
   active: boolean;
   clicked: EventEmitter<Tool>;

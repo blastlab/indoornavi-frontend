@@ -17,7 +17,7 @@ export class IconService {
       'hardware', 'image', 'maps', 'navigation', 'notification', 'places', 'social', 'toggle']);
   }
 
-  public loadCollections(collection: string[]) {
+  private loadCollections(collection: string[]) {
     for (let i = 0; i < collection.length; i++) {
       this.mdIconRegistry
         .addSvgIcon(collection[i], this._sanitizer
