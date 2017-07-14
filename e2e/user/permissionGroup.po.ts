@@ -15,11 +15,26 @@ export class PermissionGroupPage {
     element(by.id('save-button')).click();
   }
 
-  static getPermissionGroupsCount() {
+  static getPermissionGroupsCount() { // TODO: change to utils method
     return element.all(by.tagName('tr')).count();
+  }
+
+  static editPermissionGroupName(name: string) {
+    PermissionGroupPage.getLastPermissionGroup().element(by.className('edit-button')).click();
+    element(by.id('name-input')).clear();
+    element(by.id('name-input')).sendKeys(name);
+    element(by.id('save-button')).click();
   }
 
   static removeLastPermissionGroup() {
     element.all(by.tagName('tr')).last().element(by.className('remove-button')).click();
+  }
+
+  static getLastPermissionGroup() {
+    return element.all(by.tagName('tr')).last();
+  }
+
+  static getLastPermissionGroupName() {
+    return PermissionGroupPage.getLastPermissionGroup().all(by.tagName('td')).first().getText();
   }
 }

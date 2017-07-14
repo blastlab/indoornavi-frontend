@@ -55,7 +55,7 @@ export class PermissionGroupComponent implements OnInit {
   }
 
   edit(permissionGroup: PermissionGroup) {
-    this.permissionGroup = permissionGroup;
+    this.permissionGroup = {...permissionGroup};
     this.selectedOptions = [];
     this.permissionGroup.permissions.forEach((permission: Permission) => {
       if (this.selectedOptions.map((option: Option) => {
@@ -76,6 +76,11 @@ export class PermissionGroupComponent implements OnInit {
         this.permissionGroup = PermissionGroupComponent.createEmptyPermissionGroup();
         this.selectedOptions = [];
         if (isEditMode) {
+          this.permissionGroups.forEach((pG: PermissionGroup) => {
+            if (pG.id === permissionGroup.id) {
+              this.permissionGroups[this.permissionGroups.indexOf(pG)] = permissionGroup;
+            }
+          });
           this.toast.showSuccess('permissionGroup.save.success');
         } else {
           this.permissionGroups.push(permissionGroup);

@@ -7,7 +7,7 @@ describe('Permission group component', () => {
     expect(AppPage.getTitle()).toEqual('Permission groups');
   });
 
-  it('Adds new permission group, edit it and then remove it', () => {
+  it('Adds new permission group, edit it and then remove it', (done: DoneFn) => {
     PermissionGroupPage.navigateToHome();
 
     PermissionGroupPage.getPermissionGroupsCount().then((initCount: number) => {
@@ -16,10 +16,17 @@ describe('Permission group component', () => {
       PermissionGroupPage.getPermissionGroupsCount().then((count: number) => {
         expect(count).toEqual(initCount + 1);
 
-        PermissionGroupPage.removeLastPermissionGroup();
+        PermissionGroupPage.editPermissionGroupName('test 2');
+        PermissionGroupPage.getPermissionGroupsCount().then((afterEditCount: number) => {
+          expect(afterEditCount).toEqual(count);
+          expect(PermissionGroupPage.getLastPermissionGroupName()).toEqual('test 2');
 
-        PermissionGroupPage.getPermissionGroupsCount().then((afterRemoveCount: number) => {
-          expect(afterRemoveCount).toEqual(initCount);
+          PermissionGroupPage.removeLastPermissionGroup();
+
+          PermissionGroupPage.getPermissionGroupsCount().then((afterRemoveCount: number) => {
+            expect(afterRemoveCount).toEqual(initCount);
+            done();
+          });
         });
       });
     });
