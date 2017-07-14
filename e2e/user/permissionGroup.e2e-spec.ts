@@ -2,14 +2,15 @@ import {PermissionGroupPage} from './permissionGroup.po';
 import {AppPage} from '../app.po';
 
 describe('Permission group component', () => {
-  it('Enters permission groups list', () => {
+  beforeAll(() => {
     PermissionGroupPage.navigateToHome();
+  });
+
+  it('Enters permission groups list', () => {
     expect(AppPage.getTitle()).toEqual('Permission groups');
   });
 
   it('Adds new permission group, edit it and then remove it', (done: DoneFn) => {
-    PermissionGroupPage.navigateToHome();
-
     PermissionGroupPage.getPermissionGroupsCount().then((initCount: number) => {
       PermissionGroupPage.addPermissionGroup();
 
@@ -30,6 +31,5 @@ describe('Permission group component', () => {
         });
       });
     });
-
   });
 });

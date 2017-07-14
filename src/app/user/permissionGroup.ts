@@ -114,6 +114,7 @@ export class PermissionGroupComponent implements OnInit {
   }
 
   onSelectAll(items: Option[]) {
+    this.onDeSelectAll();
     items.forEach((item: Option) => {
       this.permissionGroup.permissions.push(<Permission>{id: item.id, name: item.itemName});
     });
