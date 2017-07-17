@@ -10,6 +10,7 @@ import {FloorDialogComponent} from '../../floor/floor.dialog';
 import {DeviceDialogComponent} from '../../device/device.dialog';
 import {CommonModule} from '@angular/common';
 import {UserDialogComponent} from '../../user/user.dialog';
+import {AngularMultiSelectModule} from 'angular2-multiselect-dropdown/angular2-multiselect-dropdown';
 
 const DIALOGS = [
   ComplexDialogComponent,
@@ -22,7 +23,7 @@ const DIALOGS = [
 ];
 
 @NgModule({
-  imports: [MdDialogModule, FormsModule, MaterialModule, TranslateModule.forRoot(), CommonModule],
+  imports: [MdDialogModule, FormsModule, MaterialModule, TranslateModule.forRoot(), CommonModule, AngularMultiSelectModule],
   exports: DIALOGS,
   declarations: DIALOGS,
   entryComponents: DIALOGS,

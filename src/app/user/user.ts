@@ -2,9 +2,10 @@ import {Component, OnInit} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {UserDialogComponent} from './user.dialog';
 import {MdDialog, MdDialogRef} from '@angular/material';
-import {User} from './user.type';
+import {PermissionGroup, User} from './user.type';
 import {ToastService} from '../utils/toast/toast.service';
 import {UserService} from './user.service';
+import {PermissionGroupService} from './permissionGroup.service';
 
 @Component({
   templateUrl: 'user.html',
@@ -13,11 +14,13 @@ import {UserService} from './user.service';
 export class UserComponent implements OnInit {
   dialogRef: MdDialogRef<UserDialogComponent>;
   users: User[] = [];
+  permissionGroups: PermissionGroup[] = [];
 
   constructor(public translateService: TranslateService,
               private dialog: MdDialog,
               private toast: ToastService,
-              private userService: UserService) {
+              private userService: UserService,
+              private permissionGroupService: PermissionGroupService) {
   }
 
   ngOnInit(): void {
@@ -26,19 +29,22 @@ export class UserComponent implements OnInit {
     this.userService.getUsers().subscribe((users: User[]) => {
       this.users = users;
     });
+
+    this.permissionGroupService.getPermissionGroups().subscribe((permissionGroups: PermissionGroup[]) => {
+      this.permissionGroups = permissionGroups;
+    });
   }
 
-  editUser(user: User): void {
-    this.dialogRef = this.dialog.open(UserDialogComponent);
-    this.dialogRef.componentInstance.setEditMode(true);
-    this.dialogRef.componentInstance.user = {
-      username: user.username,
-      id: user.id
-    };
+  editUser(index: number): void {
+    this.createDialog({...this.users[index]});
+
+    this.dialogRef.componentInstance.selectedOptions = this.users[index].permissionGroups.map((permissionGroup: PermissionGroup) => {
+      return {id: permissionGroup.id, itemName: permissionGroup.name};
+    });
 
     this.dialogRef.afterClosed().subscribe((updatedUser: User) => {
       if (updatedUser !== undefined) {
-        user.username = updatedUser.username;
+        this.users[index] = updatedUser;
         this.toast.showSuccess('user.save.success');
       }
       this.dialogRef = null;
@@ -54,13 +60,12 @@ export class UserComponent implements OnInit {
     });
   }
 
-  openDialog(): void {
-    this.dialogRef = this.dialog.open(UserDialogComponent);
-    this.dialogRef.componentInstance.setEditMode(false);
-    this.dialogRef.componentInstance.user = {
+  createUser(): void {
+    this.createDialog({
       username: '',
-      password: ''
-    };
+      password: '',
+      permissionGroups: []
+    });
 
     this.dialogRef.afterClosed().subscribe((user: User) => {
       if (user !== undefined) {
@@ -68,6 +73,15 @@ export class UserComponent implements OnInit {
         this.toast.showSuccess('user.create.success');
       }
       this.dialogRef = null;
+    });
+  }
+
+  private createDialog(user: User) {
+    this.dialogRef = this.dialog.open(UserDialogComponent, {width: '500px', height: '600px'});
+    this.dialogRef.componentInstance.setEditMode(!!user.id);
+    this.dialogRef.componentInstance.user = user;
+    this.dialogRef.componentInstance.options = this.permissionGroups.map((permissionGroup: PermissionGroup) => {
+      return {id: permissionGroup.id, itemName: permissionGroup.name};
     });
   }
 }

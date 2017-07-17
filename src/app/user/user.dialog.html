@@ -32,6 +32,14 @@
     </md-input-container>
   </div>
 
+  <div class="form-control">
+    <angular2-multiselect [settings]="multiSelectSettings"
+                          [ngModelOptions]="{standalone: true}"
+                          [data]="options"
+                          [(ngModel)]="selectedOptions">
+    </angular2-multiselect>
+  </div>
+
   <div class="validation-errors">
     <small [ngClass]="{'hidden' : !validatePasswords()}" [translate]="'user.passwords.mustEqual'"></small>
   </div>
