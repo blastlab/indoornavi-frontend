@@ -35,6 +35,14 @@ import {MapControllerComponent} from './map/map.controller';
 import {MapViewerComponent} from './map/map.viewer';
 import {MapUploaderComponent} from './map/map.uploader';
 import {MapService} from './map/map.service';
+import {HintBarComponent} from './map/hint-bar/hint-bar';
+import {ToolbarComponent} from './map/toolbar/toolbar';
+import {ScaleComponent} from './map/toolbar/tools/scale/scale';
+import {ScaleInputComponent} from './map/toolbar/tools/scale/input/input';
+import {ScaleInputService} from './map/toolbar/tools/scale/input/input.service';
+import {ScaleHintComponent} from './map/toolbar/tools/scale/hint/hint';
+import {ScaleHintService} from './map/toolbar/tools/scale/hint/hint.service';
+import {MapLoaderInformerService} from './utils/map-loader-informer/map-loader-informer.service';
 import {UserComponent} from './user/user';
 import {UserDialogComponent} from './user/user.dialog';
 import {UserService} from './user/user.service';
@@ -84,6 +92,11 @@ export function HttpLoaderFactory(http: Http) {
     MapControllerComponent,
     MapViewerComponent,
     MapUploaderComponent,
+    HintBarComponent,
+    ToolbarComponent,
+    ScaleComponent,
+    ScaleInputComponent,
+    ScaleHintComponent,
     UserComponent,
     UserDialogComponent,
     AuthComponent,
@@ -128,11 +141,15 @@ export function HttpLoaderFactory(http: Http) {
     SocketService,
     DeviceService,
     MapService,
+    ScaleInputService,
+    ScaleHintService,
+    MapLoaderInformerService,
     UserService,
     AuthService,
     CanRead,
     AuthGuard
-  ], bootstrap: [AppComponent]
+  ],
+  bootstrap: [AppComponent]
 })
 
 export class AppModule {

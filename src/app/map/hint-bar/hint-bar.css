@@ -1,0 +1,18 @@
+#hint-bar {
+  position: fixed;
+  height: 40px;
+  width: 69%;
+  background-color: lightgray;
+  padding-left:10px;
+  padding-bottom: 8px;
+  border: 1px dashed;
+  bottom: 0;
+  left: 20%;
+}
+.message p {
+  float: left;
+  vertical-align: middle;
+}
+.message #coords p {
+  float: right;
+}
