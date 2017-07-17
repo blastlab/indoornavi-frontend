@@ -7,13 +7,14 @@ import {Point} from '../../map/map.type';
 export class DrawingService {
   static boxSize: number = 100;
 
-  constructor(private _icons: IconService) {
+  constructor(private icons: IconService) {
   }
 
   public drawObject(id: string,
                     objectParams: ObjectParams,
                     where: Point,
-                    classes: string[] = []): d3.selection {
+                    groupClass: string,
+                    markerClass: string): d3.selection {
     if (!objectParams.size) {
       objectParams.size = 24;
     }
@@ -22,29 +23,46 @@ export class DrawingService {
     const iconHalfSize = (objectParams.size / 2);
     const objectGroup = map.append('svg')
       .attr('id', id)
-      .attr('class', classes[0])
+      .attr('class', groupClass)
       .attr('x', where.x - boxMargin)
       .attr('y', where.y - boxMargin)
       .style('cursor', 'move');
+    const pointerPadding = boxMargin - iconHalfSize;
     objectGroup.append('svg').attr('class', 'pointer')
-      .attr('x', (boxMargin - iconHalfSize)).attr('y', (boxMargin - iconHalfSize))
-      .html(this._icons.getIcon(NaviIcons.POINTER))
+      .attr('x', (pointerPadding)).attr('y', (pointerPadding))
+      .html(this.icons.getIcon(NaviIcons.POINTER))
       .attr('fill', 'red');
-    objectGroup.append('svg').attr('class', classes[1])
+    objectGroup.append('svg').attr('class', markerClass)
       .attr('x', boxMargin).attr('y', boxMargin)
-      .html(this._icons.getIcon(objectParams.iconName))
+      .html(this.icons.getIcon(objectParams.iconName))
       .attr('stroke', objectParams.fill)
       .attr('fill', objectParams.fill);
-    objectGroup.append('text').attr('x', (boxMargin + iconHalfSize)).attr('y', boxMargin)
+    const iconPadding = boxMargin - iconHalfSize;
+    objectGroup.append('text').attr('x', (iconPadding)).attr('y', boxMargin)
       .attr('class', id + 'name').attr('fill', objectParams.fill).text(id);
     objectGroup.append('circle').attr('class', 'objectArea')
-      .attr('transform', 'translate(' + (boxMargin + iconHalfSize) + ',' + (boxMargin + iconHalfSize) + ')')
+      .attr('transform', 'translate(' + (iconPadding) + ',' + (iconPadding) + ')')
       .attr('r', iconHalfSize).attr('fill', 'rgba(255,255,255,0.1)');
     const dragGroup = d3.drag()
       .on('drag', this.dragGroupBehavior);
     objectGroup.call(dragGroup);
     return objectGroup;
   }
+
+
+  /*
+   private pointerAppend() {
+
+   }
+
+   private markerAppend() {
+
+   }
+
+   private descriptionAppend() {
+
+   }
+   */
 
   public dragGroupBehavior() {
     const boxMargin = DrawingService.boxSize / 2;

@@ -34,9 +34,9 @@ export class SecondStepComponent implements WizardStep {
 
   constructor(public translate: TranslateService,
               public dialog: MdDialog,
-              private _accButtons: AcceptButtonsService,
-              private _draw: DrawingService,
-              private _hintBar: HintBarService) {
+              private accButtons: AcceptButtonsService,
+              private draw: DrawingService,
+              private hintBar: HintBarService) {
   }
 
   public load(msg: any): void {
@@ -52,7 +52,7 @@ export class SecondStepComponent implements WizardStep {
 
   public openDialog(): void {
     this.translate.get(this.title).subscribe((text: string) => {
-      this._hintBar.publishHint(text);
+      this.hintBar.publishHint(text);
     });
     this.dialogRef = this.dialog.open(this.dialogTemplate);
     this.dialogRef.afterClosed().subscribe((closeAndPlaceOnMap: boolean) => {
@@ -68,15 +68,15 @@ export class SecondStepComponent implements WizardStep {
     this.coords = [];
     const map: d3.selector = d3.select('#map');
     map.style('cursor', 'crosshair');
-    this.translate.get('wizard.click.place.anchor').subscribe((text: string) => {
-      this._hintBar.publishHint(text + this.data.anchorId + '.');
+    this.translate.get('wizard.click.place.anchor', {id: this.data.anchorId}).subscribe((text: string) => {
+      this.hintBar.publishHint(text);
     });
     this.drawSinkDistance(this.data.distance);
     map.on('click', () => {
       const coordinates: Point = {x: d3.event.offsetX, y: d3.event.offsetY};
       this.coords.push(coordinates);
-      this._draw.drawObject('anchor' + this.data.anchorId,
-        {iconName: NaviIcons.ANCHOR, fill: 'green'}, coordinates , ['wizardAnchor', 'anchorMarker']);
+      this.draw.drawObject('anchor' + this.data.anchorId,
+        {iconName: NaviIcons.ANCHOR, fill: 'green'}, coordinates, 'wizardAnchor', 'anchorMarker');
       map.on('click', null);
       map.style('cursor', 'default');
       this.makeDecision(coordinates);
@@ -84,17 +84,12 @@ export class SecondStepComponent implements WizardStep {
   }
 
   public makeDecision(coordinates: Point): void {
-    this.translate.get('wizard.confirm.anchor.1/2').subscribe((textStart: string) => {
-      let buffer = '';
-      this.translate.get('wizard.confirm.anchor.2/2').subscribe((textEnd: string) => {
-        buffer = textEnd;
-      });
-      const message = textStart + this.data.anchorId + buffer;
-      this._hintBar.publishHint(message);
+    this.translate.get('wizard.confirm.anchor', {id: this.data.anchorId}).subscribe((text: string) => {
+      this.hintBar.publishHint(text);
     });
-    this._accButtons.publishCoordinates(coordinates);
-    this._accButtons.publishVisibility(true);
-    this._accButtons.decisionMade.first().subscribe(
+    this.accButtons.publishCoordinates(coordinates);
+    this.accButtons.publishVisibility(true);
+    this.accButtons.decisionMade.first().subscribe(
       data => {
         this.removeSinkDistance();
         if (data) {

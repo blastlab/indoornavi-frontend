@@ -11,23 +11,20 @@
 
 <template>
   <span class="wizard-dialog" *ngIf="!wizardCompleted">
-    <h3 class="wizard-not-complete">{{'basic.configuration.not.complete'|translate}}</h3>
+    <h3 class="wizard-not-complete">{{'wizard.configuration.not.complete'|translate}}</h3>
     <span>
     <div class="dialog-action">
       <button class="warning-back-button" (click)="backToWizard()"
-              md-raised-button>{{'back.to.wizard'|translate}}</button>
+              md-raised-button>{{'wizard.back.to.wizard'|translate}}</button>
       <button class="warning-exit-button" (click)="wizardStopped(true)"
-              md-raised-button>{{'exit.wizard'|translate}}</button>
+              md-raised-button>{{'wizard.exit.wizard'|translate}}</button>
     </div>
     </span>
   </span>
   <span class="wizard-dialog" *ngIf="wizardCompleted">
-    <h3 class="wizard-complete">{{'basic.configuration.complete'|translate}}</h3>
-    <!--<h4>{{'left.over.anchors?'|translate}}</h4>-->
+    <h3 class="wizard-complete">{{'wizard.configuration.complete'|translate}}</h3>
     <span>
       <div class="dialog-action">
-        <!--<button class="dialog-wizard-button" (click)="manualAnchors()" md-raised-button>{{'set.manual'|translate}}</button>
-        <button class="dialog-wizard-button" (click)="wizardAnchors()" md-raised-button>{{'let.wizard.place'|translate}}</button>-->
         <button class="dialog-exit-button" (click)="dialogRef.close()" md-raised-button>{{'close'|translate}}</button>
       </div>
     </span>

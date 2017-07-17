@@ -67,15 +67,15 @@ export class ThirdStepComponent implements WizardStep {
     this.coords = [];
     const map: d3.selector = d3.select('#map');
     map.style('cursor', 'crosshair');
-    this.translate.get('wizard.click.place.anchor').subscribe((text: string) => {
-      this.hintBar.publishHint(text + this.data.anchorId + '.');
+    this.translate.get('wizard.click.place.anchor', {id: this.data.anchorId}).subscribe((text: string) => {
+      this.hintBar.publishHint(text);
     });
     this.drawSuggestedPositions(this.data.points);
     map.on('click', () => {
       const coordinates: Point = {x: d3.event.offsetX, y: d3.event.offsetY};
       this.coords.push(coordinates);
       this.draw.drawObject('anchor' + this.data.anchorId,
-        {iconName: NaviIcons.ANCHOR, fill: 'green'}, coordinates , ['wizardAnchor', 'anchorMarker']);
+        {iconName: NaviIcons.ANCHOR, fill: 'green'}, coordinates, 'wizardAnchor', 'anchorMarker');
       map.on('click', null);
       map.style('cursor', 'default');
       this.makeDecision(coordinates);
@@ -83,13 +83,8 @@ export class ThirdStepComponent implements WizardStep {
   }
 
   public makeDecision(coordinates: Point): void {
-    this.translate.get('wizard.confirm.anchor.1/2').subscribe((textStart: string) => {
-      let buffer = '';
-      this.translate.get('wizard.confirm.anchor.2/2').subscribe((textEnd: string) => {
-        buffer = textEnd;
-      });
-      const message = textStart + this.data.anchorId + buffer;
-      this.hintBar.publishHint(message);
+    this.translate.get('wizard.confirm.anchor', {id: this.data.anchorId}).subscribe((text: string) => {
+      this.hintBar.publishHint(text);
     });
     this.accButtons.publishCoordinates(coordinates);
     this.accButtons.publishVisibility(true);

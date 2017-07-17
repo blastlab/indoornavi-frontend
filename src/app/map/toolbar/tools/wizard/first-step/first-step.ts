@@ -64,13 +64,13 @@ export class FirstStepComponent implements WizardStep {
     this.coords = [];
     const map: d3.selector = d3.select('#map');
     map.style('cursor', 'crosshair');
-    this.translate.get('wizard.click.place.sink').subscribe((text: string) => {
-      this.hintBar.publishHint(text + this.data.shortId + '.');
+    this.translate.get('wizard.click.place.sink', {id: this.data.shortId}).subscribe((text: string) => {
+      this.hintBar.publishHint(text);
     });
     map.on('click', () => {
       const coordinates: Point = {x: d3.event.offsetX, y: d3.event.offsetY};
       this.draw.drawObject('sink' + this.data.shortId,
-        {iconName: NaviIcons.SINK, fill: 'blue'}, coordinates , ['wizardSink', 'sinkMarker']);
+        {iconName: NaviIcons.SINK, fill: 'blue'}, coordinates, 'wizardSink', 'sinkMarker');
       this.coords.push(coordinates);
       map.on('click', null);
       map.style('cursor', 'default');
@@ -79,13 +79,8 @@ export class FirstStepComponent implements WizardStep {
   }
 
   public makeDecision(coordinates: Point): void {
-    this.translate.get('wizard.confirm.sink.1/2').subscribe((textStart: string) => {
-      let buffer = '';
-      this.translate.get('wizard.confirm.sink.2/2').subscribe((textEnd: string) => {
-        buffer = textEnd;
-      });
-      const message = textStart + this.data.shortId + buffer;
-      this.hintBar.publishHint(message);
+    this.translate.get('wizard.confirm.sink', {id: this.data.shortId}).subscribe((text: string) => {
+      this.hintBar.publishHint(text);
     });
     this.accButtons.publishCoordinates(coordinates);
     this.accButtons.publishVisibility(true);

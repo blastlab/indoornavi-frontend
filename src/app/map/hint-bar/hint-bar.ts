@@ -22,7 +22,7 @@ export class HintBarComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.setTranslations();
-    this.translate.get('choose.a.tool').subscribe((value: string) => {
+    this.translate.get('hint.choose.a.tool').subscribe((value: string) => {
       this.setHint(value);
     });
   }

@@ -4,11 +4,11 @@
   <md-spinner *ngIf="isLoading" mode="indeterminate" color="warn"></md-spinner>
   <span>
     <div class="dialog-select" *ngIf="!isLoading">
-      <md-select placeholder="{{'select.data'|translate}}" [(ngModel)]="data" floatPlaceholder="never">
+      <md-select placeholder="{{'wizardStep.select.data'|translate}}" [(ngModel)]="data" floatPlaceholder="never">
         <md-option *ngFor="let data of socketData.toArray()" [value]="data">id:{{ data.shortId }}{{ data.anchorId }}</md-option>
         <span>
           <md-spinner id="select-spinner" *ngIf="!isLoading" mode="indeterminate" color="accent"></md-spinner>
-          <small class="searching_info">{{'waiting.for.socket.data'|translate}}</small>
+          <small class="searching_info">{{'wizardStep.waiting.for.socket.data'|translate}}</small>
         </span>
       </md-select>
     </div>
