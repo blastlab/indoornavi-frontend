@@ -26,8 +26,8 @@ describe('AcceptButtonsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should set o visible when service observable `visibility$` changed to true', () => {
-    acceptButtons.visibility$.subscribe(async (visibility) => {
+  it('should set o visible when service observable `visibilitySet` changed to true', () => {
+    acceptButtons.visibilitySet.subscribe(async (visibility) => {
       expect(visibility).toBeTruthy();
     });
     acceptButtons.publishVisibility(true);
@@ -37,19 +37,19 @@ describe('AcceptButtonsComponent', () => {
     expect(fixture.nativeElement.querySelector('#accept-buttons')).toBeTruthy();
   });
 
-  it('should publish next value for decision$ observable and hide (false)', () => {
+  it('should publish next value for decisionMade observable and hide (false)', () => {
     spyOn(component, 'decide').and.callThrough();
     component.decide(false);
-    acceptButtons.decision$.subscribe(async (decision) => {
+    acceptButtons.decisionMade.subscribe(async (decision) => {
       expect(decision).toBeFalsy();
     });
     expect(component.visible).toEqual(false);
   });
 
-  it('should publish next value for decision$ observable and hide (true)', () => {
+  it('should publish next value for decisionMade observable and hide (true)', () => {
     spyOn(component, 'decide').and.callThrough();
     component.decide(true);
-    acceptButtons.decision$.subscribe(async (decision) => {
+    acceptButtons.decisionMade.subscribe(async (decision) => {
       expect(decision).toBeTruthy();
     });
     expect(component.visible).toEqual(false);

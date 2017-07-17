@@ -77,19 +77,8 @@ describe('FirstStepComponent', () => {
       anchorShortId: null,
       degree: null
     };
-    const expectedStepMsg = {
-      socketData: expectedSocketData,
-      wizardData: {
-        sinkShortId: 339,
-        sinkPosition: {x: 543, y: 623},
-        anchorShortId: null,
-        degree: null,
-        firstAnchorPosition: null,
-        secondAnchorPosition: null
-      }
-    };
     const message = component.prepareToSend(givenWizardData);
-    expect(message).toEqual(expectedStepMsg);
+    expect(message).toEqual(expectedSocketData);
   });
 
   it('should clean data in FirstStep', () => {
@@ -98,7 +87,7 @@ describe('FirstStepComponent', () => {
     component.clean();
     expect(component.coords.length).toEqual(0);
     expect(component.data).toBe(null);
-    acceptButtons.visibility$.subscribe(async (visible) => {
+    acceptButtons.visibilitySet.subscribe(async (visible) => {
       expect(visible).toBeFalsy();
     });
   });

@@ -7,7 +7,7 @@ import * as Collections from 'typescript-collections';
 import {AnchorSuggestedPositions} from '../../../../../anchor/anchor.type';
 import {AcceptButtonsService} from '../../../../../utils/accept-buttons/accept-buttons.service';
 import {Point} from '../../../../map.type';
-import {StepMsg, WizardData} from '../wizard';
+import {SocketMsg, WizardData} from '../wizard';
 import {NaviIcons} from '../../../../../utils/drawing/icon.service';
 import {DrawingService} from '../../../../../utils/drawing/drawing.service';
 import {HintBarService} from '../../../../hint-bar/hint-bar.service';
@@ -34,9 +34,9 @@ export class ThirdStepComponent implements WizardStep {
 
   constructor(public translate: TranslateService,
               public dialog: MdDialog,
-              private _accButtons: AcceptButtonsService,
-              private _draw: DrawingService,
-              private _hintBar: HintBarService) {
+              private accButtons: AcceptButtonsService,
+              private draw: DrawingService,
+              private hintBar: HintBarService) {
   }
 
   public load(msg: any): void {
@@ -51,14 +51,14 @@ export class ThirdStepComponent implements WizardStep {
 
   public openDialog(): void {
     this.translate.get(this.title).subscribe((text: string) => {
-      this._hintBar.publishHint(text);
+      this.hintBar.publishHint(text);
     });
     this.dialogRef = this.dialog.open(this.dialogTemplate);
-    this.dialogRef.afterClosed().subscribe((place: boolean) => {
-      if (place === true) {
+    this.dialogRef.afterClosed().subscribe((closeAndPlaceOnMap: boolean) => {
+      if (closeAndPlaceOnMap) {
         this.placeOnMap(this.data);
       } else {
-        this.closeWizard(place);
+        this.closeWizard(false);
       }
     });
   }
@@ -68,13 +68,13 @@ export class ThirdStepComponent implements WizardStep {
     const map: d3.selector = d3.select('#map');
     map.style('cursor', 'crosshair');
     this.translate.get('wizard.click.place.anchor').subscribe((text: string) => {
-      this._hintBar.publishHint(text + this.data.anchorId + '.');
+      this.hintBar.publishHint(text + this.data.anchorId + '.');
     });
     this.drawSuggestedPositions(this.data.points);
     map.on('click', () => {
       const coordinates: Point = {x: d3.event.offsetX, y: d3.event.offsetY};
       this.coords.push(coordinates);
-      this._draw.drawObject('anchor' + this.data.anchorId,
+      this.draw.drawObject('anchor' + this.data.anchorId,
         {iconName: NaviIcons.ANCHOR, fill: 'green'}, coordinates , ['wizardAnchor', 'anchorMarker']);
       map.on('click', null);
       map.style('cursor', 'default');
@@ -89,24 +89,32 @@ export class ThirdStepComponent implements WizardStep {
         buffer = textEnd;
       });
       const message = textStart + this.data.anchorId + buffer;
-      this._hintBar.publishHint(message);
+      this.hintBar.publishHint(message);
     });
-    this._accButtons.publishCoordinates(coordinates);
-    this._accButtons.publishVisibility(true);
-    this._accButtons.decision$.first().subscribe(
+    this.accButtons.publishCoordinates(coordinates);
+    this.accButtons.publishVisibility(true);
+    this.accButtons.decisionMade.first().subscribe(
       data => {
         this.removeSuggestedPositions();
         if (data) {
-          const anchorGroup = d3.select('#map').select('#anchor' + this.data.anchorId);
-          anchorGroup.on('.drag', null);
-          anchorGroup.style('cursor', 'default');
-          anchorGroup.select('.pointer').attr('fill', 'rgba(0,0,0,0.7)');
-          this.nextStepIndex.emit(this.stepIndex + 1);
+          this.removeGroupDrag();
+          this.goToNextStep();
         } else {
           this.clean();
           this.openDialog();
         }
       });
+  }
+
+  private removeGroupDrag(): void {
+    const anchorGroup = d3.select('#map').select('#anchor' + this.data.anchorId);
+    anchorGroup.on('.drag', null);
+    anchorGroup.style('cursor', 'default');
+    anchorGroup.select('.pointer').attr('fill', 'rgba(0,0,0,0.7)');
+  }
+
+  public goToNextStep(): void {
+    this.nextStepIndex.emit(this.stepIndex + 1);
   }
 
   public drawSuggestedPositions(positions: Array<Point>) {
@@ -126,25 +134,28 @@ export class ThirdStepComponent implements WizardStep {
     d3.select('#map').selectAll('.suggested-position').remove();
   }
 
-  public prepareToSend(data: WizardData): StepMsg {
+  public prepareToSend(data: WizardData): SocketMsg {
     const invertedSinkPosition: Point = data.sinkPosition;
     invertedSinkPosition.y = -invertedSinkPosition.y;
     return {
-      socketData: {
         sinkShortId: data.sinkShortId,
         sinkPosition: invertedSinkPosition,
         anchorShortId: data.anchorShortId,
         degree: data.degree
-      },
-      wizardData: {
-        sinkShortId: data.sinkShortId,
-        sinkPosition: data.sinkPosition,
-        anchorShortId: data.anchorShortId,
-        degree: data.degree,
-        firstAnchorPosition: data.firstAnchorPosition,
-        secondAnchorPosition: this.coords[0]
-      }};
+    };
   }
+
+  public updateWizardData(data: WizardData): WizardData {
+    return {
+      sinkShortId: data.sinkShortId,
+      sinkPosition: data.sinkPosition,
+      anchorShortId: data.anchorShortId,
+      degree: data.degree,
+      firstAnchorPosition: data.firstAnchorPosition,
+      secondAnchorPosition: this.coords[0]
+    };
+  }
+
   public clean(): void {
     this.coords = [];
     if (!!this.data) {

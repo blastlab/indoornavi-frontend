@@ -7,7 +7,7 @@ import * as Collections from 'typescript-collections';
 import {Anchor} from '../../../../../anchor/anchor.type';
 import {AcceptButtonsService} from '../../../../../utils/accept-buttons/accept-buttons.service';
 import {Point} from '../../../../map.type';
-import {StepMsg, WizardData} from '../wizard';
+import {SocketMsg, WizardData} from '../wizard';
 import {DrawingService} from '../../../../../utils/drawing/drawing.service';
 import {NaviIcons} from '../../../../../utils/drawing/icon.service';
 import {HintBarService} from '../../../../hint-bar/hint-bar.service';
@@ -34,9 +34,9 @@ export class FirstStepComponent implements WizardStep {
 
   constructor(public translate: TranslateService,
               public dialog: MdDialog,
-              private _accButtons: AcceptButtonsService,
-              private _draw: DrawingService,
-              private _hintBar: HintBarService) {
+              private accButtons: AcceptButtonsService,
+              private draw: DrawingService,
+              private hintBar: HintBarService) {
   }
 
   public load(msg: any): void {
@@ -48,14 +48,14 @@ export class FirstStepComponent implements WizardStep {
 
   public openDialog(): void {
     this.translate.get('wizard.dialog.select.sink').subscribe((text: string) => {
-      this._hintBar.publishHint(text);
+      this.hintBar.publishHint(text);
     });
     this.dialogRef = this.dialog.open(this.dialogTemplate);
-    this.dialogRef.afterClosed().subscribe((place: boolean) => {
-      if (place === true) {
+    this.dialogRef.afterClosed().subscribe((closeAndPlaceOnMap: boolean) => {
+      if (closeAndPlaceOnMap) {
         this.placeOnMap(this.data);
       } else {
-        this.closeWizard(place);
+        this.closeWizard(false);
       }
     });
   }
@@ -65,11 +65,11 @@ export class FirstStepComponent implements WizardStep {
     const map: d3.selector = d3.select('#map');
     map.style('cursor', 'crosshair');
     this.translate.get('wizard.click.place.sink').subscribe((text: string) => {
-      this._hintBar.publishHint(text + this.data.shortId + '.');
+      this.hintBar.publishHint(text + this.data.shortId + '.');
     });
     map.on('click', () => {
       const coordinates: Point = {x: d3.event.offsetX, y: d3.event.offsetY};
-      this._draw.drawObject('sink' + this.data.shortId,
+      this.draw.drawObject('sink' + this.data.shortId,
         {iconName: NaviIcons.SINK, fill: 'blue'}, coordinates , ['wizardSink', 'sinkMarker']);
       this.coords.push(coordinates);
       map.on('click', null);
@@ -85,20 +85,15 @@ export class FirstStepComponent implements WizardStep {
         buffer = textEnd;
       });
       const message = textStart + this.data.shortId + buffer;
-      this._hintBar.publishHint(message);
+      this.hintBar.publishHint(message);
     });
-    this._accButtons.publishCoordinates(coordinates);
-    this._accButtons.publishVisibility(true);
-    this._accButtons.decision$.first().subscribe(
+    this.accButtons.publishCoordinates(coordinates);
+    this.accButtons.publishVisibility(true);
+    this.accButtons.decisionMade.first().subscribe(
       data => {
         if (data) {
-          const map = d3.select('#map');
-          const sinkGroup = map.select('#sink' + this.data.shortId);
-          map.style('cursor', 'default');
-          sinkGroup.on('.drag', null);
-          sinkGroup.style('cursor', 'default');
-          sinkGroup.select('.pointer').attr('fill', 'rgba(0,0,0,0.7)');
-          this.nextStepIndex.emit(this.stepIndex + 1);
+          this.removeGroupDrag();
+          this.goToNextStep();
         } else {
           this.clean();
           this.openDialog();
@@ -106,31 +101,46 @@ export class FirstStepComponent implements WizardStep {
       });
   }
 
-  public prepareToSend(data: WizardData): StepMsg {
+  private removeGroupDrag(): void {
+    const map = d3.select('#map');
+    const sinkGroup = map.select('#sink' + this.data.shortId);
+    map.style('cursor', 'default');
+    sinkGroup.on('.drag', null);
+    sinkGroup.style('cursor', 'default');
+    sinkGroup.select('.pointer').attr('fill', 'rgba(0,0,0,0.7)');
+  }
+
+  public goToNextStep(): void {
+    this.nextStepIndex.emit(this.stepIndex + 1);
+  }
+
+  public prepareToSend(data: WizardData): SocketMsg {
     return {
-      socketData: {
         sinkShortId: this.data.shortId,
         sinkPosition: null,
         anchorShortId: null,
         degree: null
-      },
-      wizardData: {
-        sinkShortId: this.data.shortId,
+    };
+  }
+
+  public updateWizardData(data: WizardData): WizardData {
+    return {
+      sinkShortId: this.data.shortId,
         sinkPosition: this.coords[0],
         anchorShortId: null,
         degree: null,
         firstAnchorPosition: null,
         secondAnchorPosition: null
-      }
     };
   }
 
   public clean(): void {
     this.coords = [];
     if (!!this.data) {
-      d3.select('#map').select('#sink' + this.data.shortId).remove();
-      d3.select('#map').style('cursor', 'default');
-      this._accButtons.publishVisibility(false);
+      const map = d3.select('#map');
+      map.select('#sink' + this.data.shortId).remove();
+      map.style('cursor', 'default');
+      this.accButtons.publishVisibility(false);
       this.data = null;
     }
   }

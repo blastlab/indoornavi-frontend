@@ -12,14 +12,14 @@ export class AcceptButtonsComponent {
   private coords: Point;
 
   constructor(private _accButtons: AcceptButtonsService) {
-    this._accButtons.coordinates$.subscribe(
+    this._accButtons.coordinatesChanged.subscribe(
       data => {
         this.coords = data;
         const buttons = document.getElementById('accept-buttons');
         buttons.style.top = this.coords.y + 'px';
         buttons.style.left = this.coords.x + 'px';
       });
-    this._accButtons.visibility$.subscribe(
+    this._accButtons.visibilitySet.subscribe(
       data => {
         this.visible = data;
       });

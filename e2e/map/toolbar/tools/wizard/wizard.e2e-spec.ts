@@ -1,5 +1,6 @@
 import {WizardTool} from './wizard.po';
 import {AppPage} from '../../../../app.po';
+import {browser} from 'protractor';
 
 /**
  * webSocket connection in app MUST be closed before running this test

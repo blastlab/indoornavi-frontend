@@ -1,6 +1,6 @@
 import {Point} from '../../../map.type';
 import {EventEmitter} from '@angular/core';
-import {StepMsg, WizardData} from './wizard';
+import {SocketMsg, WizardData} from './wizard';
 import {MdDialog, MdDialogRef} from '@angular/material';
 export interface WizardStep {
   nextStepIndex: EventEmitter<number>;
@@ -13,6 +13,8 @@ export interface WizardStep {
   placeOnMap(data: any): void;
   clean(): void;
   closeWizard(clean: boolean): void;
-  prepareToSend(wizardData: WizardData): StepMsg;
+  prepareToSend(wizardData: WizardData): SocketMsg;
+  goToNextStep(): void;
+  updateWizardData(wizardData: WizardData): WizardData;
   makeDecision(where: Point): void;
 }

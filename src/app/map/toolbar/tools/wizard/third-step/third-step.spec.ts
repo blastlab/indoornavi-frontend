@@ -81,19 +81,8 @@ describe('ThirdStepComponent', () => {
       anchorShortId: 36,
       degree: degree
     };
-    const expectedStepMsg = {
-      socketData: expectedSocketData,
-      wizardData: {
-        sinkShortId: 7245,
-        sinkPosition: sinkPos,
-        anchorShortId: 36,
-        degree: degree,
-        firstAnchorPosition: anchorPos,
-        secondAnchorPosition: {x: 525, y: 175}
-      }
-    };
     const message = component.prepareToSend(givenWizardData);
-    expect(message).toEqual(expectedStepMsg);
+    expect(message).toEqual(expectedSocketData);
   });
 
   it('should clean data in ThirdStep', () => {
@@ -102,7 +91,7 @@ describe('ThirdStepComponent', () => {
     component.clean();
     expect(component.coords.length).toEqual(0);
     expect(component.data).toBe(null);
-    acceptButtons.visibility$.subscribe(async (visible) => {
+    acceptButtons.visibilitySet.subscribe(async (visible) => {
       expect(visible).toBeFalsy();
     });
   });

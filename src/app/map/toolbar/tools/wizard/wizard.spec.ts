@@ -115,19 +115,20 @@ describe('WizardComponent', () => {
     expect(firstStep.load).toHaveBeenCalled();
   });
 
-  it('should extract socketData from SocketMsg', () => {
+  it('should get socketMsg from FirstStep', () => {
     spyOn(socketService, 'send').and.callFake(() => {
     });
+    spyOn(firstStep, 'updateWizardData').and.callFake(() => {
+    });
     spyOn(firstStep, 'prepareToSend').and.returnValue({
-      socketData: {
-        sinkShortId: 8,
-        sinkPosition: {x: null, y: null},
-        anchorShortId: 0,
-        degree: 0
-      }, wizardData: null
+      sinkShortId: 8,
+      sinkPosition: {x: null, y: null},
+      anchorShortId: 0,
+      degree: 0
     });
     component.setActive();
     component.wizardNextStep(0);
+    expect(firstStep.updateWizardData).toHaveBeenCalled();
     expect(socketService.send).toHaveBeenCalledWith({
       sinkShortId: 8,
       sinkPosition: {x: null, y: null},
@@ -136,19 +137,20 @@ describe('WizardComponent', () => {
     });
   });
 
-  it('should send SocketMsg.socketData in step 2', () => {
+  it('should send SocketMsg in step 2', () => {
     spyOn(socketService, 'send').and.callFake(() => {
     });
+    spyOn(firstStep, 'updateWizardData').and.callFake(() => {
+    });
     spyOn(firstStep, 'prepareToSend').and.returnValue({
-      socketData: {
-        sinkShortId: 8,
-        sinkPosition: {x: 123, y: 456},
-        anchorShortId: 1023,
-        degree: 90
-      }, wizardData: null
+      sinkShortId: 8,
+      sinkPosition: {x: 123, y: 456},
+      anchorShortId: 1023,
+      degree: 90
     });
     component.setActive();
     component.wizardNextStep(1);
+    expect(firstStep.updateWizardData).toHaveBeenCalled();
     expect(socketService.send).toHaveBeenCalledWith({
       sinkShortId: 8,
       sinkPosition: {x: 123, y: 456},

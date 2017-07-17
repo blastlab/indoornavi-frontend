@@ -108,8 +108,9 @@ export class WizardComponent implements Tool {
         this.emitToggleActive();
       });
     } else {
-      const message: StepMsg = this.activeStep.prepareToSend(this.wizardData);
-      this.socketService.send(this.handleMessage(message));
+      this.wizardData = this.activeStep.updateWizardData(this.wizardData);
+      const message: SocketMsg = this.activeStep.prepareToSend(this.wizardData);
+      this.socketService.send(message);
       this.activeStep = this.steps[nextStepIndex];
       this.activeStep.openDialog();
     }
@@ -143,11 +144,6 @@ export class WizardComponent implements Tool {
     this.emitToggleActive();
   }
 
-  private handleMessage(msg): SocketMsg {
-    this.wizardData = msg.wizardData;
-    return msg.socketData;
-  }
-
 }
 export interface SocketMsg {
   sinkShortId: number;
@@ -161,7 +157,3 @@ export interface WizardData extends SocketMsg {
   secondAnchorPosition: Point;
 }
 
-export interface StepMsg {
-  socketData: SocketMsg;
-  wizardData: WizardData;
-}

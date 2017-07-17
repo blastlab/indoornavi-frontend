@@ -8,9 +8,9 @@ export class AcceptButtonsService {
   private visibility = new Subject<boolean>();
   private coordinates = new Subject<Point>();
 
-  decision$ = this.decision.asObservable();
-  visibility$ = this.visibility.asObservable();
-  coordinates$ = this.coordinates.asObservable();
+  decisionMade = this.decision.asObservable();
+  visibilitySet = this.visibility.asObservable();
+  coordinatesChanged = this.coordinates.asObservable();
 
   publishDecision(val: boolean) {
     this.decision.next(val);

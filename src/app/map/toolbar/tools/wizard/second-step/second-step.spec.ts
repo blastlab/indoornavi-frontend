@@ -63,6 +63,9 @@ describe('SecondStepComponent', () => {
   });
 
   it('should set sinkShortId into StepMsg and sinkPosition in wizardData', () => {
+    spyOn(component, 'calculateDegree').and.callFake(() => {
+      return 45;
+    });
     const anchor: AnchorDistance = {anchorId: 39, distance: 422};
     component.data = anchor;
     const sinkPos: Point = {x: 150, y: 450};
@@ -82,19 +85,8 @@ describe('SecondStepComponent', () => {
       anchorShortId: 39,
       degree: degree
     };
-    const expectedStepMsg = {
-      socketData: expectedSocketData,
-      wizardData: {
-        sinkShortId: 7245,
-        sinkPosition: sinkPos,
-        anchorShortId: 39,
-        degree: degree,
-        firstAnchorPosition: {x: 300, y: 300},
-        secondAnchorPosition: null
-      }
-    };
     const message = component.prepareToSend(givenWizardData);
-    expect(message).toEqual(expectedStepMsg);
+    expect(message).toEqual(expectedSocketData);
   });
 
   it('should clean data in SecondStep', () => {
@@ -103,7 +95,7 @@ describe('SecondStepComponent', () => {
     component.clean();
     expect(component.coords.length).toEqual(0);
     expect(component.data).toBe(null);
-    acceptButtons.visibility$.subscribe(async (visible) => {
+    acceptButtons.visibilitySet.subscribe(async (visible) => {
       expect(visible).toBeFalsy();
     });
   });
