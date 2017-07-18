@@ -8,7 +8,7 @@ import {Anchor} from '../../../../../anchor/anchor.type';
 import {AcceptButtonsService} from '../../../../../utils/accept-buttons/accept-buttons.service';
 import {Point} from '../../../../map.type';
 import {SocketMsg, WizardData} from '../wizard';
-import {DrawingService} from '../../../../../utils/drawing/drawing.service';
+import {DrawingService, ObjectParams} from '../../../../../utils/drawing/drawing.service';
 import {NaviIcons} from '../../../../../utils/drawing/icon.service';
 import {HintBarService} from '../../../../hint-bar/hint-bar.service';
 
@@ -69,9 +69,12 @@ export class FirstStepComponent implements WizardStep {
     });
     map.on('click', () => {
       const coordinates: Point = {x: d3.event.offsetX, y: d3.event.offsetY};
-      this.draw.drawObject('sink' + this.data.shortId,
-        {iconName: NaviIcons.SINK, fill: 'blue'}, coordinates, 'wizardSink', 'sinkMarker');
       this.coords.push(coordinates);
+      const sinkParams: ObjectParams = {
+        id: 'sink' + this.data.shortId, iconName: NaviIcons.ANCHOR,
+        groupClass: 'wizardSink', markerClass: 'sinkMarker', fill: 'blue'
+      };
+      this.draw.drawObject(sinkParams, coordinates);
       map.on('click', null);
       map.style('cursor', 'default');
       this.makeDecision(coordinates);

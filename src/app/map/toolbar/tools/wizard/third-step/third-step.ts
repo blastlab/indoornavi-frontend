@@ -9,7 +9,7 @@ import {AcceptButtonsService} from '../../../../../utils/accept-buttons/accept-b
 import {Point} from '../../../../map.type';
 import {SocketMsg, WizardData} from '../wizard';
 import {NaviIcons} from '../../../../../utils/drawing/icon.service';
-import {DrawingService} from '../../../../../utils/drawing/drawing.service';
+import {DrawingService, ObjectParams} from '../../../../../utils/drawing/drawing.service';
 import {HintBarService} from '../../../../hint-bar/hint-bar.service';
 
 @Component({
@@ -74,8 +74,11 @@ export class ThirdStepComponent implements WizardStep {
     map.on('click', () => {
       const coordinates: Point = {x: d3.event.offsetX, y: d3.event.offsetY};
       this.coords.push(coordinates);
-      this.draw.drawObject('anchor' + this.data.anchorId,
-        {iconName: NaviIcons.ANCHOR, fill: 'green'}, coordinates, 'wizardAnchor', 'anchorMarker');
+      const anchorParams: ObjectParams = {
+        id: 'anchor' + this.data.anchorId, iconName: NaviIcons.ANCHOR,
+        groupClass: 'wizardAnchor', markerClass: 'anchorMarker', fill: 'green'
+      };
+      this.draw.drawObject(anchorParams, coordinates);
       map.on('click', null);
       map.style('cursor', 'default');
       this.makeDecision(coordinates);

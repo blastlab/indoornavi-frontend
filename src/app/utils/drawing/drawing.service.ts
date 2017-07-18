@@ -10,59 +10,66 @@ export class DrawingService {
   constructor(private icons: IconService) {
   }
 
-  public drawObject(id: string,
-                    objectParams: ObjectParams,
-                    where: Point,
-                    groupClass: string,
-                    markerClass: string): d3.selection {
+  public drawObject(objectParams: ObjectParams,
+                    where: Point): d3.selection {
     if (!objectParams.size) {
       objectParams.size = 24;
     }
     const boxMargin = DrawingService.boxSize / 2;
     const map = d3.select('#map');
     const iconHalfSize = (objectParams.size / 2);
-    const objectGroup = map.append('svg')
-      .attr('id', id)
-      .attr('class', groupClass)
-      .attr('x', where.x - boxMargin)
-      .attr('y', where.y - boxMargin)
-      .style('cursor', 'move');
-    const pointerPadding = boxMargin - iconHalfSize;
-    objectGroup.append('svg').attr('class', 'pointer')
-      .attr('x', (pointerPadding)).attr('y', (pointerPadding))
-      .html(this.icons.getIcon(NaviIcons.POINTER))
-      .attr('fill', 'red');
-    objectGroup.append('svg').attr('class', markerClass)
-      .attr('x', boxMargin).attr('y', boxMargin)
-      .html(this.icons.getIcon(objectParams.iconName))
-      .attr('stroke', objectParams.fill)
-      .attr('fill', objectParams.fill);
+    const objectGroup = this.createGroup(map, objectParams,
+      {x: where.x - boxMargin, y: where.y - boxMargin});
     const iconPadding = boxMargin - iconHalfSize;
-    objectGroup.append('text').attr('x', (iconPadding)).attr('y', boxMargin)
-      .attr('class', id + 'name').attr('fill', objectParams.fill).text(id);
-    objectGroup.append('circle').attr('class', 'objectArea')
-      .attr('transform', 'translate(' + (iconPadding) + ',' + (iconPadding) + ')')
-      .attr('r', iconHalfSize).attr('fill', 'rgba(255,255,255,0.1)');
+    const markerPadding = boxMargin + iconHalfSize;
+    this.pointerAppend(objectGroup, iconPadding);
+    this.markerAppend(objectGroup, boxMargin, objectParams);
+    this.descriptionAppend(objectGroup, objectParams, boxMargin, markerPadding);
+    this.dragAreaAppend(objectGroup, markerPadding, iconHalfSize);
     const dragGroup = d3.drag()
       .on('drag', this.dragGroupBehavior);
     objectGroup.call(dragGroup);
     return objectGroup;
   }
 
+  private createGroup(map: d3.selector, objectParams: ObjectParams,
+                      coords: Point): d3.selector {
+    return map.append('svg')
+      .attr('id', objectParams.id)
+      .attr('class', objectParams.groupClass)
+      .attr('x', coords.x)
+      .attr('y', coords.y)
+      .style('cursor', 'move');
+  }
 
-  /*
-   private pointerAppend() {
+  private pointerAppend(group: d3.selector, pointerPadding: number): void {
+    group.append('svg').attr('class', 'pointer')
+      .attr('x', (pointerPadding)).attr('y', (pointerPadding))
+      .html(this.icons.getIcon(NaviIcons.POINTER))
+      .attr('fill', 'red');
+  }
 
-   }
+  private markerAppend(group: d3.selector, boxMargin: number, objectParams: ObjectParams) {
+    if (!objectParams.fill) {
+      objectParams.fill = 'red';
+    }
+    group.append('svg').attr('class', objectParams.markerClass)
+      .attr('x', boxMargin).attr('y', boxMargin)
+      .html(this.icons.getIcon(objectParams.iconName))
+      .attr('stroke', objectParams.fill)
+      .attr('fill', objectParams.fill);
+  }
 
-   private markerAppend() {
+  private descriptionAppend(group: d3.selector, params: ObjectParams, margin: number, padding: number) {
+    group.append('text').attr('x', (padding)).attr('y', margin)
+      .attr('class', params.id + 'name').attr('fill', params.fill).text(params.id);
+  }
 
-   }
-
-   private descriptionAppend() {
-
-   }
-   */
+  private dragAreaAppend(group: d3.selector, padding: number, iconHalfSize: number) {
+    group.append('circle').attr('class', 'objectArea')
+      .attr('transform', 'translate(' + padding + ',' + padding + ')')
+      .attr('r', iconHalfSize).attr('fill', 'rgba(255,255,255,0.1)');
+  }
 
   public dragGroupBehavior() {
     const boxMargin = DrawingService.boxSize / 2;
@@ -85,7 +92,10 @@ export class DrawingService {
 }
 
 export interface ObjectParams {
+  id: string;
   iconName: string;
+  groupClass: string;
+  markerClass: string;
   size?: number;
   stroke?: string;
   fill?: string;
