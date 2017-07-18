@@ -66,20 +66,22 @@ export class DrawingService {
   }
 
   private dragAreaAppend(group: d3.selector, padding: number, iconHalfSize: number) {
+    const dragBackground = 'rgba(255,255,255,0.1)';
     group.append('circle').attr('class', 'objectArea')
-      .attr('transform', 'translate(' + padding + ',' + padding + ')')
-      .attr('r', iconHalfSize).attr('fill', 'rgba(255,255,255,0.1)');
+      .attr('transform', this.transform({x: padding, y: padding}))
+      .attr('r', iconHalfSize).attr('fill', dragBackground);
   }
 
-  public dragGroupBehavior() {
+  private dragGroupBehavior() {
+    const map = d3.select('#map');
     const boxMargin = DrawingService.boxSize / 2;
     let dx = parseInt(d3.select(this).attr('x'), 10);
     let dy = parseInt(d3.select(this).attr('y'), 10);
     dx += d3.event.dx;
     dy += d3.event.dy;
     d3.select(this)
-      .attr('x', Math.max(-boxMargin, Math.min(d3.select('#map').attr('width') - boxMargin, dx)))
-      .attr('y', Math.max(-boxMargin, Math.min(d3.select('#map').attr('height') - boxMargin, dy)));
+      .attr('x', Math.max(-boxMargin, Math.min(map.attr('width') - boxMargin, dx)))
+      .attr('y', Math.max(-boxMargin, Math.min(map.attr('height') - boxMargin, dy)));
     const buttons = d3.select('#accept-buttons');
     let bx = parseInt(buttons.style('left'), 10);
     let by = parseInt(buttons.style('top'), 10);
@@ -87,6 +89,10 @@ export class DrawingService {
     by += d3.event.dy;
     buttons.style('top', Math.max(0, Math.min((d3.select('#map').attr('height') - 100 ), by)) + 'px');
     buttons.style('left', Math.max(boxMargin, Math.min((d3.select('#map').attr('width') - boxMargin ), bx)) + 'px');
+  }
+
+  private transform(translation: Point): string {
+    return 'translate(' + translation.x + ',' + translation.y + ')';
   }
 
 }

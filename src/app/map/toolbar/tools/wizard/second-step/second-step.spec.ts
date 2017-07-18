@@ -75,7 +75,7 @@ describe('SecondStepComponent', () => {
       sinkShortId: 7245,
       sinkPosition: sinkPos,
       anchorShortId: null,
-      degree: null,
+      degree: degree,
       firstAnchorPosition: null,
       secondAnchorPosition: null
     };

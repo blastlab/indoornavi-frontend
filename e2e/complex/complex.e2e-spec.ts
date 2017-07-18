@@ -25,14 +25,14 @@ describe('ComplexComponent', () => {
         AppPage.getCurrentUrl().then(pageUrl => {
           expect(pageUrl).toMatch(/complexes\/.*\/buildings/g);
           ComplexPage.navigateToHome();
-        });
-        ComplexPage.editLastComplex(name, false);
-        expect(ComplexPage.getLatestAddedComplexName()).toEqual(newName);
-        AppPage.cancelEditingWithESC();
-        ComplexPage.removeLastComplex();
-        AppPage.getElementsCount('tr.complex').then(finalCount => {
-          expect(finalCount).toEqual(initCount);
-          done();
+          ComplexPage.editLastComplex(name, false);
+          expect(ComplexPage.getLatestAddedComplexName()).toEqual(newName);
+          AppPage.cancelEditingWithESC();
+          ComplexPage.removeLastComplex();
+          AppPage.getElementsCount('tr.complex').then(finalCount => {
+            expect(finalCount).toEqual(initCount);
+            done();
+          });
         });
       });
     });

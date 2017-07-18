@@ -22,13 +22,13 @@ export class HintBarComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.setTranslations();
-    this.translate.get('hint.choose.a.tool').subscribe((value: string) => {
+    this.translate.get('hint.chooseTool').subscribe((value: string) => {
       this.setHint(value);
     });
   }
 
   ngOnChanges(): void {
-    this.toolName = (this.tool) ? ToolName[this.tool.toolEnum] : ToolName[ToolName.NONE];
+    this.toolName = (this.tool) ? ToolName[this.tool.toolName] : ToolName[ToolName.NONE];
     this._hintBar.hint$.subscribe((message: string) => {
       this.setHint(message);
     });

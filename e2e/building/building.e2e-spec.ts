@@ -29,15 +29,14 @@ describe('BuildingComponent', () => {
         AppPage.getCurrentUrl().then(pageUrl => {
           expect(pageUrl).toMatch(/complexes\/.*\/buildings\/.*\/floors/g);
           AppPage.navigateBack();
-          done();
-        });
-        BuildingPage.editLastBuilding(name, false);
-        AppPage.cancelEditingWithESC();
-        expect(BuildingPage.getLatestAddedBuildingName()).toEqual(newName);
-        BuildingPage.removeLastBuilding();
-        AppPage.getElementsCount('tr.building').then(finalCount => {
-          expect(finalCount).toEqual(initCount);
-          done();
+          BuildingPage.editLastBuilding(name, false);
+          AppPage.cancelEditingWithESC();
+          expect(BuildingPage.getLatestAddedBuildingName()).toEqual(newName);
+          BuildingPage.removeLastBuilding();
+          AppPage.getElementsCount('tr.building').then(finalCount => {
+            expect(finalCount).toEqual(initCount);
+            done();
+          });
         });
       });
     });

@@ -15,7 +15,7 @@ export class ScaleComponent implements Tool {
   public hintMessage: String;
   // private scale: Scale;  // use for scale data
   public active: boolean = false;
-  public toolEnum: ToolName = ToolName.SCALE; // used in hint-bar component as a toolName
+  public toolName: ToolName = ToolName.SCALE; // used in hint-bar component as a toolName
 
   constructor(private translate: TranslateService) {
     this.setTranslations();

@@ -46,6 +46,8 @@ describe('ToolbarComponent', () => {
     });
     spyOn(mockWizardTool, 'setActive').and.callFake(() => {
     });
+    spyOn(mockScaleTool, 'setInactive').and.callFake(() => {
+    });
     spyOn(mockWizardTool, 'setInactive').and.callFake(() => {
     });
   });
@@ -60,6 +62,7 @@ describe('ToolbarComponent', () => {
     component.setTool(mockScaleTool);
     expect(component.activeTool).toBeDefined();
     expect(component.activeTool).toEqual(mockScaleTool);
+    expect(mockScaleTool.setActive).toHaveBeenCalled();
     expect(component.activeTool).not.toEqual(mockWizardTool);
   });
 
@@ -68,6 +71,8 @@ describe('ToolbarComponent', () => {
     expect(component.activeTool).toBeDefined();
     expect(component.activeTool).toEqual(mockScaleTool);
     component.setTool(mockWizardTool);
+    expect(mockScaleTool.setInactive).toHaveBeenCalled();
+    expect(mockWizardTool.setActive).toHaveBeenCalled();
     expect(component.activeTool).toBeDefined();
     expect(component.activeTool).not.toEqual(mockScaleTool);
     expect(component.activeTool).toEqual(mockWizardTool);
@@ -78,6 +83,7 @@ describe('ToolbarComponent', () => {
     expect(component.activeTool).toBeDefined();
     expect(component.activeTool).toEqual(mockWizardTool);
     component.setTool(mockWizardTool);
+    expect(mockWizardTool.setInactive).toHaveBeenCalled();
     expect(component.activeTool).toBeUndefined();
     expect(component.activeTool).not.toEqual(mockWizardTool);
   });

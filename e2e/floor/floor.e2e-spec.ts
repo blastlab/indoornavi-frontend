@@ -30,15 +30,15 @@ describe('FloorComponent', () => {
         AppPage.getCurrentUrl().then(pageUrl => {
           expect(pageUrl).toMatch(/complexes\/.*\/buildings\/.*\/floors\/.*\/map/g);
           AppPage.navigateBack();
-        });
-        FloorPage.editLastFloor(name, 7, false);
-        AppPage.cancelEditingWithESC();
-        expect(FloorPage.getLatestAddedFloorName()).toEqual(newName);
-        expect(FloorPage.getLatestAddedFloorLevel()).toBe('1');
-        FloorPage.removeLastFloor();
-        AppPage.getElementsCount('tr.floor').then(finalCount => {
-          expect(finalCount).toEqual(initCount);
-          done();
+          FloorPage.editLastFloor(name, 7, false);
+          AppPage.cancelEditingWithESC();
+          expect(FloorPage.getLatestAddedFloorName()).toEqual(newName);
+          expect(FloorPage.getLatestAddedFloorLevel()).toBe('1');
+          FloorPage.removeLastFloor();
+          AppPage.getElementsCount('tr.floor').then(finalCount => {
+            expect(finalCount).toEqual(initCount);
+            done();
+          });
         });
       });
     });

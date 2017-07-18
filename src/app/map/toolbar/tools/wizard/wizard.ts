@@ -22,7 +22,7 @@ import {HintBarService} from '../../../hint-bar/hint-bar.service';
 export class WizardComponent implements Tool {
 
   @Output() clicked: EventEmitter<Tool> = new EventEmitter<Tool>();
-  public toolEnum: ToolName = ToolName.WIZARD; // used in hint-bar component as a toolName
+  public toolName: ToolName = ToolName.WIZARD; // used in hint-bar component as a toolName
   public hintMessage: string;
   public active: boolean = false;
   public activeStep: WizardStep;
