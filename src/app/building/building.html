@@ -9,7 +9,7 @@
     <th [translate]="'building.name'"></th>
     <th colspan="3" [translate]="'th.actions'"></th>
   </tr>
-  <tr *ngFor="let building of buildings; let i = index">
+  <tr *ngFor="let building of buildings; let i = index" class="building">
     <td class="building-name">{{building.name}}</td>
     <td>
       <button class="building-floor-button" (click)="openBuilding(building)" md-mini-fab md-tooltip="{{'go.to.floors'|translate}}" mdTooltipPosition="above">

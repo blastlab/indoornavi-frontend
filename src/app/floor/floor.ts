@@ -51,14 +51,16 @@ export class FloorComponent implements OnInit {
     this.dialogRef.componentInstance.floor = {
       level: floor.level,
       name: floor.name,
-      buildingId: floor.buildingId
+      buildingId: floor.buildingId,
+      id: floor.id
     };
 
     this.dialogRef.afterClosed().subscribe((newFloor: Floor) => {
       if (newFloor !== undefined) {
         floor.name = newFloor.name;
         floor.level = newFloor.level;
-        this.toast.showSuccess('floor.create.success');
+        floor.id = newFloor.id;
+        this.toast.showSuccess('floor.save.success');
       }
       this.dialogRef = null;
     });

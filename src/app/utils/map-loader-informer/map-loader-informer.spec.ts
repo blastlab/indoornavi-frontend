@@ -17,11 +17,11 @@ describe('MapLoaderInformerService', () => {
     service.isLoaded$.subscribe(loaded => {
       expect(loaded).toBeFalsy();
     });
-    service.publishIsLoaded(false);
+    service.publishIsLoaded();
   });
 
   it('Should inform that svg is loaded', () => {
-    service.publishIsLoaded(true);
+    service.publishIsLoaded();
     service.isLoaded$.subscribe(loaded => {
       expect(loaded).toBeTruthy();
     });

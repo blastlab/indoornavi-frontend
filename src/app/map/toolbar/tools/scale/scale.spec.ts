@@ -11,6 +11,7 @@ import {Floor} from '../../../../floor/floor.type';
 import {Line, Point} from '../../../map.type';
 import {Geometry} from '../../../utils/geometry';
 import {AuthGuard} from '../../../../auth/auth.guard';
+import {HintBarService} from '../../../hint-bar/hint-bar.service';
 
 
 describe('Scale', () => {
@@ -30,10 +31,10 @@ describe('Scale', () => {
         TranslateModule.forRoot(),
       ],
       providers: [
-        ScaleHintService, ScaleInputService, MapLoaderInformerService, AuthGuard
+        ScaleHintService, ScaleInputService, MapLoaderInformerService, AuthGuard, HintBarService
       ]
     })
-      .compileComponents();
+    .compileComponents();
   }));
 
   beforeEach(() => {
@@ -60,7 +61,7 @@ describe('Scale', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create ScaleComponent', () => {
     expect(component).toBeTruthy();
   });
 

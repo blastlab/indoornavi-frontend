@@ -1,5 +1,4 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-
 import {MapViewerComponent} from './map.viewer';
 import {ScaleInputComponent} from './toolbar/tools/scale/input/input';
 import {MaterialModule} from '@angular/material';
@@ -16,6 +15,9 @@ import {ToastService} from '../utils/toast/toast.service';
 import {Floor} from '../floor/floor.type';
 import {MapService} from './map.service';
 import {AuthGuard} from '../auth/auth.guard';
+import {AcceptButtonsComponent} from '../utils/accept-buttons/accept-buttons';
+import {AcceptButtonsService} from '../utils/accept-buttons/accept-buttons.service';
+import {Observable} from 'rxjs/Observable';
 
 describe('MapViewerComponent', () => {
   let component: MapViewerComponent;
@@ -29,9 +31,10 @@ describe('MapViewerComponent', () => {
       imports: [
         TranslateModule.forRoot(), MaterialModule, FormsModule, RouterTestingModule
       ],
-      declarations: [MapViewerComponent, ScaleInputComponent, ScaleHintComponent],
+      declarations: [MapViewerComponent, ScaleInputComponent, ScaleHintComponent, AcceptButtonsComponent],
       providers: [
-        ScaleInputService, ScaleHintService, MapLoaderInformerService, FloorService, HttpService, ToastService, MapService, AuthGuard
+        ScaleInputService, ScaleHintService, MapLoaderInformerService,
+        FloorService, HttpService, ToastService, MapService, AuthGuard, AcceptButtonsService
       ]
     })
       .compileComponents();
@@ -41,11 +44,12 @@ describe('MapViewerComponent', () => {
     fixture = TestBed.createComponent(MapViewerComponent);
     component = fixture.componentInstance;
     component.floor = floor;
-
+    const mapService = fixture.debugElement.injector.get(MapService);
+    spyOn(mapService, 'getImage').and.returnValue(Observable.of(new Blob()));
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create MapViewerComponent', () => {
     expect(component).toBeTruthy();
   });
 });

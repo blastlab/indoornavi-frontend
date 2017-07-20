@@ -50,12 +50,12 @@ describe('User component', () => {
     permissionGroupService = fixture.debugElement.injector.get(PermissionGroupService);
 
     spyOn(toastService, 'showSuccess');
+    spyOn(permissionGroupService, 'getPermissionGroups').and.returnValue(Observable.of([]));
   }));
 
   it('should create component', async(() => {
     // given
     spyOn(userService, 'getUsers').and.returnValue(Observable.of([{username: 'test', id: 1}]));
-    spyOn(permissionGroupService, 'getPermissionGroups').and.returnValue(Observable.of([]));
 
     // when
     component.ngOnInit();

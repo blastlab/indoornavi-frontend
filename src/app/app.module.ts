@@ -3,7 +3,10 @@ import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {Http, HttpModule} from '@angular/http';
 import {ComplexComponent} from './complex/complex';
-import {MaterialModule} from '@angular/material';
+import {
+  MaterialModule, MdDialogModule, MdCardModule, MdButtonModule, MdIconRegistry,
+  MdIconModule
+} from '@angular/material';
 import {ComplexService} from './complex/complex.service';
 import {ComplexDialogComponent} from './complex/complex.dialog';
 import {ComplexConfirmComponent} from './complex/complex.confirm';
@@ -55,6 +58,16 @@ import {UnauthorizedComponent} from './utils/unauthorized/unauthorized';
 import {PermissionGroupComponent} from './user/permissionGroup';
 import {PermissionGroupService} from './user/permissionGroup.service';
 import {AngularMultiSelectModule} from 'angular2-multiselect-dropdown/angular2-multiselect-dropdown';
+import {WizardComponent} from './map/toolbar/tools/wizard/wizard';
+import {AcceptButtonsComponent} from './utils/accept-buttons/accept-buttons';
+import {AcceptButtonsService} from './utils/accept-buttons/accept-buttons.service';
+import {FirstStepComponent} from './map/toolbar/tools/wizard/first-step/first-step';
+import {SecondStepComponent} from './map/toolbar/tools/wizard/second-step/second-step';
+import {ThirdStepComponent} from './map/toolbar/tools/wizard/third-step/third-step';
+import {DrawingService} from './utils/drawing/drawing.service';
+import {Hammer} from 'hammerjs/hammer';
+import {IconService} from './utils/drawing/icon.service';
+import {HintBarService} from './map/hint-bar/hint-bar.service';
 
 
 const appRoutes: Routes = [
@@ -111,7 +124,12 @@ export function HttpLoaderFactory(http: Http) {
     AuthComponent,
     ChangePasswordComponent,
     UnauthorizedComponent,
-    PermissionGroupComponent
+    PermissionGroupComponent,
+    WizardComponent,
+    AcceptButtonsComponent,
+    FirstStepComponent,
+    SecondStepComponent,
+    ThirdStepComponent,
   ],
   entryComponents: [
     ComplexDialogComponent,
@@ -124,6 +142,10 @@ export function HttpLoaderFactory(http: Http) {
   ],
   imports: [
     BrowserModule,
+    MdDialogModule,
+    MdCardModule,
+    MdButtonModule,
+    MdIconModule,
     FormsModule,
     MaterialModule,
     HttpModule,
@@ -151,6 +173,12 @@ export function HttpLoaderFactory(http: Http) {
     WebSocketService,
     SocketService,
     DeviceService,
+    MapService,
+    AcceptButtonsService,
+    DrawingService,
+    MdIconRegistry,
+    IconService,
+    HintBarService,
     MapService,
     ScaleInputService,
     ScaleHintService,

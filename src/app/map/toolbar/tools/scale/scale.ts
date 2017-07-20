@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {ToolsEnum} from '../tools.enum';
-import * as d3 from 'd3';
 import {Tool} from '../tool';
+import {ToolName} from '../tools.enum';
+import * as d3 from 'd3';
 import {TranslateService} from '@ngx-translate/core';
 import {Scale} from './scale.type';
 import {Line, Point} from '../../../map.type';
@@ -13,19 +13,20 @@ import {Subscription} from 'rxjs/Subscription';
 import {promise} from 'selenium-webdriver';
 import fullyResolved = promise.fullyResolved;
 import {Geometry} from '../../../utils/geometry';
+import {HintBarService} from '../../../hint-bar/hint-bar.service';
 
 @Component({
   selector: 'app-scale',
   templateUrl: './scale.html',
-  styleUrls: ['./scale.css']
+  styleUrls: ['../tool.css', ]
 })
 export class ScaleComponent implements Tool, OnDestroy, OnInit {
-
-  @Output() clickedTool: EventEmitter<Tool> = new EventEmitter<Tool>();
+  @Output() clicked: EventEmitter<Tool> = new EventEmitter<Tool>();
   public hintMessage: string;
   private pointsArray: Array<Point> = [];
   private linesArray: Array<Line> = [];
   public active: boolean = false;
+  public toolName: ToolName = ToolName.SCALE; // used in hint-bar component as a toolName
   public isScaleDisplayed: boolean = false;
   public isScaleSet: boolean = false;
   private isFirstPointDrawn: boolean = false;
@@ -36,13 +37,14 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private scaleGroup = d3.select('#scaleGroup');
   private mapWidth: number;
   private mapHeight: number;
-  public toolEnum: ToolsEnum = ToolsEnum.SCALE; // used in hint-bar component as a toolName
   @Input() floor: Floor;
 
   constructor(private translate: TranslateService,
               private scaleInput: ScaleInputService,
               private scaleHint: ScaleHintService,
-              private mapLoaderInformer: MapLoaderInformerService) {
+              private mapLoaderInformer: MapLoaderInformerService,
+              private hintBar: HintBarService) {
+    this.setTranslations();
   }
 
   ngOnDestroy() {
@@ -60,7 +62,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     });
 
     this.saveButtonSubscription = this.scaleInput.saveClicked$.subscribe(() => {
-      this.clickedTool.emit(this);
+      this.clicked.emit(this);
       this.isScaleSet = true;
     });
 
@@ -116,13 +118,12 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   public toolClicked(): void {
-    this.setTranslations();
-    this.clickedTool.emit(this);
+    this.clicked.emit(this);
   }
 
   private setTranslations() {
     this.translate.setDefaultLang('en');
-    this.translate.get('click.at.map.to.set.scale').subscribe((value: string) => {
+    this.translate.get('scale.basic.msg').subscribe((value: string) => {
       this.hintMessage = value;
     });
   }
@@ -130,11 +131,17 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   public setActive(): void {
     this.active = true;
     this.startCreatingScale();
+    this.translate.get('scale.basic.msg').subscribe((value: string) => {
+      this.hintBar.publishHint(value);
+    });
   }
 
   public setInactive(): void {
     this.hideScale();
     this.active = false;
+    this.translate.get('hint.chooseTool').subscribe((value: string) => {
+      this.hintBar.publishHint(value);
+    });
   }
 
   private startCreatingScale(): void {

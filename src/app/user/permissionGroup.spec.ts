@@ -52,13 +52,13 @@ describe('Permission Group Component', () => {
     translateService = fixture.debugElement.injector.get(TranslateService);
 
     spyOn(toastService, 'showSuccess');
+    spyOn(permissionGroupService, 'getPermissions').and.returnValue(Observable.of(<Permission[]>[{id: 1, name: 'test'}]));
+    spyOn(permissionGroupService, 'getPermissionGroups').and.returnValue(Observable.of(<PermissionGroup[]>[{id: 1, name: 'test', permissions: []}]));
   }));
 
   it('should create component', () => {
     // given
     spyOn(translateService, 'get').and.returnValue(Observable.of('test'));
-    spyOn(permissionGroupService, 'getPermissions').and.returnValue(Observable.of(<Permission[]>[{id: 1, name: 'test'}]));
-    spyOn(permissionGroupService, 'getPermissionGroups').and.returnValue(Observable.of(<PermissionGroup[]>[{id: 1, name: 'test', permissions: []}]));
 
     // when
     component.ngOnInit();
@@ -91,8 +91,8 @@ describe('Permission Group Component', () => {
 
   it('should NOT let create new permission group when form is invalid', () => {
     // given
-    const expected = <PermissionGroup>{id: 1, name: 'test', permissions: []};
-    spyOn(permissionGroupService, 'save').and.returnValue(Observable.of(expected));
+    const notExpected = <PermissionGroup>{id: 2, name: 'test 2', permissions: []};
+    spyOn(permissionGroupService, 'save');
 
     // when
     component.ngOnInit();
@@ -101,7 +101,7 @@ describe('Permission Group Component', () => {
 
     // then
     expect(permissionGroupService.save).not.toHaveBeenCalled();
-    expect(component.permissionGroups).not.toContain(expected);
+    expect(component.permissionGroups).not.toContain(notExpected);
     expect(toastService.showSuccess).not.toHaveBeenCalledWith('permissionGroup.create.success');
   });
 

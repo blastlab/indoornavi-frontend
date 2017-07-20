@@ -2,7 +2,28 @@
   <h2>Tools</h2>
   <ul class="tools-list">
     <li class="tool">
-      <app-scale [floor]="floor" (clickedTool)="setTool($event)"></app-scale>
+      <app-scale [floor]="floor" (clicked)="setTool($event)"></app-scale>
+    </li>
+    <li>
+      <app-wizard (clicked)="setTool($event)"></app-wizard>
+    </li>
+    <li>
+      <button md-mini-fab disabled="disabled"
+              md-tooltip="Place Anchors" mdTooltipPosition="left">
+        <i class="material-icons">toll</i>
+      </button>
+    </li>
+    <li>
+      <button md-mini-fab disabled="disabled"
+              md-tooltip="Draw walls" mdTooltipPosition="left">
+        <i class="material-icons">timeline</i>
+      </button>
+    </li>
+    <li>
+      <button md-mini-fab disabled="disabled"
+              md-tooltip="Show tags" mdTooltipPosition="left">
+        <i class="material-icons">settings_remote</i>
+      </button>
     </li>
   </ul>
 </div>
