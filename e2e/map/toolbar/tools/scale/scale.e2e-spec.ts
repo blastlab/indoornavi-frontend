@@ -68,16 +68,15 @@ describe('ScaleComponent', () => {
     const distance = 543;
     const unit = 'CENTIMETERS';
     const points = element.all(by.className('point'));
-
     browser.actions().keyDown(protractor.Key.SHIFT).perform();
     ScaleTool.dragEnding(points.first(), {x: 100, y: 0});
     expect(points.first().getAttribute('cx')).toEqual(points.last().getAttribute('cx'));
     expect(points.first().getAttribute('cy')).not.toEqual(points.last().getAttribute('cy'));
     browser.actions().keyUp(protractor.Key.SHIFT).perform();
-
     ScaleTool.dragEnding(points.first(), {x: 50, y: 0});
 
     browser.actions().keyDown(protractor.Key.SHIFT).perform();
+
     ScaleTool.dragEnding(points.first(), {x: 0, y: 200});
     expect(points.first().getAttribute('cx')).not.toEqual(points.last().getAttribute('cx'));
     expect(points.first().getAttribute('cy')).toEqual(points.last().getAttribute('cy'));
@@ -90,6 +89,7 @@ describe('ScaleComponent', () => {
     expect(element(by.id('scaleHint')).getText()).toEqual('Scale: ' + distance + ' cm');
     expect(element(by.id('hintBar')).getText()).toEqual('Choose a tool.');
     DrawingChecker.expectScaleNotToBeVisible();
+
   });
 
   it('should not hide point under the scale input', (done: DoneFn) => {
@@ -123,7 +123,6 @@ describe('ScaleComponent', () => {
     ScaleTool.dragEnding(points.last(), {x: 34, y: -100});
     ScaleTool.fillInScaleInput(distance, unit);
     DrawingChecker.expectScaleToBeVisible();
-
     expect(points.first().getAttribute('cx')).toEqual(line.getAttribute('x1'));
     expect(points.first().getAttribute('cy')).toEqual(line.getAttribute('y1'));
     expect(points.last().getAttribute('cx')).toEqual(line.getAttribute('x2'));
@@ -178,7 +177,6 @@ describe('ScaleComponent', () => {
   it('should temporarily remove scale only from map view', () => {
     ScaleTool.clickRemove();
     DrawingChecker.expectScaleNotToExist();
-
     expect(element(by.id('scaleHint')).getText()).toEqual('Scale is not set');
     expect(element(by.id('hintBar')).getText()).toEqual('SCALE: Click at map to set scale.');
   });

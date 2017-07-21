@@ -23,7 +23,6 @@ export class HttpService {
   }
 
   private static errorHandler(err: any): Observable<any> {
-    console.log(err);
     if (err instanceof Response && err.status === 401) {
       HttpService.router.navigate(['/login'], {queryParams: {returnUrl: HttpService.router.routerState.snapshot.url}});
     }

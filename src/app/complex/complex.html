@@ -9,7 +9,7 @@
     <th [translate]="'complex.name'"></th>
     <th colspan="3" [translate]="'th.actions'"></th>
   </tr>
-  <tr *ngFor="let complex of complexes; let i = index">
+  <tr *ngFor="let complex of complexes; let i = index" class="complex">
     <td class="complex-name">{{complex.name}}</td>
     <td>
       <button class="complex-building-button" (click)="openComplex(complex)" md-mini-fab md-tooltip="{{'go.to.buildings'|translate}}" mdTooltipPosition="above">

@@ -1,0 +1,33 @@
+<button class="wizard-button" [ngClass]="{'active-tool' : active}" (click)="emitToggleActive()" md-mini-fab
+        md-tooltip="{{'wizard.tooltip'|translate}}" mdTooltipPosition="left">
+  <i class="material-icons">device_hub</i>
+</button>
+<app-first-step #firstStep (clearView)="wizardStopped($event)"
+                (nextStepIndex)="wizardNextStep($event)"></app-first-step>
+<app-second-step #secondStep (clearView)="wizardStopped($event)"
+                 (nextStepIndex)="wizardNextStep($event)"></app-second-step>
+<app-third-step #thirdStep (clearView)="wizardStopped($event)"
+                (nextStepIndex)="wizardNextStep($event)"></app-third-step>
+
+<template>
+  <span class="wizard-dialog" *ngIf="!wizardCompleted">
+    <h3 class="wizard-not-complete">{{'wizard.configuration.not.complete'|translate}}</h3>
+    <span>
+    <div class="dialog-action">
+      <button class="warning-back-button" (click)="backToWizard()"
+              md-raised-button>{{'wizard.backToWizard'|translate}}</button>
+      <button class="warning-exit-button" (click)="wizardStopped(true)"
+              md-raised-button>{{'wizard.exit.wizard'|translate}}</button>
+    </div>
+    </span>
+  </span>
+  <span class="wizard-dialog" *ngIf="wizardCompleted">
+    <h3 class="wizard-complete">{{'wizard.configuration.complete'|translate}}</h3>
+    <span>
+      <div class="dialog-action">
+        <button class="dialog-exit-button" (click)="dialogRef.close()" md-raised-button>{{'close'|translate}}</button>
+      </div>
+    </span>
+  </span>
+</template>
+

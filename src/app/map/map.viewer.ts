@@ -56,7 +56,7 @@ export class MapViewerComponent implements OnInit {
     this.mapLoaderInformer.publishIsLoaded();
     this.prepareScaleHint();
     this.drawPoints();
-  };
+  }
 
   private drawPoints = (): void => {
     const points = d3.select('#map').selectAll('circle');
@@ -74,7 +74,7 @@ export class MapViewerComponent implements OnInit {
       .style('opacity', 0.6);
     points.exit()
       .remove();
-  };
+  }
 
   private prepareScaleHint = (): void => {
     const scaleHint = d3.select('#scaleHint');
@@ -85,5 +85,5 @@ export class MapViewerComponent implements OnInit {
       .on('mouseout', function () {
         d3.select('#scaleGroup').style('display', 'none');
       });
-  };
+  }
 }
