@@ -13,7 +13,7 @@ export class IconService {
 
   constructor(private mdIconRegistry: MdIconRegistry,
               private _sanitizer: DomSanitizer) {
-    this.loadCollections(['action', 'alert', 'av', 'communication',  'content', 'device', 'editor', 'file',
+    this.loadCollections(['action', 'alert', 'av', 'communication', 'content', 'device', 'editor', 'file',
       'hardware', 'image', 'maps', 'navigation', 'notification', 'places', 'social', 'toggle']);
   }
 

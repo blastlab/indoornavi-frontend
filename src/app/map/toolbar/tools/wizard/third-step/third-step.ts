@@ -45,6 +45,7 @@ export class ThirdStepComponent implements WizardStep {
     }
     this.isLoading = (!this.socketData.size());
   }
+
   protected isPositionsType(checkType: any): boolean {
     return (<AnchorSuggestedPositions>checkType.points) !== undefined;
   }
@@ -118,7 +119,7 @@ export class ThirdStepComponent implements WizardStep {
   public drawSuggestedPositions(positions: Array<Point>) {
     const secondAnchor = d3.select('#map')
       .data(positions);
-    for (let i = 0 ; i < positions.length ; i++) {
+    for (let i = 0; i < positions.length; i++) {
 
       secondAnchor.append('circle')
         .attr('class', 'suggested-position')
@@ -128,6 +129,7 @@ export class ThirdStepComponent implements WizardStep {
         .style('stroke', 'yellow');
     }
   }
+
   private removeSuggestedPositions() {
     d3.select('#map').selectAll('.suggested-position').remove();
   }
@@ -136,10 +138,10 @@ export class ThirdStepComponent implements WizardStep {
     const invertedSinkPosition: Point = data.sinkPosition;
     invertedSinkPosition.y = -invertedSinkPosition.y;
     return {
-        sinkShortId: data.sinkShortId,
-        sinkPosition: invertedSinkPosition,
-        anchorShortId: data.anchorShortId,
-        degree: data.degree
+      sinkShortId: data.sinkShortId,
+      sinkPosition: invertedSinkPosition,
+      anchorShortId: data.anchorShortId,
+      degree: data.degree
     };
   }
 

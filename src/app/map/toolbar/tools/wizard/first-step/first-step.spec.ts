@@ -60,8 +60,7 @@ describe('FirstStepComponent', () => {
   });
 
   it('should set sinkShortId into StepMsg and sinkPosition in wizardData', () => {
-    const anchor: Anchor = {shortId: 339, longId: 42152, verified: true};
-    component.data = anchor;
+    component.data = {shortId: 339, longId: 42152, verified: true};
     component.coords = [{x: 543, y: 623}];
     const givenWizardData: WizardData = {
       sinkShortId: null,

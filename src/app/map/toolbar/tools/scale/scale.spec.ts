@@ -34,7 +34,7 @@ describe('Scale', () => {
         ScaleHintService, ScaleInputService, MapLoaderInformerService, AuthGuard, HintBarService
       ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

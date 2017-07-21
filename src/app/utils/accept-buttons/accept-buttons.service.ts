@@ -15,9 +15,11 @@ export class AcceptButtonsService {
   publishDecision(val: boolean) {
     this.decision.next(val);
   }
+
   publishVisibility(val: boolean) {
     this.visibility.next(val);
   }
+
   publishCoordinates(val: Point) {
     this.coordinates.next(val);
   }

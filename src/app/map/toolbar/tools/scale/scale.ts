@@ -18,7 +18,7 @@ import {HintBarService} from '../../../hint-bar/hint-bar.service';
 @Component({
   selector: 'app-scale',
   templateUrl: './scale.html',
-  styleUrls: ['../tool.css', ]
+  styleUrls: ['../tool.css']
 })
 export class ScaleComponent implements Tool, OnDestroy, OnInit {
   @Output() clicked: EventEmitter<Tool> = new EventEmitter<Tool>();

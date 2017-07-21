@@ -44,7 +44,7 @@ export class SecondStepComponent implements WizardStep {
       this.socketData.add(msg);
     }
     this.isLoading = (!this.socketData.size());
-    }
+  }
 
   protected isDistanceType(checkType: any): boolean {
     return (<AnchorDistance>checkType.distance) !== undefined;
@@ -121,16 +121,17 @@ export class SecondStepComponent implements WizardStep {
     const boxMargin = DrawingService.boxSize / 2;
     const sinkX = map.select('.wizardSink').attr('x');
     const sinkY = map.select('.wizardSink').attr('y');
-      map.append('circle')
-        .attr('id', 'sinkDistance')
-        .attr('cx', parseInt(sinkX, null) + boxMargin)
-        .attr('cy', parseInt(sinkY, null) + boxMargin)
-        .attr('r', distance)
-        .style('stroke', 'green')
-        .style('stroke-dasharray', '10,3')
-        .style('stroke-opacity', '0.9')
-        .style('fill', 'none');
+    map.append('circle')
+      .attr('id', 'sinkDistance')
+      .attr('cx', parseInt(sinkX, null) + boxMargin)
+      .attr('cy', parseInt(sinkY, null) + boxMargin)
+      .attr('r', distance)
+      .style('stroke', 'green')
+      .style('stroke-dasharray', '10,3')
+      .style('stroke-opacity', '0.9')
+      .style('fill', 'none');
   }
+
   private removeSinkDistance() {
     d3.select('#map').select('#sinkDistance').remove();
   }
@@ -139,9 +140,9 @@ export class SecondStepComponent implements WizardStep {
     const invertedSinkPosition: Point = data.sinkPosition;
     invertedSinkPosition.y = -invertedSinkPosition.y;
     return {
-        sinkShortId: data.sinkShortId,
-        sinkPosition: invertedSinkPosition,
-        anchorShortId: this.data.anchorId,
+      sinkShortId: data.sinkShortId,
+      sinkPosition: invertedSinkPosition,
+      anchorShortId: this.data.anchorId,
       degree: data.degree
     };
   }

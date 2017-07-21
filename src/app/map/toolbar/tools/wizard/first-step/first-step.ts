@@ -114,21 +114,21 @@ export class FirstStepComponent implements WizardStep {
 
   public prepareToSend(data: WizardData): SocketMsg {
     return {
-        sinkShortId: this.data.shortId,
-        sinkPosition: null,
-        anchorShortId: null,
-        degree: null
+      sinkShortId: this.data.shortId,
+      sinkPosition: null,
+      anchorShortId: null,
+      degree: null
     };
   }
 
   public updateWizardData(data: WizardData): WizardData {
     return {
       sinkShortId: this.data.shortId,
-        sinkPosition: this.coords[0],
-        anchorShortId: null,
-        degree: null,
-        firstAnchorPosition: null,
-        secondAnchorPosition: null
+      sinkPosition: this.coords[0],
+      anchorShortId: null,
+      degree: null,
+      firstAnchorPosition: null,
+      secondAnchorPosition: null
     };
   }
 

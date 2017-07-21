@@ -1,10 +1,8 @@
 import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
-import {Config} from '../../config';
 import * as d3 from 'd3';
 import {Floor} from '../floor/floor.type';
-import {Point, Line} from './map.type';
+import {Point} from './map.type';
 import {MapLoaderInformerService} from '../utils/map-loader-informer/map-loader-informer.service';
-import {ImageService} from 'angular2-image-upload/lib/image.service';
 import {MapService} from './map.service';
 
 @Component({
