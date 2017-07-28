@@ -1,6 +1,9 @@
-<div id="map-container">
+<div id="map-container" class="drop-zone" dnd-droppable
+     (onDragSuccess)="logMsg('dragulla')" (onDragEnter)="logMsg('dragEntered')"
+     (onDropSuccess)="logMsg('dropulla')" [dropZones]="['map-container']">
   <canvas #canvas></canvas>
   <app-scale-input></app-scale-input>
   <app-scale-hint [scale]="floor.scale"></app-scale-hint>
   <app-accept-buttons></app-accept-buttons>
+  <app-remaining-devices-list></app-remaining-devices-list>
 </div>

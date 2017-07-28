@@ -10,7 +10,7 @@ export class DrawingService {
   constructor(private icons: IconService) {
   }
 
-  public drawObject(objectParams: ObjectParams,
+  public drawObject(objectParams: MapObjectParams,
                     where: Point): d3.selection {
     if (!objectParams.size) {
       objectParams.size = 24;
@@ -32,7 +32,7 @@ export class DrawingService {
     return objectGroup;
   }
 
-  private createGroup(map: d3.selector, objectParams: ObjectParams,
+  private createGroup(map: d3.selector, objectParams: MapObjectParams,
                       coords: Point): d3.selector {
     return map.append('svg')
       .attr('id', objectParams.id)
@@ -49,7 +49,7 @@ export class DrawingService {
       .attr('fill', 'red');
   }
 
-  private markerAppend(group: d3.selector, boxMargin: number, objectParams: ObjectParams) {
+  private markerAppend(group: d3.selector, boxMargin: number, objectParams: MapObjectParams) {
     if (!objectParams.fill) {
       objectParams.fill = 'red';
     }
@@ -60,7 +60,7 @@ export class DrawingService {
       .attr('fill', objectParams.fill);
   }
 
-  private descriptionAppend(group: d3.selector, params: ObjectParams, margin: number, padding: number) {
+  private descriptionAppend(group: d3.selector, params: MapObjectParams, margin: number, padding: number) {
     group.append('text').attr('x', (padding)).attr('y', margin)
       .attr('class', params.id + 'name').attr('fill', params.fill).text(params.id);
   }
@@ -97,7 +97,7 @@ export class DrawingService {
 
 }
 
-export interface ObjectParams {
+export interface MapObjectParams {
   id: string;
   iconName: string;
   groupClass: string;

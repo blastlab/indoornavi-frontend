@@ -1,0 +1,28 @@
+#remaining-anchors-list-wrapper {
+  position: fixed;
+  top: 25%;
+  background-color: #2b2b2b;
+  color: antiquewhite;
+}
+
+#anchorNameFilter {
+  border-bottom: 1px black solid;
+  padding: 5px 10px;
+  width: 80%;
+}
+
+.form-control::-webkit-input-placeholder {
+  color: #BFBFBF;
+}
+
+.form-control:-moz-placeholder {
+  color: #BFBFBF;
+}
+
+.form-control::-moz-placeholder {
+  color: #BFBFBF;
+}
+
+.form-control:-ms-input-placeholder {
+  color: #BFBFBF;
+}

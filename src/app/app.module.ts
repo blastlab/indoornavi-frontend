@@ -68,6 +68,11 @@ import {DrawingService} from './utils/drawing/drawing.service';
 import {Hammer} from 'hammerjs/hammer';
 import {IconService} from './utils/drawing/icon.service';
 import {HintBarService} from './map/hint-bar/hint-bar.service';
+import {ContextMenuModule} from 'ngx-contextmenu';
+import {AnchorPlacerComponent} from './map/toolbar/tools/anchor-placer/anchor-placer';
+import {RemainingDevicesListComponent} from './map/toolbar/tools/anchor-placer/remaining-devices-list/remaining-devices-list';
+import {RemainingDevicesFilter} from './map/toolbar/tools/anchor-placer/remaining-devices-list/remaining-devices-filter';
+import {AnchorPlacerController} from './map/toolbar/tools/anchor-placer/anchor-placer.controller';
 
 
 const appRoutes: Routes = [
@@ -130,6 +135,9 @@ export function HttpLoaderFactory(http: Http) {
     FirstStepComponent,
     SecondStepComponent,
     ThirdStepComponent,
+    AnchorPlacerComponent,
+    RemainingDevicesListComponent,
+    RemainingDevicesFilter
   ],
   entryComponents: [
     ComplexDialogComponent,
@@ -187,7 +195,8 @@ export function HttpLoaderFactory(http: Http) {
     AuthService,
     CanRead,
     AuthGuard,
-  PermissionGroupService
+    PermissionGroupService,
+    AnchorPlacerController
   ], bootstrap: [AppComponent]
 })
 

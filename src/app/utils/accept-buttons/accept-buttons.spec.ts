@@ -26,7 +26,7 @@ describe('AcceptButtonsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should set o visible when service observable `visibilitySet` changed to true', () => {
+  it('should set o visible when service observable `listVisibilitySet` changed to true', () => {
     acceptButtons.visibilitySet.subscribe(async (visibility) => {
       expect(visibility).toBeTruthy();
     });

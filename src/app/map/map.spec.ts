@@ -18,6 +18,12 @@ import {AuthGuard} from '../auth/auth.guard';
 import {AcceptButtonsComponent} from '../utils/accept-buttons/accept-buttons';
 import {AcceptButtonsService} from '../utils/accept-buttons/accept-buttons.service';
 import {Observable} from 'rxjs/Observable';
+import {RemainingDevicesListComponent} from './toolbar/tools/anchor-placer/remaining-devices-list/remaining-devices-list';
+import {DndModule} from 'ng2-dnd';
+import {SharedModule} from '../utils/shared/shared.module';
+import {SocketService} from '../utils/socket/socket.service';
+import {WebSocketService} from 'angular2-websocket-service';
+import {DeviceService} from '../device/device.service';
 
 describe('MapViewerComponent', () => {
   let component: MapViewerComponent;
@@ -29,12 +35,14 @@ describe('MapViewerComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
-        TranslateModule.forRoot(), MaterialModule, FormsModule, RouterTestingModule
+        TranslateModule.forRoot(), DndModule.forRoot(), MaterialModule, FormsModule,
+        RouterTestingModule, SharedModule
       ],
-      declarations: [MapViewerComponent, ScaleInputComponent, ScaleHintComponent, AcceptButtonsComponent],
+      declarations: [MapViewerComponent, ScaleInputComponent, ScaleHintComponent,
+        AcceptButtonsComponent, RemainingDevicesListComponent],
       providers: [
-        ScaleInputService, ScaleHintService, MapLoaderInformerService,
-        FloorService, HttpService, ToastService, MapService, AuthGuard, AcceptButtonsService
+        ScaleInputService, ScaleHintService, MapLoaderInformerService, SocketService, WebSocketService,
+        FloorService, HttpService, ToastService, MapService, AuthGuard, AcceptButtonsService, DeviceService
       ]
     })
       .compileComponents();

@@ -18,6 +18,7 @@ import {IconService} from '../../utils/drawing/icon.service';
 import {ScaleInputService} from './tools/scale/input/input.service';
 import {ScaleHintService} from './tools/scale/hint/hint.service';
 import {MapLoaderInformerService} from '../../utils/map-loader-informer/map-loader-informer.service';
+import {AnchorPlacerComponent} from './tools/anchor-placer/anchor-placer';
 
 describe('ToolbarComponent', () => {
   let component: ToolbarComponent;
@@ -29,7 +30,7 @@ describe('ToolbarComponent', () => {
     TestBed.configureTestingModule({
       imports: [TranslateModule.forRoot(), MaterialModule, FormsModule],
       declarations: [ToolbarComponent, ScaleComponent, WizardComponent, FirstStepComponent, SecondStepComponent,
-        ThirdStepComponent],
+        ThirdStepComponent, AnchorPlacerComponent],
       providers: [
         SocketService, WebSocketService, ToastService, HintBarService, AcceptButtonsService, DrawingService,
         IconService, ScaleComponent, WizardComponent, ScaleInputService, ScaleHintService, MapLoaderInformerService
