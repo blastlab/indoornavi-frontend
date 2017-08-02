@@ -18,7 +18,7 @@ import {AuthGuard} from '../auth/auth.guard';
 import {AcceptButtonsComponent} from '../utils/accept-buttons/accept-buttons';
 import {AcceptButtonsService} from '../utils/accept-buttons/accept-buttons.service';
 import {Observable} from 'rxjs/Observable';
-import {RemainingDevicesListComponent} from './toolbar/tools/anchor-placer/remaining-devices-list/remaining-devices-list';
+import {RemainingDevicesListComponent} from './toolbar/tools/anchor/map-anchors-list/map-anchors-list';
 import {DndModule} from 'ng2-dnd';
 import {SharedModule} from '../utils/shared/shared.module';
 import {SocketService} from '../utils/socket/socket.service';

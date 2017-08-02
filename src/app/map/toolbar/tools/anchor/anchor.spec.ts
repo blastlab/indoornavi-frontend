@@ -1,8 +1,8 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {AnchorPlacerComponent} from './anchor-placer';
+import {AnchorPlacerComponent} from './anchor';
 import {TranslateModule} from '@ngx-translate/core';
 import {MaterialModule} from '@angular/material';
-import {RemainingDevicesListComponent} from './remaining-devices-list/remaining-devices-list';
+import {RemainingDevicesListComponent} from './map-anchors-list/map-anchors-list';
 import {AuthGuard} from '../../../../auth/auth.guard';
 import {DndModule} from 'ng2-dnd';
 import {SharedModule} from 'app/utils/shared/shared.module';

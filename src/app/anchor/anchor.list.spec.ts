@@ -1,6 +1,6 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {TranslateModule} from '@ngx-translate/core';
-import {AnchorComponent} from './anchor';
+import {AnchorListComponent} from './anchor-list';
 import {DndModule} from 'ng2-dnd';
 import {MaterialModule, MdDialog} from '@angular/material';
 import {SocketService} from '../utils/socket/socket.service';
@@ -16,9 +16,9 @@ import {Router, RouterModule} from '@angular/router';
 import {SharedModule} from '../utils/shared/shared.module';
 import {AuthGuard} from '../auth/auth.guard';
 
-describe('AnchorComponent', () => {
-  let component: AnchorComponent;
-  let fixture: ComponentFixture<AnchorComponent>;
+describe('AnchorListComponent', () => {
+  let component: AnchorListComponent;
+  let fixture: ComponentFixture<AnchorListComponent>;
 
   let socketService: SocketService;
   let dialog: MdDialog;
@@ -33,12 +33,12 @@ describe('AnchorComponent', () => {
         DialogTestModule,
         SharedModule
       ],
-      declarations: [AnchorComponent, DeviceListComponent],
+      declarations: [AnchorListComponent, DeviceListComponent],
       providers: [SocketService, WebSocketService, DeviceService, HttpService, ToastService, MdDialog, {provide: Router, useClass: RouterModule}, AuthGuard]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(AnchorComponent);
+    fixture = TestBed.createComponent(AnchorListComponent);
     component = fixture.debugElement.componentInstance;
     socketService = fixture.debugElement.injector.get(SocketService);
     dialog = fixture.debugElement.injector.get(MdDialog);

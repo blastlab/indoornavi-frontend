@@ -3,7 +3,7 @@ import {AppPage} from '../app.po';
 import {AnchorPage} from './anchor.po';
 import {ElementArrayFinder} from 'protractor';
 
-describe('AnchorComponent', () => {
+describe('AnchorListComponent', () => {
   it('should have title', () => {
     AnchorPage.navigateToHome();
     expect(AppPage.getTitle()).toEqual('Anchors');

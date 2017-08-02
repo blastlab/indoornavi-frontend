@@ -3,6 +3,8 @@ import * as d3 from 'd3';
 import {Floor} from '../floor/floor.type';
 import {MapLoaderInformerService} from '../utils/map-loader-informer/map-loader-informer.service';
 import {MapService} from './map.service';
+import {AnchorPlacerController} from './toolbar/tools/anchor/anchor.controller';
+import {Anchor} from '../anchor/anchor.type';
 
 @Component({
   selector: 'app-map-viewer',
@@ -15,7 +17,8 @@ export class MapViewerComponent implements OnInit {
   imageLoaded: boolean = false;
 
   constructor(private mapLoaderInformer: MapLoaderInformerService,
-              private mapService: MapService) {
+              private mapService: MapService,
+              private anchorTool: AnchorPlacerController) {
   }
 
   ngOnInit(): void {
@@ -53,10 +56,6 @@ export class MapViewerComponent implements OnInit {
     this.prepareScaleHint();
   }
 
-  logMsg(msg: string) {
-    console.log('msg');
-  }
-
   private prepareScaleHint = (): void => {
     const scaleHint = d3.select('#scaleHint');
     scaleHint
@@ -69,8 +68,14 @@ export class MapViewerComponent implements OnInit {
   }
 
   droppedObject(event) {
-    console.log('event');
-    console.log(event);
+    if (isAnchorType(event.dragData)) {
+      this.anchorTool.setChosenAnchor(event.dragData);
+      this.anchorTool.setCoordinates({x: event.mouseEvent.offsetX, y: event.mouseEvent.offsetY});
+    }
+
+    function isAnchorType(checkType: any): boolean {
+      return (<Anchor>checkType.verified) !== undefined;
+    }
   }
 
 }

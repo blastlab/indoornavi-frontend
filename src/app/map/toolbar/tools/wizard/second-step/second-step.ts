@@ -66,7 +66,7 @@ export class SecondStepComponent implements WizardStep {
 
   public placeOnMap(data: AnchorDistance): void {
     this.coords = [];
-    const map: d3.selector = d3.select('#map');
+    const map: d3.selection = d3.select('#map');
     map.style('cursor', 'crosshair');
     this.translate.get('wizard.click.place.anchor', {id: this.data.anchorId}).subscribe((text: string) => {
       this.hintBar.publishHint(text);
@@ -118,7 +118,8 @@ export class SecondStepComponent implements WizardStep {
 
   public drawSinkDistance(distance: number) {
     const map = d3.select('#map');
-    const boxMargin = DrawingService.boxSize / 2;
+    const boxMargin = parseInt(map.select('.sinkMarker').attr('x'), 10);
+    console.log(boxMargin);
     const sinkX = map.select('.wizardSink').attr('x');
     const sinkY = map.select('.wizardSink').attr('y');
     map.append('circle')

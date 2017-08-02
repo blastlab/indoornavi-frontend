@@ -10,11 +10,11 @@ import {DeviceDialogComponent} from '../device/device.dialog';
 import {DeviceListComponent} from '../device/device.list';
 
 @Component({
-  templateUrl: './anchor.html',
+  templateUrl: './anchor-list.html',
   styleUrls: ['../device/device.css']
 })
 
-export class AnchorComponent implements OnInit, OnDestroy {
+export class AnchorListComponent implements OnInit, OnDestroy {
   private socketSubscription: Subscription;
   @ViewChild('verified')
   private verifiedList: DeviceListComponent;

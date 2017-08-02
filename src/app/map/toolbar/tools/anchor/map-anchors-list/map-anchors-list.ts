@@ -6,12 +6,12 @@ import {Anchor} from '../../../../../anchor/anchor.type';
 import {Subscription} from 'rxjs/Subscription';
 import {DeviceService} from 'app/device/device.service';
 import {TranslateService} from '@ngx-translate/core';
-import {AnchorPlacerController} from '../anchor-placer.controller';
+import {AnchorPlacerController} from '../anchor.controller';
 
 @Component({
   selector: 'app-remaining-devices-list',
-  templateUrl: './remaining-devices-list.html',
-  styleUrls: ['./remaining-devices-list.css']
+  templateUrl: './map-anchors-list.html',
+  styleUrls: ['./map-anchors-list.css']
 })
 export class RemainingDevicesListComponent implements OnInit {
   public showAnchorsList: boolean = false;
@@ -39,8 +39,9 @@ export class RemainingDevicesListComponent implements OnInit {
       this.socketSubscription = stream.subscribe((anchors: Array<Anchor>) => {
         this.ngZone.run(() => {
           anchors.forEach((anchor: Anchor) => {
-            // TODO if anchor.isPlacedOnMap -> remainingAnchors.remove(anchor) ?
-            this.remainingAnchors.setValue(anchor.id, anchor);
+            if (!anchor.floorId) {
+              this.remainingAnchors.setValue(anchor.id, anchor);
+            }
           });
         });
         this.anchors = this.getRemainingAnchors();
@@ -51,39 +52,23 @@ export class RemainingDevicesListComponent implements OnInit {
 
   getRemainingAnchors(): Anchor[] {
     return this.remainingAnchors.values();
-    // TODO - secure case when there are no anchors
   }
 
-  private toggleAnchorIsPlacedFlag(): void {
+  private toggleAnchorIsPlacedFlag(evt: Event): void {
+    console.log(evt);
     // this.deviceService.update();
   }
 
   private controlListVisibility(): void {
-    this.anchorPlacerController.listVisibilitySet.subscribe((visible) => {
-      this.showAnchorsList = visible;
+    this.anchorPlacerController.listVisibilitySet.subscribe((visibility) => {
+      this.showAnchorsList = visibility;
       // TODO animate position by changing attr `left`
     });
   }
 
-  public anchorToPlaceChosen(anchor: Anchor): void {
-    this.anchorPlacerController.setChosenAnchor(anchor);
-  }
-
   anchorDragStarted(anchor: Anchor) {
     console.log('started');
-    console.log(anchor);
-  }
-
-  logMsg(msg: string) {
-    console.log(msg);
-  }
-
-  private hideList(): void {
-    this.anchorPlacerController.setListVisibility(false);
-  }
-
-  private showList(): void {
-    this.anchorPlacerController.setListVisibility(true);
+    // TODO publish new hint about dnd
   }
 
 }

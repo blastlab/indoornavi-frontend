@@ -66,7 +66,7 @@ export class ThirdStepComponent implements WizardStep {
 
   public placeOnMap(data: AnchorSuggestedPositions): void {
     this.coords = [];
-    const map: d3.selector = d3.select('#map');
+    const map: d3.selection = d3.select('#map');
     map.style('cursor', 'crosshair');
     this.translate.get('wizard.click.place.anchor', {id: this.data.anchorId}).subscribe((text: string) => {
       this.hintBar.publishHint(text);

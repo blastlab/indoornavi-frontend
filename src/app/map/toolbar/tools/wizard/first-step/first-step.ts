@@ -62,7 +62,7 @@ export class FirstStepComponent implements WizardStep {
 
   public placeOnMap(data: Anchor): void {
     this.coords = [];
-    const map: d3.selector = d3.select('#map');
+    const map: d3.selection = d3.select('#map');
     map.style('cursor', 'crosshair');
     this.translate.get('wizard.click.place.sink', {id: this.data.shortId}).subscribe((text: string) => {
       this.hintBar.publishHint(text);
@@ -72,7 +72,7 @@ export class FirstStepComponent implements WizardStep {
       this.coords.push(coordinates);
       const sinkParams: MapObjectParams = {
         id: 'sink' + this.data.shortId, iconName: NaviIcons.ANCHOR,
-        groupClass: 'wizardSink sink', markerClass: 'sinkMarker', fill: 'blue'
+        groupClass: 'wizardSink sink anchor', markerClass: 'sinkMarker', fill: 'blue'
       };
       this.draw.drawObject(sinkParams, coordinates);
       map.on('click', null);

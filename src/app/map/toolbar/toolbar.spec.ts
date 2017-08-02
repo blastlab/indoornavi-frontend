@@ -18,7 +18,7 @@ import {IconService} from '../../utils/drawing/icon.service';
 import {ScaleInputService} from './tools/scale/input/input.service';
 import {ScaleHintService} from './tools/scale/hint/hint.service';
 import {MapLoaderInformerService} from '../../utils/map-loader-informer/map-loader-informer.service';
-import {AnchorPlacerComponent} from './tools/anchor-placer/anchor-placer';
+import {AnchorPlacerComponent} from './tools/anchor/anchor';
 
 describe('ToolbarComponent', () => {
   let component: ToolbarComponent;

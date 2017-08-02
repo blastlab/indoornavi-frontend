@@ -1,8 +1,7 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {RemainingDevicesListComponent} from './remaining-devices-list';
+import {RemainingDevicesListComponent} from './map-anchors-list';
 import {TranslateModule} from '@ngx-translate/core';
 import {SocketService} from '../../../../../utils/socket/socket.service';
-import {Anchor} from '../../../../../anchor/anchor.type';
 import {DeviceService} from 'app/device/device.service';
 import {DndModule} from 'ng2-dnd';
 import {MaterialModule} from '@angular/material';
@@ -15,7 +14,6 @@ import {AuthGuard} from 'app/auth/auth.guard';
 import {SharedModule} from 'app/utils/shared/shared.module';
 import {HttpModule} from '@angular/http';
 import {HttpService} from '../../../../../utils/http/http.service';
-import {RouterTestingModule} from '@angular/router/testing';
 import {Router, RouterModule} from '@angular/router';
 
 describe('RemainingDevicesListComponent', () => {

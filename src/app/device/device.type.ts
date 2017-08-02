@@ -4,4 +4,7 @@ export interface Device {
   shortId: number;
   longId: number;
   verified: boolean;
+  x?: number;
+  y?: number;
+  floorId?: number;
 }

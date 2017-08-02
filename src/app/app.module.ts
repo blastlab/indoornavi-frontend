@@ -23,7 +23,7 @@ import {FloorService} from './floor/floor.service';
 import {FloorDialogComponent} from './floor/floor.dialog';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
-import {AnchorComponent} from './anchor/anchor';
+import {AnchorListComponent} from './anchor/anchor-list';
 import {Ng2BreadcrumbModule} from 'ng2-breadcrumb/ng2-breadcrumb';
 import {WebSocketService} from 'angular2-websocket-service';
 import {SocketService} from './utils/socket/socket.service';
@@ -68,11 +68,10 @@ import {DrawingService} from './utils/drawing/drawing.service';
 import {Hammer} from 'hammerjs/hammer';
 import {IconService} from './utils/drawing/icon.service';
 import {HintBarService} from './map/hint-bar/hint-bar.service';
-import {ContextMenuModule} from 'ngx-contextmenu';
-import {AnchorPlacerComponent} from './map/toolbar/tools/anchor-placer/anchor-placer';
-import {RemainingDevicesListComponent} from './map/toolbar/tools/anchor-placer/remaining-devices-list/remaining-devices-list';
-import {RemainingDevicesFilter} from './map/toolbar/tools/anchor-placer/remaining-devices-list/remaining-devices-filter';
-import {AnchorPlacerController} from './map/toolbar/tools/anchor-placer/anchor-placer.controller';
+import {AnchorPlacerComponent} from './map/toolbar/tools/anchor/anchor';
+import {RemainingDevicesListComponent} from './map/toolbar/tools/anchor/map-anchors-list/map-anchors-list';
+import {RemainingDevicesFilter} from './map/toolbar/tools/anchor/map-anchors-list/map-anchors-filter';
+import {AnchorPlacerController} from './map/toolbar/tools/anchor/anchor.controller';
 
 
 const appRoutes: Routes = [
@@ -81,7 +80,7 @@ const appRoutes: Routes = [
   {path: 'logout', component: AuthComponent},
   {path: 'complexes', component: ComplexComponent, canActivate: [CanRead], data: {permission: 'COMPLEX'}},
   {path: 'complexes/:complexId/buildings', component: BuildingComponent, canActivate: [CanRead], data: {permission: 'BUILDING'}},
-  {path: 'anchors', component: AnchorComponent, canActivate: [CanRead], data: {permission: 'ANCHOR'}},
+  {path: 'anchors', component: AnchorListComponent, canActivate: [CanRead], data: {permission: 'ANCHOR'}},
   {path: 'tags', component: TagComponent, canActivate: [CanRead], data: {permission: 'TAG'}},
   {path: 'users', component: UserComponent, canActivate: [CanRead], data: {permission: 'USER'}},
   {path: 'changePassword', component: ChangePasswordComponent, canActivate: [CanRead]},
@@ -108,7 +107,7 @@ export function HttpLoaderFactory(http: Http) {
     ComplexConfirmComponent,
     BuildingComponent,
     BuildingDialogComponent,
-    AnchorComponent,
+    AnchorListComponent,
     DeviceListComponent,
     DeviceDialogComponent,
     BuildingConfirmComponent,
