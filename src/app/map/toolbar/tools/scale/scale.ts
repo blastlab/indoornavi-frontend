@@ -1,24 +1,23 @@
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
 import {Tool} from '../tool';
 import {ToolName} from '../tools.enum';
 import * as d3 from 'd3';
 import {TranslateService} from '@ngx-translate/core';
 import {Scale} from './scale.type';
 import {Line, Point} from '../../../map.type';
-import {Floor} from '../../../../floor/floor.type';
 import {ScaleInputService} from './input/input.service';
 import {ScaleHintService} from './hint/hint.service';
 import {MapLoaderInformerService} from '../../../../utils/map-loader-informer/map-loader-informer.service';
 import {Subscription} from 'rxjs/Subscription';
-import {promise} from 'selenium-webdriver';
-import fullyResolved = promise.fullyResolved;
 import {Geometry} from '../../../utils/geometry';
 import {HintBarService} from '../../../hint-bar/hint-bar.service';
+import {ConfigurationService} from '../../../../floor/configuration/configuration.service';
+import {Observable} from 'rxjs/Observable';
 
 @Component({
   selector: 'app-scale',
   templateUrl: './scale.html',
-  styleUrls: ['../tool.css', ]
+  styleUrls: ['../tool.css']
 })
 export class ScaleComponent implements Tool, OnDestroy, OnInit {
   @Output() clicked: EventEmitter<Tool> = new EventEmitter<Tool>();
@@ -26,7 +25,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private pointsArray: Array<Point> = [];
   private linesArray: Array<Line> = [];
   public active: boolean = false;
-  public toolName: ToolName = ToolName.SCALE; // used in hint-bar component as a toolName
   public isScaleDisplayed: boolean = false;
   public isScaleSet: boolean = false;
   private isFirstPointDrawn: boolean = false;
@@ -37,13 +35,14 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private scaleGroup = d3.select('#scaleGroup');
   private mapWidth: number;
   private mapHeight: number;
-  @Input() floor: Floor;
+  private scale: Scale;
 
   constructor(private translate: TranslateService,
               private scaleInput: ScaleInputService,
               private scaleHint: ScaleHintService,
               private mapLoaderInformer: MapLoaderInformerService,
-              private hintBar: HintBarService) {
+              private hintBar: HintBarService,
+              private configurationService: ConfigurationService) {
     this.setTranslations();
   }
 
@@ -54,78 +53,39 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
-    this.mapLoaderSubscription = this.mapLoaderInformer.isLoaded$.subscribe(() => {
-      this.mapWidth = d3.select('#map').attr('width');
-      this.mapHeight = d3.select('#map').attr('height');
-      this.createSvgGroupWithScale();
-      this.updateScaleGroup();
-    });
+    this.createEmptyScale();
+
+    this.mapLoaderSubscription =
+      Observable.zip(this.mapLoaderInformer.isLoaded$, this.configurationService.configurationLoaded())
+        .subscribe(([_, configuration]) => {
+          this.scale = {...configuration.scale};
+          this.mapWidth = d3.select('#map').attr('width');
+          this.mapHeight = d3.select('#map').attr('height');
+          this.createSvgGroupWithScale();
+          this.updateScaleGroup();
+        });
 
     this.saveButtonSubscription = this.scaleInput.saveClicked$.subscribe(() => {
       this.clicked.emit(this);
       this.isScaleSet = true;
+      this.configurationService.setScale(this.scale);
     });
 
     this.removeButtonSubscription = this.scaleInput.removeClicked$.subscribe(() => {
       this.isScaleSet = false;
       this.isScaleDisplayed = false;
-      this.floor.scale = <Scale>{
-        start: null,
-        stop: null,
-        realDistance: null,
-        measure: null
-      };
+      this.createEmptyScale();
       this.pointsArray = [];
       this.linesArray = [];
       this.isFirstPointDrawn = false;
       this.startCreatingScale();
       this.updateScaleGroup();
     });
+
   }
 
-  private updateScaleGroup() {
-    this.scaleGroup = d3.select('#scaleGroup');
-  }
-
-  private createSvgGroupWithScale(): void {
-    this.scaleHint.publishScale(this.floor.scale);
-    if (!!this.floor.scale) {
-      this.isScaleSet = true;
-      d3.select('#map')
-        .append('g')
-        .attr('id', 'scaleGroup')
-        .style('display', 'none');
-      this.updateScaleGroup();
-      this.drawScaleFromDB();
-    } else {
-      this.floor.scale = <Scale>{
-        start: null,
-        stop: null,
-        realDistance: null,
-        measure: null
-      };
-    }
-  }
-
-  private drawScaleFromDB(): void {
-    this.pointsArray.push(this.floor.scale.start);
-    this.pointsArray.push(this.floor.scale.stop);
-    this.linesArray.push(this.createLine());
-    this.redrawLine();
-    this.redrawEndings();
-    this.redrawInput();
-    this.scaleInput.publishScale(this.floor.scale);
-  }
-
-  public toolClicked(): void {
-    this.clicked.emit(this);
-  }
-
-  private setTranslations() {
-    this.translate.setDefaultLang('en');
-    this.translate.get('scale.basic.msg').subscribe((value: string) => {
-      this.hintMessage = value;
-    });
+  public getToolName(): ToolName {
+    return ToolName.SCALE;
   }
 
   public setActive(): void {
@@ -141,6 +101,44 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.active = false;
     this.translate.get('hint.chooseTool').subscribe((value: string) => {
       this.hintBar.publishHint(value);
+    });
+  }
+
+  public toolClicked(): void {
+    this.clicked.emit(this);
+  }
+
+  private updateScaleGroup() {
+    this.scaleGroup = d3.select('#scaleGroup');
+  }
+
+  private createSvgGroupWithScale(): void {
+    d3.select('#map')
+      .append('g')
+      .attr('id', 'scaleGroup')
+      .style('display', 'none');
+    this.updateScaleGroup();
+    this.drawScaleFromDB();
+  }
+
+  private drawScaleFromDB(): void {
+    if (!!this.scale.realDistance && !!this.scale.start && !!this.scale.stop) {
+      this.isScaleSet = true;
+      this.pointsArray.push(this.scale.start);
+      this.pointsArray.push(this.scale.stop);
+      this.linesArray.push(this.createLine());
+      this.redrawLine();
+      this.redrawEndings();
+      this.redrawInput();
+      this.scaleInput.publishScale(this.scale);
+      this.scaleHint.publishScale(this.scale);
+    }
+  }
+
+  private setTranslations() {
+    this.translate.setDefaultLang('en');
+    this.translate.get('scale.basic.msg').subscribe((value: string) => {
+      this.hintMessage = value;
     });
   }
 
@@ -280,9 +278,8 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   private setScalePoints(): void {
-    this.floor.scale.start = this.pointsArray[0];
-    this.floor.scale.stop = this.pointsArray[1];
-    this.scaleInput.publishScale(this.floor.scale);
+    this.scale.start = this.pointsArray[0];
+    this.scale.stop = this.pointsArray[1];
   }
 
   private redrawLine(): void {
@@ -443,12 +440,12 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       x: 0,
       y: 0
     };
-    if (this.floor.scale.start.x == circle.attr('cx') && this.floor.scale.start.y == circle.attr('cy')) {
-      point.x = this.floor.scale.stop.x;
-      point.y = this.floor.scale.stop.y;
+    if (this.scale.start.x === parseInt(circle.attr('cx'), 10) && this.scale.start.y === parseInt(circle.attr('cy'), 10)) {
+      point.x = this.scale.stop.x;
+      point.y = this.scale.stop.y;
     } else {
-      point.x = this.floor.scale.start.x;
-      point.y = this.floor.scale.start.y;
+      point.x = this.scale.start.x;
+      point.y = this.scale.start.y;
     }
     return point;
   }
@@ -475,5 +472,14 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
         inputCoords.y -= (inputHeight + this.END_SIZE);
       }
     });
+  }
+
+  private createEmptyScale(): void {
+    this.scale = <Scale>{
+      start: null,
+      stop: null,
+      realDistance: null,
+      measure: null
+    };
   }
 }

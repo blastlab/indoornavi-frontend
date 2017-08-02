@@ -65,7 +65,7 @@ describe('ThirdStepComponent', () => {
     component.data = anchor;
     const sinkPos: Point = {x: 150, y: 450};
     const anchorPos: Point = {x: 300, y: 300};
-    component.coords = [{x: 525, y: 175}];
+    component.coordinates = [{x: 525, y: 175}];
     const degree = 45;
     const givenWizardData: WizardData = {
       sinkShortId: 7245,
@@ -86,10 +86,10 @@ describe('ThirdStepComponent', () => {
   });
 
   it('should clean data in ThirdStep', () => {
-    component.coords = [{x: 543, y: 623}];
+    component.coordinates = [{x: 543, y: 623}];
     component.data = {anchorId: 23, points: [{x: 250, y: 350}, {x: 200, y: 100}]};
     component.clean();
-    expect(component.coords.length).toEqual(0);
+    expect(component.coordinates.length).toEqual(0);
     expect(component.data).toBe(null);
     acceptButtons.visibilitySet.subscribe(async (visible) => {
       expect(visible).toBeFalsy();

@@ -22,15 +22,17 @@ export class FirstStepComponent implements WizardStep {
   @Output() clearView: EventEmitter<boolean> = new EventEmitter<boolean>();
   public stepIndex: number = 0;
   public title = 'wizard.title.step1';
-  public socketData = new Collections.Set<Anchor>((sink: Anchor) => {
-    return '' + sink.shortId;
-  });
+  public socketData = new Collections.Set<Anchor>(FirstStepComponent.compareFn);
   public isLoading: boolean = true;
   public data: Anchor;
   public coords: Array<Point>;
   @ViewChild(TemplateRef) dialogTemplate: TemplateRef<any>;
 
   dialogRef: MdDialogRef<MdDialog>;
+
+  private static compareFn(sink: Anchor): string {
+    return '' + sink.shortId;
+  }
 
   constructor(public translate: TranslateService,
               public dialog: MdDialog,
@@ -114,21 +116,22 @@ export class FirstStepComponent implements WizardStep {
 
   public prepareToSend(data: WizardData): SocketMsg {
     return {
-        sinkShortId: this.data.shortId,
-        sinkPosition: null,
-        anchorShortId: null,
-        degree: null
+      sinkShortId: this.data.shortId,
+      sinkPosition: null,
+      anchorShortId: null,
+      degree: null
     };
   }
 
   public updateWizardData(data: WizardData): WizardData {
     return {
       sinkShortId: this.data.shortId,
-        sinkPosition: this.coords[0],
-        anchorShortId: null,
-        degree: null,
-        firstAnchorPosition: null,
-        secondAnchorPosition: null
+      sinkPosition: this.coords[0],
+      anchorShortId: null,
+      degree: null,
+      firstAnchorPosition: null,
+      secondAnchorPosition: null,
+      secondAnchorShortId: null
     };
   }
 

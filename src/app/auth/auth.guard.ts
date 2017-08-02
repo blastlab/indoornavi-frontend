@@ -51,25 +51,3 @@ export class CanRead implements CanActivate {
     return false;
   }
 }
-
-// @Injectable()
-// export class CanReadComplex implements CanActivate {
-//   constructor(private router: Router) {
-//   }
-//
-//   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-//     console.log(route);
-//     console.log(state);
-//     return PermissionChecker.check('COMPLEX_READ', this.router, state);
-//   }
-// }
-//
-// @Injectable()
-// export class CanReadBuilding implements CanActivate {
-//   constructor(private router: Router) {
-//   }
-//
-//   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-//     return PermissionChecker.check('BUILDING_READ', this.router, state);
-//   }
-// }

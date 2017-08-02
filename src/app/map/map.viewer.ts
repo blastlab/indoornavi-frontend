@@ -1,10 +1,8 @@
 import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
-import {Config} from '../../config';
 import * as d3 from 'd3';
 import {Floor} from '../floor/floor.type';
-import {Point, Line} from './map.type';
+import {Point} from './map.type';
 import {MapLoaderInformerService} from '../utils/map-loader-informer/map-loader-informer.service';
-import {ImageService} from 'angular2-image-upload/lib/image.service';
 import {MapService} from './map.service';
 
 @Component({
@@ -42,7 +40,7 @@ export class MapViewerComponent implements OnInit {
     });
   }
 
-  private setupSVG = (width: number, height: number): void => {
+  private setupSVG(width: number, height: number): void {
     d3.select('#map-container').append('svg')
       .attr('id', 'map')
       .attr('width', width)
@@ -58,7 +56,7 @@ export class MapViewerComponent implements OnInit {
     this.drawPoints();
   }
 
-  private drawPoints = (): void => {
+  private drawPoints(): void {
     const points = d3.select('#map').selectAll('circle');
     points.data(this.pointsTable).enter()
       .append('svg:circle')
@@ -76,7 +74,7 @@ export class MapViewerComponent implements OnInit {
       .remove();
   }
 
-  private prepareScaleHint = (): void => {
+  private prepareScaleHint(): void {
     const scaleHint = d3.select('#scaleHint');
     scaleHint
       .on('mouseover', function () {

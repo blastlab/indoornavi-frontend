@@ -3,7 +3,6 @@ import {Observable} from 'rxjs/Observable';
 import {Floor} from '../floor/floor.type';
 import {HttpService} from '../utils/http/http.service';
 import {ImageConfiguration} from './map.configuration.type';
-import {ResponseContentType} from '@angular/http';
 
 @Injectable()
 export class MapService {

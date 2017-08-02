@@ -4,11 +4,11 @@ import {Scale} from '../scale.type';
 
 @Injectable()
 export class ScaleHintService {
-  private scale = new Subject<Scale>();
+  private scaleEmitter = new Subject<Scale>();
 
-  public scale$ = this.scale.asObservable();
+  public scalePublished = this.scaleEmitter.asObservable();
 
   publishScale(val: Scale) {
-    this.scale.next(val);
+    this.scaleEmitter.next(val);
   }
 }
