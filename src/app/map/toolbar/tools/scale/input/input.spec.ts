@@ -14,7 +14,7 @@ import {DndModule} from 'ng2-dnd';
 import {FloorService} from '../../../../../floor/floor.service';
 import {ToastService} from '../../../../../utils/toast/toast.service';
 import {HttpService} from '../../../../../utils/http/http.service';
-import {MeasureEnum, Scale} from '../scale.type';
+import {Measure, Scale} from '../scale.type';
 import {Point} from '../../../../map.type';
 import {Floor} from '../../../../../floor/floor.type';
 import {Observable} from 'rxjs/Rx';
@@ -64,7 +64,7 @@ describe('ScaleInputComponent', () => {
         y: 101
       },
       realDistance: 112,
-      measure: MeasureEnum.METERS
+      measure: Measure.METERS
     };
   });
 

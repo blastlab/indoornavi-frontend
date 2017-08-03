@@ -2,7 +2,8 @@
      [dropZones]="['map-container']" (onDropSuccess)="droppedObject($event)">
   <canvas #canvas></canvas>
   <app-scale-input></app-scale-input>
-  <app-scale-hint [scale]="floor.scale"></app-scale-hint>
+  <app-scale-hint></app-scale-hint>
   <app-accept-buttons></app-accept-buttons>
   <app-remaining-devices-list></app-remaining-devices-list>
+  <app-configuration [floor]="floor"></app-configuration>
 </div>

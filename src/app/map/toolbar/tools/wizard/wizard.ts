@@ -3,7 +3,6 @@ import {ToolName} from '../tools.enum';
 import {Tool} from '../tool';
 import {TranslateService} from '@ngx-translate/core';
 import {Subscription} from 'rxjs/Rx';
-import {ToastService} from '../../../../utils/toast/toast.service';
 import {Config} from '../../../../../config';
 import {SocketService} from '../../../../utils/socket/socket.service';
 import {WizardStep} from './wizard-step';
@@ -13,6 +12,9 @@ import {SecondStepComponent} from './second-step/second-step';
 import {ThirdStepComponent} from './third-step/third-step';
 import {MdDialog, MdDialogRef} from '@angular/material';
 import {HintBarService} from '../../../hint-bar/hint-bar.service';
+import {ConfigurationService} from '../../../../floor/configuration/configuration.service';
+import {Sink} from '../../../../sink/sink.type';
+import {Anchor} from '../../../../anchor/anchor.type';
 
 @Component({
   selector: 'app-wizard',
@@ -20,9 +22,7 @@ import {HintBarService} from '../../../hint-bar/hint-bar.service';
   styleUrls: ['../tool.css']
 })
 export class WizardComponent implements Tool {
-
   @Output() clicked: EventEmitter<Tool> = new EventEmitter<Tool>();
-  public toolName: ToolName = ToolName.WIZARD; // used in hint-bar component as a toolName
   public hintMessage: string;
   public active: boolean = false;
   public activeStep: WizardStep;
@@ -40,9 +40,9 @@ export class WizardComponent implements Tool {
   constructor(private socketService: SocketService,
               public translate: TranslateService,
               public dialog: MdDialog,
-              private toastService: ToastService,
               private ngZone: NgZone,
-              private hintBar: HintBarService) {
+              private hintBar: HintBarService,
+              private configurationService: ConfigurationService) {
     this.setTranslations();
   }
 
@@ -54,6 +54,21 @@ export class WizardComponent implements Tool {
     this.active = true;
     this.initWizard();
     this.wizardCompleted = false;
+  }
+
+  public setInactive(): void {
+    if (!this.wizardCompleted) {
+      this.cleanAll();
+    }
+    this.translate.get('hint.chooseTool').subscribe((value: string) => {
+      this.hintBar.publishHint(value);
+    });
+    this.active = false;
+    this.destroySocket();
+  }
+
+  public getToolName(): ToolName {
+    return ToolName.WIZARD;
   }
 
   private setTranslations(): void {
@@ -77,17 +92,6 @@ export class WizardComponent implements Tool {
     });
   }
 
-  public setInactive(): void {
-    if (!this.wizardCompleted) {
-      this.cleanAll();
-    }
-    this.translate.get('hint.chooseTool').subscribe((value: string) => {
-      this.hintBar.publishHint(value);
-    });
-    this.active = false;
-    this.destroySocket();
-  }
-
   private cleanAll(): void {
     let stepIndex = this.activeStep.stepIndex;
     while (stepIndex >= 0) {
@@ -105,6 +109,26 @@ export class WizardComponent implements Tool {
   public wizardNextStep(nextStepIndex: number): void {
     if (nextStepIndex === this.steps.length) {
       this.wizardCompleted = true;
+      this.wizardData = this.activeStep.updateWizardData(this.wizardData);
+
+      const anchors: Anchor[] = [];
+      anchors.push(<Anchor>{
+        shortId: this.wizardData.anchorShortId,
+        x: this.wizardData.firstAnchorPosition.x,
+        y: this.wizardData.firstAnchorPosition.y
+      });
+      anchors.push(<Anchor>{
+        shortId: this.wizardData.secondAnchorShortId,
+        x: this.wizardData.secondAnchorPosition.x,
+        y: this.wizardData.secondAnchorPosition.y
+      });
+      this.configurationService.addSink(<Sink>{
+        shortId: this.wizardData.sinkShortId,
+        x: this.wizardData.sinkPosition.x,
+        y: this.wizardData.sinkPosition.y,
+        anchors: anchors
+      });
+
       this.dialogRef = this.dialog.open(this.dialogTemplate);
       this.dialogRef.afterClosed().subscribe(() => {
         this.emitToggleActive();
@@ -119,7 +143,7 @@ export class WizardComponent implements Tool {
   }
 
   public wizardStopped(endWizard: boolean) {
-    if (endWizard === true) {
+    if (endWizard) {
       this.cleanAll();
       this.dialogRef.close();
       this.emitToggleActive();
@@ -147,6 +171,7 @@ export class WizardComponent implements Tool {
   }
 
 }
+
 export interface SocketMsg {
   sinkShortId: number;
   sinkPosition: Point;
@@ -157,5 +182,6 @@ export interface SocketMsg {
 export interface WizardData extends SocketMsg {
   firstAnchorPosition: Point;
   secondAnchorPosition: Point;
+  secondAnchorShortId: number;
 }
 

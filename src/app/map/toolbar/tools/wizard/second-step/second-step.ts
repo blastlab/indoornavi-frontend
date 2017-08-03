@@ -22,15 +22,17 @@ export class SecondStepComponent implements WizardStep {
   @Output() clearView: EventEmitter<boolean> = new EventEmitter<boolean>();
   public stepIndex: number = 1;
   public title = 'wizard.title.step2';
-  public socketData = new Collections.Set<AnchorDistance>((distance: AnchorDistance) => {
-    return '' + distance.anchorId;
-  });
+  public socketData = new Collections.Set<AnchorDistance>(SecondStepComponent.compareFn);
   public isLoading: boolean = true;
   public data: AnchorDistance;
   public coords: Array<Point> = [];
   @ViewChild(TemplateRef) dialogTemplate: TemplateRef<any>;
 
   dialogRef: MdDialogRef<MdDialog>;
+
+  private static compareFn(distance: AnchorDistance): string {
+    return '' + distance.anchorId;
+  }
 
   constructor(public translate: TranslateService,
               public dialog: MdDialog,
@@ -138,7 +140,7 @@ export class SecondStepComponent implements WizardStep {
   }
 
   public prepareToSend(data: WizardData): SocketMsg {
-    const invertedSinkPosition: Point = data.sinkPosition;
+    const invertedSinkPosition: Point = {...data.sinkPosition};
     invertedSinkPosition.y = -invertedSinkPosition.y;
     return {
       sinkShortId: data.sinkShortId,
@@ -155,7 +157,8 @@ export class SecondStepComponent implements WizardStep {
       anchorShortId: this.data.anchorId,
       degree: this.calculateDegree(data.sinkPosition, this.coords[0]),
       firstAnchorPosition: this.coords[0],
-      secondAnchorPosition: null
+      secondAnchorPosition: null,
+      secondAnchorShortId: null
     };
   }
 

@@ -41,7 +41,7 @@ export class MapViewerComponent implements OnInit {
     });
   }
 
-  private setupSVG = (width: number, height: number): void => {
+  private setupSVG(width: number, height: number): void {
     d3.select('#map-container').append('svg')
       .attr('id', 'map')
       .attr('width', width)
@@ -56,7 +56,7 @@ export class MapViewerComponent implements OnInit {
     this.prepareScaleHint();
   }
 
-  private prepareScaleHint = (): void => {
+  private prepareScaleHint(): void {
     const scaleHint = d3.select('#scaleHint');
     scaleHint
       .on('mouseover', function () {

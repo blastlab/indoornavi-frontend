@@ -6,7 +6,7 @@ import {MaterialModule} from '@angular/material';
 import {ScaleHintService} from './hint/hint.service';
 import {ScaleInputService} from './input/input.service';
 import {MapLoaderInformerService} from '../../../../utils/map-loader-informer/map-loader-informer.service';
-import {MeasureEnum, Scale} from 'app/map/toolbar/tools/scale/scale.type';
+import {Measure, Scale} from 'app/map/toolbar/tools/scale/scale.type';
 import {Floor} from '../../../../floor/floor.type';
 import {Line, Point} from '../../../map.type';
 import {Geometry} from '../../../utils/geometry';
@@ -53,7 +53,7 @@ describe('Scale', () => {
       start: point1,
       stop: point2,
       realDistance: 112,
-      measure: MeasureEnum.METERS
+      measure: Measure.METERS
     };
     floor = <Floor>{
       scale: this.scale

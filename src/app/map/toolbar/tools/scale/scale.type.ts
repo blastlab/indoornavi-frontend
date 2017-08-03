@@ -4,10 +4,10 @@ export interface Scale {
   start: Point;
   stop: Point;
   realDistance: number;
-  measure: MeasureEnum;
+  measure: Measure;
 }
 
-export enum MeasureEnum {
+export enum Measure {
   CENTIMETERS,
   METERS
 }

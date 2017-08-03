@@ -3,10 +3,7 @@ import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {Http, HttpModule} from '@angular/http';
 import {ComplexComponent} from './complex/complex';
-import {
-  MaterialModule, MdDialogModule, MdCardModule, MdButtonModule, MdIconRegistry,
-  MdIconModule
-} from '@angular/material';
+import {MaterialModule, MdButtonModule, MdCardModule, MdDialogModule, MdIconModule, MdIconRegistry} from '@angular/material';
 import {ComplexService} from './complex/complex.service';
 import {ComplexDialogComponent} from './complex/complex.dialog';
 import {ComplexConfirmComponent} from './complex/complex.confirm';
@@ -65,9 +62,11 @@ import {FirstStepComponent} from './map/toolbar/tools/wizard/first-step/first-st
 import {SecondStepComponent} from './map/toolbar/tools/wizard/second-step/second-step';
 import {ThirdStepComponent} from './map/toolbar/tools/wizard/third-step/third-step';
 import {DrawingService} from './utils/drawing/drawing.service';
-import {Hammer} from 'hammerjs/hammer';
 import {IconService} from './utils/drawing/icon.service';
 import {HintBarService} from './map/hint-bar/hint-bar.service';
+import {ConfigurationComponent} from './floor/configuration/configuration';
+import {ConfigurationService} from './floor/configuration/configuration.service';
+import {D3Service} from 'd3-ng2-service';
 import {AnchorPlacerComponent} from './map/toolbar/tools/anchor/anchor';
 import {RemainingDevicesListComponent} from './map/toolbar/tools/anchor/map-anchors-list/map-anchors-list';
 import {RemainingDevicesFilter} from './map/toolbar/tools/anchor/map-anchors-list/map-anchors-filter';
@@ -129,6 +128,7 @@ export function HttpLoaderFactory(http: Http) {
     ChangePasswordComponent,
     UnauthorizedComponent,
     PermissionGroupComponent,
+    ConfigurationComponent,
     WizardComponent,
     AcceptButtonsComponent,
     FirstStepComponent,
@@ -194,7 +194,9 @@ export function HttpLoaderFactory(http: Http) {
     AuthService,
     CanRead,
     AuthGuard,
+    ConfigurationService,
     PermissionGroupService,
+    D3Service,
     AnchorPlacerController
   ], bootstrap: [AppComponent]
 })
