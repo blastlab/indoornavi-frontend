@@ -3,7 +3,14 @@ import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {Http, HttpModule} from '@angular/http';
 import {ComplexComponent} from './complex/complex';
-import {MaterialModule, MdButtonModule, MdCardModule, MdDialogModule, MdIconModule, MdIconRegistry} from '@angular/material';
+import {
+  MaterialModule,
+  MdButtonModule,
+  MdCardModule,
+  MdDialogModule,
+  MdIconModule,
+  MdIconRegistry
+} from '@angular/material';
 import {ComplexService} from './complex/complex.service';
 import {ComplexDialogComponent} from './complex/complex.dialog';
 import {ComplexConfirmComponent} from './complex/complex.confirm';

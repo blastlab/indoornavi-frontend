@@ -11,6 +11,8 @@ import {HintBarService} from '../../../hint-bar/hint-bar.service';
 import {DrawingService} from '../../../../utils/drawing/drawing.service';
 import {AcceptButtonsService} from '../../../../utils/accept-buttons/accept-buttons.service';
 import * as d3 from 'd3';
+import {Sink} from '../../../../sink/sink.type';
+import {ConfigurationService} from '../../../../floor/configuration/configuration.service';
 
 
 @Component({
@@ -20,20 +22,71 @@ import * as d3 from 'd3';
 })
 export class AnchorPlacerComponent implements Tool, OnInit {
   @Output() clicked: EventEmitter<Tool> = new EventEmitter<Tool>();
-  public toolName: ToolName = ToolName.ANCHOR;
   public hintMessage: string;
   public active: boolean = false;
+  private floorId: number;
+  public chosenSink: Sink;
+  public selectedAnchor: Anchor;
 
   constructor(public translate: TranslateService,
               private anchorPlacerController: AnchorPlacerController,
               private accButtons: AcceptButtonsService,
-              private draw: DrawingService,
-              private hintBar: HintBarService) {
+              private drawingService: DrawingService,
+              private hintBar: HintBarService,
+              private configuration: ConfigurationService) {
     this.setTranslations();
   }
 
   ngOnInit() {
     this.subscribeForAnchor();
+    this.configuration.configurationLoaded().first().subscribe((config) => {
+      this.floorId = config.floorId;
+    });
+  }
+
+  public getToolName(): ToolName {
+    return ToolName.ANCHOR;
+  }
+
+  setActive(): void {
+    this.active = true;
+    this.allowToDragAllAnchorsOnMap();
+    this.showList();
+  }
+
+  setInactive(): void {
+    this.removeObjectsDrag();
+    this.hideList();
+    this.active = false;
+  }
+
+  private hideList(): void {
+    this.anchorPlacerController.setListVisibility(false);
+  }
+
+  private showList(): void {
+    this.anchorPlacerController.setListVisibility(true);
+  }
+
+  private getSelectionOfAnchorsOnMap(): d3.selection {
+    const map = d3.select('#map');
+    return map.selectAll('.anchor');
+  }
+
+  private allowToDragAllAnchorsOnMap(): void {
+    this.drawingService.applyDragBehavior(this.getSelectionOfAnchorsOnMap(), false);
+  }
+
+  private getAnchorsOnMapArray(selection: d3.selection): Array<HTMLElement> {
+    const anchors = [];
+    for (const anchor of selection._groups['0']) {
+      anchors.push(anchor);
+    }
+    return anchors;
+  }
+
+  private removeObjectsDrag() {
+    this.removeGroupDrag(this.getSelectionOfAnchorsOnMap());
   }
 
   private subscribeForAnchor() {
@@ -73,12 +126,42 @@ export class AnchorPlacerComponent implements Tool, OnInit {
     this.clicked.emit(this);
   }
 
-  private allowDrag(): void {
-    // TODO select all anchors and bind drag
+  private setTranslations(): void {
+    this.translate.setDefaultLang('en');
+    this.translate.get('wizard.first.message').subscribe((value: string) => {
+      this.hintMessage = value;
+    });
   }
 
   private drawDroppedAnchor(anchorMapObject: MapObject): d3.selection {
-    return this.draw.drawObject(anchorMapObject.parameters, anchorMapObject.coordinates);
+    return this.drawingService.drawObject(anchorMapObject.parameters, anchorMapObject.coordinates);
+  }
+
+  private placeAnchorOnMap(anchor: Anchor | Sink, coords: Point): void {
+    const mapObject = (isSinkType(anchor)) ? this.buildSinkMapObject(<Sink>anchor, coords) : this.buildAnchorMapObject(anchor, coords);
+    const droppedAnchorGroup = this.drawDroppedAnchor(mapObject);
+    this.accButtons.publishCoordinates(coords);
+    this.accButtons.publishVisibility(true);
+    this.accButtons.decisionMade.first().subscribe((decision) => {
+      if (decision) {
+        this.removeGroupDrag(droppedAnchorGroup);
+        this.drawingService.applyDragBehavior(droppedAnchorGroup, false);
+        // anchor.floorId = this.floorId;
+        if (isSinkType(anchor)) {
+          this.chosenSink = <Sink>anchor;
+          this.configuration.addSink(this.chosenSink);
+        } else {
+          this.configuration.addAnchor(this.chosenSink, anchor);
+        }
+      } else {
+        this.removeChosenAnchor(droppedAnchorGroup);
+      }
+      this.anchorPlacerController.setListVisibility(true);
+    });
+
+    function isSinkType(checkType: any): boolean {
+      return (<Sink>checkType.anchors) !== undefined;
+    }
   }
 
   private buildAnchorMapObject(anchor: Anchor, coordinates: Point): MapObject {
@@ -97,55 +180,20 @@ export class AnchorPlacerComponent implements Tool, OnInit {
     };
   }
 
-  private placeAnchorOnMap(anchor: Anchor, coords: Point): void {
-    const droppedAnchorGroup = this.drawDroppedAnchor(this.buildAnchorMapObject(anchor, coords));
-    this.accButtons.publishCoordinates(coords);
-    this.accButtons.publishVisibility(true);
-    this.accButtons.decisionMade.first().subscribe((decision) => {
-      if (decision) {
-        this.removeGroupDrag(droppedAnchorGroup);
-        this.draw.applyDragBehavior(droppedAnchorGroup, false);
-        // TODO update remainingDevices
-      } else {
-        this.removeChosenAnchor(droppedAnchorGroup);
+  private buildSinkMapObject(sink: Sink, coordinates: Point): MapObject {
+    return {
+      parameters: {
+        id: 'sink' + sink.shortId,
+        iconName: NaviIcons.SINK,
+        groupClass: 'sink',
+        markerClass: 'sinkMarker' + sink.id,
+        fill: 'blue'
+      },
+      coordinates: {
+        x: coordinates.x,
+        y: coordinates.y
       }
-      this.anchorPlacerController.setListVisibility(true);
-    });
-  }
-
-  setActive(): void {
-    this.active = true;
-    this.showList();
-  }
-
-  setInactive(): void {
-    this.removeObjectsDrag();
-    this.hideList();
-    this.active = false;
-  }
-
-  private selectAnchorsOnMap(): d3.selection {
-    const map = d3.select('#map');
-    return map.selectAll('.anchor');
-  }
-
-  private removeObjectsDrag() {
-    console.log(this.selectAnchorsOnMap());
-  }
-
-  private setTranslations(): void {
-    this.translate.setDefaultLang('en');
-    this.translate.get('wizard.first.message').subscribe((value: string) => {
-      this.hintMessage = value;
-    });
-  }
-
-  private hideList(): void {
-    this.anchorPlacerController.setListVisibility(false);
-  }
-
-  private showList(): void {
-    this.anchorPlacerController.setListVisibility(true);
+    };
   }
 
 }

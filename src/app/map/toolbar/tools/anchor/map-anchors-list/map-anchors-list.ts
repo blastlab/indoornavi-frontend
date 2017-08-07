@@ -7,6 +7,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {DeviceService} from 'app/device/device.service';
 import {TranslateService} from '@ngx-translate/core';
 import {AnchorPlacerController} from '../anchor.controller';
+import {Sink} from '../../../../../sink/sink.type';
 
 @Component({
   selector: 'app-remaining-devices-list',
@@ -18,6 +19,7 @@ export class RemainingDevicesListComponent implements OnInit {
   private socketSubscription: Subscription;
   private remainingAnchors: Collections.Dictionary<number, Anchor> = new Collections.Dictionary<number, Anchor>();
   public anchors: Anchor[];
+  public sinks: Sink[];
 
   constructor(private ngZone: NgZone,
               private socketService: SocketService,
@@ -46,12 +48,23 @@ export class RemainingDevicesListComponent implements OnInit {
         });
         this.anchors = this.getRemainingAnchors();
       });
-
+    });
+    this.anchorPlacerController.getSinks().first().subscribe((sinks) => {
+      this.sinks = sinks;
+      console.log(this.sinks);
     });
   }
 
   getRemainingAnchors(): Anchor[] {
     return this.remainingAnchors.values();
+  }
+
+  public removeFromList(anchor: Anchor) {
+    const index: number = this.anchors.indexOf(anchor);
+    if (index !== -1) {
+      this.anchors.splice(index, 1);
+    }
+    console.log('del?');
   }
 
   private toggleAnchorIsPlacedFlag(evt: Event): void {

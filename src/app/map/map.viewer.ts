@@ -5,6 +5,7 @@ import {MapLoaderInformerService} from '../utils/map-loader-informer/map-loader-
 import {MapService} from './map.service';
 import {AnchorPlacerController} from './toolbar/tools/anchor/anchor.controller';
 import {Anchor} from '../anchor/anchor.type';
+import {Sink} from '../sink/sink.type';
 
 @Component({
   selector: 'app-map-viewer',
@@ -46,7 +47,6 @@ export class MapViewerComponent implements OnInit {
       .attr('id', 'map')
       .attr('width', width)
       .attr('height', height);
-
     d3.select('#map').append('rect')
       .attr('id', 'mapBackground')
       .attr('width', width)
@@ -72,7 +72,6 @@ export class MapViewerComponent implements OnInit {
       this.anchorTool.setChosenAnchor(event.dragData);
       this.anchorTool.setCoordinates({x: event.mouseEvent.offsetX, y: event.mouseEvent.offsetY});
     }
-
     function isAnchorType(checkType: any): boolean {
       return (<Anchor>checkType.verified) !== undefined;
     }

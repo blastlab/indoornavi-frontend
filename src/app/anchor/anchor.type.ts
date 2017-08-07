@@ -2,6 +2,7 @@ import {Device} from '../device/device.type';
 import {Point} from '../map/map.type';
 
 export interface Anchor extends Device {
+  floorId?: number;
 }
 
 export interface AnchorDistance {

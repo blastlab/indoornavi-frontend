@@ -5,6 +5,7 @@ export interface Tool {
   hintMessage: String;
   active: boolean;
   clicked: EventEmitter<Tool>;
+
   getToolName(): ToolName;
   setActive(): void;
   setInactive(): void;

@@ -42,12 +42,9 @@ export class DrawingService {
   }
 
   public applyDragBehavior(selection: d3.selection, withButtons: boolean) {
-    const selectedGroup = d3.select('#map').select('#' + selection._groups['0']['0'].id);
-    const boxMargin = parseInt(selectedGroup._groups['0']['0'].childNodes[1].attributes[1].nodeValue, 10);
-    console.log(boxMargin);
-    console.log(selectedGroup);
     const dragGroup = d3.drag()
       .on('drag', (_, i, selections) => {
+        const boxMargin = this.getBoxMargin(selection);
         this.dragGroupBehavior(d3.select(selections[i]), boxMargin);
         if (withButtons) {
           this.dragAcceptButtonsBehavior(boxMargin);
@@ -112,7 +109,11 @@ export class DrawingService {
     return 'translate(' + translation.x + ',' + translation.y + ')';
   }
 
-  // TODO private getBoxMargin()
+  private getBoxMargin(selection: d3.selection): number {
+    const boxMargin = selection._groups['0']['0'].children[1].attributes[1].nodeValue;
+    // const selectedGroup = d3.select('#map').select('#' + selection._groups['0']['0'].id);
+    return parseInt(boxMargin, 10);
+  }
 
 }
 

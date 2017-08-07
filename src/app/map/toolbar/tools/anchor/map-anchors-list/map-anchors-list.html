@@ -1,9 +1,7 @@
 <div *ngIf="showAnchorsList" id="remaining-anchors-list-wrapper">
-
-
   <div>
-    <span *ngIf="!anchors">{{'placer.noConnectedDevices'|translate}}</span>
-    <table *ngIf="anchors" cellpadding="10" cellspacing="0">
+    <span *ngIf="!anchors || !sinks ">{{'placer.noConnectedDevices'|translate}}</span>
+    <table *ngIf="anchors && sinks" cellpadding="10" cellspacing="0">
       <tr>
         <th colspan="2" class="remaining-devices-header">
           <h3 class="remaining-devices-heading">{{'placer.remainingDevices'|translate}}</h3>
@@ -22,13 +20,24 @@
         <th>{{'device.longId'|translate}}</th>
         <th>{{'device.name'|translate}}</th>
       </tr>
-      <tr *ngFor="let anchor of anchors | remainingDevicesFilter:name; let i = index"
-          dnd-draggable [dragEnabled]="true" [dragData]="anchor" [dropZones]="['map-container']"
-          (onDropSuccess)="placeAnchorOnMap(event)" (onDragStart)="anchorDragStarted(anchor)">
-        <td id="shortId-{{anchor.shortId}}">{{anchor.shortId}}</td>
-        <td id="longId-{{anchor.shortId}}">{{anchor.longId}}</td>
-        <td id="name-{{anchor.shortId}}">{{anchor.name}}</td>
+      <ng-container *ngIf="!chosenSink">
+        <tr *ngFor="let sink of sinks | remainingDevicesFilter:name; let i = index"
+            dnd-draggable [dragEnabled]="true" [dragData]="sink"
+            [dropZones]="['map-container']" (onDropSuccess)="placeAnchorOnMap(event)">
+          <td id="shortId-{{sink.shortId}}">{{sink.shortId}}</td>
+          <td id="longId-{{sink.shortId}}">{{sink.longId}}</td>
+          <td id="name-{{sink.shortId}}">{{sink.name}}</td>
+        </tr>
+      </ng-container>
+      <ng-container *ngIf="chosenSink">
+        <tr *ngFor="let anchor of anchors | remainingDevicesFilter:name; let i = index"
+            dnd-draggable [dragEnabled]="true" [dragData]="anchor"
+            [dropZones]="['map-container']" (onDropSuccess)="placeAnchorOnMap(event)">
+          <td id="shortId-{{anchor.shortId}}">{{anchor.shortId}}</td>
+          <td id="longId-{{anchor.shortId}}">{{anchor.longId}}</td>
+          <td id="name-{{anchor.shortId}}">{{anchor.name}}</td>
       </tr>
+      </ng-container>
     </table>
   </div>
 </div>
