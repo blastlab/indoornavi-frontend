@@ -1,6 +1,10 @@
 #remaining-anchors-list-wrapper {
   position: fixed;
-  top: 25%;
+  float: right;
+  right: 80%;
+  overflow: hidden;
+  min-width: 25%;
+  top: 20%;
   background-color: #2b2b2b;
   color: antiquewhite;
 }

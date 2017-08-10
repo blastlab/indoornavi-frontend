@@ -1,4 +1,4 @@
-import {Component, NgZone, OnInit} from '@angular/core';
+import {animate, Component, NgZone, OnInit, state, style, transition, trigger} from '@angular/core';
 import * as Collections from 'typescript-collections';
 import {SocketService} from '../../../../../utils/socket/socket.service';
 import {Config} from '../../../../../../config';
@@ -12,7 +12,19 @@ import {Sink} from '../../../../../sink/sink.type';
 @Component({
   selector: 'app-remaining-devices-list',
   templateUrl: './map-anchors-list.html',
-  styleUrls: ['./map-anchors-list.css']
+  styleUrls: ['./map-anchors-list.css'],
+  animations: [
+    trigger('slideInOut', [
+      state('in', style({
+        transform: 'translate3d(100%, 0, 0)'
+      })),
+      state('out', style({
+        transform: 'translate3d(0, 0, 0)'
+      })),
+      transition('in => out', animate('400ms ease-in-out')),
+      transition('out => in', animate('400ms ease-in-out'))
+    ]),
+  ]
 })
 export class RemainingDevicesListComponent implements OnInit {
   public showAnchorsList: boolean = false;
@@ -20,6 +32,8 @@ export class RemainingDevicesListComponent implements OnInit {
   private remainingAnchors: Collections.Dictionary<number, Anchor> = new Collections.Dictionary<number, Anchor>();
   public anchors: Anchor[];
   public sinks: Sink[];
+  public chosenSink: Sink;
+  private menuState: string = 'out';
 
   constructor(private ngZone: NgZone,
               private socketService: SocketService,
@@ -31,6 +45,7 @@ export class RemainingDevicesListComponent implements OnInit {
   ngOnInit() {
     this.fetchDevices();
     this.controlListVisibility();
+    this.controlListState();
     this.deviceService.setUrl('anchors/');
   }
 
@@ -59,29 +74,33 @@ export class RemainingDevicesListComponent implements OnInit {
     return this.remainingAnchors.values();
   }
 
+  private controlListVisibility(): void {
+    this.anchorPlacerController.listVisibilitySet.subscribe((visibility) => {
+      this.showAnchorsList = visibility;
+      this.toggleMenu();
+    });
+  }
+
+  private toggleMenu() {
+    this.menuState = this.menuState === 'out' ? 'in' : 'out';
+  }
+
+  private controlListState(): void {
+    this.anchorPlacerController.chosenSink.subscribe((chosenSink) => {
+      this.chosenSink = chosenSink;
+    });
+  }
+
+  private deselectSink(): void {
+    this.anchorPlacerController.resetChosenSink();
+  }
+
   public removeFromList(anchor: Anchor) {
     const index: number = this.anchors.indexOf(anchor);
     if (index !== -1) {
       this.anchors.splice(index, 1);
     }
     console.log('del?');
-  }
-
-  private toggleAnchorIsPlacedFlag(evt: Event): void {
-    console.log(evt);
-    // this.deviceService.update();
-  }
-
-  private controlListVisibility(): void {
-    this.anchorPlacerController.listVisibilitySet.subscribe((visibility) => {
-      this.showAnchorsList = visibility;
-      // TODO animate position by changing attr `left`
-    });
-  }
-
-  anchorDragStarted(anchor: Anchor) {
-    console.log('started');
-    // TODO publish new hint about dnd
   }
 
 }
