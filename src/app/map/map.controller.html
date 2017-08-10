@@ -1,4 +1,5 @@
 <div *ngIf="floor">
+  <app-configuration [floor]="floor"></app-configuration>
   <app-toolbar [floor]="floor" (selectedTool)="setTool($event)" *ngIf="imageUploaded"></app-toolbar>
   <app-map-viewer [floor]="floor" *ngIf="imageUploaded"></app-map-viewer>
   <app-hint-bar [tool]="activeTool" *ngIf="imageUploaded"></app-hint-bar>

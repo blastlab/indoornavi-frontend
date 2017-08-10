@@ -1,7 +1,6 @@
 import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import * as d3 from 'd3';
 import {Floor} from '../floor/floor.type';
-import {Point} from './map.type';
 import {MapLoaderInformerService} from '../utils/map-loader-informer/map-loader-informer.service';
 import {MapService} from './map.service';
 
@@ -13,8 +12,7 @@ import {MapService} from './map.service';
 export class MapViewerComponent implements OnInit {
   @ViewChild('canvas') canvas: ElementRef;
   @Input() floor: Floor;
-  imageLoaded: boolean = false;
-  protected pointsTable: Array<Point> = [];
+  private imageLoaded: boolean = false;
 
   constructor(private mapLoaderInformer: MapLoaderInformerService,
               private mapService: MapService) {
@@ -52,36 +50,5 @@ export class MapViewerComponent implements OnInit {
       .attr('height', height)
       .attr('opacity', 0);
     this.mapLoaderInformer.publishIsLoaded();
-    this.prepareScaleHint();
-    this.drawPoints();
-  }
-
-  private drawPoints(): void {
-    const points = d3.select('#map').selectAll('circle');
-    points.data(this.pointsTable).enter()
-      .append('svg:circle')
-      .attr('cx', function (d) {
-        return d.x;
-      })
-      .attr('cy', function (d) {
-        return d.y;
-      })
-      .attr('r', 10)
-      .style('fill', 'black')
-      .style('stroke', 'yellow')
-      .style('opacity', 0.6);
-    points.exit()
-      .remove();
-  }
-
-  private prepareScaleHint(): void {
-    const scaleHint = d3.select('#scaleHint');
-    scaleHint
-      .on('mouseover', function () {
-        d3.select('#scaleGroup').style('display', 'flex');
-      })
-      .on('mouseout', function () {
-        d3.select('#scaleGroup').style('display', 'none');
-      });
   }
 }

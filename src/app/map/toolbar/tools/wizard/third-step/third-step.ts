@@ -7,10 +7,10 @@ import * as Collections from 'typescript-collections';
 import {AnchorSuggestedPositions} from '../../../../../anchor/anchor.type';
 import {AcceptButtonsService} from '../../../../../utils/accept-buttons/accept-buttons.service';
 import {Point} from '../../../../map.type';
-import {SocketMsg, WizardData} from '../wizard';
 import {NaviIcons} from '../../../../../utils/drawing/icon.service';
 import {DrawingService, ObjectParams} from '../../../../../utils/drawing/drawing.service';
 import {HintBarService} from '../../../../hint-bar/hint-bar.service';
+import {SocketMessage, Step, WizardData} from '../wizard.type';
 
 @Component({
   selector: 'app-third-step',
@@ -135,14 +135,9 @@ export class ThirdStepComponent implements WizardStep {
     d3.select('#map').selectAll('.suggested-position').remove();
   }
 
-  public prepareToSend(data: WizardData): SocketMsg {
-    const invertedSinkPosition: Point = {...data.sinkPosition};
-    invertedSinkPosition.y = -invertedSinkPosition.y;
+  public prepareToSend(data: WizardData): SocketMessage {
     return {
-      sinkShortId: data.sinkShortId,
-      sinkPosition: invertedSinkPosition,
-      anchorShortId: data.anchorShortId,
-      degree: data.degree
+      step: Step.THIRD
     };
   }
 
@@ -150,7 +145,7 @@ export class ThirdStepComponent implements WizardStep {
     return {
       sinkShortId: data.sinkShortId,
       sinkPosition: data.sinkPosition,
-      anchorShortId: data.anchorShortId,
+      firstAnchorShortId: data.firstAnchorShortId,
       degree: data.degree,
       firstAnchorPosition: data.firstAnchorPosition,
       secondAnchorPosition: this.coordinates[0],
@@ -168,7 +163,7 @@ export class ThirdStepComponent implements WizardStep {
     }
   }
 
-  public closeWizard(clean): void {
+  public closeWizard(clean: boolean): void {
     this.clearView.emit(clean);
   }
 

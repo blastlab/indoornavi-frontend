@@ -1,6 +1,5 @@
 import {WizardTool} from './wizard.po';
 import {AppPage} from '../../../../app.po';
-import {browser} from 'protractor';
 
 /**
  * webSocket connection in app MUST be closed before running this test
@@ -26,6 +25,7 @@ describe('WizardTool', () => {
     WizardTool.waitForElement('.dialog-select');
     expect(AppPage.getByClass('dialog-place-button').isDisplayed()).toBeTruthy();
     expect(AppPage.getByClass('dialog-place-button').getAttribute('disabled')).toBeTruthy();
+    expect(AppPage.getById('publish').getAttribute('disabled')).toEqual('true');
   });
 
   it('should select a sink', () => {
@@ -139,6 +139,7 @@ describe('WizardTool', () => {
         expect(zero).toEqual(0);
         expect(AppPage.getByClass('wizard-complete').getTagName()).toEqual('h3');
         AppPage.getByClass('dialog-exit-button').click();
+        expect(AppPage.getById('publish').getAttribute('disabled')).toEqual(null);
         done();
       });
     });

@@ -8,8 +8,8 @@ import {DrawingService} from '../../../../../utils/drawing/drawing.service';
 import {AcceptButtonsService} from '../../../../../utils/accept-buttons/accept-buttons.service';
 import {IconService} from '../../../../../utils/drawing/icon.service';
 import {Anchor} from '../../../../../anchor/anchor.type';
-import createSpy = jasmine.createSpy;
-import {SocketMsg, WizardData} from '../wizard';
+import {FirstStepMessage, Step, WizardData} from '../wizard.type';
+import {Sink} from '../../../../../sink/sink.type';
 
 describe('FirstStepComponent', () => {
   let component: FirstStepComponent;
@@ -59,33 +59,32 @@ describe('FirstStepComponent', () => {
     expect(component.socketData.size()).toEqual(2);
   });
 
-  it('should set sinkShortId into StepMsg and sinkPosition in wizardData', () => {
-    const anchor: Anchor = {shortId: 339, longId: 42152, verified: true};
-    component.data = anchor;
-    component.coords = [{x: 543, y: 623}];
+  it('should set sinkShortId into StepMessage and sinkPosition in wizardData', () => {
+    component.data = <Sink>{shortId: 339, longId: 42152, verified: true, anchors: []};
+    component.coordinates = [{x: 543, y: 623}];
     const givenWizardData: WizardData = {
       sinkShortId: null,
       sinkPosition: null,
-      anchorShortId: null,
+      firstAnchorShortId: null,
+      secondAnchorShortId: null,
       degree: null,
       firstAnchorPosition: null,
       secondAnchorPosition: null
     };
-    const expectedSocketData: SocketMsg = {
+    const expectedSocketData: FirstStepMessage = {
       sinkShortId: 339,
-      sinkPosition: null,
-      anchorShortId: null,
-      degree: null
+      floorId: 1,
+      step: Step.FIRST
     };
     const message = component.prepareToSend(givenWizardData);
     expect(message).toEqual(expectedSocketData);
   });
 
   it('should clean data in FirstStep', () => {
-    component.coords = [{x: 543, y: 623}];
-    component.data = {shortId: 937, longId: 172542, verified: false};
+    component.coordinates = [{x: 543, y: 623}];
+    component.data = <Sink>{shortId: 937, longId: 172542, verified: false, anchors: []};
     component.clean();
-    expect(component.coords.length).toEqual(0);
+    expect(component.coordinates.length).toEqual(0);
     expect(component.data).toBe(null);
     acceptButtons.visibilitySet.subscribe(async (visible) => {
       expect(visible).toBeFalsy();

@@ -8,8 +8,8 @@ import {DrawingService} from '../../../../../utils/drawing/drawing.service';
 import {AcceptButtonsService} from '../../../../../utils/accept-buttons/accept-buttons.service';
 import {IconService} from '../../../../../utils/drawing/icon.service';
 import {AnchorDistance} from '../../../../../anchor/anchor.type';
-import {SocketMsg, WizardData} from '../wizard';
 import {Point} from '../../../../map.type';
+import {SecondStepMessage, Step, WizardData} from '../wizard.type';
 
 describe('SecondStepComponent', () => {
   let component: SecondStepComponent;
@@ -66,34 +66,34 @@ describe('SecondStepComponent', () => {
     spyOn(component, 'calculateDegree').and.callFake(() => {
       return 45;
     });
-    const anchor: AnchorDistance = {anchorId: 39, distance: 422};
-    component.data = anchor;
+    component.data = {anchorId: 39, distance: 422};
     const sinkPos: Point = {x: 150, y: 450};
-    component.coords = [{x: 300, y: 300}];
+    component.coordinates = [{x: 300, y: 300}];
     const degree = 45;
     const givenWizardData: WizardData = {
       sinkShortId: 7245,
       sinkPosition: sinkPos,
-      anchorShortId: null,
+      firstAnchorShortId: null,
+      secondAnchorShortId: null,
       degree: degree,
       firstAnchorPosition: null,
       secondAnchorPosition: null
     };
-    const expectedSocketData: SocketMsg = {
-      sinkShortId: 7245,
-      sinkPosition: sinkPos,
+    const expectedSocketData: SecondStepMessage = {
+      sinkPosition: {x: 150, y: -450},
       anchorShortId: 39,
-      degree: degree
+      degree: degree,
+      step: Step.SECOND
     };
     const message = component.prepareToSend(givenWizardData);
     expect(message).toEqual(expectedSocketData);
   });
 
   it('should clean data in SecondStep', () => {
-    component.coords = [{x: 543, y: 623}];
+    component.coordinates = [{x: 543, y: 623}];
     component.data = {anchorId: 37, distance: 752};
     component.clean();
-    expect(component.coords.length).toEqual(0);
+    expect(component.coordinates.length).toEqual(0);
     expect(component.data).toBe(null);
     acceptButtons.visibilitySet.subscribe(async (visible) => {
       expect(visible).toBeFalsy();

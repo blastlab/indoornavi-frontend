@@ -9,7 +9,7 @@ import {FormsModule} from '@angular/forms';
 import {IconService} from '../../../../../utils/drawing/icon.service';
 import {AnchorDistance, AnchorSuggestedPositions} from '../../../../../anchor/anchor.type';
 import {Point} from '../../../../map.type';
-import {SocketMsg, WizardData} from '../wizard';
+import {SocketMessage, Step, WizardData} from '../wizard.type';
 
 describe('ThirdStepComponent', () => {
   let component: ThirdStepComponent;
@@ -61,8 +61,7 @@ describe('ThirdStepComponent', () => {
   });
 
   it('should set sinkShortId into StepMsg and sinkPosition in wizardData', () => {
-    const anchor: AnchorSuggestedPositions = {anchorId: 23, points: [{x: 150, y: 250}, {x: 250, y: 150}]};
-    component.data = anchor;
+    component.data = {anchorId: 23, points: [{x: 150, y: 250}, {x: 250, y: 150}]};
     const sinkPos: Point = {x: 150, y: 450};
     const anchorPos: Point = {x: 300, y: 300};
     component.coordinates = [{x: 525, y: 175}];
@@ -70,16 +69,14 @@ describe('ThirdStepComponent', () => {
     const givenWizardData: WizardData = {
       sinkShortId: 7245,
       sinkPosition: sinkPos,
-      anchorShortId: 36,
+      firstAnchorShortId: 36,
+      secondAnchorShortId: null,
       degree: degree,
       firstAnchorPosition: anchorPos,
       secondAnchorPosition: null
     };
-    const expectedSocketData: SocketMsg = {
-      sinkShortId: 7245,
-      sinkPosition: sinkPos,
-      anchorShortId: 36,
-      degree: degree
+    const expectedSocketData: SocketMessage = {
+      step: Step.THIRD
     };
     const message = component.prepareToSend(givenWizardData);
     expect(message).toEqual(expectedSocketData);

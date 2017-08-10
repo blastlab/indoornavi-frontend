@@ -67,6 +67,7 @@ import {HintBarService} from './map/hint-bar/hint-bar.service';
 import {ConfigurationComponent} from './floor/configuration/configuration';
 import {ConfigurationService} from './floor/configuration/configuration.service';
 import {D3Service} from 'd3-ng2-service';
+import {ScaleService} from './map/toolbar/tools/scale/scale.service';
 
 const appRoutes: Routes = [
   {path: '', redirectTo: '/complexes', pathMatch: 'full'},
@@ -188,7 +189,8 @@ export function HttpLoaderFactory(http: Http) {
     AuthGuard,
     ConfigurationService,
     PermissionGroupService,
-    D3Service
+    D3Service,
+    ScaleService
   ], bootstrap: [AppComponent]
 })
 
