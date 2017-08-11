@@ -10,15 +10,15 @@
       </th>
       <th>
         <button class="anchor-list-deselect" (click)="deselectSink()" [disabled]="!chosenSink" md-mini-fab
-                md-tooltip="{{'anchor-list.backToSinks'|translate}}" mdTooltipPosition="right">
+                md-tooltip="{{'anchor-list.backToSinks'|translate}}" mdTooltipPosition="top">
           <i class="material-icons">arrow_back</i>
         </button>
-        <button class="anchor-list-delete" (click)="deselectSink()" [disabled]="!selectedDevice" md-mini-fab
-                md-tooltip="{{'anchor-list.backToSinks'|translate}}" mdTooltipPosition="right">
+        <button class="anchor-list-delete" (click)="deleteSink()" [disabled]="!selectedDevice" md-mini-fab
+                md-tooltip="{{'anchor-list.delete'|translate}}" mdTooltipPosition="top">
           <i class="material-icons">delete</i>
         </button>
-        <button class="anchor-list-select" (click)="selectSink()" [disabled]="selectedDevice" md-mini-fab
-                md-tooltip="{{'anchor-list.backToSinks'|translate}}" mdTooltipPosition="right">
+        <button class="anchor-list-select" (click)="selectDevice()" [disabled]="selectedDevice" md-mini-fab
+                md-tooltip="{{'anchor-list.selectDevice'|translate}}" mdTooltipPosition="top">
           <i class="material-icons">touch_app</i>
         </button>
       </th>

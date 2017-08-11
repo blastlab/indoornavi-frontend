@@ -14,6 +14,7 @@ export interface WizardStep {
   placeOnMap(data: any): void;
   clean(): void;
   closeWizard(clean: boolean): void;
+
   prepareToSend(wizardData: WizardData): SocketMessage;
   goToNextStep(): void;
   updateWizardData(wizardData: WizardData): WizardData;

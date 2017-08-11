@@ -1,11 +1,10 @@
 #map-container {
   position: absolute;
   top: 15%;
-  left: 20%;
-  max-width: 70%;
+  left: 10%;
+  width: 90%;
   max-height: 80%;
   overflow: auto;
-  border: 2px rgba(132, 0, 13, .2) double;
   z-index: -1;
 }
 

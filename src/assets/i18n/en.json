@@ -1,6 +1,8 @@
 {
   "add": "Add",
   "anchor-list.backToSinks": "Back to sink list",
+  "anchor-list.delete": "Remove from map",
+  "anchor-list.selectDevice": "Select a device",
   "anchor-placer.tooltip": "Place Anchors",
   "anchor.first.message": "Select a sink from map or ",
   "anchor.header": "Anchors",

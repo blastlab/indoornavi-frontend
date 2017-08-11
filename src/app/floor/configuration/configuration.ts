@@ -32,12 +32,12 @@ export class ConfigurationComponent implements OnInit {
       this.configurationService.loadConfiguration(this.floor);
     });
     this.configurationService.configurationLoaded().subscribe(() => {
-        this.configurationService.configurationChanged().subscribe((_: Configuration) => {
-          this.publishButtonDisabled = false;
-          if (this.isAnimationDone) {
-            this.messageSpanState = 'visible';
-          }
-        });
+      this.configurationService.configurationChanged().subscribe((_: Configuration) => {
+        this.publishButtonDisabled = false;
+        if (this.isAnimationDone) {
+          this.messageSpanState = 'visible';
+        }
+      });
     });
   }
 

@@ -38,7 +38,10 @@ describe('ConfigurationComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ConfigurationComponent],
       imports: [TranslateModule.forRoot(), HttpModule, RouterTestingModule],
-      providers: [{provide: ConfigurationService, useClass: ConfigurationServiceMock}, HttpService, AuthGuard, MapLoaderInformerService]
+      providers: [{
+        provide: ConfigurationService,
+        useClass: ConfigurationServiceMock
+      }, HttpService, AuthGuard, MapLoaderInformerService]
     })
       .compileComponents();
   }));

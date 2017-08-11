@@ -13,7 +13,8 @@
   </div>
   <div class="dialog-action">
     <button *ngIf="!isLoading" class="dialog-place-button" (click)="dialogRef.close(true)" [disabled]="!data"
-            md-raised-button>{{'go.to.map'|translate}}</button>
+            md-raised-button>{{'go.to.map'|translate}}
+    </button>
     <button class="dialog-cancel-button" (click)="dialogRef.close(false)" md-button>{{'cancel'|translate}}</button>
   </div>
 </template>

@@ -11,15 +11,17 @@ export class AnchorPlacerController {
   private anchor: Subject<Anchor> = new Subject<Anchor>();
   private sink: Subject<Sink> = new Subject<Sink>();
   private coordinates: Subject<Point> = new Subject<Point>();
+  private device: Subject<Sink | Anchor> = new Subject<Sink | Anchor>();
 
   listVisibilitySet = this.listVisibility.asObservable();
   chosenAnchor = this.anchor.asObservable();
   chosenSink = this.sink.asObservable();
   newCoordinates = this.coordinates.asObservable();
+  selectedDevice = this.device.asObservable();
 
 
-  setListVisibility(val: boolean): void {
-    this.listVisibility.next(val);
+  toggleListVisibility(): void {
+    this.listVisibility.next();
   }
 
   setChosenAnchor(anchor: Anchor): void {
@@ -45,6 +47,14 @@ export class AnchorPlacerController {
   resetCoordinates(): void {
     this.coordinates.next(undefined);
   }
+
+  selectDevice(device: Sink | Anchor): void {
+    this.device.next(device);
+  };
+
+  deselectDevice(): void {
+    this.device.next(undefined);
+  };
 
   // mocking /sink endpoint
   public getSinks(): Observable<Sink[]> {

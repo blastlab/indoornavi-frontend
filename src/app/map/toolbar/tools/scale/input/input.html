@@ -7,6 +7,8 @@
     <md-select [ngModelOptions]="{standalone: true}" placeholder="unit" [(ngModel)]="scale.measure" class="measure">
       <md-option *ngFor="let measure of measures" [value]="measure">{{measure}}</md-option>
     </md-select>
-    <button id="confirmScaleButton" md-fab md-raised-button md-button (click)="confirm(scaleForm.valid)">{{'ok'|translate}}</button>
+    <button id="confirmScaleButton" md-fab md-raised-button md-button (click)="confirm(scaleForm.valid)">
+      {{'ok'|translate}}
+    </button>
   </div>
 </form>

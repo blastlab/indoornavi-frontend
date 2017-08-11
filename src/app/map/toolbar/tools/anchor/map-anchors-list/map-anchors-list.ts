@@ -7,7 +7,9 @@ import {Subscription} from 'rxjs/Subscription';
 import {DeviceService} from 'app/device/device.service';
 import {TranslateService} from '@ngx-translate/core';
 import {AnchorPlacerController} from '../anchor.controller';
+import * as d3 from 'd3';
 import {Sink} from '../../../../../sink/sink.type';
+import {AnchorPlacerComponent} from '../anchor';
 
 @Component({
   selector: 'app-remaining-devices-list',
@@ -27,13 +29,13 @@ import {Sink} from '../../../../../sink/sink.type';
   ]
 })
 export class RemainingDevicesListComponent implements OnInit {
-  public showAnchorsList: boolean = false;
   private socketSubscription: Subscription;
   private remainingAnchors: Collections.Dictionary<number, Anchor> = new Collections.Dictionary<number, Anchor>();
   public anchors: Anchor[];
   public sinks: Sink[];
   public chosenSink: Sink;
   private menuState: string = 'out';
+  public selectedDevice: Sink | Anchor;
 
   constructor(private ngZone: NgZone,
               private socketService: SocketService,
@@ -46,6 +48,7 @@ export class RemainingDevicesListComponent implements OnInit {
     this.fetchDevices();
     this.controlListVisibility();
     this.controlListState();
+    this.subscribeForSelectedDevice();
     this.deviceService.setUrl('anchors/');
   }
 
@@ -66,7 +69,7 @@ export class RemainingDevicesListComponent implements OnInit {
     });
     this.anchorPlacerController.getSinks().first().subscribe((sinks) => {
       this.sinks = sinks;
-      console.log(this.sinks);
+      // console.log(this.sinks);
     });
   }
 
@@ -75,8 +78,7 @@ export class RemainingDevicesListComponent implements OnInit {
   }
 
   private controlListVisibility(): void {
-    this.anchorPlacerController.listVisibilitySet.subscribe((visibility) => {
-      this.showAnchorsList = visibility;
+    this.anchorPlacerController.listVisibilitySet.subscribe(() => {
       this.toggleMenu();
     });
   }
@@ -91,8 +93,34 @@ export class RemainingDevicesListComponent implements OnInit {
     });
   }
 
+  private subscribeForSelectedDevice(): void {
+    this.anchorPlacerController.selectedDevice.subscribe((device) => {
+      this.selectedDevice = device;
+      if (!!this.selectedDevice) {
+        const map = d3.select('#map');
+        console.log(this.selectedDevice.shortId);
+        map.on('click', () => {
+          this.toggleMenu();
+          this.anchorPlacerController.deselectDevice();
+        });
+        AnchorPlacerComponent.getSelectionOfAnchorsOnMap().select();
+      }
+    });
+  }
+
+  public selectDevice() {
+    this.toggleMenu();
+    const mapAnchors = d3.select('#map').selectAll('.anchor');
+    mapAnchors.style('cursor', 'crosshair');
+    mapAnchors.on('click', (event) => {
+      console.log(event);
+      this.toggleMenu();
+    });
+  }
+
   private deselectSink(): void {
     this.anchorPlacerController.resetChosenSink();
+    this.anchorPlacerController.deselectDevice();
   }
 
   public removeFromList(anchor: Anchor) {

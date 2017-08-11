@@ -26,8 +26,12 @@ export class AnchorPlacerComponent implements Tool, OnInit {
   public active: boolean = false;
   private floorId: number;
   public chosenSink: Sink;
-  public selectedDevice: Sink | Anchor;
   private placementDone: boolean;
+
+  static getSelectionOfAnchorsOnMap(): d3.selection {
+    const map = d3.select('#map');
+    return map.selectAll('.anchor');
+  }
 
   constructor(public translate: TranslateService,
               private anchorPlacerController: AnchorPlacerController,
@@ -40,11 +44,18 @@ export class AnchorPlacerComponent implements Tool, OnInit {
 
   ngOnInit() {
     this.subscribeForAnchor();
-    this.configuration.configurationLoaded().first().subscribe((config) => {
-      this.floorId = config.floorId;
+    this.configuration.configurationLoaded().first().subscribe((configuration) => {
+      this.floorId = configuration.floorId;
       // draw sinks and their anchors
+      this.drawConfiguredDevices(configuration.sinks);
       // each sink group and his anchors - with connection
     });
+  }
+
+  private drawConfiguredDevices(sinks: Array<Sink>): void {
+    const mapAnchorsSelection = AnchorPlacerComponent.getSelectionOfAnchorsOnMap().data(sinks);
+    console.log(mapAnchorsSelection.enter());
+    // TODO call drawing service here
   }
 
   public getToolName(): ToolName {
@@ -54,12 +65,12 @@ export class AnchorPlacerComponent implements Tool, OnInit {
   setActive(): void {
     this.active = true;
     this.allowToDragAllAnchorsOnMap();
-    this.showList();
+    this.toggleList();
   }
 
   setInactive(): void {
     this.removeObjectsDrag();
-    this.hideList();
+    this.toggleList();
     this.active = false;
     if (!this.placementDone) {
       this.accButtons.publishDecision(false);
@@ -67,33 +78,16 @@ export class AnchorPlacerComponent implements Tool, OnInit {
     }
   }
 
-  private hideList(): void {
-    this.anchorPlacerController.setListVisibility(false);
-  }
-
-  private showList(): void {
-    this.anchorPlacerController.setListVisibility(true);
-  }
-
-  private getSelectionOfAnchorsOnMap(): d3.selection {
-    const map = d3.select('#map');
-    return map.selectAll('.anchor');
+  private toggleList(): void {
+    this.anchorPlacerController.toggleListVisibility();
   }
 
   private allowToDragAllAnchorsOnMap(): void {
-    this.drawingService.applyDragBehavior(this.getSelectionOfAnchorsOnMap(), false);
-  }
-
-  private getAnchorsOnMapArray(selection: d3.selection): Array<HTMLElement> {
-    const anchors = [];
-    for (const anchor of selection._groups['0']) {
-      anchors.push(anchor);
-    }
-    return anchors;
+    this.drawingService.applyDragBehavior(AnchorPlacerComponent.getSelectionOfAnchorsOnMap(), false);
   }
 
   private removeObjectsDrag() {
-    this.removeGroupDrag(this.getSelectionOfAnchorsOnMap());
+    this.removeGroupDrag(AnchorPlacerComponent.getSelectionOfAnchorsOnMap());
   }
 
   private subscribeForAnchor() {
@@ -145,28 +139,27 @@ export class AnchorPlacerComponent implements Tool, OnInit {
     return this.drawingService.drawObject(anchorMapObject.parameters, anchorMapObject.coordinates);
   }
 
-  private placeAnchorOnMap(anchor: Anchor | Sink, coords: Point): void {
-    const mapObject = (isSinkType(anchor)) ? this.buildSinkMapObject(<Sink>anchor, coords) : this.buildAnchorMapObject(anchor, coords);
+  private placeAnchorOnMap(anchor: Anchor | Sink, coordinates: Point): void {
+    const mapObject = (isSinkType(anchor)) ? this.buildSinkMapObject(<Sink>anchor, coordinates) : this.buildAnchorMapObject(anchor, coordinates);
     const droppedAnchorGroup = this.drawDroppedAnchor(mapObject);
-    this.accButtons.publishCoordinates(coords);
+    this.accButtons.publishCoordinates(coordinates);
     this.accButtons.publishVisibility(true);
     this.accButtons.decisionMade.first().subscribe((decision) => {
       if (decision) {
         this.removeGroupDrag(droppedAnchorGroup);
         this.drawingService.applyDragBehavior(droppedAnchorGroup, false);
-        // anchor.floorId = this.floorId;
         if (isSinkType(anchor)) {
           this.selectSink(<Sink>anchor);
-          this.configuration.addSink(this.chosenSink);
         } else {
-          this.configuration.addAnchor(this.chosenSink, anchor);
+          this.chosenSink.anchors.push(anchor);
         }
+        this.configuration.setSink(this.chosenSink);
       } else {
         this.removeChosenAnchor(droppedAnchorGroup);
       }
       this.anchorPlacerController.resetCoordinates();
       this.placementDone = true;
-      this.anchorPlacerController.setListVisibility(true);
+      this.toggleList();
     });
 
     function isSinkType(checkType: any): boolean {
@@ -177,6 +170,8 @@ export class AnchorPlacerComponent implements Tool, OnInit {
   private selectSink(sink: Sink) {
     this.anchorPlacerController.setChosenSink(sink);
     this.chosenSink = sink;
+    this.anchorPlacerController.selectDevice(sink);
+
   }
 
   private deselectSink() {
