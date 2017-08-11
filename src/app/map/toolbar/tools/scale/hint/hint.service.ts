@@ -5,10 +5,16 @@ import {Scale} from '../scale.type';
 @Injectable()
 export class ScaleHintService {
   private scaleEmitter = new Subject<Scale>();
+  private mouseHoverEmitter = new Subject<string>();
 
-  public scalePublished = this.scaleEmitter.asObservable();
+  public scaleChanged = this.scaleEmitter.asObservable();
+  public mouseHoverChanged = this.mouseHoverEmitter.asObservable();
 
-  publishScale(val: Scale) {
-    this.scaleEmitter.next(val);
+  publishScale(scale: Scale) {
+    this.scaleEmitter.next(scale);
+  }
+
+  mouseHover(overOrOut: string) {
+    this.mouseHoverEmitter.next(overOrOut);
   }
 }

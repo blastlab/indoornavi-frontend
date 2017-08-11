@@ -15,6 +15,9 @@ import {DrawingService} from '../../../../utils/drawing/drawing.service';
 import {IconService} from '../../../../utils/drawing/icon.service';
 import {Observable} from 'rxjs/Observable';
 import {AuthGuard} from '../../../../auth/auth.guard';
+import {ConfigurationService} from '../../../../floor/configuration/configuration.service';
+import {HttpService} from '../../../../utils/http/http.service';
+import {RouterTestingModule} from '@angular/router/testing';
 
 describe('WizardComponent', () => {
   let component: WizardComponent;
@@ -27,11 +30,11 @@ describe('WizardComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot(), MaterialModule, FormsModule],
+      imports: [TranslateModule.forRoot(), MaterialModule, FormsModule, RouterTestingModule],
       declarations: [WizardComponent, FirstStepComponent, SecondStepComponent,
         ThirdStepComponent],
       providers: [MdDialog, SocketService, WebSocketService, ToastService, HintBarService,
-        AcceptButtonsService, DrawingService, IconService, AuthGuard]
+        AcceptButtonsService, DrawingService, IconService, AuthGuard, ConfigurationService, HttpService]
     })
       .compileComponents();
 
@@ -89,21 +92,6 @@ describe('WizardComponent', () => {
     expect(thirdStep.clean).toHaveBeenCalled();
   });
 
-  it('could open his own and every step dialogs', () => {
-    component.setActive();
-    expect(component.dialogRef).toBeUndefined();
-    component.wizardNextStep(3);
-    expect(component.dialogRef).toBeDefined();
-    // firstStep dialog is opened by setActive()
-    expect(firstStep.dialogRef).toBeDefined();
-    expect(secondStep.dialogRef).toBeUndefined();
-    secondStep.openDialog();
-    expect(secondStep.dialogRef).toBeDefined();
-    expect(thirdStep.dialogRef).toBeUndefined();
-    thirdStep.openDialog();
-    expect(thirdStep.dialogRef).toBeDefined();
-  });
-
   it('should connect with webSocket web service and call activeStep load function', () => {
     spyOn(socketService, 'connect').and.returnValue(Observable.of(
       [{
@@ -138,7 +126,7 @@ describe('WizardComponent', () => {
     });
   });
 
-  it('should send SocketMsg in step 2', () => {
+  it('should send SocketMessage in step 2', () => {
     spyOn(socketService, 'send').and.callFake(() => {
     });
     spyOn(firstStep, 'updateWizardData').and.callFake(() => {
@@ -158,21 +146,5 @@ describe('WizardComponent', () => {
       anchorShortId: 1023,
       degree: 90
     });
-  });
-
-  it('should close dialog after choice has been made', () => {
-    component.setActive();
-    spyOn(dialog, 'open').and.callThrough();
-    expect(component.dialogRef).toBeUndefined();
-    component.wizardNextStep(3);
-    expect(component.dialogRef).toBeDefined();
-    spyOn(component.dialogRef, 'close').and.callThrough();
-    component.manualAnchors();
-    expect(component.dialogRef.close).toHaveBeenCalled();
-    component.wizardNextStep(3);
-    expect(component.dialogRef).toBeDefined();
-    spyOn(component.dialogRef, 'close').and.callThrough();
-    component.wizardAnchors();
-    expect(component.dialogRef.close).toHaveBeenCalled();
   });
 });

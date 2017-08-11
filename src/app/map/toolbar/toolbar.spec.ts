@@ -19,6 +19,11 @@ import {ScaleInputService} from './tools/scale/input/input.service';
 import {ScaleHintService} from './tools/scale/hint/hint.service';
 import {MapLoaderInformerService} from '../../utils/map-loader-informer/map-loader-informer.service';
 import {AnchorPlacerComponent} from './tools/anchor/anchor';
+import {ConfigurationService} from '../../floor/configuration/configuration.service';
+import {HttpService} from '../../utils/http/http.service';
+import {RouterTestingModule} from '@angular/router/testing';
+import {AuthGuard} from '../../auth/auth.guard';
+import {ScaleService} from './tools/scale/scale.service';
 
 describe('ToolbarComponent', () => {
   let component: ToolbarComponent;
@@ -28,12 +33,13 @@ describe('ToolbarComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot(), MaterialModule, FormsModule],
+      imports: [TranslateModule.forRoot(), MaterialModule, FormsModule, RouterTestingModule],
       declarations: [ToolbarComponent, ScaleComponent, WizardComponent, FirstStepComponent, SecondStepComponent,
         ThirdStepComponent, AnchorPlacerComponent],
       providers: [
         SocketService, WebSocketService, ToastService, HintBarService, AcceptButtonsService, DrawingService,
-        IconService, ScaleComponent, WizardComponent, ScaleInputService, ScaleHintService, MapLoaderInformerService
+        IconService, ScaleComponent, WizardComponent, ScaleInputService, ScaleHintService, MapLoaderInformerService,
+        ConfigurationService, HttpService, AuthGuard, ScaleService
       ]
     })
       .compileComponents();

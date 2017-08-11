@@ -15,7 +15,7 @@ import {Sink} from '../sink/sink.type';
 export class MapViewerComponent implements OnInit {
   @ViewChild('canvas') canvas: ElementRef;
   @Input() floor: Floor;
-  imageLoaded: boolean = false;
+  private imageLoaded: boolean = false;
 
   constructor(private mapLoaderInformer: MapLoaderInformerService,
               private mapService: MapService,

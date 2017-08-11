@@ -74,6 +74,7 @@ import {HintBarService} from './map/hint-bar/hint-bar.service';
 import {ConfigurationComponent} from './floor/configuration/configuration';
 import {ConfigurationService} from './floor/configuration/configuration.service';
 import {D3Service} from 'd3-ng2-service';
+import {ScaleService} from './map/toolbar/tools/scale/scale.service';
 import {AnchorPlacerComponent} from './map/toolbar/tools/anchor/anchor';
 import {RemainingDevicesListComponent} from './map/toolbar/tools/anchor/map-anchors-list/map-anchors-list';
 import {RemainingDevicesFilter} from './map/toolbar/tools/anchor/map-anchors-list/map-anchors-filter';
@@ -204,7 +205,8 @@ export function HttpLoaderFactory(http: Http) {
     ConfigurationService,
     PermissionGroupService,
     D3Service,
-    AnchorPlacerController
+    AnchorPlacerController,
+    ScaleService
   ], bootstrap: [AppComponent]
 })
 

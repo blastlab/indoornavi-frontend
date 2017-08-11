@@ -1,11 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {Point} from '../../../../map.type';
 import {ScaleInputService} from './input.service';
 import {Measure, Scale} from '../scale.type';
 import {ActivatedRoute, Params} from '@angular/router';
 import {ToastService} from '../../../../../utils/toast/toast.service';
 import {ScaleHintService} from '../hint/hint.service';
-import {ConfigurationService} from '../../../../../floor/configuration/configuration.service';
+import {ScaleService} from '../scale.service';
 
 @Component({
   selector: 'app-scale-input',
@@ -15,39 +14,41 @@ import {ConfigurationService} from '../../../../../floor/configuration/configura
 export class ScaleInputComponent implements OnInit {
 
   public visible: boolean = false;
-  private coords$: Point;
   public scale: Scale = <Scale>{
     start: null,
     stop: null,
     realDistance: null,
     measure: null
   };
-  private floorId: number;
   public measures = [];
+  private floorId: number;
+  private input: HTMLElement;
 
   constructor(private scaleInput: ScaleInputService,
               private scaleHint: ScaleHintService,
               private route: ActivatedRoute,
               private toast: ToastService,
-              private configurationService: ConfigurationService) {
-    this.scaleInput.coordinates$.subscribe(
-      data => {
-        this.coords$ = data;
-        const scaleInputElement = document.getElementById('scaleInput');
-        scaleInputElement.style.top = this.coords$.y + 'px';
-        scaleInputElement.style.left = this.coords$.x + 'px';
+              private scaleService: ScaleService) {
+
+    this.scaleService.coordinatesChanged.subscribe(
+      coordinates => {
+        this.input.style.top = coordinates.y + 'px';
+        this.input.style.left = coordinates.x + 'px';
       });
-    this.scaleInput.visibility$.subscribe(
-      data => {
-        this.visible = data;
+
+    this.scaleService.scaleVisibilityChanged.subscribe(
+      isScaleVisible => {
+        this.visible = isScaleVisible;
       });
-    this.scaleInput.scale$.subscribe(
-      data => {
-        this.scale = data;
+
+    this.scaleInput.scaleChanged.subscribe(
+      scale => {
+        this.scale = scale;
       });
   }
 
   ngOnInit() {
+    this.input = document.getElementById('scaleInput');
     const objValues = Object.keys(Measure).map(k => Measure[k]);
     this.measures = objValues.filter(v => typeof v === 'string') as string[];
     this.route.params.subscribe((params: Params) => {
@@ -55,31 +56,18 @@ export class ScaleInputComponent implements OnInit {
     });
   }
 
-  public save(valid: boolean) {
+  public confirm(valid: boolean) {
     if (valid) {
       if (!this.scale.measure) {
         this.toast.showFailure('scale.measureNotSet');
         return;
       }
       this.scaleHint.publishScale(this.scale);
-      this.scaleInput.publishSaveClicked();
+      this.scaleInput.publishSaveClicked(this.scale);
       this.toast.showSuccess('scale.setSuccess');
     } else {
       this.toast.showFailure('scale.mustBeInteger');
     }
   }
 
-  public removeScale() {
-    this.scale = <Scale>{
-      start: null,
-      stop: null,
-      realDistance: null,
-      measure: null
-    };
-    this.scaleHint.publishScale(null);
-    this.scaleInput.publishScale(this.scale);
-    document.getElementById('scaleGroup').remove();
-    this.scaleInput.publishRemoveClicked();
-    this.visible = false;
-  }
 }

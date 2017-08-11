@@ -1,13 +1,12 @@
 <form #scaleForm="ngForm" novalidate>
   <div id="scaleInput" [ngClass]="visible ? 'show-scale-input' : 'hide-scale-input'">
     <md-input-container class="example-full-width">
-      <input mdInput placeholder="?" pattern="\-?[\d]+" name="realDistance" [(ngModel)]="scale.realDistance"
-             required type="text" class="input" autocomplete="off">
+      <input mdInput placeholder="distance" pattern="\-?[\d]+" name="realDistance" [(ngModel)]="scale.realDistance"
+             required class="distance" autocomplete="off">
     </md-input-container>
-    <md-select placeholder="unit" [(ngModel)]="scale.measure" name="unit" class="select">
+    <md-select [ngModelOptions]="{standalone: true}" placeholder="unit" [(ngModel)]="scale.measure" class="measure">
       <md-option *ngFor="let measure of measures" [value]="measure">{{measure}}</md-option>
     </md-select>
-    <button md-button id="saveButton" class="button save-button" (click)="save(scaleForm.valid)">{{'save'|translate}}</button>
-    <button md-button id="removeButton" class="button remove-button" (click)="removeScale()">{{'remove'|translate}}</button>
+    <button id="confirmScaleButton" md-fab md-raised-button md-button (click)="confirm(scaleForm.valid)">{{'ok'|translate}}</button>
   </div>
 </form>

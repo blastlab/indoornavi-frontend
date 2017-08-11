@@ -1,4 +1,4 @@
-import {browser, element, by} from 'protractor';
+import {browser, by, element} from 'protractor';
 import {Utils} from '../../../../utils';
 
 
@@ -52,20 +52,16 @@ export class ScaleTool {
     browser.actions().mouseMove(element).perform();
   }
 
-  static clickSave() {
-    element(by.id('saveButton')).click();
-  }
-
-  static clickRemove() {
-    element(by.id('removeButton')).click();
+  static clickConfirm() {
+    element(by.id('confirmScaleButton')).click();
   }
 
   static fillInScaleInput(distance, unit) {
     element(by.name('realDistance')).clear();
     element(by.name('realDistance')).sendKeys(distance);
 
-    element(by.name('unit')).click();
-    element(by.cssContainingText('md-option', unit)).click();
+    element(by.className('measure')).click();
+    element(by.id('md-option-' + unit)).click();
   }
 
   static dragEnding(ending, point) {

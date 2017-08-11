@@ -12,6 +12,10 @@ import {Line, Point} from '../../../map.type';
 import {Geometry} from '../../../utils/geometry';
 import {AuthGuard} from '../../../../auth/auth.guard';
 import {HintBarService} from '../../../hint-bar/hint-bar.service';
+import {ConfigurationService} from '../../../../floor/configuration/configuration.service';
+import {HttpService} from '../../../../utils/http/http.service';
+import {RouterTestingModule} from '@angular/router/testing';
+import {ScaleService} from './scale.service';
 
 
 describe('Scale', () => {
@@ -29,9 +33,11 @@ describe('Scale', () => {
       imports: [
         MaterialModule,
         TranslateModule.forRoot(),
+        RouterTestingModule
       ],
       providers: [
-        ScaleHintService, ScaleInputService, MapLoaderInformerService, AuthGuard, HintBarService
+        ScaleHintService, ScaleInputService, MapLoaderInformerService, AuthGuard, HintBarService, ConfigurationService, HttpService,
+        ScaleService
       ]
     })
       .compileComponents();

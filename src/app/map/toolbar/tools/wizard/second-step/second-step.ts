@@ -7,10 +7,10 @@ import * as Collections from 'typescript-collections';
 import {AnchorDistance} from '../../../../../anchor/anchor.type';
 import {AcceptButtonsService} from '../../../../../utils/accept-buttons/accept-buttons.service';
 import {Point} from '../../../../map.type';
-import {SocketMsg, WizardData} from '../wizard';
 import {NaviIcons} from '../../../../../utils/drawing/icon.service';
 import {DrawingService, MapObjectParams} from '../../../../../utils/drawing/drawing.service';
 import {HintBarService} from '../../../../hint-bar/hint-bar.service';
+import {SecondStepMessage, Step, WizardData} from '../wizard.type';
 
 @Component({
   selector: 'app-second-step',
@@ -25,7 +25,7 @@ export class SecondStepComponent implements WizardStep {
   public socketData = new Collections.Set<AnchorDistance>(SecondStepComponent.compareFn);
   public isLoading: boolean = true;
   public data: AnchorDistance;
-  public coords: Array<Point> = [];
+  public coordinates: Array<Point> = [];
   @ViewChild(TemplateRef) dialogTemplate: TemplateRef<any>;
 
   dialogRef: MdDialogRef<MdDialog>;
@@ -67,7 +67,7 @@ export class SecondStepComponent implements WizardStep {
   }
 
   public placeOnMap(data: AnchorDistance): void {
-    this.coords = [];
+    this.coordinates = [];
     const map: d3.selection = d3.select('#map');
     map.style('cursor', 'crosshair');
     this.translate.get('wizard.click.place.anchor', {id: this.data.anchorId}).subscribe((text: string) => {
@@ -76,7 +76,7 @@ export class SecondStepComponent implements WizardStep {
     this.drawSinkDistance(this.data.distance);
     map.on('click', () => {
       const coordinates: Point = {x: d3.event.offsetX, y: d3.event.offsetY};
-      this.coords.push(coordinates);
+      this.coordinates.push(coordinates);
       const anchorParams: MapObjectParams = {
         id: 'anchor' + this.data.anchorId, iconName: NaviIcons.ANCHOR,
         groupClass: 'wizardAnchor anchor', markerClass: 'anchorMarker', fill: 'green'
@@ -121,7 +121,6 @@ export class SecondStepComponent implements WizardStep {
   public drawSinkDistance(distance: number) {
     const map = d3.select('#map');
     const boxMargin = parseInt(map.select('.sinkMarker').attr('x'), 10);
-    console.log(boxMargin);
     const sinkX = map.select('.wizardSink').attr('x');
     const sinkY = map.select('.wizardSink').attr('y');
     map.append('circle')
@@ -139,14 +138,14 @@ export class SecondStepComponent implements WizardStep {
     d3.select('#map').select('#sinkDistance').remove();
   }
 
-  public prepareToSend(data: WizardData): SocketMsg {
+  public prepareToSend(data: WizardData): SecondStepMessage {
     const invertedSinkPosition: Point = {...data.sinkPosition};
     invertedSinkPosition.y = -invertedSinkPosition.y;
     return {
-      sinkShortId: data.sinkShortId,
       sinkPosition: invertedSinkPosition,
       anchorShortId: this.data.anchorId,
-      degree: data.degree
+      degree: data.degree,
+      step: Step.SECOND
     };
   }
 
@@ -154,9 +153,9 @@ export class SecondStepComponent implements WizardStep {
     return {
       sinkShortId: data.sinkShortId,
       sinkPosition: data.sinkPosition,
-      anchorShortId: this.data.anchorId,
-      degree: this.calculateDegree(data.sinkPosition, this.coords[0]),
-      firstAnchorPosition: this.coords[0],
+      firstAnchorShortId: this.data.anchorId,
+      degree: this.calculateDegree(data.sinkPosition, this.coordinates[0]),
+      firstAnchorPosition: this.coordinates[0],
       secondAnchorPosition: null,
       secondAnchorShortId: null
     };
@@ -169,7 +168,7 @@ export class SecondStepComponent implements WizardStep {
   }
 
   public clean(): void {
-    this.coords = [];
+    this.coordinates = [];
     if (!!this.data) {
       const map = d3.select('#map');
       map.select('#anchor' + this.data.anchorId).remove();
@@ -178,7 +177,7 @@ export class SecondStepComponent implements WizardStep {
     }
   }
 
-  public closeWizard(clean): void {
+  public closeWizard(clean: boolean): void {
     this.clearView.emit(clean);
   }
 }

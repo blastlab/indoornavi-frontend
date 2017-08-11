@@ -1,4 +1,4 @@
-import {Component, EventEmitter, NgZone, Output, TemplateRef, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, NgZone, Output, TemplateRef, ViewChild} from '@angular/core';
 import {ToolName} from '../tools.enum';
 import {Tool} from '../tool';
 import {TranslateService} from '@ngx-translate/core';
@@ -6,7 +6,6 @@ import {Subscription} from 'rxjs/Rx';
 import {Config} from '../../../../../config';
 import {SocketService} from '../../../../utils/socket/socket.service';
 import {WizardStep} from './wizard-step';
-import {Point} from '../../../map.type';
 import {FirstStepComponent} from './first-step/first-step';
 import {SecondStepComponent} from './second-step/second-step';
 import {ThirdStepComponent} from './third-step/third-step';
@@ -15,6 +14,8 @@ import {HintBarService} from '../../../hint-bar/hint-bar.service';
 import {ConfigurationService} from '../../../../floor/configuration/configuration.service';
 import {Sink} from '../../../../sink/sink.type';
 import {Anchor} from '../../../../anchor/anchor.type';
+import {SocketMessage, WizardData} from './wizard.type';
+import {Floor} from '../../../../floor/floor.type';
 
 @Component({
   selector: 'app-wizard',
@@ -34,6 +35,7 @@ export class WizardComponent implements Tool {
   @ViewChild('secondStep') secondStep: SecondStepComponent;
   @ViewChild('thirdStep') thirdStep: ThirdStepComponent;
   @ViewChild(TemplateRef) dialogTemplate: TemplateRef<any>;
+  @Input() floor: Floor;
 
   dialogRef: MdDialogRef<MdDialog>;
 
@@ -107,13 +109,16 @@ export class WizardComponent implements Tool {
   }
 
   public wizardNextStep(nextStepIndex: number): void {
+    this.wizardData = this.activeStep.updateWizardData(this.wizardData);
+    const message: SocketMessage = this.activeStep.prepareToSend(this.wizardData);
+    this.socketService.send(message);
+
     if (nextStepIndex === this.steps.length) {
       this.wizardCompleted = true;
-      this.wizardData = this.activeStep.updateWizardData(this.wizardData);
 
       const anchors: Anchor[] = [];
       anchors.push(<Anchor>{
-        shortId: this.wizardData.anchorShortId,
+        shortId: this.wizardData.firstAnchorShortId,
         x: this.wizardData.firstAnchorPosition.x,
         y: this.wizardData.firstAnchorPosition.y
       });
@@ -122,7 +127,7 @@ export class WizardComponent implements Tool {
         x: this.wizardData.secondAnchorPosition.x,
         y: this.wizardData.secondAnchorPosition.y
       });
-      this.configurationService.addSink(<Sink>{
+      this.configurationService.setSink(<Sink>{
         shortId: this.wizardData.sinkShortId,
         x: this.wizardData.sinkPosition.x,
         y: this.wizardData.sinkPosition.y,
@@ -133,10 +138,11 @@ export class WizardComponent implements Tool {
       this.dialogRef.afterClosed().subscribe(() => {
         this.emitToggleActive();
       });
+
+      this.firstStep.socketData.clear();
+      this.cleanAll();
+
     } else {
-      this.wizardData = this.activeStep.updateWizardData(this.wizardData);
-      const message: SocketMsg = this.activeStep.prepareToSend(this.wizardData);
-      this.socketService.send(message);
       this.activeStep = this.steps[nextStepIndex];
       this.activeStep.openDialog();
     }
@@ -171,17 +177,3 @@ export class WizardComponent implements Tool {
   }
 
 }
-
-export interface SocketMsg {
-  sinkShortId: number;
-  sinkPosition: Point;
-  anchorShortId: number;
-  degree: number;
-}
-
-export interface WizardData extends SocketMsg {
-  firstAnchorPosition: Point;
-  secondAnchorPosition: Point;
-  secondAnchorShortId: number;
-}
-

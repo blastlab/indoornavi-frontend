@@ -5,7 +5,7 @@
       <app-scale (clicked)="setTool($event)"></app-scale>
     </li>
     <li>
-      <app-wizard (clicked)="setTool($event)"></app-wizard>
+      <app-wizard [floor]="floor" (clicked)="setTool($event)"></app-wizard>
     </li>
     <li>
       <app-anchor-placer (clicked)="setTool($event)"></app-anchor-placer>

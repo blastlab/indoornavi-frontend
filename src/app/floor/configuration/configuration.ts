@@ -1,53 +1,54 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {animate, Component, Input, OnInit, state, style, transition, trigger} from '@angular/core';
 import {Configuration} from './configuration.type';
 import {ConfigurationService} from './configuration.service';
 import {Floor} from '../floor.type';
-import {Timer} from '../../utils/timer/timer';
-import {D3, D3Service} from 'd3-ng2-service';
 import {MapLoaderInformerService} from '../../utils/map-loader-informer/map-loader-informer.service';
 
 @Component({
   selector: 'app-configuration',
   templateUrl: './configuration.html',
-  styleUrls: ['./configuration.css']
+  styleUrls: ['./configuration.css'],
+  animations: [
+    trigger('messageState', [
+      state('visible', style({opacity: 1, transform: 'scale(1.0)'})),
+      state('hidden', style({opacity: 0, transform: 'scale(0.0)'})),
+      transition('hidden <=> visible', animate(ConfigurationService.SAVE_DRAFT_ANIMATION_TIME + 'ms')),
+    ])
+  ]
 })
 export class ConfigurationComponent implements OnInit {
 
-  private d3: D3;
+  public publishButtonDisabled = true;
+  public messageSpanState: string = 'hidden';
   @Input() floor: Floor;
-  private hashedConfiguration: Int32Array | string;
+  private isAnimationDone: boolean = true;
 
   constructor(private configurationService: ConfigurationService,
-              private d3Service: D3Service,
-              private mapLoader: MapLoaderInformerService) {
-    this.d3 = d3Service.getD3();
+              private mapLoaderInformer: MapLoaderInformerService) {
   }
 
   ngOnInit() {
-    this.configurationService.loadConfiguration(this.floor);
+    this.mapLoaderInformer.isLoaded$.subscribe(() => {
+      this.configurationService.loadConfiguration(this.floor);
+    });
     this.configurationService.configurationLoaded().subscribe(() => {
-      const timer = new Timer(() => {
-        const currentHash = this.configurationService.getHashedConfiguration();
-        if (currentHash !== this.hashedConfiguration) {
-          this.hashedConfiguration = currentHash;
-          this.configurationService.saveDraft().subscribe((configuration: Configuration) => {
-            console.log('draft saved');
-            console.log(configuration);
-          });
-        }
-      }, 3000);
-
-      this.mapLoader.isLoaded$.subscribe(() => {
-        this.d3.select('#map').on('click', () => {
-          timer.restart();
+        this.configurationService.configurationChanged().subscribe((_: Configuration) => {
+          this.publishButtonDisabled = false;
+          if (this.isAnimationDone) {
+            this.messageSpanState = 'visible';
+          }
         });
-      });
     });
   }
 
   public publish(): void {
-    this.configurationService.publish().subscribe((configuration: Configuration) => {
-      console.log(configuration);
+    this.configurationService.publish().subscribe((_: Configuration) => {
+      this.publishButtonDisabled = true;
     });
+  }
+
+  public messageSpanAnimationDone(): void {
+    this.isAnimationDone = this.messageSpanState === 'hidden';
+    this.messageSpanState = 'hidden';
   }
 }

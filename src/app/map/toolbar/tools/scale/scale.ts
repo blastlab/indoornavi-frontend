@@ -12,7 +12,8 @@ import {Subscription} from 'rxjs/Subscription';
 import {Geometry} from '../../../utils/geometry';
 import {HintBarService} from '../../../hint-bar/hint-bar.service';
 import {ConfigurationService} from '../../../../floor/configuration/configuration.service';
-import {Observable} from 'rxjs/Observable';
+import {Configuration} from '../../../../floor/configuration/configuration.type';
+import {ScaleService} from './scale.service';
 
 @Component({
   selector: 'app-scale',
@@ -29,9 +30,9 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   public isScaleSet: boolean = false;
   private isFirstPointDrawn: boolean = false;
   private END_SIZE: number = 5;
-  private mapLoaderSubscription: Subscription;
+  private mapLoadedSubscription: Subscription;
   private saveButtonSubscription: Subscription;
-  private removeButtonSubscription: Subscription;
+  private configurationLoadedSubscription: Subscription;
   private scaleGroup = d3.select('#scaleGroup');
   private mapWidth: number;
   private mapHeight: number;
@@ -42,46 +43,52 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
               private scaleHint: ScaleHintService,
               private mapLoaderInformer: MapLoaderInformerService,
               private hintBar: HintBarService,
-              private configurationService: ConfigurationService) {
+              private configurationService: ConfigurationService,
+              private scaleService: ScaleService) {
     this.setTranslations();
   }
 
   ngOnDestroy() {
-    this.mapLoaderSubscription.unsubscribe();
+    this.mapLoadedSubscription.unsubscribe();
     this.saveButtonSubscription.unsubscribe();
-    this.removeButtonSubscription.unsubscribe();
+    this.configurationLoadedSubscription.unsubscribe();
   }
 
   ngOnInit(): void {
     this.createEmptyScale();
 
-    this.mapLoaderSubscription =
-      Observable.zip(this.mapLoaderInformer.isLoaded$, this.configurationService.configurationLoaded())
-        .subscribe(([_, configuration]) => {
-          this.scale = {...configuration.scale};
-          this.mapWidth = d3.select('#map').attr('width');
-          this.mapHeight = d3.select('#map').attr('height');
-          this.createSvgGroupWithScale();
-          this.updateScaleGroup();
-        });
-
-    this.saveButtonSubscription = this.scaleInput.saveClicked$.subscribe(() => {
-      this.clicked.emit(this);
-      this.isScaleSet = true;
-      this.configurationService.setScale(this.scale);
-    });
-
-    this.removeButtonSubscription = this.scaleInput.removeClicked$.subscribe(() => {
-      this.isScaleSet = false;
-      this.isScaleDisplayed = false;
-      this.createEmptyScale();
-      this.pointsArray = [];
-      this.linesArray = [];
-      this.isFirstPointDrawn = false;
-      this.startCreatingScale();
+    this.configurationLoadedSubscription = this.configurationService.configurationLoaded().subscribe((configuration: Configuration) => {
+      if (configuration.scale === null) {
+        this.createEmptyScale();
+      } else {
+        this.scale = {...configuration.scale};
+        this.drawScaleFromConfiguration();
+      }
       this.updateScaleGroup();
     });
 
+    this.mapLoadedSubscription = this.mapLoaderInformer.isLoaded$
+      .subscribe(() => {
+        this.mapWidth = d3.select('#map').attr('width');
+        this.mapHeight = d3.select('#map').attr('height');
+        this.createSvgGroupWithScale();
+      });
+
+    this.saveButtonSubscription = this.scaleInput.confirmClicked.subscribe((scale: Scale) => {
+      this.clicked.emit(this);
+      this.isScaleSet = true;
+      this.scale.realDistance = scale.realDistance;
+      this.scale.measure = scale.measure;
+      this.configurationService.setScale(this.scale);
+    });
+
+    this.scaleHint.mouseHoverChanged.subscribe((overOrOut: string) => {
+      if (overOrOut === 'over') {
+        this.scaleGroup.style('display', 'flex');
+      } else {
+        this.scaleGroup.style('display', 'none');
+      }
+    });
   }
 
   public getToolName(): ToolName {
@@ -118,10 +125,9 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       .attr('id', 'scaleGroup')
       .style('display', 'none');
     this.updateScaleGroup();
-    this.drawScaleFromDB();
   }
 
-  private drawScaleFromDB(): void {
+  private drawScaleFromConfiguration(): void {
     if (!!this.scale.realDistance && !!this.scale.start && !!this.scale.stop) {
       this.isScaleSet = true;
       this.pointsArray.push(this.scale.start);
@@ -144,9 +150,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   private startCreatingScale(): void {
     this.scaleGroup.style('display', 'flex');
-    d3.select('#scaleHint')
-      .on('mouseover', null)
-      .on('mouseout', null);
 
     const mapBackground = d3.select('#mapBackground');
     mapBackground.style('cursor', 'crosshair');
@@ -155,18 +158,20 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       mapBackground.on('click', () => {
         this.addPoint();
       });
-      this.scaleInput.publishVisibility(false);
-    }
-    if (this.isScaleSet || this.isScaleDisplayed) {
-      this.scaleInput.publishVisibility(true);
+      this.scaleService.changeVisibility(false);
     }
 
-    if (!d3.select('#scaleGroup').empty()) {
+    if (this.isScaleSet || this.isScaleDisplayed) {
+      this.scaleService.changeVisibility(true);
+    }
+
+    if (!d3.select('#scaleGroup').empty() && this.isScaleSet) {
       d3.select('#scaleGroup').style('display', 'flex');
       this.redrawLine();
       this.redrawEndings();
       this.redrawPoints();
-    } else {
+      this.redrawInput();
+    } else if (d3.select('#scaleGroup').empty()) {
       d3.select('#map').append('g')
         .attr('id', 'scaleGroup')
         .style('display', 'flex');
@@ -176,18 +181,11 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   private hideScale(): void {
-    this.scaleInput.publishVisibility(false);
+    this.scaleService.changeVisibility(false);
 
     d3.select('#mapBackground').style('cursor', 'default');
     this.scaleGroup.style('display', 'none');
     d3.select('#mapBackground').on('click', null);
-    d3.select('#scaleHint')
-      .on('mouseover', () => {
-        this.scaleGroup.style('display', 'flex');
-      })
-      .on('mouseout', () => {
-        this.scaleGroup.style('display', 'none');
-      });
   }
 
   private addPoint(): void {
@@ -234,9 +232,8 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   private setScaleVisible(): void {
     this.isScaleDisplayed = true;
-    this.scaleInput.publishVisibility(this.isScaleDisplayed);
+    this.scaleService.changeVisibility(this.isScaleDisplayed);
   }
-
 
   private getLineSlope(): number {
     if (this.linesArray.length === 0) {
@@ -259,6 +256,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       })
       .on('end', () => {
         this.setScalePoints();
+        this.configurationService.setScale(this.scale);
       });
 
     const points = this.scaleGroup.selectAll('circle');
@@ -454,19 +452,20 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     const tempX = (this.linesArray[0].p1.x + this.linesArray[0].p2.x) / 2;
     const tempY = (this.linesArray[0].p1.y + this.linesArray[0].p2.y) / 2;
 
-    const inputHeight = 50;
-    const inputWidth = 295;
+    const scaleInput = document.getElementById('scaleInput');
+    const inputHeight = scaleInput.offsetHeight;
+    const inputWidth = scaleInput.offsetWidth;
     const x = Math.max(0, Math.min(tempX, this.mapWidth - inputWidth - 25));
     const y = Math.max(inputHeight, Math.min(tempY, this.mapHeight - inputHeight));
     const p = <Point>{
       x: x,
       y: y
     };
-    this.MoveInputIfItEclipsesPoint(p, inputHeight, inputWidth);
-    this.scaleInput.publishCoordinates(p);
+    this.moveInputIfItEclipsesPoint(p, inputHeight, inputWidth);
+    this.scaleService.publishCoordinates(p);
   }
 
-  private MoveInputIfItEclipsesPoint(inputCoords: Point, inputHeight: number, inputWidth: number): void {
+  private moveInputIfItEclipsesPoint(inputCoords: Point, inputHeight: number, inputWidth: number): void {
     this.pointsArray.forEach((point: Point) => {
       if (point.x - 22 >= inputCoords.x && point.x - 25 <= inputCoords.x + inputWidth && point.y >= inputCoords.y && point.y <= inputCoords.y + inputHeight) {
         inputCoords.y -= (inputHeight + this.END_SIZE);

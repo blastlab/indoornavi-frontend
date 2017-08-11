@@ -6,36 +6,25 @@
 }
 
 #scaleInput {
-  background-color: burlywood;
+  background-color: whitesmoke;
+  padding: 5px;
+  border-radius: 5px;
+  box-shadow: #999999 4px 3px;
 }
 
 .hide-scale-input {
   display: none;
 }
 
-.select {
-  background-color: burlywood;
-  width: 140px;
-  padding-top: 10px;
-}
-
-.input {
+.distance {
   width: 100px;
 }
 
-.button {
-  width: 10px;
-  font-size: 17px;
+.measure {
+  margin-top: 11px;
+  width: 150px;
 }
 
-.remove-button {
-  background-color: #d92020;
-}
-
-.save-button {
-  background-color: #77f977;
-}
-
-.md-button {
-  width: 10px;
+button {
+  margin-left: 15px;
 }

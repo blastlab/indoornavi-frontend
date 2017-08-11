@@ -6,6 +6,7 @@ import {Measure, Scale} from '../scale.type';
 import {Point} from '../../../../map.type';
 import {BrowserModule, DOCUMENT} from '@angular/platform-browser';
 import {AuthGuard} from '../../../../../auth/auth.guard';
+import {ScaleService} from '../scale.service';
 
 describe('ScaleHintComponent', () => {
   let component: ScaleHintComponent;
@@ -21,7 +22,7 @@ describe('ScaleHintComponent', () => {
         TranslateModule.forRoot(), BrowserModule
       ],
       providers: [
-        ScaleHintService, TranslateService, AuthGuard
+        ScaleHintService, TranslateService, AuthGuard, ScaleService
       ]
     })
       .compileComponents();
