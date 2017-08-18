@@ -1,6 +1,7 @@
 import {ScaleTool} from './scale.po';
 import {browser, by, element, ElementFinder, protractor} from 'protractor';
 import {Measure} from '../../../../../src/app/map/toolbar/tools/scale/scale.type';
+import {AppPage} from '../../../../app.po';
 
 describe('ScaleComponentInit', () => {
   let path: any;
@@ -31,7 +32,12 @@ describe('ScaleComponentInit', () => {
     expect(element(by.className('map-toolbar'))).toBeTruthy();
     expect(element(by.id('hint-bar')).getText()).toEqual('Choose a tool.');
     expect(element(by.id('scaleHint')).getText()).toEqual('Scale is not set');
-    expect(element(by.id('publish')).getAttribute('disabled')).toEqual('true');
+    browser.wait(function () {
+      return AppPage.getById('publish').getAttribute('disabled').then(function (value) {
+        return value === 'true';
+      });
+    }, 10000);
+    expect(AppPage.getById('publish').getAttribute('disabled')).toEqual('true');
   });
 });
 
@@ -62,6 +68,11 @@ describe('ScaleComponent', () => {
     ScaleTool.clickConfirm();
     expect(element(by.id('scaleHint')).getText()).toEqual('Scale: ' + distance + ' cm');
     expect(element(by.id('hintBar')).getText()).toEqual('Choose a tool.');
+    browser.wait(function () {
+      return AppPage.getById('publish').getAttribute('disabled').then(function (value) {
+        return value === null;
+      });
+    }, 10000);
     expect(element(by.id('publish')).getAttribute('disabled')).toEqual(null);
     DrawingChecker.expectScaleNotToBeVisible();
   });

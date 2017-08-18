@@ -6,6 +6,7 @@ const { SpecReporter } = require('jasmine-spec-reporter');
 const baseUrl =  'http://localhost:4200/';
 
 exports.config = {
+  useAllAngular2AppRoots: true,
   allScriptsTimeout: 11000,
   specs: [
     './e2e/**/*.e2e-spec.ts'
