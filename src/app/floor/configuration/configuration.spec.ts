@@ -26,6 +26,12 @@ class ConfigurationServiceMock {
   public loadConfiguration(_: Floor): Observable<Configuration> {
     return Observable.of(this.configuration);
   }
+
+  public saveDraft(): Promise<void> {
+    return new Promise<void>(resolve => {
+      resolve();
+    });
+  }
 }
 
 describe('ConfigurationComponent', () => {
@@ -70,16 +76,20 @@ describe('ConfigurationComponent', () => {
     expect(configurationService.loadConfiguration).toHaveBeenCalled();
   });
 
-  it('should change state of publish button and message span', () => {
+  it('should save draft after SAVE_DRAFT_TIMEOUT', (done: DoneFn) => {
     // given
-    component.messageSpanState = 'hidden';
-    component.publishButtonDisabled = true;
+    spyOn(configurationService, 'configurationLoaded').and.callThrough();
+    spyOn(configurationService, 'saveDraft').and.callThrough();
 
     // when
     component.ngOnInit();
+    mapLoader.publishIsLoaded();
 
     // then
-    expect(component.messageSpanState).toBe('visible');
-    expect(component.publishButtonDisabled).toBe(false);
+    setTimeout(() => {
+      expect(configurationService.configurationLoaded).toHaveBeenCalled();
+      expect(configurationService.saveDraft).toHaveBeenCalled();
+      done();
+    }, ConfigurationComponent.SAVE_DRAFT_TIMEOUT);
   });
 });

@@ -52,18 +52,25 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.mapLoadedSubscription.unsubscribe();
     this.saveButtonSubscription.unsubscribe();
     this.configurationLoadedSubscription.unsubscribe();
+    this.isScaleSet = false;
+    this.scaleGroup.remove();
+    this.pointsArray = [];
+    this.linesArray = [];
+    this.isFirstPointDrawn = false;
   }
 
   ngOnInit(): void {
     this.createEmptyScale();
 
     this.configurationLoadedSubscription = this.configurationService.configurationLoaded().subscribe((configuration: Configuration) => {
-      if (configuration.scale === null) {
+      if (configuration.data.scale === null) {
         this.createEmptyScale();
       } else {
-        this.scale = {...configuration.scale};
+        this.scale = {...configuration.data.scale};
         this.drawScaleFromConfiguration();
       }
+      this.scaleInput.publishScale(this.scale);
+      this.scaleHint.publishScale(this.scale);
       this.updateScaleGroup();
     });
 
@@ -136,8 +143,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.redrawLine();
       this.redrawEndings();
       this.redrawInput();
-      this.scaleInput.publishScale(this.scale);
-      this.scaleHint.publishScale(this.scale);
     }
   }
 

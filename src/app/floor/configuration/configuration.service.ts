@@ -1,12 +1,13 @@
 import {Injectable} from '@angular/core';
 import {HttpService} from '../../utils/http/http.service';
-import {Configuration} from './configuration.type';
+import {Configuration, ConfigurationData} from './configuration.type';
 import {Observable} from 'rxjs/Rx';
 import {Scale} from '../../map/toolbar/tools/scale/scale.type';
 import {Sink} from 'app/sink/sink.type';
 import {Floor} from '../floor.type';
 import * as Collections from 'typescript-collections';
 import {Subject} from 'rxjs/Subject';
+import {Md5} from 'ts-md5/dist/md5';
 
 @Injectable()
 export class ConfigurationService {
@@ -17,6 +18,7 @@ export class ConfigurationService {
   private configurationChangedEmitter: Subject<Configuration> = new Subject<Configuration>();
   private loaded = this.configurationLoadedEmitter.asObservable();
   private changed = this.configurationChangedEmitter.asObservable();
+  private configurationHash: string | Int32Array;
 
   private static compareFn(sink: Sink): string {
     return '' + sink.shortId;
@@ -38,24 +40,27 @@ export class ConfigurationService {
       if (configurations.length === 0) {
         this.configuration = <Configuration>{
           floorId: floor.id,
-          sinks: [],
-          scale: null,
-          version: 0
+          version: 0,
+          data: {
+            sinks: [],
+            scale: null
+          }
         };
       } else {
         this.configuration = configurations[0];
       }
+      this.configurationHash = this.hashConfiguration();
       this.configurationLoadedEmitter.next(this.configuration);
     });
   }
 
-  public publish(): Observable<Configuration> {
-    return this.httpService.doPost(ConfigurationService.URL, this.configuration);
+  public publish(): Observable<ConfigurationData> {
+    return this.httpService.doPost(ConfigurationService.URL, this.configuration.floorId);
   }
 
   public setScale(scale: Scale): void {
-    this.configuration.scale = {...scale};
-    this.saveDraft();
+    this.configuration.data.scale = {...scale};
+    this.configurationChangedEmitter.next(this.configuration);
   }
 
   public setSink(sink: Sink): void {
@@ -65,21 +70,30 @@ export class ConfigurationService {
       sinks.remove(sinkCopy);
     }
     sinks.add(sinkCopy);
-    this.configuration.sinks = sinks.toArray();
-    this.saveDraft();
+    this.configuration.data.sinks = sinks.toArray();
+    this.configurationChangedEmitter.next(this.configuration);
   }
 
-  private saveDraft(): void {
-    this.httpService.doPut(ConfigurationService.URL, this.configuration).subscribe(() => {
-      this.configurationChangedEmitter.next(this.configuration);
+  public saveDraft(): Promise<void> {
+    return new Promise<void>((resolve) => {
+      if (this.hashConfiguration() !== this.configurationHash) {
+        this.httpService.doPut(ConfigurationService.URL, this.configuration).subscribe(() => {
+          this.configurationHash = this.hashConfiguration();
+          resolve();
+        });
+      }
     });
   }
 
   private getConfigurationSinks(): Collections.Set<Sink> {
     const sinks = new Collections.Set<Sink>(ConfigurationService.compareFn);
-    this.configuration.sinks.forEach((configurationSink: Sink) => {
+    this.configuration.data.sinks.forEach((configurationSink: Sink) => {
       sinks.add(configurationSink);
     });
     return sinks;
+  }
+
+  private hashConfiguration(): string | Int32Array {
+    return Md5.hashStr(JSON.stringify(this.configuration));
   }
 }

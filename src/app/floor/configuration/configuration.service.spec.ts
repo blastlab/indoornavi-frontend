@@ -58,18 +58,20 @@ describe('ConfigurationService', () => {
       spyOn(httpService, 'doGet').and.returnValue(Observable.of([{
         version: 1,
         floorId: 1,
-        sinks: [],
-        scale: <Scale>{
-          start: {
-            x: 1,
-            y: 2
-          },
-          stop: {
-            x: 1,
-            y: 2
-          },
-          realDistance: 1000,
-          measure: Measure.CENTIMETERS
+        data: {
+          sinks: [],
+          scale: <Scale>{
+            start: {
+              x: 1,
+              y: 2
+            },
+            stop: {
+              x: 1,
+              y: 2
+            },
+            realDistance: 1000,
+            measure: Measure.CENTIMETERS
+          }
         }
       }]).delay(1000));
 
@@ -80,14 +82,14 @@ describe('ConfigurationService', () => {
       service.configurationLoaded().subscribe((configuration: Configuration) => {
         expect(configuration.floorId).toBe(1);
         expect(configuration.version).toBe(1);
-        expect(configuration.scale).toBeDefined();
-        expect(configuration.sinks.length).toBe(0);
+        expect(configuration.data.scale).toBeDefined();
+        expect(configuration.data.sinks.length).toBe(0);
         done();
       });
     })();
   });
 
-  it('should save draft when setting scale', (done: DoneFn) => {
+  it('should emit changed event when setting scale', (done: DoneFn) => {
     inject([ConfigurationService, HttpService], (service: ConfigurationService, httpService: HttpService) => {
       // given
       const floor: Floor = {
@@ -96,38 +98,38 @@ describe('ConfigurationService', () => {
         name: '',
         buildingId: 1
       };
-      spyOn(httpService, 'doPut').and.returnValue(Observable.of({}).delay(1000));
       spyOn(httpService, 'doGet').and.returnValue(Observable.of([]).delay(1000));
       service.loadConfiguration(floor);
 
       service.configurationLoaded().subscribe((_: Configuration) => {
         // when
-        service.setScale(<Scale>{
-          start: {
-            x: 1,
-            y: 2
-          },
-          stop: {
-            x: 1,
-            y: 2
-          },
-          realDistance: 1000,
-          measure: Measure.CENTIMETERS
-        });
+        setTimeout(() => {
+          service.setScale(<Scale>{
+            start: {
+              x: 1,
+              y: 2
+            },
+            stop: {
+              x: 1,
+              y: 2
+            },
+            realDistance: 1000,
+            measure: Measure.CENTIMETERS
+          });
+        }, 1000);
 
         // then
         service.configurationChanged().subscribe((changedConfiguration: Configuration) => {
-          expect(httpService.doPut).toHaveBeenCalled();
-          expect(changedConfiguration.scale.start.x).toBe(1);
-          expect(changedConfiguration.scale.start.y).toBe(2);
-          expect(changedConfiguration.scale.realDistance).toBe(1000);
+          expect(changedConfiguration.data.scale.start.x).toBe(1);
+          expect(changedConfiguration.data.scale.start.y).toBe(2);
+          expect(changedConfiguration.data.scale.realDistance).toBe(1000);
           done();
         });
       });
     })();
   });
 
-  it('should save draft when adding sink', (done: DoneFn) => {
+  it('should emit changed event when adding sink', (done: DoneFn) => {
     inject([ConfigurationService, HttpService], (service: ConfigurationService, httpService: HttpService) => {
       // given
       const floor: Floor = {
@@ -136,30 +138,30 @@ describe('ConfigurationService', () => {
         name: '',
         buildingId: 1
       };
-      spyOn(httpService, 'doPut').and.returnValue(Observable.of({}).delay(1000));
       spyOn(httpService, 'doGet').and.returnValue(Observable.of([]).delay(1000));
       service.loadConfiguration(floor);
 
       service.configurationLoaded().subscribe((_: Configuration) => {
         // when
-        service.setSink(<Sink>{
-          shortId: 123,
-          verified: true,
-          anchors: [
-            <Anchor>{
-              shortId: 321,
-              verified: true
-            }
-          ]
-        });
+        setTimeout(() => {
+          service.setSink(<Sink>{
+            shortId: 123,
+            verified: true,
+            anchors: [
+              <Anchor>{
+                shortId: 321,
+                verified: true
+              }
+            ]
+          });
+        }, 1000);
 
         // then
         service.configurationChanged().subscribe((changedConfiguration: Configuration) => {
-          expect(httpService.doPut).toHaveBeenCalled();
-          expect(changedConfiguration.sinks.length).toBe(1);
-          expect(changedConfiguration.sinks[0].shortId).toBe(123);
-          expect(changedConfiguration.sinks[0].anchors.length).toBe(1);
-          expect(changedConfiguration.sinks[0].anchors[0].shortId).toBe(321);
+          expect(changedConfiguration.data.sinks.length).toBe(1);
+          expect(changedConfiguration.data.sinks[0].shortId).toBe(123);
+          expect(changedConfiguration.data.sinks[0].anchors.length).toBe(1);
+          expect(changedConfiguration.data.sinks[0].anchors[0].shortId).toBe(321);
           done();
         });
       });

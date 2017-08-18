@@ -62,6 +62,7 @@ describe('FirstStepComponent', () => {
   it('should set sinkShortId into StepMessage and sinkPosition in wizardData', () => {
     component.data = <Sink>{shortId: 339, longId: 42152, verified: true, anchors: []};
     component.coordinates = [{x: 543, y: 623}];
+    component.floor = {id: 1, level: 0, name: '', buildingId: 1};
     const givenWizardData: WizardData = {
       sinkShortId: null,
       sinkPosition: null,
