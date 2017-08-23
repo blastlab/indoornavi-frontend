@@ -68,6 +68,7 @@ import {DrawingService} from './utils/drawing/drawing.service';
 import {Hammer} from 'hammerjs/hammer';
 import {IconService} from './utils/drawing/icon.service';
 import {HintBarService} from './map/hint-bar/hint-bar.service';
+import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 
 const appRoutes: Routes = [
@@ -149,6 +150,8 @@ export function HttpLoaderFactory(http: Http) {
     FormsModule,
     MaterialModule,
     HttpModule,
+    BrowserAnimationsModule,
+    NoopAnimationsModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
