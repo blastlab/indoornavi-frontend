@@ -1,18 +1,14 @@
 #hint-bar {
-  position: fixed;
-  height: 40px;
-  width: 69%;
+  position: absolute;
+  height: 30px;
+  width: 70%;
   background-color: lightgray;
-  padding-left:10px;
-  padding-bottom: 8px;
-  border: 1px dashed;
-  bottom: 0;
+  padding: 5px;
+  border: 1px;
+  top: 100%;
+  margin-top: -30px;
   left: 20%;
+  box-sizing: border-box;
+  font-size: 80%;
 }
-.message p {
-  float: left;
-  vertical-align: middle;
-}
-.message #coords p {
-  float: right;
-}
+

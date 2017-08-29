@@ -1,4 +1,5 @@
-import {Scale} from "../map/toolbar/tools/scale/scale.type";
+import {Scale} from '../map/toolbar/tools/scale/scale.type';
+
 export interface Floor {
   id?: number;
   level: number;

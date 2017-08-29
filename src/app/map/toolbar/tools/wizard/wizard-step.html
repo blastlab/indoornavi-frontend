@@ -1,0 +1,20 @@
+
+<template>
+  <h3>{{title|translate}}</h3>
+  <md-spinner *ngIf="isLoading" mode="indeterminate" color="warn"></md-spinner>
+  <div class="dialog-select" *ngIf="!isLoading">
+    <md-select placeholder="{{'wizardStep.select.data'|translate}}" [(ngModel)]="data" floatPlaceholder="never">
+      <md-option *ngFor="let data of socketData.toArray()" [value]="data">id:{{ data.shortId }}{{ data.anchorId }}</md-option>
+      <span>
+        <md-spinner id="select-spinner" *ngIf="!isLoading" mode="indeterminate" color="accent"></md-spinner>
+        <small class="searching_info">{{'wizardStep.waitingForDevicesInfo'|translate}}</small>
+      </span>
+    </md-select>
+  </div>
+  <div class="dialog-action">
+    <button *ngIf="!isLoading" class="dialog-place-button" (click)="dialogRef.close(true)" [disabled]="!data"
+            md-raised-button>{{'go.to.map'|translate}}</button>
+    <button class="dialog-cancel-button" (click)="dialogRef.close(false)" md-button>{{'cancel'|translate}}</button>
+  </div>
+</template>
+

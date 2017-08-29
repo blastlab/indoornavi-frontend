@@ -2,10 +2,11 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {ScaleHintComponent} from './hint';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {ScaleHintService} from './hint.service';
-import {MeasureEnum, Scale} from '../scale.type';
+import {Measure, Scale} from '../scale.type';
 import {Point} from '../../../../map.type';
 import {BrowserModule, DOCUMENT} from '@angular/platform-browser';
 import {AuthGuard} from '../../../../../auth/auth.guard';
+import {ScaleService} from '../scale.service';
 
 describe('ScaleHintComponent', () => {
   let component: ScaleHintComponent;
@@ -21,7 +22,7 @@ describe('ScaleHintComponent', () => {
         TranslateModule.forRoot(), BrowserModule
       ],
       providers: [
-        ScaleHintService, TranslateService, AuthGuard
+        ScaleHintService, TranslateService, AuthGuard, ScaleService
       ]
     })
       .compileComponents();
@@ -67,7 +68,7 @@ describe('ScaleHintComponent', () => {
         y: 101
       },
       realDistance: 112,
-      measure: MeasureEnum.METERS
+      measure: Measure.METERS
     };
     let translation = '';
     spyOn(component, 'showScaleValue').and.callThrough();

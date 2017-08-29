@@ -1,6 +1,6 @@
 #map-container {
   position: absolute;
-  top: 10%;
+  top: 15%;
   left: 20%;
   max-width: 70%;
   max-height: 80%;
@@ -8,16 +8,15 @@
   border: 2px rgba(132, 0, 13, .2) double;
   z-index: -1;
 }
-#map-container canvas {
-position: absolute;
-top: 0;
-left: 0;
-background: rgba(132, 0, 13, .2);
-z-index: -2;
-}
-#map {
 
+#map-container canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: rgba(132, 0, 13, .2);
+  z-index: -2;
 }
+
 .svg-container {
   display: inline-block;
   position: relative;
@@ -33,6 +32,7 @@ z-index: -2;
   top: 10px;
   left: 0;
 }
+
 .edit-map-button, .view-map-button {
   top: 50px;
   left: 15%;
@@ -43,6 +43,15 @@ z-index: -2;
   height: 100%;
   margin: 0;
   border: 0;
-  /* uncomment for production  -> overflow: hidden; /*  Disable scrollbars */
-  display: block;  /* No floating content on sides */
+  /* uncomment after zoom implementation  -> overflow: hidden; /*  Disable scrollbars */
+  display: block; /* No floating content on sides */
 }
+
+/*
+.draggable {
+  cursor: pointer;
+}
+.draggable.active {
+  cursor: move;
+}
+*/

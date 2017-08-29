@@ -11,7 +11,6 @@ import {Tool} from './toolbar/tools/tool';
 export class MapControllerComponent implements OnInit {
   @Input() activeTool: Tool;
   imageUploaded: boolean;
-  editing: boolean;
   floor: Floor;
 
   constructor(private route: ActivatedRoute,

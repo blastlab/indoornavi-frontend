@@ -13,9 +13,7 @@ export class ComplexPage {
   }
 
   static removeLastComplex() {
-    Utils.waitForToastToDisappear(() => {
       element.all(by.css('.complex-remove-button')).last().click();
-    });
   }
 
   static editLastComplex(name: string, doSave: boolean) {
@@ -27,12 +25,12 @@ export class ComplexPage {
     }
   }
 
-  static cancelEditingLastComplex() {
-    element(by.css('.cdk-overlay-container')).click();
+  static getLatestAddedComplexName() {
+    return element.all(by.css('.complex-name')).last().getText();
   }
 
-  static getLatestAddedComplex() {
-    return element.all(by.css('.complex-name')).last().getText();
+  static openLatestAddedComplex() {
+    return element.all(by.css('.complex-building-button')).last().click();
   }
 
 }

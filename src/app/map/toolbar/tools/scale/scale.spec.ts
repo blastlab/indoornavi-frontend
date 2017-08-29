@@ -6,11 +6,16 @@ import {MaterialModule} from '@angular/material';
 import {ScaleHintService} from './hint/hint.service';
 import {ScaleInputService} from './input/input.service';
 import {MapLoaderInformerService} from '../../../../utils/map-loader-informer/map-loader-informer.service';
-import {MeasureEnum, Scale} from 'app/map/toolbar/tools/scale/scale.type';
+import {Measure, Scale} from 'app/map/toolbar/tools/scale/scale.type';
 import {Floor} from '../../../../floor/floor.type';
 import {Line, Point} from '../../../map.type';
 import {Geometry} from '../../../utils/geometry';
 import {AuthGuard} from '../../../../auth/auth.guard';
+import {HintBarService} from '../../../hint-bar/hint-bar.service';
+import {ConfigurationService} from '../../../../floor/configuration/configuration.service';
+import {HttpService} from '../../../../utils/http/http.service';
+import {RouterTestingModule} from '@angular/router/testing';
+import {ScaleService} from './scale.service';
 
 
 describe('Scale', () => {
@@ -28,12 +33,14 @@ describe('Scale', () => {
       imports: [
         MaterialModule,
         TranslateModule.forRoot(),
+        RouterTestingModule
       ],
       providers: [
-        ScaleHintService, ScaleInputService, MapLoaderInformerService, AuthGuard
+        ScaleHintService, ScaleInputService, MapLoaderInformerService, AuthGuard, HintBarService, ConfigurationService, HttpService,
+        ScaleService
       ]
     })
-      .compileComponents();
+    .compileComponents();
   }));
 
   beforeEach(() => {
@@ -52,7 +59,7 @@ describe('Scale', () => {
       start: point1,
       stop: point2,
       realDistance: 112,
-      measure: MeasureEnum.METERS
+      measure: Measure.METERS
     };
     floor = <Floor>{
       scale: this.scale
@@ -60,7 +67,7 @@ describe('Scale', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create ScaleComponent', () => {
     expect(component).toBeTruthy();
   });
 

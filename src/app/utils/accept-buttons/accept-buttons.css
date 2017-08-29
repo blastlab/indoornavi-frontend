@@ -1,0 +1,21 @@
+#accept-buttons {
+  display: none;
+  position: absolute;
+}
+#accept-buttons.visible {
+  display: flex;
+  max-width: 0;
+  pointer-events: none;
+}
+.decision {
+  position: relative;
+  top: 25px;
+  pointer-events: auto;
+  opacity: 0.75;
+}
+.positive {
+  left: -50px;
+}
+.negative {
+  left: -30px;
+}

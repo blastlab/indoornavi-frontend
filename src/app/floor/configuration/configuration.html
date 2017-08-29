@@ -1,0 +1,7 @@
+<div id="panel">
+  <button [disabled]="publishButtonDisabled" md-fab id="publish" md-raised-button (click)="publish()">
+    {{'publish'|translate}}
+  </button>
+
+  <span [@messageState]="messageSpanState" (@messageState.done)="messageSpanAnimationDone()" id="message">The draft has been saved.</span>
+</div>
