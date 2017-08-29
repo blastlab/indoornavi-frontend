@@ -41,7 +41,7 @@ describe('ToolbarComponent', () => {
         ConfigurationService, HttpService, AuthGuard, ScaleService
       ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

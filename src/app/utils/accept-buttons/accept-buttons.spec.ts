@@ -1,5 +1,5 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { AcceptButtonsComponent } from './accept-buttons';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {AcceptButtonsComponent} from './accept-buttons';
 import {AcceptButtonsService} from './accept-buttons.service';
 
 describe('AcceptButtonsComponent', () => {
@@ -12,7 +12,7 @@ describe('AcceptButtonsComponent', () => {
       declarations: [AcceptButtonsComponent],
       providers: [AcceptButtonsService]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

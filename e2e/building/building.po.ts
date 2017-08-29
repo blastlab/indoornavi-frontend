@@ -1,4 +1,4 @@
-import {browser, element, by, promise} from 'protractor';
+import {element, by, promise} from 'protractor';
 import {ComplexPage} from '../complex/complex.po';
 
 export class BuildingPage {

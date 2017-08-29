@@ -137,7 +137,7 @@ export class ThirdStepComponent implements WizardStep {
 
   public prepareToSend(data: WizardData): SocketMessage {
     return {
-      step: Step.THIRD
+        step: Step.THIRD
     };
   }
 

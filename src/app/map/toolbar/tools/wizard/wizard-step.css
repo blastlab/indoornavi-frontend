@@ -10,6 +10,7 @@ md-spinner, .dialog-cancel-button, .dialog-place-button, md-select {
   vertical-align: top;
   max-width: 175px;
 }
+
 #select-spinner {
   display: inline-block;
   position: absolute;
@@ -17,9 +18,11 @@ md-spinner, .dialog-cancel-button, .dialog-place-button, md-select {
   max-height: 40px;
   max-width: 40px;
 }
+
 .dialog-cancel-button {
   background-color: firebrick;
 }
+
 .dialog-place-button {
   background-color: forestgreen;
 }

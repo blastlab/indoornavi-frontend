@@ -40,7 +40,7 @@ describe('Scale', () => {
         ScaleService
       ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
