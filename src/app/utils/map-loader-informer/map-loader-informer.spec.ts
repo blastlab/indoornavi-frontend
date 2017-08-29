@@ -14,7 +14,7 @@ describe('MapLoaderInformerService', () => {
 
 
   it('Should inform that svg is NOT loaded', () => {
-    service.isLoaded$.subscribe(loaded => {
+    service.loadCompleted().subscribe(loaded => {
       expect(loaded).toBeFalsy();
     });
     service.publishIsLoaded();
@@ -22,7 +22,7 @@ describe('MapLoaderInformerService', () => {
 
   it('Should inform that svg is loaded', () => {
     service.publishIsLoaded();
-    service.isLoaded$.subscribe(loaded => {
+    service.loadCompleted().subscribe(loaded => {
       expect(loaded).toBeTruthy();
     });
   });
