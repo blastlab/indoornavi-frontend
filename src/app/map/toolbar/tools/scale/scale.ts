@@ -74,12 +74,11 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.updateScaleGroup();
     });
 
-    this.mapLoadedSubscription = this.mapLoaderInformer.isLoaded$
-      .subscribe(() => {
-        this.mapWidth = d3.select('#map').attr('width');
-        this.mapHeight = d3.select('#map').attr('height');
-        this.createSvgGroupWithScale();
-      });
+    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe(() => {
+      this.mapWidth = d3.select('#map').attr('width');
+      this.mapHeight = d3.select('#map').attr('height');
+      this.createSvgGroupWithScale();
+    });
 
     this.saveButtonSubscription = this.scaleInput.confirmClicked.subscribe((scale: Scale) => {
       this.clicked.emit(this);

@@ -17,7 +17,7 @@ describe('ScaleComponentInit', () => {
     path = require('path');
   });
 
-  it('should not be able to upload wrong step of image', () => {
+  it('should not be able to upload wrong type of image', () => {
     const file = '../../../../resources/wrongFile.txt';
     const absolutePath = path.resolve(__dirname, file);
     element(by.tagName('input')).sendKeys(absolutePath);
@@ -59,7 +59,7 @@ describe('ScaleComponent', () => {
     expect(element(by.id('hint-bar')).getText()).toEqual('SCALE: Click at map to set scale.');
   });
 
-  it('should draw first scale and step in distance and unit', () => {
+  it('should draw first scale and type in distance and unit', () => {
     const distance = 314;
     ScaleTool.clickMap(svg, 126, 125);
     ScaleTool.clickMap(svg, 241, 342);
@@ -124,7 +124,7 @@ describe('ScaleComponent', () => {
     DrawingChecker.expectScaleNotToBeVisible();
   });
 
-  it('should not be able to step in text instead of number in scale input', () => {
+  it('should not be able to type in text instead of number in scale input', () => {
     const distance = 'NaN';
     ScaleTool.fillInScaleInput(distance, Measure.METERS);
     ScaleTool.clickConfirm();

@@ -69,6 +69,7 @@
 	"save": "Save",
 	"scale": "Scale",
 	"scale.basic.msg": "Click at map to set scale.",
+  "scale.distance.hint": "How many units equals drawn scale",
 	"scale.isNotSet": "Scale is not set",
 	"scale.measureNotSet": "Please set the measure unit",
 	"scale.mustBeInteger": "Real distance must be integer",
