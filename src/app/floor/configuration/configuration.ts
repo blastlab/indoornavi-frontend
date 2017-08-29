@@ -34,7 +34,7 @@ export class ConfigurationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.mapLoadedSubscription = this.mapLoaderInformer.isLoaded$.subscribe(() => {
+    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe(() => {
       this.configurationService.loadConfiguration(this.floor);
     });
 
