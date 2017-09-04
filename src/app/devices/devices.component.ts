@@ -80,7 +80,7 @@ export class DevicesComponent implements OnInit, OnDestroy {
 
   openDialog(): void {
     this.dialogRef = this.dialog.open(DeviceDialogComponent);
-    this.dialogRef.componentInstance.url = `${this.routeState}s/`;
+    this.dialogRef.componentInstance.url = `${this.routeState}/`;
     this.dialogRef.componentInstance.device = {
       id: null,
       shortId: null,

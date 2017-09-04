@@ -1,6 +1,6 @@
 {
   "add": "Add",
-  "anchor.header": "Anchors",
+  "anchors.header": "Anchors",
   "auth.invalid.credentials": "Invalid username and/or password",
   "building.confirm.to.remove": "Are you sure you want to remove the building along with the floors?",
   "building.create.success": "Building has been created.",
@@ -75,8 +75,8 @@
   "scale.mustBeInteger": "Real distance must be integer",
   "scale.setSuccess": "Scale has been set.",
   "scale.tooltip": "Scale",
-  "sink.header": "Sinks",
-  "tag.header": "Tags",
+  "sinks.header": "Sinks",
+  "tags.header": "Tags",
   "th.actions": "Actions",
   "user.changePassword.success": "Your password has been changed.",
   "user.create.success": "User has been created.",

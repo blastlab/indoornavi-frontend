@@ -7,11 +7,11 @@
 <div class="row">
   <div id="notVerifiedList" class="devices-list">
     <app-device-list #notVerified [verified]="false"
-                     [deviceType]="routeState +'s'"></app-device-list>
+                     [deviceType]="routeState"></app-device-list>
   </div>
 
   <div id="verifiedList" class="devices-list verified">
     <app-device-list #verified [verified]="true"
-                     [deviceType]="routeState +'s'"></app-device-list>
+                     [deviceType]="routeState"></app-device-list>
   </div>
 </div>
