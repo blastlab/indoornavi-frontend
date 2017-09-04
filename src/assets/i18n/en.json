@@ -75,6 +75,7 @@
   "scale.mustBeInteger": "Real distance must be integer",
   "scale.setSuccess": "Scale has been set.",
   "scale.tooltip": "Scale",
+  "sink.header": "Sinks",
   "tag.header": "Tags",
   "th.actions": "Actions",
   "user.changePassword.success": "Your password has been changed.",

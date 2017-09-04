@@ -20,12 +20,12 @@ import {FloorService} from './floor/floor.service';
 import {FloorDialogComponent} from './floor/floor.dialog';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
-import {AnchorComponent} from './anchor/anchor';
+// import {AnchorComponent} from './anchor/anchor';
 import {Ng2BreadcrumbModule} from 'ng2-breadcrumb/ng2-breadcrumb';
 import {WebSocketService} from 'angular2-websocket-service';
 import {SocketService} from './utils/socket/socket.service';
 import {DndModule} from 'ng2-dnd';
-import {TagComponent} from './tag/tag';
+// import {TagComponent} from './tag/tag';
 import {DeviceListComponent} from './device/device.list';
 import {DeviceDialogComponent} from './device/device.dialog';
 import {DeviceService} from './device/device.service';
@@ -68,6 +68,7 @@ import {ConfigurationComponent} from './floor/configuration/configuration';
 import {ConfigurationService} from './floor/configuration/configuration.service';
 import {D3Service} from 'd3-ng2-service';
 import {ScaleService} from './map/toolbar/tools/scale/scale.service';
+import {DevicesComponent} from './devices/devices.component';
 
 const appRoutes: Routes = [
   {path: '', redirectTo: '/complexes', pathMatch: 'full'},
@@ -75,8 +76,8 @@ const appRoutes: Routes = [
   {path: 'logout', component: AuthComponent},
   {path: 'complexes', component: ComplexComponent, canActivate: [CanRead], data: {permission: 'COMPLEX'}},
   {path: 'complexes/:complexId/buildings', component: BuildingComponent, canActivate: [CanRead], data: {permission: 'BUILDING'}},
-  {path: 'anchors', component: AnchorComponent, canActivate: [CanRead], data: {permission: 'ANCHOR'}},
-  {path: 'tags', component: TagComponent, canActivate: [CanRead], data: {permission: 'TAG'}},
+  {path: 'anchor', component: DevicesComponent, canActivate: [CanRead], data: {permission: 'ANCHOR'}},
+  {path: 'tag', component: DevicesComponent, canActivate: [CanRead], data: {permission: 'TAG'}},
   {path: 'users', component: UserComponent, canActivate: [CanRead], data: {permission: 'USER'}},
   {path: 'changePassword', component: ChangePasswordComponent, canActivate: [CanRead]},
   {path: 'permissionGroups', component: PermissionGroupComponent, canActivate: [CanRead], data: {permission: 'PERMISSION_GROUP'}},
@@ -102,14 +103,14 @@ export function HttpLoaderFactory(http: Http) {
     ComplexConfirmComponent,
     BuildingComponent,
     BuildingDialogComponent,
-    AnchorComponent,
+    // AnchorComponent,
     DeviceListComponent,
     DeviceDialogComponent,
     BuildingConfirmComponent,
     FloorComponent,
     FloorDialogComponent,
     AppComponent,
-    TagComponent,
+    // TagComponent,
     MapControllerComponent,
     MapViewerComponent,
     MapUploaderComponent,
@@ -130,6 +131,7 @@ export function HttpLoaderFactory(http: Http) {
     FirstStepComponent,
     SecondStepComponent,
     ThirdStepComponent,
+    DevicesComponent,
   ],
   entryComponents: [
     ComplexDialogComponent,
