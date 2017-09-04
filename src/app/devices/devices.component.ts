@@ -8,9 +8,9 @@ import {ToastService} from '../utils/toast/toast.service';
 import {DeviceDialogComponent} from '../device/device.dialog';
 import {DeviceListComponent} from '../device/device.list';
 import {ActivatedRoute} from '@angular/router';
-import {Tag} from '../tag/tag.type';
-import {Anchor} from '../anchor/anchor.type';
-import {Sink} from '../sink/sink.type';
+import {Tag} from './tag.type';
+import {Anchor} from './anchor.type';
+import {Sink} from './sink.type';
 
 @Component({
   templateUrl: './devices.component.html',
@@ -45,13 +45,12 @@ export class DevicesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.route.params.subscribe(params => {
-      this.routeState = this.route.snapshot.routeConfig.path;
-    });
+    this.routeState = this.route.snapshot.routeConfig.path;
     this.ngZone.runOutsideAngular(() => {
       const stream = this.socketService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.routeState}`);
 
       this.socketSubscription = stream.subscribe((devices: Array<Anchor|Tag|Sink>) => {
+        console.log(devices);
         this.ngZone.run(() => {
           devices.forEach((device: Anchor|Tag|Sink) => {
             if (this.verifiedList.isLocked(device) || this.notVerifiedList.isLocked(device)) {

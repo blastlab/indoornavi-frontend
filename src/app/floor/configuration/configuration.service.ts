@@ -3,7 +3,7 @@ import {HttpService} from '../../utils/http/http.service';
 import {Configuration, ConfigurationData} from './configuration.type';
 import {Observable} from 'rxjs/Rx';
 import {Scale} from '../../map/toolbar/tools/scale/scale.type';
-import {Sink} from 'app/sink/sink.type';
+import {Sink} from 'app/devices/sink.type';
 import {Floor} from '../floor.type';
 import * as Collections from 'typescript-collections';
 import {Subject} from 'rxjs/Subject';

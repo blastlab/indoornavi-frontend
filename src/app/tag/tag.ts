@@ -1,7 +1,7 @@
 import {Component, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Subscription} from 'rxjs/Rx';
 import {SocketService} from '../utils/socket/socket.service';
-import {Tag} from './tag.type';
+import {Tag} from '../devices/tag.type';
 import {DeviceListComponent} from '../device/device.list';
 import {MdDialog, MdDialogRef} from '@angular/material';
 import {DeviceDialogComponent} from '../device/device.dialog';

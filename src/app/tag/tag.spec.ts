@@ -11,7 +11,7 @@ import {DialogTestModule} from '../utils/dialog/dialog.test';
 import {DeviceService} from '../device/device.service';
 import {DeviceListComponent} from '../device/device.list';
 import {TagComponent} from './tag';
-import {Tag} from './tag.type';
+import {Tag} from '../devices/tag.type';
 import {Router, RouterModule} from '@angular/router';
 import {AuthGuard} from '../auth/auth.guard';
 import {SharedModule} from '../utils/shared/shared.module';

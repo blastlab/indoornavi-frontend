@@ -9,7 +9,7 @@ import {HttpService} from '../utils/http/http.service';
 import {ToastService} from '../utils/toast/toast.service';
 import {Observable} from 'rxjs/Rx';
 import {DialogTestModule} from '../utils/dialog/dialog.test';
-import {Anchor} from './anchor.type';
+import {Anchor} from '../devices/anchor.type';
 import {DeviceService} from '../device/device.service';
 import {DeviceListComponent} from '../device/device.list';
 import {Router, RouterModule} from '@angular/router';

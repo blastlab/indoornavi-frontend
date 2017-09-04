@@ -1,7 +1,7 @@
 import {Component, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Subscription} from 'rxjs/Rx';
 import {SocketService} from '../utils/socket/socket.service';
-import {Anchor} from './anchor.type';
+import {Anchor} from '../devices/anchor.type';
 import {MdDialog, MdDialogRef} from '@angular/material';
 import {Config} from '../../config';
 import {TranslateService} from '@ngx-translate/core';
