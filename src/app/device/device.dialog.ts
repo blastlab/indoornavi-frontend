@@ -28,7 +28,7 @@ export class DeviceDialogComponent implements OnInit {
   save(valid: boolean): void {
     if (valid) {
       (!this.device.id ? this.deviceService.create(this.device) : this.deviceService.update(this.device))
-        .subscribe((savedDevice: Device) => {
+        .subscribe((savedDevice: Device) => {;
             this.dialogRef.close(savedDevice);
           },
           (errorCode: string) => {

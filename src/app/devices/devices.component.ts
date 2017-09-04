@@ -50,7 +50,6 @@ export class DevicesComponent implements OnInit, OnDestroy {
       const stream = this.socketService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.routeState}`);
 
       this.socketSubscription = stream.subscribe((devices: Array<Anchor|Tag|Sink>) => {
-        console.log(devices);
         this.ngZone.run(() => {
           devices.forEach((device: Anchor|Tag|Sink) => {
             if (this.verifiedList.isLocked(device) || this.notVerifiedList.isLocked(device)) {
@@ -60,7 +59,9 @@ export class DevicesComponent implements OnInit, OnDestroy {
               this.verifiedList.devices.setValue(device.id, device);
               this.notVerifiedList.devices.remove(device.id);
             } else {
+              console.log(device);
               this.notVerifiedList.devices.setValue(device.id, device);
+              console.log(this.notVerifiedList.devices);
               this.verifiedList.devices.remove(device.id);
             }
           });

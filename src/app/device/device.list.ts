@@ -59,8 +59,8 @@ export class DeviceListComponent implements OnInit {
     this.dialogRef.componentInstance.device = {...device}; // copy
     this.dialogRef.componentInstance.url = this.deviceType + '/';
 
-    this.dialogRef.afterClosed().subscribe(anchorFromDialog => {
-      if (anchorFromDialog !== undefined) {
+    this.dialogRef.afterClosed().subscribe(deviceFromDialog => {
+      if (deviceFromDialog !== undefined) {
         this.toastService.showSuccess('device.save.success');
       }
       this.dialogRef = null;
