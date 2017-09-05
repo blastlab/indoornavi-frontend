@@ -5,6 +5,7 @@ import {ToastService} from '../utils/toast/toast.service';
 import {Device} from './device.type';
 import {DeviceService} from './device.service';
 import {DeviceDialogComponent} from './device.dialog';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-device-list',
@@ -24,7 +25,9 @@ export class DeviceListComponent implements OnInit {
   dialogRef: MdDialogRef<DeviceDialogComponent>;
   private lockedDevice: Device = null;
 
-  constructor(private deviceService: DeviceService, private dialog: MdDialog, private toastService: ToastService) {
+  constructor(private deviceService: DeviceService,
+              private dialog: MdDialog,
+              private toastService: ToastService) {
   }
 
   ngOnInit() {
@@ -53,11 +56,18 @@ export class DeviceListComponent implements OnInit {
     const device: Device = $event.dragData;
     this.devices.remove(device.id);
   }
-
+  // this method opens a component dialog and cannot be passed as service
+  // in addition this method needs a path that is taken from
+  // this.route.snapshot.path
+  // similar method is used in DevicesComponent and has the same name
+  // this method updates device
   openDialog(device: Device): void {
-    this.dialogRef = this.dialog.open(DeviceDialogComponent);
-    this.dialogRef.componentInstance.device = {...device}; // copy
-    this.dialogRef.componentInstance.url = this.deviceType + '/';
+    this.dialogRef = this.dialog.open(DeviceDialogComponent, {
+      data: {
+        device: Object.assign({}, device),
+        url: `${this.deviceType}/`
+      }
+    });
 
     this.dialogRef.afterClosed().subscribe(deviceFromDialog => {
       if (deviceFromDialog !== undefined) {

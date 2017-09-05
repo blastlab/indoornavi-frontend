@@ -11,6 +11,7 @@ import {ActivatedRoute} from '@angular/router';
 import {Tag} from './tag.type';
 import {Anchor} from './anchor.type';
 import {Sink} from './sink.type';
+import {DeviceService} from '../device/device.service';
 
 @Component({
   templateUrl: './devices.component.html',
@@ -19,12 +20,11 @@ import {Sink} from './sink.type';
 
 export class DevicesComponent implements OnInit, OnDestroy {
   private socketSubscription: Subscription;
-  @ViewChild('verified')
-  private verifiedList: DeviceListComponent;
-  @ViewChild('notVerified')
-  private notVerifiedList: DeviceListComponent;
+  @ViewChild('verified') private verifiedList: DeviceListComponent;
+  @ViewChild('notVerified') private notVerifiedList: DeviceListComponent;
 
   private routeState: string;
+  private device: object;
 
   dialogRef: MdDialogRef<DeviceDialogComponent>;
 
@@ -32,15 +32,15 @@ export class DevicesComponent implements OnInit, OnDestroy {
               private dialog: MdDialog,
               public translate: TranslateService,
               private toastService: ToastService,
-              private ngZone: NgZone,
-              private route: ActivatedRoute) {
+              private ngZone: NgZone, private route: ActivatedRoute,
+              private deviceService: DeviceService,) {
   }
 
-  get verified(): Anchor[]|Tag[]|Sink[]  {
+  get verified(): Anchor[] | Tag[] | Sink[] {
     return this.verifiedList.getDevices();
   }
 
-  get notVerified(): Anchor[]|Tag[]|Sink[] {
+  get notVerified(): Anchor[] | Tag[] | Sink[] {
     return this.notVerifiedList.getDevices();
   }
 
@@ -49,9 +49,9 @@ export class DevicesComponent implements OnInit, OnDestroy {
     this.ngZone.runOutsideAngular(() => {
       const stream = this.socketService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.routeState}`);
 
-      this.socketSubscription = stream.subscribe((devices: Array<Anchor|Tag|Sink>) => {
+      this.socketSubscription = stream.subscribe((devices: Array<Anchor | Tag | Sink>) => {
         this.ngZone.run(() => {
-          devices.forEach((device: Anchor|Tag|Sink) => {
+          devices.forEach((device: Anchor | Tag | Sink) => {
             if (this.verifiedList.isLocked(device) || this.notVerifiedList.isLocked(device)) {
               return;
             }
@@ -59,9 +59,7 @@ export class DevicesComponent implements OnInit, OnDestroy {
               this.verifiedList.devices.setValue(device.id, device);
               this.notVerifiedList.devices.remove(device.id);
             } else {
-              console.log(device);
               this.notVerifiedList.devices.setValue(device.id, device);
-              console.log(this.notVerifiedList.devices);
               this.verifiedList.devices.remove(device.id);
             }
           });
@@ -77,24 +75,25 @@ export class DevicesComponent implements OnInit, OnDestroy {
     if (this.socketSubscription) {
     }
   }
-
+  // this method opens a component dialog and cannot be passed as service
+  // in addition this method needs a path that is taken from
+  // this.route.snapshot.path
+  // similar method is used in DeviceListComponent and has the same name
+  // this method adds device devices
   openDialog(): void {
-    this.dialogRef = this.dialog.open(DeviceDialogComponent);
-    this.dialogRef.componentInstance.url = `${this.routeState}/`;
-    this.dialogRef.componentInstance.device = {
-      id: null,
-      shortId: null,
-      longId: null,
-      verified: false,
-      name: ''
-    };
+    this.device = this.deviceService.getEmptyDeviceObject(this.routeState);
+    this.dialogRef = this.dialog.open(DeviceDialogComponent, {
+      data: {
+        device: Object.assign({}, this.device),
+        url: `${this.routeState}/`
+      }
+    });
 
-    this.dialogRef.afterClosed().subscribe(device => {
-      if (device !== undefined) {
+    this.dialogRef.afterClosed().subscribe(savedDevice => {
+      if (savedDevice !== undefined) {
         this.toastService.showSuccess('device.create.success');
       }
       this.dialogRef = null;
     });
   }
-
 }

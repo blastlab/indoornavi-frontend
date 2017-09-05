@@ -20,12 +20,10 @@ import {FloorService} from './floor/floor.service';
 import {FloorDialogComponent} from './floor/floor.dialog';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
-// import {AnchorComponent} from './anchor/anchor';
 import {Ng2BreadcrumbModule} from 'ng2-breadcrumb/ng2-breadcrumb';
 import {WebSocketService} from 'angular2-websocket-service';
 import {SocketService} from './utils/socket/socket.service';
 import {DndModule} from 'ng2-dnd';
-// import {TagComponent} from './tag/tag';
 import {DeviceListComponent} from './device/device.list';
 import {DeviceDialogComponent} from './device/device.dialog';
 import {DeviceService} from './device/device.service';
@@ -76,6 +74,7 @@ const appRoutes: Routes = [
   {path: 'logout', component: AuthComponent},
   {path: 'complexes', component: ComplexComponent, canActivate: [CanRead], data: {permission: 'COMPLEX'}},
   {path: 'complexes/:complexId/buildings', component: BuildingComponent, canActivate: [CanRead], data: {permission: 'BUILDING'}},
+  {path: 'sinks', component: DevicesComponent, canActivate: [CanRead], data: {permission: 'SINK'}},
   {path: 'anchors', component: DevicesComponent, canActivate: [CanRead], data: {permission: 'ANCHOR'}},
   {path: 'tags', component: DevicesComponent, canActivate: [CanRead], data: {permission: 'TAG'}},
   {path: 'users', component: UserComponent, canActivate: [CanRead], data: {permission: 'USER'}},
@@ -103,14 +102,12 @@ export function HttpLoaderFactory(http: Http) {
     ComplexConfirmComponent,
     BuildingComponent,
     BuildingDialogComponent,
-    // AnchorComponent,
     DeviceListComponent,
     DeviceDialogComponent,
     BuildingConfirmComponent,
     FloorComponent,
     FloorDialogComponent,
     AppComponent,
-    // TagComponent,
     MapControllerComponent,
     MapViewerComponent,
     MapUploaderComponent,

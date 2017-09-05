@@ -15,6 +15,24 @@ export class DeviceService {
   constructor(protected httpService: HttpService) {
   }
 
+  getEmptyDeviceObject(path: string): object {
+    return path === 'sinks' ?
+      {
+        id: null,
+        shortId: null,
+        longId: null,
+        verified: false,
+        name: '',
+        configured: false
+      } :
+      {
+        id: null,
+        shortId: null,
+        longId: null,
+        verified: false,
+        name: ''
+      };
+  }
   create(device: Device): Observable<Device> {
     return this.httpService.doPost(this.url, device);
   }
