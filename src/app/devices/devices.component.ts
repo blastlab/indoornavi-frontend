@@ -32,7 +32,8 @@ export class DevicesComponent implements OnInit, OnDestroy {
               private dialog: MdDialog,
               public translate: TranslateService,
               private toastService: ToastService,
-              private ngZone: NgZone, private route: ActivatedRoute,
+              private ngZone: NgZone,
+              private route: ActivatedRoute,
               private deviceService: DeviceService,) {
   }
 
@@ -79,7 +80,7 @@ export class DevicesComponent implements OnInit, OnDestroy {
   // in addition this method needs a path that is taken from
   // this.route.snapshot.path
   // similar method is used in DeviceListComponent and has the same name
-  // this method adds device devices
+  // this method opens dialog that adds device
   openDialog(): void {
     this.device = this.deviceService.getEmptyDeviceObject(this.routeState);
     this.dialogRef = this.dialog.open(DeviceDialogComponent, {

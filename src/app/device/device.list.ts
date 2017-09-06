@@ -60,7 +60,7 @@ export class DeviceListComponent implements OnInit {
   // in addition this method needs a path that is taken from
   // this.route.snapshot.path
   // similar method is used in DevicesComponent and has the same name
-  // this method updates device
+  // this method opens dialog that updates device
   openDialog(device: Device): void {
     this.dialogRef = this.dialog.open(DeviceDialogComponent, {
       data: {

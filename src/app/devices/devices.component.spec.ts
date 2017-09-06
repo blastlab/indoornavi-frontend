@@ -8,22 +8,25 @@ import {HttpService} from '../utils/http/http.service';
 import {ToastService} from '../utils/toast/toast.service';
 import {Observable} from 'rxjs/Rx';
 import {DialogTestModule} from '../utils/dialog/dialog.test';
-import {Anchor} from './anchor.type';
 import {DeviceService} from '../device/device.service';
 import {DeviceListComponent} from '../device/device.list';
 import {Router, RouterModule} from '@angular/router';
 import {SharedModule} from '../utils/shared/shared.module';
 import {AuthGuard} from '../auth/auth.guard';
-
+import {ActivatedRoute} from '@angular/router';
 import { DevicesComponent } from './devices.component';
+import {Sink} from './sink.type';
 
 describe('DevicesComponent', () => {
   let component: DevicesComponent;
   let fixture: ComponentFixture<DevicesComponent>;
+  let mockActivatedRoute;
 
   let socketService: SocketService;
   let dialog: MdDialog;
   let toastService: ToastService;
+
+  mockActivatedRoute = {snapshot: {routeConfig: {path: 'sinks'}}};
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -35,7 +38,7 @@ describe('DevicesComponent', () => {
         SharedModule
       ],
       declarations: [DevicesComponent, DeviceListComponent],
-      providers: [SocketService, WebSocketService, DeviceService, HttpService, ToastService, MdDialog, {provide: Router, useClass: RouterModule}, AuthGuard]
+      providers: [SocketService, WebSocketService, DeviceService, HttpService, ToastService, MdDialog, {provide: Router, useClass: RouterModule}, {provide: ActivatedRoute, useValue: mockActivatedRoute}, AuthGuard]
     })
       .compileComponents();
 
@@ -52,8 +55,7 @@ describe('DevicesComponent', () => {
   it('should create component', () => {
     // given
     spyOn(socketService, 'connect').and.returnValue(Observable.of([{id: 1, verified: true}]));
-
-    // when
+    // // when
     component.ngOnInit();
     component.ngOnDestroy();
 
@@ -64,32 +66,34 @@ describe('DevicesComponent', () => {
     expect(component.verified.length).toBe(1);
   });
 
-  it('should open dialog to create new anchor', () => {
+  it('should open dialog to create new sink', () => {
     // given
     spyOn(dialog, 'open').and.callThrough();
 
     // when
+    component.ngOnInit();
     component.openDialog();
+    component.ngOnDestroy();
 
     // then
-    expect(component.dialogRef.componentInstance.device).toBeDefined();
-    expect(component.dialogRef.componentInstance.url).toBeDefined();
-    expect(component.dialogRef.componentInstance.url).toBe('anchors/');
+    expect(component.dialogRef.config.data).toBeDefined();
+    expect(component.dialogRef.config.data).toBeDefined();
+    expect(component.dialogRef.config.data['url']).toBe('sinks/');
     expect(dialog.open).toHaveBeenCalled();
   });
 
-  it('should create new anchor when dialog closes with value', () => {
+  it('should create new sink when dialog closes with value', () => {
     // given
-    const expectedAnchor: Anchor = {id: 1, shortId: 1, longId: 11, verified: false};
+    const expectedAnchor: Sink = {id: 1, shortId: 1, longId: 11, verified: false, anchors: []};
     spyOn(dialog, 'open').and.callThrough();
 
     // when
+    component.ngOnInit();
     component.openDialog();
     component.dialogRef.close(expectedAnchor);
+    component.ngOnDestroy();
 
     // then
     expect(toastService.showSuccess).toHaveBeenCalled();
   });
 });
-
-
