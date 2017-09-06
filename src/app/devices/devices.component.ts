@@ -78,11 +78,11 @@ export class DevicesComponent implements OnInit, OnDestroy {
   }
   // this method opens a component dialog and cannot be passed as service
   // in addition this method needs a path that is taken from
-  // this.route.snapshot.path
+  // this.route.snapshot.path that is this component prop
   // similar method is used in DeviceListComponent and has the same name
   // this method opens dialog that adds device
   openDialog(): void {
-    this.device = this.deviceService.getEmptyDeviceObject(this.routeState);
+    this.device = this.deviceService.emptyDeviceObjectDepandentOnPath(this.routeState);
     this.dialogRef = this.dialog.open(DeviceDialogComponent, {
       data: {
         device: Object.assign({}, this.device),

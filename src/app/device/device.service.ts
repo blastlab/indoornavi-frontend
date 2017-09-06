@@ -15,7 +15,7 @@ export class DeviceService {
   constructor(protected httpService: HttpService) {
   }
 
-  getEmptyDeviceObject(path: string): object {
+  emptyDeviceObjectDepandentOnPath(path: string): object {
     return path === 'sinks' ?
       {
         id: null,
@@ -33,6 +33,7 @@ export class DeviceService {
         name: ''
       };
   }
+
   create(device: Device): Observable<Device> {
     return this.httpService.doPost(this.url, device);
   }

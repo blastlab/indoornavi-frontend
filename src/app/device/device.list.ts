@@ -58,7 +58,7 @@ export class DeviceListComponent implements OnInit {
   }
   // this method opens a component dialog and cannot be passed as service
   // in addition this method needs a path that is taken from
-  // this.route.snapshot.path
+  // this.route.snapshot.path that is this component prop
   // similar method is used in DevicesComponent and has the same name
   // this method opens dialog that updates device
   openDialog(device: Device): void {
