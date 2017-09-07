@@ -70,7 +70,7 @@ export class ComplexComponent implements OnInit {
 
   removeComplex(index: number): void {
     const complexId: number = this.complexes[index].id;
-    this.buildingService.getBuildings(complexId).subscribe((result: any) => {
+    this.buildingService.getComplexWithBuildings(complexId).subscribe((result: any) => {
       if (result.buildings && result.buildings.length) {
         this.openRemoveConfirmationDialog(index);
       } else {

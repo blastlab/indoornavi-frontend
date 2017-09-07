@@ -11,6 +11,7 @@ import {MapLoaderInformerService} from '../../utils/map-loader-informer/map-load
 import {Observable} from 'rxjs/Rx';
 import {Configuration} from './configuration.type';
 import {Floor} from '../floor.type';
+import {DialogTestModule} from '../../utils/dialog/dialog.test';
 
 class ConfigurationServiceMock {
   private configuration: Configuration;
@@ -43,7 +44,7 @@ describe('ConfigurationComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ConfigurationComponent],
-      imports: [TranslateModule.forRoot(), HttpModule, RouterTestingModule],
+      imports: [TranslateModule.forRoot(), HttpModule, RouterTestingModule, DialogTestModule],
       providers: [{provide: ConfigurationService, useClass: ConfigurationServiceMock}, HttpService, AuthGuard, MapLoaderInformerService]
     })
       .compileComponents();

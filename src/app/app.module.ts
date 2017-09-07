@@ -10,7 +10,7 @@ import {ComplexConfirmComponent} from './complex/complex.confirm';
 import {ToastService} from './utils/toast/toast.service';
 import {HttpService} from './utils/http/http.service';
 import {AppComponent} from './app.component';
-import {RouterModule, Routes} from '@angular/router';
+import {RouterModule} from '@angular/router';
 import {BuildingComponent} from './building/building';
 import {BuildingDialogComponent} from './building/building.dialog';
 import {BuildingConfirmComponent} from './building/building.confirm';
@@ -68,28 +68,15 @@ import {ConfigurationComponent} from './floor/configuration/configuration';
 import {ConfigurationService} from './floor/configuration/configuration.service';
 import {D3Service} from 'd3-ng2-service';
 import {ScaleService} from './map/toolbar/tools/scale/scale.service';
-
-const appRoutes: Routes = [
-  {path: '', redirectTo: '/complexes', pathMatch: 'full'},
-  {path: 'login', component: AuthComponent},
-  {path: 'logout', component: AuthComponent},
-  {path: 'complexes', component: ComplexComponent, canActivate: [CanRead], data: {permission: 'COMPLEX'}},
-  {path: 'complexes/:complexId/buildings', component: BuildingComponent, canActivate: [CanRead], data: {permission: 'BUILDING'}},
-  {path: 'anchors', component: AnchorComponent, canActivate: [CanRead], data: {permission: 'ANCHOR'}},
-  {path: 'tags', component: TagComponent, canActivate: [CanRead], data: {permission: 'TAG'}},
-  {path: 'users', component: UserComponent, canActivate: [CanRead], data: {permission: 'USER'}},
-  {path: 'changePassword', component: ChangePasswordComponent, canActivate: [CanRead]},
-  {path: 'permissionGroups', component: PermissionGroupComponent, canActivate: [CanRead], data: {permission: 'PERMISSION_GROUP'}},
-  {path: 'complexes/:complexId/buildings/:buildingId/floors', component: FloorComponent, canActivate: [CanRead], data: {permission: 'FLOOR'}},
-  {
-    path: 'complexes/:complexId/buildings/:buildingId/floors/:floorId/map',
-    component: MapControllerComponent,
-    canActivate: [CanRead],
-    data: {permission: 'FLOOR'}
-  },
-  {path: 'unauthorized', component: UnauthorizedComponent},
-  {path: '**', redirectTo: '/complexes'}
-];
+import {PublishedComponent} from './published/published';
+import {PublishedListComponent} from './published/list/published-list';
+import {NgxDatatableModule} from '@swimlane/ngx-datatable';
+import {appRoutes} from './app.routes';
+import {PublishedService} from './published/published.service';
+import {TagService} from './tag/tag.service';
+import {MapViewerService} from './map/map.viewer.service';
+import {PublishedDialogComponent} from './published/dialog/published.dialog';
+import {ConfirmDialogComponent} from './utils/confirm-dialog/confirm.dialog';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -130,6 +117,10 @@ export function HttpLoaderFactory(http: Http) {
     FirstStepComponent,
     SecondStepComponent,
     ThirdStepComponent,
+    PublishedComponent,
+    PublishedListComponent,
+    PublishedDialogComponent,
+    ConfirmDialogComponent
   ],
   entryComponents: [
     ComplexDialogComponent,
@@ -138,7 +129,9 @@ export function HttpLoaderFactory(http: Http) {
     DeviceDialogComponent,
     BuildingConfirmComponent,
     FloorDialogComponent,
-    UserDialogComponent
+    UserDialogComponent,
+    PublishedDialogComponent,
+    ConfirmDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -162,7 +155,8 @@ export function HttpLoaderFactory(http: Http) {
     FlexLayoutModule,
     ImageUploadModule.forRoot(),
     SharedModule,
-    AngularMultiSelectModule
+    AngularMultiSelectModule,
+    NgxDatatableModule
   ],
   providers: [
     BuildingService,
@@ -190,7 +184,10 @@ export function HttpLoaderFactory(http: Http) {
     ConfigurationService,
     PermissionGroupService,
     D3Service,
-    ScaleService
+    ScaleService,
+    PublishedService,
+    TagService,
+    MapViewerService
   ], bootstrap: [AppComponent]
 })
 

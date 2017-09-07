@@ -4,6 +4,11 @@ import {Floor} from '../floor.type';
 import {MapLoaderInformerService} from '../../utils/map-loader-informer/map-loader-informer.service';
 import {Subscription} from 'rxjs/Subscription';
 import {Timer} from '../../utils/timer/timer';
+import {MdDialog, MdDialogRef} from '@angular/material';
+import {PublishedDialogComponent} from '../../published/dialog/published.dialog';
+import {PublishedMap} from '../../published/published.type';
+import {ConfirmDialogComponent} from '../../utils/confirm-dialog/confirm.dialog';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-configuration',
@@ -27,10 +32,19 @@ export class ConfigurationComponent implements OnInit, OnDestroy {
   private configurationLoadedSubscription: Subscription;
   private configurationChangedSubscription: Subscription;
   private timer: Timer;
+  private publishedDialogRef: MdDialogRef<PublishedDialogComponent>;
+
+  // confirm dialog data
+  private confirmDialogRef: MdDialogRef<ConfirmDialogComponent>;
+  private confirmButton: string;
+  private cancelButton: string;
+  private body: string;
 
   constructor(private configurationService: ConfigurationService,
               private mapLoaderInformer: MapLoaderInformerService,
-              private ngZone: NgZone) {
+              private ngZone: NgZone,
+              private dialog: MdDialog,
+              private translateService: TranslateService) {
   }
 
   ngOnInit() {
@@ -59,6 +73,7 @@ export class ConfigurationComponent implements OnInit, OnDestroy {
       });
     });
 
+    this.setTranslations();
   }
 
   ngOnDestroy(): void {
@@ -74,13 +89,51 @@ export class ConfigurationComponent implements OnInit, OnDestroy {
   }
 
   public publish(): void {
-    this.configurationService.publish().subscribe(() => {
-      this.publishButtonDisabled = true;
+    this.confirmDialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        body: this.body,
+        confirmButton: this.confirmButton,
+        cancelButton: this.cancelButton
+      }
+    });
+    this.confirmDialogRef.afterClosed().subscribe((okButtonClicked: boolean) => {
+      if (okButtonClicked) {
+        this.publishedDialogRef = this.dialog.open(PublishedDialogComponent, {width: '500px', height: '600px'});
+        this.publishedDialogRef.componentInstance.setMap({
+          floor: this.floor,
+          users: [],
+          tags: []
+        });
+        this.publishedDialogRef.afterClosed().subscribe((savedMap: PublishedMap) => {
+          if (!!savedMap) {
+            this.configurationService.publish().subscribe(() => {
+              this.publishButtonDisabled = true;
+            });
+          }
+        });
+      } else {
+        this.configurationService.publish().subscribe(() => {
+          this.publishButtonDisabled = true;
+        });
+      }
     });
   }
 
   public messageSpanAnimationDone(): void {
     this.isAnimationDone = this.messageSpanState === 'hidden';
     this.messageSpanState = 'hidden';
+  }
+
+  private setTranslations() {
+    this.translateService.setDefaultLang('en');
+    this.translateService.get('yes').subscribe((value: string) => {
+      this.confirmButton = value;
+    });
+    this.translateService.get('no').subscribe((value: string) => {
+      this.cancelButton = value;
+    });
+    this.translateService.get('configuration.confirmDialog.body').subscribe((value: string) => {
+      this.body = value;
+    });
   }
 }

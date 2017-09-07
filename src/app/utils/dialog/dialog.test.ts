@@ -11,6 +11,8 @@ import {DeviceDialogComponent} from '../../device/device.dialog';
 import {CommonModule} from '@angular/common';
 import {UserDialogComponent} from '../../user/user.dialog';
 import {AngularMultiSelectModule} from 'angular2-multiselect-dropdown/angular2-multiselect-dropdown';
+import {ConfirmDialogComponent} from '../confirm-dialog/confirm.dialog';
+import {PublishedDialogComponent} from '../../published/dialog/published.dialog';
 
 const DIALOGS = [
   ComplexDialogComponent,
@@ -19,7 +21,9 @@ const DIALOGS = [
   BuildingDialogComponent,
   BuildingConfirmComponent,
   FloorDialogComponent,
-  UserDialogComponent
+  UserDialogComponent,
+  ConfirmDialogComponent,
+  PublishedDialogComponent
 ];
 
 @NgModule({
@@ -28,4 +32,5 @@ const DIALOGS = [
   declarations: DIALOGS,
   entryComponents: DIALOGS,
 })
-export class DialogTestModule { }
+export class DialogTestModule {
+}
