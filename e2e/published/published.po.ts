@@ -1,6 +1,8 @@
 import {browser, by, element, promise as protractorPromise} from 'protractor';
 import {Utils} from '../utils';
 import {WebElement} from 'selenium-webdriver';
+import {ScaleTool} from '../map/toolbar/tools/scale/scale.po';
+import {Measure} from '../../src/app/map/toolbar/tools/scale/scale.type';
 
 export class PublishedPage {
   static navigateToPublishedList() {
@@ -53,6 +55,17 @@ export class PublishedPage {
         });
       });
     });
+  }
+
+  static prepareScale() {
+    const svg = element(by.id('map'));
+    ScaleTool.clickScaleTool();
+    ScaleTool.clickMap(svg, 126, 125);
+    ScaleTool.clickMap(svg, 241, 342);
+    ScaleTool.fillInScaleInput(100, Measure.CENTIMETERS);
+    ScaleTool.clickConfirm();
+    browser.sleep(5000); // wait till save draft
+    element(by.id('publish')).click();
   }
 }
 

@@ -14,9 +14,11 @@ describe('Published Map', () => {
   });
 
   it('should create, edit and then remove published map', (done: DoneFn) => {
-    // first we need to create floor with uploaded image
+    // first we need to create floor with uploaded image and scale set
     const elementName = 'Published Map Test Floor';
-    MapPage.prepareFloor(elementName);
+    MapPage.prepareAndOpenFloor(elementName);
+    MapPage.uploadFile('map.jpg');
+    PublishedPage.prepareScale();
 
     // go back to published maps list
     PublishedPage.navigateToPublishedList();
