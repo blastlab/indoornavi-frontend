@@ -5,20 +5,20 @@ import {MdDialog, MdDialogRef} from '@angular/material';
 import {Config} from '../../config';
 import {TranslateService} from '@ngx-translate/core';
 import {ToastService} from '../utils/toast/toast.service';
-import {DeviceDialogComponent} from '../device/device.dialog';
-import {DeviceListComponent} from '../device/device.list';
+import {DeviceDialogComponent} from './device.dialog';
+import {DeviceListComponent} from './device.list';
 import {ActivatedRoute} from '@angular/router';
 import {Tag} from './tag.type';
 import {Anchor} from './anchor.type';
 import {Sink} from './sink.type';
-import {DeviceService} from '../device/device.service';
+import {DeviceService} from './device.service';
 
 @Component({
-  templateUrl: './devices.component.html',
-  styleUrls: ['../device/device.css']
+  templateUrl: './device.component.html',
+  styleUrls: ['./device.css']
 })
 
-export class DevicesComponent implements OnInit, OnDestroy {
+export class DeviceComponent implements OnInit, OnDestroy {
   private socketSubscription: Subscription;
   @ViewChild('verified') private verifiedList: DeviceListComponent;
   @ViewChild('notVerified') private notVerifiedList: DeviceListComponent;

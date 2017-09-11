@@ -3,8 +3,8 @@ import {MdDialogRef} from '@angular/material';
 import {Device} from './device.type';
 import {DeviceService} from './device.service';
 import {ToastService} from '../utils/toast/toast.service';
-import {Anchor} from '../devices/anchor.type';
-import {Sink} from '../devices/sink.type';
+import {Anchor} from './anchor.type';
+import {Sink} from './sink.type';
 
 @Component({
   selector: 'app-device-dialog',
@@ -32,7 +32,7 @@ export class DeviceDialogComponent implements OnInit {
   save(valid: boolean): void {
     if (valid) {
       (!this.device.id ? this.deviceService.create(this.device) : this.deviceService.update(this.device))
-        .subscribe((savedDevice: Device) => {;
+        .subscribe((savedDevice: Device) => {
             this.dialogRef.close(savedDevice);
           },
           (errorCode: string) => {

@@ -1,5 +1,5 @@
 import {Scale} from '../../map/toolbar/tools/scale/scale.type';
-import {Sink} from '../../devices/sink.type';
+import {Sink} from '../../device/sink.type';
 
 export interface Configuration {
   version: number;

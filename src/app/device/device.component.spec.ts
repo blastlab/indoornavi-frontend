@@ -8,18 +8,18 @@ import {HttpService} from '../utils/http/http.service';
 import {ToastService} from '../utils/toast/toast.service';
 import {Observable} from 'rxjs/Rx';
 import {DialogTestModule} from '../utils/dialog/dialog.test';
-import {DeviceService} from '../device/device.service';
-import {DeviceListComponent} from '../device/device.list';
+import {DeviceService} from './device.service';
+import {DeviceListComponent} from './device.list';
 import {Router, RouterModule} from '@angular/router';
 import {SharedModule} from '../utils/shared/shared.module';
 import {AuthGuard} from '../auth/auth.guard';
 import {ActivatedRoute} from '@angular/router';
-import { DevicesComponent } from './devices.component';
+import { DeviceComponent } from './device.component';
 import {Sink} from './sink.type';
 
 describe('DevicesComponent', () => {
-  let component: DevicesComponent;
-  let fixture: ComponentFixture<DevicesComponent>;
+  let component: DeviceComponent;
+  let fixture: ComponentFixture<DeviceComponent>;
   let mockActivatedRoute;
 
   let socketService: SocketService;
@@ -37,12 +37,12 @@ describe('DevicesComponent', () => {
         DialogTestModule,
         SharedModule
       ],
-      declarations: [DevicesComponent, DeviceListComponent],
+      declarations: [DeviceComponent, DeviceListComponent],
       providers: [SocketService, WebSocketService, DeviceService, HttpService, ToastService, MdDialog, {provide: Router, useClass: RouterModule}, {provide: ActivatedRoute, useValue: mockActivatedRoute}, AuthGuard]
     })
       .compileComponents();
 
-    fixture = TestBed.createComponent(DevicesComponent);
+    fixture = TestBed.createComponent(DeviceComponent);
     component = fixture.debugElement.componentInstance;
     socketService = fixture.debugElement.injector.get(SocketService);
     dialog = fixture.debugElement.injector.get(MdDialog);

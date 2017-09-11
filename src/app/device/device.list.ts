@@ -5,7 +5,7 @@ import {ToastService} from '../utils/toast/toast.service';
 import {Device} from './device.type';
 import {DeviceService} from './device.service';
 import {DeviceDialogComponent} from './device.dialog';
-import {ActivatedRoute} from '@angular/router';
+
 
 @Component({
   selector: 'app-device-list',
@@ -13,6 +13,9 @@ import {ActivatedRoute} from '@angular/router';
   styleUrls: ['./device.css']
 })
 export class DeviceListComponent implements OnInit {
+
+  private delPermision: string;
+  private editPermision: string;
 
   @Input()
   verified: boolean;
@@ -32,6 +35,7 @@ export class DeviceListComponent implements OnInit {
 
   ngOnInit() {
     this.deviceService.setUrl(this.deviceType + '/');
+    this.setPermisions();
   }
 
   getDevices(): Device[] {
@@ -82,6 +86,26 @@ export class DeviceListComponent implements OnInit {
       this.devices.remove(device.id);
       this.toastService.showSuccess('device.remove.success');
     });
+  }
+  setPermisions(): void {
+    switch (this.deviceType) {
+      case 'tag':
+        this.delPermision =  'TAG_DELETE';
+        this.editPermision = 'TAG_UPDATE';
+        break;
+      case 'anchor':
+        this.delPermision =  'ANCHOR_DELETE';
+        this.editPermision = 'ANCHOR_UPDATE';
+        break;
+      case 'sink':
+        this.delPermision =  'SINK_DELETE';
+        this.editPermision = 'SINK_UPDATE';
+        break;
+      default:
+        this.delPermision =  'TAG_DELETE';
+        this.editPermision = 'TAG_UPDATE';
+        break;
+    }
   }
 
 }

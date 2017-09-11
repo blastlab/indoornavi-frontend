@@ -7,7 +7,7 @@ import {AcceptButtonsService} from '../../../../../utils/accept-buttons/accept-b
 import {TranslateModule} from '@ngx-translate/core';
 import {FormsModule} from '@angular/forms';
 import {IconService} from '../../../../../utils/drawing/icon.service';
-import {AnchorDistance, AnchorSuggestedPositions} from '../../../../../devices/anchor.type';
+import {AnchorDistance, AnchorSuggestedPositions} from '../../../../../device/anchor.type';
 import {Point} from '../../../../map.type';
 import {SocketMessage, Step, WizardData} from '../wizard.type';
 
