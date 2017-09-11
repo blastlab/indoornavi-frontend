@@ -14,7 +14,7 @@ import {DeviceDialogComponent} from './device.dialog';
 })
 export class DeviceListComponent implements OnInit {
 
-  private delPermision: string;
+  private deletePermision: string;
   private editPermision: string;
 
   @Input()
@@ -90,19 +90,19 @@ export class DeviceListComponent implements OnInit {
   setPermisions(): void {
     switch (this.deviceType) {
       case 'tag':
-        this.delPermision =  'TAG_DELETE';
+        this.deletePermision =  'TAG_DELETE';
         this.editPermision = 'TAG_UPDATE';
         break;
       case 'anchor':
-        this.delPermision =  'ANCHOR_DELETE';
+        this.deletePermision =  'ANCHOR_DELETE';
         this.editPermision = 'ANCHOR_UPDATE';
         break;
       case 'sink':
-        this.delPermision =  'SINK_DELETE';
+        this.deletePermision =  'SINK_DELETE';
         this.editPermision = 'SINK_UPDATE';
         break;
       default:
-        this.delPermision =  'TAG_DELETE';
+        this.deletePermision =  'TAG_DELETE';
         this.editPermision = 'TAG_UPDATE';
         break;
     }
