@@ -12,6 +12,8 @@ import * as d3 from 'd3';
 import {Point} from '../map/map.type';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
 import {Tag} from '../tag/tag.type';
+import {Measure} from '../map/toolbar/tools/scale/scale.type';
+import {Geometry} from '../map/utils/geometry';
 
 @Component({
   templateUrl: './published.html',
@@ -23,6 +25,7 @@ export class PublishedComponent implements OnInit {
   private activeMap: PublishedMap;
   private d3map: d3.selection = null;
   private tagsOnMap: Dictionary<number, GroupCreated> = new Dictionary<number, GroupCreated>();
+  private pixelsToCentimeters: number;
 
   constructor(private ngZone: NgZone,
               private socketService: SocketService,
@@ -40,6 +43,9 @@ export class PublishedComponent implements OnInit {
         if (this.activeMap.floor.imageId != null) {
           this.mapViewerService.drawMap(this.activeMap.floor).then((d3map: d3.selection) => {
             this.d3map = d3map;
+            const realDistanceInCentimeters = map.floor.scale.realDistance * (Measure[map.floor.scale.measure] === Measure[Measure.METERS] ? 100 : 1);
+            const pixels = Geometry.getDistanceBetweenTwoPoints(map.floor.scale.start, map.floor.scale.stop);
+            this.pixelsToCentimeters = realDistanceInCentimeters / pixels;
             this.initializeSocketConnection();
           });
         }
@@ -63,7 +69,7 @@ export class PublishedComponent implements OnInit {
   }
 
   private handleCoordinatesData(data: MeasureSocketData) {
-    const coordinates: Point = data.coordinates.point,
+    const coordinates: Point = this.scaleCoordinates(data.coordinates.point),
       deviceId: number = data.coordinates.tagShortId;
     if (!this.isOnMap(deviceId)) {
       const drawBuilder = new DrawBuilder(this.d3map, {id: 'tag-' + deviceId, clazz: 'tag'});
@@ -97,4 +103,16 @@ export class PublishedComponent implements OnInit {
       });
     });
   };
+
+  private scaleCoordinates(point: Point): Point {
+    console.log(this.pixelsToCentimeters);
+    console.log(point.x);
+    console.log(point.x * this.pixelsToCentimeters);
+    console.log(point.y);
+    console.log(point.y * this.pixelsToCentimeters);
+    return {
+      x: point.x * this.pixelsToCentimeters,
+      y: point.y * this.pixelsToCentimeters
+    };
+  }
 }

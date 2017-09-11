@@ -19,6 +19,7 @@ import {UserService} from '../../user/user.service';
 import {BuildingService} from '../../building/building.service';
 import {ComplexService} from '../../complex/complex.service';
 import {FloorService} from '../../floor/floor.service';
+import {ConfigurationService} from '../../floor/configuration/configuration.service';
 
 describe('PublishedListComponent', () => {
   let component: PublishedListComponent;
@@ -40,7 +41,11 @@ describe('PublishedListComponent', () => {
         TranslateModule.forRoot(),
         RouterTestingModule,
         SharedModule, NgxDatatableModule],
-      providers: [PublishedService, TranslateService, ToastService, HttpService, AuthGuard, TagService, UserService, ComplexService, BuildingService, FloorService]
+      providers: [
+        PublishedService, TranslateService, ToastService,
+        HttpService, AuthGuard, TagService, UserService,
+        ComplexService, BuildingService, FloorService,
+        ConfigurationService]
     })
       .compileComponents();
   }));
@@ -60,7 +65,7 @@ describe('PublishedListComponent', () => {
     // given
     spyOn(publishedService, 'getAll').and.returnValue(Observable.of([<PublishedMap>{
       id: 1,
-      floor: { id: 1 },
+      floor: {id: 1},
       users: [],
       tags: []
     }]));
@@ -76,7 +81,7 @@ describe('PublishedListComponent', () => {
 
   it('should open dialog to create new map', () => {
     // given
-    const expected = <PublishedMap> {id: 1, floor: { id: 1 }, users: [], tags: []};
+    const expected = <PublishedMap> {id: 1, floor: {id: 1}, users: [], tags: []};
     component.rows = [];
 
     // when
@@ -89,7 +94,7 @@ describe('PublishedListComponent', () => {
 
   it('should NOT create new map when it is already on the list', () => {
     // given
-    const expected = <PublishedMap> {id: 1, floor: { id: 1, building: { id: 1, complexId: 1 } }, users: [], tags: []};
+    const expected = <PublishedMap> {id: 1, floor: {id: 1, building: {id: 1, complexId: 1}}, users: [], tags: []};
     component.rows = [expected];
 
     // when
@@ -102,7 +107,7 @@ describe('PublishedListComponent', () => {
 
   it('should open dialog to edit map', () => {
     // given
-    const expected = <PublishedMap> {id: 1, floor: { id: 1, building: { id: 1, complexId: 1 } }, users: [], tags: []};
+    const expected = <PublishedMap> {id: 1, floor: {id: 1, building: {id: 1, complexId: 1}}, users: [], tags: []};
     spyOn(component, 'openDialog').and.callThrough();
     spyOn(userService, 'getUsers').and.returnValue(Observable.of([{}]));
     spyOn(complexService, 'getComplexes').and.returnValue(Observable.of([{}]));
@@ -122,7 +127,7 @@ describe('PublishedListComponent', () => {
 
   it('should remove map', () => {
     // given
-    const expected = <PublishedMap> {id: 1, floor: { id: 1, building: { id: 1, complexId: 1 } }, users: [], tags: []};
+    const expected = <PublishedMap> {id: 1, floor: {id: 1, building: {id: 1, complexId: 1}}, users: [], tags: []};
     spyOn(publishedService, 'remove').and.returnValue(Observable.of({}));
     component.rows = [expected];
 

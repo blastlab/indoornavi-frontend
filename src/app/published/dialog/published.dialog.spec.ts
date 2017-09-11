@@ -21,6 +21,8 @@ import {ToastService} from '../../utils/toast/toast.service';
 import {SharedModule} from '../../utils/shared/shared.module';
 import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 import {Observable} from 'rxjs/Rx';
+import {Measure} from '../../map/toolbar/tools/scale/scale.type';
+import {ConfigurationService} from '../../floor/configuration/configuration.service';
 
 describe('PublishedDialogComponent', () => {
   let component: PublishedDialogComponent;
@@ -42,7 +44,7 @@ describe('PublishedDialogComponent', () => {
       ],
       providers: [TagService, HttpService, AuthGuard, TranslateService,
         UserService, ComplexService, BuildingService, FloorService,
-        ToastService, PublishedService]
+        ToastService, PublishedService, ConfigurationService]
     })
       .compileComponents();
 
@@ -115,19 +117,86 @@ describe('PublishedDialogComponent', () => {
   }));
 
   it('should call published map service to save map when form is valid',
-    inject([PublishedService, ToastService], (publishedMapService: PublishedService, toastService: ToastService) => {
-      // given
-      spyOn(publishedMapService, 'save').and.returnValue(Observable.of({id: 1}));
-      spyOn(toastService, 'showSuccess');
-      component.floors = [];
+    inject([PublishedService, ToastService, ConfigurationService],
+      (publishedMapService: PublishedService, toastService: ToastService, configurationService: ConfigurationService) => {
+        // given
+        spyOn(publishedMapService, 'save').and.returnValue(Observable.of({id: 1}));
+        spyOn(configurationService, 'loadConfiguration').and.callFake(() => {
+        });
+        spyOn(configurationService, 'configurationLoaded').and.returnValue(Observable.of({data: {scale: {}}}));
+        spyOn(toastService, 'showSuccess');
+        component.floors = [{
+          id: 1,
+          scale: {start: {x: 1, y: 1}, stop: {x: 1, y: 1}, realDistance: 1, measure: Measure.CENTIMETERS},
+          level: 0,
+          name: 'test',
+          building: {name: 'test', complexId: 1},
+          imageId: 1
+        }];
+        component.selectedFloorId = 1;
 
-      // when
-      component.save(true);
+        // when
+        component.save(true);
 
-      // then
-      expect(publishedMapService.save).toHaveBeenCalled();
-      expect(toastService.showSuccess).toHaveBeenCalled();
-    }));
+        // then
+        expect(publishedMapService.save).toHaveBeenCalled();
+        expect(toastService.showSuccess).toHaveBeenCalled();
+        expect(configurationService.loadConfiguration).toHaveBeenCalled();
+        expect(configurationService.configurationLoaded).toHaveBeenCalled();
+      }));
+
+  it('should display error toast when floor has no scale set',
+    inject([PublishedService, ToastService, ConfigurationService],
+      (publishedMapService: PublishedService, toastService: ToastService, configurationService: ConfigurationService) => {
+        // given
+        spyOn(toastService, 'showFailure');
+        spyOn(configurationService, 'loadConfiguration').and.callFake(() => {
+        });
+        spyOn(configurationService, 'configurationLoaded').and.returnValue(Observable.of({data: {scale: null}}));
+        component.floors = [{
+          id: 1,
+          scale: null,
+          level: 0,
+          name: 'test',
+          building: {name: 'test', complexId: 1}
+        }];
+        component.selectedFloorId = 1;
+
+        // when
+        component.save(true);
+
+        // then
+        expect(toastService.showFailure).toHaveBeenCalledWith('publishedDialog.floor.scaleNotSet');
+        expect(configurationService.loadConfiguration).toHaveBeenCalled();
+        expect(configurationService.configurationLoaded).toHaveBeenCalled();
+      }));
+
+  it('should display error toast when floor has no image uploaded',
+    inject([PublishedService, ToastService, ConfigurationService],
+      (publishedMapService: PublishedService, toastService: ToastService, configurationService: ConfigurationService) => {
+        // given
+        spyOn(toastService, 'showFailure');
+        spyOn(configurationService, 'loadConfiguration').and.callFake(() => {
+        });
+        spyOn(configurationService, 'configurationLoaded').and.returnValue(Observable.of({data: {scale: {}}}));
+        component.floors = [{
+          id: 1,
+          scale: {start: {x: 1, y: 1}, stop: {x: 1, y: 1}, realDistance: 1, measure: Measure.CENTIMETERS},
+          level: 0,
+          name: 'test',
+          building: {name: 'test', complexId: 1},
+          imageId: null
+        }];
+        component.selectedFloorId = 1;
+
+        // when
+        component.save(true);
+
+        // then
+        expect(toastService.showFailure).toHaveBeenCalledWith('publishedDialog.floor.imageNotSet');
+        expect(configurationService.loadConfiguration).toHaveBeenCalled();
+        expect(configurationService.configurationLoaded).toHaveBeenCalled();
+      }));
 
   it('should do nothing when setMap is called without map', () => {
     // given

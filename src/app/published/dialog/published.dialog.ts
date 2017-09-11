@@ -16,6 +16,8 @@ import {MultiSelectUtils} from '../../utils/multiselect/mutliselect.util';
 import {PublishedService} from '../published.service';
 import {ToastService} from '../../utils/toast/toast.service';
 import {MdDialogRef} from '@angular/material';
+import {ConfigurationService} from '../../floor/configuration/configuration.service';
+import {Configuration} from '../../floor/configuration/configuration.type';
 
 @Component({
   templateUrl: './published.dialog.html',
@@ -45,7 +47,8 @@ export class PublishedDialogComponent implements OnInit {
               private floorService: FloorService,
               private translateService: TranslateService,
               private publishedMapService: PublishedService,
-              private toastService: ToastService) {
+              private toastService: ToastService,
+              private configurationService: ConfigurationService) {
   }
 
   ngOnInit() {
@@ -87,19 +90,29 @@ export class PublishedDialogComponent implements OnInit {
 
   save(isValid: boolean) {
     if (isValid) {
-      this.publishedMapService.save({
-        id: this.selectedMap ? this.selectedMap.id : null,
-        floor: this.floors.find((floor: Floor) => {
-          return floor.id === this.selectedFloorId;
-        }),
-        tags: this.selectedTags.map(MultiSelectUtils.extractOptionData),
-        users: this.selectedUsers.map(MultiSelectUtils.extractOptionData),
-      }).subscribe((savedMap: PublishedMap) => {
-        this.dialogRef.close(savedMap);
-        this.clean();
-        this.toastService.showSuccess('publishedList.save.success');
-      }, (err: string) => {
-        this.toastService.showFailure(err);
+      const selectedFloor: Floor = this.floors.find((floor: Floor) => {
+        return floor.id === this.selectedFloorId;
+      });
+      this.configurationService.loadConfiguration(selectedFloor);
+      this.configurationService.configurationLoaded().first().subscribe((configuration: Configuration) => {
+        if (!configuration.data.scale) {
+          this.toastService.showFailure('publishedDialog.floor.scaleNotSet');
+        } else if (!selectedFloor.imageId) {
+          this.toastService.showFailure('publishedDialog.floor.imageNotSet');
+        } else {
+          this.publishedMapService.save({
+            id: this.selectedMap ? this.selectedMap.id : null,
+            floor: selectedFloor,
+            tags: this.selectedTags.map(MultiSelectUtils.extractOptionData),
+            users: this.selectedUsers.map(MultiSelectUtils.extractOptionData),
+          }).subscribe((savedMap: PublishedMap) => {
+            this.dialogRef.close(savedMap);
+            this.clean();
+            this.toastService.showSuccess('publishedList.save.success');
+          }, (err: string) => {
+            this.toastService.showFailure(err);
+          });
+        }
       });
     }
   }

@@ -111,7 +111,7 @@ export class ConfigurationComponent implements OnInit, OnDestroy {
             });
           }
         });
-      } else {
+      } else if (okButtonClicked !== undefined) { // don't do it when user closed dialog giving no answer
         this.configurationService.publish().subscribe(() => {
           this.publishButtonDisabled = true;
         });
@@ -126,10 +126,10 @@ export class ConfigurationComponent implements OnInit, OnDestroy {
 
   private setTranslations() {
     this.translateService.setDefaultLang('en');
-    this.translateService.get('yes').subscribe((value: string) => {
+    this.translateService.get('configuration.confirmDialog.yes').subscribe((value: string) => {
       this.confirmButton = value;
     });
-    this.translateService.get('no').subscribe((value: string) => {
+    this.translateService.get('configuration.confirmDialog.no').subscribe((value: string) => {
       this.cancelButton = value;
     });
     this.translateService.get('configuration.confirmDialog.body').subscribe((value: string) => {
