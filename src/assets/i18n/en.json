@@ -41,7 +41,7 @@
   "device.shortId.required": "Short Id is required.",
   "device.verified": "Verified",
   "edit": "Edit",
-  "filter.findByName": "Find by name...",
+  "filter.findByAllFields": "Find by all fields...",
   "floor.create.success": "Floor has been created.",
   "floor.header": "Floors",
   "floor.level": "Floor level",

@@ -10,15 +10,15 @@
       </th>
       <th>
         <button class="anchor-list-deselect" (click)="deselectSink()" [disabled]="!chosenSink" md-mini-fab
-                md-tooltip="{{'anchor-list.backToSinks'|translate}}" mdTooltipPosition="top">
+                md-tooltip="{{'anchor-list.backToSinks'|translate}}" mdTooltipPosition="above">
           <i class="material-icons">arrow_back</i>
         </button>
         <button class="anchor-list-delete" (click)="deleteSink()" [disabled]="!selectedDevice" md-mini-fab
-                md-tooltip="{{'anchor-list.delete'|translate}}" mdTooltipPosition="top">
+                md-tooltip="{{'anchor-list.delete'|translate}}" mdTooltipPosition="above">
           <i class="material-icons">delete</i>
         </button>
         <button class="anchor-list-select" (click)="selectDevice()" [disabled]="selectedDevice" md-mini-fab
-                md-tooltip="{{'anchor-list.selectDevice'|translate}}" mdTooltipPosition="top">
+                md-tooltip="{{'anchor-list.selectDevice'|translate}}" mdTooltipPosition="above">
           <i class="material-icons">touch_app</i>
         </button>
       </th>
@@ -30,7 +30,7 @@
       <th *ngIf="remainingAnchors.size()">
         <input mdInput autofocus autocomplete="off" type="text"
                id="anchorNameFilter" class="form-control"
-               placeholder="{{'filter.findByName'|translate}}" [(ngModel)]="name">
+               placeholder="{{'filter.findByAllFields'|translate}}" [(ngModel)]="queryString">
       </th>
       <th *ngIf="!remainingAnchors.size()">
         {{'placer.noRemainingDevicesLeft'|translate}}
@@ -42,22 +42,13 @@
       <th>{{'device.name'|translate}}</th>
 
     </tr>
-    <ng-container *ngIf="!chosenSink">
-      <tr *ngFor="let sink of sinks | remainingDevicesFilter:name; let i = index"
-          dnd-draggable [dragEnabled]="true" [dragData]="sink" (onDragStart)="toggleMenu()"
-          [dropZones]="['map-container']" (onDropSuccess)="placeAnchorOnMap(event)">
-        <td id="shortId-{{sink.shortId}}">{{sink.shortId}}</td>
-        <td id="longId-{{sink.shortId}}">{{sink.longId}}</td>
-        <td id="name-{{sink.shortId}}">{{sink.name}}</td>
-      </tr>
-    </ng-container>
-    <ng-container *ngIf="chosenSink">
-      <tr *ngFor="let anchor of anchors | remainingDevicesFilter:name; let i = index"
+    <ng-container>
+      <tr *ngFor="let anchor of getRemainingAnchors() | allFieldsFilter:queryString; let i = index"
           dnd-draggable [dragEnabled]="true" [dragData]="anchor" (onDragStart)="toggleMenu()"
           [dropZones]="['map-container']" (onDropSuccess)="placeAnchorOnMap(event)">
-        <td id="shortId-{{anchor.shortId}}">{{anchor.shortId}}</td>
-        <td id="longId-{{anchor.shortId}}">{{anchor.longId}}</td>
-        <td id="name-{{anchor.shortId}}">{{anchor.name}}</td>
+        <td>{{anchor.shortId}}</td>
+        <td>{{anchor.longId}}</td>
+        <td>{{anchor.name}}</td>
       </tr>
     </ng-container>
   </table>

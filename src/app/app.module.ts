@@ -77,7 +77,7 @@ import {D3Service} from 'd3-ng2-service';
 import {ScaleService} from './map/toolbar/tools/scale/scale.service';
 import {AnchorPlacerComponent} from './map/toolbar/tools/anchor/anchor';
 import {RemainingDevicesListComponent} from './map/toolbar/tools/anchor/map-anchors-list/map-anchors-list';
-import {RemainingDevicesFilter} from './map/toolbar/tools/anchor/map-anchors-list/map-anchors-filter';
+import {AllFieldsFilter} from './utils/filters/allFieldsFilter';
 import {AnchorPlacerController} from './map/toolbar/tools/anchor/anchor.controller';
 
 
@@ -144,7 +144,7 @@ export function HttpLoaderFactory(http: Http) {
     ThirdStepComponent,
     AnchorPlacerComponent,
     RemainingDevicesListComponent,
-    RemainingDevicesFilter
+    AllFieldsFilter
   ],
   entryComponents: [
     ComplexDialogComponent,

@@ -47,7 +47,7 @@ export class AnchorPlacerComponent implements Tool, OnInit {
     this.configuration.configurationLoaded().first().subscribe((configuration) => {
       this.floorId = configuration.floorId;
       // draw sinks and their anchors
-      this.drawConfiguredDevices(configuration.sinks);
+      this.drawConfiguredDevices(configuration.data.sinks);
       // each sink group and his anchors - with connection
     });
   }

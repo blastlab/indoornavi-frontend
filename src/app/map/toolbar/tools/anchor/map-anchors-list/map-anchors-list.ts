@@ -36,6 +36,7 @@ export class RemainingDevicesListComponent implements OnInit {
   public chosenSink: Sink;
   private menuState: string = 'out';
   public selectedDevice: Sink | Anchor;
+  public queryString;
 
   constructor(private ngZone: NgZone,
               private socketService: SocketService,
