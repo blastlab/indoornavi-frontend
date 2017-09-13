@@ -67,7 +67,7 @@ describe('DeviceListComponent', () => {
     component.openDialog(currentDevice);
 
     // then
-    expect(component.dialogRef.componentInstance.device).toBeDefined();
+    expect(component.dialogRef.config.data['device']).toBeDefined();
     expect(dialog.open).toHaveBeenCalled();
   });
 
