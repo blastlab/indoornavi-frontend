@@ -12,6 +12,7 @@ import {Device} from './device.type';
 import {Router, RouterModule} from '@angular/router';
 import {AuthGuard} from '../auth/auth.guard';
 import {SharedModule} from '../utils/shared/shared.module';
+import {ActivatedRoute} from '@angular/router';
 
 describe('DeviceListComponent', () => {
   let component: DeviceListComponent;
@@ -20,6 +21,9 @@ describe('DeviceListComponent', () => {
   let dialog: MdDialog;
   let service: DeviceService;
   let toastService: ToastService;
+  let mockActivatedRoute;
+
+  mockActivatedRoute = {snapshot: {routeConfig: {path: 'sinks'}}};
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -31,7 +35,7 @@ describe('DeviceListComponent', () => {
         SharedModule
       ],
       declarations: [DeviceListComponent],
-      providers: [DeviceService, HttpService, ToastService, MdDialog, {provide: Router, useClass: RouterModule}, AuthGuard]
+      providers: [DeviceService, HttpService, ToastService, MdDialog, {provide: Router, useClass: RouterModule}, {provide: ActivatedRoute, useValue: mockActivatedRoute}, AuthGuard]
     }).compileComponents();
 
     fixture = TestBed.createComponent(DeviceListComponent);

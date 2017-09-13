@@ -45,4 +45,17 @@ export class DeviceService {
   remove(id: number): Observable<any> {
     return this.httpService.doDelete(this.url + id);
   }
+
+  permissions(deviceType: string): string {
+    switch (deviceType) {
+      case 'tags':
+        return 'TAG';
+      case 'anchors':
+        return 'ANCHOR';
+      case 'sinks':
+        return 'SINK';
+      default:
+        return 'Tag';
+    }
+  }
 }

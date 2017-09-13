@@ -14,7 +14,7 @@ import {Router, RouterModule} from '@angular/router';
 import {SharedModule} from '../utils/shared/shared.module';
 import {AuthGuard} from '../auth/auth.guard';
 import {ActivatedRoute} from '@angular/router';
-import { DeviceComponent } from './device.component';
+import {DeviceComponent} from './device.component';
 import {Sink} from './sink.type';
 
 describe('DevicesComponent', () => {
@@ -38,7 +38,7 @@ describe('DevicesComponent', () => {
         SharedModule
       ],
       declarations: [DeviceComponent, DeviceListComponent],
-      providers: [SocketService, WebSocketService, DeviceService, HttpService, ToastService, MdDialog, {provide: Router, useClass: RouterModule}, {provide: ActivatedRoute, useValue: mockActivatedRoute}, AuthGuard]
+      providers: [DeviceService, SocketService, WebSocketService, DeviceService, HttpService, ToastService, MdDialog, {provide: Router, useClass: RouterModule}, {provide: ActivatedRoute, useValue: mockActivatedRoute}, AuthGuard]
     })
       .compileComponents();
 

@@ -36,7 +36,7 @@ export class DeviceListComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.deviceType = this.route.snapshot.routeConfig.path
+    this.deviceType = this.route.snapshot.routeConfig.path;
     this.deviceService.setUrl(this.deviceType + '/');
     this.setPermissions();
   }
@@ -91,24 +91,9 @@ export class DeviceListComponent implements OnInit {
     });
   }
   setPermissions(): void {
-    switch (this.deviceType) {
-      case 'tag':
-        this.deletePermission =  'TAG_DELETE';
-        this.editPermission = 'TAG_UPDATE';
-        break;
-      case 'anchor':
-        this.deletePermission =  'ANCHOR_DELETE';
-        this.editPermission = 'ANCHOR_UPDATE';
-        break;
-      case 'sink':
-        this.deletePermission =  'SINK_DELETE';
-        this.editPermission = 'SINK_UPDATE';
-        break;
-      default:
-        this.deletePermission =  'TAG_DELETE';
-        this.editPermission = 'TAG_UPDATE';
-        break;
-    }
+    const permissionsSet: string = this.deviceService.permissions(this.deviceType);
+    this.editPermission = `${permissionsSet}_EDIT`;
+    this.deletePermission = `${permissionsSet}_DELETE`;
   }
 
 }

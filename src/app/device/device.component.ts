@@ -25,6 +25,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
 
   private routeState: string;
   private device: object;
+  private createPermission: string;
 
   dialogRef: MdDialogRef<DeviceDialogComponent>;
 
@@ -34,7 +35,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
               private toastService: ToastService,
               private ngZone: NgZone,
               private route: ActivatedRoute,
-              private deviceService: DeviceService,) {
+              private deviceService: DeviceService) {
   }
 
   get verified(): Anchor[] | Tag[] | Sink[] {
@@ -47,6 +48,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.routeState = this.route.snapshot.routeConfig.path;
+    this.setPermissions();
     this.ngZone.runOutsideAngular(() => {
       const stream = this.socketService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.routeState}`);
 
@@ -96,5 +98,9 @@ export class DeviceComponent implements OnInit, OnDestroy {
       }
       this.dialogRef = null;
     });
+  }
+  setPermissions(){
+    const permissionsSet: string = this.deviceService.permissions(this.routeState);
+    this.createPermission = `${permissionsSet}_CREATE`;
   }
 }
