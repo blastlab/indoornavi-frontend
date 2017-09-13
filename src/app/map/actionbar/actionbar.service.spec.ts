@@ -1,31 +1,31 @@
 import {inject, TestBed} from '@angular/core/testing';
 
-import {ConfigurationService} from './configuration.service';
+import {ActionBarService} from './actionbar.service';
 import {HttpService} from '../../utils/http/http.service';
 import {HttpModule} from '@angular/http';
 import {RouterTestingModule} from '@angular/router/testing';
 import {AuthGuard} from '../../auth/auth.guard';
-import {Floor} from '../floor.type';
+import {Floor} from '../../floor/floor.type';
 import {Observable} from 'rxjs/Rx';
-import {Configuration} from './configuration.type';
-import {Measure, Scale} from '../../map/toolbar/tools/scale/scale.type';
+import {Configuration} from './actionbar.type';
+import {Measure, Scale} from '../toolbar/tools/scale/scale.type';
 import {Sink} from '../../device/sink.type';
 import {Anchor} from '../../device/anchor.type';
 
-describe('ConfigurationService', () => {
+describe('ActionBarService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ConfigurationService, HttpService, AuthGuard],
+      providers: [ActionBarService, HttpService, AuthGuard],
       imports: [HttpModule, RouterTestingModule]
     });
   });
 
-  it('should create component', inject([ConfigurationService], (service: ConfigurationService) => {
+  it('should create component', inject([ActionBarService], (service: ActionBarService) => {
     expect(service).toBeTruthy();
   }));
 
   it('should create empty configuration and emit event', (done: DoneFn) => {
-    inject([ConfigurationService, HttpService], (service: ConfigurationService, httpService: HttpService) => {
+    inject([ActionBarService, HttpService], (service: ActionBarService, httpService: HttpService) => {
       // given
       const floor: Floor = {
         id: 1,
@@ -47,7 +47,7 @@ describe('ConfigurationService', () => {
   });
 
   it('should load configuration and emit event', (done: DoneFn) => {
-    inject([ConfigurationService, HttpService], (service: ConfigurationService, httpService: HttpService) => {
+    inject([ActionBarService, HttpService], (service: ActionBarService, httpService: HttpService) => {
       // given
       const floor: Floor = {
         id: 1,
@@ -90,7 +90,7 @@ describe('ConfigurationService', () => {
   });
 
   it('should emit changed event when setting scale', (done: DoneFn) => {
-    inject([ConfigurationService, HttpService], (service: ConfigurationService, httpService: HttpService) => {
+    inject([ActionBarService, HttpService], (service: ActionBarService, httpService: HttpService) => {
       // given
       const floor: Floor = {
         id: 1,
@@ -99,6 +99,19 @@ describe('ConfigurationService', () => {
         buildingId: 1
       };
       spyOn(httpService, 'doGet').and.returnValue(Observable.of([]).delay(1000));
+      spyOn(service, 'configurationChanged').and.callFake(() => {
+        return Observable.of({
+          data: {
+            scale: {
+              start: {
+                x: 1,
+                y: 2
+              },
+              realDistance: 1000
+            }
+          }
+        });
+      });
       service.loadConfiguration(floor);
 
       service.configurationLoaded().subscribe((_: Configuration) => {
@@ -130,7 +143,7 @@ describe('ConfigurationService', () => {
   });
 
   it('should emit changed event when adding sink', (done: DoneFn) => {
-    inject([ConfigurationService, HttpService], (service: ConfigurationService, httpService: HttpService) => {
+    inject([ActionBarService, HttpService], (service: ActionBarService, httpService: HttpService) => {
       // given
       const floor: Floor = {
         id: 1,
@@ -139,6 +152,20 @@ describe('ConfigurationService', () => {
         buildingId: 1
       };
       spyOn(httpService, 'doGet').and.returnValue(Observable.of([]).delay(1000));
+      spyOn(service, 'configurationChanged').and.callFake(() => {
+        return Observable.of({
+          data: {
+            sinks: [
+              {
+                shortId: 123,
+                anchors: [{
+                  shortId: 321
+                }]
+              }
+            ]
+          }
+        });
+      });
       service.loadConfiguration(floor);
 
       service.configurationLoaded().subscribe((_: Configuration) => {

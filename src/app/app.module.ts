@@ -62,11 +62,11 @@ import {ThirdStepComponent} from './map/toolbar/tools/wizard/third-step/third-st
 import {DrawingService} from './utils/drawing/drawing.service';
 import {IconService} from './utils/drawing/icon.service';
 import {HintBarService} from './map/hint-bar/hint-bar.service';
-import {ConfigurationComponent} from './floor/configuration/configuration';
-import {ConfigurationService} from './floor/configuration/configuration.service';
+import {ActionBarService} from './map/actionbar/actionbar.service';
 import {D3Service} from 'd3-ng2-service';
 import {ScaleService} from './map/toolbar/tools/scale/scale.service';
 import {DeviceComponent} from './device/device.component';
+import {ActionBarComponent} from 'app/map/actionbar/actionbar';
 
 const appRoutes: Routes = [
   {path: '', redirectTo: '/complexes', pathMatch: 'full'},
@@ -122,7 +122,7 @@ export function HttpLoaderFactory(http: Http) {
     ChangePasswordComponent,
     UnauthorizedComponent,
     PermissionGroupComponent,
-    ConfigurationComponent,
+    ActionBarComponent,
     WizardComponent,
     AcceptButtonsComponent,
     FirstStepComponent,
@@ -186,7 +186,7 @@ export function HttpLoaderFactory(http: Http) {
     AuthService,
     CanRead,
     AuthGuard,
-    ConfigurationService,
+    ActionBarService,
     PermissionGroupService,
     D3Service,
     ScaleService

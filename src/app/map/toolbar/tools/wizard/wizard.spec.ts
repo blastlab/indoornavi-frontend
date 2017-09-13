@@ -15,7 +15,7 @@ import {DrawingService} from '../../../../utils/drawing/drawing.service';
 import {IconService} from '../../../../utils/drawing/icon.service';
 import {Observable} from 'rxjs/Observable';
 import {AuthGuard} from '../../../../auth/auth.guard';
-import {ConfigurationService} from '../../../../floor/configuration/configuration.service';
+import {ActionBarService} from '../../../actionbar/actionbar.service';
 import {HttpService} from '../../../../utils/http/http.service';
 import {RouterTestingModule} from '@angular/router/testing';
 
@@ -34,7 +34,7 @@ describe('WizardComponent', () => {
       declarations: [WizardComponent, FirstStepComponent, SecondStepComponent,
         ThirdStepComponent],
       providers: [MdDialog, SocketService, WebSocketService, ToastService, HintBarService,
-        AcceptButtonsService, DrawingService, IconService, AuthGuard, ConfigurationService, HttpService]
+        AcceptButtonsService, DrawingService, IconService, AuthGuard, ActionBarService, HttpService]
     })
       .compileComponents();
 

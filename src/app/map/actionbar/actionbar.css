@@ -1,10 +1,10 @@
-#panel {
+#actionbar {
   position: absolute;
   left: 14%;
   top: 7%;
 }
 
-#panel #message {
+#actionbar #message {
   margin-left: 10px;
   opacity: 0;
   transform: scale(0.0)

@@ -1,16 +1,17 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {ConfigurationComponent} from './configuration';
+import {ActionBarComponent} from './actionbar';
 import {TranslateModule} from '@ngx-translate/core';
-import {ConfigurationService} from './configuration.service';
+import {ActionBarService} from './actionbar.service';
 import {HttpService} from '../../utils/http/http.service';
 import {HttpModule} from '@angular/http';
 import {RouterTestingModule} from '@angular/router/testing';
 import {AuthGuard} from '../../auth/auth.guard';
 import {MapLoaderInformerService} from '../../utils/map-loader-informer/map-loader-informer.service';
 import {Observable} from 'rxjs/Rx';
-import {Configuration} from './configuration.type';
-import {Floor} from '../floor.type';
+import {Configuration} from './actionbar.type';
+import {Floor} from '../../floor/floor.type';
+import {MaterialModule} from '@angular/material';
 
 class ConfigurationServiceMock {
   private configuration: Configuration;
@@ -34,26 +35,31 @@ class ConfigurationServiceMock {
   }
 }
 
-describe('ConfigurationComponent', () => {
-  let component: ConfigurationComponent;
+describe('ActionBarComponent', () => {
+  let component: ActionBarComponent;
   let mapLoader: MapLoaderInformerService;
-  let configurationService: ConfigurationService;
-  let fixture: ComponentFixture<ConfigurationComponent>;
+  let configurationService: ActionBarService;
+  let fixture: ComponentFixture<ActionBarComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ConfigurationComponent],
-      imports: [TranslateModule.forRoot(), HttpModule, RouterTestingModule],
-      providers: [{provide: ConfigurationService, useClass: ConfigurationServiceMock}, HttpService, AuthGuard, MapLoaderInformerService]
+      declarations: [ActionBarComponent],
+      imports: [TranslateModule.forRoot(), HttpModule, RouterTestingModule, MaterialModule],
+      providers: [{provide: ActionBarService, useClass: ConfigurationServiceMock}, HttpService, AuthGuard, MapLoaderInformerService]
     })
       .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ConfigurationComponent);
+    fixture = TestBed.createComponent(ActionBarComponent);
     component = fixture.componentInstance;
     mapLoader = fixture.debugElement.injector.get(MapLoaderInformerService);
-    configurationService = fixture.debugElement.injector.get(ConfigurationService);
+    configurationService = fixture.debugElement.injector.get(ActionBarService);
+    spyOn(configurationService, 'configurationLoaded').and.callFake(() => {
+      return Observable.of({
+        published: false
+      });
+    });
     fixture.detectChanges();
   });
 
@@ -75,7 +81,6 @@ describe('ConfigurationComponent', () => {
 
   it('should save draft after SAVE_DRAFT_TIMEOUT', (done: DoneFn) => {
     // given
-    spyOn(configurationService, 'configurationLoaded').and.callThrough();
     spyOn(configurationService, 'saveDraft').and.callThrough();
 
     // when
@@ -87,6 +92,6 @@ describe('ConfigurationComponent', () => {
       expect(configurationService.configurationLoaded).toHaveBeenCalled();
       expect(configurationService.saveDraft).toHaveBeenCalled();
       done();
-    }, ConfigurationComponent.SAVE_DRAFT_TIMEOUT);
+    }, ActionBarComponent.SAVE_DRAFT_TIMEOUT);
   });
 });
