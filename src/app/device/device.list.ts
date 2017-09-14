@@ -91,9 +91,9 @@ export class DeviceListComponent implements OnInit {
     });
   }
   setPermissions(): void {
-    const permissionsSet: string = this.deviceService.permissions(this.deviceType);
-    this.editPermission = `${permissionsSet}_EDIT`;
-    this.deletePermission = `${permissionsSet}_DELETE`;
+    const prefix: string = DeviceService.getDevicePermissionPrefix(this.deviceType);
+    this.editPermission = `${prefix}_EDIT`;
+    this.deletePermission = `${prefix}_DELETE`;
   }
 
 }

@@ -84,7 +84,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
   // similar method is used in DeviceListComponent and has the same name
   // this method opens dialog that adds device
   openDialog(): void {
-    this.device = this.deviceService.emptyDeviceObjectDepandentOnPath(this.routeState);
+    this.device = DeviceService.emptyDeviceObjectDependentOnPath(this.routeState);
     this.dialogRef = this.dialog.open(DeviceDialogComponent, {
       data: {
         device: Object.assign({}, this.device),
@@ -100,7 +100,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
     });
   }
   setPermissions(){
-    const permissionsSet: string = this.deviceService.permissions(this.routeState);
-    this.createPermission = `${permissionsSet}_CREATE`;
+    const prefix: string = DeviceService.getDevicePermissionPrefix(this.routeState);
+    this.createPermission = `${prefix}_CREATE`;
   }
 }
