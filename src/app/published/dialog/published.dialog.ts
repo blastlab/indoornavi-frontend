@@ -5,8 +5,6 @@ import {Floor} from '../../floor/floor.type';
 import {Building} from '../../building/building.type';
 import {Complex} from '../../complex/complex.type';
 import {UserService} from '../../user/user.service';
-import {TagService} from '../../tag/tag.service';
-import {Tag} from '../../tag/tag.type';
 import {User} from '../../user/user.type';
 import {ComplexService} from '../../complex/complex.service';
 import {FloorService} from '../../floor/floor.service';
@@ -18,6 +16,8 @@ import {ToastService} from '../../utils/toast/toast.service';
 import {MdDialogRef} from '@angular/material';
 import {ConfigurationService} from '../../floor/configuration/configuration.service';
 import {Configuration} from '../../floor/configuration/configuration.type';
+import {DeviceService} from '../../device/device.service';
+import {Tag} from '../../device/tag.type';
 
 @Component({
   templateUrl: './published.dialog.html',
@@ -40,7 +40,7 @@ export class PublishedDialogComponent implements OnInit {
   selectedMap: PublishedMap;
 
   constructor(private dialogRef: MdDialogRef<PublishedDialogComponent>,
-              private tagService: TagService,
+              private deviceService: DeviceService,
               private userService: UserService,
               private complexService: ComplexService,
               private buildingService: BuildingService,
@@ -52,7 +52,8 @@ export class PublishedDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.tagService.getAll().subscribe((tags: Tag[]) => {
+    this.deviceService.setUrl('/tags');
+    this.deviceService.getAll().subscribe((tags: Tag[]) => {
       this.tags = this.getTagsOptions(tags);
     });
 

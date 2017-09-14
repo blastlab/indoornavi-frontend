@@ -11,9 +11,9 @@ import {DrawBuilder, GroupCreated} from './published.builder';
 import * as d3 from 'd3';
 import {Point} from '../map/map.type';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
-import {Tag} from '../tag/tag.type';
 import {Measure} from '../map/toolbar/tools/scale/scale.type';
 import {Geometry} from '../map/utils/geometry';
+import {Tag} from '../device/tag.type';
 
 @Component({
   templateUrl: './published.html',
@@ -105,11 +105,6 @@ export class PublishedComponent implements OnInit {
   };
 
   private scaleCoordinates(point: Point): Point {
-    console.log(this.pixelsToCentimeters);
-    console.log(point.x);
-    console.log(point.x * this.pixelsToCentimeters);
-    console.log(point.y);
-    console.log(point.y * this.pixelsToCentimeters);
     return {
       x: point.x * this.pixelsToCentimeters,
       y: point.y * this.pixelsToCentimeters

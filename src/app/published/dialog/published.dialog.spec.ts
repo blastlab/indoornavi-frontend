@@ -9,7 +9,6 @@ import {HttpModule} from '@angular/http';
 import {MaterialModule, MdDialog, MdDialogModule} from '@angular/material';
 import {BrowserModule} from '@angular/platform-browser';
 import {AngularMultiSelectModule} from 'angular2-multiselect-dropdown/angular2-multiselect-dropdown';
-import {TagService} from '../../tag/tag.service';
 import {HttpService} from '../../utils/http/http.service';
 import {AuthGuard} from '../../auth/auth.guard';
 import {UserService} from '../../user/user.service';
@@ -23,6 +22,7 @@ import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/tes
 import {Observable} from 'rxjs/Rx';
 import {Measure} from '../../map/toolbar/tools/scale/scale.type';
 import {ConfigurationService} from '../../floor/configuration/configuration.service';
+import {DeviceService} from '../../device/device.service';
 
 describe('PublishedDialogComponent', () => {
   let component: PublishedDialogComponent;
@@ -42,7 +42,7 @@ describe('PublishedDialogComponent', () => {
         MdDialogModule,
         SharedModule
       ],
-      providers: [TagService, HttpService, AuthGuard, TranslateService,
+      providers: [DeviceService, HttpService, AuthGuard, TranslateService,
         UserService, ComplexService, BuildingService, FloorService,
         ToastService, PublishedService, ConfigurationService]
     })
@@ -61,15 +61,15 @@ describe('PublishedDialogComponent', () => {
     component = dialogRef.componentInstance;
   });
 
-  it('should create component', inject([TagService, UserService, ComplexService], (tagService: TagService, userService: UserService, complexService: ComplexService) => {
-    spyOn(tagService, 'getAll').and.returnValue(Observable.of([{}]));
+  it('should create component', inject([DeviceService, UserService, ComplexService], (deviceService: DeviceService, userService: UserService, complexService: ComplexService) => {
+    spyOn(deviceService, 'getAll').and.returnValue(Observable.of([{}]));
     spyOn(userService, 'getUsers').and.returnValue(Observable.of([{}]));
     spyOn(complexService, 'getComplexes').and.returnValue(Observable.of([{}]));
 
     component.ngOnInit();
 
     expect(component).toBeTruthy();
-    expect(tagService.getAll).toHaveBeenCalled();
+    expect(deviceService.getAll).toHaveBeenCalled();
     expect(userService.getUsers).toHaveBeenCalled();
     expect(complexService.getComplexes).toHaveBeenCalled();
   }));

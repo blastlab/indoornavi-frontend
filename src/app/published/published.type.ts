@@ -1,7 +1,7 @@
-import {Tag} from '../tag/tag.type';
 import {User} from '../user/user.type';
 import {Floor} from '../floor/floor.type';
 import {Point} from '../map/map.type';
+import {Tag} from '../device/tag.type';
 
 export interface PublishedMap {
   id?: number;

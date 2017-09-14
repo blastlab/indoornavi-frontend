@@ -71,7 +71,6 @@ import {PublishedListComponent} from './published/list/published-list';
 import {NgxDatatableModule} from '@swimlane/ngx-datatable';
 import {appRoutes} from './app.routes';
 import {PublishedService} from './published/published.service';
-import {TagService} from './tag/tag.service';
 import {MapViewerService} from './map/map.viewer.service';
 import {PublishedDialogComponent} from './published/dialog/published.dialog';
 import {ConfirmDialogComponent} from './utils/confirm-dialog/confirm.dialog';
@@ -184,7 +183,6 @@ export function HttpLoaderFactory(http: Http) {
     D3Service,
     ScaleService,
     PublishedService,
-    TagService,
     MapViewerService
   ], bootstrap: [AppComponent]
 })

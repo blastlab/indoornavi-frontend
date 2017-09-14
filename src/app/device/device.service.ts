@@ -8,11 +8,11 @@ export class DeviceService {
 
   private url: string;
 
-  setUrl(url: string) {
-    this.url = url;
+  constructor(protected httpService: HttpService) {
   }
 
-  constructor(protected httpService: HttpService) {
+  setUrl(url: string) {
+    this.url = url;
   }
 
   emptyDeviceObjectDepandentOnPath(path: string): object {
@@ -44,5 +44,9 @@ export class DeviceService {
 
   remove(id: number): Observable<any> {
     return this.httpService.doDelete(this.url + id);
+  }
+
+  getAll(): Observable<Device[]> {
+    return this.httpService.doGet(this.url);
   }
 }

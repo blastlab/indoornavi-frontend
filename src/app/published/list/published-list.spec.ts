@@ -14,12 +14,12 @@ import {RouterTestingModule} from '@angular/router/testing';
 import {AuthGuard} from '../../auth/auth.guard';
 import {Observable} from 'rxjs/Rx';
 import {PublishedMap} from '../published.type';
-import {TagService} from '../../tag/tag.service';
 import {UserService} from '../../user/user.service';
 import {BuildingService} from '../../building/building.service';
 import {ComplexService} from '../../complex/complex.service';
 import {FloorService} from '../../floor/floor.service';
 import {ConfigurationService} from '../../floor/configuration/configuration.service';
+import {DeviceService} from '../../device/device.service';
 
 describe('PublishedListComponent', () => {
   let component: PublishedListComponent;
@@ -27,7 +27,7 @@ describe('PublishedListComponent', () => {
   let publishedService: PublishedService;
   let complexService: ComplexService;
   let userService: UserService;
-  let tagService: TagService;
+  let deviceService: DeviceService;
   let buildingService: BuildingService;
   let floorService: FloorService;
 
@@ -43,7 +43,7 @@ describe('PublishedListComponent', () => {
         SharedModule, NgxDatatableModule],
       providers: [
         PublishedService, TranslateService, ToastService,
-        HttpService, AuthGuard, TagService, UserService,
+        HttpService, AuthGuard, DeviceService, UserService,
         ComplexService, BuildingService, FloorService,
         ConfigurationService]
     })
@@ -56,7 +56,7 @@ describe('PublishedListComponent', () => {
     publishedService = fixture.debugElement.injector.get(PublishedService);
     complexService = fixture.debugElement.injector.get(ComplexService);
     userService = fixture.debugElement.injector.get(UserService);
-    tagService = fixture.debugElement.injector.get(TagService);
+    deviceService = fixture.debugElement.injector.get(DeviceService);
     buildingService = fixture.debugElement.injector.get(BuildingService);
     floorService = fixture.debugElement.injector.get(FloorService);
   });
@@ -111,7 +111,7 @@ describe('PublishedListComponent', () => {
     spyOn(component, 'openDialog').and.callThrough();
     spyOn(userService, 'getUsers').and.returnValue(Observable.of([{}]));
     spyOn(complexService, 'getComplexes').and.returnValue(Observable.of([{}]));
-    spyOn(tagService, 'getAll').and.returnValue(Observable.of([{}]));
+    spyOn(deviceService, 'getAll').and.returnValue(Observable.of([{}]));
     spyOn(buildingService, 'getComplexWithBuildings').and.returnValue(Observable.of([{}]));
     spyOn(floorService, 'getBuildingWithFloors').and.returnValue(Observable.of([{}]));
     component.rows = [expected];
