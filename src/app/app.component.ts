@@ -20,6 +20,7 @@ export class AppComponent {
     breadcrumbService.addFriendlyNameForRouteRegex('/complexes/\\d+/buildings', 'Buildings');
     breadcrumbService.addFriendlyNameForRouteRegex('/buildings/\\d+/floors', 'Floors');
     breadcrumbService.addFriendlyNameForRouteRegex('/floors/\\d+/map', 'Map');
+    breadcrumbService.addFriendlyNameForRoute('/sinks', 'Sinks');
     breadcrumbService.addFriendlyNameForRoute('/anchors', 'Anchors');
     breadcrumbService.addFriendlyNameForRoute('/tags', 'Tags');
     breadcrumbService.addFriendlyNameForRoute('/users', 'Users');
