@@ -9,8 +9,8 @@ import {Floor} from '../floor.type';
 import {Observable} from 'rxjs/Rx';
 import {Configuration} from './configuration.type';
 import {Measure, Scale} from '../../map/toolbar/tools/scale/scale.type';
-import {Sink} from '../../sink/sink.type';
-import {Anchor} from '../../anchor/anchor.type';
+import {Sink} from '../../device/sink.type';
+import {Anchor} from '../../device/anchor.type';
 
 describe('ConfigurationService', () => {
   beforeEach(() => {

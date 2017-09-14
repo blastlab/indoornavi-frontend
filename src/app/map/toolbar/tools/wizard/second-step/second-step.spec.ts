@@ -7,7 +7,7 @@ import {HintBarService} from '../../../../hint-bar/hint-bar.service';
 import {DrawingService} from '../../../../../utils/drawing/drawing.service';
 import {AcceptButtonsService} from '../../../../../utils/accept-buttons/accept-buttons.service';
 import {IconService} from '../../../../../utils/drawing/icon.service';
-import {AnchorDistance} from '../../../../../anchor/anchor.type';
+import {AnchorDistance} from '../../../../../device/anchor.type';
 import {Point} from '../../../../map.type';
 import {SecondStepMessage, Step, WizardData} from '../wizard.type';
 

@@ -7,9 +7,9 @@ import {HintBarService} from '../../../../hint-bar/hint-bar.service';
 import {DrawingService} from '../../../../../utils/drawing/drawing.service';
 import {AcceptButtonsService} from '../../../../../utils/accept-buttons/accept-buttons.service';
 import {IconService} from '../../../../../utils/drawing/icon.service';
-import {Anchor} from '../../../../../anchor/anchor.type';
+import {Anchor} from '../../../../../device/anchor.type';
 import {FirstStepMessage, Step, WizardData} from '../wizard.type';
-import {Sink} from '../../../../../sink/sink.type';
+import {Sink} from '../../../../../device/sink.type';
 
 describe('FirstStepComponent', () => {
   let component: FirstStepComponent;
