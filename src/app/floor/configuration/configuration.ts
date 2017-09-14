@@ -36,8 +36,8 @@ export class ConfigurationComponent implements OnInit, OnDestroy {
 
   // confirm dialog data
   private confirmDialogRef: MdDialogRef<ConfirmDialogComponent>;
-  private confirmButton: string;
-  private cancelButton: string;
+  private confirmButtonText: string;
+  private cancelButtonText: string;
   private body: string;
 
   constructor(private configurationService: ConfigurationService,
@@ -92,8 +92,8 @@ export class ConfigurationComponent implements OnInit, OnDestroy {
     this.confirmDialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
         body: this.body,
-        confirmButton: this.confirmButton,
-        cancelButton: this.cancelButton
+        confirmButtonText: this.confirmButtonText,
+        cancelButtonText: this.cancelButtonText
       }
     });
     this.confirmDialogRef.afterClosed().subscribe((okButtonClicked: boolean) => {
@@ -127,10 +127,10 @@ export class ConfigurationComponent implements OnInit, OnDestroy {
   private setTranslations() {
     this.translateService.setDefaultLang('en');
     this.translateService.get('configuration.confirmDialog.yes').subscribe((value: string) => {
-      this.confirmButton = value;
+      this.confirmButtonText = value;
     });
     this.translateService.get('configuration.confirmDialog.no').subscribe((value: string) => {
-      this.cancelButton = value;
+      this.cancelButtonText = value;
     });
     this.translateService.get('configuration.confirmDialog.body').subscribe((value: string) => {
       this.body = value;

@@ -9,8 +9,8 @@ import {TranslateService} from '@ngx-translate/core';
 export class ConfirmDialogComponent implements OnInit {
   header: string;
   body: string;
-  confirmButton: string;
-  cancelButton: string;
+  confirmButtonText: string;
+  cancelButtonText: string;
 
   constructor(private dialogRef: MdDialogRef<ConfirmDialogComponent>,
               private translateService: TranslateService) {
@@ -19,10 +19,10 @@ export class ConfirmDialogComponent implements OnInit {
   ngOnInit(): void {
     this.translateService.setDefaultLang('en');
     this.translateService.get('ok').subscribe((value: string) => {
-      this.confirmButton = value;
+      this.confirmButtonText = value;
     });
     this.translateService.get('cancel').subscribe((value: string) => {
-      this.cancelButton = value;
+      this.cancelButtonText = value;
     });
     const data = this.dialogRef.config.data;
     if ('header' in data) {
@@ -31,11 +31,11 @@ export class ConfirmDialogComponent implements OnInit {
     if ('body' in data) {
       this.body = data['body'];
     }
-    if ('confirmButton' in data) {
-      this.confirmButton = data['confirmButton'];
+    if ('confirmButtonText' in data) {
+      this.confirmButtonText = data['confirmButtonText'];
     }
-    if ('cancelButton' in data) {
-      this.cancelButton = data['cancelButton'];
+    if ('cancelButtonText' in data) {
+      this.cancelButtonText = data['cancelButtonText'];
     }
   }
 
