@@ -29,7 +29,15 @@ export class ScaleInputComponent implements OnInit {
               private route: ActivatedRoute,
               private toast: ToastService,
               private scaleService: ScaleService) {
+  }
 
+  ngOnInit() {
+    this.input = document.getElementById('scaleInput');
+    const objValues = Object.keys(Measure).map(k => Measure[k]);
+    this.measures = objValues.filter(v => typeof v === 'string') as string[];
+    this.route.params.subscribe((params: Params) => {
+      this.floorId = +params['floorId'];
+    });
     this.scaleService.coordinatesChanged.subscribe(
       coordinates => {
         this.input.style.top = coordinates.y + 'px';
@@ -45,15 +53,6 @@ export class ScaleInputComponent implements OnInit {
       scale => {
         this.scale = scale;
       });
-  }
-
-  ngOnInit() {
-    this.input = document.getElementById('scaleInput');
-    const objValues = Object.keys(Measure).map(k => Measure[k]);
-    this.measures = objValues.filter(v => typeof v === 'string') as string[];
-    this.route.params.subscribe((params: Params) => {
-      this.floorId = +params['floorId'];
-    });
   }
 
   public confirm(valid: boolean) {

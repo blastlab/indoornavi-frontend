@@ -155,7 +155,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private startCreatingScale(): void {
     this.scaleGroup.style('display', 'flex');
 
-    const mapBackground = d3.select('#mapBackground');
+    const mapBackground = d3.select('#map');
     mapBackground.style('cursor', 'crosshair');
 
     if (this.linesArray.length !== 1) {
@@ -187,9 +187,9 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private hideScale(): void {
     this.scaleService.changeVisibility(false);
 
-    d3.select('#mapBackground').style('cursor', 'default');
+    d3.select('#map').style('cursor', 'default');
     this.scaleGroup.style('display', 'none');
-    d3.select('#mapBackground').on('click', null);
+    d3.select('#map').on('click', null);
   }
 
   private addPoint(): void {
@@ -214,7 +214,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.redrawAllObjectsOnMap();
       this.setScaleVisible();
       this.scaleGroup.style('display', 'flex');
-      d3.select('#mapBackground').on('click', null);
+      d3.select('#map').on('click', null);
     }
   }
 

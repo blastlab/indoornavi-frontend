@@ -51,7 +51,7 @@ describe('FloorComponent', () => {
 
   it('should create floor', async(() => {
     // given
-    spyOn(floorService, 'getFloors').and.returnValue(Observable.of({floors: [{'level': 0, 'name': 'test', buildingId: 1}]}));
+    spyOn(floorService, 'getBuildingWithFloors').and.returnValue(Observable.of({floors: [{'level': 0, 'name': 'test', buildingId: 1}]}));
     spyOn(route, 'params').and.returnValue(Observable.of({id: 1}));
 
     // when
@@ -59,7 +59,7 @@ describe('FloorComponent', () => {
 
     // then
     expect(component).toBeTruthy();
-    expect(floorService.getFloors).toHaveBeenCalled();
+    expect(floorService.getBuildingWithFloors).toHaveBeenCalled();
 
     expect(component.floors.length).toEqual(1);
     expect(component.floors).toContain({'level': 0, 'name': 'test', buildingId: 1});
@@ -70,7 +70,7 @@ describe('FloorComponent', () => {
     // given
     const newFloorName = 'some name';
     const newFloorName2 = 'some different name';
-    component.floors = [{'level': 0, name: newFloorName, buildingId: 1}, {'level': 0, name: newFloorName2, buildingId: 1}];
+    component.floors = [{'level': 0, name: newFloorName, building: {id: 1, name: '', complexId: 1}}, {'level': 0, name: newFloorName2, building: {id: 1, name: '', complexId: 1}}];
     spyOn(floorService, 'removeFloor').and.returnValue(Observable.of({}));
 
     // when
@@ -85,7 +85,7 @@ describe('FloorComponent', () => {
   it('should open dialog to edit floor name', () => {
     // given
     const oldFloorName = 'some name';
-    component.floors = [{'level': 0, name: oldFloorName, buildingId: 1}];
+    component.floors = [{'level': 0, name: oldFloorName, building: {id: 1, name: '', complexId: 1}}];
     spyOn(dialog, 'open').and.callThrough();
 
     // when
@@ -101,12 +101,12 @@ describe('FloorComponent', () => {
     // given
     const oldFloorName = 'some name';
     const newFloorName = 'some new name';
-    component.floors = [{'level': 0, name: oldFloorName, buildingId: 1}];
+    component.floors = [{'level': 0, name: oldFloorName, building: {id: 1, name: '', complexId: 1}}];
     spyOn(dialog, 'open').and.callThrough();
 
     // when
     component.editFloor(component.floors[0]);
-    component.dialogRef.close({name: newFloorName, buildingId: 1});
+    component.dialogRef.close({name: newFloorName, building: {id: 1, name: '', complexId: 1}});
 
     // then
     expect(component.floors.length).toEqual(1);
@@ -116,7 +116,7 @@ describe('FloorComponent', () => {
   it('should NOT set new floor name when dialog closes without value', () => {
     // given
     const oldFloorName = 'some name';
-    component.floors = [{'level': 0, name: oldFloorName, buildingId: 1}];
+    component.floors = [{'level': 0, name: oldFloorName, building: {id: 1, name: '', complexId: 1}}];
     spyOn(dialog, 'open').and.callThrough();
     spyOn(floorService, 'updateFloor');
 
@@ -143,7 +143,7 @@ describe('FloorComponent', () => {
 
   it('should create new floor when dialog closes with value', () => {
     // given
-    const expectedFloor: Floor = {id: 1, level: 1, name: 'test', buildingId: 1};
+    const expectedFloor: Floor = {id: 1, level: 1, name: 'test', building: {id: 1, name: '', complexId: 1}};
     spyOn(dialog, 'open').and.callThrough();
 
     // when
@@ -159,9 +159,9 @@ describe('FloorComponent', () => {
       it('should change floor number 5 to 3', () => {
         // given
         component.floors = [
-          {name: 'xxx', level: 2, buildingId: 1},
-          {name: 'xxx', level: 5, buildingId: 1},
-          {name: 'xxx', level: 4, buildingId: 1}
+          {name: 'xxx', level: 2, building: {id: 1, name: '', complexId: 1}},
+          {name: 'xxx', level: 5, building: {id: 1, name: '', complexId: 1}},
+          {name: 'xxx', level: 4, building: {id: 1, name: '', complexId: 1}}
         ];
 
         // when
@@ -178,9 +178,9 @@ describe('FloorComponent', () => {
       it('should change floor number 4 to 1', () => {
         // given
         component.floors = [
-          {name: 'xxx', level: 4, buildingId: 1},
-          {name: 'xxx', level: 2, buildingId: 1},
-          {name: 'xxx', level: 7, buildingId: 1}
+          {name: 'xxx', level: 4, building: {id: 1, name: '', complexId: 1}},
+          {name: 'xxx', level: 2, building: {id: 1, name: '', complexId: 1}},
+          {name: 'xxx', level: 7, building: {id: 1, name: '', complexId: 1}}
         ];
 
         // when
@@ -197,9 +197,9 @@ describe('FloorComponent', () => {
       it('should change floor number 6 to -1', () => {
         // given
         component.floors = [
-          {name: 'xxx', level: 6, buildingId: 1},
-          {name: 'xxx', level: 0, buildingId: 1},
-          {name: 'xxx', level: 3, buildingId: 1}
+          {name: 'xxx', level: 6, building: {id: 1, name: '', complexId: 1}},
+          {name: 'xxx', level: 0, building: {id: 1, name: '', complexId: 1}},
+          {name: 'xxx', level: 3, building: {id: 1, name: '', complexId: 1}}
         ];
 
         // when
@@ -216,9 +216,9 @@ describe('FloorComponent', () => {
       it('should change floor number 7 to 6 and 2 to 7', () => {
         // given
         component.floors = [
-          {name: 'xxx', level: 5, buildingId: 1},
-          {name: 'xxx', level: 7, buildingId: 1},
-          {name: 'xxx', level: 2, buildingId: 1}
+          {name: 'xxx', level: 5, building: {id: 1, name: '', complexId: 1}},
+          {name: 'xxx', level: 7, building: {id: 1, name: '', complexId: 1}},
+          {name: 'xxx', level: 2, building: {id: 1, name: '', complexId: 1}}
         ];
 
         // when
