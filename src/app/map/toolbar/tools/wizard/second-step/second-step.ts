@@ -142,9 +142,8 @@ export class SecondStepComponent implements WizardStep {
     const invertedSinkPosition: Point = {...data.sinkPosition};
     invertedSinkPosition.y = -invertedSinkPosition.y;
     return {
-
-        sinkPosition: invertedSinkPosition,
-        anchorShortId: this.data.anchorId,
+      sinkPosition: invertedSinkPosition,
+      anchorShortId: this.data.anchorId,
       degree: data.degree,
       step: Step.SECOND
     };

@@ -12,6 +12,7 @@ import {Observable} from 'rxjs/Rx';
 import {Configuration} from './actionbar.type';
 import {Floor} from '../../floor/floor.type';
 import {MaterialModule} from '@angular/material';
+import {DialogTestModule} from '../../utils/dialog/dialog.test';
 
 class ConfigurationServiceMock {
   private configuration: Configuration;
@@ -44,7 +45,7 @@ describe('ActionBarComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ActionBarComponent],
-      imports: [TranslateModule.forRoot(), HttpModule, RouterTestingModule, MaterialModule],
+      imports: [TranslateModule.forRoot(), HttpModule, RouterTestingModule, MaterialModule, DialogTestModule],
       providers: [{provide: ActionBarService, useClass: ConfigurationServiceMock}, HttpService, AuthGuard, MapLoaderInformerService]
     })
       .compileComponents();

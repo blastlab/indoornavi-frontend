@@ -49,7 +49,7 @@ describe('BuildingComponent', () => {
 
   it('should create building', async(() => {
     // given
-    spyOn(buildingService, 'getBuildings').and.returnValue(Observable.of({buildings: [{'name': 'test', complexId: 1}]}));
+    spyOn(buildingService, 'getComplexWithBuildings').and.returnValue(Observable.of({buildings: [{'name': 'test', complexId: 1}]}));
     spyOn(route, 'params').and.returnValue(Observable.of({id: 1}));
 
     // when
@@ -57,11 +57,10 @@ describe('BuildingComponent', () => {
 
     // then
     expect(component).toBeTruthy();
-    expect(buildingService.getBuildings).toHaveBeenCalled();
+    expect(buildingService.getComplexWithBuildings).toHaveBeenCalled();
 
     expect(component.buildings.length).toEqual(1);
     expect(component.buildings).toContain({'name': 'test', complexId: 1});
-    // expect(component.building).toContain({'name': ''});
   }));
 
   it('should add new building to list when form is valid', () => {
@@ -98,7 +97,7 @@ describe('BuildingComponent', () => {
     const newBuildingName2 = 'some different name';
     component.buildings = [{name: newBuildingName, complexId: 1}, {name: newBuildingName2, complexId: 1}];
     spyOn(buildingService, 'removeBuilding').and.returnValue(Observable.of({}));
-    spyOn(floorService, 'getFloors').and.returnValue(Observable.of({}));
+    spyOn(floorService, 'getBuildingWithFloors').and.returnValue(Observable.of({}));
 
     // when
     component.removeBuilding(0);

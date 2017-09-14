@@ -47,7 +47,7 @@ describe('ScaleComponent', () => {
   beforeEach(() => {
     ScaleTool.turnOffScaleTool();
     ScaleTool.clickScaleTool();
-    svg = element(by.id('mapBackground'));
+    svg = element(by.id('map'));
   });
 
   afterAll(() => {

@@ -31,7 +31,7 @@ describe('ActionBarService', () => {
         id: 1,
         level: 0,
         name: '',
-        buildingId: 1
+        building: {id: 1, name: '', complexId: 1}
       };
       spyOn(httpService, 'doGet').and.returnValue(Observable.of([]).delay(1000));
 
@@ -53,7 +53,7 @@ describe('ActionBarService', () => {
         id: 1,
         level: 0,
         name: '',
-        buildingId: 1
+        building: {id: 1, name: '', complexId: 1}
       };
       spyOn(httpService, 'doGet').and.returnValue(Observable.of([{
         version: 1,
@@ -96,7 +96,7 @@ describe('ActionBarService', () => {
         id: 1,
         level: 0,
         name: '',
-        buildingId: 1
+        building: {id: 1, name: '', complexId: 1}
       };
       spyOn(httpService, 'doGet').and.returnValue(Observable.of([]).delay(1000));
       spyOn(service, 'configurationChanged').and.callFake(() => {
@@ -149,7 +149,7 @@ describe('ActionBarService', () => {
         id: 1,
         level: 0,
         name: '',
-        buildingId: 1
+        building: {id: 1, name: '', complexId: 1}
       };
       spyOn(httpService, 'doGet').and.returnValue(Observable.of([]).delay(1000));
       spyOn(service, 'configurationChanged').and.callFake(() => {
