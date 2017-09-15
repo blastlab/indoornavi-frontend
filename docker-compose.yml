@@ -8,8 +8,9 @@ services:
     container_name:
       frontend
     working_dir: /app
-    command: npm install
-    command: ng serve host=0.0.0.0
+    command: bash -c "npm install; ng serve host=0.0.0.0"    
+
+
     
   core:
     build: backend
@@ -25,6 +26,7 @@ services:
       APP_ENVIRONMENT: development
       APP_DB_HOST: db
 
+
   db:
     extends:
       file: backend/database/docker-compose.yml
@@ -38,14 +40,21 @@ services:
       service: liquibase
     container_name:
       liquibase
-    
+
   core_compiler:
-    build: backend/compiler
-    volumes:
-      - ./backend:/app
-      - ./backend/maven_core_compiler:/root/.m2
+    extends:
+      file: backend/docker-compose.override.yml
+      service: core_compiler
     container_name:
       core_compiler
+    
+#  core_compiler:
+#    build: backend/compiler
+#    volumes:
+#      - ./backend:/app
+#      - ./backend/maven_core_compiler:/root/.m2
+#    container_name:
+#      core_compiler
   
 
 volumes:
