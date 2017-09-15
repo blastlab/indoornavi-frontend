@@ -143,14 +143,10 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   private drawScaleFromConfiguration(): void {
     if (!!this.scale.realDistance && !!this.scale.start && !!this.scale.stop) {
-      console.log('redrawing scale from configuration');
-      console.log(this.scale);
       this.isScaleSet = true;
       this.pointsArray.push(this.scale.start);
       this.pointsArray.push(this.scale.stop);
       this.linesArray.push(this.createLine());
-      console.log(this.linesArray);
-      console.log(this.pointsArray);
       this.redrawLine();
       this.redrawEndings();
       this.redrawInput();

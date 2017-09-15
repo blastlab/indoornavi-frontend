@@ -13,6 +13,7 @@ import {Configuration} from './actionbar.type';
 import {Floor} from '../../floor/floor.type';
 import {MaterialModule} from '@angular/material';
 import {DialogTestModule} from '../../utils/dialog/dialog.test';
+import {Measure} from '../toolbar/tools/scale/scale.type';
 
 class ConfigurationServiceMock {
   private configuration: Configuration;
@@ -27,6 +28,29 @@ class ConfigurationServiceMock {
 
   public loadConfiguration(_: Floor): Observable<Configuration> {
     return Observable.of(this.configuration);
+  }
+
+  public getLatestPublishedConfiguration(): Configuration {
+    return {
+      version: 0,
+      floorId: 1,
+      data: {
+        sinks: [],
+        scale: {
+          start: {
+            x: 0,
+            y: 0
+          },
+          stop: {
+            x: 0,
+            y: 0
+          },
+          realDistance: 0,
+          measure: Measure.CENTIMETERS
+        }
+      },
+      publishedDate: new Date().getMilliseconds()
+    };
   }
 
   public saveDraft(): Promise<void> {
@@ -58,7 +82,7 @@ describe('ActionBarComponent', () => {
     configurationService = fixture.debugElement.injector.get(ActionBarService);
     spyOn(configurationService, 'configurationLoaded').and.callFake(() => {
       return Observable.of({
-        published: false
+        publishedDate: new Date().getMilliseconds()
       });
     });
     fixture.detectChanges();

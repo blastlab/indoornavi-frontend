@@ -4,7 +4,7 @@ import {Sink} from '../../device/sink.type';
 export interface Configuration {
   version: number;
   floorId: number;
-  published: boolean;
+  publishedDate: number;
   data: ConfigurationData;
 }
 

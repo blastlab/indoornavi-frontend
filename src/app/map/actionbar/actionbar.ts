@@ -39,9 +39,16 @@ export class ActionBarComponent implements OnInit, OnDestroy {
 
   // confirm dialog data
   private confirmDialogRef: MdDialogRef<ConfirmDialogComponent>;
-  private confirmButtonText: string;
-  private cancelButtonText: string;
-  private body: string;
+
+  // pre publish dialog data
+  private publishConfirmButtonText: string;
+  private publishCancelButtonText: string;
+  private publishDialogBody: string;
+
+  // pre undo dialog data
+  private undoConfirmButtonText: string;
+  private undoCancelButtonText: string;
+  private undoDialogBody: string;
 
   constructor(private configurationService: ActionBarService,
               private mapLoaderInformer: MapLoaderInformerService,
@@ -56,8 +63,11 @@ export class ActionBarComponent implements OnInit, OnDestroy {
     });
 
     this.configurationLoadedSubscription = this.configurationService.configurationLoaded().subscribe((configuration: Configuration) => {
-      this.publishButtonDisabled = configuration.published;
-      this.resetButtonDisabled = configuration.published;
+      console.log(configuration)
+      this.publishButtonDisabled = !!configuration.publishedDate;
+      this.resetButtonDisabled = !!configuration.publishedDate;
+
+      this.updateUndoDialogBody(new Date(this.configurationService.getLatestPublishedConfiguration().publishedDate));
 
       this.ngZone.runOutsideAngular(() => {
         this.timer = new Timer(() => {
@@ -102,22 +112,31 @@ export class ActionBarComponent implements OnInit, OnDestroy {
   }
 
   public resetToPreviousPublication(): void {
-    this.configurationService.undo().then(() => {
-      this.publishButtonDisabled = true;
-      this.resetButtonDisabled = true;
+    this.confirmDialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        body: this.undoDialogBody,
+        confirmButtonText: this.undoConfirmButtonText,
+        cancelButtonText: this.undoCancelButtonText
+      }
+    });
+    this.confirmDialogRef.afterClosed().subscribe((okButtonClicked: boolean) => {
+      if (okButtonClicked) {
+        this.configurationService.undo().then(() => {
+          this.publishButtonDisabled = true;
+          this.resetButtonDisabled = true;
+        });
+      }
+
+      this.confirmDialogRef = null;
     });
   }
 
   public publish(): void {
-    this.configurationService.publish().subscribe(() => {
-      this.publishButtonDisabled = true;
-      this.resetButtonDisabled = true;
-      this.saveButtonDisabled = true;
     this.confirmDialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
-        body: this.body,
-        confirmButtonText: this.confirmButtonText,
-        cancelButtonText: this.cancelButtonText
+        body: this.publishDialogBody,
+        confirmButtonText: this.publishConfirmButtonText,
+        cancelButtonText: this.publishCancelButtonText
       }
     });
     this.confirmDialogRef.afterClosed().subscribe((okButtonClicked: boolean) => {
@@ -131,15 +150,17 @@ export class ActionBarComponent implements OnInit, OnDestroy {
         this.publishedDialogRef.afterClosed().subscribe((savedMap: PublishedMap) => {
           if (!!savedMap) {
             this.configurationService.publish().subscribe(() => {
-              this.publishButtonDisabled = true;
+              this.afterPublishDone();
             });
           }
         });
       } else if (okButtonClicked !== undefined) { // don't do it when user closed dialog giving no answer
         this.configurationService.publish().subscribe(() => {
-          this.publishButtonDisabled = true;
+          this.afterPublishDone();
         });
       }
+
+      this.confirmDialogRef = null;
     });
   }
 
@@ -157,16 +178,37 @@ export class ActionBarComponent implements OnInit, OnDestroy {
     }
   }
 
-  private setTranslations() {
+  private afterPublishDone(): void {
+    this.publishButtonDisabled = true;
+    this.resetButtonDisabled = true;
+    this.saveButtonDisabled = true;
+    this.updateUndoDialogBody(new Date());
+  }
+
+  private setTranslations(): void {
     this.translateService.setDefaultLang('en');
-    this.translateService.get('configuration.confirmDialog.yes').subscribe((value: string) => {
-      this.confirmButtonText = value;
+    this.translateService.get('configuration.prePublishConfirmDialog.yes').subscribe((value: string) => {
+      this.publishConfirmButtonText = value;
     });
-    this.translateService.get('configuration.confirmDialog.no').subscribe((value: string) => {
-      this.cancelButtonText = value;
+    this.translateService.get('configuration.prePublishConfirmDialog.no').subscribe((value: string) => {
+      this.publishCancelButtonText = value;
     });
-    this.translateService.get('configuration.confirmDialog.body').subscribe((value: string) => {
-      this.body = value;
+    this.translateService.get('configuration.prePublishConfirmDialog.body').subscribe((value: string) => {
+      this.publishDialogBody = value;
+    });
+    this.translateService.get('configuration.preUndoConfirmDialog.yes').subscribe((value: string) => {
+      this.undoConfirmButtonText = value;
+    });
+    this.translateService.get('configuration.preUndoConfirmDialog.no').subscribe((value: string) => {
+      this.undoCancelButtonText = value;
+    });
+  }
+
+  private updateUndoDialogBody(date: Date): void {
+    this.translateService.get('configuration.preUndoConfirmDialog.body', {
+      date: date.toLocaleString()
+    }).subscribe((value: string) => {
+      this.undoDialogBody = value;
     });
   }
 }

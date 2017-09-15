@@ -15,6 +15,7 @@ export class ActionBarService {
   public static SAVE_DRAFT_ANIMATION_TIME = 500;
   private static URL: string = 'configurations/';
   private configuration: Configuration;
+  private latestPublishedConfiguration: Configuration;
   private configurationLoadedEmitter: Subject<Configuration> = new Subject<Configuration>();
   private configurationChangedEmitter: Subject<Configuration> = new Subject<Configuration>();
   private configurationResetEmitter: Subject<Configuration> = new Subject<Configuration>();
@@ -42,20 +43,30 @@ export class ActionBarService {
     return this.changed;
   }
 
+  public getLatestPublishedConfiguration(): Configuration {
+    return this.latestPublishedConfiguration;
+  }
+
   public loadConfiguration(floor: Floor): void {
     this.httpService.doGet(ActionBarService.URL + floor.id).subscribe((configurations: Configuration[]) => {
       if (configurations.length === 0) {
         this.configuration = <Configuration>{
           floorId: floor.id,
           version: 0,
-          published: true,
+          publishedDate: new Date().getMilliseconds(),
           data: {
             sinks: [],
             scale: null
           }
         };
+        this.latestPublishedConfiguration = this.configuration;
       } else {
         this.configuration = configurations[0];
+        this.latestPublishedConfiguration = configurations.sort((a, b) => {
+          return b.publishedDate - a.publishedDate;
+        }).find((configuration: Configuration) => {
+          return !!configuration.publishedDate;
+        });
       }
       this.configurationHash = this.hashConfiguration();
       this.configurationLoadedEmitter.next(this.configuration);

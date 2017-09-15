@@ -17,8 +17,8 @@ import {DeviceService} from './device.service';
   templateUrl: './device.component.html',
   styleUrls: ['./device.css']
 })
-
 export class DeviceComponent implements OnInit, OnDestroy {
+
   private socketSubscription: Subscription;
   @ViewChild('verified') private verifiedList: DeviceListComponent;
   @ViewChild('notVerified') private notVerifiedList: DeviceListComponent;
@@ -34,7 +34,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
               private toastService: ToastService,
               private ngZone: NgZone,
               private route: ActivatedRoute,
-              private deviceService: DeviceService,) {
+              private deviceService: DeviceService) {
   }
 
   get verified(): Anchor[] | Tag[] | Sink[] {
@@ -74,8 +74,10 @@ export class DeviceComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.socketSubscription) {
+      this.socketSubscription.unsubscribe();
     }
   }
+
   // this method opens a component dialog and cannot be passed as service
   // in addition this method needs a path that is taken from
   // this.route.snapshot.path that is this component prop

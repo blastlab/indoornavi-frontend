@@ -33,9 +33,7 @@ describe('Published Map', () => {
           expect(lastlyAddedMap.floor).toBe('Published Map Test Floor/Published Map Test Floor/0/Published Map Test Floor');
           expect(lastlyAddedMap.tags).toBe(
             '10999 - 1099999\n' +
-            '11999 - 1199999\n' +
-            '12999 - 1299999\n' +
-            '13999 - 1399999');
+            '11999 - 1199999');
           expect(lastlyAddedMap.users).toBe(
             'admin\n' +
             'user');
@@ -47,10 +45,7 @@ describe('Published Map', () => {
 
             PublishedPage.getLastMap().then((lastlyEditedMap: LastMap) => {
               expect(lastlyEditedMap.floor).toBe('Published Map Test Floor/Published Map Test Floor/0/Published Map Test Floor');
-              expect(lastlyEditedMap.tags).toBe(
-                '10999 - 1099999\n' +
-                '12999 - 1299999\n' +
-                '13999 - 1399999');
+              expect(lastlyEditedMap.tags).toBe('10999 - 1099999');
               expect(lastlyEditedMap.users).toBe('admin');
 
               // clean
