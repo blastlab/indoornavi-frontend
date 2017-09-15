@@ -1,0 +1,3 @@
+[submodule "backend"]
+	path = backend
+	url = http://gitlab.blastlab.local/indoornavi/backend
