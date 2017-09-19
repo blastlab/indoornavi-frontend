@@ -10,7 +10,7 @@ services:
     container_name:
       frontend
     working_dir: /app
-    command: bash -c "npm install; ng serve host=0.0.0.0"    
+    command: bash -c "npm install; ng serve --host=0.0.0.0"    
 
 
     
@@ -23,6 +23,8 @@ services:
     entrypoint: ["wait-for-container-end.sh", "-c", "liquibase", "--", "/start-server.sh"]
     depends_on:
       - db
+    ports:
+      - '90:8080'
     environment:
       TZ: Europe/Warsaw
       APP_ENVIRONMENT: development
