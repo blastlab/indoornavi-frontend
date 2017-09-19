@@ -5,6 +5,8 @@ services:
     image: teracy/angular-cli:1.0.0
     volumes:
       - ./:/app
+    ports:
+      - '4200:4200'
     container_name:
       frontend
     working_dir: /app
@@ -47,14 +49,6 @@ services:
       service: core_compiler
     container_name:
       core_compiler
-    
-#  core_compiler:
-#    build: backend/compiler
-#    volumes:
-#      - ./backend:/app
-#      - ./backend/maven_core_compiler:/root/.m2
-#    container_name:
-#      core_compiler
   
 
 volumes:
