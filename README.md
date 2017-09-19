@@ -4,7 +4,10 @@ Obraz dockerowy wykorzystywany w projekcie: `https://hub.docker.com/r/teracy/ang
 
 ## Uwaga 
 
-Do poprawnego działania trzeba jeszcze dodać backend jako submoduł w projekcie.
+Backend został dodany jako submoduł w projekcie.
+
+Klonowanie projektu z deva: `git clone -b development --recursive <ssh-repo-path>`
+Jeśli tego nie zrobiłeś to (./backend jest pusty) wykonaj `git submodule update --init --recursive`
 
 ## Run project
 
