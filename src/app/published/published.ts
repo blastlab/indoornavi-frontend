@@ -1,4 +1,4 @@
-import {Component, NgZone, OnInit} from '@angular/core';
+import {AfterViewInit, Component, NgZone, OnInit} from '@angular/core';
 import {Config} from '../../config';
 import {SocketService} from '../utils/socket/socket.service';
 import {Subscription} from 'rxjs/Subscription';
@@ -19,8 +19,7 @@ import {Tag} from '../device/tag.type';
   templateUrl: './published.html',
   styleUrls: ['./published.css']
 })
-export class PublishedComponent implements OnInit {
-
+export class PublishedComponent implements OnInit, AfterViewInit {
   private socketSubscription: Subscription;
   private activeMap: PublishedMap;
   private d3map: d3.selection = null;
@@ -43,7 +42,7 @@ export class PublishedComponent implements OnInit {
         if (this.activeMap.floor.imageId != null) {
           this.mapViewerService.drawMap(this.activeMap.floor).then((d3map: d3.selection) => {
             this.d3map = d3map;
-            const realDistanceInCentimeters = map.floor.scale.realDistance * (Measure[map.floor.scale.measure] === Measure[Measure.METERS] ? 100 : 1);
+            const realDistanceInCentimeters = map.floor.scale.realDistance * (map.floor.scale.measure.toString() === Measure[Measure.METERS] ? 100 : 1);
             const pixels = Geometry.getDistanceBetweenTwoPoints(map.floor.scale.start, map.floor.scale.stop);
             this.pixelsToCentimeters = realDistanceInCentimeters / pixels;
             this.initializeSocketConnection();
@@ -51,6 +50,28 @@ export class PublishedComponent implements OnInit {
         }
       });
     });
+  }
+
+  ngAfterViewInit(): void {
+    window.addEventListener('message', (event: MessageEvent) => {
+      this.route.queryParams.subscribe((params: Params) => {
+        if (event.origin === window.location.origin) {
+          return;
+        }
+        this.publishedService.checkOrigin(params['api_key'], event.origin).subscribe((verified: boolean) => {
+          if (verified) {
+            if ('command' in event.data && event.data['command'] === 'toggleTagVisibility') {
+              const tagId = parseInt(event.data['args'], 10);
+              this.socketService.send({type: CommandType[CommandType.TOGGLE_TAG], args: tagId});
+              if (this.isOnMap(tagId)) {
+                this.tagsOnMap.getValue(tagId).remove();
+                this.tagsOnMap.remove(tagId);
+              }
+            }
+          }
+        });
+      });
+    }, false);
   }
 
   private isCoordinatesData(data: MeasureSocketData): boolean {
@@ -72,11 +93,11 @@ export class PublishedComponent implements OnInit {
     const coordinates: Point = this.scaleCoordinates(data.coordinates.point),
       deviceId: number = data.coordinates.tagShortId;
     if (!this.isOnMap(deviceId)) {
-      const drawBuilder = new DrawBuilder(this.d3map, {id: 'tag-' + deviceId, clazz: 'tag'});
+      const drawBuilder = new DrawBuilder(this.d3map, {id: `tag-${deviceId}`, clazz: 'tag'});
       const tagOnMap = drawBuilder
         .createGroup()
         .addIcon({x: 0, y: 0}, this.iconService.getIcon(NaviIcons.TAG))
-        .addText({x: 0, y: 36}, '' + deviceId)
+        .addText({x: 0, y: 36}, `${deviceId}`)
         .place({x: coordinates.x, y: coordinates.y});
       this.tagsOnMap.setValue(deviceId, tagOnMap);
     } else {
@@ -85,13 +106,13 @@ export class PublishedComponent implements OnInit {
   }
 
   private setSocketConfiguration() {
-    this.socketService.send({type: CommandType[CommandType.SET_FLOOR], args: '' + this.activeMap.floor.id});
-    this.socketService.send({type: CommandType[CommandType.SET_TAGS], args: '[' + this.extractTagsShortIds() + ']'});
+    this.socketService.send({type: CommandType[CommandType.SET_FLOOR], args: `${this.activeMap.floor.id}`});
+    this.socketService.send({type: CommandType[CommandType.SET_TAGS], args: `[${this.extractTagsShortIds()}]`});
   }
 
   private initializeSocketConnection() {
     this.ngZone.runOutsideAngular(() => {
-      const stream = this.socketService.connect(Config.WEB_SOCKET_URL + 'measures?client');
+      const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?client`);
       this.setSocketConfiguration();
 
       this.socketSubscription = stream.subscribe((data: MeasureSocketData) => {

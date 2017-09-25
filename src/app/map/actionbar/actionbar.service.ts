@@ -24,6 +24,14 @@ export class ActionBarService {
   private changed = this.configurationChangedEmitter.asObservable();
   private configurationHash: string | Int32Array;
 
+  private static findLatestConfiguration(configurations: Configuration[]): Configuration {
+    return configurations.sort((a, b) => {
+      return b.publishedDate - a.publishedDate;
+    }).find((configuration: Configuration) => {
+      return !!configuration.publishedDate;
+    });
+  }
+
   private static compareFn(sink: Sink): string {
     return '' + sink.shortId;
   }
@@ -62,11 +70,11 @@ export class ActionBarService {
         this.latestPublishedConfiguration = this.configuration;
       } else {
         this.configuration = configurations[0];
-        this.latestPublishedConfiguration = configurations.sort((a, b) => {
-          return b.publishedDate - a.publishedDate;
-        }).find((configuration: Configuration) => {
-          return !!configuration.publishedDate;
-        });
+        if (configurations.length > 1) {
+          this.latestPublishedConfiguration = ActionBarService.findLatestConfiguration(configurations);
+        } else {
+          this.latestPublishedConfiguration = this.configuration;
+        }
       }
       this.configurationHash = this.hashConfiguration();
       this.configurationLoadedEmitter.next(this.configuration);
@@ -136,4 +144,5 @@ export class ActionBarService {
   private sendConfigurationResetEvent(): void {
     this.configurationResetEmitter.next(this.configuration);
   }
+
 }

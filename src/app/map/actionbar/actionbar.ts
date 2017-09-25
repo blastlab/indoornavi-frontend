@@ -63,7 +63,6 @@ export class ActionBarComponent implements OnInit, OnDestroy {
     });
 
     this.configurationLoadedSubscription = this.configurationService.configurationLoaded().subscribe((configuration: Configuration) => {
-      console.log(configuration)
       this.publishButtonDisabled = !!configuration.publishedDate;
       this.resetButtonDisabled = !!configuration.publishedDate;
 

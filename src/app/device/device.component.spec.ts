@@ -10,11 +10,10 @@ import {Observable} from 'rxjs/Rx';
 import {DialogTestModule} from '../utils/dialog/dialog.test';
 import {DeviceService} from './device.service';
 import {DeviceListComponent} from './device.list';
-import {Router, RouterModule} from '@angular/router';
+import {ActivatedRoute, Router, RouterModule} from '@angular/router';
 import {SharedModule} from '../utils/shared/shared.module';
 import {AuthGuard} from '../auth/auth.guard';
-import {ActivatedRoute} from '@angular/router';
-import { DeviceComponent } from './device.component';
+import {DeviceComponent} from './device.component';
 import {Sink} from './sink.type';
 
 describe('DevicesComponent', () => {
@@ -26,7 +25,7 @@ describe('DevicesComponent', () => {
   let dialog: MdDialog;
   let toastService: ToastService;
 
-  mockActivatedRoute = {snapshot: {routeConfig: {path: 'sinks'}}};
+  mockActivatedRoute = {snapshot: {routeConfig: {path: 'sinks'}}, queryParams: Observable.of({})};
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -38,7 +37,9 @@ describe('DevicesComponent', () => {
         SharedModule
       ],
       declarations: [DeviceComponent, DeviceListComponent],
-      providers: [SocketService, WebSocketService, DeviceService, HttpService, ToastService, MdDialog, {provide: Router, useClass: RouterModule}, {provide: ActivatedRoute, useValue: mockActivatedRoute}, AuthGuard]
+      providers: [
+        SocketService, WebSocketService, DeviceService, HttpService,
+        ToastService, MdDialog, {provide: Router, useClass: RouterModule}, {provide: ActivatedRoute, useValue: mockActivatedRoute}, AuthGuard]
     })
       .compileComponents();
 
@@ -48,7 +49,8 @@ describe('DevicesComponent', () => {
     dialog = fixture.debugElement.injector.get(MdDialog);
     toastService = fixture.debugElement.injector.get(ToastService);
 
-    spyOn(socketService, 'send').and.callFake(() => {});
+    spyOn(socketService, 'send').and.callFake(() => {
+    });
     spyOn(toastService, 'showSuccess');
   }));
 

@@ -55,6 +55,7 @@
 	"go.to.buildings": "Go to buildings",
 	"go.to.floors": "Go to floors",
 	"go.to.map": "Go to map",
+	"go.to.mapEditor": "Go to map's editor",
 	"hint.chooseTool": "Choose a tool.",
 	"login": "Login",
 	"map.upload.buttonCaption": "Select floor's map image from disk",

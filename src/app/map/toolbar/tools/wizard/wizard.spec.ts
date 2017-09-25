@@ -175,6 +175,7 @@ describe('WizardComponent', () => {
   });
 
   it('should send SocketMessage in step 2', () => {
+    // given
     spyOn(socketService, 'send').and.callFake(() => {
     });
     spyOn(firstStep, 'updateWizardData').and.callFake(() => {
@@ -185,8 +186,13 @@ describe('WizardComponent', () => {
       anchorShortId: 1023,
       degree: 90
     });
+    spyOn(socketService, 'connect').and.returnValue(Observable.of({}));
     component.setActive();
+
+    // when
     component.wizardNextStep(1);
+
+    // then
     expect(firstStep.updateWizardData).toHaveBeenCalled();
     expect(socketService.send).toHaveBeenCalledWith({
       sinkShortId: 8,
