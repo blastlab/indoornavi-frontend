@@ -1,7 +1,7 @@
 import {ScaleTool} from './scale.po';
 import {browser, by, element, ElementFinder, protractor} from 'protractor';
 import {Measure} from '../../../../../src/app/map/toolbar/tools/scale/scale.type';
-import {AppPage} from '../../../../app.po';
+import {ActionBarChecker} from '../../../actionbar/actionbar.checker';
 
 describe('ScaleComponentInit', () => {
   let path: any;
@@ -32,12 +32,23 @@ describe('ScaleComponentInit', () => {
     expect(element(by.className('map-toolbar'))).toBeTruthy();
     expect(element(by.id('hint-bar')).getText()).toEqual('Choose a tool.');
     expect(element(by.id('scaleHint')).getText()).toEqual('Scale is not set');
-    browser.wait(function () {
-      return AppPage.getById('publish').getAttribute('disabled').then(function (value) {
-        return value === 'true';
-      });
-    }, 10000);
-    expect(AppPage.getById('publish').getAttribute('disabled')).toEqual('true');
+    ActionBarChecker.expectButtonsToBeInProperStateBeforeAndAfter([], () => {
+      },
+      'true',
+      [
+        {
+          id: 'publish',
+          disabled: 'true'
+        },
+        {
+          id: 'saveDraft',
+          disabled: 'true'
+        },
+        {
+          id: 'resetToPrevious',
+          disabled: 'true'
+        }
+      ]);
   });
 });
 
@@ -47,7 +58,7 @@ describe('ScaleComponent', () => {
   beforeEach(() => {
     ScaleTool.turnOffScaleTool();
     ScaleTool.clickScaleTool();
-    svg = element(by.id('mapBackground'));
+    svg = element(by.id('map'));
   });
 
   afterAll(() => {
@@ -65,15 +76,25 @@ describe('ScaleComponent', () => {
     ScaleTool.clickMap(svg, 241, 342);
     DrawingChecker.expectScaleToExist();
     ScaleTool.fillInScaleInput(distance, Measure.CENTIMETERS);
-    ScaleTool.clickConfirm();
+
+    ActionBarChecker.expectButtonsToBeInProperStateBeforeAndAfter([{
+        id: 'saveDraft',
+        disabled: 'true'
+      }], ScaleTool.clickConfirm,
+      null,
+      [
+        {
+          id: 'publish',
+          disabled: null
+        },
+        {
+          id: 'resetToPrevious',
+          disabled: null
+        }
+      ]);
+
     expect(element(by.id('scaleHint')).getText()).toEqual('Scale: ' + distance + ' cm');
     expect(element(by.id('hintBar')).getText()).toEqual('Choose a tool.');
-    browser.wait(function () {
-      return AppPage.getById('publish').getAttribute('disabled').then(function (value) {
-        return value === null;
-      });
-    }, 10000);
-    expect(element(by.id('publish')).getAttribute('disabled')).toEqual(null);
     DrawingChecker.expectScaleNotToBeVisible();
   });
 
@@ -164,4 +185,6 @@ class DrawingChecker {
     expect(element(by.id('scaleGroup')).getAttribute('style')).toEqual('display: none;');
   }
 }
+
+
 

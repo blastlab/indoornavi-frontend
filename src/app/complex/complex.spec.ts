@@ -102,7 +102,7 @@ describe('ComplexComponent', () => {
     const newComplexName = 'some name';
     const newComplexName2 = 'some different name';
     component.complexes = [{name: newComplexName}, {name: newComplexName2}];
-    spyOn(buildingService, 'getBuildings').and.returnValue(Observable.of({}));
+    spyOn(buildingService, 'getComplexWithBuildings').and.returnValue(Observable.of({}));
     spyOn(complexService, 'removeComplex').and.returnValue(Observable.of({}));
 
     // when
