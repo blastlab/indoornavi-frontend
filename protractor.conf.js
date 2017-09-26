@@ -9,10 +9,13 @@ exports.config = {
   useAllAngular2AppRoots: true,
   allScriptsTimeout: 11000,
   specs: [
-    './e2e/**/*.e2e-spec.ts'
+    './e2e/**/scale.e2e-spec.ts'
   ],
   capabilities: {
-    'browserName': 'chrome'
+    'browserName': 'chrome',
+    'chromeOptions': {
+      'args': ['no-sandbox']
+    }
   },
   directConnect: true,
   baseUrl: baseUrl,
@@ -28,7 +31,7 @@ exports.config = {
     });
   },
   onPrepare() {
-    browser.driver.manage().window().maximize();
+    //browser.driver.manage().window().maximize();
     jasmine.getEnv().addReporter(new SpecReporter({ spec: { displayStacktrace: true } }));
 
     browser.driver.get(baseUrl + 'login');

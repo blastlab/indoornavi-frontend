@@ -81,7 +81,7 @@ describe('ScaleInputComponent', () => {
         id: 6,
         level: 0,
         name: '',
-        buildingId: 4,
+        building: { id: 4, name: 'test', complexId: 1 },
         imageId: 1,
         scale: scale
       };

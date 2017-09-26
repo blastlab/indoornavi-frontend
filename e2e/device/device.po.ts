@@ -13,7 +13,7 @@ export class DevicePage {
   }
 
   static addAnchor(shortId: string, longId: string, name: string) {
-    element(by.id('new-anchor-button')).click();
+    element(by.id('new-device-button')).click();
     element(by.id('device-short-id')).sendKeys(shortId);
     element(by.id('device-long-id')).sendKeys(longId);
     element(by.id('device-name')).sendKeys(name);

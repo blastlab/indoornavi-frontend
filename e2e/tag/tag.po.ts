@@ -16,7 +16,7 @@ export class TagPage {
   }
 
   static addTag(shortId: string, longId: string, name: string) {
-    element(by.id('new-tag-button')).click();
+    element(by.id('new-device-button')).click();
     element(by.id('device-short-id')).sendKeys(shortId);
     element(by.id('device-long-id')).sendKeys(longId);
     element(by.id('device-name')).sendKeys(name);

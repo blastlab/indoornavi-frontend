@@ -19,6 +19,7 @@ import {AcceptButtonsComponent} from '../utils/accept-buttons/accept-buttons';
 import {AcceptButtonsService} from '../utils/accept-buttons/accept-buttons.service';
 import {Observable} from 'rxjs/Observable';
 import {ScaleService} from './toolbar/tools/scale/scale.service';
+import {MapViewerService} from './map.viewer.service';
 
 describe('MapViewerComponent', () => {
   let component: MapViewerComponent;
@@ -36,7 +37,7 @@ describe('MapViewerComponent', () => {
       providers: [
         ScaleInputService, ScaleHintService, MapLoaderInformerService,
         FloorService, HttpService, ToastService, MapService, AuthGuard, AcceptButtonsService,
-        ScaleService
+        ScaleService, MapViewerService
       ]
     })
       .compileComponents();

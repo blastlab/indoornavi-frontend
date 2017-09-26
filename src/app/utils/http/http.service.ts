@@ -3,7 +3,7 @@ import {Headers, Http, RequestOptions, Response, ResponseContentType} from '@ang
 import {Observable} from 'rxjs/Rx';
 import {Config} from '../../../config';
 import 'rxjs/add/observable/throw';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Params, Router} from '@angular/router';
 import {AuthGuard} from '../../auth/auth.guard';
 
 @Injectable()
@@ -35,11 +35,15 @@ export class HttpService {
     return Observable.throw('S_000');
   }
 
-  constructor(private http: Http, private router: Router, private authGuard: AuthGuard) {
+  constructor(private http: Http, private router: Router, private authGuard: AuthGuard, private route: ActivatedRoute) {
     HttpService.router = router;
-    if (localStorage.getItem('currentUser')) {
-      this.prepareAuthHeader();
-    }
+    route.queryParams.subscribe((params: Params) => {
+      if (localStorage.getItem('currentUser')) {
+        this.prepareAuthHeader();
+      } else if (params['api_key']) {
+        this.prepareAuthHeader(params['api_key']);
+      }
+    });
     authGuard.userLoggedIn().subscribe((loggedIn: boolean) => {
       (loggedIn) ?
         this.prepareAuthHeader()
@@ -74,8 +78,12 @@ export class HttpService {
     this.options.responseType = type;
   }
 
-  private prepareAuthHeader() {
-    this.options.headers.set('Authorization', 'Bearer ' + JSON.parse(localStorage.getItem('currentUser'))['token']);
+  private prepareAuthHeader(apiKey?: string) {
+    if (!!apiKey) {
+      this.options.headers.set('Authorization', `Token ${apiKey}`);
+    } else {
+      this.options.headers.set('Authorization', `Bearer ${JSON.parse(localStorage.getItem('currentUser'))['token']}`);
+    }
   }
 
 }

@@ -3,6 +3,7 @@ import {Floor} from './floor.type';
 import {Observable} from 'rxjs/Rx';
 import {HttpService} from '../utils/http/http.service';
 import {Scale} from '../map/toolbar/tools/scale/scale.type';
+import {Building} from '../building/building.type';
 
 @Injectable()
 export class FloorService {
@@ -12,7 +13,7 @@ export class FloorService {
   constructor(private httpService: HttpService) {
   }
 
-  getFloors(buildingId: number): Observable<Floor[]> {
+  getBuildingWithFloors(buildingId: number): Observable<Building> {
     return this.httpService.doGet('buildings/' + buildingId + '/' + this.floorsUrl);
   }
 
