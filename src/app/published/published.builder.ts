@@ -68,6 +68,10 @@ export class GroupCreated {
       .text(text);
     return this;
   }
+
+  remove(): void {
+    this.group.remove();
+  }
 }
 
 export interface DrawConfiguration {

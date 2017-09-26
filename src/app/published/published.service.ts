@@ -25,4 +25,8 @@ export class PublishedService {
   get(id: number): Observable<PublishedMap> {
     return this.httpService.doGet(this.url + id);
   }
+
+  checkOrigin(apiKey: string, origin: string) {
+    return this.httpService.doPost(`${this.url}checkOrigin`, {apiKey: apiKey, origin: origin});
+  }
 }
