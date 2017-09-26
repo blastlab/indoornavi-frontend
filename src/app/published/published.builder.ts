@@ -70,8 +70,7 @@ export class GroupCreated {
   }
 
   remove(): void {
-    this.group
-      .remove();
+    this.group.remove();
   }
 }
 
