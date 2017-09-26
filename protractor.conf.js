@@ -14,7 +14,7 @@ exports.config = {
   capabilities: {
     'browserName': 'chrome',
     'chromeOptions': {
-      'args': ['no-sandbox']
+      'args': ['no-sandbox', 'start-maximized']
     }
   },
   directConnect: true,
@@ -31,7 +31,7 @@ exports.config = {
     });
   },
   onPrepare() {
-    //browser.driver.manage().window().maximize();
+    // browser.driver.manage().window().maximize();
     jasmine.getEnv().addReporter(new SpecReporter({ spec: { displayStacktrace: true } }));
 
     browser.driver.get(baseUrl + 'login');
