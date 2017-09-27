@@ -37,9 +37,7 @@ describe('DevicesComponent', () => {
         SharedModule
       ],
       declarations: [DeviceComponent, DeviceListComponent],
-      providers: [
-        SocketService, WebSocketService, DeviceService, HttpService,
-        ToastService, MdDialog, {provide: Router, useClass: RouterModule}, {provide: ActivatedRoute, useValue: mockActivatedRoute}, AuthGuard]
+      providers: [DeviceService, SocketService, WebSocketService, DeviceService, HttpService, ToastService, MdDialog, {provide: Router, useClass: RouterModule}, {provide: ActivatedRoute, useValue: mockActivatedRoute}, AuthGuard]
     })
       .compileComponents();
 

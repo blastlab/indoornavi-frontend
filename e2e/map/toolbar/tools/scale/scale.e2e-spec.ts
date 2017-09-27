@@ -162,6 +162,8 @@ describe('ScaleComponent', () => {
   });
 
   it('should not draw scale outside of canvas', () => {
+    browser.pause();
+    browser.debugger();
     const points = element.all(by.className('point'));
     ScaleTool.dragEnding(points.last(), {x: 0, y: -9999});
     expect(points.last().getAttribute('cy')).toEqual('0');
