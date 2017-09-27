@@ -11,9 +11,10 @@ import {MapLoaderInformerService} from '../../../../utils/map-loader-informer/ma
 import {Subscription} from 'rxjs/Subscription';
 import {Geometry} from '../../../utils/geometry';
 import {HintBarService} from '../../../hint-bar/hint-bar.service';
-import {ConfigurationService} from '../../../../floor/configuration/configuration.service';
-import {Configuration} from '../../../../floor/configuration/configuration.type';
+import {ActionBarService} from '../../../actionbar/actionbar.service';
+import {Configuration} from '../../../actionbar/actionbar.type';
 import {ScaleService} from './scale.service';
+import {Helper} from '../../../../utils/helper/helper';
 
 @Component({
   selector: 'app-scale',
@@ -33,6 +34,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private mapLoadedSubscription: Subscription;
   private saveButtonSubscription: Subscription;
   private configurationLoadedSubscription: Subscription;
+  private configurationResetSubscription: Subscription;
   private scaleGroup = d3.select('#scaleGroup');
   private mapWidth: number;
   private mapHeight: number;
@@ -43,7 +45,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
               private scaleHint: ScaleHintService,
               private mapLoaderInformer: MapLoaderInformerService,
               private hintBar: HintBarService,
-              private configurationService: ConfigurationService,
+              private configurationService: ActionBarService,
               private scaleService: ScaleService) {
     this.setTranslations();
   }
@@ -52,6 +54,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.mapLoadedSubscription.unsubscribe();
     this.saveButtonSubscription.unsubscribe();
     this.configurationLoadedSubscription.unsubscribe();
+    this.configurationResetSubscription.unsubscribe();
     this.isScaleSet = false;
     this.scaleGroup.remove();
     this.pointsArray = [];
@@ -63,23 +66,27 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.createEmptyScale();
 
     this.configurationLoadedSubscription = this.configurationService.configurationLoaded().subscribe((configuration: Configuration) => {
-      if (configuration.data.scale === null) {
-        this.createEmptyScale();
-      } else {
-        this.scale = {...configuration.data.scale};
-        this.drawScaleFromConfiguration();
-      }
-      this.scaleInput.publishScale(this.scale);
-      this.scaleHint.publishScale(this.scale);
-      this.updateScaleGroup();
+      this.drawScale(configuration.data.scale);
     });
 
-    this.mapLoadedSubscription = this.mapLoaderInformer.isLoaded$
-      .subscribe(() => {
-        this.mapWidth = d3.select('#map').attr('width');
-        this.mapHeight = d3.select('#map').attr('height');
-        this.createSvgGroupWithScale();
-      });
+    this.configurationResetSubscription = this.configurationService.configurationReset().subscribe((configuration: Configuration) => {
+      if (!configuration.data.scale) {
+        this.isScaleSet = false;
+        this.isFirstPointDrawn = false;
+      }
+      this.scaleGroup.remove();
+      this.createSvgGroupWithScale();
+      this.pointsArray = [];
+      this.linesArray = [];
+      this.drawScale(configuration.data.scale);
+    });
+
+    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe(() => {
+      const mapSvg = d3.select('#map');
+      this.mapWidth = mapSvg.attr('width');
+      this.mapHeight = mapSvg.attr('height');
+      this.createSvgGroupWithScale();
+    });
 
     this.saveButtonSubscription = this.scaleInput.confirmClicked.subscribe((scale: Scale) => {
       this.clicked.emit(this);
@@ -156,7 +163,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private startCreatingScale(): void {
     this.scaleGroup.style('display', 'flex');
 
-    const mapBackground = d3.select('#mapBackground');
+    const mapBackground = d3.select('#map');
     mapBackground.style('cursor', 'crosshair');
 
     if (this.linesArray.length !== 1) {
@@ -188,9 +195,9 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private hideScale(): void {
     this.scaleService.changeVisibility(false);
 
-    d3.select('#mapBackground').style('cursor', 'default');
+    d3.select('#map').style('cursor', 'default');
     this.scaleGroup.style('display', 'none');
-    d3.select('#mapBackground').on('click', null);
+    d3.select('#map').on('click', null);
   }
 
   private addPoint(): void {
@@ -215,7 +222,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.redrawAllObjectsOnMap();
       this.setScaleVisible();
       this.scaleGroup.style('display', 'flex');
-      d3.select('#mapBackground').on('click', null);
+      d3.select('#map').on('click', null);
     }
   }
 
@@ -485,5 +492,17 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       realDistance: null,
       measure: null
     };
+  }
+
+  private drawScale(scale: Scale) {
+    if (scale === null) {
+      this.createEmptyScale();
+    } else {
+      this.scale = Helper.deepCopy(scale);
+      this.drawScaleFromConfiguration();
+    }
+    this.scaleInput.publishScale(this.scale);
+    this.scaleHint.publishScale(this.scale);
+    this.updateScaleGroup();
   }
 }

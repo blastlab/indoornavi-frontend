@@ -8,21 +8,24 @@ import {HttpService} from '../utils/http/http.service';
 import {ToastService} from '../utils/toast/toast.service';
 import {Observable} from 'rxjs/Rx';
 import {DialogTestModule} from '../utils/dialog/dialog.test';
-import {DeviceService} from '../device/device.service';
-import {DeviceListComponent} from '../device/device.list';
-import {TagComponent} from './tag';
-import {Tag} from './tag.type';
-import {Router, RouterModule} from '@angular/router';
-import {AuthGuard} from '../auth/auth.guard';
+import {DeviceService} from './device.service';
+import {DeviceListComponent} from './device.list';
+import {ActivatedRoute, Router, RouterModule} from '@angular/router';
 import {SharedModule} from '../utils/shared/shared.module';
+import {AuthGuard} from '../auth/auth.guard';
+import {DeviceComponent} from './device.component';
+import {Sink} from './sink.type';
 
-describe('TagComponent', () => {
-  let component: TagComponent;
-  let fixture: ComponentFixture<TagComponent>;
+describe('DevicesComponent', () => {
+  let component: DeviceComponent;
+  let fixture: ComponentFixture<DeviceComponent>;
+  let mockActivatedRoute;
 
   let socketService: SocketService;
   let dialog: MdDialog;
   let toastService: ToastService;
+
+  mockActivatedRoute = {snapshot: {routeConfig: {path: 'sinks'}}, queryParams: Observable.of({})};
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -33,26 +36,28 @@ describe('TagComponent', () => {
         DialogTestModule,
         SharedModule
       ],
-      declarations: [TagComponent, DeviceListComponent],
-      providers: [SocketService, WebSocketService, DeviceService, HttpService, ToastService, MdDialog, {provide: Router, useClass: RouterModule}, AuthGuard]
+      declarations: [DeviceComponent, DeviceListComponent],
+      providers: [
+        SocketService, WebSocketService, DeviceService, HttpService,
+        ToastService, MdDialog, {provide: Router, useClass: RouterModule}, {provide: ActivatedRoute, useValue: mockActivatedRoute}, AuthGuard]
     })
-    .compileComponents();
+      .compileComponents();
 
-    fixture = TestBed.createComponent(TagComponent);
+    fixture = TestBed.createComponent(DeviceComponent);
     component = fixture.debugElement.componentInstance;
     socketService = fixture.debugElement.injector.get(SocketService);
     dialog = fixture.debugElement.injector.get(MdDialog);
     toastService = fixture.debugElement.injector.get(ToastService);
 
-    spyOn(socketService, 'send').and.callFake(() => {});
+    spyOn(socketService, 'send').and.callFake(() => {
+    });
     spyOn(toastService, 'showSuccess');
   }));
 
   it('should create component', () => {
     // given
     spyOn(socketService, 'connect').and.returnValue(Observable.of([{id: 1, verified: true}]));
-
-    // when
+    // // when
     component.ngOnInit();
     component.ngOnDestroy();
 
@@ -63,28 +68,32 @@ describe('TagComponent', () => {
     expect(component.verified.length).toBe(1);
   });
 
-  it('should open dialog to create new tag', () => {
+  it('should open dialog to create new sink', () => {
     // given
     spyOn(dialog, 'open').and.callThrough();
 
     // when
+    component.ngOnInit();
     component.openDialog();
+    component.ngOnDestroy();
 
     // then
-    expect(component.dialogRef.componentInstance.device).toBeDefined();
-    expect(component.dialogRef.componentInstance.url).toBeDefined();
-    expect(component.dialogRef.componentInstance.url).toBe('tags/');
+    expect(component.dialogRef.config.data).toBeDefined();
+    expect(component.dialogRef.config.data).toBeDefined();
+    expect(component.dialogRef.config.data['url']).toBe('sinks/');
     expect(dialog.open).toHaveBeenCalled();
   });
 
-  it('should create new tag when dialog closes with value', () => {
+  it('should create new sink when dialog closes with value', () => {
     // given
-    const expectedTag: Tag = {id: 1, shortId: 1, longId: 11, verified: false};
+    const expectedAnchor: Sink = {id: 1, shortId: 1, longId: 11, verified: false, anchors: []};
     spyOn(dialog, 'open').and.callThrough();
 
     // when
+    component.ngOnInit();
     component.openDialog();
-    component.dialogRef.close(expectedTag);
+    component.dialogRef.close(expectedAnchor);
+    component.ngOnDestroy();
 
     // then
     expect(toastService.showSuccess).toHaveBeenCalled();

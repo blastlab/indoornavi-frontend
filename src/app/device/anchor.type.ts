@@ -1,4 +1,4 @@
-import {Device} from '../device/device.type';
+import {Device} from './device.type';
 import {Point} from '../map/map.type';
 
 export interface Anchor extends Device {

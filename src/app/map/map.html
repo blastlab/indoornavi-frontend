@@ -1,6 +1,6 @@
 <div id="map-container" class="drop-zone" dnd-droppable
      [dropZones]="['map-container']" (onDropSuccess)="droppedObject($event)">
-  <canvas #canvas></canvas>
+  <svg id="map"></svg>
   <app-scale-input></app-scale-input>
   <app-scale-hint></app-scale-hint>
   <app-accept-buttons></app-accept-buttons>

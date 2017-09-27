@@ -19,7 +19,7 @@ import {ScaleInputService} from './tools/scale/input/input.service';
 import {ScaleHintService} from './tools/scale/hint/hint.service';
 import {MapLoaderInformerService} from '../../utils/map-loader-informer/map-loader-informer.service';
 import {AnchorPlacerComponent} from './tools/anchor/anchor';
-import {ConfigurationService} from '../../floor/configuration/configuration.service';
+import {ActionBarService} from '../actionbar/actionbar.service';
 import {HttpService} from '../../utils/http/http.service';
 import {RouterTestingModule} from '@angular/router/testing';
 import {AuthGuard} from '../../auth/auth.guard';
@@ -39,7 +39,7 @@ describe('ToolbarComponent', () => {
       providers: [
         SocketService, WebSocketService, ToastService, HintBarService, AcceptButtonsService, DrawingService,
         IconService, ScaleComponent, WizardComponent, ScaleInputService, ScaleHintService, MapLoaderInformerService,
-        ConfigurationService, HttpService, AuthGuard, ScaleService
+        ActionBarService, HttpService, AuthGuard, ScaleService
       ]
     })
       .compileComponents();

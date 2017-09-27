@@ -7,9 +7,9 @@ import {HintBarService} from '../../../../hint-bar/hint-bar.service';
 import {DrawingService} from '../../../../../utils/drawing/drawing.service';
 import {AcceptButtonsService} from '../../../../../utils/accept-buttons/accept-buttons.service';
 import {IconService} from '../../../../../utils/drawing/icon.service';
-import {Anchor} from '../../../../../anchor/anchor.type';
+import {Anchor} from '../../../../../device/anchor.type';
 import {FirstStepMessage, Step, WizardData} from '../wizard.type';
-import {Sink} from '../../../../../sink/sink.type';
+import {Sink} from '../../../../../device/sink.type';
 
 describe('FirstStepComponent', () => {
   let component: FirstStepComponent;
@@ -62,7 +62,7 @@ describe('FirstStepComponent', () => {
   it('should set sinkShortId into StepMessage and sinkPosition in wizardData', () => {
     component.data = <Sink>{shortId: 339, longId: 42152, verified: true, anchors: []};
     component.coordinates = [{x: 543, y: 623}];
-    component.floor = {id: 1, level: 0, name: '', buildingId: 1};
+    component.floor = {id: 1, level: 0, name: '', building: { id: 1, name: '', complexId: 1 }};
     const givenWizardData: WizardData = {
       sinkShortId: null,
       sinkPosition: null,

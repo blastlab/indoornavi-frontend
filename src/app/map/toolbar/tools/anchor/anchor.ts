@@ -5,14 +5,14 @@ import {TranslateService} from '@ngx-translate/core';
 import {AnchorPlacerController} from './anchor.controller';
 import {Point} from '../../../map.type';
 import {MapObject} from '../selection/map-object.type';
-import {Anchor} from '../../../../anchor/anchor.type';
 import {NaviIcons} from '../../../../utils/drawing/icon.service';
 import {HintBarService} from '../../../hint-bar/hint-bar.service';
 import {DrawingService} from '../../../../utils/drawing/drawing.service';
 import {AcceptButtonsService} from '../../../../utils/accept-buttons/accept-buttons.service';
 import * as d3 from 'd3';
-import {Sink} from '../../../../sink/sink.type';
-import {ConfigurationService} from '../../../../floor/configuration/configuration.service';
+import {Sink} from '../../../../device/sink.type';
+import {Anchor} from '../../../../device/anchor.type';
+import {ActionBarService} from '../../../actionbar/actionbar.service';
 
 
 @Component({
@@ -38,13 +38,13 @@ export class AnchorPlacerComponent implements Tool, OnInit {
               private accButtons: AcceptButtonsService,
               private drawingService: DrawingService,
               private hintBar: HintBarService,
-              private configuration: ConfigurationService) {
+              private configurationService: ActionBarService) {
     this.setTranslations();
   }
 
   ngOnInit() {
     this.subscribeForAnchor();
-    this.configuration.configurationLoaded().first().subscribe((configuration) => {
+    this.configurationService.configurationLoaded().first().subscribe((configuration) => {
       this.floorId = configuration.floorId;
       // draw sinks and their anchors
       this.drawConfiguredDevices(configuration.data.sinks);
@@ -153,7 +153,7 @@ export class AnchorPlacerComponent implements Tool, OnInit {
         } else {
           this.chosenSink.anchors.push(anchor);
         }
-        this.configuration.setSink(this.chosenSink);
+        this.configurationService.setSink(this.chosenSink);
       } else {
         this.removeChosenAnchor(droppedAnchorGroup);
       }

@@ -27,18 +27,18 @@ describe('AnchorListComponent', () => {
         expect(row.get(0).getText()).toBe(shortId);
         expect(row.get(1).getText()).toBe(longId);
         expect(row.get(2).getText()).toBe(name);
-        expect(afterAddCount).toBe(initialRowsCount + 1, 'test 2');
+        expect(afterAddCount).toBe(initialRowsCount + 1, 'After add count should be equal initial count + 1 (ADD)');
 
         AnchorPage.editLastAnchor(newShortId, longId, name, true);
         row = AnchorPage.getLatestFromNotVerified();
         expect(row.get(0).getText()).toBe(newShortId);
         expect(row.get(1).getText()).toBe(longId);
         expect(row.get(2).getText()).toBe(name);
-        expect(afterAddCount).toBe(initialRowsCount + 1, 'test 3');
+        expect(afterAddCount).toBe(initialRowsCount + 1, 'After add count should be equal initial count + 1 (EDIT)');
 
         AnchorPage.removeAnchor(newShortId);
         AnchorPage.getRowsCount().then((afterRemoveCount: number) => {
-          expect(afterRemoveCount).toBe(initialRowsCount, 'test 4');
+          expect(afterRemoveCount).toBe(initialRowsCount, 'After add count should be equal initial count (REMOVE)');
           done();
         });
       });

@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
 import {Point} from '../../../map.type';
-import {Anchor} from '../../../../anchor/anchor.type';
-import {Sink} from '../../../../sink/sink.type';
 import {Observable} from 'rxjs/Observable';
+import {Sink} from '../../../../device/sink.type';
+import {Anchor} from '../../../../device/anchor.type';
 
 @Injectable()
 export class AnchorPlacerController {

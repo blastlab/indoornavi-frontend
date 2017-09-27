@@ -3,8 +3,9 @@
     <md-input-container class="example-full-width">
       <input mdInput placeholder="distance" pattern="\-?[\d]+" name="realDistance" [(ngModel)]="scale.realDistance"
              required class="distance" autocomplete="off">
+      <md-icon mdTooltipPosition="above" mdTooltip="{{'scale.distance.hint'|translate}}" mdSuffix>help_outline</md-icon>
     </md-input-container>
-    <md-select [ngModelOptions]="{standalone: true}" placeholder="unit" [(ngModel)]="scale.measure" class="measure">
+    <md-select required [ngModelOptions]="{standalone: true}" placeholder="unit" [(ngModel)]="scale.measure" class="measure">
       <md-option *ngFor="let measure of measures" [value]="measure">{{measure}}</md-option>
     </md-select>
     <button id="confirmScaleButton" md-fab md-raised-button md-button (click)="confirm(scaleForm.valid)">

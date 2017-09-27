@@ -1,0 +1,12 @@
+.modal-header {
+  font-weight: bold;
+  font-size: 120%;
+}
+
+.modal-body {
+  padding: 20px 0;
+}
+
+.modal-footer {
+  padding-top: 10px;
+}

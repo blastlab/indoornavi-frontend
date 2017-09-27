@@ -11,9 +11,9 @@ import {SecondStepComponent} from './second-step/second-step';
 import {ThirdStepComponent} from './third-step/third-step';
 import {MdDialog, MdDialogRef} from '@angular/material';
 import {HintBarService} from '../../../hint-bar/hint-bar.service';
-import {ConfigurationService} from '../../../../floor/configuration/configuration.service';
-import {Sink} from '../../../../sink/sink.type';
-import {Anchor} from '../../../../anchor/anchor.type';
+import {ActionBarService} from '../../../actionbar/actionbar.service';
+import {Sink} from '../../../../device/sink.type';
+import {Anchor} from '../../../../device/anchor.type';
 import {SocketMessage, WizardData} from './wizard.type';
 import {Floor} from '../../../../floor/floor.type';
 
@@ -44,7 +44,7 @@ export class WizardComponent implements Tool {
               public dialog: MdDialog,
               private ngZone: NgZone,
               private hintBar: HintBarService,
-              private configurationService: ConfigurationService) {
+              private configurationService: ActionBarService) {
     this.setTranslations();
   }
 

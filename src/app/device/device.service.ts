@@ -8,11 +8,30 @@ export class DeviceService {
 
   private url: string;
 
+  constructor(protected httpService: HttpService) {
+  }
+
   setUrl(url: string) {
     this.url = url;
   }
 
-  constructor(protected httpService: HttpService) {
+  emptyDeviceObjectDepandentOnPath(path: string): object {
+    return path === 'sinks' ?
+      {
+        id: null,
+        shortId: null,
+        longId: null,
+        verified: false,
+        name: '',
+        configured: false
+      } :
+      {
+        id: null,
+        shortId: null,
+        longId: null,
+        verified: false,
+        name: ''
+      };
   }
 
   create(device: Device): Observable<Device> {
@@ -25,5 +44,9 @@ export class DeviceService {
 
   remove(id: number): Observable<any> {
     return this.httpService.doDelete(this.url + id);
+  }
+
+  getAll(): Observable<Device[]> {
+    return this.httpService.doGet(this.url);
   }
 }

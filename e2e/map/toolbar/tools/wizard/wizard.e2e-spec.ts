@@ -1,5 +1,6 @@
 import {WizardTool} from './wizard.po';
 import {AppPage} from '../../../../app.po';
+import {ActionBarChecker} from '../../../actionbar/actionbar.checker';
 import {browser} from 'protractor';
 
 /**
@@ -140,12 +141,21 @@ describe('WizardTool', () => {
         expect(zero).toEqual(0);
         expect(AppPage.getByClass('wizard-complete').getTagName()).toEqual('h3');
         AppPage.getByClass('dialog-exit-button').click();
-        browser.wait(function() {
-          return AppPage.getById('publish').getAttribute('disabled').then(function(value) {
-            return value === null;
-          });
-        }, 10000);
-        expect(AppPage.getById('publish').getAttribute('disabled')).toEqual(null);
+        ActionBarChecker.expectButtonsToBeInProperStateBeforeAndAfter([{
+            id: 'saveDraft',
+            disabled: null
+          }], () => {},
+          null,
+          [
+            {
+              id: 'publish',
+              disabled: null
+            },
+            {
+              id: 'resetToPrevious',
+              disabled: null
+            }
+          ]);
         done();
       });
     });

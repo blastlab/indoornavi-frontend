@@ -12,7 +12,7 @@ import {Line, Point} from '../../../map.type';
 import {Geometry} from '../../../utils/geometry';
 import {AuthGuard} from '../../../../auth/auth.guard';
 import {HintBarService} from '../../../hint-bar/hint-bar.service';
-import {ConfigurationService} from '../../../../floor/configuration/configuration.service';
+import {ActionBarService} from '../../../actionbar/actionbar.service';
 import {HttpService} from '../../../../utils/http/http.service';
 import {RouterTestingModule} from '@angular/router/testing';
 import {ScaleService} from './scale.service';
@@ -36,7 +36,7 @@ describe('Scale', () => {
         RouterTestingModule
       ],
       providers: [
-        ScaleHintService, ScaleInputService, MapLoaderInformerService, AuthGuard, HintBarService, ConfigurationService, HttpService,
+        ScaleHintService, ScaleInputService, MapLoaderInformerService, AuthGuard, HintBarService, ActionBarService, HttpService,
         ScaleService
       ]
     })

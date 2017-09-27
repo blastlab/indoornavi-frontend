@@ -2,14 +2,14 @@ import {animate, Component, NgZone, OnInit, state, style, transition, trigger} f
 import * as Collections from 'typescript-collections';
 import {SocketService} from '../../../../../utils/socket/socket.service';
 import {Config} from '../../../../../../config';
-import {Anchor} from '../../../../../anchor/anchor.type';
 import {Subscription} from 'rxjs/Subscription';
 import {DeviceService} from 'app/device/device.service';
 import {TranslateService} from '@ngx-translate/core';
 import {AnchorPlacerController} from '../anchor.controller';
 import * as d3 from 'd3';
-import {Sink} from '../../../../../sink/sink.type';
 import {AnchorPlacerComponent} from '../anchor';
+import {Anchor} from '../../../../../device/anchor.type';
+import {Sink} from '../../../../../device/sink.type';
 
 @Component({
   selector: 'app-remaining-devices-list',
