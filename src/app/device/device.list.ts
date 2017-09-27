@@ -63,6 +63,7 @@ export class DeviceListComponent implements OnInit {
     const device: Device = $event.dragData;
     this.devices.remove(device.id);
   }
+
   // this method opens a component dialog and cannot be passed as service
   // in addition this method needs a path that is taken from
   // this.route.snapshot.path that is this component prop
@@ -90,6 +91,7 @@ export class DeviceListComponent implements OnInit {
       this.toastService.showSuccess('device.remove.success');
     });
   }
+
   setPermissions(): void {
     const prefix: string = DeviceService.getDevicePermissionPrefix(this.deviceType);
     this.editPermission = `${prefix}_UPDATE`;

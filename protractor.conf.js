@@ -9,7 +9,7 @@ exports.config = {
   useAllAngular2AppRoots: true,
   allScriptsTimeout: 11000,
   specs: [
-    './e2e/**/scale.e2e-spec.ts'
+    './e2e/**/*.e2e-spec.ts'
   ],
   capabilities: {
     'browserName': 'chrome',

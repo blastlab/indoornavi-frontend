@@ -2,6 +2,7 @@ import {LastMap, PublishedPage} from './published.po';
 import {AppPage} from '../app.po';
 import {MapPage} from '../map/map.po';
 import {BuildingPage} from '../building/building.po';
+import {browser} from 'protractor';
 
 describe('Published Map', () => {
   afterAll(() => {
@@ -48,6 +49,8 @@ describe('Published Map', () => {
               expect(lastlyEditedMap.tags).toBe('10999 - 1099999');
               expect(lastlyEditedMap.users).toBe('admin');
 
+              // we have to wait before we remove the lastly added map because assertions above may not be completed yet
+              browser.sleep(3000);
               // clean
               PublishedPage.removeLastlyAddedMap();
               PublishedPage.getMapsCount().then((afterRemoveCount: number) => {

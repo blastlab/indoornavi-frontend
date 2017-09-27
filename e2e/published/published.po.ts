@@ -38,10 +38,10 @@ export class PublishedPage {
   static editPublishedMap() {
     element.all(by.className('editButton')).last().click();
     element(by.className('tags')).click();
-    element(by.cssContainingText('.pure-checkbox label', '11999 - 1199999')).click();
+    element(by.className('tags')).element(by.cssContainingText('label', '11999 - 1199999')).click();
     element(by.className('tags')).click();
     element(by.className('users')).click();
-    element(by.cssContainingText('.pure-checkbox label', 'user')).click();
+    element(by.className('users')).element(by.cssContainingText('label', 'user')).click();
     element(by.className('users')).click();
     element(by.id('save-button')).click();
   }
@@ -65,6 +65,7 @@ export class PublishedPage {
     ScaleTool.clickConfirm();
     browser.sleep(5000); // wait till save draft
     element(by.id('publish')).click();
+    element(by.cssContainingText('button', 'No, just publish changes')).click();
   }
 }
 
