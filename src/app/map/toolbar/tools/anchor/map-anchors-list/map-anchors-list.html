@@ -1,39 +1,35 @@
-<div [@slideInOut]="menuState" id="remaining-anchors-list-wrapper">
-  <span *ngIf="!anchors || !sinks ">{{'placer.noConnectedDevices'|translate}}</span>
-  <table *ngIf="anchors && sinks" cellpadding="10" cellspacing="0">
+<div [@slideInOut]="menuState" id="remaining-devices-list-wrapper">
+  <table cellpadding="10" cellspacing="0">
     <tr>
-      <th *ngIf="!chosenSink" colspan="2" class="remaining-devices-header">
-        <h2 class="remaining-devices-heading">{{'placer.listOfSinks'|translate}}</h2>
-      </th>
-      <th *ngIf="chosenSink" colspan="2" class="remaining-devices-header">
-        <h2 class="remaining-devices-heading">{{'placer.listOfAnchors'|translate}}</h2>
+      <th colspan="2" class="remaining-devices-header">
+        <h2 class="remaining-devices-heading">{{'device-list.listOfDevices'|translate}}</h2>
       </th>
       <th>
-        <button class="anchor-list-deselect" (click)="deselectSink()" [disabled]="!chosenSink" md-mini-fab
-                md-tooltip="{{'anchor-list.backToSinks'|translate}}" mdTooltipPosition="above">
+        <button class="device-list-deselect" (click)="deselectSink()" [disabled]="!chosenSink" md-mini-fab
+                md-tooltip="{{'device-list.backToSinks'|translate}}" mdTooltipPosition="above">
           <i class="material-icons">arrow_back</i>
         </button>
-        <button class="anchor-list-delete" (click)="deleteSink()" [disabled]="!selectedDevice" md-mini-fab
-                md-tooltip="{{'anchor-list.delete'|translate}}" mdTooltipPosition="above">
+        <button class="device-list-delete" (click)="deleteSink()" [disabled]="!selectedDevice" md-mini-fab
+                md-tooltip="{{'device-list.delete'|translate}}" mdTooltipPosition="above">
           <i class="material-icons">delete</i>
         </button>
-        <button class="anchor-list-select" (click)="selectDevice()" [disabled]="selectedDevice" md-mini-fab
-                md-tooltip="{{'anchor-list.selectDevice'|translate}}" mdTooltipPosition="above">
+        <button class="device-list-select" (click)="selectDevice()" [disabled]="selectedDevice" md-mini-fab
+                md-tooltip="{{'device-list.selectDevice'|translate}}" mdTooltipPosition="above">
           <i class="material-icons">touch_app</i>
         </button>
       </th>
     </tr>
     <tr>
       <th colspan="2" class="remaining-devices-subheader">
-        <h3 class="remaining-devices-subheading">{{'placer.remainingDevices'|translate}}</h3>
+        <h3 class="remaining-devices-subheading">{{'device-list.remainingDevices'|translate}}</h3>
       </th>
-      <th *ngIf="remainingAnchors.size()">
+      <th *ngIf="remainingDevices.length">
         <input mdInput autofocus autocomplete="off" type="text"
-               id="anchorNameFilter" class="form-control"
+               id="deviceNameFilter" class="form-control"
                placeholder="{{'filter.findByAllFields'|translate}}" [(ngModel)]="queryString">
       </th>
-      <th *ngIf="!remainingAnchors.size()">
-        {{'placer.noRemainingDevicesLeft'|translate}}
+      <th *ngIf="!remainingDevices.length">
+        {{'device-list.noRemainingDevicesLeft'|translate}}
       </th>
     </tr>
     <tr>
@@ -43,12 +39,12 @@
 
     </tr>
     <ng-container>
-      <tr *ngFor="let anchor of getRemainingAnchors() | allFieldsFilter:queryString; let i = index"
-          dnd-draggable [dragEnabled]="true" [dragData]="anchor" (onDragStart)="toggleMenu()"
-          [dropZones]="['map-container']" (onDropSuccess)="placeAnchorOnMap(event)">
-        <td>{{anchor.shortId}}</td>
-        <td>{{anchor.longId}}</td>
-        <td>{{anchor.name}}</td>
+      <tr *ngFor="let device of remainingDevices | allFieldsFilter:queryString; let i = index"
+          dnd-draggable [dragEnabled]="true" [dragData]="device" (onDragStart)="toggleMenu()"
+          [dropZones]="['map-container']" (onDropSuccess)="placeDeviceOnMap(event)">
+        <td>{{device.shortId}}</td>
+        <td>{{device.longId}}</td>
+        <td>{{device.name}}</td>
       </tr>
     </ng-container>
   </table>

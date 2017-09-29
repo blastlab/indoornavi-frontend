@@ -1,4 +1,4 @@
-#remaining-anchors-list-wrapper {
+#remaining-devices-list-wrapper {
   position: fixed;
   float: right;
   right: 90%;
@@ -9,7 +9,7 @@
   color: antiquewhite;
 }
 
-#anchorNameFilter {
+#deviceNameFilter {
   border-bottom: 1px black solid;
   padding: 5px 10px;
   width: 80%;

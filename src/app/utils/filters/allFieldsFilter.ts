@@ -18,7 +18,8 @@ import {Injectable, Pipe, PipeTransform} from '@angular/core';
 
 
 @Pipe({
-  name: 'allFieldsFilter'
+  name: 'allFieldsFilter',
+  pure: true
 })
 @Injectable()
 export class AllFieldsFilter implements PipeTransform {

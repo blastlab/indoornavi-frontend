@@ -48,6 +48,7 @@ export class AnchorPlacerComponent implements Tool, OnInit {
       this.floorId = configuration.floorId;
       // draw sinks and their anchors
       this.drawConfiguredDevices(configuration.data.sinks);
+      console.log(configuration);
       // each sink group and his anchors - with connection
     });
   }
@@ -107,7 +108,7 @@ export class AnchorPlacerComponent implements Tool, OnInit {
           } else {
             coordinates = coords;
           }
-          this.placeAnchorOnMap(anchor, coordinates);
+          this.placeDeviceOnMap(anchor, coordinates);
         });
       }
     });
@@ -139,8 +140,8 @@ export class AnchorPlacerComponent implements Tool, OnInit {
     return this.drawingService.drawObject(anchorMapObject.parameters, anchorMapObject.coordinates);
   }
 
-  private placeAnchorOnMap(anchor: Anchor | Sink, coordinates: Point): void {
-    const mapObject = (isSinkType(anchor)) ? this.buildSinkMapObject(<Sink>anchor, coordinates) : this.buildAnchorMapObject(anchor, coordinates);
+  private placeDeviceOnMap(device: Anchor | Sink, coordinates: Point): void {
+    const mapObject = (isSinkType(device)) ? this.buildSinkMapObject(<Sink>device, coordinates) : this.buildAnchorMapObject(device, coordinates);
     const droppedAnchorGroup = this.drawDroppedAnchor(mapObject);
     this.accButtons.publishCoordinates(coordinates);
     this.accButtons.publishVisibility(true);
@@ -148,10 +149,10 @@ export class AnchorPlacerComponent implements Tool, OnInit {
       if (decision) {
         this.removeGroupDrag(droppedAnchorGroup);
         this.drawingService.applyDragBehavior(droppedAnchorGroup, false);
-        if (isSinkType(anchor)) {
-          this.selectSink(<Sink>anchor);
+        if (isSinkType(device)) {
+          this.selectSink(<Sink>device);
         } else {
-          this.chosenSink.anchors.push(anchor);
+          this.chosenSink.anchors.push(device);
         }
         this.configurationService.setSink(this.chosenSink);
       } else {
