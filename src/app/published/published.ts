@@ -3,7 +3,15 @@ import {Config} from '../../config';
 import {SocketService} from '../utils/socket/socket.service';
 import {Subscription} from 'rxjs/Subscription';
 import {ActivatedRoute, Params} from '@angular/router';
-import {CommandType, MeasureSocketData, MeasureSocketDataType, PublishedMap} from './published.type';
+import {
+  AreaEventMode,
+  CommandType,
+  CoordinatesSocketData,
+  EventSocketData,
+  MeasureSocketData,
+  MeasureSocketDataType,
+  PublishedMap
+} from './published.type';
 import {PublishedService} from './published.service';
 import {MapViewerService} from '../map/map.viewer.service';
 import {IconService, NaviIcons} from 'app/utils/drawing/icon.service';
@@ -14,6 +22,8 @@ import Dictionary from 'typescript-collections/dist/lib/Dictionary';
 import {Measure} from '../map/toolbar/tools/scale/scale.type';
 import {Geometry} from '../map/utils/geometry';
 import {Tag} from '../device/tag.type';
+import {AreaService} from '../area/area.service';
+import {Area} from '../area/area.type';
 
 @Component({
   templateUrl: './published.html',
@@ -24,6 +34,7 @@ export class PublishedComponent implements OnInit, AfterViewInit {
   private activeMap: PublishedMap;
   private d3map: d3.selection = null;
   private tagsOnMap: Dictionary<number, GroupCreated> = new Dictionary<number, GroupCreated>();
+  private areasOnMap: Dictionary<number, GroupCreated> = new Dictionary<number, GroupCreated>();
   private pixelsToCentimeters: number;
 
   constructor(private ngZone: NgZone,
@@ -31,7 +42,8 @@ export class PublishedComponent implements OnInit, AfterViewInit {
               private route: ActivatedRoute,
               private publishedService: PublishedService,
               private mapViewerService: MapViewerService,
-              private iconService: IconService) {
+              private iconService: IconService,
+              private areaService: AreaService) {
   }
 
   ngOnInit() {
@@ -42,6 +54,7 @@ export class PublishedComponent implements OnInit, AfterViewInit {
         if (this.activeMap.floor.imageId != null) {
           this.mapViewerService.drawMap(this.activeMap.floor).then((d3map: d3.selection) => {
             this.d3map = d3map;
+            this.drawAreas(map.floor.id);
             const realDistanceInCentimeters = map.floor.scale.realDistance * (map.floor.scale.measure.toString() === Measure[Measure.METERS] ? 100 : 1);
             const pixels = Geometry.getDistanceBetweenTwoPoints(map.floor.scale.start, map.floor.scale.stop);
             this.pixelsToCentimeters = realDistanceInCentimeters / pixels;
@@ -75,8 +88,13 @@ export class PublishedComponent implements OnInit, AfterViewInit {
   }
 
   private isCoordinatesData(data: MeasureSocketData): boolean {
-    return this.d3map !== null
+    return !!this.d3map
       && MeasureSocketDataType[MeasureSocketDataType.COORDINATES] === data.type.toString();
+  }
+
+  private isEventData(data: MeasureSocketData): boolean {
+    return !!this.d3map
+      && MeasureSocketDataType[MeasureSocketDataType.EVENT] === data.type.toString();
   }
 
   private isOnMap(deviceId: number): boolean {
@@ -89,7 +107,7 @@ export class PublishedComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private handleCoordinatesData(data: MeasureSocketData) {
+  private handleCoordinatesData(data: CoordinatesSocketData) {
     const coordinates: Point = this.scaleCoordinates(data.coordinates.point),
       deviceId: number = data.coordinates.tagShortId;
     if (!this.isOnMap(deviceId)) {
@@ -118,7 +136,9 @@ export class PublishedComponent implements OnInit, AfterViewInit {
       this.socketSubscription = stream.subscribe((data: MeasureSocketData) => {
         this.ngZone.run(() => {
           if (this.isCoordinatesData(data)) {
-            this.handleCoordinatesData(data);
+            this.handleCoordinatesData(<CoordinatesSocketData> data);
+          } else if (this.isEventData(data)) {
+            this.handleEventData(<EventSocketData> data);
           }
         });
       });
@@ -127,8 +147,36 @@ export class PublishedComponent implements OnInit, AfterViewInit {
 
   private scaleCoordinates(point: Point): Point {
     return {
-      x: point.x * this.pixelsToCentimeters,
-      y: point.y * this.pixelsToCentimeters
+      x: point.x / this.pixelsToCentimeters,
+      y: point.y / this.pixelsToCentimeters
     };
+  }
+
+  private drawAreas(floorId: number): void {
+    const settings = new Map<string, string>();
+    settings.set('opacity', '0.3');
+    settings.set('fill', 'grey');
+    this.areaService.getAllByFloor(floorId).subscribe((areas: Area[]) => {
+      areas.forEach((area: Area) => {
+        const drawBuilder = new DrawBuilder(this.d3map, {id: `area-${area.id}`, clazz: 'area'});
+        const scaledPoints = area.buffer.map((point: Point) => {
+          return this.scaleCoordinates(point);
+        });
+        const areaOnMap = drawBuilder
+          .createGroup()
+          .addPolygon(scaledPoints, settings);
+        this.areasOnMap.setValue(area.id, areaOnMap);
+      });
+    });
+  }
+
+  private handleEventData(data: EventSocketData) {
+    const areaOnMap: GroupCreated = this.areasOnMap.getValue(data.event.areaId);
+
+    if (data.event.mode.toString() === AreaEventMode[AreaEventMode.ON_ENTER]) {
+      areaOnMap.group.select('polygon').attr('fill', 'red');
+    } else {
+      areaOnMap.group.select('polygon').attr('fill', 'grey');
+    }
   }
 }

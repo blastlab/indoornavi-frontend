@@ -12,12 +12,32 @@ export interface PublishedMap {
 
 export interface MeasureSocketData {
   type: MeasureSocketDataType;
-  coordinates: Coordinates;
 }
 
 export enum MeasureSocketDataType {
   TAGS,
-  COORDINATES
+  COORDINATES,
+  EVENT
+}
+
+export interface CoordinatesSocketData extends MeasureSocketData {
+  coordinates: Coordinates;
+}
+
+export interface EventSocketData extends MeasureSocketData {
+  event: AreaEvent;
+}
+
+export interface AreaEvent {
+  mode: AreaEventMode;
+  areaName: string;
+  areaId: number;
+  tagId: number;
+}
+
+export enum AreaEventMode {
+  ON_LEAVE,
+  ON_ENTER
 }
 
 export interface Coordinates {
