@@ -8,6 +8,7 @@ import {PublishedService} from './published.service';
 import {MapViewerService} from '../map/map.viewer.service';
 import {IconService, NaviIcons} from 'app/utils/drawing/icon.service';
 import {DrawBuilder, GroupCreated} from './published.builder';
+import {HeatMapBuilder, HeatMapCreated} from './heatmap.service';
 import * as d3 from 'd3';
 import {Point} from '../map/map.type';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
@@ -25,6 +26,7 @@ export class PublishedComponent implements OnInit, AfterViewInit {
   private d3map: d3.selection = null;
   private tagsOnMap: Dictionary<number, GroupCreated> = new Dictionary<number, GroupCreated>();
   private pixelsToCentimeters: number;
+  private heatMapSet: Dictionary<number, HeatMapCreated> = new Dictionary<number, HeatMapCreated>();
 
   constructor(private ngZone: NgZone,
               private socketService: SocketService,
@@ -83,6 +85,10 @@ export class PublishedComponent implements OnInit, AfterViewInit {
     return this.tagsOnMap.containsKey(deviceId);
   }
 
+  private isInHeatMapSet(deviceId: number): boolean {
+    return this.heatMapSet.containsKey(deviceId);
+  }
+
   private extractTagsShortIds() {
     return this.activeMap.tags.map((tag: Tag) => {
       return tag.shortId;
@@ -103,7 +109,21 @@ export class PublishedComponent implements OnInit, AfterViewInit {
     } else {
       this.tagsOnMap.getValue(deviceId).move(coordinates);
     }
-  }
+  };
+
+  private activateHeatMap(data: MeasureSocketData) {
+      const coordinates: Point = this.scaleCoordinates(data.coordinates.point),
+      deviceId: number = data.coordinates.tagShortId;
+    if (!this.isInHeatMapSet(deviceId)) {
+      const heatMapBuilder = new HeatMapBuilder(this.d3map, coordinates, deviceId);
+      const heatMap = heatMapBuilder
+        .createHeatGroup()
+        .update(coordinates);
+      this.heatMapSet.setValue(deviceId, heatMap);
+    } else {
+      this.heatMapSet.getValue(deviceId).update(coordinates);
+    }
+  };
 
   private setSocketConfiguration() {
     this.socketService.send({type: CommandType[CommandType.SET_FLOOR], args: `${this.activeMap.floor.id}`});
@@ -111,14 +131,22 @@ export class PublishedComponent implements OnInit, AfterViewInit {
   }
 
   private initializeSocketConnection() {
+    let heatMapBufferData: Array<any> = [];
+    let counter: number = 0;
     this.ngZone.runOutsideAngular(() => {
       const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?client`);
       this.setSocketConfiguration();
-
       this.socketSubscription = stream.subscribe((data: MeasureSocketData) => {
         this.ngZone.run(() => {
           if (this.isCoordinatesData(data)) {
             this.handleCoordinatesData(data);
+            heatMapBufferData.push(data);
+            counter ++;
+            if (counter > 1) {
+              this.activateHeatMap(heatMapBufferData[0]);
+              heatMapBufferData = [];
+              counter = 0;
+            }
           }
         });
       });
@@ -127,8 +155,8 @@ export class PublishedComponent implements OnInit, AfterViewInit {
 
   private scaleCoordinates(point: Point): Point {
     return {
-      x: point.x * this.pixelsToCentimeters,
-      y: point.y * this.pixelsToCentimeters
+      x: point.x / this.pixelsToCentimeters,
+      y: point.y / this.pixelsToCentimeters
     };
-  }
+  };
 }
