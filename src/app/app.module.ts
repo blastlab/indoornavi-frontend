@@ -75,6 +75,7 @@ import {PublishedDialogComponent} from './published/dialog/published.dialog';
 import {ConfirmDialogComponent} from './utils/confirm-dialog/confirm.dialog';
 import {DeviceComponent} from './device/device.component';
 import {ActionBarComponent} from 'app/map/actionbar/actionbar';
+import {AreaService} from './area/area.service';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -183,7 +184,8 @@ export function HttpLoaderFactory(http: Http) {
     D3Service,
     ScaleService,
     PublishedService,
-    MapViewerService
+    MapViewerService,
+    AreaService
   ], bootstrap: [AppComponent]
 })
 

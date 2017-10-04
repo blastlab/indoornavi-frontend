@@ -69,6 +69,23 @@ export class GroupCreated {
     return this;
   }
 
+  addPolygon(points: Point[], settings?: Map<string, string>): GroupCreated {
+    let pointsString = '';
+    points.forEach((point: Point) => {
+      pointsString += `${point.x},${point.y} `;
+    });
+    this.group
+      .append('polygon')
+      .attr('points', pointsString);
+    if (!!settings) {
+      settings.forEach((value: string, key: string) => {
+        this.group
+          .attr(key, value);
+      });
+    }
+    return this;
+  }
+
   remove(): void {
     this.group.remove();
   }

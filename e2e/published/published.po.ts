@@ -9,6 +9,7 @@ export class PublishedPage {
   }
 
   static createPublishedMap(elementName: string) {
+    Utils.waitForElement(element(by.id('new-publishedList-button')));
     element(by.id('new-publishedList-button')).click();
     element(by.name('complexId')).click();
     element(by.cssContainingText('md-option.complexOption', elementName)).click();
@@ -28,6 +29,7 @@ export class PublishedPage {
   }
 
   static removeLastlyAddedMap() {
+    Utils.waitForElement(element.all(by.className('deleteButton')).last());
     element.all(by.className('deleteButton')).last().click();
   }
 
@@ -36,6 +38,7 @@ export class PublishedPage {
   }
 
   static editPublishedMap() {
+    Utils.waitForElement(element.all(by.className('editButton')).last());
     element.all(by.className('editButton')).last().click();
     element(by.className('tags')).click();
     element(by.className('tags')).element(by.cssContainingText('label', '11999 - 1199999')).click();

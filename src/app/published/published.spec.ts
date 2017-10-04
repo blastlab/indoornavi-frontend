@@ -14,13 +14,17 @@ import {MapService} from '../map/map.service';
 import {MdIconRegistry} from '@angular/material';
 import {Observable} from 'rxjs/Rx';
 import {ActivatedRoute} from '@angular/router';
+import {AreaService} from '../area/area.service';
+import {Measure} from '../map/toolbar/tools/scale/scale.type';
+import {MeasureSocketDataType} from './published.type';
 
 describe('PublishedComponent', () => {
   let component: PublishedComponent;
   let fixture: ComponentFixture<PublishedComponent>;
   let publishedService: PublishedService;
   let mapViewerService: MapViewerService;
-  let activatedRoute: ActivatedRoute;
+  let areaService: AreaService;
+  let socketService: SocketService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -30,7 +34,13 @@ describe('PublishedComponent', () => {
         RouterTestingModule,
       ],
       providers: [SocketService, WebSocketService, PublishedService, MapViewerService,
-        IconService, HttpService, AuthGuard, MapService, MdIconRegistry]
+        IconService, HttpService, AuthGuard, MapService, MdIconRegistry, AreaService,
+        {
+          provide: ActivatedRoute, useValue: {
+          params: Observable.of({id: '1'}),
+          queryParams: Observable.of({})
+        }
+        }]
     })
       .compileComponents();
   }));
@@ -40,21 +50,52 @@ describe('PublishedComponent', () => {
     component = fixture.componentInstance;
     publishedService = fixture.debugElement.injector.get(PublishedService);
     mapViewerService = fixture.debugElement.injector.get(MapViewerService);
-    activatedRoute = fixture.debugElement.injector.get(ActivatedRoute);
+    areaService = fixture.debugElement.injector.get(AreaService);
+    socketService = fixture.debugElement.injector.get(SocketService);
   });
 
-  it('should create and draw map', () => {
+  it('should create and draw map', (done: DoneFn) => {
     // given
-    spyOn(publishedService, 'get').and.returnValue(Observable.of({floor: {imageId: 1}}));
-    spyOn(mapViewerService, 'drawMap').and.returnValue(new Promise(() => {}));
-    activatedRoute.params = Observable.of({'id': '1'});
+    spyOn(publishedService, 'get').and.returnValue(Observable.of({
+      tags: [],
+      floor: {
+        id: 2,
+        imageId: 1,
+        scale: {
+          realDistance: 100,
+          measure: Measure.METERS,
+          start: {
+            x: 0,
+            y: 0
+          },
+          stop: {
+            x: 100,
+            y: 100
+          }
+        }
+      }
+    }));
+    spyOn(mapViewerService, 'drawMap').and.returnValue(new Promise((resolve) => {
+      resolve();
+    }));
+    spyOn(areaService, 'getAllByFloor').and.returnValue(Observable.of([]));
+    spyOn(socketService, 'connect').and.returnValue(Observable.of({type: MeasureSocketDataType.COORDINATES}));
+    spyOn(socketService, 'send').and.callFake(() => {
+    });
 
     // when
     component.ngOnInit();
 
     // then
-    expect(component).toBeTruthy();
-    expect(publishedService.get).toHaveBeenCalled();
-    expect(mapViewerService.drawMap).toHaveBeenCalled();
+    fixture.whenStable().then(() => {
+      expect(component).toBeTruthy();
+      expect(publishedService.get).toHaveBeenCalled();
+      expect(mapViewerService.drawMap).toHaveBeenCalled();
+      expect(areaService.getAllByFloor).toHaveBeenCalled();
+      expect(socketService.send).toHaveBeenCalled();
+      expect(socketService.connect).toHaveBeenCalled();
+      done();
+    });
   });
+
 });
