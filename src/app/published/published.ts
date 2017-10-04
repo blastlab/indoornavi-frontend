@@ -7,7 +7,7 @@ import {CommandType, MeasureSocketData, MeasureSocketDataType, PublishedMap} fro
 import {PublishedService} from './published.service';
 import {MapViewerService} from '../map/map.viewer.service';
 import {IconService, NaviIcons} from 'app/utils/drawing/icon.service';
-import {DrawBuilder, GroupCreated} from './published.builder';
+import {DrawBuilder, GroupCreated} from '../utils/builder/draw.builder';
 import * as d3 from 'd3';
 import {Point} from '../map/map.type';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
