@@ -6,17 +6,17 @@ import {Observable} from 'rxjs/Observable';
 @Injectable()
 export class AuthGuard {
 
-  private subject = new Subject<any>();
+  private userLoggedInSubject = new Subject<boolean>();
 
   constructor() {
   }
 
   public toggleUserLoggedIn(loggedIn: boolean) {
-    this.subject.next(loggedIn);
+    this.userLoggedInSubject.next(loggedIn);
   }
 
   public userLoggedIn(): Observable<boolean> {
-    return this.subject.asObservable();
+    return this.userLoggedInSubject.asObservable();
   }
 
 }

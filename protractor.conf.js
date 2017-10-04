@@ -12,7 +12,10 @@ exports.config = {
     './e2e/**/*.e2e-spec.ts'
   ],
   capabilities: {
-    'browserName': 'chrome'
+    'browserName': 'chrome',
+    'chromeOptions': {
+      'args': ['no-sandbox', 'start-maximized']
+    }
   },
   directConnect: true,
   baseUrl: baseUrl,
@@ -28,6 +31,7 @@ exports.config = {
     });
   },
   onPrepare() {
+    browser.manage().window().setSize(1960, 1080);
     browser.driver.manage().window().maximize();
     jasmine.getEnv().addReporter(new SpecReporter({ spec: { displayStacktrace: true } }));
 

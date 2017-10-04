@@ -45,9 +45,12 @@
       {{'th.actions'|translate}}
     </template>
     <template let-row="row" ngx-datatable-cell-template>
-      <a md-tooltip="{{'go.to.map'|translate}}" md-mini-fab href="/public/{{row.id}}" target="_blank" mdTooltipPosition="above">
+      <button md-tooltip="{{'go.to.map'|translate}}" md-mini-fab (click)="goToMap(row)" mdTooltipPosition="above">
         <i class="material-icons">map</i>
-      </a>
+      </button>
+      <button md-tooltip="{{'go.to.mapEditor'|translate}}" [appHasPermission]="'FLOOR_READ'" (click)="goToEditor(row)" md-mini-fab mdTooltipPosition="above">
+        <i class="material-icons">format_paint</i>
+      </button>
       <button ngClass="editButton" md-tooltip="{{'edit'|translate}}" [appHasPermission]="'MAP_UPDATE'" (click)="edit(row)" md-mini-fab mdTooltipPosition="above">
         <i class="material-icons">mode_edit</i>
       </button>

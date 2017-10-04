@@ -14,10 +14,10 @@ import {MultiSelectUtils} from '../../utils/multiselect/mutliselect.util';
 import {PublishedService} from '../published.service';
 import {ToastService} from '../../utils/toast/toast.service';
 import {MdDialogRef} from '@angular/material';
-import {ConfigurationService} from '../../floor/configuration/configuration.service';
-import {Configuration} from '../../floor/configuration/configuration.type';
 import {DeviceService} from '../../device/device.service';
 import {Tag} from '../../device/tag.type';
+import {ActionBarService} from '../../map/actionbar/actionbar.service';
+import {Configuration} from '../../map/actionbar/actionbar.type';
 
 @Component({
   templateUrl: './published.dialog.html',
@@ -48,11 +48,11 @@ export class PublishedDialogComponent implements OnInit {
               private translateService: TranslateService,
               private publishedMapService: PublishedService,
               private toastService: ToastService,
-              private configurationService: ConfigurationService) {
+              private actionBarService: ActionBarService) {
   }
 
   ngOnInit() {
-    this.deviceService.setUrl('/tags');
+    this.deviceService.setUrl('tags');
     this.deviceService.getAll().subscribe((tags: Tag[]) => {
       this.tags = this.getTagsOptions(tags);
     });
@@ -94,8 +94,8 @@ export class PublishedDialogComponent implements OnInit {
       const selectedFloor: Floor = this.floors.find((floor: Floor) => {
         return floor.id === this.selectedFloorId;
       });
-      this.configurationService.loadConfiguration(selectedFloor);
-      this.configurationService.configurationLoaded().first().subscribe((configuration: Configuration) => {
+      this.actionBarService.loadConfiguration(selectedFloor);
+      this.actionBarService.configurationLoaded().first().subscribe((configuration: Configuration) => {
         if (!configuration.data.scale) {
           this.toastService.showFailure('publishedDialog.floor.scaleNotSet');
         } else if (!selectedFloor.imageId) {

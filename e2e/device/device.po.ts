@@ -1,13 +1,10 @@
-import {browser, by, element, ElementArrayFinder, promise} from 'protractor';
+import {browser, by, element, promise} from 'protractor';
 import {Utils} from '../utils';
 
-export class TagPage {
-  static navigateToHome() {
-    return browser.get(Utils.baseUrl + 'tags');
-  }
+export class DevicePage {
 
-  static prepareToAddTag(shortId: string) {
-    // first, we check that tag with shortId already exists, if so we remove him
+  static prepareToAddAnchor(shortId: string) {
+    // first, we check that anchor with shortId already exists, if so we remove him
     element(by.id('remove-' + shortId)).isPresent().then((isPresent: boolean) => {
       if (isPresent) {
         element(by.id('remove-' + shortId)).click();
@@ -15,7 +12,7 @@ export class TagPage {
     });
   }
 
-  static addTag(shortId: string, longId: string, name: string) {
+  static addAnchor(shortId: string, longId: string, name: string) {
     element(by.id('new-device-button')).click();
     element(by.id('device-short-id')).sendKeys(shortId);
     element(by.id('device-long-id')).sendKeys(longId);
@@ -23,7 +20,11 @@ export class TagPage {
     element(by.id('save-button')).click();
   }
 
-  static getLatestFromNotVerified(): ElementArrayFinder {
+  static navigateToHome() {
+    return browser.get(Utils.baseUrl + 'anchors');
+  }
+
+  static getLatestFromNotVerified() {
     return element.all(by.css('#notVerifiedList tr')).last().all(by.tagName('td'));
   }
 
@@ -31,11 +32,11 @@ export class TagPage {
     return element.all(by.css('#notVerifiedList tr')).count();
   }
 
-  static removeTag(shortId: string) {
+  static removeAnchor(shortId: string) {
     element(by.id('remove-' + shortId)).click();
   }
 
-  static editLastTag(shortId: string, longId: string, name: string, doSave: boolean) {
+  static editLastAnchor(shortId: string, longId: string, name: string, doSave: boolean) {
     element.all(by.css('#notVerifiedList tr')).last().element(by.className('edit-button')).click();
     element(by.id('device-short-id')).clear();
     element(by.id('device-short-id')).sendKeys(shortId);
@@ -48,10 +49,4 @@ export class TagPage {
     }
   }
 
-}
-
-export interface TableRow {
-  shortId: promise.Promise<string>;
-  longId: promise.Promise<string>;
-  name?: promise.Promise<string>;
 }

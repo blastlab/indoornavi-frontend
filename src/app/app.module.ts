@@ -62,8 +62,7 @@ import {ThirdStepComponent} from './map/toolbar/tools/wizard/third-step/third-st
 import {DrawingService} from './utils/drawing/drawing.service';
 import {IconService} from './utils/drawing/icon.service';
 import {HintBarService} from './map/hint-bar/hint-bar.service';
-import {ConfigurationComponent} from './floor/configuration/configuration';
-import {ConfigurationService} from './floor/configuration/configuration.service';
+import {ActionBarService} from './map/actionbar/actionbar.service';
 import {D3Service} from 'd3-ng2-service';
 import {ScaleService} from './map/toolbar/tools/scale/scale.service';
 import {PublishedComponent} from './published/published';
@@ -75,6 +74,8 @@ import {MapViewerService} from './map/map.viewer.service';
 import {PublishedDialogComponent} from './published/dialog/published.dialog';
 import {ConfirmDialogComponent} from './utils/confirm-dialog/confirm.dialog';
 import {DeviceComponent} from './device/device.component';
+import {ActionBarComponent} from 'app/map/actionbar/actionbar';
+import {AreaService} from './area/area.service';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -107,7 +108,7 @@ export function HttpLoaderFactory(http: Http) {
     ChangePasswordComponent,
     UnauthorizedComponent,
     PermissionGroupComponent,
-    ConfigurationComponent,
+    ActionBarComponent,
     WizardComponent,
     AcceptButtonsComponent,
     FirstStepComponent,
@@ -178,12 +179,13 @@ export function HttpLoaderFactory(http: Http) {
     AuthService,
     CanRead,
     AuthGuard,
-    ConfigurationService,
+    ActionBarService,
     PermissionGroupService,
     D3Service,
     ScaleService,
     PublishedService,
-    MapViewerService
+    MapViewerService,
+    AreaService
   ], bootstrap: [AppComponent]
 })
 

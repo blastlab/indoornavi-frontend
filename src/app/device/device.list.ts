@@ -5,6 +5,7 @@ import {ToastService} from '../utils/toast/toast.service';
 import {Device} from './device.type';
 import {DeviceService} from './device.service';
 import {DeviceDialogComponent} from './device.dialog';
+import {ActivatedRoute} from '@angular/router';
 
 
 @Component({
@@ -14,8 +15,8 @@ import {DeviceDialogComponent} from './device.dialog';
 })
 export class DeviceListComponent implements OnInit {
 
-  private deletePermision: string;
-  private editPermision: string;
+  private deletePermission: string;
+  private editPermission: string;
 
   @Input()
   verified: boolean;
@@ -30,12 +31,14 @@ export class DeviceListComponent implements OnInit {
 
   constructor(private deviceService: DeviceService,
               private dialog: MdDialog,
-              private toastService: ToastService) {
+              private toastService: ToastService,
+              private route: ActivatedRoute) {
   }
 
   ngOnInit() {
+    this.deviceType = this.route.snapshot.routeConfig.path;
     this.deviceService.setUrl(this.deviceType + '/');
-    this.setPermisions();
+    this.setPermissions();
   }
 
   getDevices(): Device[] {
@@ -60,6 +63,7 @@ export class DeviceListComponent implements OnInit {
     const device: Device = $event.dragData;
     this.devices.remove(device.id);
   }
+
   // this method opens a component dialog and cannot be passed as service
   // in addition this method needs a path that is taken from
   // this.route.snapshot.path that is this component prop
@@ -87,25 +91,11 @@ export class DeviceListComponent implements OnInit {
       this.toastService.showSuccess('device.remove.success');
     });
   }
-  setPermisions(): void {
-    switch (this.deviceType) {
-      case 'tag':
-        this.deletePermision =  'TAG_DELETE';
-        this.editPermision = 'TAG_UPDATE';
-        break;
-      case 'anchor':
-        this.deletePermision =  'ANCHOR_DELETE';
-        this.editPermision = 'ANCHOR_UPDATE';
-        break;
-      case 'sink':
-        this.deletePermision =  'SINK_DELETE';
-        this.editPermision = 'SINK_UPDATE';
-        break;
-      default:
-        this.deletePermision =  'TAG_DELETE';
-        this.editPermision = 'TAG_UPDATE';
-        break;
-    }
+
+  setPermissions(): void {
+    const prefix: string = DeviceService.getDevicePermissionPrefix(this.deviceType);
+    this.editPermission = `${prefix}_UPDATE`;
+    this.deletePermission = `${prefix}_DELETE`;
   }
 
 }

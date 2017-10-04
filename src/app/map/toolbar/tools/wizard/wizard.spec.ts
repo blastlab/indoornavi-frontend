@@ -15,7 +15,7 @@ import {DrawingService} from '../../../../utils/drawing/drawing.service';
 import {IconService} from '../../../../utils/drawing/icon.service';
 import {Observable} from 'rxjs/Observable';
 import {AuthGuard} from '../../../../auth/auth.guard';
-import {ConfigurationService} from '../../../../floor/configuration/configuration.service';
+import {ActionBarService} from '../../../actionbar/actionbar.service';
 import {HttpService} from '../../../../utils/http/http.service';
 import {RouterTestingModule} from '@angular/router/testing';
 
@@ -36,7 +36,7 @@ describe('WizardComponent', () => {
       declarations: [WizardComponent, FirstStepComponent, SecondStepComponent,
         ThirdStepComponent],
       providers: [MdDialog, SocketService, WebSocketService, ToastService, HintBarService,
-        AcceptButtonsService, DrawingService, IconService, AuthGuard, ConfigurationService, HttpService, TranslateService]
+        AcceptButtonsService, DrawingService, IconService, AuthGuard, ActionBarService, HttpService, TranslateService]
     })
       .compileComponents();
 
@@ -175,6 +175,7 @@ describe('WizardComponent', () => {
   });
 
   it('should send SocketMessage in step 2', () => {
+    // given
     spyOn(socketService, 'send').and.callFake(() => {
     });
     spyOn(firstStep, 'updateWizardData').and.callFake(() => {
@@ -185,8 +186,13 @@ describe('WizardComponent', () => {
       anchorShortId: 1023,
       degree: 90
     });
+    spyOn(socketService, 'connect').and.returnValue(Observable.of({}));
     component.setActive();
+
+    // when
     component.wizardNextStep(1);
+
+    // then
     expect(firstStep.updateWizardData).toHaveBeenCalled();
     expect(socketService.send).toHaveBeenCalledWith({
       sinkShortId: 8,

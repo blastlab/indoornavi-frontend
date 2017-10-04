@@ -18,8 +18,8 @@ import {UserService} from '../../user/user.service';
 import {BuildingService} from '../../building/building.service';
 import {ComplexService} from '../../complex/complex.service';
 import {FloorService} from '../../floor/floor.service';
-import {ConfigurationService} from '../../floor/configuration/configuration.service';
 import {DeviceService} from '../../device/device.service';
+import {ActionBarService} from '../../map/actionbar/actionbar.service';
 
 describe('PublishedListComponent', () => {
   let component: PublishedListComponent;
@@ -45,7 +45,7 @@ describe('PublishedListComponent', () => {
         PublishedService, TranslateService, ToastService,
         HttpService, AuthGuard, DeviceService, UserService,
         ComplexService, BuildingService, FloorService,
-        ConfigurationService]
+        ActionBarService]
     })
       .compileComponents();
   }));

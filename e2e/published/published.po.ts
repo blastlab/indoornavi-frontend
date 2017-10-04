@@ -1,6 +1,5 @@
 import {browser, by, element, promise as protractorPromise} from 'protractor';
 import {Utils} from '../utils';
-import {WebElement} from 'selenium-webdriver';
 import {ScaleTool} from '../map/toolbar/tools/scale/scale.po';
 import {Measure} from '../../src/app/map/toolbar/tools/scale/scale.type';
 
@@ -10,6 +9,7 @@ export class PublishedPage {
   }
 
   static createPublishedMap(elementName: string) {
+    Utils.waitForElement(element(by.id('new-publishedList-button')));
     element(by.id('new-publishedList-button')).click();
     element(by.name('complexId')).click();
     element(by.cssContainingText('md-option.complexOption', elementName)).click();
@@ -18,15 +18,18 @@ export class PublishedPage {
     element(by.name('floorId')).click();
     element(by.cssContainingText('md-option.floorOption', '0')).click();
     element(by.className('tags')).click();
-    element(by.className('tags')).element(by.className('select-all')).click();
+    element(by.className('tags')).element(by.cssContainingText('label', '10999 - 1099999')).click();
+    element(by.className('tags')).element(by.cssContainingText('label', '11999 - 1199999')).click();
     element(by.className('tags')).click();
     element(by.className('users')).click();
-    element(by.className('users')).element(by.className('select-all')).click();
+    element(by.className('users')).element(by.cssContainingText('label', 'admin')).click();
+    element(by.className('users')).element(by.cssContainingText('label', 'user')).click();
     element(by.className('users')).click();
     element(by.id('save-button')).click();
   }
 
   static removeLastlyAddedMap() {
+    Utils.waitForElement(element.all(by.className('deleteButton')).last());
     element.all(by.className('deleteButton')).last().click();
   }
 
@@ -35,24 +38,23 @@ export class PublishedPage {
   }
 
   static editPublishedMap() {
+    Utils.waitForElement(element.all(by.className('editButton')).last());
     element.all(by.className('editButton')).last().click();
     element(by.className('tags')).click();
-    element(by.cssContainingText('.pure-checkbox label', '11999 - 1199999')).click();
+    element(by.className('tags')).element(by.cssContainingText('label', '11999 - 1199999')).click();
     element(by.className('tags')).click();
     element(by.className('users')).click();
-    element(by.cssContainingText('.pure-checkbox label', 'user')).click();
+    element(by.className('users')).element(by.cssContainingText('label', 'user')).click();
     element(by.className('users')).click();
     element(by.id('save-button')).click();
   }
 
   static getLastMap(): Promise<LastMap> {
     return new Promise((resolve) => {
-      element.all(by.tagName('datatable-row-wrapper')).last().all(by.className('datatable-body-cell-label')).then((elements: WebElement[]) => {
-        resolve({
-          floor: elements[0].getText(),
-          tags: elements[1].getText(),
-          users: elements[2].getText()
-        });
+      resolve({
+        floor: element.all(by.tagName('datatable-row-wrapper')).last().all(by.className('datatable-body-cell-label')).get(0).getText(),
+        tags: element.all(by.tagName('datatable-row-wrapper')).last().all(by.className('datatable-body-cell-label')).get(1).getText(),
+        users: element.all(by.tagName('datatable-row-wrapper')).last().all(by.className('datatable-body-cell-label')).get(2).getText()
       });
     });
   }
@@ -66,6 +68,7 @@ export class PublishedPage {
     ScaleTool.clickConfirm();
     browser.sleep(5000); // wait till save draft
     element(by.id('publish')).click();
+    element(by.cssContainingText('button', 'No, just publish changes')).click();
   }
 }
 

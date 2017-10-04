@@ -5,6 +5,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {MdDialog, MdDialogRef} from '@angular/material';
 import {ToastService} from '../../utils/toast/toast.service';
 import {PublishedDialogComponent} from '../dialog/published.dialog';
+import {Router} from '@angular/router';
 
 @Component({
   templateUrl: './published-list.html',
@@ -19,7 +20,8 @@ export class PublishedListComponent implements OnInit {
   constructor(private publishedMapService: PublishedService,
               private translateService: TranslateService,
               private dialog: MdDialog,
-              private toastService: ToastService) {
+              private toastService: ToastService,
+              private router: Router) {
   }
 
   ngOnInit() {
@@ -63,6 +65,17 @@ export class PublishedListComponent implements OnInit {
     }, (err) => {
       this.toastService.showFailure(err);
     });
+  }
+
+  goToEditor(map: PublishedMap): void {
+    const complexId = map.floor.building.complexId;
+    const buildingId = map.floor.building.id;
+    const floorId = map.floor.id;
+    this.router.navigate(['complexes', complexId, 'buildings', buildingId, 'floors', floorId, 'map']);
+  }
+
+  goToMap(map: PublishedMap) {
+    this.router.navigate(['maps', map.id]);
   }
 
 }

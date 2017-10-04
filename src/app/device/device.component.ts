@@ -17,14 +17,15 @@ import {DeviceService} from './device.service';
   templateUrl: './device.component.html',
   styleUrls: ['./device.css']
 })
-
 export class DeviceComponent implements OnInit, OnDestroy {
+
   private socketSubscription: Subscription;
   @ViewChild('verified') private verifiedList: DeviceListComponent;
   @ViewChild('notVerified') private notVerifiedList: DeviceListComponent;
 
   private routeState: string;
   private device: object;
+  private createPermission: string;
 
   dialogRef: MdDialogRef<DeviceDialogComponent>;
 
@@ -34,7 +35,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
               private toastService: ToastService,
               private ngZone: NgZone,
               private route: ActivatedRoute,
-              private deviceService: DeviceService,) {
+              private deviceService: DeviceService) {
   }
 
   get verified(): Anchor[] | Tag[] | Sink[] {
@@ -47,6 +48,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.routeState = this.route.snapshot.routeConfig.path;
+    this.setPermissions();
     this.ngZone.runOutsideAngular(() => {
       const stream = this.socketService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.routeState}`);
 
@@ -74,15 +76,17 @@ export class DeviceComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.socketSubscription) {
+      this.socketSubscription.unsubscribe();
     }
   }
+
   // this method opens a component dialog and cannot be passed as service
   // in addition this method needs a path that is taken from
   // this.route.snapshot.path that is this component prop
   // similar method is used in DeviceListComponent and has the same name
   // this method opens dialog that adds device
   openDialog(): void {
-    this.device = this.deviceService.emptyDeviceObjectDepandentOnPath(this.routeState);
+    this.device = DeviceService.emptyDeviceObjectDependentOnPath(this.routeState);
     this.dialogRef = this.dialog.open(DeviceDialogComponent, {
       data: {
         device: Object.assign({}, this.device),
@@ -96,5 +100,9 @@ export class DeviceComponent implements OnInit, OnDestroy {
       }
       this.dialogRef = null;
     });
+  }
+  setPermissions(){
+    const prefix: string = DeviceService.getDevicePermissionPrefix(this.routeState);
+    this.createPermission = `${prefix}_CREATE`;
   }
 }
