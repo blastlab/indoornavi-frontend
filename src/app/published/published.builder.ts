@@ -40,7 +40,6 @@ export class GroupCreated {
   }
 
   move(coordinates: Point): GroupCreated {
-    console.log(coordinates);
     this.group
       .transition()
       .attr('x', coordinates.x)

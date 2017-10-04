@@ -115,7 +115,7 @@ export class PublishedComponent implements OnInit, AfterViewInit {
       const coordinates: Point = this.scaleCoordinates(data.coordinates.point),
       deviceId: number = data.coordinates.tagShortId;
     if (!this.isInHeatMapSet(deviceId)) {
-      const heatMapBuilder = new HeatMapBuilder(this.d3map, coordinates, deviceId);
+      const heatMapBuilder = new HeatMapBuilder();
       const heatMap = heatMapBuilder
         .createHeatGroup()
         .update(coordinates);

@@ -1,56 +1,48 @@
 import {Point} from '../map/map.type';
-import * as d3 from 'd3';
+import h337 from 'heatmap.js';
 
 export class HeatMapBuilder {
-  private appendable: d3.selection;
-  private coordinates: Point;
-  private deviceId: number;
-
-  constructor(appendable: d3.selection,
-              coordinates: Point,
-              deviceId: number) {
-    this.appendable = appendable;
-    this.coordinates = coordinates;
-    this.deviceId = deviceId;
+  constructor() {
   }
 
   createHeatGroup(): HeatMapCreated {
-    const group = this.appendable;
-    return new HeatMapCreated(group);
+    const heatMapInstance = h337.create({
+      container: document.querySelector('#map-container'),
+      radius: 20,
+      // backgroundColor: 'rgba(0,0,255,.6)',
+      maxOpacity: 0.8,
+      minOpacity: 0.4,
+      blur: 0.9,
+      gradient: {
+        '.9': 'yellow',
+        '.95': 'orange',
+        '1': 'red'
+      }
+    })
+    console.log(heatMapInstance);
+    return new HeatMapCreated(heatMapInstance);
   }
 }
 
 export class HeatMapCreated {
-  private heatPointsList: Array<Point> = [];
-  group: d3.selection;
+  heatMapInstance: MapConfiguration;
 
-  constructor(group: d3.selection) {
-    this.group = group;
+  constructor(heatMapInstance: MapConfiguration) {
+    this.heatMapInstance = heatMapInstance;
   }
 
   update(coordinates: Point): HeatMapCreated {
-    const filteredCoordinates = {
-      x: Math.round(coordinates.x),
-      y: Math.round(coordinates.y)
-    };
-    this.heatPointsList.push(filteredCoordinates);
-    setTimeout(() => {
-      this.group
-        .selectAll('heat-rect')
-        .data(this.heatPointsList)
-        .enter()
-        .append('rect')
-        .attr('x', d => d.x - 5)
-        .attr('y', d => d.y - 5)
-        .attr('width', 10)
-        .attr('height', 10)
-        .attr('fill', 'red');
+    setTimeout( () => {
+      this.heatMapInstance.addData({
+        x: coordinates.x,
+        y: coordinates.y,
+        value: 0.002
+      });
     }, 1000);
     return this;
   }
 }
 
 export interface MapConfiguration {
-  id: string;
-  clazz: string;
+  addData: any;
 }
