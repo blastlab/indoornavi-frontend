@@ -31,7 +31,8 @@ exports.config = {
     });
   },
   onPrepare() {
-    // browser.driver.manage().window().maximize();
+    browser.manage().window().setSize(1960, 1080);
+    browser.driver.manage().window().maximize();
     jasmine.getEnv().addReporter(new SpecReporter({ spec: { displayStacktrace: true } }));
 
     browser.driver.get(baseUrl + 'login');
