@@ -111,11 +111,11 @@ export class PublishedComponent implements OnInit, AfterViewInit {
     }
   };
 
-  private activateHeatMap(data: MeasureSocketData) {
+  private heatMapDrawer(data: MeasureSocketData) {
       const coordinates: Point = this.scaleCoordinates(data.coordinates.point),
       deviceId: number = data.coordinates.tagShortId;
     if (!this.isInHeatMapSet(deviceId)) {
-      const heatMapBuilder = new HeatMapBuilder();
+      const heatMapBuilder = new HeatMapBuilder({pathLength: 100, heatValue: 20});
       const heatMap = heatMapBuilder
         .createHeatGroup()
         .update(coordinates);
@@ -131,8 +131,6 @@ export class PublishedComponent implements OnInit, AfterViewInit {
   }
 
   private initializeSocketConnection() {
-    let heatMapBufferData: Array<any> = [];
-    let counter: number = 0;
     this.ngZone.runOutsideAngular(() => {
       const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?client`);
       this.setSocketConfiguration();
@@ -140,13 +138,7 @@ export class PublishedComponent implements OnInit, AfterViewInit {
         this.ngZone.run(() => {
           if (this.isCoordinatesData(data)) {
             this.handleCoordinatesData(data);
-            heatMapBufferData.push(data);
-            counter ++;
-            if (counter > 1) {
-              this.activateHeatMap(heatMapBufferData[0]);
-              heatMapBufferData = [];
-              counter = 0;
-            }
+            this.heatMapDrawer(data);
           }
         });
       });
