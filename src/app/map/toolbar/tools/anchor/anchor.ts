@@ -13,6 +13,7 @@ import * as d3 from 'd3';
 import {Sink} from '../../../../device/sink.type';
 import {Anchor} from '../../../../device/anchor.type';
 import {ActionBarService} from '../../../actionbar/actionbar.service';
+import {DrawConfiguration} from '../../../../utils/builder/draw.builder';
 
 
 @Component({
@@ -136,13 +137,14 @@ export class AnchorPlacerComponent implements Tool, OnInit {
     });
   }
 
-  private drawDroppedAnchor(anchorMapObject: MapObject): d3.selection {
-    return this.drawingService.drawObject(anchorMapObject.parameters, anchorMapObject.coordinates);
+  private drawDroppedAnchor(anchorConfig: DrawConfiguration): d3.selection {
+    return
+    //return this.drawingService.drawObject(anchorMapObject.parameters, anchorMapObject.coordinates);
   }
 
   private placeDeviceOnMap(device: Anchor | Sink, coordinates: Point): void {
-    const mapObject = (isSinkType(device)) ? this.buildSinkMapObject(<Sink>device, coordinates) : this.buildAnchorMapObject(device, coordinates);
-    const droppedAnchorGroup = this.drawDroppedAnchor(mapObject);
+    const drawConfig = (isSinkType(device)) ? this.buildSinkDrawConfiguration(<Sink>device) : this.buildAnchorDrawConfiguration(<Anchor>device);
+    const droppedAnchorGroup = this.drawDroppedAnchor(drawConfig);
     this.accButtons.publishCoordinates(coordinates);
     this.accButtons.publishVisibility(true);
     this.accButtons.decisionMade.first().subscribe((decision) => {
@@ -180,7 +182,23 @@ export class AnchorPlacerComponent implements Tool, OnInit {
     this.chosenSink = undefined;
   }
 
-  private buildAnchorMapObject(anchor: Anchor, coordinates: Point): MapObject {
+  private buildAnchorDrawConfiguration(anchor: Anchor): DrawConfiguration {
+    return {
+      id: '' + anchor.shortId,
+      clazz: 'anchorMarker' + anchor.id,
+      cursor: 'pointer'
+    };
+  }
+
+  private buildSinkDrawConfiguration(sink: Sink): DrawConfiguration {
+    return {
+      id: '' + sink.shortId,
+      clazz: 'anchorMarker' + sink.id,
+      cursor: 'pointer'
+    };
+  }
+
+  /*private buildAnchorMapObject(anchor: Anchor, coordinates: Point): MapObject {
     return {
       parameters: {
         id: 'anchor' + anchor.shortId,
@@ -210,6 +228,6 @@ export class AnchorPlacerComponent implements Tool, OnInit {
         y: coordinates.y
       }
     };
-  }
+  }*/
 
 }
