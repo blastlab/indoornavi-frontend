@@ -11,3 +11,7 @@ export enum Measure {
   CENTIMETERS,
   METERS
 }
+
+export const getRealDistanceInCentimeters = (scale: Scale): number => {
+  return scale.realDistance * (scale.measure.toString() === Measure[Measure.METERS] ? 100 : 1);
+};

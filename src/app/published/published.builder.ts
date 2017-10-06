@@ -27,6 +27,7 @@ export class DrawBuilder {
 
 export class GroupCreated {
   group: d3.selection;
+  transitionEnded: boolean = true;
 
   constructor(group: d3.selection) {
     this.group = group;
@@ -40,11 +41,18 @@ export class GroupCreated {
   }
 
   move(coordinates: Point): GroupCreated {
-    this.group
-      .transition()
-      .attr('x', coordinates.x)
-      .attr('y', coordinates.y)
-      .duration(1000);
+    if (this.transitionEnded) {
+      this.group
+        .transition()
+        .attr('x', coordinates.x)
+        .attr('y', coordinates.y)
+        .on('start', () => {
+          this.transitionEnded = false;
+        })
+        .on('end', () => {
+          this.transitionEnded = true;
+        }).duration(1000);
+    }
     return this;
   }
 
