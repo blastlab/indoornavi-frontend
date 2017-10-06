@@ -48,6 +48,9 @@
       <button md-tooltip="{{'go.to.map'|translate}}" md-mini-fab (click)="goToMap(row)" mdTooltipPosition="above">
         <i class="material-icons">map</i>
       </button>
+      <button ngClass="analytics" md-tooltip="{{'analytics'|translate}}" [appHasPermission]="'FLOOR_READ'" (click)="goToAnalytics(row)" md-mini-fab mdTooltipPosition="above">
+        <i class="material-icons">assessment</i>
+      </button>
       <button md-tooltip="{{'go.to.mapEditor'|translate}}" [appHasPermission]="'FLOOR_READ'" (click)="goToEditor(row)" md-mini-fab mdTooltipPosition="above">
         <i class="material-icons">format_paint</i>
       </button>

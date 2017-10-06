@@ -1,10 +1,7 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-
-import {PublishedComponent} from './published';
 import {SocketService} from '../utils/socket/socket.service';
 import {WebSocketService} from 'angular2-websocket-service';
 import {RouterTestingModule} from '@angular/router/testing';
-import {PublishedService} from './published.service';
 import {MapViewerService} from '../map/map.viewer.service';
 import {IconService} from '../utils/drawing/icon.service';
 import {HttpModule} from '@angular/http';
@@ -14,6 +11,8 @@ import {MapService} from '../map/map.service';
 import {MdIconRegistry} from '@angular/material';
 import {Observable} from 'rxjs/Rx';
 import {ActivatedRoute} from '@angular/router';
+import {PublishedService} from './publication/published.service';
+import {PublishedComponent} from './publication/published';
 
 describe('PublishedComponent', () => {
   let component: PublishedComponent;

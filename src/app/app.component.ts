@@ -33,10 +33,10 @@ export class AppComponent {
     breadcrumbService.addFriendlyNameForRoute('/sinks', 'Sinks');
     breadcrumbService.addFriendlyNameForRouteRegex('^/maps$', 'Published maps');
     breadcrumbService.addFriendlyNameForRouteRegex('/maps/\\d+', 'Map view');
+    breadcrumbService.addFriendlyNameForRouteRegex('/analytics', 'Analytics');
     breadcrumbService.addFriendlyNameForRoute('/users', 'Users');
     breadcrumbService.addFriendlyNameForRoute('/changePassword', 'Change password');
     breadcrumbService.addFriendlyNameForRoute('/permissionGroups', 'Permission groups');
-
     breadcrumbService.hideRouteRegex('^/complexes/\\d+$');
     breadcrumbService.hideRouteRegex('^/complexes/\\d+/buildings/\\d+$');
     breadcrumbService.hideRouteRegex('^/complexes/\\d+/buildings/\\d+/floors/\\d+$');
@@ -47,5 +47,4 @@ export class AppComponent {
     breadcrumbService.hideRouteRegex('^/embedded/\\d+\\?api_key=\\w+$');
     breadcrumbService.hideRouteRegex('^/unauthorized');
   }
-
 }

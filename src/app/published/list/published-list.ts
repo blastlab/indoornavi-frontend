@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {PublishedService} from '../published.service';
-import {PublishedMap} from '../published.type';
+import {PublishedService} from '../publication/published.service';
+import {PublishedMap} from '../publication/published.type';
 import {TranslateService} from '@ngx-translate/core';
 import {MdDialog, MdDialogRef} from '@angular/material';
 import {ToastService} from '../../utils/toast/toast.service';
@@ -78,4 +78,7 @@ export class PublishedListComponent implements OnInit {
     this.router.navigate(['maps', map.id]);
   }
 
+  goToAnalytics(map: PublishedMap) {
+    this.router.navigate(['maps', map.id, 'analytics']);
+  }
 }

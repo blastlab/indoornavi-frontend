@@ -1,5 +1,6 @@
 {
 	"add": "Add",
+  "analytics": "Analytics",
 	"anchors.header": "Anchors",
 	"auth.invalid.credentials": "Invalid username and/or password",
 	"building.confirm.to.remove": "Are you sure you want to remove the building along with the floors?",

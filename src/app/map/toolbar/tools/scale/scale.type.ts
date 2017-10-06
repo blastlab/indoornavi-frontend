@@ -11,3 +11,10 @@ export enum Measure {
   CENTIMETERS,
   METERS
 }
+
+export const scaleCoordinates = (point: Point, pixelsToCentimeters: number): Point => {
+  return {
+    x: point.x / pixelsToCentimeters,
+    y: point.y / pixelsToCentimeters
+  };
+};
