@@ -13,7 +13,6 @@ import {PublishedViewerComponent} from '../published-viewer.component';
 })
 export class PublishedComponent extends PublishedViewerComponent implements AfterViewInit {
 
-
   constructor(ngZone: NgZone,
               socketService: SocketService,
               route: ActivatedRoute,

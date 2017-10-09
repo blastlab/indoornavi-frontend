@@ -1,4 +1,4 @@
-import {Component, NgZone, OnInit} from '@angular/core';
+import {Component, Injectable, NgZone, OnInit} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
 import {ActivatedRoute, Params} from '@angular/router';
 import * as d3 from 'd3';
@@ -25,10 +25,7 @@ export class PublishedViewerComponent implements OnInit {
   private d3map: d3.selection = null;
   protected tagsOnMap: Dictionary<number, GroupCreated> = new Dictionary<number, GroupCreated>();
   protected pixelsToCentimeters: number;
-
-  static logger (data) {
-    console.log(data);
-  }
+  protected callbacksArrayToBeRunAfterSocketInitialization: Array<Function> = [];
 
   constructor(protected ngZone: NgZone,
               protected socketService: SocketService,
@@ -49,8 +46,8 @@ export class PublishedViewerComponent implements OnInit {
             const realDistanceInCentimeters = map.floor.scale.realDistance * (map.floor.scale.measure.toString() === Measure[Measure.METERS] ? 100 : 1);
             const pixels = Geometry.getDistanceBetweenTwoPoints(map.floor.scale.start, map.floor.scale.stop);
             this.pixelsToCentimeters = realDistanceInCentimeters / pixels;
-            this.initializeSocketConnection(this.handleCoordinatesData.bind(this));
-            this.testThisShit(PublishedViewerComponent.logger.bind(this));
+            this.callbacksArrayToBeRunAfterSocketInitialization.push(this.handleCoordinatesData.bind(this));
+            this.initializeSocketConnection(this.callbacksArrayToBeRunAfterSocketInitialization);
           });
         }
       });
@@ -93,22 +90,19 @@ export class PublishedViewerComponent implements OnInit {
     this.socketService.send({type: CommandType[CommandType.SET_TAGS], args: `[${this.extractTagsShortIds()}]`});
   };
 
-  protected initializeSocketConnection(callBack) {
+  protected initializeSocketConnection(callBacks: Array<Function>) {
     this.ngZone.runOutsideAngular(() => {
       const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?client`);
       this.setSocketConfiguration();
       this.socketSubscription = stream.subscribe((data: MeasureSocketData) => {
         this.ngZone.run(() => {
           if (this.isCoordinatesData(data)) {
-            callBack(data);
+            callBacks.forEach(callBack => {
+              callBack(data);
+            });
           }
         });
       });
     });
-  };
-
-  protected testThisShit (callBack) {
-    const dupa: string = 'dupa ze hej';
-    callBack(dupa);
   };
 }

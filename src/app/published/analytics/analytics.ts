@@ -1,15 +1,15 @@
 import {SocketService} from '../../utils/socket/socket.service';
-import {ActivatedRoute, Params} from '@angular/router';
-import {MeasureSocketData} from '../publication/published.type';
+import {ActivatedRoute} from '@angular/router';
 import {PublishedService} from '../publication/published.service';
 import {MapViewerService} from '../../map/map.viewer.service';
 import {IconService} from 'app/utils/drawing/icon.service';
-import {HeatMapBuilder, HeatMapCreated} from './heatmap.service';
-import {Point} from '../../map/map.type';
-import Dictionary from 'typescript-collections/dist/lib/Dictionary';
-import {scaleCoordinates} from '../../map/toolbar/tools/scale/scale.type';
 import {PublishedViewerComponent} from '../published-viewer.component';
-import {AfterViewInit, Component, NgZone, OnInit} from '@angular/core';
+import {AfterViewInit, Component, NgZone} from '@angular/core';
+import {MeasureSocketData} from '../publication/published.type';
+import {scaleCoordinates} from '../../map/toolbar/tools/scale/scale.type';
+import {Point} from '../../map/map.type';
+import {HeatMapBuilder, HeatMapCreated} from './heatmap.service';
+import Dictionary from 'typescript-collections/dist/lib/Dictionary';
 
 @Component({
   templateUrl: './analytics.html',
@@ -18,9 +18,6 @@ import {AfterViewInit, Component, NgZone, OnInit} from '@angular/core';
 export class AnalyticsComponent extends PublishedViewerComponent implements AfterViewInit {
   private heatMapSet: Dictionary<number, HeatMapCreated> = new Dictionary<number, HeatMapCreated>();
 
-  static logger2 (data) {
-    console.log(data);
-  }
 
   constructor(ngZone: NgZone,
               socketService: SocketService,
@@ -37,31 +34,24 @@ export class AnalyticsComponent extends PublishedViewerComponent implements Afte
   }
 
   ngAfterViewInit () {
-    // this.initializeSocketConnection(() => console.log());
-    this.testThisShit(AnalyticsComponent.logger2.bind(this));
+    this.callbacksArrayToBeRunAfterSocketInitialization.push(this.heatMapDrawer.bind(this));
   }
 
   protected isInHeatMapSet(deviceId: number): boolean {
     return this.tagsOnMap.containsKey(deviceId);
   }
 
-  protected printData () {
-    console.log('ddd');
-  };
-
   protected heatMapDrawer(data: MeasureSocketData) {
-      const coordinates: Point = scaleCoordinates(data.coordinates.point, this.pixelsToCentimeters),
+    const coordinates: Point = scaleCoordinates(data.coordinates.point, this.pixelsToCentimeters),
       deviceId: number = data.coordinates.tagShortId;
-      console.log(coordinates, deviceId);
-    // if (!this.isInHeatMapSet(deviceId)) {
-    //   const heatMapBuilder = new HeatMapBuilder({pathLength: 100, heatValue: 20});
-    //   const heatMap = heatMapBuilder
-    //     .createHeatGroup()
-    //     .update(coordinates);
-    //   this.heatMapSet.setValue(deviceId, heatMap);
-    // } else {
-    //   this.heatMapSet.getValue(deviceId).update(coordinates);
-    // }
+    if (!this.isInHeatMapSet(deviceId)) {
+      const heatMapBuilder = new HeatMapBuilder({pathLength: 100, heatValue: 20});
+      const heatMap = heatMapBuilder
+        .createHeatGroup()
+        .update(coordinates);
+      this.heatMapSet.setValue(deviceId, heatMap);
+    } else {
+      this.heatMapSet.getValue(deviceId).update(coordinates);
+    }
   };
-
 }
