@@ -1,19 +1,33 @@
 import {GroupCreated} from './draw.builder';
 import * as d3 from 'd3';
+import {MapLoaderInformerService} from '../map-loader-informer/map-loader-informer.service';
+import {OnInit} from '@angular/core';
+import {Subscription} from 'rxjs/Subscription';
 
-export class Draggable {
+export class Draggable implements OnInit {
   private group: d3.selection;
   private boxMargin: number;
+  private mapLoaderInformerService = new MapLoaderInformerService();
+  private mapLoadedSubscription: Subscription;
+  private mapAttributes: { width: number, height: number };
 
 
   private static getBoxMargin(selection: d3.selection): number {
-    const boxMargin = selection._groups['0']['0'].children[1].attributes[1].nodeValue;
+    const boxMargin = '50'; // selection._groups['0']['0'].children[1].attributes[1].nodeValue;
     return parseInt(boxMargin, 10);
   }
 
-  constructor(private groupCreated: GroupCreated) {
+  constructor(groupCreated: GroupCreated) {
     this.group = groupCreated;
     this.boxMargin = Draggable.getBoxMargin(groupCreated);
+  }
+
+  ngOnInit(): void {
+    this.mapLoadedSubscription = this.mapLoaderInformerService.loadCompleted().subscribe(() => {
+      const map = d3.select('#map');
+      this.mapAttributes.width = map.attr('width');
+      this.mapAttributes.height = map.attr('height');
+    });
   }
 
   // TODO add pointer
@@ -35,14 +49,13 @@ export class Draggable {
   }
 
   private dragGroupBehavior(selection: d3.selection) {
-    const map = d3.select('#map');
     let dx = parseInt(selection.attr('x'), 10);
     let dy = parseInt(selection.attr('y'), 10);
     dx += d3.event.dx;
     dy += d3.event.dy;
     selection
-      .attr('x', Math.max(-this.boxMargin, Math.min(map.attr('width') - this.boxMargin, dx)))
-      .attr('y', Math.max(-this.boxMargin, Math.min(map.attr('height') - this.boxMargin, dy)));
+      .attr('x', Math.max(-this.boxMargin, Math.min(this.mapAttributes.width - this.boxMargin, dx)))
+      .attr('y', Math.max(-this.boxMargin, Math.min(this.mapAttributes.height - this.boxMargin, dy)));
   }
   private dragAcceptButtonsBehavior() {
     const buttons = d3.select('#accept-buttons');
@@ -50,8 +63,8 @@ export class Draggable {
     let by = parseInt(buttons.style('top'), 10);
     bx += d3.event.dx;
     by += d3.event.dy;
-    buttons.style('top', Math.max(0, Math.min((d3.select('#map').attr('height') - 100 ), by)) + 'px');
-    buttons.style('left', Math.max(this.boxMargin, Math.min((d3.select('#map').attr('width') - this.boxMargin ), bx)) + 'px');
+    buttons.style('top', Math.max(0, Math.min((this.mapAttributes.height - 100 ), by)) + 'px');
+    buttons.style('left', Math.max(this.boxMargin, Math.min((this.mapAttributes.width - this.boxMargin ), bx)) + 'px');
   }
 
 }

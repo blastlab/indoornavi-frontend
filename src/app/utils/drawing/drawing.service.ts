@@ -111,7 +111,6 @@ export class DrawingService {
 
   private getBoxMargin(selection: d3.selection): number {
     const boxMargin = selection._groups['0']['0'].children[1].attributes[1].nodeValue;
-    // const selectedGroup = d3.select('#map').select('#' + selection._groups['0']['0'].id);
     return parseInt(boxMargin, 10);
   }
 

@@ -4,8 +4,7 @@ import {ToolName} from '../tools.enum';
 import {TranslateService} from '@ngx-translate/core';
 import {AnchorPlacerController} from './anchor.controller';
 import {Point} from '../../../map.type';
-import {MapObject} from '../selection/map-object.type';
-import {NaviIcons} from '../../../../utils/drawing/icon.service';
+import {IconService, NaviIcons} from '../../../../utils/drawing/icon.service';
 import {HintBarService} from '../../../hint-bar/hint-bar.service';
 import {DrawingService} from '../../../../utils/drawing/drawing.service';
 import {AcceptButtonsService} from '../../../../utils/accept-buttons/accept-buttons.service';
@@ -13,7 +12,10 @@ import * as d3 from 'd3';
 import {Sink} from '../../../../device/sink.type';
 import {Anchor} from '../../../../device/anchor.type';
 import {ActionBarService} from '../../../actionbar/actionbar.service';
-import {DrawConfiguration} from '../../../../utils/builder/draw.builder';
+import {DrawBuilder, DrawConfiguration} from '../../../../utils/builder/draw.builder';
+import {Draggable} from '../../../../utils/builder/draggable';
+import {Subscription} from 'rxjs/Subscription';
+import {MapLoaderInformerService} from 'app/utils/map-loader-informer/map-loader-informer.service';
 
 
 @Component({
@@ -28,6 +30,12 @@ export class AnchorPlacerComponent implements Tool, OnInit {
   private floorId: number;
   public chosenSink: Sink;
   private placementDone: boolean;
+  private mapLoadedSubscription: Subscription;
+  private map: d3.selection;
+
+  static isSinkType(checkType: any): boolean {
+    return (<Sink>checkType.anchors) !== undefined;
+  }
 
   static getSelectionOfAnchorsOnMap(): d3.selection {
     const map = d3.select('#map');
@@ -39,7 +47,9 @@ export class AnchorPlacerComponent implements Tool, OnInit {
               private accButtons: AcceptButtonsService,
               private drawingService: DrawingService,
               private hintBar: HintBarService,
-              private configurationService: ActionBarService) {
+              private configurationService: ActionBarService,
+              private mapLoaderInformer: MapLoaderInformerService,
+              private icons: IconService) {
     this.setTranslations();
   }
 
@@ -47,10 +57,11 @@ export class AnchorPlacerComponent implements Tool, OnInit {
     this.subscribeForAnchor();
     this.configurationService.configurationLoaded().first().subscribe((configuration) => {
       this.floorId = configuration.floorId;
-      // draw sinks and their anchors
       this.drawConfiguredDevices(configuration.data.sinks);
       console.log(configuration);
-      // each sink group and his anchors - with connection
+    });
+    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe(() => {
+      this.map = d3.select('#map');
     });
   }
 
@@ -137,21 +148,30 @@ export class AnchorPlacerComponent implements Tool, OnInit {
     });
   }
 
-  private drawDroppedAnchor(anchorConfig: DrawConfiguration): d3.selection {
-    return
-    //return this.drawingService.drawObject(anchorMapObject.parameters, anchorMapObject.coordinates);
+  private drawDroppedDevice(deviceConfig: DrawConfiguration, coordinates: Point): d3.selection {
+    const droppedDevice = new DrawBuilder(this.map, deviceConfig);
+    const deviceGroup = droppedDevice.createGroup()
+      .addIcon({x: coordinates.x - 12, y: coordinates.y - 12}, this.icons.getIcon(NaviIcons.POINTER));
+    if (deviceConfig.clazz === `sink`) {
+      deviceGroup.addIcon({x: coordinates.x + 5, y: coordinates.y + 5}, this.icons.getIcon(NaviIcons.SINK));
+    } else if (deviceConfig.clazz === `anchor`) {
+      deviceGroup.addIcon({x: coordinates.x + 5, y: coordinates.y + 5}, this.icons.getIcon(NaviIcons.ANCHOR));
+    }
+    deviceGroup.group.append();
+    return new Draggable(deviceGroup);
   }
 
   private placeDeviceOnMap(device: Anchor | Sink, coordinates: Point): void {
-    const drawConfig = (isSinkType(device)) ? this.buildSinkDrawConfiguration(<Sink>device) : this.buildAnchorDrawConfiguration(<Anchor>device);
-    const droppedAnchorGroup = this.drawDroppedAnchor(drawConfig);
+    const drawOptions = (AnchorPlacerComponent.isSinkType(device)) ? this.buildSinkDrawConfiguration(<Sink>device) : this.buildAnchorDrawConfiguration(<Anchor>device);
+    const droppedAnchorGroup = this.drawDroppedDevice(drawOptions, coordinates);
     this.accButtons.publishCoordinates(coordinates);
     this.accButtons.publishVisibility(true);
     this.accButtons.decisionMade.first().subscribe((decision) => {
+      // TODO Change after decision logic to allow adding anchors alone
       if (decision) {
         this.removeGroupDrag(droppedAnchorGroup);
         this.drawingService.applyDragBehavior(droppedAnchorGroup, false);
-        if (isSinkType(device)) {
+        if (AnchorPlacerComponent.isSinkType(device)) {
           this.selectSink(<Sink>device);
         } else {
           this.chosenSink.anchors.push(device);
@@ -164,17 +184,12 @@ export class AnchorPlacerComponent implements Tool, OnInit {
       this.placementDone = true;
       this.toggleList();
     });
-
-    function isSinkType(checkType: any): boolean {
-      return (<Sink>checkType.anchors) !== undefined;
-    }
   }
 
   private selectSink(sink: Sink) {
     this.anchorPlacerController.setChosenSink(sink);
     this.chosenSink = sink;
     this.anchorPlacerController.selectDevice(sink);
-
   }
 
   private deselectSink() {
@@ -184,17 +199,17 @@ export class AnchorPlacerComponent implements Tool, OnInit {
 
   private buildAnchorDrawConfiguration(anchor: Anchor): DrawConfiguration {
     return {
-      id: '' + anchor.shortId,
-      clazz: 'anchorMarker' + anchor.id,
-      cursor: 'pointer'
+      id: `${anchor.shortId}`,
+      clazz: `anchor`,
+      cursor: `pointer`
     };
   }
 
   private buildSinkDrawConfiguration(sink: Sink): DrawConfiguration {
     return {
-      id: '' + sink.shortId,
-      clazz: 'anchorMarker' + sink.id,
-      cursor: 'pointer'
+      id: `${sink.shortId}`,
+      clazz: `sink`,
+      cursor: `pointer`
     };
   }
 
