@@ -122,6 +122,7 @@ export function HttpLoaderFactory(http: Http) {
     ConfirmDialogComponent,
     DeviceComponent,
     PublishedViewerComponent
+
   ],
   entryComponents: [
     ComplexDialogComponent,

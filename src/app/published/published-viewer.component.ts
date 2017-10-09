@@ -25,7 +25,7 @@ export class PublishedViewerComponent implements OnInit {
   private d3map: d3.selection = null;
   protected tagsOnMap: Dictionary<number, GroupCreated> = new Dictionary<number, GroupCreated>();
   protected pixelsToCentimeters: number;
-  protected callbacksArrayToBeRunAfterSocketInitialization: Array<Function> = [];
+  protected callbacksToBeRunAfterSocketInitialization: Array<Function> = [];
 
   constructor(protected ngZone: NgZone,
               protected socketService: SocketService,
@@ -46,8 +46,8 @@ export class PublishedViewerComponent implements OnInit {
             const realDistanceInCentimeters = map.floor.scale.realDistance * (map.floor.scale.measure.toString() === Measure[Measure.METERS] ? 100 : 1);
             const pixels = Geometry.getDistanceBetweenTwoPoints(map.floor.scale.start, map.floor.scale.stop);
             this.pixelsToCentimeters = realDistanceInCentimeters / pixels;
-            this.callbacksArrayToBeRunAfterSocketInitialization.push(this.handleCoordinatesData.bind(this));
-            this.initializeSocketConnection(this.callbacksArrayToBeRunAfterSocketInitialization);
+            this.callbacksToBeRunAfterSocketInitialization.push(this.handleCoordinatesData.bind(this));
+            this.initializeSocketConnection(this.callbacksToBeRunAfterSocketInitialization);
           });
         }
       });
