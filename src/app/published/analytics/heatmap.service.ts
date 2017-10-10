@@ -98,11 +98,16 @@ export class HeatMapCreated {
     });
     this.heatValue = heatMapConfiguration.heat;
     this.heatMapPathLength = heatMapConfiguration.path;
-    console.log(heatMapConfiguration.radius);
   }
 
   public repaint() {
     this.heatBuffer = [];
+    const data = {
+      max: this.heatValue * 5,
+      min: 0,
+      data: this.heatBuffer
+    };
+    this.heatMapInstance.setData(data);
   }
 
 }
