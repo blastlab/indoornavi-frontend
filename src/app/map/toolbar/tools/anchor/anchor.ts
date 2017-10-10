@@ -151,11 +151,14 @@ export class AnchorPlacerComponent implements Tool, OnInit {
   private drawDroppedDevice(deviceConfig: DrawConfiguration, coordinates: Point): d3.selection {
     const droppedDevice = new DrawBuilder(this.map, deviceConfig);
     const deviceGroup = droppedDevice.createGroup()
-      .addIcon({x: coordinates.x - 12, y: coordinates.y - 12}, this.icons.getIcon(NaviIcons.POINTER));
+      .addIcon({x: coordinates.x - 12, y: coordinates.y - 12}, this.icons.getIcon(NaviIcons.POINTER))
+      .addText({x: coordinates.x + 5, y: coordinates.y - 5}, `${deviceConfig.clazz}-${deviceConfig.id}`);
     if (deviceConfig.clazz === `sink`) {
-      deviceGroup.addIcon({x: coordinates.x + 5, y: coordinates.y + 5}, this.icons.getIcon(NaviIcons.SINK));
+      deviceGroup
+        .addIcon({x: coordinates.x + 5, y: coordinates.y + 5}, this.icons.getIcon(NaviIcons.SINK));
     } else if (deviceConfig.clazz === `anchor`) {
-      deviceGroup.addIcon({x: coordinates.x + 5, y: coordinates.y + 5}, this.icons.getIcon(NaviIcons.ANCHOR));
+      deviceGroup
+        .addIcon({x: coordinates.x + 5, y: coordinates.y + 5}, this.icons.getIcon(NaviIcons.ANCHOR));
     }
     deviceGroup.group.append();
     return new Draggable(deviceGroup);
@@ -169,12 +172,12 @@ export class AnchorPlacerComponent implements Tool, OnInit {
     this.accButtons.decisionMade.first().subscribe((decision) => {
       // TODO Change after decision logic to allow adding anchors alone
       if (decision) {
-        this.removeGroupDrag(droppedAnchorGroup);
-        this.drawingService.applyDragBehavior(droppedAnchorGroup, false);
+        // this.removeGroupDrag(droppedAnchorGroup);
+        // this.drawingService.applyDragBehavior(droppedAnchorGroup, false);
         if (AnchorPlacerComponent.isSinkType(device)) {
-          this.selectSink(<Sink>device);
+          // TODO selection -> this.selectSink(<Sink>device);
         } else {
-          this.chosenSink.anchors.push(device);
+          // this.chosenSink.anchors.push(device);
         }
         this.configurationService.setSink(this.chosenSink);
       } else {
