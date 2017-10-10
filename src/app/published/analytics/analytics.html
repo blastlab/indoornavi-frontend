@@ -6,26 +6,13 @@
 <div class="analytics-toolbar">
   <h2>Tools</h2>
   <ul class="tools-list">
-    <li class="tool">
-      <button
-        [disabled]="playingAnimation"
-        (click)="toggleSlider('radius')"
-        md-mini-fab
-        md-tooltip="Radius" mdTooltipPosition="right">
-        <i class="material-icons">lens</i>
-      </button>
-      <md-slider [ngModel]="range"
-                 (ngModelChange)="setSliderValue('radius', $event)"
-                 class="analytics-slider"
-                 *ngIf="radiusSliderView" min="15" max="50" step="1" value="20"></md-slider>
-    </li>
     <li>
       <button
         [disabled]="playingAnimation"
         (click)="toggleSlider('opacity')"
         md-mini-fab
         md-tooltip="Opacity" mdTooltipPosition="right">
-        <i class="material-icons">tonality</i>
+        <i class="material-icons">brightness_7</i>
       </button>
       <md-slider [ngModel]="range"
                  (ngModelChange)="setSliderValue('opacity', $event)"
@@ -51,7 +38,7 @@
         (click)="toggleSlider('path')"
         md-mini-fab
         md-tooltip="Path length" mdTooltipPosition="right">
-        <i class="material-icons">linear_scale</i>
+        <i class="material-icons">history</i>
       </button>
       <md-slider [ngModel]="range"
                  (ngModelChange)="setSliderValue('path', $event)"
@@ -64,12 +51,12 @@
         (click)="toggleSlider('heat')"
         md-mini-fab
         md-tooltip="Heat persistence" mdTooltipPosition="right">
-        <i class="material-icons">brightness_7</i>
+        <i class="material-icons">hourglass_empty</i>
       </button>
       <md-slider [ngModel]="range"
                  (ngModelChange)="setSliderValue('heat', $event)"
                  class="analytics-slider"
-                 *ngIf="heatSliderView" min="5" max="50" step="1" value="20"></md-slider>
+                 *ngIf="heatSliderView" min="2" max="50" step="1" value="20"></md-slider>
     </li>
     <hr/>
     <li>

@@ -10,6 +10,7 @@ import {scaleCoordinates} from '../../map/toolbar/tools/scale/scale.type';
 import {Point} from '../../map/map.type';
 import {HeatMapBuilder, HeatMapCreated} from './heatmap.service';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
+import {HeatMapSettings} from './heat-map.type';
 
 @Component({
   templateUrl: './analytics.html',
@@ -23,10 +24,10 @@ export class AnalyticsComponent extends PublishedViewerComponent implements Afte
   private pathSliderView: boolean = false;
   private heatSliderView: boolean = false;
   private heatMapSettings: HeatMapSettings = {
-    radius: 15,
+    radius: 20,
     opacity: 0.5,
     blur: 0.5,
-    path: 400,
+    path: 100,
     heat: 20
   };
 
@@ -46,41 +47,35 @@ export class AnalyticsComponent extends PublishedViewerComponent implements Afte
       iconService);
   }
 
-  ngAfterViewInit () {
+  ngAfterViewInit() {
     this.callbacksToBeRunAfterSocketInitialization.push(this.heatMapDrawer.bind(this));
   }
 
   public toggleSlider(type: string): void {
     switch (type) {
-      case 'radius':
-        this.radiusSliderView = !this.radiusSliderView;
-        this.opacitySliderView = this.blurSliderView = this.pathSliderView = this.heatSliderView = false;
-        break;
       case 'opacity':
         this.opacitySliderView = !this.opacitySliderView;
-        this.radiusSliderView = this.blurSliderView = this.pathSliderView = this.heatSliderView = false;
+        this.blurSliderView = this.pathSliderView = this.heatSliderView = false;
         break;
       case 'blur':
         this.blurSliderView = !this.blurSliderView;
-        this.radiusSliderView = this.opacitySliderView = this.pathSliderView = this.heatSliderView = false;
+        this.opacitySliderView = this.pathSliderView = this.heatSliderView = false;
         break;
       case 'path':
         this.pathSliderView = !this.pathSliderView;
-        this.radiusSliderView = this.opacitySliderView = this.blurSliderView = this.heatSliderView = false;
+        this.opacitySliderView = this.blurSliderView = this.heatSliderView = false;
         break;
       case 'heat':
         this.heatSliderView = !this.heatSliderView;
-        this.radiusSliderView = this.opacitySliderView = this.blurSliderView = this.pathSliderView = false;
+        this.opacitySliderView = this.blurSliderView = this.pathSliderView = false;
         break;
       default:
         break;
     }
   }
+
   public setSliderValue(type: string, value): void {
     switch (type) {
-      case 'radius':
-        this.heatMapSettings.radius = value;
-        break;
       case 'opacity':
         this.heatMapSettings.opacity = value;
         break;
@@ -96,12 +91,13 @@ export class AnalyticsComponent extends PublishedViewerComponent implements Afte
       default:
         break;
     }
-    console.log(this.heatMapSettings);
+    console.log(this.heatMapSettings.radius);
   }
+
   public toggleHeatAnimation() {
     this.playingAnimation = !this.playingAnimation;
     if (this.playingAnimation) {
-      this.radiusSliderView = this.opacitySliderView = this.blurSliderView = this.pathSliderView = this.radiusSliderView = false;
+      this.opacitySliderView = this.blurSliderView = this.pathSliderView = this.radiusSliderView = this.heatSliderView = false;
     }
   }
 
@@ -113,21 +109,21 @@ export class AnalyticsComponent extends PublishedViewerComponent implements Afte
     const coordinates: Point = scaleCoordinates(data.coordinates.point, this.pixelsToCentimeters),
       deviceId: number = data.coordinates.tagShortId;
     if (!this.isInHeatMapSet(deviceId)) {
-      const heatMapBuilder = new HeatMapBuilder({pathLength: 1000, heatValue: 20});
+      const heatMapBuilder = new HeatMapBuilder({
+        pathLength: this.heatMapSettings.path,
+        heatValue: this.heatMapSettings.heat,
+        radius: this.heatMapSettings.radius,
+        opacity: this.heatMapSettings.opacity,
+        blur: this.heatMapSettings.blur
+      });
       const heatMap = heatMapBuilder
-        .createHeatGroup()
-        .update(coordinates);
+        .createHeatGroup();
       this.heatMapSet.setValue(deviceId, heatMap);
-    } else {
+    } else if (this.playingAnimation) {
+      this.heatMapSet.getValue(deviceId).configure(this.heatMapSettings);
       this.heatMapSet.getValue(deviceId).update(coordinates);
+    } else {
+      this.heatMapSet.getValue(deviceId).repaint();
     }
   };
-}
-
-export interface HeatMapSettings {
-  radius: number;
-  opacity: number;
-  blur: number;
-  path: number;
-  heat: number;
 }

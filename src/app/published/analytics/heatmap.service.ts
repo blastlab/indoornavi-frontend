@@ -1,6 +1,6 @@
 import {Point} from '../../map/map.type';
 import h337 from 'heatmap.js';
-import {HeatMapCoordinates, HeatMapConfig} from '../publication/published.type';
+import {HeatMapConfig, HeatMapConfiguration, HeatMapCoordinates, HeatPoint, MapConfiguration} from './heat-map.type';
 
 export class HeatMapBuilder {
   private configuration: HeatMapConfig;
@@ -13,17 +13,21 @@ export class HeatMapBuilder {
 
     const heatMapInstance = h337.create({
       container: document.querySelector('#map-canvas'),
-      radius: 15,
+      radius: this.configuration.radius,
       // backgroundColor: 'rgba(0,0,255,.6)',
-      opacity: 0.8,
-      blur: 0.9,
+      opacity: this.configuration.opacity,
+      blur: this.configuration.blur,
       gradient: {
-        '0.4': 'yellow',
-        '.5': 'orange',
+        '0.7': 'yellow',
+        '.9': 'orange',
         '1': 'red'
       }
     });
-    return new HeatMapCreated(heatMapInstance, this.configuration.pathLength, this.configuration.heatValue);
+    return new HeatMapCreated(
+      heatMapInstance,
+      this.configuration.pathLength,
+      this.configuration.heatValue
+      );
   }
 }
 
@@ -51,7 +55,7 @@ export class HeatMapCreated {
   // Add this point on the end of heatBuffer with value equal to preconfigured heat value step, then:
   // Check the length of the heatBuffer and first take all items of heatBuffer from beginning to given preconfigured length and
   // decrease heat down by preconfigured value and second remove first heat point in heatBuffer which is the oldest heatPoint in heatBuffer.
-  update(coordinates: Point): HeatMapCreated {
+  public update(coordinates: Point): HeatMapCreated {
     setTimeout( () => {
       const x = Math.round(coordinates.x / 10) * 10;
       const y = Math.round(coordinates.y / 10) * 10;
@@ -85,8 +89,23 @@ export class HeatMapCreated {
     }, 650);
     return this;
   }
-}
 
+  public configure(heatMapConfiguration: HeatMapConfiguration) {
+    this.heatMapInstance.configure({
+      radius: heatMapConfiguration.radius,
+      opacity: heatMapConfiguration.opacity,
+      blur: heatMapConfiguration.blur
+    });
+    this.heatValue = heatMapConfiguration.heat;
+    this.heatMapPathLength = heatMapConfiguration.path;
+    console.log(heatMapConfiguration.radius);
+  }
+
+  public repaint() {
+    this.heatBuffer = [];
+  }
+
+}
 export class HeatPointSetter {
   private x: number;
   private y: number;
@@ -105,14 +124,4 @@ export class HeatPointSetter {
       value: this.value
     };
   }
-}
-
-export interface MapConfiguration {
-  setData: any;
-}
-
-export interface HeatPoint {
-  x: number;
-  y: number;
-  value: number;
 }

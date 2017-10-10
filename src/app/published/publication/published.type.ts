@@ -36,14 +36,3 @@ export enum CommandType {
   SET_TAGS,
   TOGGLE_TAG
 }
-
-export interface HeatMapCoordinates {
-  x: number;
-  y: number;
-  value: number;
-}
-
-export interface HeatMapConfig {
-  pathLength: number;
-  heatValue: number;
-}
