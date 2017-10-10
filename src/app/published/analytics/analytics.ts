@@ -32,6 +32,9 @@ export class AnalyticsComponent extends PublishedViewerComponent implements Afte
   };
 
   public playingAnimation: boolean = false;
+  public mapStyle: object = {
+    'width': '2000px'
+  };
 
   constructor(ngZone: NgZone,
               socketService: SocketService,
@@ -48,6 +51,11 @@ export class AnalyticsComponent extends PublishedViewerComponent implements Afte
   }
 
   ngAfterViewInit() {
+    // in the moment of creating svg #map, component doesn't know anything about its style
+    // so cannot set proper canvas size,
+    // we need to get picture size an set it before canvas creation
+    const map = document.querySelector('#map');
+    console.log(map);
     this.callbacksToBeRunAfterSocketInitialization.push(this.heatMapDrawer.bind(this));
   }
 
@@ -91,7 +99,6 @@ export class AnalyticsComponent extends PublishedViewerComponent implements Afte
       default:
         break;
     }
-    console.log(this.heatMapSettings.radius);
   }
 
   public toggleHeatAnimation() {

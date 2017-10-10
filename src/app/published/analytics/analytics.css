@@ -8,6 +8,16 @@
   background-color: burlywood;
 }
 
+#map-container {
+  width: 1860px;
+  height: 1125px;
+}
+
+#map-canvas {
+  height: inherit;
+  display: block;
+}
+
 ul {
   -webkit-padding-start: 0;
   text-align: center;

@@ -10,7 +10,6 @@ export class HeatMapBuilder {
   }
 
   createHeatGroup(): HeatMapCreated {
-
     const heatMapInstance = h337.create({
       container: document.querySelector('#map-canvas'),
       radius: this.configuration.radius,
