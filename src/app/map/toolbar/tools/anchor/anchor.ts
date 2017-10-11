@@ -54,21 +54,25 @@ export class AnchorPlacerComponent implements Tool, OnInit {
   }
 
   ngOnInit() {
-    this.subscribeForAnchor();
+    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe(() => {
+      this.map = d3.select('#map');
+    });
     this.configurationService.configurationLoaded().first().subscribe((configuration) => {
       this.floorId = configuration.floorId;
       this.drawConfiguredDevices(configuration.data.sinks);
       console.log(configuration);
     });
-    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe(() => {
-      this.map = d3.select('#map');
-    });
+    this.subscribeForAnchor();
   }
 
   private drawConfiguredDevices(sinks: Array<Sink>): void {
-    const mapAnchorsSelection = AnchorPlacerComponent.getSelectionOfAnchorsOnMap().data(sinks);
-    console.log(mapAnchorsSelection.enter());
-    // TODO call drawing service here
+    sinks.forEach((sink) => {
+      this.drawDevice(this.buildSinkDrawConfiguration(sink), {x: sink.x, y: sink.y});
+      sink.anchors.forEach((anchor) => {
+        this.drawDevice(this.buildAnchorDrawConfiguration(anchor), {x: anchor.x, y: anchor.y});
+        // TODO draw connection method
+      });
+    });
   }
 
   public getToolName(): ToolName {
@@ -148,7 +152,7 @@ export class AnchorPlacerComponent implements Tool, OnInit {
     });
   }
 
-  private drawDroppedDevice(deviceConfig: DrawConfiguration, coordinates: Point): d3.selection {
+  private drawDevice(deviceConfig: DrawConfiguration, coordinates: Point): d3.selection {
     const droppedDevice = new DrawBuilder(this.map, deviceConfig);
     const deviceGroup = droppedDevice.createGroup()
       .addIcon({x: coordinates.x - 12, y: coordinates.y - 12}, this.icons.getIcon(NaviIcons.POINTER))
@@ -166,7 +170,7 @@ export class AnchorPlacerComponent implements Tool, OnInit {
 
   private placeDeviceOnMap(device: Anchor | Sink, coordinates: Point): void {
     const drawOptions = (AnchorPlacerComponent.isSinkType(device)) ? this.buildSinkDrawConfiguration(<Sink>device) : this.buildAnchorDrawConfiguration(<Anchor>device);
-    const droppedAnchorGroup = this.drawDroppedDevice(drawOptions, coordinates);
+    const droppedAnchorGroup = this.drawDevice(drawOptions, coordinates);
     this.accButtons.publishCoordinates(coordinates);
     this.accButtons.publishVisibility(true);
     this.accButtons.decisionMade.first().subscribe((decision) => {
@@ -211,41 +215,9 @@ export class AnchorPlacerComponent implements Tool, OnInit {
   private buildSinkDrawConfiguration(sink: Sink): DrawConfiguration {
     return {
       id: `${sink.shortId}`,
-      clazz: `sink`,
+      clazz: `sink anchor`,
       cursor: `pointer`
     };
   }
-
-  /*private buildAnchorMapObject(anchor: Anchor, coordinates: Point): MapObject {
-    return {
-      parameters: {
-        id: 'anchor' + anchor.shortId,
-        iconName: NaviIcons.ANCHOR,
-        groupClass: 'anchor',
-        markerClass: 'anchorMarker' + anchor.id,
-        fill: 'green'
-      },
-      coordinates: {
-        x: coordinates.x,
-        y: coordinates.y
-      }
-    };
-  }
-
-  private buildSinkMapObject(sink: Sink, coordinates: Point): MapObject {
-    return {
-      parameters: {
-        id: 'sink' + sink.shortId,
-        iconName: NaviIcons.SINK,
-        groupClass: 'sink anchor',
-        markerClass: 'sinkMarker' + sink.id,
-        fill: 'blue'
-      },
-      coordinates: {
-        x: coordinates.x,
-        y: coordinates.y
-      }
-    };
-  }*/
 
 }
