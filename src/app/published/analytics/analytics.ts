@@ -18,7 +18,6 @@ import {HeatMapSettings} from './heat-map.type';
 })
 export class AnalyticsComponent extends PublishedViewerComponent implements AfterViewInit {
   private heatMapSet: Dictionary<number, HeatMapCreated> = new Dictionary<number, HeatMapCreated>();
-  private radiusSliderView: boolean = false;
   private opacitySliderView: boolean = false;
   private blurSliderView: boolean = false;
   private pathSliderView: boolean = false;
@@ -50,61 +49,57 @@ export class AnalyticsComponent extends PublishedViewerComponent implements Afte
       iconService);
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     // in the moment of creating svg #map, component doesn't know anything about its style
     // so cannot set proper canvas size,
     // we need to get picture size an set it before canvas creation
-    const map = document.querySelector('#map');
-    console.log(map);
+    // const map = document.querySelector('#map');
     this.callbacksToBeRunAfterSocketInitialization.push(this.heatMapDrawer.bind(this));
   }
 
   public toggleSlider(type: string): void {
     switch (type) {
       case 'opacity':
-        this.opacitySliderView = !this.opacitySliderView;
-        this.blurSliderView = this.pathSliderView = this.heatSliderView = false;
+        if (this.opacitySliderView) {
+          this.setAllSlidersViewToFalse();
+        } else {
+          this.setAllSlidersViewToFalse();
+          this.opacitySliderView = !this.opacitySliderView;
+        }
         break;
       case 'blur':
-        this.blurSliderView = !this.blurSliderView;
-        this.opacitySliderView = this.pathSliderView = this.heatSliderView = false;
+        if (this.blurSliderView) {
+          this.setAllSlidersViewToFalse();
+        } else {
+          this.setAllSlidersViewToFalse();
+          this.blurSliderView = !this.blurSliderView;
+        }
         break;
       case 'path':
-        this.pathSliderView = !this.pathSliderView;
-        this.opacitySliderView = this.blurSliderView = this.heatSliderView = false;
+        if (this.pathSliderView) {
+          this.setAllSlidersViewToFalse();
+        } else {
+          this.setAllSlidersViewToFalse();
+          this.pathSliderView = !this.pathSliderView;
+        }
         break;
       case 'heat':
-        this.heatSliderView = !this.heatSliderView;
-        this.opacitySliderView = this.blurSliderView = this.pathSliderView = false;
+        if (this.heatSliderView) {
+          this.setAllSlidersViewToFalse();
+        } else {
+          this.setAllSlidersViewToFalse();
+          this.heatSliderView = !this.heatSliderView;
+        }
         break;
       default:
         break;
     }
   }
 
-  public setSliderValue(type: string, value): void {
-    switch (type) {
-      case 'opacity':
-        this.heatMapSettings.opacity = value;
-        break;
-      case 'blur':
-        this.heatMapSettings.blur = value;
-        break;
-      case 'path':
-        this.heatMapSettings.path = value;
-        break;
-      case 'heat':
-        this.heatMapSettings.heat = value;
-        break;
-      default:
-        break;
-    }
-  }
-
-  public toggleHeatAnimation() {
+  public toggleHeatAnimation(): void {
     this.playingAnimation = !this.playingAnimation;
     if (this.playingAnimation) {
-      this.opacitySliderView = this.blurSliderView = this.pathSliderView = this.radiusSliderView = this.heatSliderView = false;
+      this.setAllSlidersViewToFalse();
     }
   }
 
@@ -112,7 +107,7 @@ export class AnalyticsComponent extends PublishedViewerComponent implements Afte
     return this.tagsOnMap.containsKey(deviceId);
   }
 
-  protected heatMapDrawer(data: MeasureSocketData) {
+  protected heatMapDrawer(data: MeasureSocketData): void {
     const coordinates: Point = scaleCoordinates(data.coordinates.point, this.pixelsToCentimeters),
       deviceId: number = data.coordinates.tagShortId;
     if (!this.isInHeatMapSet(deviceId)) {
@@ -133,4 +128,9 @@ export class AnalyticsComponent extends PublishedViewerComponent implements Afte
       this.heatMapSet.getValue(deviceId).repaint();
     }
   };
+
+  private setAllSlidersViewToFalse(): void {
+    this.opacitySliderView = this.blurSliderView = this.pathSliderView = this.heatSliderView = false;
+  }
+
 }

@@ -8,7 +8,7 @@ import {IconService} from 'app/utils/drawing/icon.service';
 import {PublishedViewerComponent} from '../published-viewer.component';
 
 @Component({
-  templateUrl: './published.html',
+  templateUrl: '../published-viewer.component.html',
   styleUrls: ['./published.css']
 })
 export class PublishedComponent extends PublishedViewerComponent implements AfterViewInit {

@@ -14,10 +14,9 @@
         md-tooltip="Opacity" mdTooltipPosition="right">
         <i class="material-icons">brightness_7</i>
       </button>
-      <md-slider [ngModel]="range"
-                 (ngModelChange)="setSliderValue('opacity', $event)"
+      <md-slider [(ngModel)]="heatMapSettings.opacity"
                  class="analytics-slider"
-                 *ngIf="opacitySliderView" min="0.1" max="1" step="0.1" value="0.5"></md-slider>
+                 *ngIf="opacitySliderView" min="0.1" max="1" step="0.1"></md-slider>
     </li>
     <li>
       <button
@@ -27,10 +26,9 @@
         md-tooltip="Blur" mdTooltipPosition="right">
         <i class="material-icons">blur_on</i>
       </button>
-      <md-slider [ngModel]="range"
-                 (ngModelChange)="setSliderValue('blur', $event)"
+      <md-slider [(ngModel)]="heatMapSettings.blur"
                  class="analytics-slider"
-                 *ngIf="blurSliderView" min="0.1" max="1" step="0.1" value="0.5"></md-slider>
+                 *ngIf="blurSliderView" min="0.1" max="1" step="0.1"></md-slider>
     </li>
     <li>
       <button
@@ -40,10 +38,9 @@
         md-tooltip="Path length" mdTooltipPosition="right">
         <i class="material-icons">history</i>
       </button>
-      <md-slider [ngModel]="range"
-                 (ngModelChange)="setSliderValue('path', $event)"
+      <md-slider [(ngModel)]="heatMapSettings.path"
                  class="analytics-slider"
-                 *ngIf="pathSliderView" min="100" max="5000" step="100" value="400"></md-slider>
+                 *ngIf="pathSliderView" min="50" max="2000" step="50"></md-slider>
     </li>
     <li>
       <button
@@ -53,10 +50,9 @@
         md-tooltip="Heat persistence" mdTooltipPosition="right">
         <i class="material-icons">hourglass_empty</i>
       </button>
-      <md-slider [ngModel]="range"
-                 (ngModelChange)="setSliderValue('heat', $event)"
+      <md-slider [(ngModel)]="heatMapSettings.heat"
                  class="analytics-slider"
-                 *ngIf="heatSliderView" min="2" max="50" step="1" value="20"></md-slider>
+                 *ngIf="heatSliderView" min="2" max="50" step="1"></md-slider>
     </li>
     <hr/>
     <li>

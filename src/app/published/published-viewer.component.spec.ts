@@ -12,18 +12,18 @@ import {MdIconRegistry} from '@angular/material';
 import {Observable} from 'rxjs/Rx';
 import {ActivatedRoute} from '@angular/router';
 import {PublishedService} from './publication/published.service';
-import {PublishedComponent} from './publication/published';
+import {PublishedViewerComponent} from './published-viewer.component';
 
-describe('PublishedComponent', () => {
-  let component: PublishedComponent;
-  let fixture: ComponentFixture<PublishedComponent>;
+describe('PublishedViewerComponent', () => {
+  let component: PublishedViewerComponent;
+  let fixture: ComponentFixture<PublishedViewerComponent>;
   let publishedService: PublishedService;
   let mapViewerService: MapViewerService;
   let activatedRoute: ActivatedRoute;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [PublishedComponent],
+      declarations: [PublishedViewerComponent],
       imports: [
         HttpModule,
         RouterTestingModule,
@@ -35,7 +35,7 @@ describe('PublishedComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PublishedComponent);
+    fixture = TestBed.createComponent(PublishedViewerComponent);
     component = fixture.componentInstance;
     publishedService = fixture.debugElement.injector.get(PublishedService);
     mapViewerService = fixture.debugElement.injector.get(MapViewerService);

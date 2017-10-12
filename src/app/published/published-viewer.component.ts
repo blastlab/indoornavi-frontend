@@ -54,16 +54,12 @@ export class PublishedViewerComponent implements OnInit {
     });
   }
 
-  protected isCoordinatesData(data: MeasureSocketData): boolean {
+  private isCoordinatesData(data: MeasureSocketData): boolean {
     return this.d3map !== null
       && MeasureSocketDataType[MeasureSocketDataType.COORDINATES] === data.type.toString();
   }
 
-  protected isOnMap(deviceId: number): boolean {
-    return this.tagsOnMap.containsKey(deviceId);
-  }
-
-  protected extractTagsShortIds() {
+  private extractTagsShortIds() {
     return this.activeMap.tags.map((tag: Tag) => {
       return tag.shortId;
     });
@@ -85,12 +81,12 @@ export class PublishedViewerComponent implements OnInit {
     }
   };
 
-  protected setSocketConfiguration() {
+  private setSocketConfiguration() {
     this.socketService.send({type: CommandType[CommandType.SET_FLOOR], args: `${this.activeMap.floor.id}`});
     this.socketService.send({type: CommandType[CommandType.SET_TAGS], args: `[${this.extractTagsShortIds()}]`});
   };
 
-  protected initializeSocketConnection(callBacks: Array<Function>) {
+  private initializeSocketConnection(callBacks: Array<Function>) {
     this.ngZone.runOutsideAngular(() => {
       const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?client`);
       this.setSocketConfiguration();
@@ -105,4 +101,8 @@ export class PublishedViewerComponent implements OnInit {
       });
     });
   };
+
+  protected isOnMap(deviceId: number): boolean {
+    return this.tagsOnMap.containsKey(deviceId);
+  }
 }

@@ -1,5 +1,4 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-
 import {PublishedComponent} from './published';
 import {SocketService} from '../../utils/socket/socket.service';
 import {WebSocketService} from 'angular2-websocket-service';
