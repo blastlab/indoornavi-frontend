@@ -3,7 +3,6 @@ import {ActivatedRoute} from '@angular/router';
 import {PublishedService} from '../publication/published.service';
 import {MapViewerService} from '../../map/map.viewer.service';
 import {IconService} from 'app/utils/drawing/icon.service';
-import {PublishedViewerComponent} from '../published-viewer.component';
 import {AfterViewInit, Component, NgZone} from '@angular/core';
 import {MeasureSocketData} from '../publication/published.type';
 import {scaleCoordinates} from '../../map/toolbar/tools/scale/scale.type';
@@ -11,12 +10,13 @@ import {Point} from '../../map/map.type';
 import {HeatMapBuilder, HeatMapCreated} from './heatmap.service';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
 import {HeatMapSettings} from './heat-map.type';
+import {PublishedComponent} from '../publication/published';
 
 @Component({
   templateUrl: './analytics.html',
   styleUrls: ['./analytics.css']
 })
-export class AnalyticsComponent extends PublishedViewerComponent implements AfterViewInit {
+export class AnalyticsComponent extends PublishedComponent implements AfterViewInit {
   private heatMapSet: Dictionary<number, HeatMapCreated> = new Dictionary<number, HeatMapCreated>();
   private opacitySliderView: boolean = false;
   private blurSliderView: boolean = false;
@@ -53,8 +53,13 @@ export class AnalyticsComponent extends PublishedViewerComponent implements Afte
     // in the moment of creating svg #map, component doesn't know anything about its style
     // so cannot set proper canvas size,
     // we need to get picture size an set it before canvas creation
-    // const map = document.querySelector('#map');
-    this.callbacksToBeRunAfterSocketInitialization.push(this.heatMapDrawer.bind(this));
+    // const widthOfMapComponent = document.querySelector('#map').getAttribute('width');
+    // doesn't work as it is not set for this element in the process of DOM setting
+    // mapStyle variable needs to be updated with proper width value of the map
+    // before canvas is being created in the DOM
+    this.ngZone.runOutsideAngular(() => {
+      this.callbacksToBeRunAfterSocketInitialization.push(this.heatMapDrawer.bind(this));
+    });
   }
 
   public toggleSlider(type: string): void {

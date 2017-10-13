@@ -1,5 +1,4 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {SocketService} from '../../utils/socket/socket.service';
 import {WebSocketService} from 'angular2-websocket-service';
 import {RouterTestingModule} from '@angular/router/testing';
 import {IconService} from '../../utils/drawing/icon.service';
@@ -8,17 +7,21 @@ import {HttpService} from '../../utils/http/http.service';
 import {AuthGuard} from '../../auth/auth.guard';
 import {MapService} from '../../map/map.service';
 import {MdIconRegistry} from '@angular/material';
-import {ActivatedRoute} from '@angular/router';
 import {AnalyticsComponent} from './analytics';
 import {MapViewerService} from '../../map/map.viewer.service';
 import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
-import {HeatMapBuilder} from './heatmap.service';
+import {SocketService} from '../../utils/socket/socket.service';
+import {PublishedService} from '../publication/published.service';
+import {ActivatedRoute} from '@angular/router';
 import {Observable} from 'rxjs/Observable';
+import {HeatMapBuilder} from './heatmap.service';
+
 
 describe('AnalyticsComponent', () => {
   let component: AnalyticsComponent;
   let fixture: ComponentFixture<AnalyticsComponent>;
-  let heatMapBuilder: HeatMapBuilder;
+  let publishedService: PublishedService;
+  let mapViewerService: MapViewerService;
   let activatedRoute: ActivatedRoute;
 
   beforeEach(async(() => {
@@ -27,10 +30,19 @@ describe('AnalyticsComponent', () => {
       declarations: [AnalyticsComponent],
       imports: [
         HttpModule,
-        RouterTestingModule,
+        RouterTestingModule
       ],
-      providers: [SocketService, WebSocketService, AnalyticsComponent, MapViewerService,
-        IconService, HttpService, AuthGuard, MapService, MdIconRegistry, HeatMapBuilder]
+      providers: [
+        WebSocketService,
+        MapViewerService,
+        IconService,
+        HttpService,
+        AuthGuard,
+        MapService,
+        MdIconRegistry,
+        SocketService,
+        PublishedService
+      ]
     })
       .compileComponents();
   }));
@@ -38,26 +50,22 @@ describe('AnalyticsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AnalyticsComponent);
     component = fixture.componentInstance;
-    heatMapBuilder = fixture.debugElement.injector.get(HeatMapBuilder);
+    publishedService = fixture.debugElement.injector.get(PublishedService);
+    mapViewerService = fixture.debugElement.injector.get(MapViewerService);
     activatedRoute = fixture.debugElement.injector.get(ActivatedRoute);
   });
 
-  it('should create and draw canvas', () => {
+  it('should create component with map', () => {
     // given
-    spyOn(heatMapBuilder, 'createHeatGroup').and.returnValue({
-      pathLength: 100,
-      heatValue: 20,
-      radius: 20,
-      opacity: 0.5,
-      blur: 0.5
-      });
-    // activatedRoute.params = Observable.of({'id': '1'});
-
+    spyOn(publishedService, 'get').and.returnValue(Observable.of({floor: {imageId: 1}}));
+    spyOn(mapViewerService, 'drawMap').and.returnValue(new Promise(() => {}));
+    activatedRoute.params = Observable.of({'id': '1'});
     // when
     component.ngOnInit();
 
     // then
     expect(component).toBeTruthy();
-    expect(heatMapBuilder.createHeatGroup).toHaveBeenCalled();
+    expect(publishedService.get).toHaveBeenCalled();
+    expect(mapViewerService.drawMap).toHaveBeenCalled();;
   });
 });
