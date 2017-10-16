@@ -14,7 +14,7 @@ import {SocketService} from '../../utils/socket/socket.service';
 import {PublishedService} from '../publication/published.service';
 import {ActivatedRoute} from '@angular/router';
 import {Observable} from 'rxjs/Observable';
-import {HeatMapBuilder} from './heatmap.service';
+
 
 
 describe('AnalyticsComponent', () => {

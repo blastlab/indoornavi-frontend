@@ -126,7 +126,7 @@ describe('ScaleComponent', () => {
   });
 
   it('should change scale', () => {
-    const distance = 543;
+    const distance = 345;
     const points = element.all(by.className('point'));
     const line = element(by.className('connectLine'));
 
