@@ -3,7 +3,7 @@ import {ActivatedRoute} from '@angular/router';
 import {PublishedService} from '../publication/published.service';
 import {MapViewerService} from '../../map/map.viewer.service';
 import {IconService} from 'app/utils/drawing/icon.service';
-import {AfterViewInit, Component, NgZone} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, NgZone, ViewChild} from '@angular/core';
 import {MeasureSocketData} from '../publication/published.type';
 import {scaleCoordinates} from '../../map/toolbar/tools/scale/scale.type';
 import {Point} from '../../map/map.type';
@@ -29,11 +29,13 @@ export class AnalyticsComponent extends PublishedComponent implements AfterViewI
     path: 100,
     heat: 20
   };
-
-  public playingAnimation: boolean = false;
-  public mapStyle: object = {
+  private mapStyle = {
     'width': '2000px'
   };
+
+  public playingAnimation: boolean = false;
+  @ViewChild('mapContainer')
+  private canvasContainer: ElementRef;
 
   constructor(ngZone: NgZone,
               socketService: SocketService,

@@ -17,7 +17,7 @@ describe('MapComponent', () => {
     });
   });
 
-  it('should not upload not image file as map', () => {
+  it('should not upload file that is not image type as map', () => {
     MapPage.uploadFile('wrongFile.txt');
     expect(MapPage.getUploader().getAttribute('accept')).toEqual('image/*');
   });

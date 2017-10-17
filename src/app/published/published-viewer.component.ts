@@ -15,6 +15,7 @@ import {Tag} from '../device/tag.type';
 import {Point} from '../map/map.type';
 import {Config} from '../../config';
 
+
 @Component({
   templateUrl: './published-viewer.component.html',
   styleUrls: ['./published-viewer.component.css']
@@ -22,7 +23,7 @@ import {Config} from '../../config';
 export class PublishedViewerComponent implements OnInit {
   protected socketSubscription: Subscription;
   protected activeMap: PublishedMap;
-  private d3map: d3.selection = null;
+  protected d3map: d3.selection = null;
   protected tagsOnMap: Dictionary<number, GroupCreated> = new Dictionary<number, GroupCreated>();
   protected pixelsToCentimeters: number;
   protected callbacksToBeRunAfterSocketInitialization: Array<Function> = [];
