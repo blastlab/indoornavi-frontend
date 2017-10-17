@@ -19,7 +19,7 @@ import {DrawBuilder, GroupCreated} from './published.builder';
 import * as d3 from 'd3';
 import {Point} from '../map/map.type';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
-import {Measure} from '../map/toolbar/tools/scale/scale.type';
+import {getRealDistanceInCentimeters} from '../map/toolbar/tools/scale/scale.type';
 import {Geometry} from '../map/utils/geometry';
 import {Tag} from '../device/tag.type';
 import {AreaService} from '../area/area.service';
@@ -35,6 +35,7 @@ export class PublishedComponent implements OnInit, AfterViewInit {
   private d3map: d3.selection = null;
   private tagsOnMap: Dictionary<number, GroupCreated> = new Dictionary<number, GroupCreated>();
   private areasOnMap: Dictionary<number, GroupCreated> = new Dictionary<number, GroupCreated>();
+  private originListeningOnEvent: Dictionary<string, MessageEvent[]> = new Dictionary<string, MessageEvent[]>();
   private pixelsToCentimeters: number;
 
   constructor(private ngZone: NgZone,
@@ -55,7 +56,7 @@ export class PublishedComponent implements OnInit, AfterViewInit {
           this.mapViewerService.drawMap(this.activeMap.floor).then((d3map: d3.selection) => {
             this.d3map = d3map;
             this.drawAreas(map.floor.id);
-            const realDistanceInCentimeters = map.floor.scale.realDistance * (map.floor.scale.measure.toString() === Measure[Measure.METERS] ? 100 : 1);
+            const realDistanceInCentimeters = getRealDistanceInCentimeters(this.activeMap.floor.scale);
             const pixels = Geometry.getDistanceBetweenTwoPoints(map.floor.scale.start, map.floor.scale.stop);
             this.pixelsToCentimeters = realDistanceInCentimeters / pixels;
             this.initializeSocketConnection();
@@ -73,14 +74,7 @@ export class PublishedComponent implements OnInit, AfterViewInit {
         }
         this.publishedService.checkOrigin(params['api_key'], event.origin).subscribe((verified: boolean) => {
           if (verified) {
-            if ('command' in event.data && event.data['command'] === 'toggleTagVisibility') {
-              const tagId = parseInt(event.data['args'], 10);
-              this.socketService.send({type: CommandType[CommandType.TOGGLE_TAG], args: tagId});
-              if (this.isOnMap(tagId)) {
-                this.tagsOnMap.getValue(tagId).remove();
-                this.tagsOnMap.remove(tagId);
-              }
-            }
+            this.handleCommands(event);
           }
         });
       });
@@ -135,6 +129,7 @@ export class PublishedComponent implements OnInit, AfterViewInit {
 
       this.socketSubscription = stream.subscribe((data: MeasureSocketData) => {
         this.ngZone.run(() => {
+
           if (this.isCoordinatesData(data)) {
             this.handleCoordinatesData(<CoordinatesSocketData> data);
           } else if (this.isEventData(data)) {
@@ -172,11 +167,47 @@ export class PublishedComponent implements OnInit, AfterViewInit {
 
   private handleEventData(data: EventSocketData) {
     const areaOnMap: GroupCreated = this.areasOnMap.getValue(data.event.areaId);
+    if (!!areaOnMap) {
+      if (data.event.mode.toString() === AreaEventMode[AreaEventMode.ON_ENTER]) {
+        areaOnMap.group.select('polygon').transition().attr('fill', 'red').delay(1000);
+      } else {
+        areaOnMap.group.select('polygon').transition().attr('fill', 'grey').delay(1000);
+      }
+    }
 
-    if (data.event.mode.toString() === AreaEventMode[AreaEventMode.ON_ENTER]) {
-      areaOnMap.group.select('polygon').attr('fill', 'red');
-    } else {
-      areaOnMap.group.select('polygon').attr('fill', 'grey');
+    if (this.originListeningOnEvent.containsKey('area')) {
+      this.originListeningOnEvent.getValue('area').forEach((event: MessageEvent) => {
+        setTimeout(() => {
+          event.source.postMessage({type: 'area', area: data.event}, event.origin);
+        }, 1000);
+      });
+    }
+  }
+
+  private handleCommands(event: MessageEvent) {
+    const data = event.data;
+    if ('command' in data) {
+
+      switch (data['command']) {
+
+        case 'toggleTagVisibility':
+          const tagId = parseInt(data['args'], 10);
+          this.socketService.send({type: CommandType[CommandType.TOGGLE_TAG], args: tagId});
+          if (this.isOnMap(tagId)) {
+            this.tagsOnMap.getValue(tagId).remove();
+            this.tagsOnMap.remove(tagId);
+          }
+          break;
+
+        case 'addEventListener':
+          if (this.originListeningOnEvent.containsKey(data['args'])) {
+            this.originListeningOnEvent.getValue(data['args']).push(event);
+          } else {
+            this.originListeningOnEvent.setValue(data['args'], [event]);
+          }
+          break;
+
+      }
     }
   }
 }
