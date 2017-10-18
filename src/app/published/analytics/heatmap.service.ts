@@ -17,8 +17,12 @@ export class HeatMapBuilder {
       opacity: this.configuration.opacity,
       blur: this.configuration.blur,
       gradient: {
-        '0.7': 'yellow',
-        '.9': 'orange',
+        '.01': 'lightBlue',
+        '.8': '#7FFFD4',
+        '.85': 'green',
+        '.9': 'lightGreen',
+        '.95': 'yellow',
+        '.98': 'orange',
         '1': 'red'
       }
     });

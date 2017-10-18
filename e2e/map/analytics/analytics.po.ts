@@ -1,4 +1,4 @@
-import {browser, by, element, promise as protractorPromise} from 'protractor';
+import {by, element, promise as protractorPromise} from 'protractor';
 
 
 export class AnalyticsPage {

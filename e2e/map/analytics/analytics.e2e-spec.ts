@@ -1,7 +1,5 @@
 import {AnalyticsPage} from './analytics.po';
-import {AppPage} from '../../app.po';
 import {browser} from 'protractor';
-import {MapPage} from '../map.po';
 import {PublishedPage} from '../../published/published.po';
 
 describe('Analytics', () => {
