@@ -2,14 +2,16 @@ export interface HeatMapSettings {
   radius: number;
   opacity: number;
   blur: number;
+}
+
+export interface HeatMapSettingsExtended extends HeatMapSettings {
   path: number;
   heat: number;
 }
 
 export interface MapConfiguration {
-  setData: any;
-  configure: any;
-  repaint: any;
+  setData: (data: HeatMapData) => void;
+  configure: (config: HeatMapSettings) => void;
 }
 
 export interface HeatPoint {
@@ -24,18 +26,13 @@ export interface HeatMapCoordinates {
   value: number;
 }
 
-export interface HeatMapConfig {
+export interface HeatMapConfig extends HeatMapSettings {
   pathLength: number;
   heatValue: number;
-  radius: number;
-  opacity: number;
-  blur: number;
 }
 
-export interface HeatMapConfiguration {
-  radius: number;
-  opacity: number;
-  blur: number;
-  heat: number;
-  path: number;
+export interface HeatMapData {
+  max: number;
+  min: number;
+  data: HeatMapCoordinates[];
 }

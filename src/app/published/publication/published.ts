@@ -6,6 +6,7 @@ import {PublishedService} from './published.service';
 import {MapViewerService} from '../../map/map.viewer.service';
 import {IconService} from 'app/utils/drawing/icon.service';
 import {PublishedViewerComponent} from '../published-viewer.component';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   templateUrl: '../published-viewer.component.html',
@@ -18,12 +19,14 @@ export class PublishedComponent extends PublishedViewerComponent implements Afte
               route: ActivatedRoute,
               publishedService: PublishedService,
               mapViewerService: MapViewerService,
+              translateService: TranslateService,
               iconService: IconService) {
     super(ngZone,
       socketService,
       route,
       publishedService,
       mapViewerService,
+      translateService,
       iconService);
   }
 

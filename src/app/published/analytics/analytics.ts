@@ -9,8 +9,9 @@ import {scaleCoordinates} from '../../map/toolbar/tools/scale/scale.type';
 import {Point} from '../../map/map.type';
 import {HeatMapBuilder, HeatMapCreated} from './heatmap.service';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
-import {HeatMapSettings} from './heat-map.type';
+import {HeatMapSettingsExtended} from './heat-map.type';
 import {PublishedComponent} from '../publication/published';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   templateUrl: './analytics.html',
@@ -22,7 +23,7 @@ export class AnalyticsComponent extends PublishedComponent implements AfterViewI
   private blurSliderView: boolean = false;
   private pathSliderView: boolean = false;
   private heatSliderView: boolean = false;
-  private heatMapSettings: HeatMapSettings = {
+  private heatMapSettings: HeatMapSettingsExtended = {
     radius: 20,
     opacity: 0.5,
     blur: 0.5,
@@ -42,12 +43,14 @@ export class AnalyticsComponent extends PublishedComponent implements AfterViewI
               route: ActivatedRoute,
               publishedService: PublishedService,
               mapViewerService: MapViewerService,
+              translateService: TranslateService,
               iconService: IconService) {
     super(ngZone,
       socketService,
       route,
       publishedService,
       mapViewerService,
+      translateService,
       iconService);
   }
 

@@ -4,14 +4,14 @@
   </div>
 </div>
 <div class="analytics-toolbar">
-  <h2>Tools</h2>
+  <h2>{{'tools'|translate}}</h2>
   <ul class="tools-list">
     <li>
       <button
         [disabled]="playingAnimation"
         (click)="toggleSlider('opacity')"
         md-mini-fab
-        md-tooltip="Opacity" mdTooltipPosition="right">
+        md-tooltip="{{'opacity'|translate}}" mdTooltipPosition="right">
         <i class="material-icons">brightness_7</i>
       </button>
       <md-slider [(ngModel)]="heatMapSettings.opacity"
@@ -23,7 +23,7 @@
         [disabled]="playingAnimation"
         (click)="toggleSlider('blur')"
         md-mini-fab
-        md-tooltip="Blur" mdTooltipPosition="right">
+        md-tooltip="{{'blur'|translate}}" mdTooltipPosition="right">
         <i class="material-icons">blur_on</i>
       </button>
       <md-slider [(ngModel)]="heatMapSettings.blur"
@@ -35,7 +35,7 @@
         [disabled]="playingAnimation"
         (click)="toggleSlider('path')"
         md-mini-fab
-        md-tooltip="Path length" mdTooltipPosition="right">
+        md-tooltip="{{'path.length'|translate}}" mdTooltipPosition="right">
         <i class="material-icons">history</i>
       </button>
       <md-slider [(ngModel)]="heatMapSettings.path"
@@ -47,7 +47,7 @@
         [disabled]="playingAnimation"
         (click)="toggleSlider('heat')"
         md-mini-fab
-        md-tooltip="Heat persistence" mdTooltipPosition="right">
+        md-tooltip="{{'heat.persistence'|translate}}" mdTooltipPosition="right">
         <i class="material-icons">hourglass_empty</i>
       </button>
       <md-slider [(ngModel)]="heatMapSettings.heat"
@@ -60,14 +60,14 @@
         (click)="toggleHeatAnimation()"
         [disabled]="playingAnimation"
         md-mini-fab
-        md-tooltip="Show Heat Map" mdTooltipPosition="right">
+        md-tooltip="{{'Show.heat.map'|translate}}" mdTooltipPosition="right">
         <i class="material-icons">play_arrow</i>
       </button>
       <button
         (click)="toggleHeatAnimation()"
         [disabled]="!playingAnimation"
         md-mini-fab
-        md-tooltip="Stop Heat Map" mdTooltipPosition="right">
+        md-tooltip="{{'stop.heat.map'|translate}}" mdTooltipPosition="right">
         <i class="material-icons">stop</i>
       </button>
     </li>

@@ -1,6 +1,6 @@
 import {Point} from '../../map/map.type';
 import h337 from 'heatmap.js';
-import {HeatMapConfig, HeatMapConfiguration, HeatMapCoordinates, HeatPoint, MapConfiguration} from './heat-map.type';
+import {HeatMapConfig, HeatMapCoordinates, HeatMapData, HeatMapSettingsExtended, HeatPoint, MapConfiguration} from './heat-map.type';
 
 export class HeatMapBuilder {
   private configuration: HeatMapConfig;
@@ -17,13 +17,12 @@ export class HeatMapBuilder {
       opacity: this.configuration.opacity,
       blur: this.configuration.blur,
       gradient: {
-        '.01': 'lightBlue',
-        '.8': '#7FFFD4',
-        '.85': 'green',
-        '.9': 'lightGreen',
-        '.95': 'yellow',
-        '.98': 'orange',
-        '1': 'red'
+        '.1': '#7FFFD4',
+        '.85': '#ADFF2F',
+        '.9': '#7FFF00',
+        '.95': '#FFD700',
+        '.98': '#FFA07A',
+        '1': '#FF4500'
       }
     });
     return new HeatMapCreated(
@@ -83,7 +82,7 @@ export class HeatMapCreated {
         }
         this.heatBuffer.splice(0, 1);
       }
-      const data = {
+      const data =  <HeatMapData> {
         max: this.heatValue * 5,
         min: 0,
         data: this.heatBuffer
@@ -93,7 +92,7 @@ export class HeatMapCreated {
     return this;
   }
 
-  public configure(heatMapConfiguration: HeatMapConfiguration) {
+  public configure(heatMapConfiguration: HeatMapSettingsExtended) {
     this.heatMapInstance.configure({
       radius: heatMapConfiguration.radius,
       opacity: heatMapConfiguration.opacity,

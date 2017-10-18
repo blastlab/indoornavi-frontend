@@ -14,6 +14,7 @@ import {Measure, scaleCoordinates} from '../map/toolbar/tools/scale/scale.type';
 import {Tag} from '../device/tag.type';
 import {Point} from '../map/map.type';
 import {Config} from '../../config';
+import {TranslateService} from '@ngx-translate/core';
 
 
 @Component({
@@ -33,10 +34,12 @@ export class PublishedViewerComponent implements OnInit {
               protected route: ActivatedRoute,
               protected publishedService: PublishedService,
               private mapViewerService: MapViewerService,
+              private translateService: TranslateService,
               private iconService: IconService) {
   }
 
   ngOnInit() {
+    this.translateService.setDefaultLang('en');
     this.route.params.subscribe((params: Params) => {
       const mapId = +params['id'];
       this.publishedService.get(mapId).subscribe((map: PublishedMap) => {
