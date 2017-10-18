@@ -61,6 +61,10 @@ export class AnchorPlacerComponent implements Tool, OnInit {
       this.floorId = configuration.floorId;
       this.drawConfiguredDevices(configuration.data.sinks);
       console.log(configuration);
+        /*configuration.data.anchors = []; // TODO delete empty array after DTO update
+        configuration.data.anchors.forEach((anchor) => {
+            this.drawDevice(this.buildAnchorDrawConfiguration(anchor), {x: anchor.x, y: anchor.y});
+        });*/
     });
     this.subscribeForAnchor();
   }
@@ -157,10 +161,10 @@ export class AnchorPlacerComponent implements Tool, OnInit {
     const deviceGroup = droppedDevice.createGroup()
       .addIcon({x: coordinates.x - 12, y: coordinates.y - 12}, this.icons.getIcon(NaviIcons.POINTER))
       .addText({x: coordinates.x + 5, y: coordinates.y - 5}, `${deviceConfig.clazz}-${deviceConfig.id}`);
-    if (deviceConfig.clazz === `sink`) {
+      if (deviceConfig.clazz.includes(`sink`)) {
       deviceGroup
         .addIcon({x: coordinates.x + 5, y: coordinates.y + 5}, this.icons.getIcon(NaviIcons.SINK));
-    } else if (deviceConfig.clazz === `anchor`) {
+      } else if (deviceConfig.clazz.includes(`anchor`)) {
       deviceGroup
         .addIcon({x: coordinates.x + 5, y: coordinates.y + 5}, this.icons.getIcon(NaviIcons.ANCHOR));
     }

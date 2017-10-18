@@ -1,5 +1,6 @@
 import {Scale} from '../toolbar/tools/scale/scale.type';
 import {Sink} from '../../device/sink.type';
+import {Anchor} from '../../device/anchor.type';
 
 export interface Configuration {
   version: number;
@@ -10,5 +11,6 @@ export interface Configuration {
 
 export interface ConfigurationData {
   sinks: Sink[];
+    anchors?: Anchor[];  // TODO delete `?` after DTO update
   scale: Scale;
 }
