@@ -3,21 +3,22 @@ import {ActivatedRoute} from '@angular/router';
 import {PublishedService} from '../publication/published.service';
 import {MapViewerService} from '../../map/map.viewer.service';
 import {IconService} from 'app/utils/drawing/icon.service';
-import {AfterViewInit, Component, ElementRef, NgZone, ViewChild} from '@angular/core';
+import {Component, ElementRef, NgZone, OnInit, ViewChild} from '@angular/core';
 import {MeasureSocketData} from '../publication/published.type';
 import {scaleCoordinates} from '../../map/toolbar/tools/scale/scale.type';
 import {Point} from '../../map/map.type';
 import {HeatMapBuilder, HeatMapCreated} from './heatmap.service';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
 import {HeatMapSettingsExtended} from './heat-map.type';
-import {PublishedComponent} from '../publication/published';
 import {TranslateService} from '@ngx-translate/core';
+import {PublishedViewerComponent} from '../published-viewer.component';
+import {GroupCreated} from '../publication/published.builder';
 
 @Component({
   templateUrl: './analytics.html',
   styleUrls: ['./analytics.css']
 })
-export class AnalyticsComponent extends PublishedComponent implements AfterViewInit {
+export class AnalyticsComponent extends PublishedViewerComponent implements OnInit {
   private heatMapSet: Dictionary<number, HeatMapCreated> = new Dictionary<number, HeatMapCreated>();
   private opacitySliderView: boolean = false;
   private blurSliderView: boolean = false;
@@ -54,7 +55,7 @@ export class AnalyticsComponent extends PublishedComponent implements AfterViewI
       iconService);
   }
 
-  ngAfterViewInit(): void {
+  ngOnInit(): void {
     // in the moment of creating svg #map, component doesn't know anything about its style
     // so cannot set proper canvas size,
     // we need to get picture size an set it before canvas creation
@@ -62,9 +63,7 @@ export class AnalyticsComponent extends PublishedComponent implements AfterViewI
     // doesn't work as it is not set for this element in the process of DOM setting
     // mapStyle variable needs to be updated with proper width value of the map
     // before canvas is being created in the DOM
-    this.ngZone.runOutsideAngular(() => {
-      this.callbacksToBeRunAfterSocketInitialization.push(this.heatMapDrawer.bind(this));
-    });
+    this.connect(this.handleCoordinatesData.bind(this), this.heatMapDrawer.bind(this));
   }
 
   public toggleSlider(type: string): void {
@@ -114,10 +113,10 @@ export class AnalyticsComponent extends PublishedComponent implements AfterViewI
   }
 
   protected isInHeatMapSet(deviceId: number): boolean {
-    return this.tagsOnMap.containsKey(deviceId);
+    return this.heatMapSet.containsKey(deviceId);
   }
 
-  protected heatMapDrawer(data: MeasureSocketData): void {
+  public heatMapDrawer(data: MeasureSocketData): void {
     const coordinates: Point = scaleCoordinates(data.coordinates.point, this.pixelsToCentimeters),
       deviceId: number = data.coordinates.tagShortId;
     if (!this.isInHeatMapSet(deviceId)) {

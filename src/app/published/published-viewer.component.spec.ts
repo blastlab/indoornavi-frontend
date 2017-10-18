@@ -13,6 +13,7 @@ import {Observable} from 'rxjs/Rx';
 import {ActivatedRoute} from '@angular/router';
 import {PublishedService} from './publication/published.service';
 import {PublishedViewerComponent} from './published-viewer.component';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
 
 describe('PublishedViewerComponent', () => {
   let component: PublishedViewerComponent;
@@ -25,10 +26,11 @@ describe('PublishedViewerComponent', () => {
     TestBed.configureTestingModule({
       declarations: [PublishedViewerComponent],
       imports: [
+        TranslateModule.forRoot(),
         HttpModule,
         RouterTestingModule,
       ],
-      providers: [SocketService, WebSocketService, PublishedService, MapViewerService,
+      providers: [SocketService, WebSocketService, PublishedService, MapViewerService, TranslateService,
         IconService, HttpService, AuthGuard, MapService, MdIconRegistry]
     })
       .compileComponents();
@@ -49,7 +51,7 @@ describe('PublishedViewerComponent', () => {
     activatedRoute.params = Observable.of({'id': '1'});
 
     // when
-    component.ngOnInit();
+    component.connect();
 
     // then
     expect(component).toBeTruthy();

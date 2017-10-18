@@ -13,6 +13,7 @@ import {MapService} from '../../map/map.service';
 import {MdIconRegistry} from '@angular/material';
 import {Observable} from 'rxjs/Rx';
 import {ActivatedRoute} from '@angular/router';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
 
 describe('PublishedComponent', () => {
   let component: PublishedComponent;
@@ -25,10 +26,12 @@ describe('PublishedComponent', () => {
     TestBed.configureTestingModule({
       declarations: [PublishedComponent],
       imports: [
+        TranslateModule.forRoot(),
         HttpModule,
         RouterTestingModule,
+
       ],
-      providers: [SocketService, WebSocketService, PublishedService, MapViewerService,
+      providers: [SocketService, WebSocketService, PublishedService, MapViewerService, TranslateService,
         IconService, HttpService, AuthGuard, MapService, MdIconRegistry]
     })
       .compileComponents();

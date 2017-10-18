@@ -9,11 +9,13 @@ import {MapService} from '../../map/map.service';
 import {MdIconRegistry} from '@angular/material';
 import {AnalyticsComponent} from './analytics';
 import {MapViewerService} from '../../map/map.viewer.service';
-import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 import {SocketService} from '../../utils/socket/socket.service';
 import {PublishedService} from '../publication/published.service';
 import {ActivatedRoute} from '@angular/router';
 import {Observable} from 'rxjs/Observable';
+import {MaterialModule} from '@angular/material';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {FormsModule} from '@angular/forms';
 
 
 
@@ -26,13 +28,16 @@ describe('AnalyticsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       declarations: [AnalyticsComponent],
       imports: [
+        TranslateModule.forRoot(),
+        MaterialModule,
         HttpModule,
-        RouterTestingModule
+        RouterTestingModule,
+        FormsModule,
       ],
       providers: [
+        TranslateService,
         WebSocketService,
         MapViewerService,
         IconService,
@@ -66,6 +71,6 @@ describe('AnalyticsComponent', () => {
     // then
     expect(component).toBeTruthy();
     expect(publishedService.get).toHaveBeenCalled();
-    expect(mapViewerService.drawMap).toHaveBeenCalled();;
+    expect(mapViewerService.drawMap).toHaveBeenCalled();
   });
 });

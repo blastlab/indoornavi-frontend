@@ -1,4 +1,4 @@
-import {Component, Injectable, NgZone, OnInit} from '@angular/core';
+import {Component, Injectable, NgZone} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
 import {ActivatedRoute, Params} from '@angular/router';
 import * as d3 from 'd3';
@@ -21,24 +21,23 @@ import {TranslateService} from '@ngx-translate/core';
   templateUrl: './published-viewer.component.html',
   styleUrls: ['./published-viewer.component.css']
 })
-export class PublishedViewerComponent implements OnInit {
+export class PublishedViewerComponent {
   protected socketSubscription: Subscription;
   protected activeMap: PublishedMap;
   protected d3map: d3.selection = null;
   protected tagsOnMap: Dictionary<number, GroupCreated> = new Dictionary<number, GroupCreated>();
   protected pixelsToCentimeters: number;
-  protected callbacksToBeRunAfterSocketInitialization: Array<Function> = [];
 
-  constructor(protected ngZone: NgZone,
+  constructor(private ngZone: NgZone,
               protected socketService: SocketService,
               protected route: ActivatedRoute,
               protected publishedService: PublishedService,
               private mapViewerService: MapViewerService,
               private translateService: TranslateService,
-              private iconService: IconService) {
+              public iconService: IconService) {
   }
 
-  ngOnInit() {
+  public connect(...callBacks: Array<Function>) {
     this.translateService.setDefaultLang('en');
     this.route.params.subscribe((params: Params) => {
       const mapId = +params['id'];
@@ -50,26 +49,14 @@ export class PublishedViewerComponent implements OnInit {
             const realDistanceInCentimeters = map.floor.scale.realDistance * (map.floor.scale.measure.toString() === Measure[Measure.METERS] ? 100 : 1);
             const pixels = Geometry.getDistanceBetweenTwoPoints(map.floor.scale.start, map.floor.scale.stop);
             this.pixelsToCentimeters = realDistanceInCentimeters / pixels;
-            this.callbacksToBeRunAfterSocketInitialization.push(this.handleCoordinatesData.bind(this));
-            this.initializeSocketConnection(this.callbacksToBeRunAfterSocketInitialization);
+            this.initializeSocketConnection(callBacks);
           });
         }
       });
     });
   }
 
-  private isCoordinatesData(data: MeasureSocketData): boolean {
-    return this.d3map !== null
-      && MeasureSocketDataType[MeasureSocketDataType.COORDINATES] === data.type.toString();
-  }
-
-  private extractTagsShortIds() {
-    return this.activeMap.tags.map((tag: Tag) => {
-      return tag.shortId;
-    });
-  }
-
-  private handleCoordinatesData(data: MeasureSocketData) {
+  public handleCoordinatesData(data: MeasureSocketData) {
     const coordinates: Point = scaleCoordinates(data.coordinates.point, this.pixelsToCentimeters),
       deviceId: number = data.coordinates.tagShortId;
     if (!this.isOnMap(deviceId)) {
@@ -85,19 +72,31 @@ export class PublishedViewerComponent implements OnInit {
     }
   };
 
+
+  private isCoordinatesData(data: MeasureSocketData): boolean {
+    return this.d3map !== null
+      && MeasureSocketDataType[MeasureSocketDataType.COORDINATES] === data.type.toString();
+  }
+
+  private extractTagsShortIds() {
+    return this.activeMap.tags.map((tag: Tag) => {
+      return tag.shortId;
+    });
+  }
+
   private setSocketConfiguration() {
     this.socketService.send({type: CommandType[CommandType.SET_FLOOR], args: `${this.activeMap.floor.id}`});
     this.socketService.send({type: CommandType[CommandType.SET_TAGS], args: `[${this.extractTagsShortIds()}]`});
   };
 
-  private initializeSocketConnection(callBacks: Array<Function>) {
+  public initializeSocketConnection(callBacks: Array<Function>) {
     this.ngZone.runOutsideAngular(() => {
       const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?client`);
       this.setSocketConfiguration();
       this.socketSubscription = stream.subscribe((data: MeasureSocketData) => {
         this.ngZone.run(() => {
           if (this.isCoordinatesData(data)) {
-            callBacks.forEach(callBack => {
+            callBacks.forEach((callBack: Function) => {
               callBack(data);
             });
           }
