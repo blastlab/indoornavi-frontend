@@ -6,7 +6,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {Timer} from '../../utils/timer/timer';
 import {MdDialog, MdDialogRef} from '@angular/material';
 import {PublishedDialogComponent} from '../../published/dialog/published.dialog';
-import {PublishedMap} from '../../published/publication/published.type';
+import {PublishedMap} from '../../published/public/published.type';
 import {ConfirmDialogComponent} from '../../utils/confirm-dialog/confirm.dialog';
 import {TranslateService} from '@ngx-translate/core';
 import {Configuration} from './actionbar.type';

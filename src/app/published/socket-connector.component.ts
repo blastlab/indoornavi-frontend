@@ -1,32 +1,35 @@
-import {Component, Injectable, NgZone} from '@angular/core';
+import {Component, NgZone, OnInit} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
 import {ActivatedRoute, Params} from '@angular/router';
 import * as d3 from 'd3';
-import Dictionary from 'typescript-collections/dist/lib/Dictionary';
-import {CommandType, MeasureSocketData, MeasureSocketDataType, PublishedMap} from './publication/published.type';
-import {DrawBuilder, GroupCreated} from './publication/published.builder';
+import {CommandType, MeasureSocketData, MeasureSocketDataType, PublishedMap} from './public/published.type';
 import {SocketService} from '../utils/socket/socket.service';
-import {PublishedService} from 'app/published/publication/published.service';
+import {PublishedService} from 'app/published/public/published.service';
 import {MapViewerService} from '../map/map.viewer.service';
-import {IconService, NaviIcons} from '../utils/drawing/icon.service';
 import {Geometry} from '../map/utils/geometry';
 import {Measure, scaleCoordinates} from '../map/toolbar/tools/scale/scale.type';
 import {Tag} from '../device/tag.type';
-import {Point} from '../map/map.type';
 import {Config} from '../../config';
 import {TranslateService} from '@ngx-translate/core';
+import {Subject} from 'rxjs/Subject';
+import {Observable} from 'rxjs/Observable';
+import {IconService, NaviIcons} from '../utils/drawing/icon.service';
+import {DrawBuilder, GroupCreated} from './public/published.builder';
+import {Point} from '../map/map.type';
+import Dictionary from 'typescript-collections/dist/lib/Dictionary';
 
 
 @Component({
-  templateUrl: './published-viewer.component.html',
-  styleUrls: ['./published-viewer.component.css']
+  templateUrl: './socket-connector.component.html',
+  styleUrls: ['./socket-connector.component.css']
 })
-export class PublishedViewerComponent {
+export class SocketConnectorComponent implements OnInit{
   protected socketSubscription: Subscription;
   protected activeMap: PublishedMap;
   protected d3map: d3.selection = null;
-  protected tagsOnMap: Dictionary<number, GroupCreated> = new Dictionary<number, GroupCreated>();
   protected pixelsToCentimeters: number;
+  private dataReceived = new Subject<MeasureSocketData>();
+  private tagsOnMap: Dictionary<number, GroupCreated> = new Dictionary<number, GroupCreated>();
 
   constructor(private ngZone: NgZone,
               protected socketService: SocketService,
@@ -34,10 +37,10 @@ export class PublishedViewerComponent {
               protected publishedService: PublishedService,
               private mapViewerService: MapViewerService,
               private translateService: TranslateService,
-              public iconService: IconService) {
+              private iconService: IconService) {
   }
 
-  public connect(...callBacks: Array<Function>) {
+  ngOnInit() {
     this.translateService.setDefaultLang('en');
     this.route.params.subscribe((params: Params) => {
       const mapId = +params['id'];
@@ -49,29 +52,22 @@ export class PublishedViewerComponent {
             const realDistanceInCentimeters = map.floor.scale.realDistance * (map.floor.scale.measure.toString() === Measure[Measure.METERS] ? 100 : 1);
             const pixels = Geometry.getDistanceBetweenTwoPoints(map.floor.scale.start, map.floor.scale.stop);
             this.pixelsToCentimeters = realDistanceInCentimeters / pixels;
-            this.initializeSocketConnection(callBacks);
+            this.initializeSocketConnection();
           });
         }
       });
     });
+    this.init();
+  }
+  protected init() {
+    this.whenDataArrived().subscribe((data: MeasureSocketData) => {
+      this.handleCoordinatesData(data, this.d3map);
+    });
   }
 
-  public handleCoordinatesData(data: MeasureSocketData) {
-    const coordinates: Point = scaleCoordinates(data.coordinates.point, this.pixelsToCentimeters),
-      deviceId: number = data.coordinates.tagShortId;
-    if (!this.isOnMap(deviceId)) {
-      const drawBuilder = new DrawBuilder(this.d3map, {id: `tag-${deviceId}`, clazz: 'tag'});
-      const tagOnMap = drawBuilder
-        .createGroup()
-        .addIcon({x: 0, y: 0}, this.iconService.getIcon(NaviIcons.TAG))
-        .addText({x: 0, y: 36}, `${deviceId}`)
-        .place({x: coordinates.x, y: coordinates.y});
-      this.tagsOnMap.setValue(deviceId, tagOnMap);
-    } else {
-      this.tagsOnMap.getValue(deviceId).move(coordinates);
-    }
-  };
-
+  protected whenDataArrived(): Observable<MeasureSocketData> {
+    return this.dataReceived.asObservable();
+  }
 
   private isCoordinatesData(data: MeasureSocketData): boolean {
     return this.d3map !== null
@@ -87,25 +83,44 @@ export class PublishedViewerComponent {
   private setSocketConfiguration() {
     this.socketService.send({type: CommandType[CommandType.SET_FLOOR], args: `${this.activeMap.floor.id}`});
     this.socketService.send({type: CommandType[CommandType.SET_TAGS], args: `[${this.extractTagsShortIds()}]`});
-  };
+  }
 
-  public initializeSocketConnection(callBacks: Array<Function>) {
+  public initializeSocketConnection() {
     this.ngZone.runOutsideAngular(() => {
       const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?client`);
       this.setSocketConfiguration();
       this.socketSubscription = stream.subscribe((data: MeasureSocketData) => {
         this.ngZone.run(() => {
           if (this.isCoordinatesData(data)) {
-            callBacks.forEach((callBack: Function) => {
-              callBack(data);
-            });
+            this.dataReceived.next(data);
           }
         });
       });
     });
-  };
+  }
+
+  protected handleCoordinatesData(data: MeasureSocketData, d3map: d3.selection) {
+    const coordinates: Point = scaleCoordinates(data.coordinates.point, this.pixelsToCentimeters),
+      deviceId: number = data.coordinates.tagShortId;
+    if (!this.isOnMap(deviceId)) {
+      const drawBuilder = new DrawBuilder(d3map, {id: `tag-${deviceId}`, clazz: 'tag'});
+      const tagOnMap = drawBuilder
+        .createGroup()
+        .addIcon({x: 0, y: 0}, this.iconService.getIcon(NaviIcons.TAG))
+        .addText({x: 0, y: 36}, `${deviceId}`)
+        .place({x: coordinates.x, y: coordinates.y});
+      this.tagsOnMap.setValue(deviceId, tagOnMap);
+    } else {
+      this.tagsOnMap.getValue(deviceId).move(coordinates);
+    }
+  }
 
   protected isOnMap(deviceId: number): boolean {
     return this.tagsOnMap.containsKey(deviceId);
+  }
+
+  removeTagFromMap(tagId: number) {
+    this.tagsOnMap.getValue(tagId).remove();
+    this.tagsOnMap.remove(tagId);
   }
 }

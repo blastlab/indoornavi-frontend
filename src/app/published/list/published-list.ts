@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {PublishedService} from '../publication/published.service';
-import {PublishedMap} from '../publication/published.type';
+import {PublishedService} from '../public/published.service';
+import {PublishedMap} from '../public/published.type';
 import {TranslateService} from '@ngx-translate/core';
 import {MdDialog, MdDialogRef} from '@angular/material';
 import {ToastService} from '../../utils/toast/toast.service';

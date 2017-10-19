@@ -15,7 +15,7 @@ import {UserService} from '../../user/user.service';
 import {ComplexService} from '../../complex/complex.service';
 import {BuildingService} from '../../building/building.service';
 import {FloorService} from '../../floor/floor.service';
-import {PublishedService} from 'app/published/publication/published.service';
+import {PublishedService} from 'app/published/public/published.service';
 import {ToastService} from '../../utils/toast/toast.service';
 import {SharedModule} from '../../utils/shared/shared.module';
 import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';

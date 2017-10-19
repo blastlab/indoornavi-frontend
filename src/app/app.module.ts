@@ -65,18 +65,18 @@ import {HintBarService} from './map/hint-bar/hint-bar.service';
 import {ActionBarService} from './map/actionbar/actionbar.service';
 import {D3Service} from 'd3-ng2-service';
 import {ScaleService} from './map/toolbar/tools/scale/scale.service';
-import {PublishedComponent} from './published/publication/published';
+import {PublishedComponent} from './published/public/published';
 import {AnalyticsComponent} from './published/analytics/analytics';
 import {PublishedListComponent} from './published/list/published-list';
 import {NgxDatatableModule} from '@swimlane/ngx-datatable';
 import {appRoutes} from './app.routes';
-import {PublishedService} from './published/publication/published.service';
+import {PublishedService} from './published/public/published.service';
 import {MapViewerService} from './map/map.viewer.service';
 import {PublishedDialogComponent} from './published/dialog/published.dialog';
 import {ConfirmDialogComponent} from './utils/confirm-dialog/confirm.dialog';
 import {DeviceComponent} from './device/device.component';
 import {ActionBarComponent} from 'app/map/actionbar/actionbar';
-import { PublishedViewerComponent } from './published/published-viewer.component';
+import { SocketConnectorComponent } from './published/socket-connector.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -121,7 +121,7 @@ export function HttpLoaderFactory(http: Http) {
     PublishedDialogComponent,
     ConfirmDialogComponent,
     DeviceComponent,
-    PublishedViewerComponent
+    SocketConnectorComponent
 
   ],
   entryComponents: [

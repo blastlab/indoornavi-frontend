@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {PublishedMap} from '../publication/published.type';
+import {PublishedMap} from '../public/published.type';
 import {Option} from '../../utils/multiselect/multiselect.type';
 import {Floor} from '../../floor/floor.type';
 import {Building} from '../../building/building.type';
@@ -11,7 +11,7 @@ import {FloorService} from '../../floor/floor.service';
 import {BuildingService} from 'app/building/building.service';
 import {TranslateService} from '@ngx-translate/core';
 import {MultiSelectUtils} from '../../utils/multiselect/mutliselect.util';
-import {PublishedService} from '../publication/published.service';
+import {PublishedService} from '../public/published.service';
 import {ToastService} from '../../utils/toast/toast.service';
 import {MdDialogRef} from '@angular/material';
 import {DeviceService} from '../../device/device.service';

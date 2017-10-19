@@ -1,24 +1,23 @@
 import {SocketService} from '../../utils/socket/socket.service';
 import {ActivatedRoute} from '@angular/router';
-import {PublishedService} from '../publication/published.service';
+import {PublishedService} from '../public/published.service';
 import {MapViewerService} from '../../map/map.viewer.service';
-import {IconService} from 'app/utils/drawing/icon.service';
 import {Component, ElementRef, NgZone, OnInit, ViewChild} from '@angular/core';
-import {MeasureSocketData} from '../publication/published.type';
+import {MeasureSocketData} from '../public/published.type';
 import {scaleCoordinates} from '../../map/toolbar/tools/scale/scale.type';
 import {Point} from '../../map/map.type';
 import {HeatMapBuilder, HeatMapCreated} from './heatmap.service';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
 import {HeatMapSettingsExtended} from './heat-map.type';
 import {TranslateService} from '@ngx-translate/core';
-import {PublishedViewerComponent} from '../published-viewer.component';
-import {GroupCreated} from '../publication/published.builder';
+import {SocketConnectorComponent} from '../socket-connector.component';
+import {IconService} from '../../utils/drawing/icon.service';
 
 @Component({
   templateUrl: './analytics.html',
   styleUrls: ['./analytics.css']
 })
-export class AnalyticsComponent extends PublishedViewerComponent implements OnInit {
+export class AnalyticsComponent extends SocketConnectorComponent implements OnInit {
   private heatMapSet: Dictionary<number, HeatMapCreated> = new Dictionary<number, HeatMapCreated>();
   private opacitySliderView: boolean = false;
   private blurSliderView: boolean = false;
@@ -36,8 +35,6 @@ export class AnalyticsComponent extends PublishedViewerComponent implements OnIn
   };
 
   public playingAnimation: boolean = false;
-  @ViewChild('mapContainer')
-  private canvasContainer: ElementRef;
 
   constructor(ngZone: NgZone,
               socketService: SocketService,
@@ -55,7 +52,7 @@ export class AnalyticsComponent extends PublishedViewerComponent implements OnIn
       iconService);
   }
 
-  ngOnInit(): void {
+  protected init(): void {
     // in the moment of creating svg #map, component doesn't know anything about its style
     // so cannot set proper canvas size,
     // we need to get picture size an set it before canvas creation
@@ -63,7 +60,10 @@ export class AnalyticsComponent extends PublishedViewerComponent implements OnIn
     // doesn't work as it is not set for this element in the process of DOM setting
     // mapStyle variable needs to be updated with proper width value of the map
     // before canvas is being created in the DOM
-    this.connect(this.handleCoordinatesData.bind(this), this.heatMapDrawer.bind(this));
+    this.whenDataArrived().subscribe((data: MeasureSocketData) => {
+      this.handleCoordinatesData(data, this.d3map);
+      this.drawHeatMap(data);
+    });
   }
 
   public toggleSlider(type: string): void {
@@ -116,7 +116,7 @@ export class AnalyticsComponent extends PublishedViewerComponent implements OnIn
     return this.heatMapSet.containsKey(deviceId);
   }
 
-  public heatMapDrawer(data: MeasureSocketData): void {
+  public drawHeatMap(data: MeasureSocketData): void {
     const coordinates: Point = scaleCoordinates(data.coordinates.point, this.pixelsToCentimeters),
       deviceId: number = data.coordinates.tagShortId;
     if (!this.isInHeatMapSet(deviceId)) {
@@ -136,7 +136,7 @@ export class AnalyticsComponent extends PublishedViewerComponent implements OnIn
     } else {
       this.heatMapSet.getValue(deviceId).repaint();
     }
-  };
+  }
 
   private setAllSlidersViewToFalse(): void {
     this.opacitySliderView = this.blurSliderView = this.pathSliderView = this.heatSliderView = false;

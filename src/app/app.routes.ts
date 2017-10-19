@@ -10,7 +10,7 @@ import {FloorComponent} from './floor/floor';
 import {MapControllerComponent} from './map/map.controller';
 import {UnauthorizedComponent} from './utils/unauthorized/unauthorized';
 import {PublishedListComponent} from './published/list/published-list';
-import {PublishedComponent} from './published/publication/published';
+import {PublishedComponent} from './published/public/published';
 import {AnalyticsComponent} from './published/analytics/analytics';
 import {DeviceComponent} from './device/device.component';
 
