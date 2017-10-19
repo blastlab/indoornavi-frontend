@@ -7,6 +7,7 @@ import {MapViewerService} from '../../map/map.viewer.service';
 import {SocketConnectorComponent} from '../socket-connector.component';
 import {TranslateService} from '@ngx-translate/core';
 import {IconService} from '../../utils/drawing/icon.service';
+import {AreaService} from '../../area/area.service';
 
 @Component({
   templateUrl: '../socket-connector.component.html',
@@ -19,13 +20,17 @@ export class PublishedComponent extends SocketConnectorComponent implements OnIn
               route: ActivatedRoute,
               publishedService: PublishedService,
               mapViewerService: MapViewerService,
+              areaService: AreaService,
               translateService: TranslateService,
               iconService: IconService) {
-    super(ngZone,
+
+    super(
+      ngZone,
       socketService,
       route,
       publishedService,
       mapViewerService,
+      areaService,
       translateService,
       iconService);
   }

@@ -12,6 +12,10 @@ export enum Measure {
   METERS
 }
 
+export const getRealDistanceInCentimeters = (scale: Scale): number => {
+  return scale.realDistance * (scale.measure.toString() === Measure[Measure.METERS] ? 100 : 1);
+};
+
 export const scaleCoordinates = (point: Point, pixelsToCentimeters: number): Point => {
   return {
     x: point.x / pixelsToCentimeters,

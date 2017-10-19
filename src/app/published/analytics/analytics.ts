@@ -3,7 +3,7 @@ import {ActivatedRoute} from '@angular/router';
 import {PublishedService} from '../public/published.service';
 import {MapViewerService} from '../../map/map.viewer.service';
 import {Component, ElementRef, NgZone, OnInit, ViewChild} from '@angular/core';
-import {MeasureSocketData} from '../public/published.type';
+import {CoordinatesSocketData, MeasureSocketData} from '../public/published.type';
 import {scaleCoordinates} from '../../map/toolbar/tools/scale/scale.type';
 import {Point} from '../../map/map.type';
 import {HeatMapBuilder, HeatMapCreated} from './heatmap.service';
@@ -12,12 +12,13 @@ import {HeatMapSettingsExtended} from './heat-map.type';
 import {TranslateService} from '@ngx-translate/core';
 import {SocketConnectorComponent} from '../socket-connector.component';
 import {IconService} from '../../utils/drawing/icon.service';
+import {AreaService} from '../../area/area.service';
 
 @Component({
   templateUrl: './analytics.html',
   styleUrls: ['./analytics.css']
 })
-export class AnalyticsComponent extends SocketConnectorComponent implements OnInit {
+export class AnalyticsComponent extends SocketConnectorComponent {
   private heatMapSet: Dictionary<number, HeatMapCreated> = new Dictionary<number, HeatMapCreated>();
   private opacitySliderView: boolean = false;
   private blurSliderView: boolean = false;
@@ -41,6 +42,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
               route: ActivatedRoute,
               publishedService: PublishedService,
               mapViewerService: MapViewerService,
+              areaService: AreaService,
               translateService: TranslateService,
               iconService: IconService) {
     super(ngZone,
@@ -48,6 +50,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       route,
       publishedService,
       mapViewerService,
+      areaService,
       translateService,
       iconService);
   }
@@ -60,9 +63,15 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     // doesn't work as it is not set for this element in the process of DOM setting
     // mapStyle variable needs to be updated with proper width value of the map
     // before canvas is being created in the DOM
-    this.whenDataArrived().subscribe((data: MeasureSocketData) => {
-      this.handleCoordinatesData(data, this.d3map);
-      this.drawHeatMap(data);
+    this.whenDataArrived().subscribe((data: CoordinatesSocketData) => {
+      // update
+      this.setHeatMap(data);
+      this.handleCoordinatesData(data);
+    });
+
+    this.whenTransitionEnded().subscribe((tagShortId: number) => {
+      // draw
+      this.drawHeatMap(tagShortId);
     });
   }
 
@@ -116,8 +125,8 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     return this.heatMapSet.containsKey(deviceId);
   }
 
-  public drawHeatMap(data: MeasureSocketData): void {
-    const coordinates: Point = scaleCoordinates(data.coordinates.point, this.pixelsToCentimeters),
+  private setHeatMap(data: CoordinatesSocketData): void {
+    const coordinates: Point = data.coordinates.point,
       deviceId: number = data.coordinates.tagShortId;
     if (!this.isInHeatMapSet(deviceId)) {
       const heatMapBuilder = new HeatMapBuilder({
@@ -130,16 +139,20 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       const heatMap = heatMapBuilder
         .createHeatGroup();
       this.heatMapSet.setValue(deviceId, heatMap);
-    } else if (this.playingAnimation) {
+    }
+    if (this.playingAnimation) {
       this.heatMapSet.getValue(deviceId).configure(this.heatMapSettings);
       this.heatMapSet.getValue(deviceId).update(coordinates);
     } else {
-      this.heatMapSet.getValue(deviceId).repaint();
+      this.heatMapSet.getValue(deviceId).clean();
     }
+  }
+
+  private drawHeatMap (deviceId) {
+    this.heatMapSet.getValue(deviceId).draw();
   }
 
   private setAllSlidersViewToFalse(): void {
     this.opacitySliderView = this.blurSliderView = this.pathSliderView = this.heatSliderView = false;
   }
-
 }

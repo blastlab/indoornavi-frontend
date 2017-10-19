@@ -27,6 +27,7 @@ export class DrawBuilder {
 
 export class GroupCreated {
   group: d3.selection;
+  transitionEnded: boolean = true;
 
   constructor(group: d3.selection) {
     this.group = group;
@@ -38,16 +39,6 @@ export class GroupCreated {
       .attr('y', coordinates.y);
     return this;
   }
-
-  move(coordinates: Point): GroupCreated {
-    this.group
-      .transition()
-      .attr('x', coordinates.x)
-      .attr('y', coordinates.y)
-      .duration(1000);
-    return this;
-  }
-
   addIcon(coordinates: Point, icon: string): GroupCreated {
     this.group
       .append('svg')
@@ -66,6 +57,23 @@ export class GroupCreated {
       .attr('y', coordinates.y)
       .attr('fill', 'black')
       .text(text);
+    return this;
+  }
+
+  addPolygon(points: Point[], settings?: Map<string, string>): GroupCreated {
+    let pointsString = '';
+    points.forEach((point: Point) => {
+      pointsString += `${point.x},${point.y} `;
+    });
+    this.group
+      .append('polygon')
+      .attr('points', pointsString);
+    if (!!settings) {
+      settings.forEach((value: string, key: string) => {
+        this.group
+          .attr(key, value);
+      });
+    }
     return this;
   }
 

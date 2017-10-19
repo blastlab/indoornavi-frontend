@@ -58,37 +58,30 @@ export class HeatMapCreated {
   // Check the length of the heatBuffer and first take all items of heatBuffer from beginning to given preconfigured length and
   // decrease heat down by preconfigured value and second remove first heat point in heatBuffer which is the oldest heatPoint in heatBuffer.
   public update(coordinates: Point): HeatMapCreated {
-    setTimeout( () => {
-      const x = Math.round(coordinates.x / 10) * 10;
-      const y = Math.round(coordinates.y / 10) * 10;
-      const heatPointIndex = this.heatBuffer
-        .findIndex( heatPoint => (heatPoint.x === x && heatPoint.y === y ));
-      if (heatPointIndex > -1) {
-        const increaseValueNumber = this.heatValue + this.heatBuffer[heatPointIndex].value <= this.heatValue * 5 ?
-          this.heatValue + this.heatBuffer[heatPointIndex].value : this.heatValue * 5;
-        this.heatBuffer.splice(heatPointIndex, 1);
-        const heatPoint = new HeatPointSetter(x, y, increaseValueNumber);
-        this.heatBuffer.push(heatPoint.configuration);
-      } else {
-        const heatPoint = new HeatPointSetter(x, y, this.heatValue);
-        this.heatBuffer.push(heatPoint.configuration);
-      }
-      if (this.heatBuffer.length > this.heatMapPathLength) {
-        for (let i = 0; i < Math.round(this.heatMapPathLength / 2); i ++) {
-          if (this.heatBuffer[i].value > Math.round(this.heatValue / 20)) {
-            this.heatBuffer[i].value -= 1;
+    console.log('buffor', coordinates.x, coordinates.y);
+    const x = Math.round(coordinates.x / 10) * 10;
+    const y = Math.round(coordinates.y / 10) * 10;
+    const heatPointIndex = this.heatBuffer
+      .findIndex( heatPoint => (heatPoint.x === x && heatPoint.y === y ));
+    if (heatPointIndex > -1) {
+      const increaseValueNumber = this.heatValue + this.heatBuffer[heatPointIndex].value <= this.heatValue * 5 ?
+        this.heatValue + this.heatBuffer[heatPointIndex].value : this.heatValue * 5;
+      this.heatBuffer.splice(heatPointIndex, 1);
+      const heatPoint = new HeatPointSetter(x, y, increaseValueNumber);
+      this.heatBuffer.push(heatPoint.configuration);
+    } else {
+      const heatPoint = new HeatPointSetter(x, y, this.heatValue);
+      this.heatBuffer.push(heatPoint.configuration);
+    }
+    if (this.heatBuffer.length > this.heatMapPathLength) {
+      for (let i = 0; i < Math.round(this.heatMapPathLength / 2); i ++) {
+        if (this.heatBuffer[i].value > Math.round(this.heatValue / 20)) {
+          this.heatBuffer[i].value -= 1;
 
-          }
         }
-        this.heatBuffer.splice(0, 1);
       }
-      const data =  <HeatMapData> {
-        max: this.heatValue * 5,
-        min: 0,
-        data: this.heatBuffer
-      };
-      this.heatMapInstance.setData(data);
-    }, 650);
+      this.heatBuffer.splice(0, 1);
+    }
     return this;
   }
 
@@ -102,7 +95,17 @@ export class HeatMapCreated {
     this.heatMapPathLength = heatMapConfiguration.path;
   }
 
-  public repaint() {
+  public draw(): HeatMapCreated {
+    const data =  <HeatMapData> {
+      max: this.heatValue * 5,
+      min: 0,
+      data: this.heatBuffer
+    };
+    this.heatMapInstance.setData(data);
+    return this;
+  }
+
+  public clean() {
     this.heatBuffer = [];
     const data = {
       max: this.heatValue * 5,
@@ -113,6 +116,7 @@ export class HeatMapCreated {
   }
 
 }
+
 export class HeatPointSetter {
   private x: number;
   private y: number;
