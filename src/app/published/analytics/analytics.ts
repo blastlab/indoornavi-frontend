@@ -2,9 +2,8 @@ import {SocketService} from '../../utils/socket/socket.service';
 import {ActivatedRoute} from '@angular/router';
 import {PublishedService} from '../public/published.service';
 import {MapViewerService} from '../../map/map.viewer.service';
-import {Component, ElementRef, NgZone, OnInit, ViewChild} from '@angular/core';
-import {CoordinatesSocketData, MeasureSocketData} from '../public/published.type';
-import {scaleCoordinates} from '../../map/toolbar/tools/scale/scale.type';
+import {Component, NgZone} from '@angular/core';
+import {CoordinatesSocketData} from '../public/published.type';
 import {Point} from '../../map/map.type';
 import {HeatMapBuilder, HeatMapCreated} from './heatmap.service';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
@@ -13,6 +12,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {SocketConnectorComponent} from '../socket-connector.component';
 import {IconService} from '../../utils/drawing/icon.service';
 import {AreaService} from '../../area/area.service';
+import {TimeStepBuffer} from './analytics.type';
 
 @Component({
   templateUrl: './analytics.html',
@@ -24,6 +24,7 @@ export class AnalyticsComponent extends SocketConnectorComponent {
   private blurSliderView: boolean = false;
   private pathSliderView: boolean = false;
   private heatSliderView: boolean = false;
+  private timeStepBuffer: Array<TimeStepBuffer> = [];
   private heatMapSettings: HeatMapSettingsExtended = {
     radius: 20,
     opacity: 0.5,
@@ -56,22 +57,39 @@ export class AnalyticsComponent extends SocketConnectorComponent {
   }
 
   protected init(): void {
-    // in the moment of creating svg #map, component doesn't know anything about its style
-    // so cannot set proper canvas size,
-    // we need to get picture size an set it before canvas creation
-    // const widthOfMapComponent = document.querySelector('#map').getAttribute('width');
-    // doesn't work as it is not set for this element in the process of DOM setting
-    // mapStyle variable needs to be updated with proper width value of the map
-    // before canvas is being created in the DOM
+    /*
+    in the moment of creating svg #map, component doesn't know anything about its style
+    so cannot set proper canvas size,
+    we need to get picture size an set it before canvas creation
+    const widthOfMapComponent = document.querySelector('#map').getAttribute('width');
+    doesn't work as it is not set for this element in the process of DOM setting
+    mapStyle variable needs to be updated with proper width value of the map
+    before canvas is being created in the DOM
+    */
     this.whenDataArrived().subscribe((data: CoordinatesSocketData) => {
       // update
-      this.setHeatMap(data);
+      const timeOfDataStep: number = Date.now();
+      this.timeStepBuffer.push({data: data, timeOfDataStep: timeOfDataStep});
       this.handleCoordinatesData(data);
     });
 
     this.whenTransitionEnded().subscribe((tagShortId: number) => {
-      // draw
-      this.drawHeatMap(tagShortId);
+      // release to setHeatMap only those data that are in proper time step up to transition of the tag
+      // from timeStepBuffer
+      const timeWhenTransitionIsFinished: number = Date.now() - this.transitionDurationTimeStep;
+      for (let index = 0; index < this.timeStepBuffer.length; index ++) {
+        if (this.timeStepBuffer[index].timeOfDataStep < timeWhenTransitionIsFinished) {
+          this.setHeatMap(this.timeStepBuffer[index].data);
+          this.timeStepBuffer.splice(index, 1);
+        }
+      }
+      if (!this.playingAnimation) {
+        // clean timeStepBuffer
+        this.timeStepBuffer = [];
+      } else {
+        // draw
+        this.drawHeatMap(tagShortId);
+      }
     });
   }
 

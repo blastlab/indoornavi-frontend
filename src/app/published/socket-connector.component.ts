@@ -18,7 +18,6 @@ import {getRealDistanceInCentimeters} from '../map/toolbar/tools/scale/scale.typ
 import {SocketService} from '../utils/socket/socket.service';
 import {PublishedService} from 'app/published/public/published.service';
 import {Geometry} from '../map/utils/geometry';
-import {Measure, scaleCoordinates} from '../map/toolbar/tools/scale/scale.type';
 import {Tag} from '../device/tag.type';
 import {AreaService} from '../area/area.service';
 import {Area} from '../area/area.type';
@@ -39,13 +38,14 @@ export class SocketConnectorComponent implements OnInit {
   protected activeMap: PublishedMap;
   protected d3map: d3.selection = null;
   protected pixelsToCentimeters: number;
+  protected transitionDurationTimeStep: number = 1000;
   private dataReceived = new Subject<CoordinatesSocketData>();
   private transitionEnded = new Subject<number>();
   private tagsOnMap: Dictionary<number, GroupCreated> = new Dictionary<number, GroupCreated>();
   private areasOnMap: Dictionary<number, GroupCreated> = new Dictionary<number, GroupCreated>();
   private originListeningOnEvent: Dictionary<string, MessageEvent[]> = new Dictionary<string, MessageEvent[]>();
 
-  constructor(private ngZone: NgZone,
+  constructor(protected ngZone: NgZone,
               protected socketService: SocketService,
               protected route: ActivatedRoute,
               protected publishedService: PublishedService,
@@ -153,9 +153,8 @@ export class SocketConnectorComponent implements OnInit {
         })
         .on('end', () => {
           tag.transitionEnded = true;
-          console.log(data.coordinates.point.x, data.coordinates.point.y);
           this.transitionEnded.next(data.coordinates.tagShortId);
-        }).duration(0);
+        }).duration(this.transitionDurationTimeStep);
     }
   }
 
@@ -247,7 +246,6 @@ export class SocketConnectorComponent implements OnInit {
             this.originListeningOnEvent.setValue(data['args'], [event]);
           }
           break;
-
       }
     }
   }

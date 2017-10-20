@@ -13,10 +13,10 @@ import {MapService} from '../../map/map.service';
 import {MdIconRegistry} from '@angular/material';
 import {Observable} from 'rxjs/Rx';
 import {ActivatedRoute} from '@angular/router';
-import {AreaService} from '../area/area.service';
-import {Measure} from '../map/toolbar/tools/scale/scale.type';
 import {MeasureSocketDataType} from './published.type';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {AreaService} from '../../area/area.service';
+import {Measure} from '../../map/toolbar/tools/scale/scale.type';
 
 describe('PublishedComponent', () => {
   let component: PublishedComponent;

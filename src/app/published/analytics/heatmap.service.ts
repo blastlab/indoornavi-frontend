@@ -45,20 +45,21 @@ export class HeatMapCreated {
     this.heatValue = heatValue;
   }
 
-  // Update method waits for tag icon to be translated to new coordinates -> setTimeout time is hardcoded.
-  // Then algorithm rounds coordinate to collect all occurrences to one square 10x10 pixels.
-  // This lets us to avoid separation between coordinates to be to small, and points are not mapped to different heat points if close enough to each other.
-  // This allows algorithm to increase 'temperature' of given square area if coordinates are approximate the same,
-  // in addition algorithm collects less heat points allowing to optimize number of stored locations,
-  // without loosing accuracy and need to store all given coordinates.
-  // Next algorithm searches for heatPoint in heatBuffer for given coordinates point, then:
-  // If heatPoint is in heatBuffer and his heat value allows to be increased, do so by preconfigured heat value step.
-  // If found but heat value is to high, than it sets heat value to maximum possible value, if not found in heatBuffer, then:
-  // Add this point on the end of heatBuffer with value equal to preconfigured heat value step, then:
-  // Check the length of the heatBuffer and first take all items of heatBuffer from beginning to given preconfigured length and
-  // decrease heat down by preconfigured value and second remove first heat point in heatBuffer which is the oldest heatPoint in heatBuffer.
+  /*
+  Update method waits for tag icon to be translated to new coordinates -> setTimeout time is hardcoded.
+  Then algorithm rounds coordinate to collect all occurrences to one square 10x10 pixels.
+  This lets us to avoid separation between coordinates to be to small, and points are not mapped to different heat points if close enough to each other.
+  This allows algorithm to increase 'temperature' of given square area if coordinates are approximate the same,
+  in addition algorithm collects less heat points allowing to optimize number of stored locations,
+  without loosing accuracy and need to store all given coordinates.
+  Next algorithm searches for heatPoint in heatBuffer for given coordinates point, then:
+  If heatPoint is in heatBuffer and his heat value allows to be increased, do so by preconfigured heat value step.
+  If found but heat value is to high, than it sets heat value to maximum possible value, if not found in heatBuffer, then:
+  Add this point on the end of heatBuffer with value equal to preconfigured heat value step, then:
+  Check the length of the heatBuffer and first take all items of heatBuffer from beginning to given preconfigured length and
+  decrease heat down by preconfigured value and second remove first heat point in heatBuffer which is the oldest heatPoint in heatBuffer.
+  */
   public update(coordinates: Point): HeatMapCreated {
-    console.log('buffor', coordinates.x, coordinates.y);
     const x = Math.round(coordinates.x / 10) * 10;
     const y = Math.round(coordinates.y / 10) * 10;
     const heatPointIndex = this.heatBuffer
