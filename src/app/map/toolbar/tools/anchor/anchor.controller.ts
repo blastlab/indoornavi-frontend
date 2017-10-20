@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
 import {Point} from '../../../map.type';
-import {Observable} from 'rxjs/Observable';
 import {Sink} from '../../../../device/sink.type';
 import {Anchor} from '../../../../device/anchor.type';
 
@@ -50,30 +49,10 @@ export class AnchorPlacerController {
 
   selectDevice(device: Sink | Anchor): void {
     this.device.next(device);
-  };
+  }
 
   deselectDevice(): void {
     this.device.next(undefined);
-  };
-
-  // mocking /sink endpoint
-  public getSinks(): Observable<Sink[]> {
-    const sinks = [];
-    const quota = getRandom(2, 10);
-    for (let i = 0; i < quota; i++) {
-      sinks.push({
-        name: 'sinkGen',
-        shortId: getRandom(465, 75633),
-        verified: false,
-        floorId: null,
-        anchors: [],
-      });
-    }
-
-    function getRandom(min, max): number {
-      return Math.floor(Math.random() * (max - min) + min);
-    }
-
-    return Observable.of(sinks);
   }
+
 }

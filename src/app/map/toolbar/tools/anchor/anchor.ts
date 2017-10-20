@@ -61,10 +61,9 @@ export class AnchorPlacerComponent implements Tool, OnInit {
       this.floorId = configuration.floorId;
       this.drawConfiguredDevices(configuration.data.sinks);
       console.log(configuration);
-        /*configuration.data.anchors = []; // TODO delete empty array after DTO update
         configuration.data.anchors.forEach((anchor) => {
             this.drawDevice(this.buildAnchorDrawConfiguration(anchor), {x: anchor.x, y: anchor.y});
-        });*/
+        });
     });
     this.subscribeForAnchor();
   }

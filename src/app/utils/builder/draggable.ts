@@ -57,6 +57,11 @@ export class Draggable implements OnInit {
       .attr('x', Math.max(-this.boxMargin, Math.min(this.mapAttributes.width - this.boxMargin, dx)))
       .attr('y', Math.max(-this.boxMargin, Math.min(this.mapAttributes.height - this.boxMargin, dy)));
   }
+
+    private dragGroup(selection: d3.selection) {
+
+    }
+
   private dragAcceptButtonsBehavior() {
     const buttons = d3.select('#accept-buttons');
     let bx = parseInt(buttons.style('left'), 10);
