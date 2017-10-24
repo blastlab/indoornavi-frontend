@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {Building} from './building.type';
 import {Observable} from 'rxjs/Rx';
 import {HttpService} from '../utils/http/http.service';
+import {Complex} from '../complex/complex.type';
 
 @Injectable()
 export class BuildingService {
@@ -11,7 +12,7 @@ export class BuildingService {
   constructor(private httpService: HttpService) {
   }
 
-  getBuildings(complexId: number): Observable<Building[]> {
+  getComplexWithBuildings(complexId: number): Observable<Complex> {
     return this.httpService.doGet('complexes/' + complexId + '/' + this.buildingsUrl);
   }
 

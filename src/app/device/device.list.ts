@@ -5,6 +5,8 @@ import {ToastService} from '../utils/toast/toast.service';
 import {Device} from './device.type';
 import {DeviceService} from './device.service';
 import {DeviceDialogComponent} from './device.dialog';
+import {ActivatedRoute} from '@angular/router';
+
 
 @Component({
   selector: 'app-device-list',
@@ -12,6 +14,9 @@ import {DeviceDialogComponent} from './device.dialog';
   styleUrls: ['./device.css']
 })
 export class DeviceListComponent implements OnInit {
+
+  private deletePermission: string;
+  private editPermission: string;
 
   @Input()
   verified: boolean;
@@ -24,11 +29,16 @@ export class DeviceListComponent implements OnInit {
   dialogRef: MdDialogRef<DeviceDialogComponent>;
   private lockedDevice: Device = null;
 
-  constructor(private deviceService: DeviceService, private dialog: MdDialog, private toastService: ToastService) {
+  constructor(private deviceService: DeviceService,
+              private dialog: MdDialog,
+              private toastService: ToastService,
+              private route: ActivatedRoute) {
   }
 
   ngOnInit() {
+    this.deviceType = this.route.snapshot.routeConfig.path;
     this.deviceService.setUrl(this.deviceType + '/');
+    this.setPermissions();
   }
 
   getDevices(): Device[] {
@@ -54,13 +64,21 @@ export class DeviceListComponent implements OnInit {
     this.devices.remove(device.id);
   }
 
+  // this method opens a component dialog and cannot be passed as service
+  // in addition this method needs a path that is taken from
+  // this.route.snapshot.path that is this component prop
+  // similar method is used in DevicesComponent and has the same name
+  // this method opens dialog that updates device
   openDialog(device: Device): void {
-    this.dialogRef = this.dialog.open(DeviceDialogComponent);
-    this.dialogRef.componentInstance.device = {...device}; // copy
-    this.dialogRef.componentInstance.url = this.deviceType + '/';
+    this.dialogRef = this.dialog.open(DeviceDialogComponent, {
+      data: {
+        device: Object.assign({}, device),
+        url: `${this.deviceType}/`
+      }
+    });
 
-    this.dialogRef.afterClosed().subscribe(anchorFromDialog => {
-      if (anchorFromDialog !== undefined) {
+    this.dialogRef.afterClosed().subscribe(deviceFromDialog => {
+      if (deviceFromDialog !== undefined) {
         this.toastService.showSuccess('device.save.success');
       }
       this.dialogRef = null;
@@ -72,6 +90,12 @@ export class DeviceListComponent implements OnInit {
       this.devices.remove(device.id);
       this.toastService.showSuccess('device.remove.success');
     });
+  }
+
+  setPermissions(): void {
+    const prefix: string = DeviceService.getDevicePermissionPrefix(this.deviceType);
+    this.editPermission = `${prefix}_UPDATE`;
+    this.deletePermission = `${prefix}_DELETE`;
   }
 
 }

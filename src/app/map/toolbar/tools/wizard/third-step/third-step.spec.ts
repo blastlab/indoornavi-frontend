@@ -7,9 +7,9 @@ import {AcceptButtonsService} from '../../../../../utils/accept-buttons/accept-b
 import {TranslateModule} from '@ngx-translate/core';
 import {FormsModule} from '@angular/forms';
 import {IconService} from '../../../../../utils/drawing/icon.service';
-import {AnchorDistance, AnchorSuggestedPositions} from '../../../../../anchor/anchor.type';
+import {AnchorDistance, AnchorSuggestedPositions} from '../../../../../device/anchor.type';
 import {Point} from '../../../../map.type';
-import {SocketMsg, WizardData} from '../wizard';
+import {SocketMessage, Step, WizardData} from '../wizard.type';
 
 describe('ThirdStepComponent', () => {
   let component: ThirdStepComponent;
@@ -61,48 +61,60 @@ describe('ThirdStepComponent', () => {
   });
 
   it('should set sinkShortId into StepMsg and sinkPosition in wizardData', () => {
-    const anchor: AnchorSuggestedPositions = {anchorId: 23, points: [{x: 150, y: 250}, {x: 250, y: 150}]};
-    component.data = anchor;
+    component.data = {anchorId: 23, points: [{x: 150, y: 250}, {x: 250, y: 150}]};
     const sinkPos: Point = {x: 150, y: 450};
     const anchorPos: Point = {x: 300, y: 300};
-    component.coords = [{x: 525, y: 175}];
+    component.coordinates = [{x: 525, y: 175}];
     const degree = 45;
     const givenWizardData: WizardData = {
       sinkShortId: 7245,
       sinkPosition: sinkPos,
-      anchorShortId: 36,
+      firstAnchorShortId: 36,
+      secondAnchorShortId: null,
       degree: degree,
       firstAnchorPosition: anchorPos,
       secondAnchorPosition: null
     };
-    const expectedSocketData: SocketMsg = {
-      sinkShortId: 7245,
-      sinkPosition: sinkPos,
-      anchorShortId: 36,
-      degree: degree
+    const expectedSocketData: SocketMessage = {
+      step: Step.THIRD
     };
     const message = component.prepareToSend(givenWizardData);
     expect(message).toEqual(expectedSocketData);
   });
 
   it('should clean data in ThirdStep', () => {
-    component.coords = [{x: 543, y: 623}];
+    // given
+    component.coordinates = [{x: 543, y: 623}];
     component.data = {anchorId: 23, points: [{x: 250, y: 350}, {x: 200, y: 100}]};
+
+    // when
     component.clean();
-    expect(component.coords.length).toEqual(0);
+
+    // then
+    expect(component.coordinates.length).toEqual(0);
     expect(component.data).toBe(null);
-    acceptButtons.visibilitySet.subscribe(async (visible) => {
-      expect(visible).toBeFalsy();
-    });
   });
 
-  it('could emit setting tool to inactive with a `clear` flag', () => {
+  it('could emit clear view command to inactive with a `clear` flag', () => {
+    // given
     spyOn(component.clearView, 'emit').and.callThrough();
-    expect(component.clearView.emit).not.toHaveBeenCalled();
-    component.closeWizard(true);
-    expect(component.clearView.emit).toHaveBeenCalledWith(true);
+
+    // when
     component.closeWizard(false);
+
+    // then
     expect(component.clearView.emit).toHaveBeenCalledWith(false);
+  });
+
+  it('should emit clear view command to active with a `clear` flag', () => {
+    // given
+    spyOn(component.clearView, 'emit').and.callThrough();
+
+    // when
+    component.closeWizard(true);
+
+    // then
+    expect(component.clearView.emit).toHaveBeenCalledWith(true);
   });
 
 });

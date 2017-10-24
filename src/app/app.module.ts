@@ -3,17 +3,14 @@ import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {Http, HttpModule} from '@angular/http';
 import {ComplexComponent} from './complex/complex';
-import {
-  MaterialModule, MdDialogModule, MdCardModule, MdButtonModule, MdIconRegistry,
-  MdIconModule
-} from '@angular/material';
+import {MaterialModule, MdButtonModule, MdCardModule, MdDialogModule, MdIconModule, MdIconRegistry} from '@angular/material';
 import {ComplexService} from './complex/complex.service';
 import {ComplexDialogComponent} from './complex/complex.dialog';
 import {ComplexConfirmComponent} from './complex/complex.confirm';
 import {ToastService} from './utils/toast/toast.service';
 import {HttpService} from './utils/http/http.service';
 import {AppComponent} from './app.component';
-import {RouterModule, Routes} from '@angular/router';
+import {RouterModule} from '@angular/router';
 import {BuildingComponent} from './building/building';
 import {BuildingDialogComponent} from './building/building.dialog';
 import {BuildingConfirmComponent} from './building/building.confirm';
@@ -23,12 +20,10 @@ import {FloorService} from './floor/floor.service';
 import {FloorDialogComponent} from './floor/floor.dialog';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
-import {AnchorComponent} from './anchor/anchor';
-import {Ng2BreadcrumbModule} from 'ng2-breadcrumb/ng2-breadcrumb';
+// import {Ng2BreadcrumbModule} from 'ng2-breadcrumb/ng2-breadcrumb';
 import {WebSocketService} from 'angular2-websocket-service';
 import {SocketService} from './utils/socket/socket.service';
 import {DndModule} from 'ng2-dnd';
-import {TagComponent} from './tag/tag';
 import {DeviceListComponent} from './device/device.list';
 import {DeviceDialogComponent} from './device/device.dialog';
 import {DeviceService} from './device/device.service';
@@ -65,33 +60,25 @@ import {FirstStepComponent} from './map/toolbar/tools/wizard/first-step/first-st
 import {SecondStepComponent} from './map/toolbar/tools/wizard/second-step/second-step';
 import {ThirdStepComponent} from './map/toolbar/tools/wizard/third-step/third-step';
 import {DrawingService} from './utils/drawing/drawing.service';
-import {Hammer} from 'hammerjs/hammer';
 import {IconService} from './utils/drawing/icon.service';
 import {HintBarService} from './map/hint-bar/hint-bar.service';
+import {ActionBarService} from './map/actionbar/actionbar.service';
+import {D3Service} from 'd3-ng2-service';
+import {ScaleService} from './map/toolbar/tools/scale/scale.service';
+import {PublishedComponent} from './published/published';
+import {PublishedListComponent} from './published/list/published-list';
+import {NgxDatatableModule} from '@swimlane/ngx-datatable';
+import {appRoutes} from './app.routes';
+import {PublishedService} from './published/published.service';
+import {MapViewerService} from './map/map.viewer.service';
+import {PublishedDialogComponent} from './published/dialog/published.dialog';
+import {ConfirmDialogComponent} from './utils/confirm-dialog/confirm.dialog';
+import {DeviceComponent} from './device/device.component';
+import {ActionBarComponent} from 'app/map/actionbar/actionbar';
+import {AreaService} from './area/area.service';
+import {Md5} from 'ts-md5/dist/md5';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 
-
-const appRoutes: Routes = [
-  {path: '', redirectTo: '/complexes', pathMatch: 'full'},
-  {path: 'login', component: AuthComponent},
-  {path: 'logout', component: AuthComponent},
-  {path: 'complexes', component: ComplexComponent, canActivate: [CanRead], data: {permission: 'COMPLEX'}},
-  {path: 'complexes/:complexId/buildings', component: BuildingComponent, canActivate: [CanRead], data: {permission: 'BUILDING'}},
-  {path: 'anchors', component: AnchorComponent, canActivate: [CanRead], data: {permission: 'ANCHOR'}},
-  {path: 'tags', component: TagComponent, canActivate: [CanRead], data: {permission: 'TAG'}},
-  {path: 'users', component: UserComponent, canActivate: [CanRead], data: {permission: 'USER'}},
-  {path: 'changePassword', component: ChangePasswordComponent, canActivate: [CanRead]},
-  {path: 'permissionGroups', component: PermissionGroupComponent, canActivate: [CanRead], data: {permission: 'PERMISSION_GROUP'}},
-  {path: 'complexes/:complexId/buildings/:buildingId/floors', component: FloorComponent, canActivate: [CanRead], data: {permission: 'FLOOR'}},
-  {
-    path: 'complexes/:complexId/buildings/:buildingId/floors/:floorId/map',
-    component: MapControllerComponent,
-    canActivate: [CanRead],
-    data: {permission: 'FLOOR'}
-  },
-  {path: 'unauthorized', component: UnauthorizedComponent},
-  {path: '**', redirectTo: '/complexes'}
-];
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -104,14 +91,12 @@ export function HttpLoaderFactory(http: Http) {
     ComplexConfirmComponent,
     BuildingComponent,
     BuildingDialogComponent,
-    AnchorComponent,
     DeviceListComponent,
     DeviceDialogComponent,
     BuildingConfirmComponent,
     FloorComponent,
     FloorDialogComponent,
     AppComponent,
-    TagComponent,
     MapControllerComponent,
     MapViewerComponent,
     MapUploaderComponent,
@@ -126,11 +111,17 @@ export function HttpLoaderFactory(http: Http) {
     ChangePasswordComponent,
     UnauthorizedComponent,
     PermissionGroupComponent,
+    ActionBarComponent,
     WizardComponent,
     AcceptButtonsComponent,
     FirstStepComponent,
     SecondStepComponent,
     ThirdStepComponent,
+    PublishedComponent,
+    PublishedListComponent,
+    PublishedDialogComponent,
+    ConfirmDialogComponent,
+    DeviceComponent
   ],
   entryComponents: [
     ComplexDialogComponent,
@@ -139,7 +130,9 @@ export function HttpLoaderFactory(http: Http) {
     DeviceDialogComponent,
     BuildingConfirmComponent,
     FloorDialogComponent,
-    UserDialogComponent
+    UserDialogComponent,
+    PublishedDialogComponent,
+    ConfirmDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -160,12 +153,13 @@ export function HttpLoaderFactory(http: Http) {
       }
     }),
     RouterModule.forRoot(appRoutes),
-    Ng2BreadcrumbModule.forRoot(),
+    // Ng2BreadcrumbModule.forRoot(),
     DndModule.forRoot(),
     FlexLayoutModule,
     ImageUploadModule.forRoot(),
     SharedModule,
-    AngularMultiSelectModule
+    AngularMultiSelectModule,
+    NgxDatatableModule
   ],
   providers: [
     BuildingService,
@@ -190,7 +184,14 @@ export function HttpLoaderFactory(http: Http) {
     AuthService,
     CanRead,
     AuthGuard,
-  PermissionGroupService
+    ActionBarService,
+    PermissionGroupService,
+    D3Service,
+    ScaleService,
+    PublishedService,
+    MapViewerService,
+    AreaService,
+    Md5
   ], bootstrap: [AppComponent]
 })
 

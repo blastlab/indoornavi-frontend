@@ -1,9 +1,6 @@
 <div fxFlexFill fxLayout="column">
-  <header>
-    <div fxFlex="50">
-      <breadcrumb></breadcrumb>
-    </div>
-    <div fxFlex="50" fxLayoutAlign="end" *ngIf="isUserLoggedIn">
+  <header *ngIf="!isDisplayedInIFrame">
+    <div fxFlex="100" fxLayoutAlign="end" *ngIf="isUserLoggedIn">
       <button md-icon-button [mdMenuTriggerFor]="menu">
         <md-icon>more_vert</md-icon>
       </button>
@@ -12,6 +9,10 @@
           <md-icon>domain</md-icon>
           <span>Complexes</span>
         </button>
+        <button md-menu-item [routerLink]="['./sinks']">
+          <md-icon>device_hub</md-icon>
+          <span>Sinks</span>
+        </button>
         <button md-menu-item [routerLink]="['./anchors']">
           <md-icon>toll</md-icon>
           <span>Anchors</span>
@@ -19,6 +20,10 @@
         <button md-menu-item [routerLink]="['./tags']">
           <md-icon>settings_remote</md-icon>
           <span>Tags</span>
+        </button>
+        <button md-menu-item [routerLink]="['./maps']">
+          <md-icon>map</md-icon>
+          <span>Published maps</span>
         </button>
         <button md-menu-item [routerLink]="['./users']">
           <md-icon>account_circle</md-icon>

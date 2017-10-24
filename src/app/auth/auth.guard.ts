@@ -6,17 +6,17 @@ import {Observable} from 'rxjs/Observable';
 @Injectable()
 export class AuthGuard {
 
-  private subject = new Subject<any>();
+  private userLoggedInSubject = new Subject<boolean>();
 
   constructor() {
   }
 
   public toggleUserLoggedIn(loggedIn: boolean) {
-    this.subject.next(loggedIn);
+    this.userLoggedInSubject.next(loggedIn);
   }
 
   public userLoggedIn(): Observable<boolean> {
-    return this.subject.asObservable();
+    return this.userLoggedInSubject.asObservable();
   }
 
 }
@@ -51,25 +51,3 @@ export class CanRead implements CanActivate {
     return false;
   }
 }
-
-// @Injectable()
-// export class CanReadComplex implements CanActivate {
-//   constructor(private router: Router) {
-//   }
-//
-//   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-//     console.log(route);
-//     console.log(state);
-//     return PermissionChecker.check('COMPLEX_READ', this.router, state);
-//   }
-// }
-//
-// @Injectable()
-// export class CanReadBuilding implements CanActivate {
-//   constructor(private router: Router) {
-//   }
-//
-//   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-//     return PermissionChecker.check('BUILDING_READ', this.router, state);
-//   }
-// }

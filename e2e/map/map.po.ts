@@ -1,12 +1,18 @@
-import {element, by} from 'protractor';
+import {by, element} from 'protractor';
 import {FloorPage} from '../floor/floor.po';
 import {Utils} from '../utils';
 
+const path = require('path');
+
 export class MapPage {
   static prepareAndOpenFloor(name: string): void {
+    MapPage.prepareFloor(name);
+    FloorPage.openLatestAddedFloor();
+  }
+
+  static prepareFloor(name: string): void {
     FloorPage.prepareAndOpenBuilding(name);
     FloorPage.addFloor(name, 0);
-    FloorPage.openLatestAddedFloor();
   }
 
   static destroyLastComplex() {
@@ -14,7 +20,6 @@ export class MapPage {
   }
 
   static uploadFile(fileName: string): void {
-    const path = require('path');
     const file = '../resources/' + fileName;
     const absolutePath = path.resolve(__dirname, file);
     element(by.css('input[type="file"]')).sendKeys(absolutePath);

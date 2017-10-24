@@ -11,13 +11,14 @@ import {HttpModule} from '@angular/http';
 import {TranslateModule} from '@ngx-translate/core';
 import {Observable} from 'rxjs/Observable';
 import {AuthGuard} from '../auth/auth.guard';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 
 describe('Change password component', () => {
   let component: ChangePasswordComponent;
   let userService: UserService;
   let toastService: ToastService;
   let dialog: MdDialog;
+  const mockActivatedRoute = {queryParams: Observable.of({})};
 
   beforeEach(async(() => {
     const routerStub = {
@@ -47,7 +48,8 @@ describe('Change password component', () => {
         ChangePasswordComponent
       ],
       providers: [
-        UserService, HttpService, ToastService, MdDialog, AuthGuard, { provide: Router, useValue: routerStub }
+        UserService, HttpService, ToastService, MdDialog, AuthGuard, { provide: Router, useValue: routerStub },
+        {provide: ActivatedRoute, useValue: mockActivatedRoute}
       ]
     }).compileComponents();
 

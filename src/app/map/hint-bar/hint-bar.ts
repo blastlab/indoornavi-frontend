@@ -1,6 +1,5 @@
 import {Component, Input, OnChanges, OnInit} from '@angular/core';
 import {ToolName} from '../toolbar/tools/tools.enum';
-import {Point} from '../map.type';
 import {Tool} from '../toolbar/tools/tool';
 import {TranslateService} from '@ngx-translate/core';
 import {HintBarService} from './hint-bar.service';
@@ -14,7 +13,6 @@ export class HintBarComponent implements OnInit, OnChanges {
   @Input() tool: Tool;
   public toolName: String;
   public hintMsg: String;
-  public mousePos: Point = {x: 0, y: 0};
 
   constructor(private translate: TranslateService,
               private hintBar: HintBarService) {
@@ -28,7 +26,7 @@ export class HintBarComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(): void {
-    this.toolName = (this.tool) ? ToolName[this.tool.toolName] : ToolName[ToolName.NONE];
+    this.toolName = (this.tool) ? ToolName[this.tool.getToolName()] : ToolName[ToolName.NONE];
     this.hintBar.hint$.subscribe((message: string) => {
       this.setHint(message);
     });
@@ -38,8 +36,8 @@ export class HintBarComponent implements OnInit, OnChanges {
     this.translate.setDefaultLang('en');
   }
 
-  public setHint(defaultMsg: string) {
-    this.hintMsg = defaultMsg;
+  public setHint(msg: string) {
+    this.hintMsg = msg;
   }
 
 }

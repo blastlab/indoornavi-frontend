@@ -7,6 +7,7 @@ import {ToastService} from '../utils/toast/toast.service';
 import {NgForm} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
+import {Building} from '../building/building.type';
 
 @Component({
   templateUrl: 'floor.html',
@@ -18,7 +19,7 @@ export class FloorComponent implements OnInit {
   floor: Floor;
   dialogRef: MdDialogRef<FloorDialogComponent>;
 
-  private buildingId: number;
+  private building: Building;
   private complexId: number;
 
   @ViewChild('floorForm') floorForm: NgForm;
@@ -36,10 +37,11 @@ export class FloorComponent implements OnInit {
     this.route.params
     // (+) converts string 'id' to a number
       .subscribe((params: Params) => {
-        this.buildingId = +params['buildingId'];
+        const buildingId = +params['buildingId'];
         this.complexId = +params['complexId'];
-        this.floorService.getFloors(this.buildingId).subscribe((result: any) => {
-          this.floors = result.floors;
+        this.floorService.getBuildingWithFloors(buildingId).subscribe((building: Building) => {
+          this.floors = building.floors;
+          this.building = building;
           this.newFloor();
         });
       });
@@ -51,7 +53,7 @@ export class FloorComponent implements OnInit {
     this.dialogRef.componentInstance.floor = {
       level: floor.level,
       name: floor.name,
-      buildingId: floor.buildingId,
+      building: floor.building,
       id: floor.id
     };
 
@@ -80,7 +82,7 @@ export class FloorComponent implements OnInit {
     this.dialogRef.componentInstance.floor = {
       level: this.getCurrentMaxLevel() + 1,
       name: '',
-      buildingId: this.buildingId
+      building: this.building
     };
 
     this.dialogRef.afterClosed().subscribe(floor => {
@@ -129,14 +131,14 @@ export class FloorComponent implements OnInit {
   }
 
   openMap(floor: Floor): void {
-    this.router.navigate(['/complexes', this.complexId, 'buildings', this.buildingId, 'floors', floor.id, 'map']);
+    this.router.navigate(['/complexes', this.complexId, 'buildings', this.building.id, 'floors', floor.id, 'map']);
   }
 
   private newFloor(): void {
     this.floor = {
       level: this.getCurrentMaxLevel() + 1,
       name: '',
-      buildingId: this.buildingId
+      building: this.building
     };
   }
 }

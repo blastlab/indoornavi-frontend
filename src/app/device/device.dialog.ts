@@ -3,6 +3,8 @@ import {MdDialogRef} from '@angular/material';
 import {Device} from './device.type';
 import {DeviceService} from './device.service';
 import {ToastService} from '../utils/toast/toast.service';
+import {Anchor} from './anchor.type';
+import {Sink} from './sink.type';
 
 @Component({
   selector: 'app-device-dialog',
@@ -10,7 +12,7 @@ import {ToastService} from '../utils/toast/toast.service';
   styleUrls: ['./device.css']
 })
 export class DeviceDialogComponent implements OnInit {
-  device: Device;
+  device: Device|Anchor|Sink;
   url: string;
 
   constructor(private dialogRef: MdDialogRef<DeviceDialogComponent>,
@@ -19,6 +21,8 @@ export class DeviceDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.url = this.dialogRef.config.data['url'];
+    this.device = this.dialogRef.config.data['device'];
     if (!this.url) {
       throw Error('You need to set device URL');
     }

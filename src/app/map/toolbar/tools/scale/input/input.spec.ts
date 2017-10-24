@@ -14,11 +14,12 @@ import {DndModule} from 'ng2-dnd';
 import {FloorService} from '../../../../../floor/floor.service';
 import {ToastService} from '../../../../../utils/toast/toast.service';
 import {HttpService} from '../../../../../utils/http/http.service';
-import {MeasureEnum, Scale} from '../scale.type';
+import {Measure, Scale} from '../scale.type';
 import {Point} from '../../../../map.type';
 import {Floor} from '../../../../../floor/floor.type';
 import {Observable} from 'rxjs/Rx';
 import {AuthGuard} from '../../../../../auth/auth.guard';
+import {ScaleService} from '../scale.service';
 
 describe('ScaleInputComponent', () => {
   let component: ScaleInputComponent;
@@ -26,8 +27,9 @@ describe('ScaleInputComponent', () => {
   let route: ActivatedRoute;
   let toastService: ToastService;
   let scaleHintService: ScaleHintService;
-  let scaleInputService: ScaleInputComponent;
+  let scaleInputService: ScaleInputService;
   let floorService: FloorService;
+  let scaleService: ScaleService;
   let scale: Scale;
 
   beforeEach(async(() => {
@@ -37,7 +39,7 @@ describe('ScaleInputComponent', () => {
         TranslateModule.forRoot(), BrowserModule, FormsModule, MaterialModule, HttpModule, RouterTestingModule, DndModule.forRoot()
       ],
       providers: [
-        ScaleInputService, ScaleHintService, FloorService, ToastService, HttpService, AuthGuard
+        ScaleInputService, ScaleHintService, FloorService, ToastService, HttpService, AuthGuard, ScaleService
       ]
     })
       .compileComponents();
@@ -51,6 +53,7 @@ describe('ScaleInputComponent', () => {
     scaleHintService = fixture.debugElement.injector.get(ScaleHintService);
     scaleInputService = fixture.debugElement.injector.get(ScaleInputService);
     floorService = fixture.debugElement.injector.get(FloorService);
+    scaleService = fixture.debugElement.injector.get(ScaleService);
     fixture.detectChanges();
     spyOn(toastService, 'showSuccess');
     spyOn(toastService, 'showFailure');
@@ -64,7 +67,7 @@ describe('ScaleInputComponent', () => {
         y: 101
       },
       realDistance: 112,
-      measure: MeasureEnum.METERS
+      measure: Measure.METERS
     };
   });
 
@@ -72,29 +75,28 @@ describe('ScaleInputComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should save scale in DB', (done: DoneFn) => {
+  it('should publish scale after confirm button has been clicked', () => {
     // given
     const expectedFloor: Floor = {
         id: 6,
         level: 0,
         name: '',
-        buildingId: 4,
+        building: { id: 4, name: 'test', complexId: 1 },
         imageId: 1,
         scale: scale
       };
-    spyOn(floorService, 'setScale').and.returnValue(Observable.of(expectedFloor));
     spyOn(scaleHintService, 'publishScale');
+    spyOn(scaleInputService, 'publishSaveClicked');
     component.scale = scale;
     const valid = true;
 
     // when
-    component.save(valid);
+    component.confirm(valid);
 
     // then
-    expect(floorService.setScale).toHaveBeenCalled();
+    expect(scaleInputService.publishSaveClicked).toHaveBeenCalled();
     expect(scaleHintService.publishScale).toHaveBeenCalled();
     expect(toastService.showSuccess).toHaveBeenCalled();
-    done();
   });
 
   it('should NOT save scale in DB because of Measure unit not set', () => {
@@ -106,7 +108,7 @@ describe('ScaleInputComponent', () => {
     spyOn(floorService, 'setScale').and.returnValue(Observable.of(errorCode));
 
     // when
-    component.save(valid);
+    component.confirm(valid);
 
     // then
     expect(toastService.showSuccess).not.toHaveBeenCalled();
@@ -121,7 +123,7 @@ describe('ScaleInputComponent', () => {
     spyOn(floorService, 'setScale').and.returnValue(Observable.of(errorCode));
 
     // when
-    component.save(valid);
+    component.confirm(valid);
 
     // then
     expect(toastService.showSuccess).not.toHaveBeenCalled();

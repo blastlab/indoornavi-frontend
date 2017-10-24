@@ -9,7 +9,6 @@ describe('AnchorComponent', () => {
     expect(AppPage.getTitle()).toEqual('Anchors');
   });
 
-
   it('should be able to add new anchor, edit it and then remove it', (done: DoneFn) => {
     const shortId = '123';
     const longId = '12345';
@@ -28,18 +27,18 @@ describe('AnchorComponent', () => {
         expect(row.get(0).getText()).toBe(shortId);
         expect(row.get(1).getText()).toBe(longId);
         expect(row.get(2).getText()).toBe(name);
-        expect(afterAddCount).toBe(initialRowsCount + 1);
+        expect(afterAddCount).toBe(initialRowsCount + 1, 'After add count should be equal initial count + 1 (ADD)');
 
         AnchorPage.editLastAnchor(newShortId, longId, name, true);
         row = AnchorPage.getLatestFromNotVerified();
         expect(row.get(0).getText()).toBe(newShortId);
         expect(row.get(1).getText()).toBe(longId);
         expect(row.get(2).getText()).toBe(name);
-        expect(afterAddCount).toBe(initialRowsCount + 1);
+        expect(afterAddCount).toBe(initialRowsCount + 1, 'After add count should be equal initial count + 1 (EDIT)');
 
         AnchorPage.removeAnchor(newShortId);
         AnchorPage.getRowsCount().then((afterRemoveCount: number) => {
-          expect(afterRemoveCount).toBe(initialRowsCount);
+          expect(afterRemoveCount).toBe(initialRowsCount, 'After add count should be equal initial count (REMOVE)');
           done();
         });
       });

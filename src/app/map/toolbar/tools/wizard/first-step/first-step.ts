@@ -1,16 +1,18 @@
-import {Component, EventEmitter, Output, TemplateRef, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, Output, TemplateRef, ViewChild} from '@angular/core';
 import {WizardStep} from '../wizard-step';
 import {MdDialog, MdDialogRef} from '@angular/material';
 import {TranslateService} from '@ngx-translate/core';
 import * as d3 from 'd3';
 import * as Collections from 'typescript-collections';
-import {Anchor} from '../../../../../anchor/anchor.type';
+import {Anchor} from '../../../../../device/anchor.type';
 import {AcceptButtonsService} from '../../../../../utils/accept-buttons/accept-buttons.service';
 import {Point} from '../../../../map.type';
-import {SocketMsg, WizardData} from '../wizard';
 import {DrawingService, ObjectParams} from '../../../../../utils/drawing/drawing.service';
 import {NaviIcons} from '../../../../../utils/drawing/icon.service';
 import {HintBarService} from '../../../../hint-bar/hint-bar.service';
+import {FirstStepMessage, Step, WizardData} from '../wizard.type';
+import {Sink} from '../../../../../device/sink.type';
+import {Floor} from '../../../../../floor/floor.type';
 
 @Component({
   selector: 'app-first-step',
@@ -22,15 +24,18 @@ export class FirstStepComponent implements WizardStep {
   @Output() clearView: EventEmitter<boolean> = new EventEmitter<boolean>();
   public stepIndex: number = 0;
   public title = 'wizard.title.step1';
-  public socketData = new Collections.Set<Anchor>((sink: Anchor) => {
-    return '' + sink.shortId;
-  });
+  public socketData = new Collections.Set<Anchor>(FirstStepComponent.compareFn);
   public isLoading: boolean = true;
-  public data: Anchor;
-  public coords: Array<Point>;
+  public data: Sink;
+  public coordinates: Array<Point>;
   @ViewChild(TemplateRef) dialogTemplate: TemplateRef<any>;
+  @Input() floor: Floor;
 
   dialogRef: MdDialogRef<MdDialog>;
+
+  private static compareFn(sink: Anchor): string {
+    return '' + sink.shortId;
+  }
 
   constructor(public translate: TranslateService,
               public dialog: MdDialog,
@@ -60,8 +65,8 @@ export class FirstStepComponent implements WizardStep {
     });
   }
 
-  public placeOnMap(data: Anchor): void {
-    this.coords = [];
+  public placeOnMap(data: Sink): void {
+    this.coordinates = [];
     const map: d3.selector = d3.select('#map');
     map.style('cursor', 'crosshair');
     this.translate.get('wizard.click.place.sink', {id: this.data.shortId}).subscribe((text: string) => {
@@ -69,7 +74,7 @@ export class FirstStepComponent implements WizardStep {
     });
     map.on('click', () => {
       const coordinates: Point = {x: d3.event.offsetX, y: d3.event.offsetY};
-      this.coords.push(coordinates);
+      this.coordinates.push(coordinates);
       const sinkParams: ObjectParams = {
         id: 'sink' + this.data.shortId, iconName: NaviIcons.ANCHOR,
         groupClass: 'wizardSink', markerClass: 'sinkMarker', fill: 'blue'
@@ -112,28 +117,27 @@ export class FirstStepComponent implements WizardStep {
     this.nextStepIndex.emit(this.stepIndex + 1);
   }
 
-  public prepareToSend(data: WizardData): SocketMsg {
+  public prepareToSend(data: WizardData): FirstStepMessage {
     return {
-      sinkShortId: this.data.shortId,
-      sinkPosition: null,
-      anchorShortId: null,
-      degree: null
+      step: Step.FIRST, sinkShortId: this.data.shortId,
+      floorId: this.floor.id
     };
   }
 
   public updateWizardData(data: WizardData): WizardData {
     return {
       sinkShortId: this.data.shortId,
-      sinkPosition: this.coords[0],
-      anchorShortId: null,
+      sinkPosition: this.coordinates[0],
+      firstAnchorShortId: null,
       degree: null,
       firstAnchorPosition: null,
-      secondAnchorPosition: null
+      secondAnchorPosition: null,
+      secondAnchorShortId: null
     };
   }
 
   public clean(): void {
-    this.coords = [];
+    this.coordinates = [];
     if (!!this.data) {
       const map = d3.select('#map');
       map.select('#sink' + this.data.shortId).remove();
@@ -143,7 +147,7 @@ export class FirstStepComponent implements WizardStep {
     }
   }
 
-  public closeWizard(clean): void {
+  public closeWizard(clean: boolean): void {
     this.clearView.emit(clean);
   }
 }

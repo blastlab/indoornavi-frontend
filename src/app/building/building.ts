@@ -32,7 +32,7 @@ export class BuildingComponent implements OnInit {
     // (+) converts string 'id' to a number
       .subscribe((params: Params) => {
         this.complexId = +params['complexId'];
-        this.buildingService.getBuildings(this.complexId).subscribe((result: any) => {
+        this.buildingService.getComplexWithBuildings(this.complexId).subscribe((result: any) => {
           this.buildings = result.buildings;
         });
         this.newBuilding();
@@ -79,7 +79,7 @@ export class BuildingComponent implements OnInit {
 
   removeBuilding(index: number): void {
     const buildingId: number = this.buildings[index].id;
-    this.floorService.getFloors(buildingId).subscribe((result: any) => {
+    this.floorService.getBuildingWithFloors(buildingId).subscribe((result: any) => {
       if (result && result.floors && result.floors.length) {
         this.openBuildingRemoveConfirmationDialog(index);
       } else {

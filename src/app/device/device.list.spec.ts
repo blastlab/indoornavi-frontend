@@ -9,9 +9,10 @@ import {Observable} from 'rxjs/Rx';
 import {DeviceListComponent} from './device.list';
 import {DeviceService} from './device.service';
 import {Device} from './device.type';
-import {Router, RouterModule} from '@angular/router';
+import {ActivatedRoute, Router, RouterModule} from '@angular/router';
 import {AuthGuard} from '../auth/auth.guard';
 import {SharedModule} from '../utils/shared/shared.module';
+
 
 describe('DeviceListComponent', () => {
   let component: DeviceListComponent;
@@ -20,6 +21,8 @@ describe('DeviceListComponent', () => {
   let dialog: MdDialog;
   let service: DeviceService;
   let toastService: ToastService;
+  const mockActivatedRoute = {queryParams: Observable.of({}), snapshot: {routeConfig: {path: 'sinks'}}};
+
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -31,7 +34,8 @@ describe('DeviceListComponent', () => {
         SharedModule
       ],
       declarations: [DeviceListComponent],
-      providers: [DeviceService, HttpService, ToastService, MdDialog, {provide: Router, useClass: RouterModule}, AuthGuard]
+      providers: [DeviceService, HttpService, ToastService, MdDialog,
+        {provide: Router, useClass: RouterModule}, {provide: ActivatedRoute, useValue: mockActivatedRoute}, AuthGuard, {provide: ActivatedRoute, useValue: mockActivatedRoute}]
     }).compileComponents();
 
     fixture = TestBed.createComponent(DeviceListComponent);
@@ -67,7 +71,7 @@ describe('DeviceListComponent', () => {
     component.openDialog(currentDevice);
 
     // then
-    expect(component.dialogRef.componentInstance.device).toBeDefined();
+    expect(component.dialogRef.config.data['device']).toBeDefined();
     expect(dialog.open).toHaveBeenCalled();
   });
 
