@@ -47,7 +47,7 @@ export class PublishedComponent extends SocketConnectorComponent implements OnIn
   //             const tagId = parseInt(event.data['args'], 10);
   //             this.socketService.send({type: CommandType[CommandType.TOGGLE_TAG], args: tagId});
   //             if (this.isOnMap(tagId)) {
-  //               this.removeTagFromMap(tagId);
+  //               // this.removeTagFromMap(tagId);
   //             }
   //           }
   //         }

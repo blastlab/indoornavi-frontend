@@ -2,7 +2,7 @@ import {SocketService} from '../../utils/socket/socket.service';
 import {ActivatedRoute} from '@angular/router';
 import {PublishedService} from '../public/published.service';
 import {MapViewerService} from '../../map/map.viewer.service';
-import {Component, NgZone} from '@angular/core';
+import {Component, NgZone, OnInit} from '@angular/core';
 import {CoordinatesSocketData} from '../public/published.type';
 import {Point} from '../../map/map.type';
 import {HeatMapBuilder, HeatMapCreated} from './heatmap.service';
@@ -18,7 +18,7 @@ import {TimeStepBuffer} from './analytics.type';
   templateUrl: './analytics.html',
   styleUrls: ['./analytics.css']
 })
-export class AnalyticsComponent extends SocketConnectorComponent {
+export class AnalyticsComponent extends SocketConnectorComponent implements OnInit {
   private heatMapSet: Dictionary<number, HeatMapCreated> = new Dictionary<number, HeatMapCreated>();
   private opacitySliderView: boolean = false;
   private blurSliderView: boolean = false;

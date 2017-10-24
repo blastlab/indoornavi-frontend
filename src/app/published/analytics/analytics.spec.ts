@@ -10,7 +10,6 @@ import {MaterialModule, MdIconRegistry} from '@angular/material';
 import {AnalyticsComponent} from './analytics';
 import {MapViewerService} from '../../map/map.viewer.service';
 import {SocketService} from '../../utils/socket/socket.service';
-import {PublishedService} from '../public/published.service';
 import {ActivatedRoute} from '@angular/router';
 import {Observable} from 'rxjs/Observable';
 import {TranslateModule} from '@ngx-translate/core';
@@ -18,8 +17,7 @@ import {MeasureSocketDataType} from '../public/published.type';
 import {Measure} from '../../map/toolbar/tools/scale/scale.type';
 import {AreaService} from '../../area/area.service';
 import {FormsModule} from '@angular/forms';
-
-
+import {PublishedService} from '../public/published.service';
 
 describe('AnalyticsComponent', () => {
   let component: AnalyticsComponent;
@@ -59,10 +57,12 @@ describe('AnalyticsComponent', () => {
     mapViewerService = fixture.debugElement.injector.get(MapViewerService);
     areaService = fixture.debugElement.injector.get(AreaService);
     socketService = fixture.debugElement.injector.get(SocketService);
+    fixture.detectChanges();
   });
 
   it('should create and draw map', (done: DoneFn) => {
     // given
+    console.log(publishedService);
     spyOn(publishedService, 'get').and.returnValue(Observable.of({
       tags: [],
       floor: {
@@ -104,5 +104,4 @@ describe('AnalyticsComponent', () => {
       done();
     });
   });
-
 });
