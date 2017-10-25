@@ -20,6 +20,7 @@ import {ComplexService} from '../../complex/complex.service';
 import {FloorService} from '../../floor/floor.service';
 import {DeviceService} from '../../device/device.service';
 import {ActionBarService} from '../../map/actionbar/actionbar.service';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('PublishedListComponent', () => {
   let component: PublishedListComponent;
@@ -40,7 +41,10 @@ describe('PublishedListComponent', () => {
         DialogTestModule,
         TranslateModule.forRoot(),
         RouterTestingModule,
-        SharedModule, NgxDatatableModule],
+        SharedModule,
+        NgxDatatableModule,
+        BrowserAnimationsModule
+      ],
       providers: [
         PublishedService, TranslateService, ToastService,
         HttpService, AuthGuard, DeviceService, UserService,

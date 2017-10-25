@@ -1,29 +1,6 @@
 import * as d3 from 'd3';
 import {Point} from '../map/map.type';
-
-export class DrawBuilder {
-  private appendable: d3.selection;
-  private configuration: DrawConfiguration;
-
-  constructor(appendable: d3.selection,
-              configuration: DrawConfiguration) {
-    this.appendable = appendable;
-    this.configuration = configuration;
-  }
-
-  createGroup(): GroupCreated {
-    const group = this.appendable
-      .append('svg')
-      .attr('id', this.configuration.id)
-      .attr('class', this.configuration.clazz)
-      .attr('x', 0)
-      .attr('y', 0);
-    if (this.configuration.cursor) {
-      group.style('cursor', this.configuration.cursor);
-    }
-    return new GroupCreated(group);
-  }
-}
+import {DrawConfiguration} from './published.type';
 
 export class GroupCreated {
   group: d3.selection;
@@ -99,8 +76,26 @@ export class GroupCreated {
   }
 }
 
-export interface DrawConfiguration {
-  id: string;
-  clazz: string;
-  cursor?: string;
+export class DrawBuilder {
+  private appendable: d3.selection;
+  private configuration: DrawConfiguration;
+
+  constructor(appendable: d3.selection,
+              configuration: DrawConfiguration) {
+    this.appendable = appendable;
+    this.configuration = configuration;
+  }
+
+  createGroup(): GroupCreated {
+    const group = this.appendable
+      .append('svg')
+      .attr('id', this.configuration.id)
+      .attr('class', this.configuration.clazz)
+      .attr('x', 0)
+      .attr('y', 0);
+    if (this.configuration.cursor) {
+      group.style('cursor', this.configuration.cursor);
+    }
+    return new GroupCreated(group);
+  }
 }

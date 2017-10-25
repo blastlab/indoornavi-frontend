@@ -38,9 +38,9 @@ export class WizardTool {
       .click().perform();
   }
 
-  static dragElementBy(element, translation) {
+  static dragElementBy(elementBeingDragged, translation) {
     browser.actions()
-      .mouseDown(element).mouseMove(translation).mouseUp()
+      .mouseDown(elementBeingDragged).mouseMove(translation).mouseUp()
       .perform();
   }
 

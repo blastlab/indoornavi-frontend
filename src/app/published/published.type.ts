@@ -56,3 +56,9 @@ export enum CommandType {
   SET_TAGS,
   TOGGLE_TAG
 }
+
+export interface DrawConfiguration {
+  id: string;
+  clazz: string;
+  cursor?: string;
+}

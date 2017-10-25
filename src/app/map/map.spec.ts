@@ -20,6 +20,7 @@ import {AcceptButtonsService} from '../utils/accept-buttons/accept-buttons.servi
 import {Observable} from 'rxjs/Observable';
 import {ScaleService} from './toolbar/tools/scale/scale.service';
 import {MapViewerService} from './map.viewer.service';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('MapViewerComponent', () => {
   let component: MapViewerComponent;
@@ -31,13 +32,29 @@ describe('MapViewerComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
-        TranslateModule.forRoot(), MaterialModule, FormsModule, RouterTestingModule
+        TranslateModule.forRoot(),
+        MaterialModule,
+        FormsModule,
+        RouterTestingModule,
+        BrowserAnimationsModule
       ],
-      declarations: [MapViewerComponent, ScaleInputComponent, ScaleHintComponent, AcceptButtonsComponent],
+      declarations: [
+        MapViewerComponent,
+        ScaleInputComponent,
+        ScaleHintComponent,
+        AcceptButtonsComponent],
       providers: [
-        ScaleInputService, ScaleHintService, MapLoaderInformerService,
-        FloorService, HttpService, ToastService, MapService, AuthGuard, AcceptButtonsService,
-        ScaleService, MapViewerService
+        ScaleInputService,
+        ScaleHintService,
+        MapLoaderInformerService,
+        FloorService,
+        HttpService,
+        ToastService,
+        MapService,
+        AuthGuard,
+        AcceptButtonsService,
+        ScaleService,
+        MapViewerService
       ]
     })
       .compileComponents();

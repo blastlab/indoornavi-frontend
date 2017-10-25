@@ -14,6 +14,7 @@ import {HttpModule} from '@angular/http';
 import {BuildingService} from '../building/building.service';
 import {SharedModule} from '../utils/shared/shared.module';
 import {AuthGuard} from '../auth/auth.guard';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('ComplexComponent', () => {
 
@@ -33,13 +34,19 @@ describe('ComplexComponent', () => {
         DialogTestModule,
         TranslateModule.forRoot(),
         RouterTestingModule,
-        SharedModule
+        SharedModule,
+        BrowserAnimationsModule
       ],
       declarations: [
         ComplexComponent
       ],
       providers: [
-        ComplexService, BuildingService, HttpService, ToastService, MdDialog, AuthGuard
+        ComplexService,
+        BuildingService,
+        HttpService,
+        ToastService,
+        MdDialog,
+        AuthGuard
       ]
     }).compileComponents();
 

@@ -7,7 +7,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {ToastService} from '../utils/toast/toast.service';
 import {DeviceDialogComponent} from './device.dialog';
 import {DeviceListComponent} from './device.list';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Tag} from './tag.type';
 import {Anchor} from './anchor.type';
 import {Sink} from './sink.type';
@@ -101,7 +101,7 @@ export class DeviceComponent implements OnInit, OnDestroy {
       this.dialogRef = null;
     });
   }
-  setPermissions(){
+  setPermissions() {
     const prefix: string = DeviceService.getDevicePermissionPrefix(this.routeState);
     this.createPermission = `${prefix}_CREATE`;
   }

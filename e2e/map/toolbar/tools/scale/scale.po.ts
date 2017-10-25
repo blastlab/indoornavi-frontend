@@ -48,8 +48,8 @@ export class ScaleTool {
     browser.actions().mouseMove(svg, {x: x, y: y}).click().perform();
   }
 
-  static moveMouseTo(element) {
-    browser.actions().mouseMove(element).perform();
+  static moveMouseTo(elementOfMouseMovement) {
+    browser.actions().mouseMove(elementOfMouseMovement).perform();
   }
 
   static clickConfirm() {

@@ -37,7 +37,6 @@
     "hammerjs": "^2.0.8",
     "material-design-icons": "^3.0.1",
     "md5": "^2.2.1",
-    "ng2-breadcrumb": "^0.5.6",
     "ng2-dnd": "^2.2.2",
     "primeng": "^4.2.2",
     "font-awesome": "^4.7.0",
@@ -54,7 +53,7 @@
     "@types/jasmine": "2.5.38",
     "@types/node": "^7.0.46",
     "chai": "^3.5.0",
-    "codelyzer": "~2.0.0",
+    "codelyzer": "^3.0.1",
     "jasmine-core": "~2.5.2",
     "jasmine-spec-reporter": "~3.2.0",
     "karma": "~1.4.1",
@@ -68,7 +67,7 @@
     "sinon": "^1.17.4",
     "sinon-chai": "^2.14.0",
     "ts-node": "~3.0.2",
-    "tslint": "~4.5.0",
+    "tslint": "^5.8.0",
     "typescript": "^2.5.3"
   }
 }

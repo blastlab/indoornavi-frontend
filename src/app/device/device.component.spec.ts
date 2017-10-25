@@ -20,7 +20,6 @@ describe('DevicesComponent', () => {
   let component: DeviceComponent;
   let fixture: ComponentFixture<DeviceComponent>;
   let mockActivatedRoute;
-
   let socketService: SocketService;
   let dialog: MdDialog;
   let toastService: ToastService;
@@ -37,7 +36,17 @@ describe('DevicesComponent', () => {
         SharedModule
       ],
       declarations: [DeviceComponent, DeviceListComponent],
-      providers: [DeviceService, SocketService, WebSocketService, DeviceService, HttpService, ToastService, MdDialog, {provide: Router, useClass: RouterModule}, {provide: ActivatedRoute, useValue: mockActivatedRoute}, AuthGuard]
+      providers: [
+        DeviceService,
+        SocketService,
+        WebSocketService,
+        DeviceService,
+        HttpService,
+        ToastService,
+        MdDialog,
+        {provide: Router, useClass: class { navigate = jasmine.createSpy('navigate'); }},
+        {provide: ActivatedRoute, useValue: mockActivatedRoute},
+        AuthGuard]
     })
       .compileComponents();
 

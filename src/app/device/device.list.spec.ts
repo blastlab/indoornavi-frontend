@@ -12,6 +12,7 @@ import {Device} from './device.type';
 import {ActivatedRoute, Router, RouterModule} from '@angular/router';
 import {AuthGuard} from '../auth/auth.guard';
 import {SharedModule} from '../utils/shared/shared.module';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 
 describe('DeviceListComponent', () => {
@@ -31,11 +32,19 @@ describe('DeviceListComponent', () => {
         DndModule.forRoot(),
         MaterialModule,
         DialogTestModule,
-        SharedModule
+        SharedModule,
+        BrowserAnimationsModule
       ],
       declarations: [DeviceListComponent],
-      providers: [DeviceService, HttpService, ToastService, MdDialog,
-        {provide: Router, useClass: RouterModule}, {provide: ActivatedRoute, useValue: mockActivatedRoute}, AuthGuard, {provide: ActivatedRoute, useValue: mockActivatedRoute}]
+      providers: [
+        DeviceService,
+        HttpService,
+        ToastService,
+        MdDialog,
+        {provide: Router, useClass: class { navigate = jasmine.createSpy('navigate'); }},
+        {provide: ActivatedRoute, useValue: mockActivatedRoute},
+        AuthGuard
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(DeviceListComponent);

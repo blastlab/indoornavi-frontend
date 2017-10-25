@@ -3,6 +3,23 @@ import {browser, by, element, ElementFinder, protractor} from 'protractor';
 import {Measure} from '../../../../../src/app/map/toolbar/tools/scale/scale.type';
 import {ActionBarChecker} from '../../../actionbar/actionbar.checker';
 
+class DrawingChecker {
+
+  static expectScaleToExist() {
+    expect(element.all(by.className('connectLine')).isPresent()).toBeTruthy();
+    expect(element.all(by.className('endings')).first().isPresent()).toBeTruthy();
+    expect(element.all(by.className('point')).first().isPresent()).toBeTruthy();
+  }
+
+  static expectScaleToBeVisible() {
+    expect(element(by.id('scaleGroup')).getAttribute('style')).toEqual('display: flex;');
+  }
+
+  static expectScaleNotToBeVisible() {
+    expect(element(by.id('scaleGroup')).getAttribute('style')).toEqual('display: none;');
+  }
+}
+
 describe('ScaleComponentInit', () => {
   let path: any;
 
@@ -169,22 +186,6 @@ describe('ScaleComponent', () => {
 
 });
 
-class DrawingChecker {
-
-  static expectScaleToExist() {
-    expect(element.all(by.className('connectLine')).isPresent()).toBeTruthy();
-    expect(element.all(by.className('endings')).first().isPresent()).toBeTruthy();
-    expect(element.all(by.className('point')).first().isPresent()).toBeTruthy();
-  }
-
-  static expectScaleToBeVisible() {
-    expect(element(by.id('scaleGroup')).getAttribute('style')).toEqual('display: flex;');
-  }
-
-  static expectScaleNotToBeVisible() {
-    expect(element(by.id('scaleGroup')).getAttribute('style')).toEqual('display: none;');
-  }
-}
 
 
 

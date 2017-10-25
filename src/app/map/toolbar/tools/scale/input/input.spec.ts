@@ -20,6 +20,7 @@ import {Floor} from '../../../../../floor/floor.type';
 import {Observable} from 'rxjs/Rx';
 import {AuthGuard} from '../../../../../auth/auth.guard';
 import {ScaleService} from '../scale.service';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('ScaleInputComponent', () => {
   let component: ScaleInputComponent;
@@ -36,7 +37,14 @@ describe('ScaleInputComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ScaleInputComponent],
       imports: [
-        TranslateModule.forRoot(), BrowserModule, FormsModule, MaterialModule, HttpModule, RouterTestingModule, DndModule.forRoot()
+        TranslateModule.forRoot(),
+        BrowserModule,
+        FormsModule,
+        MaterialModule,
+        HttpModule,
+        RouterTestingModule,
+        DndModule.forRoot(),
+        BrowserAnimationsModule
       ],
       providers: [
         ScaleInputService, ScaleHintService, FloorService, ToastService, HttpService, AuthGuard, ScaleService

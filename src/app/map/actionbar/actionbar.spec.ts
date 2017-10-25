@@ -1,5 +1,4 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-
 import {ActionBarComponent} from './actionbar';
 import {TranslateModule} from '@ngx-translate/core';
 import {ActionBarService} from './actionbar.service';
@@ -14,6 +13,7 @@ import {Floor} from '../../floor/floor.type';
 import {MaterialModule} from '@angular/material';
 import {DialogTestModule} from '../../utils/dialog/dialog.test';
 import {Measure} from '../toolbar/tools/scale/scale.type';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 class ConfigurationServiceMock {
   private configuration: Configuration;
@@ -69,8 +69,20 @@ describe('ActionBarComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ActionBarComponent],
-      imports: [TranslateModule.forRoot(), HttpModule, RouterTestingModule, MaterialModule, DialogTestModule],
-      providers: [{provide: ActionBarService, useClass: ConfigurationServiceMock}, HttpService, AuthGuard, MapLoaderInformerService]
+      imports: [
+        TranslateModule.forRoot(),
+        HttpModule,
+        RouterTestingModule,
+        MaterialModule,
+        DialogTestModule,
+        BrowserAnimationsModule
+      ],
+      providers: [
+        {provide: ActionBarService, useClass: ConfigurationServiceMock},
+        HttpService,
+        AuthGuard,
+        MapLoaderInformerService
+      ]
     })
       .compileComponents();
   }));
