@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {BreadcrumbService} from 'ng2-breadcrumb/ng2-breadcrumb';
+// import {BreadcrumbService} from 'ng2-breadcrumb/ng2-breadcrumb';
 import {AuthGuard} from './auth/auth.guard';
 import {ActivatedRoute, Params} from '@angular/router';
 

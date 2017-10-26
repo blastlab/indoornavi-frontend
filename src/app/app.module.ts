@@ -79,7 +79,6 @@ import {AreaService} from './area/area.service';
 import {Md5} from 'ts-md5/dist/md5';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 
-
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
 }
