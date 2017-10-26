@@ -6,7 +6,6 @@ import {AnchorPlacerController} from './anchor.controller';
 import {Point} from '../../../map.type';
 import {IconService, NaviIcons} from '../../../../utils/drawing/icon.service';
 import {HintBarService} from '../../../hint-bar/hint-bar.service';
-import {DrawingService} from '../../../../utils/drawing/drawing.service';
 import {AcceptButtonsService} from '../../../../utils/accept-buttons/accept-buttons.service';
 import * as d3 from 'd3';
 import {Sink} from '../../../../device/sink.type';
@@ -25,6 +24,7 @@ import {MapLoaderInformerService} from 'app/utils/map-loader-informer/map-loader
 })
 export class AnchorPlacerComponent implements Tool, OnInit {
   @Output() clicked: EventEmitter<Tool> = new EventEmitter<Tool>();
+  private mapDevices: Draggable[] = [];
   public hintMessage: string;
   public active: boolean = false;
   private floorId: number;
@@ -37,15 +37,15 @@ export class AnchorPlacerComponent implements Tool, OnInit {
     return (<Sink>checkType.anchors) !== undefined;
   }
 
-  static getSelectionOfAnchorsOnMap(): d3.selection {
-    const map = d3.select('#map');
-    return map.selectAll('.anchor');
-  }
+  /* static getSelectionOfAnchorsOnMap(): d3.selection {
+     const map = d3.select('#map');
+     return map.selectAll('.anchor');
+   }*/
 
   constructor(public translate: TranslateService,
               private anchorPlacerController: AnchorPlacerController,
               private accButtons: AcceptButtonsService,
-              private drawingService: DrawingService,
+              // private drawingService: DrawingService,
               private hintBar: HintBarService,
               private configurationService: ActionBarService,
               private mapLoaderInformer: MapLoaderInformerService,
@@ -89,7 +89,7 @@ export class AnchorPlacerComponent implements Tool, OnInit {
   }
 
   setInactive(): void {
-    this.removeObjectsDrag();
+    // this.removeObjectsDrag();
     this.toggleList();
     this.active = false;
     if (!this.placementDone) {
@@ -103,12 +103,16 @@ export class AnchorPlacerComponent implements Tool, OnInit {
   }
 
   private allowToDragAllAnchorsOnMap(): void {
-    this.drawingService.applyDragBehavior(AnchorPlacerComponent.getSelectionOfAnchorsOnMap(), false);
+    // this.drawingService.applyDragBehavior(AnchorPlacerComponent.getSelectionOfAnchorsOnMap(), false);
+    this.mapDevices.forEach((draggable) => {
+      draggable.on(false);
+    });
+    // TODO get list of draggables
   }
 
-  private removeObjectsDrag() {
-    this.removeGroupDrag(AnchorPlacerComponent.getSelectionOfAnchorsOnMap());
-  }
+  /*  private removeObjectsDrag() {
+      this.removeGroupDrag(AnchorPlacerComponent.getSelectionOfAnchorsOnMap());
+    }*/
 
   private subscribeForAnchor() {
     this.anchorPlacerController.chosenAnchor.subscribe((anchor) => {
@@ -168,7 +172,9 @@ export class AnchorPlacerComponent implements Tool, OnInit {
         .addIcon({x: coordinates.x + 5, y: coordinates.y + 5}, this.icons.getIcon(NaviIcons.ANCHOR));
     }
     deviceGroup.group.append();
-    return new Draggable(deviceGroup);
+    const mapDevice = new Draggable(deviceGroup);
+    this.mapDevices.push(mapDevice);
+    return mapDevice;
   }
 
   private placeDeviceOnMap(device: Anchor | Sink, coordinates: Point): void {

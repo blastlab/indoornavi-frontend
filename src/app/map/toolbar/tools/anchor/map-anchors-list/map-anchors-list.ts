@@ -43,7 +43,7 @@ export class RemainingDevicesListComponent implements OnInit {
     this.fetchDevices();
     this.controlListVisibility();
     this.controlListState();
-    this.subscribeForSelectedDevice();
+    // this.subscribeForSelectedDevice();
   }
 
   private fetchDevices() {
@@ -51,7 +51,6 @@ export class RemainingDevicesListComponent implements OnInit {
     this.deviceService.getAll().subscribe((devices: Device[]) => {
       devices.forEach((device: Anchor|Sink) => {
         if (device.verified) {
-
           this.remainingDevices.push(device);
         }
       });
@@ -74,20 +73,20 @@ export class RemainingDevicesListComponent implements OnInit {
     });
   }
 
-  private subscribeForSelectedDevice(): void {
-    this.anchorPlacerController.selectedDevice.subscribe((device) => {
-      this.selectedDevice = device;
-      if (!!this.selectedDevice) {
-        const map = d3.select('#map');
-        console.log(this.selectedDevice.shortId);
-        map.on('click', () => {
-          this.toggleMenu();
-          this.anchorPlacerController.deselectDevice();
-        });
-        AnchorPlacerComponent.getSelectionOfAnchorsOnMap().select();
-      }
-    });
-  }
+  /* private subscribeForSelectedDevice(): void {
+     this.anchorPlacerController.selectedDevice.subscribe((device) => {
+       this.selectedDevice = device;
+       if (!!this.selectedDevice) {
+         const map = d3.select('#map');
+         console.log(this.selectedDevice.shortId);
+         map.on('click', () => {
+           this.toggleMenu();
+           this.anchorPlacerController.deselectDevice();
+         });
+         AnchorPlacerComponent.getSelectionOfAnchorsOnMap().select();
+       }
+     });
+   }*/
 
   public selectDevice() {
     this.toggleMenu();

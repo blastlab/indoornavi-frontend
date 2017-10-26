@@ -6,20 +6,12 @@ import {Subscription} from 'rxjs/Subscription';
 
 export class Draggable implements OnInit {
   private group: d3.selection;
-  private boxMargin: number;
   private mapLoaderInformerService = new MapLoaderInformerService();
   private mapLoadedSubscription: Subscription;
   private mapAttributes: { width: number, height: number };
 
-
-  private static getBoxMargin(selection: d3.selection): number {
-    const boxMargin = '50'; // selection._groups['0']['0'].children[1].attributes[1].nodeValue;
-    return parseInt(boxMargin, 10);
-  }
-
   constructor(groupCreated: GroupCreated) {
     this.group = groupCreated;
-    this.boxMargin = Draggable.getBoxMargin(groupCreated);
   }
 
   ngOnInit(): void {
@@ -31,24 +23,25 @@ export class Draggable implements OnInit {
   }
 
   // TODO add pointer
-  public on(selection: d3.selection, withButtons: boolean) {
+  public on(withButtons: boolean) {
     const dragGroup = d3.drag()
-      .on('drag', (_, i, selections) => {
-        this.dragGroupBehavior(d3.select(selections[i]));
+      .on('drag', () => {
+        this.dragGroup();
         if (withButtons) {
           this.dragAcceptButtonsBehavior();
         }
       });
-    selection.select('.pointer').attr('fill', 'red');
-    selection.style('cursor', 'move');
-    selection.call(dragGroup);
+    // this.group.select('.pointer').attr('fill', 'red');
+    console.log(this.group);
+    this.group.style('cursor', 'move');
+    this.group.call(dragGroup);
   }
 
-  public off(selection: d3.selection) {
-    selection.on('drag', null);
+  public off() {
+    this.group.on('drag', null);
   }
 
-  private dragGroupBehavior(selection: d3.selection) {
+  /*private dragGroupBehavior(selection: d3.selection) {
     let dx = parseInt(selection.attr('x'), 10);
     let dy = parseInt(selection.attr('y'), 10);
     dx += d3.event.dx;
@@ -56,10 +49,10 @@ export class Draggable implements OnInit {
     selection
       .attr('x', Math.max(-this.boxMargin, Math.min(this.mapAttributes.width - this.boxMargin, dx)))
       .attr('y', Math.max(-this.boxMargin, Math.min(this.mapAttributes.height - this.boxMargin, dy)));
-  }
+  }*/
 
-    private dragGroup(selection: d3.selection) {
-
+  private dragGroup() {
+    console.log(this.group);
     }
 
   private dragAcceptButtonsBehavior() {
@@ -69,7 +62,7 @@ export class Draggable implements OnInit {
     bx += d3.event.dx;
     by += d3.event.dy;
     buttons.style('top', Math.max(0, Math.min((this.mapAttributes.height - 100 ), by)) + 'px');
-    buttons.style('left', Math.max(this.boxMargin, Math.min((this.mapAttributes.width - this.boxMargin ), bx)) + 'px');
+    buttons.style('left', Math.max(50, Math.min((this.mapAttributes.width - 50 ), bx)) + 'px');
   }
 
 }
