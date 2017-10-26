@@ -54,7 +54,7 @@
     "@types/node": "^7.0.46",
     "chai": "^3.5.0",
     "codelyzer": "^3.0.1",
-    "jasmine-core": "~2.5.2",
+    "jasmine-core": "~2.8.0",
     "jasmine-spec-reporter": "~3.2.0",
     "karma": "~1.4.1",
     "karma-chai-sinon": "^0.1.5",
@@ -66,7 +66,7 @@
     "protractor": "^5.2.0",
     "sinon": "^1.17.4",
     "sinon-chai": "^2.14.0",
-    "ts-node": "~3.0.2",
+    "ts-node": "~3.3.0",
     "tslint": "^5.8.0",
     "typescript": "^2.5.3"
   }

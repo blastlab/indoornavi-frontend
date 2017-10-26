@@ -67,6 +67,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
     this.configurationLoadedSubscription = this.configurationService.configurationLoaded().subscribe((configuration: Configuration) => {
       this.drawScale(configuration.data.scale);
+      console.log(configuration);
     });
 
     this.configurationResetSubscription = this.configurationService.configurationReset().subscribe((configuration: Configuration) => {

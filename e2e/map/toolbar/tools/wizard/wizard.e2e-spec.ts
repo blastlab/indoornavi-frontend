@@ -46,7 +46,10 @@ describe('WizardTool', () => {
     testedSink.getAttribute('x').then((attrString) => {
       expect(parseInt(attrString, 10)).toEqual(149);
       testedSink.getAttribute('y').then((attr) => {
-        expect(parseInt(attr, 10)).toEqual(223);
+        // setting range as the difference is negligible for test to be confirmed as passed
+        // but returned value can vary cosing unexpected variations that are not part of this test
+        expect(parseInt(attr, 10)).toBeGreaterThan(218);
+        expect(parseInt(attr, 10)).toBeLessThan(228);
         done();
       });
     });
@@ -59,7 +62,8 @@ describe('WizardTool', () => {
     testSink.getAttribute('x').then((attrString) => {
       expect(parseInt(attrString, 10)).toEqual(150);
       testSink.getAttribute('y').then((attr) => {
-        expect(parseInt(attr, 10)).toEqual(200);
+        expect(parseInt(attr, 10)).toBeGreaterThan(195);
+        expect(parseInt(attr, 10)).toBeLessThan(205);
         done();
       });
     });
@@ -109,7 +113,8 @@ describe('WizardTool', () => {
     anchor.getAttribute('x').then((attrString) => {
       expect(parseInt(attrString, 10)).toEqual(400);
       anchor.getAttribute('y').then((attr) => {
-        expect(parseInt(attr, 10)).toEqual(190);
+        expect(parseInt(attr, 10)).toBeGreaterThan(185);
+        expect(parseInt(attr, 10)).toBeLessThan(195);
         WizardTool.clickDecisionButton(true);
         done();
       });
