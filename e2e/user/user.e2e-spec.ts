@@ -1,5 +1,6 @@
 import {UserPage} from './user.po';
 import {AppPage} from '../app.po';
+import {Utils} from '../utils';
 
 describe('User component', () => {
   it('Enters user lists', () => {
@@ -11,15 +12,15 @@ describe('User component', () => {
     UserPage.navigateToHome();
     UserPage.prepareToAddUser();
 
-    UserPage.getUsersCount().then((initialUsersCount: number) => {
+    Utils.getUsersCount().then((initialUsersCount: number) => {
       UserPage.addUser();
 
-      UserPage.getUsersCount().then((usersCount: number) => {
+      Utils.getUsersCount().then((usersCount: number) => {
         expect(usersCount).toBe(initialUsersCount + 1);
 
         UserPage.removeLastAddedUser();
 
-        UserPage.getUsersCount().then((afterRemoveCount: number) => {
+        Utils.getUsersCount().then((afterRemoveCount: number) => {
           expect(afterRemoveCount).toBe(initialUsersCount);
           done();
         });
@@ -39,7 +40,7 @@ describe('User component', () => {
     UserPage.navigateToHome();
     UserPage.editUser('edit-user', 'newName');
 
-    expect(UserPage.getEditedUser().getText()).toBe('newName');
+    expect(UserPage.getEditedUser('edit-newName').getText()).toBe('newName');
 
     UserPage.editUser('edit-newName', 'user');
   });
