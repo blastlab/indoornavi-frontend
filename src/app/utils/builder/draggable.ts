@@ -1,59 +1,64 @@
 import {GroupCreated} from './draw.builder';
 import * as d3 from 'd3';
-import {MapLoaderInformerService} from '../map-loader-informer/map-loader-informer.service';
-import {OnInit} from '@angular/core';
-import {Subscription} from 'rxjs/Subscription';
 
-export class Draggable implements OnInit {
+export class Draggable {
   private group: d3.selection;
-  private mapLoaderInformerService = new MapLoaderInformerService();
-  private mapLoadedSubscription: Subscription;
   private mapAttributes: { width: number, height: number };
 
-  constructor(groupCreated: GroupCreated) {
-    this.group = groupCreated;
+  constructor(groupCreated: GroupCreated,
+              container: d3.selection) {
+    this.group = groupCreated.group;
+    this.mapAttributes = {width: container.attr('width'), height: container.attr('height')};
   }
 
-  ngOnInit(): void {
-    this.mapLoadedSubscription = this.mapLoaderInformerService.loadCompleted().subscribe(() => {
-      const map = d3.select('#map');
-      this.mapAttributes.width = map.attr('width');
-      this.mapAttributes.height = map.attr('height');
-    });
-  }
-
-  // TODO add pointer
   public on(withButtons: boolean) {
     const dragGroup = d3.drag()
       .on('drag', () => {
-        this.dragGroup();
+        this.dragGroupBehavior();
         if (withButtons) {
           this.dragAcceptButtonsBehavior();
         }
       });
-    // this.group.select('.pointer').attr('fill', 'red');
-    console.log(this.group);
+    this.group.select('.pointer').attr('stroke', 'red');
     this.group.style('cursor', 'move');
     this.group.call(dragGroup);
+    this.group.on('click', () => {
+      this.select();
+    });
   }
 
   public off() {
     this.group.on('drag', null);
+    this.group.select('.pointer').attr('stroke', 'black');
+    this.group.style('cursor', 'pointer');
+    this.group.on('click', null);
   }
 
-  /*private dragGroupBehavior(selection: d3.selection) {
-    let dx = parseInt(selection.attr('x'), 10);
-    let dy = parseInt(selection.attr('y'), 10);
+  private select() {
+    console.log('select and set deselect');
+    this.group.on('click', () => {
+      this.deselect();
+    });
+    this.group.classed('selected', true);
+  }
+
+  private deselect() {
+    console.log('deselect');
+    this.group.on('click', () => {
+      this.select();
+    });
+    this.group.classed('selected', false);
+  }
+
+  private dragGroupBehavior() {
+    let dx = parseInt(this.group.attr('x'), 10);
+    let dy = parseInt(this.group.attr('y'), 10);
     dx += d3.event.dx;
     dy += d3.event.dy;
-    selection
-      .attr('x', Math.max(-this.boxMargin, Math.min(this.mapAttributes.width - this.boxMargin, dx)))
-      .attr('y', Math.max(-this.boxMargin, Math.min(this.mapAttributes.height - this.boxMargin, dy)));
-  }*/
-
-  private dragGroup() {
-    console.log(this.group);
-    }
+    this.group
+      .attr('x', Math.max(0, Math.min(this.mapAttributes.width, dx)))
+      .attr('y', Math.max(0, Math.min(this.mapAttributes.height, dy)));
+  }
 
   private dragAcceptButtonsBehavior() {
     const buttons = d3.select('#accept-buttons');
@@ -63,6 +68,10 @@ export class Draggable implements OnInit {
     by += d3.event.dy;
     buttons.style('top', Math.max(0, Math.min((this.mapAttributes.height - 100 ), by)) + 'px');
     buttons.style('left', Math.max(50, Math.min((this.mapAttributes.width - 50 ), bx)) + 'px');
+  }
+
+  private createSelectionBorder() {
+
   }
 
 }

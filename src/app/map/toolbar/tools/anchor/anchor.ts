@@ -31,16 +31,11 @@ export class AnchorPlacerComponent implements Tool, OnInit {
   public chosenSink: Sink;
   private placementDone: boolean;
   private mapLoadedSubscription: Subscription;
-  private map: d3.selection;
+  protected map: d3.selection;
 
   static isSinkType(checkType: any): boolean {
     return (<Sink>checkType.anchors) !== undefined;
   }
-
-  /* static getSelectionOfAnchorsOnMap(): d3.selection {
-     const map = d3.select('#map');
-     return map.selectAll('.anchor');
-   }*/
 
   constructor(public translate: TranslateService,
               private anchorPlacerController: AnchorPlacerController,
@@ -60,7 +55,6 @@ export class AnchorPlacerComponent implements Tool, OnInit {
     this.configurationService.configurationLoaded().first().subscribe((configuration) => {
       this.floorId = configuration.floorId;
       this.drawConfiguredDevices(configuration.data.sinks);
-      console.log(configuration);
         configuration.data.anchors.forEach((anchor) => {
             this.drawDevice(this.buildAnchorDrawConfiguration(anchor), {x: anchor.x, y: anchor.y});
         });
@@ -89,7 +83,7 @@ export class AnchorPlacerComponent implements Tool, OnInit {
   }
 
   setInactive(): void {
-    // this.removeObjectsDrag();
+    this.removeDragFromAllAnchorsOnMap();
     this.toggleList();
     this.active = false;
     if (!this.placementDone) {
@@ -103,16 +97,16 @@ export class AnchorPlacerComponent implements Tool, OnInit {
   }
 
   private allowToDragAllAnchorsOnMap(): void {
-    // this.drawingService.applyDragBehavior(AnchorPlacerComponent.getSelectionOfAnchorsOnMap(), false);
     this.mapDevices.forEach((draggable) => {
       draggable.on(false);
     });
-    // TODO get list of draggables
   }
 
-  /*  private removeObjectsDrag() {
-      this.removeGroupDrag(AnchorPlacerComponent.getSelectionOfAnchorsOnMap());
-    }*/
+  private removeDragFromAllAnchorsOnMap() {
+    this.mapDevices.forEach((draggable) => {
+      draggable.off();
+    });
+  }
 
   private subscribeForAnchor() {
     this.anchorPlacerController.chosenAnchor.subscribe((anchor) => {
@@ -162,17 +156,15 @@ export class AnchorPlacerComponent implements Tool, OnInit {
   private drawDevice(deviceConfig: DrawConfiguration, coordinates: Point): d3.selection {
     const droppedDevice = new DrawBuilder(this.map, deviceConfig);
     const deviceGroup = droppedDevice.createGroup()
-      .addIcon({x: coordinates.x - 12, y: coordinates.y - 12}, this.icons.getIcon(NaviIcons.POINTER))
-      .addText({x: coordinates.x + 5, y: coordinates.y - 5}, `${deviceConfig.clazz}-${deviceConfig.id}`);
+      .place(coordinates)
+      .addPointer({x: -12, y: -12}, this.icons.getIcon(NaviIcons.POINTER))
+      .addText({x: 5, y: -5}, `${deviceConfig.clazz}-${deviceConfig.id}`);
       if (deviceConfig.clazz.includes(`sink`)) {
-      deviceGroup
-        .addIcon({x: coordinates.x + 5, y: coordinates.y + 5}, this.icons.getIcon(NaviIcons.SINK));
+        deviceGroup.addIcon({x: 5, y: 5}, this.icons.getIcon(NaviIcons.SINK));
       } else if (deviceConfig.clazz.includes(`anchor`)) {
-      deviceGroup
-        .addIcon({x: coordinates.x + 5, y: coordinates.y + 5}, this.icons.getIcon(NaviIcons.ANCHOR));
+        deviceGroup.addIcon({x: 5, y: 5}, this.icons.getIcon(NaviIcons.ANCHOR));
     }
-    deviceGroup.group.append();
-    const mapDevice = new Draggable(deviceGroup);
+    const mapDevice = new Draggable(deviceGroup, this.map);
     this.mapDevices.push(mapDevice);
     return mapDevice;
   }
@@ -192,7 +184,7 @@ export class AnchorPlacerComponent implements Tool, OnInit {
         } else {
           // this.chosenSink.anchors.push(device);
         }
-        this.configurationService.setSink(this.chosenSink);
+        // ->  this.configurationService.setSink(this.chosenSink);
       } else {
         this.removeChosenAnchor(droppedAnchorGroup);
       }

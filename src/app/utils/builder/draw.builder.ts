@@ -16,6 +16,7 @@ export class DrawBuilder {
       .append('svg')
       .attr('id', this.configuration.id)
       .attr('class', this.configuration.clazz)
+      .attr('overflow', 'visible')
       .attr('x', 0)
       .attr('y', 0);
     if (this.configuration.cursor) {
@@ -54,6 +55,18 @@ export class GroupCreated {
       .attr('x', coordinates.x)
       .attr('y', coordinates.y)
       .html(icon)
+      .attr('stroke', 'black')
+      .attr('fill', 'black');
+    return this;
+  }
+
+  addPointer(coordinates: Point, icon: string): GroupCreated {
+    this.group
+      .append('svg')
+      .attr('x', coordinates.x)
+      .attr('y', coordinates.y)
+      .html(icon)
+      .classed('pointer', true)
       .attr('stroke', 'black')
       .attr('fill', 'black');
     return this;
