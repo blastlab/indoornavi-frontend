@@ -2,7 +2,7 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {Floor} from './floor.type';
 import {FloorService} from './floor.service';
 import {MdDialog, MdDialogRef} from '@angular/material';
-import {FloorDialogComponent} from './floor.dialog';
+import {FloorDialogComponent} from './dialog/floor.dialog';
 import {ToastService} from '../utils/toast/toast.service';
 import {NgForm} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';

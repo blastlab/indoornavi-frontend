@@ -1,6 +1,6 @@
 import {ScaleTool} from './scale.po';
 import {browser, by, element, ElementFinder, protractor} from 'protractor';
-import {Measure} from '../../../../../src/app/map/toolbar/tools/scale/scale.type';
+import {Measure} from '../../../../../src/app/map-editor/tool-bar/tools/scale/scale.type';
 import {ActionBarChecker} from '../../../actionbar/actionbar.checker';
 
 class DrawingChecker {

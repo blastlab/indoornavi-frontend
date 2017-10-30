@@ -1,4 +1,4 @@
-import {Scale} from '../map/toolbar/tools/scale/scale.type';
+import {Scale} from '../map-editor/tool-bar/tools/scale/scale.type';
 import {Building} from '../building/building.type';
 
 export interface Floor {

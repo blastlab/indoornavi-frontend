@@ -2,7 +2,7 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {Complex} from './complex.type';
 import {ComplexService} from './complex.service';
 import {MdDialog, MdDialogRef} from '@angular/material';
-import {ComplexDialogComponent} from './complex.dialog';
+import {ComplexDialogComponent} from './dilaog/complex.dialog';
 import {ComplexConfirmComponent} from './complex.confirm';
 import {ToastService} from '../utils/toast/toast.service';
 import {NgForm} from '@angular/forms';

@@ -7,10 +7,10 @@ import {UserComponent} from './user/user';
 import {ChangePasswordComponent} from './user/changePassword';
 import {PermissionGroupComponent} from './user/permissionGroup';
 import {FloorComponent} from './floor/floor';
-import {MapControllerComponent} from './map/map.controller';
+import {MapControllerComponent} from './map-editor/map.controller';
 import {UnauthorizedComponent} from './utils/unauthorized/unauthorized';
-import {PublishedListComponent} from './published/list/published-list';
-import {PublishedComponent} from './published/published';
+import {PublishedListComponent} from './publications/list/published-list';
+import {PublishedComponent} from './map-viewer/published';
 import {DeviceComponent} from './device/device.component';
 
 export const appRoutes: Routes = [

@@ -1,7 +1,7 @@
 import {browser, by, element, promise as protractorPromise} from 'protractor';
 import {Utils} from '../utils';
 import {ScaleTool} from '../map/toolbar/tools/scale/scale.po';
-import {Measure} from '../../src/app/map/toolbar/tools/scale/scale.type';
+import {Measure} from '../../src/app/map-editor/tool-bar/tools/scale/scale.type';
 import {WebElement} from 'selenium-webdriver';
 
 export class PublishedPage {

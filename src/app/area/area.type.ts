@@ -1,4 +1,4 @@
-import {Point} from '../map/map.type';
+import {Point} from '../map-editor/map.type';
 
 export interface Area {
   id: number;

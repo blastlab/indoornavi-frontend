@@ -9,7 +9,7 @@ import {ToastService} from '../utils/toast/toast.service';
 import {Observable} from 'rxjs/Rx';
 import {DialogTestModule} from '../utils/dialog/dialog.test';
 import {DeviceService} from './device.service';
-import {DeviceListComponent} from './device.list';
+import {DeviceListComponent} from './list/device.list';
 import {ActivatedRoute, Router, RouterModule} from '@angular/router';
 import {SharedModule} from '../utils/shared/shared.module';
 import {AuthGuard} from '../auth/auth.guard';

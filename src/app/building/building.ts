@@ -2,7 +2,7 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {Building} from './building.type';
 import {BuildingService} from './building.service';
 import {MdDialog, MdDialogRef} from '@angular/material';
-import {BuildingDialogComponent} from './building.dialog';
+import {BuildingDialogComponent} from './dialog/building.dialog';
 import {BuildingConfirmComponent} from './building.confirm';
 import {ToastService} from '../utils/toast/toast.service';
 import {NgForm} from '@angular/forms';
@@ -11,7 +11,6 @@ import {ActivatedRoute, Params, Router} from '@angular/router';
 import {FloorService} from '../floor/floor.service';
 
 @Component({
-  selector: 'app-root',
   templateUrl: 'building.html',
   styleUrls: ['building.css']
 })
