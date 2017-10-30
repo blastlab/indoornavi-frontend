@@ -67,7 +67,6 @@ import {D3Service} from 'd3-ng2-service';
 import {ScaleService} from './map/toolbar/tools/scale/scale.service';
 import {PublishedComponent} from './published/published';
 import {PublishedListComponent} from './published/list/published-list';
-import {NgxDatatableModule} from '@swimlane/ngx-datatable';
 import {appRoutes} from './app.routes';
 import {PublishedService} from './published/published.service';
 import {MapViewerService} from './map/map.viewer.service';
@@ -158,7 +157,6 @@ export function HttpLoaderFactory(http: Http) {
     ImageUploadModule.forRoot(),
     SharedModule,
     AngularMultiSelectModule,
-    NgxDatatableModule
   ],
   providers: [
     BuildingService,

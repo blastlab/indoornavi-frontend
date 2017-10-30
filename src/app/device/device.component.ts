@@ -23,9 +23,9 @@ export class DeviceComponent implements OnInit, OnDestroy {
   @ViewChild('verified') private verifiedList: DeviceListComponent;
   @ViewChild('notVerified') private notVerifiedList: DeviceListComponent;
 
-  private routeState: string;
+  public routeState: string;
+  public createPermission: string;
   private device: object;
-  private createPermission: string;
 
   dialogRef: MdDialogRef<DeviceDialogComponent>;
 
