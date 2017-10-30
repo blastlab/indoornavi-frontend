@@ -3,6 +3,7 @@ import {UserService} from 'app/user/user.service';
 import {TranslateService} from '@ngx-translate/core';
 import {ToastService} from '../utils/toast/toast.service';
 import {Router} from '@angular/router';
+import {AuthService} from '../auth/auth.service';
 
 @Component({
   templateUrl: 'changePassword.html'
@@ -16,7 +17,7 @@ export class ChangePasswordComponent {
     newPasswordRepeat: ''
   };
 
-  constructor(private userService: UserService, public translateService: TranslateService, private toastService: ToastService, private router: Router) {
+  constructor(private userService: UserService, public translateService: TranslateService, private toastService: ToastService, private router: Router, private authService: AuthService) {
     translateService.setDefaultLang('en');
     this.currentUserName = JSON.parse(localStorage.getItem('currentUser'))['username'];
   }
@@ -29,7 +30,6 @@ export class ChangePasswordComponent {
     if (isValid) {
       this.userService.changePassword({oldPassword: this.model.oldPassword, newPassword: this.model.newPassword}).subscribe(() => {
         this.toastService.showSuccess('user.changePassword.success');
-        this.router.navigate(['login']);
       }, (msg: string) => {
         this.toastService.showFailure(msg);
       });

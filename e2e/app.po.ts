@@ -3,9 +3,7 @@ import {Utils} from './utils';
 
 export class AppPage {
   static getTitle() {
-    Utils.getScreenshots('AppPage_before');
     Utils.waitForElement(element(by.css('app-root h1')));
-    Utils.getScreenshots('AppPage_after');
     return element(by.css('app-root h1')).getText();
   }
 
@@ -30,11 +28,8 @@ export class AppPage {
   }
 
   static getToast() {
-    Utils.getScreenshots('AppPage_before');
-    const toast = element(by.className('mat-simple-snackbar-message'));
-    Utils.getScreenshots('AppPage_after');
-    Utils.waitForElement(toast);
-    return toast;
+    Utils.waitForElement(element(by.css('.mat-simple-snackbar-message')));
+    return element(by.css('.mat-simple-snackbar-message')).getText();
   }
 
   static getById(id: string) {

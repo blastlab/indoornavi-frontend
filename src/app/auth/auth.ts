@@ -7,6 +7,7 @@ import {AuthGuard} from './auth.guard';
 import {ToastService} from '../utils/toast/toast.service';
 
 @Component({
+  selector: 'app-auth',
   templateUrl: 'auth.html',
   styleUrls: []
 })
@@ -23,8 +24,8 @@ export class AuthComponent implements OnInit {
   ngOnInit(): void {
     if (localStorage.getItem('currentUser')) {
       this.authService.logout();
-      this.authGuard.toggleUserLoggedIn(false);
       localStorage.removeItem('currentUser');
+      // this.authGuard.toggleUserLoggedIn(false);
       this.router.navigate(['/login']);
     }
   }

@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {AfterViewChecked, Component, OnInit} from '@angular/core';
 // import {BreadcrumbService} from 'ng2-breadcrumb/ng2-breadcrumb';
 import {AuthGuard} from './auth/auth.guard';
 import {ActivatedRoute, Params} from '@angular/router';
@@ -21,6 +21,7 @@ export class AppComponent {
     this.authGuard.userLoggedIn().subscribe((loggedIn: boolean) => {
       this.isUserLoggedIn = loggedIn;
     });
+
    /* breadcrumbService.addFriendlyNameForRoute('/complexes', 'Complexes');
     breadcrumbService.addFriendlyNameForRoute('/buildings', 'Buildings');
     breadcrumbService.addFriendlyNameForRoute('/floors', 'Floors');

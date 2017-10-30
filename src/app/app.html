@@ -1,7 +1,11 @@
+<ng-container *ngIf="isUserLoggedIn; then logged_in else not_logged_in">
+
+</ng-container>
+<ng-template #logged_in>
 <div fxFlexFill fxLayout="column">
   <header *ngIf="!isDisplayedInIFrame">
-    <div fxFlex="100" fxLayoutAlign="end" *ngIf="isUserLoggedIn">
-      <button md-icon-button [mdMenuTriggerFor]="menu">
+    <div fxFlex="100" fxLayoutAlign="end" >
+      <button id="menu" md-icon-button [mdMenuTriggerFor]="menu">
         <md-icon>more_vert</md-icon>
       </button>
       <md-menu #menu="mdMenu">
@@ -37,7 +41,7 @@
           <md-icon>lock_outline</md-icon>
           <span>Change Password</span>
         </button>
-        <button md-menu-item [routerLink]="['./logout']">
+        <button md-menu-item id="logout" [routerLink]="['./logout']">
           <md-icon>directions_run</md-icon>
           <span>Logout</span>
         </button>
@@ -48,3 +52,9 @@
     <router-outlet></router-outlet>
   </div>
 </div>
+
+</ng-template>
+
+<ng-template #not_logged_in>
+  <app-auth></app-auth>
+</ng-template>

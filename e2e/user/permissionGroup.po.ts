@@ -18,11 +18,8 @@ export class PermissionGroupPage {
     nameInput.sendKeys('Test');
     Utils.waitForElement(multiselectNG2);
     multiselectNG2.click();
-    Utils.waitForElement(pureCheckbox);
     pureCheckbox.click();
-    Utils.waitForElement(multiselectNG2);
     multiselectNG2.click();
-    Utils.waitForElement(saveButton);
     saveButton.click();
   }
 

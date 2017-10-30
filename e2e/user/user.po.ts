@@ -8,14 +8,11 @@ export class UserPage {
 
   static prepareToAddUser() {
     // first, we check that user with username 'test' already exists, if so we remove him
-    // element(by.id('remove-test')).isPresent().then((isPresent: boolean) => {
-    //   if (isPresent) {
-    //     element(by.id('remove-test')).click();
-    //   }
-    // });
-    const removeTest = element(by.id('user-name-input'));
-    Utils.waitForElement(removeTest);
-    removeTest.click();
+    element(by.id('remove-test')).isPresent().then((isPresent: boolean) => {
+      if (isPresent) {
+        element(by.id('remove-test')).click();
+      }
+    });
   }
 
   static addUser() {
@@ -24,16 +21,13 @@ export class UserPage {
     const userPsswdInput = element(by.id('user-password-input'));
     const userRepeatPsswdInput = element(by.id('user-repeat-password-input'));
     const userSaveButton = element(by.id('user-save-button'));
-    Utils.getScreenshots('AddUser');
     Utils.waitForElement(newUserButton);
     newUserButton.click();
     Utils.waitForElement(userNameInput);
-    Utils.getScreenshots('AddUser');
     userNameInput.sendKeys('test');
     userPsswdInput.sendKeys('test');
     userRepeatPsswdInput.sendKeys('test');
     userSaveButton.click();
-    Utils.getScreenshots('AddUser');
   }
 
   static removeLastAddedUser() {
@@ -60,9 +54,7 @@ export class UserPage {
     element(by.id('user-save-button')).click();
   }
 
-  static getEditedUser(id: string) {
-    const userName = element(by.id(id));
-    Utils.waitForElement(userName);
-    return userName;
+  static getEditedUser() {
+    return element(by.id('newName'));
   }
 }
