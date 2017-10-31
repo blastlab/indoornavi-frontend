@@ -51,10 +51,18 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   ngOnDestroy() {
-    this.mapLoadedSubscription.unsubscribe();
-    this.saveButtonSubscription.unsubscribe();
-    this.configurationLoadedSubscription.unsubscribe();
-    this.configurationResetSubscription.unsubscribe();
+    if (this.mapLoadedSubscription) {
+      this.mapLoadedSubscription.unsubscribe();
+    }
+    if (this.saveButtonSubscription) {
+      this.saveButtonSubscription.unsubscribe();
+    }
+    if (this.configurationLoadedSubscription) {
+      this.configurationLoadedSubscription.unsubscribe();
+    }
+    if (this.configurationResetSubscription) {
+      this.configurationResetSubscription.unsubscribe();
+    }
     this.isScaleSet = false;
     this.scaleGroup.remove();
     this.pointsArray = [];
@@ -67,7 +75,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
     this.configurationLoadedSubscription = this.configurationService.configurationLoaded().subscribe((configuration: Configuration) => {
       this.drawScale(configuration.data.scale);
-      console.log(configuration);
     });
 
     this.configurationResetSubscription = this.configurationService.configurationReset().subscribe((configuration: Configuration) => {

@@ -1,6 +1,5 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MaterialModule, MdDialog} from '@angular/material';
-import {DialogTestModule} from '../utils/dialog/dialog.test';
 import {HttpService} from '../../utils/http/http.service';
 import {ToastService} from '../../utils/toast/toast.service';
 import {DndModule} from 'ng2-dnd';
@@ -13,6 +12,7 @@ import {ActivatedRoute, Router, RouterModule} from '@angular/router';
 import {AuthGuard} from '../../auth/auth.guard';
 import {SharedModule} from '../../utils/shared/shared.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {DialogTestModule} from '../../utils/dialog/dialog.test';
 
 
 describe('DeviceListComponent', () => {

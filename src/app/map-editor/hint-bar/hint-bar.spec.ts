@@ -39,5 +39,4 @@ describe('HintBarComponent', () => {
     expect(component.hintMsg).toEqual('testString!*.nG');
   });
 
-
 });

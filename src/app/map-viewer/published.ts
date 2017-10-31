@@ -206,7 +206,6 @@ export class PublishedComponent implements OnInit, AfterViewInit {
             this.originListeningOnEvent.setValue(data['args'], [event]);
           }
           break;
-
       }
     }
   }

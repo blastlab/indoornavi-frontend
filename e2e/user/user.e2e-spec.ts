@@ -40,7 +40,7 @@ describe('User component', () => {
     UserPage.navigateToHome();
     UserPage.editUser('edit-user', 'newName');
 
-    expect(UserPage.getEditedUser('edit-newName').getText()).toBe('newName');
+    expect(UserPage.getEditedUser().getText()).toBe('newName');
 
     UserPage.editUser('edit-newName', 'user');
   });

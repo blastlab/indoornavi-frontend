@@ -1,6 +1,5 @@
 import {ChangePasswordPage} from './changePassword.po';
 import {AppPage} from '../app.po';
-import {browser} from 'protractor';
 
 describe('Change password component', () => {
   it('Enters change password form', () => {

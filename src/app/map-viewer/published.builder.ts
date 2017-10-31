@@ -1,6 +1,5 @@
 import * as d3 from 'd3';
 import {Point} from '../map-editor/map.type';
-import {DrawConfiguration} from './published.type';
 
 export class GroupCreated {
   group: d3.selection;
@@ -98,4 +97,10 @@ export class DrawBuilder {
     }
     return new GroupCreated(group);
   }
+}
+// TODO: to be moved to general catalogue containing interfaces
+export interface DrawConfiguration {
+  id: string;
+  clazz: string;
+  cursor?: string;
 }

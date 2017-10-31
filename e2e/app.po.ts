@@ -27,11 +27,6 @@ export class AppPage {
     return ValidationError;
   }
 
-  static getToast() {
-    Utils.waitForElement(element(by.css('.mat-simple-snackbar-message')));
-    return element(by.css('.mat-simple-snackbar-message')).getText();
-  }
-
   static getById(id: string) {
     return element(by.id(id));
   }

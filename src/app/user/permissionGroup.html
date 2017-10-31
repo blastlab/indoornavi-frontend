@@ -28,7 +28,7 @@
     </tr>
 </table>
 
-<template #dialog>
+<ng-template #dialog>
   <form #permissionGroupForm="ngForm" novalidate>
     <div class="form-control">
       <md-input-container>
@@ -55,4 +55,4 @@
 
     <button id="save-button" type="submit" md-raised-button (click)="save(permissionGroupForm.valid)">{{'save'|translate}}</button>
   </form>
-</template>
+</ng-template>

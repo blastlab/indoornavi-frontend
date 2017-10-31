@@ -5,7 +5,6 @@ import {SharedModule} from '../../utils/shared/shared.module';
 import {ToastService} from '../../utils/toast/toast.service';
 import {PublishedService} from '../../map-viewer/published.service';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
-import {NgxDatatableModule} from '@swimlane/ngx-datatable';
 import {BrowserModule} from '@angular/platform-browser';
 import {MaterialModule} from '@angular/material';
 import {DialogTestModule} from '../../utils/dialog/dialog.test';
@@ -42,7 +41,6 @@ describe('PublishedListComponent', () => {
         TranslateModule.forRoot(),
         RouterTestingModule,
         SharedModule,
-        NgxDatatableModule,
         BrowserAnimationsModule
       ],
       providers: [

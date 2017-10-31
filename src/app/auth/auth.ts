@@ -25,7 +25,6 @@ export class AuthComponent implements OnInit {
     if (localStorage.getItem('currentUser')) {
       this.authService.logout();
       localStorage.removeItem('currentUser');
-      // this.authGuard.toggleUserLoggedIn(false);
       this.router.navigate(['/login']);
     }
   }

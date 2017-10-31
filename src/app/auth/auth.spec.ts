@@ -64,11 +64,7 @@ describe('Auth component', () => {
     router = fixture.debugElement.injector.get(Router);
     route = fixture.debugElement.injector.get(ActivatedRoute);
     authGuard = fixture.debugElement.injector.get(AuthGuard);
-    // toastService = fixture.debugElement.injector.get(ToastService);
-    // dialog = fixture.debugElement.injector.get(MdDialog);
 
-    // spyOn(toastService, 'showSuccess');
-    // spyOn(toastService, 'showFailure');
     spyOn(authGuard, 'toggleUserLoggedIn');
     spyOn(router, 'navigate');
   }));
@@ -79,7 +75,6 @@ describe('Auth component', () => {
     component.ngOnInit();
 
     expect(authService.logout).toHaveBeenCalled();
-    expect(authGuard.toggleUserLoggedIn).toHaveBeenCalled();
     expect(router.navigate).toHaveBeenCalled();
     expect(localStorage.getItem('currentUser')).toBeUndefined();
   });
