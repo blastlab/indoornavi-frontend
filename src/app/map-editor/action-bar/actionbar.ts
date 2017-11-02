@@ -1,4 +1,4 @@
-import {animate, Component, Input, NgZone, OnDestroy, OnInit, state, style, transition, trigger} from '@angular/core';
+import {animate, ChangeDetectorRef, Component, Input, NgZone, OnDestroy, OnInit, state, style, transition, trigger, ViewRef} from '@angular/core';
 import {ActionBarService} from './actionbar.service';
 import {Floor} from '../../floor/floor.type';
 import {MapLoaderInformerService} from '../../utils/map-loader-informer/map-loader-informer.service';
@@ -15,6 +15,9 @@ import {Configuration} from './actionbar.type';
   selector: 'app-actionbar',
   templateUrl: './actionbar.html',
   styleUrls: ['./actionbar.css'],
+  /*
+  TODO: fix deprecated of animations
+   */
   animations: [
     trigger('messageState', [
       state('visible', style({opacity: 1, transform: 'scale(1.0)'})),
@@ -54,6 +57,7 @@ export class ActionBarComponent implements OnInit, OnDestroy {
               private mapLoaderInformer: MapLoaderInformerService,
               private ngZone: NgZone,
               private dialog: MdDialog,
+              private cd: ChangeDetectorRef,
               private translateService: TranslateService) {
   }
 
@@ -90,17 +94,20 @@ export class ActionBarComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.configurationLoadedSubscription) {
+    if (!!this.configurationLoadedSubscription) {
       this.configurationLoadedSubscription.unsubscribe();
     }
-    if (this.mapLoadedSubscription) {
+    if (!!this.mapLoadedSubscription) {
       this.mapLoadedSubscription.unsubscribe();
     }
-    if (this.configurationChangedSubscription) {
+    if (!!this.configurationChangedSubscription) {
       this.configurationChangedSubscription.unsubscribe();
     }
     if (!!this.timer) {
       this.timer.stop();
+    }
+    if (!!this.cd) {
+      this.cd.detach();
     }
   }
 
@@ -175,6 +182,10 @@ export class ActionBarComponent implements OnInit, OnDestroy {
     if (this.isAnimationDone) {
       this.messageSpanState = 'visible';
     }
+    // if (!(this.cd as ViewRef).destroyed) {
+    // console.log(this.cd);
+    this.cd.detectChanges();
+    // }
   }
 
   private afterPublishDone(): void {
@@ -182,6 +193,9 @@ export class ActionBarComponent implements OnInit, OnDestroy {
     this.resetButtonDisabled = true;
     this.saveButtonDisabled = true;
     this.updateUndoDialogBody(new Date());
+    // if (!(this.cd as ViewRef).destroyed) {
+      this.cd.detectChanges();
+    // }
   }
 
   private setTranslations(): void {

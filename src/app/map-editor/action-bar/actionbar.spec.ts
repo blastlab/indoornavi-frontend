@@ -14,6 +14,7 @@ import {MaterialModule} from '@angular/material';
 import {DialogTestModule} from '../../utils/dialog/dialog.test';
 import {Measure} from '../tool-bar/tools/scale/scale.type';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {ChangeDetectorRef} from '@angular/core';
 
 class ConfigurationServiceMock {
   private configuration: Configuration;
@@ -92,12 +93,13 @@ describe('ActionBarComponent', () => {
     component = fixture.componentInstance;
     mapLoader = fixture.debugElement.injector.get(MapLoaderInformerService);
     configurationService = fixture.debugElement.injector.get(ActionBarService);
+    // spyOn((component as any).cd, 'detectChanges');
     spyOn(configurationService, 'configurationLoaded').and.callFake(() => {
       return Observable.of({
         publishedDate: new Date().getMilliseconds()
       });
     });
-    fixture.detectChanges();
+    // fixture.detectChanges();
   });
 
   it('should create component ', () => {
@@ -111,6 +113,7 @@ describe('ActionBarComponent', () => {
     // when
     component.ngOnInit();
     mapLoader.publishIsLoaded();
+    component.ngOnDestroy();
 
     // then
     expect(configurationService.loadConfiguration).toHaveBeenCalled();
@@ -126,6 +129,7 @@ describe('ActionBarComponent', () => {
 
     // then
     setTimeout(() => {
+      component.ngOnDestroy();
       expect(configurationService.configurationLoaded).toHaveBeenCalled();
       expect(configurationService.saveDraft).toHaveBeenCalled();
       done();

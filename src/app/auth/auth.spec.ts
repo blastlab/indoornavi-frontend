@@ -21,6 +21,8 @@ describe('Auth component', () => {
   let router: Router;
   let route: ActivatedRoute;
   let authGuard: AuthGuard;
+  let toastService: ToastService;
+  let dialog: MdDialog;
 
   beforeEach(async(() => {
     const store = {
@@ -64,7 +66,11 @@ describe('Auth component', () => {
     router = fixture.debugElement.injector.get(Router);
     route = fixture.debugElement.injector.get(ActivatedRoute);
     authGuard = fixture.debugElement.injector.get(AuthGuard);
+    toastService = fixture.debugElement.injector.get(ToastService);
+    dialog = fixture.debugElement.injector.get(MdDialog);
 
+    spyOn(toastService, 'showSuccess');
+    spyOn(toastService, 'showFailure');
     spyOn(authGuard, 'toggleUserLoggedIn');
     spyOn(router, 'navigate');
   }));
