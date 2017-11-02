@@ -194,17 +194,6 @@ export class AnchorPlacerComponent implements Tool, OnInit {
     });
   }
 
-  private selectSink(sink: Sink) {
-    this.anchorPlacerController.setChosenSink(sink);
-    this.chosenSink = sink;
-    this.anchorPlacerController.selectDevice(sink);
-  }
-
-  private deselectSink() {
-    this.anchorPlacerController.resetChosenSink();
-    this.chosenSink = undefined;
-  }
-
   private buildAnchorDrawConfiguration(anchor: Anchor): DrawConfiguration {
     return {
       id: `${anchor.shortId}`,

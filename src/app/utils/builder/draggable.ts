@@ -25,6 +25,7 @@ export class Draggable {
     this.group.on('click', () => {
       this.select();
     });
+
   }
 
   public off() {

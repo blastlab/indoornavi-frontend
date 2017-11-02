@@ -3,6 +3,7 @@ import {Subject} from 'rxjs/Subject';
 import {Point} from '../../../map.type';
 import {Sink} from '../../../../device/sink.type';
 import {Anchor} from '../../../../device/anchor.type';
+import {Draggable} from '../../../../utils/builder/draggable';
 
 @Injectable()
 export class AnchorPlacerController {
@@ -10,13 +11,13 @@ export class AnchorPlacerController {
   private anchor: Subject<Anchor> = new Subject<Anchor>();
   private sink: Subject<Sink> = new Subject<Sink>();
   private coordinates: Subject<Point> = new Subject<Point>();
-  private device: Subject<Sink | Anchor> = new Subject<Sink | Anchor>();
+  private mapDevice: Subject<Draggable> = new Subject<Draggable>();
 
   listVisibilitySet = this.listVisibility.asObservable();
   chosenAnchor = this.anchor.asObservable();
   chosenSink = this.sink.asObservable();
   newCoordinates = this.coordinates.asObservable();
-  selectedDevice = this.device.asObservable();
+  selectedDevice = this.mapDevice.asObservable();
 
 
   toggleListVisibility(): void {
@@ -47,12 +48,12 @@ export class AnchorPlacerController {
     this.coordinates.next(undefined);
   }
 
-  selectDevice(device: Sink | Anchor): void {
-    this.device.next(device);
+  selectDevice(device: Draggable): void {
+    this.mapDevice.next(device);
   }
 
   deselectDevice(): void {
-    this.device.next(undefined);
+    this.mapDevice.next(undefined);
   }
 
 }
