@@ -29,7 +29,7 @@ export module Utils {
     })
   }
 
-  export function getUsersCount() {
+  export function getNumberOfTagTrElements() {
     const tr = element.all(by.tagName('tr'));
     Utils.waitForElement(tr.first());
     return tr.count();

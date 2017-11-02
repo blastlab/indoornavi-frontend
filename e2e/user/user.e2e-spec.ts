@@ -12,15 +12,15 @@ describe('User component', () => {
     UserPage.navigateToHome();
     UserPage.prepareToAddUser();
 
-    Utils.getUsersCount().then((initialUsersCount: number) => {
+    Utils.getNumberOfTagTrElements().then((initialUsersCount: number) => {
       UserPage.addUser();
 
-      Utils.getUsersCount().then((usersCount: number) => {
+      Utils.getNumberOfTagTrElements().then((usersCount: number) => {
         expect(usersCount).toBe(initialUsersCount + 1);
 
         UserPage.removeLastAddedUser();
 
-        Utils.getUsersCount().then((afterRemoveCount: number) => {
+        Utils.getNumberOfTagTrElements().then((afterRemoveCount: number) => {
           expect(afterRemoveCount).toBe(initialUsersCount);
           done();
         });
