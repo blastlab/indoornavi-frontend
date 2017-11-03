@@ -1,10 +1,15 @@
 <h1 [translate]="'permissionGroup.header'"></h1>
-
-<div class="adding-section">
-    <button [appHasPermission]="'PERMISSION_GROUP_CREATE'" md-raised-button id="new-permissionGroup-button" type="button" (click)="openDialog()">
-        {{'add'|translate}}
-    </button>
-</div>
+<p-toolbar>
+  <div class="ui-toolbar-group-left">
+      <button pButton class="ui-button-secondary"
+              id="add-permission"
+        [appHasPermission]="'PERMISSION_GROUP_CREATE'"
+        (click)="openDialog()"
+        label="{{'add'|translate}}"
+        icon="fa fa-plus" iconPos="left"
+      ></button>
+  </div>
+</p-toolbar>
 
 <table cellpadding="10" cellspacing="0">
     <tr>
@@ -14,16 +19,22 @@
     <tr *ngFor="let permissionGroup of permissionGroups; let i = index">
         <td>{{permissionGroup.name}}</td>
         <td>
-            <button [appHasPermission]="'PERMISSION_GROUP_UPDATE'" id="edit-{{permissionGroup.id}}" class="edit-button" (click)="edit(permissionGroup)" md-mini-fab
-                    md-tooltip="{{'edit'|translate}}" mdTooltipPosition="above">
-                <i class="material-icons">mode_edit</i>
-            </button>
+            <button pButton class="ui-button-warning"
+                    id="edit-permission"
+                    [appHasPermission]="'PERMISSION_GROUP_UPDATE'"
+                    (click)="edit(permissionGroup)"
+                    label="{{'edit'|translate}}"
+                    icon="fa fa-pencil-square" iconPos="left"
+            ></button>
         </td>
         <td>
-            <button [appHasPermission]="'PERMISSION_GROUP_DELETE'" id="remove-{{permissionGroup.id}}" class="remove-button" (click)="remove(i)" md-mini-fab md-mini-fab
-                    md-tooltip="{{'remove'|translate}}" mdTooltipPosition="above">
-                <i class="material-icons">delete</i>
-            </button>
+            <button pButton class="ui-button-danger"
+                    id="remove-permission"
+                    [appHasPermission]="'PERMISSION_GROUP_DELETE'"
+                    (click)="remove(i)"
+                    label="{{'remove'|translate}}"
+                    icon="fa fa-trash" iconPos="left"
+            ></button>
         </td>
     </tr>
 </table>
@@ -53,6 +64,11 @@
       </angular2-multiselect>
     </div>
 
-    <button id="save-button" type="submit" md-raised-button (click)="save(permissionGroupForm.valid)">{{'save'|translate}}</button>
+    <button pButton class="ui-button-success"
+            id="save-permission"
+            (click)="save(permissionGroupForm.valid)"
+            label="{{'save'|translate}}"
+            icon="fa fa-floppy-o" iconPos="left"
+    ></button>
   </form>
 </ng-template>

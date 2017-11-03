@@ -1,8 +1,16 @@
 <h1 [translate]="'complex.header'"></h1>
 
-<div class="adding-section">
-  <button [appHasPermission]="'COMPLEX_CREATE'" md-raised-button id="new-complex-button" type="button" (click)="openDialog()">{{'add'|translate}}</button>
-</div>
+<p-toolbar>
+  <div class="ui-toolbar-group-left">
+    <button pButton class="ui-button-primary"
+            id="add-complex" [appHasPermission]="'COMPLEX_CREATE'"
+            (click)="openDialog()"
+            label="{{'add'|translate}}"
+            icon="fa fa-plus"
+            iconPos="left"
+    ></button>
+  </div>
+</p-toolbar>
 
 <table cellpadding="10" cellspacing="0">
   <tr>
@@ -12,18 +20,29 @@
   <tr *ngFor="let complex of complexes; let i = index" class="complex">
     <td class="complex-name">{{complex.name}}</td>
     <td>
-      <button class="complex-building-button" (click)="openComplex(complex)" md-mini-fab md-tooltip="{{'go.to.buildings'|translate}}" mdTooltipPosition="above">
-        <i class="material-icons">open_in_browser</i>
+      <button pButton class="ui-button-success"
+              id="enter-building"
+              label="{{'enter'|translate}}"
+              (click)="openComplex(complex)"
+              icon="fa fa-level-down" iconPos="left">
       </button>
     </td>
     <td>
-      <button md-tooltip="{{'edit'|translate}}" [appHasPermission]="'COMPLEX_UPDATE'" class="complex-edit-button" (click)="editComplex(complex)" md-mini-fab mdTooltipPosition="above">
-        <i class="material-icons">mode_edit</i>
+      <button pButton class="ui-button-warning"
+              id="edit-building"
+              label="{{'edit'|translate}}"
+              [appHasPermission]="'COMPLEX_UPDATE'"
+              (click)="editComplex(complex)"
+              icon="fa fa-pencil-square" iconPos="left">
       </button>
     </td>
     <td>
-      <button md-tooltip="{{'remove'|translate}}" [appHasPermission]="'COMPLEX_DELETE'" class="complex-remove-button" (click)="removeComplex(i)" md-mini-fab md-mini-fab mdTooltipPosition="above">
-        <i class="material-icons">delete</i>
+      <button pButton class="ui-button-danger"
+              id="remove-building"
+              label="{{'remove'|translate}}"
+              [appHasPermission]="'COMPLEX_DELETE'"
+              (click)="removeComplex(i)"
+              icon="fa fa-trash" iconPos="left"  >
       </button>
     </td>
   </tr>

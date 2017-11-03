@@ -1,11 +1,15 @@
 <h1 [translate]="'floor.header'"></h1>
-
-<div class="adding-section">
-  <button [appHasPermission]="'FLOOR_CREATE'" md-raised-button id="new-floor-button" type="button"
-          (click)="openDialog()">{{'add'|translate}}
-  </button>
+<p-toolbar>
+<div class="ui-toolbar-group-left">
+  <button pButton class="ui-button-secondary"
+          id="add-floor"
+          [appHasPermission]="'FLOOR_CREATE'"
+          label="{{'add'|translate}}"
+          (click)="openDialog()"
+          icon="fa fa-plus" iconPos="left"
+  ></button>
 </div>
-
+</p-toolbar>
 <table cellpadding="10" cellspacing="0" dnd-sortable-container [sortableData]="floors">
   <tr>
     <th [translate]="'floor.level'"></th>
@@ -17,22 +21,28 @@
     <td class="floor-level">{{floor.level}}</td>
     <td class="floor-name">{{floor.name}}</td>
     <td>
-      <button class="floor-map-button" (click)="openMap(floor)" md-mini-fab md-tooltip="{{'go.to.map'|translate}}"
-              mdTooltipPosition="above">
-        <i class="material-icons">map</i>
-      </button>
+      <button pButton class="ui-button-success"
+              id="goTo-map"
+              (click)="openMap(floor)"
+              label="{{'enter'|translate}}"
+              icon="fa fa-level-down" iconPos="left"
+      ></button>
     </td>
     <td>
-      <button md-tooltip="{{'edit'|translate}}"[appHasPermission]="'FLOOR_UPDATE'" class="floor-edit-button" (click)="editFloor(floor)" md-mini-fab
-              mdTooltipPosition="above">
-        <i class="material-icons">mode_edit</i>
-      </button>
+      <button pButton class="ui-button-warning"
+              [appHasPermission]="'FLOOR_UPDATE'"
+              (click)="editFloor(floor)"
+              label="{{'edit'|translate}}"
+              icon="fa fa-edit" iconPas="left"
+      ></button>
     </td>
     <td>
-      <button md-tooltip="{{'remove'|translate}}" [appHasPermission]="'FLOOR_DELETE'" class="floor-remove-button" (click)="removeFloor(i)" md-mini-fab
-              mdTooltipPosition="above">
-        <i class="material-icons">delete</i>
-      </button>
+      <button pButton class="ui-button-danger"
+              [appHasPermission]="'FLOOR_DELETE'"
+              (click)="removeFloor(i)"
+              label="{{'remove'|translate}}"
+              icon="fa fa-trash" iconPos="left"
+      ></button>
     </td>
   </tr>
 </table>

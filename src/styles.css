@@ -4,15 +4,7 @@ body{
   font-family: 'Roboto', sans-serif;
   margin: 20px 30px;
 }
-.adding-section{
-  margin: 30px 0;
-}
-table tr td{
-  border-bottom: 1px solid #000;
-}
-.adding-section button{
-  margin: 15px 0;
-}
+
 .error-toast {
   background: #d92020 !important;
 }
@@ -57,5 +49,7 @@ table tr td{
   max-height: 800px;
   overflow: auto;
 }
-
+@import '~primeng/resources/primeng.css';
+@import '~primeng/resources/themes/ludvig/theme.css';
 @import '~@angular/material/core/theming/prebuilt/deeppurple-amber.css';
+@import '~font-awesome/css/font-awesome.css';

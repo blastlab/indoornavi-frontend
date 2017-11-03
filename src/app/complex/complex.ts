@@ -7,7 +7,7 @@ import {ComplexConfirmComponent} from './complex.confirm';
 import {ToastService} from '../utils/toast/toast.service';
 import {NgForm} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {BuildingService} from '../building/building.service';
 
 @Component({
@@ -17,13 +17,15 @@ import {BuildingService} from '../building/building.service';
 export class ComplexComponent implements OnInit {
   complex: Complex;
   complexes: Array<Complex> = [];
-
   dialogRef: MdDialogRef<ComplexDialogComponent>;
+
   confirmRef: MdDialogRef<ComplexConfirmComponent>;
+  private routeState: string;
 
   @ViewChild('complexForm') complexForm: NgForm;
 
   ngOnInit(): void {
+    this.routeState = this.route.snapshot.routeConfig.path;
     this.newComplex();
 
     this.complexService.getComplexes().subscribe((complexes: Array<Complex>) => {
@@ -38,6 +40,7 @@ export class ComplexComponent implements OnInit {
               private toast: ToastService,
               public translate: TranslateService,
               private router: Router,
+              private route: ActivatedRoute,
               private buildingService: BuildingService) {
   }
 

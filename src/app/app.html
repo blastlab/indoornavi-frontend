@@ -5,47 +5,67 @@
 <div fxFlexFill fxLayout="column">
   <header *ngIf="!isDisplayedInIFrame">
     <div fxFlex="100" fxLayoutAlign="end" >
-      <button id="menu" md-icon-button [mdMenuTriggerFor]="menu">
-        <md-icon>more_vert</md-icon>
+      <button pButton class="ui-sidebar"
+              id="menu"  (click)="displaySidebar = true"
+              icon="fa fa-bars" iconPos="left">
       </button>
-      <md-menu #menu="mdMenu">
-        <button md-menu-item [routerLink]="['./complexes']">
-          <md-icon>domain</md-icon>
-          <span>Complexes</span>
+      <p-sidebar id="sidebar-menu" [(visible)]="displaySidebar" position="right">
+        <button pButton class="ui-button-secondary"
+                [routerLink]="['./complexes']"
+                label="{{'complexes'|translate}}"
+                icon="fa fa-building" iconPos="left">
         </button>
-        <button md-menu-item [routerLink]="['./sinks']">
-          <md-icon>device_hub</md-icon>
-          <span>Sinks</span>
+        <br/>
+        <button pButton class="ui-button-secondary"
+                [routerLink]="['./sinks']"
+                label="{{'sinks.header'|translate}}"
+                icon="fa fa-share-alt" iconPos="left">
         </button>
-        <button md-menu-item [routerLink]="['./anchors']">
-          <md-icon>toll</md-icon>
-          <span>Anchors</span>
+        <br/>
+        <button pButton class="ui-button-secondary"
+                [routerLink]="['./anchors']"
+                label="{{'anchors.header'|translate}}"
+                icon="fa fa-circle-o-notch" iconPos="left">
         </button>
-        <button md-menu-item [routerLink]="['./tags']">
-          <md-icon>settings_remote</md-icon>
-          <span>Tags</span>
+        <br/>
+        <button pButton class="ui-button-secondary"
+                [routerLink]="['./tags']"
+                label="{{'tags.header'|translate}}"
+                icon="fa fa-tag" iconPos="left">
+
         </button>
-        <button md-menu-item [routerLink]="['./maps']">
-          <md-icon>map</md-icon>
-          <span>Published maps</span>
+        <br/>
+        <button pButton class="ui-button-secondary"
+                [routerLink]="['./maps']"
+                label="{{'publishedMaps'|translate}}"
+                icon="fa fa-map" iconPos="left">
         </button>
-        <button md-menu-item [routerLink]="['./users']">
-          <md-icon>account_circle</md-icon>
-          <span>Users</span>
+        <br/>
+        <button pButton class="ui-button-secondary"
+                [routerLink]="['./users']"
+                label="{{'user.header'|translate}}"
+                icon="fa fa-user" iconPos="left">
         </button>
-        <button md-menu-item [routerLink]="['./permissionGroups']">
-          <md-icon>group_work</md-icon>
-          <span>Permission Groups</span>
+        <br/>
+        <button pButton class="ui-button-secondary"
+                [routerLink]="['./permissionGroups']"
+                label="{{'user.permissionGroups'|translate}}"
+                icon="fa fa-lock" iconPos="left">
         </button>
-        <button md-menu-item [routerLink]="['./changePassword']">
-          <md-icon>lock_outline</md-icon>
-          <span>Change Password</span>
+        <br/>
+        <button pButton class="ui-button-secondary"
+                [routerLink]="['./changePassword']"
+                label="{{'changePassword.header'|translate}}"
+                icon="fa fa-key" iconPos="left">
         </button>
-        <button md-menu-item id="logout" [routerLink]="['./logout']">
-          <md-icon>directions_run</md-icon>
-          <span>Logout</span>
+        <br/>
+        <button pButton class="ui-button-secondary"
+                id="logout" [routerLink]="['./logout']"
+                label="{{'logout'|translate}}"
+                icon="fa fa-sign-out" iconPos="left">
         </button>
-      </md-menu>
+        <br/>
+      </p-sidebar>
     </div>
   </header>
   <div fxFlexFill>

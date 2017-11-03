@@ -1,9 +1,14 @@
 <h1 [translate]="'user.header'"></h1>
-
-<div class="adding-section">
-  <button [appHasPermission]="'USER_CREATE'" md-raised-button id="new-user-button" type="button" (click)="createUser()">{{'add'|translate}}</button>
+<p-toolbar>
+<div class="ui-toolbar-group-left">
+  <button pButton class="ui-button-secondary"
+          [appHasPermission]="'USER_CREATE'"
+          (click)="createUser()"
+          label="{{'add'|translate}}"
+          icon="fa fa-plus" iconPos="left"
+  ></button>
 </div>
-
+</p-toolbar>
 <table cellpadding="10" cellspacing="0">
   <tr>
     <th [translate]="'user.username'"></th>
@@ -16,14 +21,21 @@
     <td><md-checkbox [checked]=user.superUser [disabled]="true"></md-checkbox></td>
     <td><span *ngFor="let pG of user.permissionGroups; let isLast=last">{{pG.name}}{{isLast ? '' : ', '}}</span></td>
     <td>
-      <button md-tooltip="{{'edit'|translate}}" [appHasPermission]="'USER_UPDATE'" id="edit-{{user.username}}" class="edit-button" (click)="editUser(i)" md-mini-fab mdTooltipPosition="above">
-        <i class="material-icons">mode_edit</i>
-      </button>
+      <button pButton class="ui-button-warning"
+              id="edit-user"
+              [appHasPermission]="'USER_UPDATE'"
+              (click)="editUser(i)"
+              label="{{'edit'|translate}}"
+              icon="fa fa-pencil-square" iconPos="left"
+      ></button>
     </td>
     <td>
-      <button md-tooltip="{{'remove'|translate}}" [appHasPermission]="'USER_DELETE'" id="remove-{{user.username}}" class="remove-button" *ngIf="!user.superUser" (click)="removeUser(i)" md-mini-fab md-mini-fab mdTooltipPosition="above">
-        <i class="material-icons">delete</i>
-      </button>
+      <button pButton class="ui-button-danger"
+              [appHasPermission]="'USER_DELETE'"
+              *ngIf="!user.superUser" (click)="removeUser(i)"
+              label="{{'remove'|translate}}"
+              icon="fa fa-trash" iconPos="left"
+      ></button>
     </td>
   </tr>
 </table>

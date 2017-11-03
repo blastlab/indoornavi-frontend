@@ -1,4 +1,14 @@
 <p [translate]="'complex.confirm.to.remove'"></p>
 
-<button id="complex-confirm-remove-button"  (click)="remove()" md-raised-button>{{'remove'|translate}}</button>
-<button id="complex-cancel-button" (click)="close()" md-raised-button>{{'cancel'|translate}}</button>
+<button pButton class="ui-button-danger"
+        id="confirmRemove-complex"
+        (click)="remove()"
+        label="{{'confirm'|translate}}"
+        icon="fa fa-trash" iconPos="right"
+></button>
+<button pButton class="ui-button-warning"
+        id="cancelRemove-complex"
+        (click)="close()"
+        label="{{'cancel'|translate}}"
+        icon="fa fa-trash" iconPos="right"
+></button>

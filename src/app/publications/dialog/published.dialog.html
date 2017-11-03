@@ -38,5 +38,10 @@
     </angular2-multiselect>
   </div>
 
-  <button id="save-button" md-raised-button (click)="save(publishedListForm.valid)">{{'save'|translate}}</button>
+  <button pButton class="ui-button-secondary"
+          id="save-publication"
+          (click)="save(publishedListForm.valid)"
+          label="{{'save'|translate}}"
+          icon="fa fa-floppy-o" iconPos="left"
+  ></button>
 </form>

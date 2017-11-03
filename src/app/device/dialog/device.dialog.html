@@ -42,5 +42,9 @@
     </md-input-container>
   </div>
 
-  <button type="submit" id="save-button" (click)="save(deviceForm.valid)" md-raised-button>{{'save'|translate}}</button>
+  <button pButton class="ui-button-success"
+          id="save-device" (click)="save(deviceForm.valid)"
+          label="{{'save'|translate}}"
+          icon="fa fa-floppy-o" iconPos="left"
+  ></button>
 </form>

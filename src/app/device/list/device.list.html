@@ -14,14 +14,19 @@
       <td id="longId-{{device.shortId}}">{{device.longId}}</td>
       <td id="name-{{device.shortId}}">{{device.name}}</td>
       <td>
-        <button md-tooltip="{{'edit'|translate}}" [appHasPermission]="editPermission" id="edit-{{device.shortId}}"
-                class="edit-button" (click)="openDialog(device)" md-mini-fab mdTooltipPosition="above">
-          <i class="material-icons">mode_edit</i>
+        <button pButton class="ui-button-warning"
+                id="edit-{{device.shortId}}" [appHasPermission]="editPermission"
+                (click)="openDialog(device)"
+                label="{{'edit'|translate}}"
+                icon="fa fa-pencil-square"  iconPos="left">
         </button>
       </td>
       <td>
-        <button md-tooltip="{{'remove'|translate}}" [appHasPermission]="deletePermission" id="remove-{{device.shortId}}" class="remove-button" (click)="remove(device)" md-mini-fab md-mini-fab mdTooltipPosition="above">
-          <i class="material-icons">delete</i>
+        <button pButton class="ui-button-danger"
+                id="remove-{{device.shortId}}" [appHasPermission]="deletePermission"
+                (click)="remove(device)"
+                label="{{'remove'|translate}}"
+                icon="fa fa-trash" iconPos="left">
         </button>
       </td>
     </tr>

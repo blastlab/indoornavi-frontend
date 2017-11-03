@@ -1,8 +1,15 @@
 <h1 [translate]="routeState + '.header'"></h1>
+<p-toolbar>
+  <div class="ui-toolbar-group-left">
+    <button pButton class="ui-button-secondary"
+            id="open-dialog" [appHasPermission]="createPermission"
+            (click)="openDialog()"
+            label="{{'add'|translate}}"
+            icon="fa fa-plus" iconPos="left">
 
-<div class="row">
-  <button [appHasPermission]="createPermission" md-raised-button id="new-device-button" type="button" (click)="openDialog()">{{'add'|translate}}</button>
-</div>
+    </button>
+  </div>
+</p-toolbar>
 
 <div class="row">
   <div id="notVerifiedList" class="devices-list">

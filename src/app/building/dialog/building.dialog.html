@@ -7,5 +7,10 @@
     </md-input-container>
     <small [hidden]="name.valid || (name.pristine && !buildingForm.submitted)" [translate]="'building.name.required'"></small>
   </div>
-  <button id="building-save-button" type="submit" md-raised-button (click)="save(buildingForm.valid)">{{'save'|translate}}</button>
+  <button pButton class="ui-button-success"
+          id="save-building"
+          (click)="save(buildingForm.valid)"
+          label="{{'save'|translate}}"
+          icon="fa fa-floppy-o" iconPos="left"
+  ></button>
 </form>

@@ -1,11 +1,16 @@
 <h1 [translate]="'publishedList.header'"></h1>
+<p-toolbar>
+  <div class="ui-toolbar-group-left">
+    <button pButton class="ui-button-secondary"
+            id="add-publishedMa"
+            [appHasPermission]="'MAP_CREATE'"
+            (click)="openDialog(null)"
+            label="{{'map'|translate}}"
+            icon="fa fa-plus" iconPos="left"
+    ></button>
 
-<div class="adding-section">
-  <button [appHasPermission]="'MAP_CREATE'" md-raised-button id="new-publishedList-button" type="button"
-          (click)="openDialog(null)">{{'add'|translate}}
-  </button>
-</div>
-
+  </div>
+</p-toolbar>
 <!--<ngx-datatable-->
   <!--class="material"-->
   <!--[rows]="rows"-->
@@ -45,18 +50,33 @@
       <!--{{'th.actions'|translate}}-->
     <!--</template>-->
     <!--<template let-row="row" ngx-datatable-cell-template>-->
-      <!--<button md-tooltip="{{'go.to.map'|translate}}" md-mini-fab (click)="goToMap(row)" mdTooltipPosition="above">-->
-        <!--<i class="material-icons">map</i>-->
-      <!--</button>-->
-      <!--<button md-tooltip="{{'go.to.mapEditor'|translate}}" [appHasPermission]="'FLOOR_READ'" (click)="goToEditor(row)" md-mini-fab mdTooltipPosition="above">-->
-        <!--<i class="material-icons">format_paint</i>-->
-      <!--</button>-->
-      <!--<button ngClass="editButton" md-tooltip="{{'edit'|translate}}" [appHasPermission]="'MAP_UPDATE'" (click)="edit(row)" md-mini-fab mdTooltipPosition="above">-->
-        <!--<i class="material-icons">mode_edit</i>-->
-      <!--</button>-->
-      <!--<button ngClass="deleteButton" md-tooltip="{{'remove'|translate}}" [appHasPermission]="'MAP_DELETE'" (click)="remove(row)" md-mini-fab mdTooltipPosition="above">-->
-        <!--<i class="material-icons">delete</i>-->
-      <!--</button>-->
+      <button pButton class="ui-button-success"
+              id="enter-map"
+              (click)="goToMap(row)"
+              label="{{'enter'|translate}}"
+              icon="fa fa-level-down" iconPos="left"
+      ></button>
+      <button pButton class="ui-button-success"
+              id="open-map"
+              [appHasPermission]="'FLOOR_READ'"
+              (click)="goToEditor(row)"
+              label="{{'open'|translate}}"
+              icon="fa fa-external-link" iconPos="left"
+      ></button>
+      <button pButton class="ui-button-warning"
+              id="edit-map"
+              [appHasPermission]="'MAP_UPDATE'"
+              (click)="edit(row)"
+              label="{{'edit'|translate}}"
+              icon="fa fa-pencil-square" iconPos="left"
+      ></button>
+      <button pButton class="ui-button-danger"
+              id="remove-map"
+              [appHasPermission]="'MAP_DELETE'"
+              (click)="remove(row)"
+              label="{{'remove'|translate}}"
+              icon="fa fa-trash" iconPos="left"
+      ></button>
     <!--</template>-->
   <!--</ngx-datatable-column>-->
 <!--</ngx-datatable>-->

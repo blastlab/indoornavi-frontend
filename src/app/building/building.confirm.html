@@ -1,4 +1,14 @@
 <p [translate]="'building.confirm.to.remove'"></p>
 
-<button id="building-confirm-remove-button"  (click)="remove()" md-raised-button>{{'remove'|translate}}</button>
-<button id="building-cancel-button" (click)="close()" md-raised-button>{{'cancel'|translate}}</button>
+<button pButton class="ui-button-danger"
+        id="confirmRemove-building"
+        (click)="remove()"
+        label="{{'confirm'|translate}}"
+        icon="fa fa-trash" iconPos="right"
+></button>
+<button pButton class="ui-button-success"
+        id="cancelRemove-building"
+        (click)="close()"
+        label="{{'cancel'|translate}}"
+        icon="fa fa-trash" iconPos="right"
+></button>

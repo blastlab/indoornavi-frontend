@@ -1,9 +1,15 @@
 <h1 [translate]="'building.header'"></h1>
-
-<div class="adding-section">
-  <button [appHasPermission]="'BUILDING_CREATE'" md-raised-button id="new-building-button" type="button" (click)="openDialog()">{{'add'|translate}}</button>
+<p-toolbar>
+<div class="ui-toolbar-group-left">
+  <button pButton class="ui-button-secondary"
+          id="new-building-button"
+          [appHasPermission]="'BUILDING_CREATE'"
+          (click)="openDialog()"
+          label="{{'add'|translate}}"
+          icon="fa fa-plus" iconPos="left"
+  ></button>
 </div>
-
+</p-toolbar>
 <table cellpadding="10" cellspacing="0">
   <tr>
     <th [translate]="'building.name'"></th>
@@ -12,19 +18,27 @@
   <tr *ngFor="let building of buildings; let i = index" class="building">
     <td class="building-name">{{building.name}}</td>
     <td>
-      <button class="building-floor-button" (click)="openBuilding(building)" md-mini-fab md-tooltip="{{'go.to.floors'|translate}}" mdTooltipPosition="above">
-        <i class="material-icons">open_in_browser</i>
-      </button>
+      <button pButton class="ui-button-success"
+              (click)="openBuilding(building)"
+              label="{{'Enter'|translate}}"
+              icon="fa-level-down" iconPos="left"
+      ></button>
     </td>
     <td>
-      <button md-tooltip="{{'edit'|translate}}"  [appHasPermission]="'BUILDING_UPDATE'" class="building-edit-button" (click)="editBuilding(building)" md-mini-fab mdTooltipPosition="above">
-        <i class="material-icons">mode_edit</i>
-      </button>
+      <button pButton class="ui-button-warning"
+              [appHasPermission]="'BUILDING_UPDATE'"
+              (click)="editBuilding(building)"
+              label="{{'edit'|translate}}"
+              icon="fa fa-edit" iconPos="left"
+      ></button>
     </td>
     <td>
-      <button md-tooltip="{{'remove'|translate}}"  [appHasPermission]="'BUILDING_DELETE'" class="building-remove-button" (click)="removeBuilding(i)" md-mini-fab md-mini-fab mdTooltipPosition="above">
-        <i class="material-icons">delete</i>
-      </button>
+      <button pButton class="ui-button-danger"
+              [appHasPermission]="'BUILDING_DELETE'"
+              (click)="removeBuilding(i)"
+              label="{{'remove'|translate}}"
+              icon="fa fa-trash" iconPos="left"
+      ></button>
     </td>
   </tr>
 </table>
