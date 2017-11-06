@@ -6,7 +6,17 @@
     {{body}}
   </div>
   <div class="modal-footer">
-    <button md-raised-button (click)="confirm(true)">{{confirmButtonText}}</button>
-    <button md-raised-button (click)="confirm(false)">{{cancelButtonText}}</button>
+    <button pButton class="ui-button-success"
+            id="confirm-decision"
+            (click)="confirm(true)"
+            label="{{confirmButtonText}}"
+            icon="fa fa-check-circle-o" iconPos="left"
+    ></button>
+    <button  pButton class="ui-button-warning"
+             id="reject-decision"
+             (click)="confirm(false)"
+             label="{{cancelButtonText}}"
+             icon="fa fa-exclamation-circle" iconPos="left"
+    ></button>
   </div>
 </div>

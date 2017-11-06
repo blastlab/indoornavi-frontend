@@ -8,19 +8,25 @@
       <app-wizard [floor]="floor" (clicked)="setTool($event)"></app-wizard>
     </li>
     <li>
-      <button disabled="disabled">
-        <i class="icons">toll</i>
-      </button>
+      <button pButton class="ui-button-secondary"
+              disabled="disabled"
+              label="{{'toll'|translate}}"
+              icon="fa fa-usd" icoPos="left"
+      ></button>
     </li>
     <li>
-      <button disabled="disabled">
-        <i class="icons">timeline</i>
-      </button>
+      <button pButton class="ui-button-secondary"
+              disabled="disabled"
+              label="{{'timeline'|translate}}"
+              icon="fa fa-calendar" iconPos="left"
+      ></button>
     </li>
     <li>
-      <button disabled="disabled">
-        <i class="icons">settings_remote</i>
-      </button>
+      <button pButton class="ui-button-secondary"
+              disabled="disabled"
+              label="{{'settings.remote'|translate}}"
+              icon="fa fa-cogs" iconPos="left"
+      ></button>
     </li>
   </ul>
 </div>

@@ -53,3 +53,21 @@ body{
 @import '~primeng/resources/themes/ludvig/theme.css';
 @import '~@angular/material/core/theming/prebuilt/deeppurple-amber.css';
 @import '~font-awesome/css/font-awesome.css';
+
+#sidebar-menu .ui-sidebar-close {
+  display: none;
+}
+
+#sidebar-menu .ui-sidebar {
+  padding: 0;
+}
+
+#sidebar-menu .menu-button {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column-reverse;
+  flex-direction: column-reverse;
+  height: 100px;
+  margin: 0;
+  align-items: center;
+}

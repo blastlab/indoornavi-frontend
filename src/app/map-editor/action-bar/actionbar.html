@@ -1,19 +1,20 @@
 <div id="actionbar">
-  <span mdTooltipPosition="above" md-tooltip="{{'saveDraft'|translate}}">
-    <button [disabled]="saveButtonDisabled" md-fab id="saveDraft" md-raised-button (click)="saveDraft()">
-      <i class="material-icons">save</i>
-    </button>
-  </span>
-  <span mdTooltipPosition="above" md-tooltip="{{'resetToPrevious'|translate}}">
-    <button [disabled]="resetButtonDisabled" md-fab id="resetToPrevious" md-raised-button (click)="resetToPreviousPublication()">
-      <i class="material-icons">undo</i>
-    </button>
-  </span>
-  <span mdTooltipPosition="above" md-tooltip="{{'publish'|translate}}">
-    <button [disabled]="publishButtonDisabled" md-fab id="publish" md-raised-button (click)="publish()">
-      <i class="material-icons">send</i>
-    </button>
-  </span>
+    <button pButton class="ui-button-success"
+            id="save-draft"
+            [disabled]="saveButtonDisabled" (click)="saveDraft()"
+            label="{{'saveDraft'|translate}}"
+            icon="fa fa-floppy-o" iconPos="left"
+    ></button>
+    <button pButton class="ui-button-secondary"
+            [disabled]="resetButtonDisabled" (click)="resetToPreviousPublication()"
+            label="{{'resetToPrevious'|translate}}"
+            icon="fa fa-undo" iconPos="left"
+    ></button>
+    <button pButton class="ui-button-warning"
+            [disabled]="publishButtonDisabled" (click)="publish()"
+            label="{{'publish'|translate}}"
+            icon="fa fa-file-text" iconPos="left"
+    ></button>
 
   <span [@messageState]="messageSpanState" (@messageState.done)="messageSpanAnimationDone()" id="message">The draft has been saved.</span>
 </div>

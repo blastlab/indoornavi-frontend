@@ -1,10 +1,11 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, NgZone, OnInit} from '@angular/core';
 import {AuthService} from './auth.service';
 import {AuthResponse} from './auth.type';
 import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AuthGuard} from './auth.guard';
 import {ToastService} from '../utils/toast/toast.service';
+import {AppComponent} from '../app.component';
 
 @Component({
   selector: 'app-auth',
@@ -17,7 +18,8 @@ export class AuthComponent implements OnInit {
               private router: Router,
               private route: ActivatedRoute,
               private authGuard: AuthGuard,
-              private toastService: ToastService) {
+              private toastService: ToastService
+  ) {
     translateService.setDefaultLang('en');
   }
 
@@ -25,6 +27,7 @@ export class AuthComponent implements OnInit {
     if (localStorage.getItem('currentUser')) {
       this.authService.logout();
       localStorage.removeItem('currentUser');
+      this.authGuard.toggleUserLoggedIn(false);
       this.router.navigate(['/login']);
     }
   }

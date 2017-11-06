@@ -1,4 +1,4 @@
-import {AfterViewChecked, Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {AuthGuard} from './auth/auth.guard';
 import {ActivatedRoute, Params} from '@angular/router';
 
@@ -18,8 +18,8 @@ export class AppComponent {
     });
     this.isUserLoggedIn = !!localStorage.getItem('currentUser');
     this.authGuard.userLoggedIn().subscribe((loggedIn: boolean) => {
+      console.log(loggedIn);
       this.isUserLoggedIn = loggedIn;
     });
   }
-
-}
+ }
