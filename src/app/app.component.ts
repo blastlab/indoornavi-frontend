@@ -18,8 +18,9 @@ export class AppComponent {
     });
     this.isUserLoggedIn = !!localStorage.getItem('currentUser');
     this.authGuard.userLoggedIn().subscribe((loggedIn: boolean) => {
-      console.log(loggedIn);
-      this.isUserLoggedIn = loggedIn;
+      if (loggedIn) { this.isUserLoggedIn = loggedIn; }
     });
   }
+
+
  }

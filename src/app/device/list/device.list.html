@@ -17,16 +17,16 @@
         <button pButton class="ui-button-warning"
                 id="edit-{{device.shortId}}" [appHasPermission]="editPermission"
                 (click)="openDialog(device)"
-                label="{{'edit'|translate}}"
-                icon="fa fa-pencil-square"  iconPos="left">
+                title="{{'edit'|translate}}"
+                icon="fa fa-pencil-square fa-lg"  iconPos="left">
         </button>
       </td>
       <td>
         <button pButton class="ui-button-danger"
                 id="remove-{{device.shortId}}" [appHasPermission]="deletePermission"
                 (click)="remove(device)"
-                label="{{'remove'|translate}}"
-                icon="fa fa-trash" iconPos="left">
+                title="{{'remove'|translate}}"
+                icon="fa fa-trash fa-lg" iconPos="left">
         </button>
       </td>
     </tr>

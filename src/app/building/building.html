@@ -5,8 +5,8 @@
           id="new-building-button"
           [appHasPermission]="'BUILDING_CREATE'"
           (click)="openDialog()"
-          label="{{'add'|translate}}"
-          icon="fa fa-plus" iconPos="left"
+          title="{{'add'|translate}}"
+          icon="fa fa-plus fa-lg" iconPos="left"
   ></button>
 </div>
 </p-toolbar>
@@ -20,24 +20,24 @@
     <td>
       <button pButton class="ui-button-success"
               (click)="openBuilding(building)"
-              label="{{'Enter'|translate}}"
-              icon="fa-level-down" iconPos="left"
+              title="{{'Enter'|translate}}"
+              icon="fa-level-down fa-lg" iconPos="left"
       ></button>
     </td>
     <td>
       <button pButton class="ui-button-warning"
               [appHasPermission]="'BUILDING_UPDATE'"
               (click)="editBuilding(building)"
-              label="{{'edit'|translate}}"
-              icon="fa fa-edit" iconPos="left"
+              title="{{'edit'|translate}}"
+              icon="fa fa-edit fa-lg" iconPos="left"
       ></button>
     </td>
     <td>
       <button pButton class="ui-button-danger"
               [appHasPermission]="'BUILDING_DELETE'"
               (click)="removeBuilding(i)"
-              label="{{'remove'|translate}}"
-              icon="fa fa-trash" iconPos="left"
+              title="{{'remove'|translate}}"
+              icon="fa fa-trash fa-lg" iconPos="left"
       ></button>
     </td>
   </tr>

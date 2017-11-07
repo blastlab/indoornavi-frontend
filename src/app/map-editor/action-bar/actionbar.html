@@ -7,13 +7,13 @@
     ></button>
     <button pButton class="ui-button-secondary"
             [disabled]="resetButtonDisabled" (click)="resetToPreviousPublication()"
-            label="{{'resetToPrevious'|translate}}"
-            icon="fa fa-undo" iconPos="left"
+            title="{{'resetToPrevious'|translate}}"
+            icon="fa fa-undo fa-lg" iconPos="left"
     ></button>
     <button pButton class="ui-button-warning"
             [disabled]="publishButtonDisabled" (click)="publish()"
-            label="{{'publish'|translate}}"
-            icon="fa fa-file-text" iconPos="left"
+            title="{{'publish'|translate}}"
+            icon="fa fa-file-text fa-lg" iconPos="left"
     ></button>
 
   <span [@messageState]="messageSpanState" (@messageState.done)="messageSpanAnimationDone()" id="message">The draft has been saved.</span>

@@ -67,7 +67,7 @@
           </button>
           <button pButton class="ui-button-secondary ui-g-6 menu-button"
                   id="logout" [routerLink]="['./logout']"
-                  (click)="displaySidebar = false"
+                  (click)="displaySidebar = false; isUserLoggedIn = false;"
                   icon="fa fa-sign-out fa-2x" >
             <span>{{'logout'|translate}}</span>
           </button>

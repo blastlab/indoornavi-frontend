@@ -5,8 +5,8 @@
               id="add-permission"
         [appHasPermission]="'PERMISSION_GROUP_CREATE'"
         (click)="openDialog()"
-        label="{{'add'|translate}}"
-        icon="fa fa-plus" iconPos="left"
+        title="{{'add'|translate}}"
+        icon="fa fa-plus fa-lg" iconPos="left"
       ></button>
   </div>
 </p-toolbar>
@@ -23,8 +23,8 @@
                     id="edit-permission"
                     [appHasPermission]="'PERMISSION_GROUP_UPDATE'"
                     (click)="edit(permissionGroup)"
-                    label="{{'edit'|translate}}"
-                    icon="fa fa-pencil-square" iconPos="left"
+                    title="{{'edit'|translate}}"
+                    icon="fa fa-pencil-square fa-lg" iconPos="left"
             ></button>
         </td>
         <td>
@@ -32,8 +32,8 @@
                     id="remove-permission"
                     [appHasPermission]="'PERMISSION_GROUP_DELETE'"
                     (click)="remove(i)"
-                    label="{{'remove'|translate}}"
-                    icon="fa fa-trash" iconPos="left"
+                    title="{{'remove'|translate}}"
+                    icon="fa fa-trash fa-lg" iconPos="left"
             ></button>
         </td>
     </tr>

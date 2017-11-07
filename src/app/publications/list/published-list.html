@@ -5,8 +5,8 @@
             id="add-publishedMa"
             [appHasPermission]="'MAP_CREATE'"
             (click)="openDialog(null)"
-            label="{{'map'|translate}}"
-            icon="fa fa-plus" iconPos="left"
+            title="{{'map'|translate}}"
+            icon="fa fa-plus fa-lg" iconPos="left"
     ></button>
 
   </div>
@@ -53,29 +53,29 @@
       <button pButton class="ui-button-success"
               id="enter-map"
               (click)="goToMap(row)"
-              label="{{'enter'|translate}}"
-              icon="fa fa-level-down" iconPos="left"
+              title="{{'enter'|translate}}"
+              icon="fa fa-level-down fa-lg" iconPos="left"
       ></button>
       <button pButton class="ui-button-success"
               id="open-map"
               [appHasPermission]="'FLOOR_READ'"
               (click)="goToEditor(row)"
-              label="{{'open'|translate}}"
-              icon="fa fa-external-link" iconPos="left"
+              title="{{'open'|translate}}"
+              icon="fa fa-external-link fa-lg" iconPos="left"
       ></button>
       <button pButton class="ui-button-warning"
               id="edit-map"
               [appHasPermission]="'MAP_UPDATE'"
               (click)="edit(row)"
-              label="{{'edit'|translate}}"
-              icon="fa fa-pencil-square" iconPos="left"
+              title="{{'edit'|translate}}"
+              icon="fa fa-pencil-square fa-lg" iconPos="left"
       ></button>
       <button pButton class="ui-button-danger"
               id="remove-map"
               [appHasPermission]="'MAP_DELETE'"
               (click)="remove(row)"
-              label="{{'remove'|translate}}"
-              icon="fa fa-trash" iconPos="left"
+              title="{{'remove'|translate}}"
+              icon="fa fa-trash fa-lg" iconPos="left"
       ></button>
     <!--</template>-->
   <!--</ngx-datatable-column>-->

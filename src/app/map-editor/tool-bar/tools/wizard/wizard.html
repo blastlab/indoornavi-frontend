@@ -1,7 +1,7 @@
 <button pButton class="ui-button-secondary"
         [ngClass]="{'active-tool' : active}" (click)="emitToggleActive()"
-        label="{{'sinks.one.header'|translate}}"
-        icon="fa fa-sitemap" iconPos="left"
+        title="{{'sinks.one.header'|translate}}"
+        icon="fa fa-sitemap fa-lg" iconPos="left"
 ></button>
 <app-first-step [floor]="floor" #firstStep (clearView)="wizardStopped($event)"
                 (nextStepIndex)="wizardNextStep($event)"></app-first-step>

@@ -5,8 +5,8 @@
     <button pButton class="ui-button-primary"
             id="add-complex" [appHasPermission]="'COMPLEX_CREATE'"
             (click)="openDialog()"
-            label="{{'add'|translate}}"
-            icon="fa fa-plus"
+            title="{{'add'|translate}}"
+            icon="fa fa-plus fa-lg"
             iconPos="left"
     ></button>
   </div>
@@ -22,27 +22,27 @@
     <td>
       <button pButton class="ui-button-success"
               id="enter-building"
-              label="{{'enter'|translate}}"
+              title="{{'enter'|translate}}"
               (click)="openComplex(complex)"
-              icon="fa fa-level-down" iconPos="left">
+              icon="fa fa-level-down fa-lg" iconPos="left">
       </button>
     </td>
     <td>
       <button pButton class="ui-button-warning"
               id="edit-building"
-              label="{{'edit'|translate}}"
+              title="{{'edit'|translate}}"
               [appHasPermission]="'COMPLEX_UPDATE'"
               (click)="editComplex(complex)"
-              icon="fa fa-pencil-square" iconPos="left">
+              icon="fa fa-pencil-square fa-lg" iconPos="left">
       </button>
     </td>
     <td>
       <button pButton class="ui-button-danger"
               id="remove-building"
-              label="{{'remove'|translate}}"
+              title="{{'remove'|translate}}"
               [appHasPermission]="'COMPLEX_DELETE'"
               (click)="removeComplex(i)"
-              icon="fa fa-trash" iconPos="left"  >
+              icon="fa fa-trash fa-lg" iconPos="left"  >
       </button>
     </td>
   </tr>
