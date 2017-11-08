@@ -22,26 +22,26 @@
     <td>
       <button pButton class="ui-button-success"
               id="enter-building"
-              title="{{'enter'|translate}}"
               (click)="openComplex(complex)"
+              pTooltip="{{'enter'|translate}}"
               icon="fa fa-level-down" iconPos="left">
       </button>
     </td>
     <td>
       <button pButton class="ui-button-warning"
               id="edit-building"
-              title="{{'edit'|translate}}"
               [appHasPermission]="'COMPLEX_UPDATE'"
               (click)="editComplex(complex)"
+              pTooltip="{{'edit'|translate}}"
               icon="fa fa-pencil-square" iconPos="left">
       </button>
     </td>
     <td>
       <button pButton class="ui-button-danger"
               id="remove-building"
-              title="{{'remove'|translate}}"
               [appHasPermission]="'COMPLEX_DELETE'"
               (click)="removeComplex(i)"
+              pTooltip="{{'remove'|translate}}"
               icon="fa fa-trash" iconPos="left"  >
       </button>
     </td>

@@ -53,28 +53,28 @@
       <button pButton class="ui-button-success"
               id="enter-map"
               (click)="goToMap(row)"
-              title="{{'enter'|translate}}"
-              icon="fa fa-level-down "
+              pTooltip="{{'enter'|translate}}"
+              icon="fa fa-level-down" iconPos="left"
       ></button>
       <button pButton class="ui-button-success"
               id="open-map"
               [appHasPermission]="'FLOOR_READ'"
               (click)="goToEditor(row)"
-              title="{{'open'|translate}}"
+              pTooltip="{{'open'|translate}}"
               icon="fa fa-external-link"
       ></button>
       <button pButton class="ui-button-warning"
               id="edit-map"
               [appHasPermission]="'MAP_UPDATE'"
               (click)="edit(row)"
-              title="{{'edit'|translate}}"
+              pTooltip="{{'edit'|translate}}"
               icon="fa fa-pencil-square"
       ></button>
       <button pButton class="ui-button-danger"
               id="remove-map"
               [appHasPermission]="'MAP_DELETE'"
               (click)="remove(row)"
-              title="{{'remove'|translate}}"
+              pTooltip="{{'remove'|translate}}"
               icon="fa fa-trash"
       ></button>
     <!--</template>-->

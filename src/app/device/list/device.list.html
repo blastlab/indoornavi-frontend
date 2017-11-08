@@ -17,7 +17,7 @@
         <button pButton class="ui-button-warning"
                 id="edit-{{device.shortId}}" [appHasPermission]="editPermission"
                 (click)="openDialog(device)"
-                title="{{'edit'|translate}}"
+                pTooltip="{{'edit'|translate}}"
                 icon="fa fa-pencil-square"  iconPos="left">
         </button>
       </td>
@@ -25,7 +25,7 @@
         <button pButton class="ui-button-danger"
                 id="remove-{{device.shortId}}" [appHasPermission]="deletePermission"
                 (click)="remove(device)"
-                title="{{'remove'|translate}}"
+                pTooltip="{{'remove'|translate}}"
                 icon="fa fa-trash" iconPos="left">
         </button>
       </td>

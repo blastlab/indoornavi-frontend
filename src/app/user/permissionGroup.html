@@ -23,7 +23,7 @@
                     id="edit-permission"
                     [appHasPermission]="'PERMISSION_GROUP_UPDATE'"
                     (click)="edit(permissionGroup)"
-                    title="{{'edit'|translate}}"
+                    pTooltip="{{'edit'|translate}}"
                     icon="fa fa-pencil-square" iconPos="left"
             ></button>
         </td>
@@ -32,7 +32,7 @@
                     id="remove-permission"
                     [appHasPermission]="'PERMISSION_GROUP_DELETE'"
                     (click)="remove(i)"
-                    title="{{'remove'|translate}}"
+                    pTooltip="{{'remove'|translate}}"
                     icon="fa fa-trash" iconPos="left"
             ></button>
         </td>

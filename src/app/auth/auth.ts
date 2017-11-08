@@ -1,11 +1,10 @@
-import {ChangeDetectorRef, Component, NgZone, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {AuthService} from './auth.service';
 import {AuthResponse} from './auth.type';
 import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AuthGuard} from './auth.guard';
 import {ToastService} from '../utils/toast/toast.service';
-import {AppComponent} from '../app.component';
 
 @Component({
   selector: 'app-auth',

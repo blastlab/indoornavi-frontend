@@ -9,13 +9,13 @@
     <button pButton class="ui-button-success"
             id="confirm-decision"
             (click)="confirm(true)"
-            title="{{confirmButtonText}}"
+            pTooltip="{{confirmButtonText}}"
             icon="fa fa-check-circle-o" iconPos="left"
     ></button>
     <button  pButton class="ui-button-warning"
              id="reject-decision"
              (click)="confirm(false)"
-             title="{{cancelButtonText}}"
+             pTooltip="{{cancelButtonText}}"
              icon="fa fa-exclamation-circle" iconPos="left"
     ></button>
   </div>

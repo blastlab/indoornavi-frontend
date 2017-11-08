@@ -1,16 +1,19 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {AuthGuard} from './auth/auth.guard';
 import {ActivatedRoute, Params} from '@angular/router';
+import {MenuItem} from 'primeng/primeng';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.html'
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   public isUserLoggedIn: boolean;
   public isDisplayedInIFrame: boolean = false;
 
-  constructor(/*private breadcrumbService: BreadcrumbService,*/ private authGuard: AuthGuard, private route: ActivatedRoute) {
+  private items: Array<MenuItem>;
+
+  constructor(private authGuard: AuthGuard, private route: ActivatedRoute) {
     this.route.queryParams.subscribe((params: Params) => {
       if (!!params['api_key']) {
         this.isDisplayedInIFrame = true;
@@ -22,5 +25,12 @@ export class AppComponent {
     });
   }
 
+  ngOnInit () {
+    this.items = [
+      {label: 'Complexes', url: '/complexes'},
+      {label: 'Users', url: '/users'}
+    ];
+  }
 
  }
+

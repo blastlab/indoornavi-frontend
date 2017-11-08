@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
+import {NgModule, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {Http, HttpModule} from '@angular/http';
 import {ComplexComponent} from './complex/complex';
@@ -20,7 +20,6 @@ import {FloorService} from './floor/floor.service';
 import {FloorDialogComponent} from './floor/dialog/floor.dialog';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
-// import {Ng2BreadcrumbModule} from 'ng2-breadcrumb/ng2-breadcrumb';
 import {WebSocketService} from 'angular2-websocket-service';
 import {SocketService} from './utils/socket/socket.service';
 import {DndModule} from 'ng2-dnd';
@@ -77,7 +76,7 @@ import {ActionBarComponent} from 'app/map-editor/action-bar/actionbar';
 import {AreaService} from './area/area.service';
 import {Md5} from 'ts-md5/dist/md5';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {ButtonModule, PanelMenuModule, ToolbarModule, BreadcrumbModule} from 'primeng/primeng';
+import {ButtonModule, PanelMenuModule, ToolbarModule, BreadcrumbModule, TooltipModule, MenuItem} from 'primeng/primeng';
 import {SidebarModule} from 'primeng/components/sidebar/sidebar';
 
 export function HttpLoaderFactory(http: Http) {
@@ -163,7 +162,8 @@ export function HttpLoaderFactory(http: Http) {
     ToolbarModule,
     PanelMenuModule,
     SidebarModule,
-    BreadcrumbModule
+    BreadcrumbModule,
+    TooltipModule
   ],
   providers: [
     BuildingService,

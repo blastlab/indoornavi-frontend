@@ -7,12 +7,12 @@
     ></button>
     <button pButton class="ui-button-secondary"
             [disabled]="resetButtonDisabled" (click)="resetToPreviousPublication()"
-            title="{{'resetToPrevious'|translate}}"
+            pTooltip="{{'resetToPrevious'|translate}}"
             icon="fa fa-undo" iconPos="left"
     ></button>
     <button pButton class="ui-button-warning"
             [disabled]="publishButtonDisabled" (click)="publish()"
-            title="{{'publish'|translate}}"
+            pTooltip="{{'publish'|translate}}"
             icon="fa fa-file-text" iconPos="left"
     ></button>
 
