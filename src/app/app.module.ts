@@ -77,7 +77,7 @@ import {ActionBarComponent} from 'app/map-editor/action-bar/actionbar';
 import {AreaService} from './area/area.service';
 import {Md5} from 'ts-md5/dist/md5';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {ButtonModule, PanelMenuModule, ToolbarModule} from 'primeng/primeng';
+import {ButtonModule, PanelMenuModule, ToolbarModule, BreadcrumbModule} from 'primeng/primeng';
 import {SidebarModule} from 'primeng/components/sidebar/sidebar';
 
 export function HttpLoaderFactory(http: Http) {
@@ -162,7 +162,8 @@ export function HttpLoaderFactory(http: Http) {
     ButtonModule,
     ToolbarModule,
     PanelMenuModule,
-    SidebarModule
+    SidebarModule,
+    BreadcrumbModule
   ],
   providers: [
     BuildingService,
@@ -200,3 +201,4 @@ export function HttpLoaderFactory(http: Http) {
 
 export class AppModule {
 }
+

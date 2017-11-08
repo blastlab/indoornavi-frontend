@@ -4,9 +4,9 @@
   <button pButton class="ui-button-secondary"
           id="add-floor"
           [appHasPermission]="'FLOOR_CREATE'"
-          title="{{'add'|translate}}"
+          label="{{'add'|translate}}"
           (click)="openDialog()"
-          icon="fa fa-plus fa-lg" iconPos="left"
+          icon="fa fa-plus" iconPos="left"
   ></button>
 </div>
 </p-toolbar>
@@ -25,7 +25,7 @@
               id="goTo-map"
               (click)="openMap(floor)"
               title="{{'enter'|translate}}"
-              icon="fa fa-level-down fa-lg" iconPos="left"
+              icon="fa fa-level-down" iconPos="left"
       ></button>
     </td>
     <td>
@@ -33,7 +33,7 @@
               [appHasPermission]="'FLOOR_UPDATE'"
               (click)="editFloor(floor)"
               title="{{'edit'|translate}}"
-              icon="fa fa-edit fa-lg" iconPas="left"
+              icon="fa fa-edit" iconPas="left"
       ></button>
     </td>
     <td>
@@ -41,7 +41,7 @@
               [appHasPermission]="'FLOOR_DELETE'"
               (click)="removeFloor(i)"
               title="{{'remove'|translate}}"
-              icon="fa fa-trash fa-lg" iconPos="left"
+              icon="fa fa-trash" iconPos="left"
       ></button>
     </td>
   </tr>

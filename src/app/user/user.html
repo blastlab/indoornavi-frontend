@@ -4,8 +4,8 @@
   <button pButton class="ui-button-secondary"
           [appHasPermission]="'USER_CREATE'"
           (click)="createUser()"
-          title="{{'add'|translate}}"
-          icon="fa fa-plus fa-lg" iconPos="left"
+          label="{{'add'|translate}}"
+          icon="fa fa-plus" iconPos="left"
   ></button>
 </div>
 </p-toolbar>
@@ -26,7 +26,7 @@
               [appHasPermission]="'USER_UPDATE'"
               (click)="editUser(i)"
               title="{{'edit'|translate}}"
-              icon="fa fa-pencil-square fa-lg" iconPos="left"
+              icon="fa fa-pencil-square" iconPos="left"
       ></button>
     </td>
     <td>
@@ -34,7 +34,7 @@
               [appHasPermission]="'USER_DELETE'"
               *ngIf="!user.superUser" (click)="removeUser(i)"
               title="{{'remove'|translate}}"
-              icon="fa fa-trash fa-lg" iconPos="left"
+              icon="fa fa-trash" iconPos="left"
       ></button>
     </td>
   </tr>

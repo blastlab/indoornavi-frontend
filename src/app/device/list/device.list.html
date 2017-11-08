@@ -18,7 +18,7 @@
                 id="edit-{{device.shortId}}" [appHasPermission]="editPermission"
                 (click)="openDialog(device)"
                 title="{{'edit'|translate}}"
-                icon="fa fa-pencil-square fa-lg"  iconPos="left">
+                icon="fa fa-pencil-square"  iconPos="left">
         </button>
       </td>
       <td>
@@ -26,7 +26,7 @@
                 id="remove-{{device.shortId}}" [appHasPermission]="deletePermission"
                 (click)="remove(device)"
                 title="{{'remove'|translate}}"
-                icon="fa fa-trash fa-lg" iconPos="left">
+                icon="fa fa-trash" iconPos="left">
         </button>
       </td>
     </tr>
