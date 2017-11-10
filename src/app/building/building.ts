@@ -9,6 +9,8 @@ import {NgForm} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {FloorService} from '../floor/floor.service';
+import {BreadcrumbService} from '../utils/breadcrumbs/breadcrumb.service';
+import {Complex} from '../complex/complex.type';
 
 @Component({
   templateUrl: 'building.html',
@@ -25,27 +27,33 @@ export class BuildingComponent implements OnInit {
 
   @ViewChild('buildingForm') buildingForm: NgForm;
 
-  ngOnInit(): void {
-
-    this.route.params
-    // (+) converts string 'id' to a number
-      .subscribe((params: Params) => {
-        this.complexId = +params['complexId'];
-        this.buildingService.getComplexWithBuildings(this.complexId).subscribe((result: any) => {
-          this.buildings = result.buildings;
-        });
-        this.newBuilding();
-      });
-    this.translate.setDefaultLang('en');
-  }
-
   constructor(private buildingService: BuildingService,
               private dialog: MdDialog,
               private toast: ToastService,
               public translate: TranslateService,
               private router: Router,
               private floorService: FloorService,
-              private route: ActivatedRoute) {
+              private route: ActivatedRoute,
+              private breadcrumbsService: BreadcrumbService
+  ) {
+  }
+
+  ngOnInit(): void {
+
+    this.route.params
+    // (+) converts string 'id' to a number
+      .subscribe((params: Params) => {
+        this.complexId = +params['complexId'];
+        this.buildingService.getComplexWithBuildings(this.complexId).subscribe((complex: Complex) => {
+          this.buildings = complex.buildings;
+          this.breadcrumbsService.publishIsReady([
+            {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
+            {label: complex.name, disabled: true}
+          ]);
+        });
+        this.newBuilding();
+      });
+    this.translate.setDefaultLang('en');
   }
 
   editBuilding(building: Building): void {

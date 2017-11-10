@@ -12,6 +12,7 @@ import {Tag} from './tag.type';
 import {Anchor} from './anchor.type';
 import {Sink} from './sink.type';
 import {DeviceService} from './device.service';
+import {BreadcrumbService} from '../utils/breadcrumbs/breadcrumb.service';
 
 @Component({
   templateUrl: './device.component.html',
@@ -29,13 +30,16 @@ export class DeviceComponent implements OnInit, OnDestroy {
 
   dialogRef: MdDialogRef<DeviceDialogComponent>;
 
-  constructor(private socketService: SocketService,
-              private dialog: MdDialog,
+  constructor(
               public translate: TranslateService,
+              private socketService: SocketService,
+              private dialog: MdDialog,
               private toastService: ToastService,
               private ngZone: NgZone,
               private route: ActivatedRoute,
-              private deviceService: DeviceService) {
+              private translateService: TranslateService,
+              private breadcrumbsService: BreadcrumbService
+  ) {
   }
 
   get verified(): Anchor[] | Tag[] | Sink[] {
@@ -49,6 +53,12 @@ export class DeviceComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.routeState = this.route.snapshot.routeConfig.path;
     this.setPermissions();
+    this.translateService.setDefaultLang('en');
+    this.translateService.get(`${this.routeState}.header`).subscribe((value: string) => {
+      this.breadcrumbsService.publishIsReady([
+        {label: value, disabled: true}
+      ]);
+    });
     this.ngZone.runOutsideAngular(() => {
       const stream = this.socketService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.routeState}`);
 

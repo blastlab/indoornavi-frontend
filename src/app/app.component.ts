@@ -1,7 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {AuthGuard} from './auth/auth.guard';
 import {ActivatedRoute, Params} from '@angular/router';
 import {MenuItem} from 'primeng/primeng';
+import {BreadcrumbService} from './utils/breadcrumbs/breadcrumb.service';
 
 @Component({
   selector: 'app-root',
@@ -11,9 +12,9 @@ export class AppComponent implements OnInit {
   public isUserLoggedIn: boolean;
   public isDisplayedInIFrame: boolean = false;
 
-  private items: Array<MenuItem>;
+  private items: MenuItem[];
 
-  constructor(private authGuard: AuthGuard, private route: ActivatedRoute) {
+  constructor(private authGuard: AuthGuard, private route: ActivatedRoute, private breadcrumbService: BreadcrumbService, private cd: ChangeDetectorRef) {
     this.route.queryParams.subscribe((params: Params) => {
       if (!!params['api_key']) {
         this.isDisplayedInIFrame = true;
@@ -26,11 +27,10 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit () {
-    this.items = [
-      {label: 'Complexes', url: '/complexes'},
-      {label: 'Users', url: '/users'}
-    ];
+    this.breadcrumbService.isReady().subscribe((breadcrumbs: MenuItem[]) => {
+      this.items = breadcrumbs;
+      this.cd.detectChanges();
+    });
   }
 
  }
-

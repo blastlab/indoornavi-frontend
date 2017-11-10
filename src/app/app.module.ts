@@ -78,6 +78,7 @@ import {Md5} from 'ts-md5/dist/md5';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {ButtonModule, PanelMenuModule, ToolbarModule, BreadcrumbModule, TooltipModule, MenuItem} from 'primeng/primeng';
 import {SidebarModule} from 'primeng/components/sidebar/sidebar';
+import {BreadcrumbService} from './utils/breadcrumbs/breadcrumb.service';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -153,7 +154,6 @@ export function HttpLoaderFactory(http: Http) {
     }),
     RouterModule.forRoot(appRoutes),
     DndModule.forRoot(),
-    // Ng2BreadcrumbModule.forRoot(),
     FlexLayoutModule,
     ImageUploadModule.forRoot(),
     SharedModule,
@@ -195,7 +195,8 @@ export function HttpLoaderFactory(http: Http) {
     PublishedService,
     MapViewerService,
     AreaService,
-    Md5
+    Md5,
+    BreadcrumbService
   ], bootstrap: [AppComponent]
 })
 

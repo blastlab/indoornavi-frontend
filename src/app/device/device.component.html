@@ -1,4 +1,3 @@
-<h1 [translate]="routeState + '.header'"></h1>
 <p-toolbar>
   <div class="ui-toolbar-group-left">
     <button pButton class="ui-button-secondary"
@@ -6,11 +5,9 @@
             (click)="openDialog()"
             label="{{'add'|translate}}"
             icon="fa fa-plus" iconPos="left">
-
     </button>
   </div>
 </p-toolbar>
-
 <div class="row">
   <div id="notVerifiedList" class="devices-list">
     <app-device-list #notVerified [verified]="false"></app-device-list>

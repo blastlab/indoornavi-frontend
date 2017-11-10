@@ -49,6 +49,7 @@ body{
   max-height: 800px;
   overflow: auto;
 }
+
 @import '~primeng/resources/primeng.css';
 @import '~primeng/resources/themes/ludvig/theme.css';
 @import '~@angular/material/core/theming/prebuilt/deeppurple-amber.css';
@@ -70,4 +71,14 @@ body{
   height: 100px;
   margin: 0;
   align-items: center;
+}
+
+.ui-breadcrumb {
+  color: inherit;
+  background: none;
+  border: none;
+}
+
+.ui-breadcrumb a {
+  color: inherit;
 }

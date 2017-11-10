@@ -5,7 +5,8 @@ import {TranslateService} from '@ngx-translate/core';
 import {MdDialog, MdDialogRef} from '@angular/material';
 import {ToastService} from '../../utils/toast/toast.service';
 import {PublishedDialogComponent} from '../dialog/published.dialog';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
+import {BreadcrumbService} from '../../utils/breadcrumbs/breadcrumb.service';
 
 @Component({
   templateUrl: './published-list.html',
@@ -17,18 +18,28 @@ export class PublishedListComponent implements OnInit {
 
   dialogRef: MdDialogRef<PublishedDialogComponent>;
 
+  private routeState: string;
+
   constructor(private publishedMapService: PublishedService,
               private translateService: TranslateService,
               private dialog: MdDialog,
               private toastService: ToastService,
-              private router: Router) {
+              private router: Router,
+              private route: ActivatedRoute,
+              private breadcrumbService: BreadcrumbService
+  ) {
   }
 
   ngOnInit() {
-    this.translateService.setDefaultLang('en');
-
     this.publishedMapService.getAll().subscribe((maps: PublishedMap[]) => {
       this.rows = maps;
+    });
+    this.routeState = this.route.snapshot.routeConfig.path;
+    this.translateService.setDefaultLang('en');
+    this.translateService.get(`publishedList.header`).subscribe((value: string) => {
+      this.breadcrumbService.publishIsReady([
+        {label: value, disabled: true}
+      ]);
     });
   }
 

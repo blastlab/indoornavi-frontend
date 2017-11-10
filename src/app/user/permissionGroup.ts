@@ -5,6 +5,7 @@ import {ToastService} from '../utils/toast/toast.service';
 import {PermissionGroupService} from 'app/user/permissionGroup.service';
 import {TranslateService} from '@ngx-translate/core';
 import {Option} from '../utils/multiselect/multiselect.type';
+import {BreadcrumbService} from '../utils/breadcrumbs/breadcrumb.service';
 
 @Component({
   templateUrl: 'permissionGroup.html'
@@ -30,7 +31,9 @@ export class PermissionGroupComponent implements OnInit {
   constructor(private dialog: MdDialog,
               private toast: ToastService,
               private permissionGroupService: PermissionGroupService,
-              private translateService: TranslateService) {
+              private translateService: TranslateService,
+              private breadcrumbService: BreadcrumbService
+  ) {
   }
 
   ngOnInit(): void {
@@ -44,6 +47,11 @@ export class PermissionGroupComponent implements OnInit {
       this.permissions.forEach((permission: Permission) => {
         this.options.push({id: permission.id, itemName: permission.name});
       });
+    });
+    this.translateService.get(`permissionGroup.header`).subscribe((value: string) => {
+      this.breadcrumbService.publishIsReady([
+        {label: value, disabled: true}
+      ]);
     });
     this.permissionGroupService.getPermissionGroups().subscribe((permissionGroups: PermissionGroup[]) => {
       this.permissionGroups = permissionGroups;

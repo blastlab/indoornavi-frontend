@@ -8,6 +8,9 @@ import {NgForm} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {Building} from '../building/building.type';
+import {BreadcrumbService} from '../utils/breadcrumbs/breadcrumb.service';
+import {Complex} from '../complex/complex.type';
+import {BuildingService} from '../building/building.service';
 
 @Component({
   templateUrl: 'floor.html',
@@ -29,7 +32,10 @@ export class FloorComponent implements OnInit {
               private toast: ToastService,
               public translate: TranslateService,
               private route: ActivatedRoute,
-              private router: Router) {
+              private router: Router,
+              private buildingService: BuildingService,
+              private breadcrumbsService: BreadcrumbService
+  ) {
   }
 
   ngOnInit(): void {
@@ -40,9 +46,17 @@ export class FloorComponent implements OnInit {
         const buildingId = +params['buildingId'];
         this.complexId = +params['complexId'];
         this.floorService.getBuildingWithFloors(buildingId).subscribe((building: Building) => {
+          // todo change to one request instead of nested, after backend marge with new version
           this.floors = building.floors;
           this.building = building;
           this.newFloor();
+          this.buildingService.getComplexWithBuildings(this.complexId).subscribe((complex: Complex) => {
+            this.breadcrumbsService.publishIsReady([
+              {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
+              {label: complex.name, routerLink: `/complexes/${this.complexId}/buildings`, routerLinkActiveOptions: {exact: true}},
+              {label: building.name, disabled: true}
+            ]);
+          });
         });
       });
     this.translate.setDefaultLang('en');

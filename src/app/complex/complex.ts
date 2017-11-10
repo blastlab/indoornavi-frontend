@@ -7,8 +7,9 @@ import {ComplexConfirmComponent} from './complex.confirm';
 import {ToastService} from '../utils/toast/toast.service';
 import {NgForm} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {Router} from '@angular/router';
 import {BuildingService} from '../building/building.service';
+import {BreadcrumbService} from '../utils/breadcrumbs/breadcrumb.service';
 
 @Component({
   templateUrl: 'complex.html',
@@ -20,28 +21,30 @@ export class ComplexComponent implements OnInit {
   dialogRef: MdDialogRef<ComplexDialogComponent>;
 
   confirmRef: MdDialogRef<ComplexConfirmComponent>;
-  private routeState: string;
 
   @ViewChild('complexForm') complexForm: NgForm;
-
-  ngOnInit(): void {
-    this.routeState = this.route.snapshot.routeConfig.path;
-    this.newComplex();
-
-    this.complexService.getComplexes().subscribe((complexes: Array<Complex>) => {
-      this.complexes = complexes;
-    });
-
-    this.translate.setDefaultLang('en');
-  }
 
   constructor(private complexService: ComplexService,
               private dialog: MdDialog,
               private toast: ToastService,
               public translate: TranslateService,
               private router: Router,
-              private route: ActivatedRoute,
-              private buildingService: BuildingService) {
+              private buildingService: BuildingService,
+              private breadcrumbsService: BreadcrumbService,
+              private translateService: TranslateService
+  ) { }
+
+  ngOnInit(): void {
+    this.newComplex();
+    this.translateService.setDefaultLang('en');
+    this.translateService.get(`complexes`).subscribe((value: string) => {
+      this.breadcrumbsService.publishIsReady([
+        {label: value, disabled: true}
+      ]);
+    });
+    this.complexService.getComplexes().subscribe((complexes: Array<Complex>) => {
+      this.complexes = complexes;
+    });
   }
 
   editComplex(complex: Complex): void {

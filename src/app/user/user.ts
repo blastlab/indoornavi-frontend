@@ -6,6 +6,7 @@ import {PermissionGroup, User} from './user.type';
 import {ToastService} from '../utils/toast/toast.service';
 import {UserService} from './user.service';
 import {PermissionGroupService} from './permissionGroup.service';
+import {BreadcrumbService} from '../utils/breadcrumbs/breadcrumb.service';
 
 @Component({
   templateUrl: 'user.html',
@@ -20,14 +21,20 @@ export class UserComponent implements OnInit {
               private dialog: MdDialog,
               private toast: ToastService,
               private userService: UserService,
-              private permissionGroupService: PermissionGroupService) {
+              private permissionGroupService: PermissionGroupService,
+              private breadcrumbService: BreadcrumbService
+  ) {
   }
 
   ngOnInit(): void {
-    this.translateService.setDefaultLang('en');
-
     this.userService.getUsers().subscribe((users: User[]) => {
       this.users = users;
+    });
+    this.translateService.setDefaultLang('en');
+    this.translateService.get(`users.header`).subscribe((value: string) => {
+      this.breadcrumbService.publishIsReady([
+        {label: value, disabled: true}
+      ]);
     });
 
     this.permissionGroupService.getPermissionGroups().subscribe((permissionGroups: PermissionGroup[]) => {
