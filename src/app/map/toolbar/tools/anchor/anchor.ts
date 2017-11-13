@@ -15,6 +15,7 @@ import {DrawBuilder, DrawConfiguration} from '../../../../utils/builder/draw.bui
 import {Draggable} from '../../../../utils/builder/draggable';
 import {Subscription} from 'rxjs/Subscription';
 import {MapLoaderInformerService} from 'app/utils/map-loader-informer/map-loader-informer.service';
+import {Connection} from '../../../../utils/builder/connection';
 
 
 @Component({
@@ -24,9 +25,9 @@ import {MapLoaderInformerService} from 'app/utils/map-loader-informer/map-loader
 })
 export class AnchorPlacerComponent implements Tool, OnInit {
   @Output() clicked: EventEmitter<Tool> = new EventEmitter<Tool>();
-  private mapDevices: Draggable[] = [];
-  public hintMessage: string;
   public active: boolean = false;
+  public hintMessage: string;
+  private mapDevices: Draggable[] = [];
   private floorId: number;
   public chosenSink: Sink;
   private placementDone: boolean;
@@ -40,7 +41,6 @@ export class AnchorPlacerComponent implements Tool, OnInit {
   constructor(public translate: TranslateService,
               private anchorPlacerController: AnchorPlacerController,
               private accButtons: AcceptButtonsService,
-              // private drawingService: DrawingService,
               private hintBar: HintBarService,
               private configurationService: ActionBarService,
               private mapLoaderInformer: MapLoaderInformerService,
@@ -49,28 +49,53 @@ export class AnchorPlacerComponent implements Tool, OnInit {
   }
 
   ngOnInit() {
+    this.getMapSelection();
+    this.getConfiguredDevices();
+    this.subscribeForAnchor();
+  }
+
+  private getMapSelection(): void {
     this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe(() => {
       this.map = d3.select('#map');
     });
+  }
+
+  private getConfiguredDevices(): void {
     this.configurationService.configurationLoaded().first().subscribe((configuration) => {
       this.floorId = configuration.floorId;
-      this.drawConfiguredDevices(configuration.data.sinks);
-        configuration.data.anchors.forEach((anchor) => {
-            this.drawDevice(this.buildAnchorDrawConfiguration(anchor), {x: anchor.x, y: anchor.y});
-        });
+      if (!!configuration.data.sinks) {
+        this.drawConfiguredDevices(configuration.data.sinks);
+      }
+      if (!!configuration.data.anchors) {
+        this.drawAnchorsWithoutConnection(configuration.data.anchors);
+      }
     });
-    this.subscribeForAnchor();
   }
 
   private drawConfiguredDevices(sinks: Array<Sink>): void {
     sinks.forEach((sink) => {
-      this.drawDevice(this.buildSinkDrawConfiguration(sink), {x: sink.x, y: sink.y});
+      const mapSink = this.drawDevice(this.buildSinkDrawConfiguration(sink), {x: sink.x, y: sink.y});
       sink.anchors.forEach((anchor) => {
-        this.drawDevice(this.buildAnchorDrawConfiguration(anchor), {x: anchor.x, y: anchor.y});
-        // TODO draw connection method
+        const mapAnchor = this.drawDevice(this.buildAnchorDrawConfiguration(anchor), {x: anchor.x, y: anchor.y});
+        const identifier = '' + sink.shortId + anchor.shortId;
+        this.createConnection(mapSink, mapAnchor, identifier);
       });
     });
   }
+
+  public createConnection(sink: Draggable, anchor: Draggable, id: string): Connection {
+    const connectingLine = new Connection(sink, anchor, id);
+    sink.sinkConnections.push(connectingLine);
+    anchor.anchorConnection = connectingLine;
+    return connectingLine;
+  }
+
+  private drawAnchorsWithoutConnection(anchors: Array<Anchor>): void {
+    anchors.forEach((anchor) => {
+      this.drawDevice(this.buildAnchorDrawConfiguration(anchor), {x: anchor.x, y: anchor.y});
+    });
+  }
+
 
   public getToolName(): ToolName {
     return ToolName.ANCHOR;
