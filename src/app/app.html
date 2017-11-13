@@ -1,19 +1,9 @@
-<ng-container *ngIf="isUserLoggedIn; then logged_in else not_logged_in">
-</ng-container>
+<ng-container *ngIf="isUserLoggedIn; then logged_in else not_logged_in"></ng-container>
 <ng-template #logged_in>
-  <div *ngIf="!isDisplayedInIFrame">
-    <div class="ui-g-11 ui-md-11 ui-lg-11">
-    <p-breadcrumb [model]="items"></p-breadcrumb>
-    </div>
-    <div class class="ui-g-1 ui-md-1 ui-lg-1">
-      <button pButton class="ui-sidebar"
-              id="menu"  (click)="displaySidebar = true"
-              icon="fa fa-bars" iconPos="left">
-      </button>
-    </div>
-  <p-sidebar id="sidebar-menu" [(visible)]="displaySidebar" position="right"
-             [baseZIndex]="10000" >
-    <div class="ui-g">
+  <div *ngIf="!isDisplayedInIFrame" class="ui-g">
+    <p-sidebar id="sidebar-menu" [(visible)]="displaySidebar" position="right"
+               [baseZIndex]="10000">
+      <div class="ui-g">
         <button pButton class="ui-button-secondary ui-g-6 menu-button"
                 [routerLink]="['./complexes']"
                 (click)="displaySidebar = false"
@@ -28,57 +18,69 @@
           <span>{{'sinks.header'|translate}}</span>
         </button>
       </div>
-    <button pButton class="ui-button-secondary ui-g-6 menu-button"
+      <button pButton class="ui-button-secondary ui-g-6 menu-button"
               [routerLink]="['./anchors']"
               (click)="displaySidebar = false"
-              icon="fa fa-circle-o-notch fa-2x" >
+              icon="fa fa-circle-o-notch fa-2x">
         <span>{{'anchors.header'|translate}}</span>
       </button>
 
-    <button pButton class="ui-button-secondary ui-g-6 menu-button"
+      <button pButton class="ui-button-secondary ui-g-6 menu-button"
               [routerLink]="['./tags']"
               (click)="displaySidebar = false"
-              icon="fa fa-tag fa-2x" >
+              icon="fa fa-tag fa-2x">
         <span>{{'tags.header'|translate}}</span>
       </button>
-    <button pButton class="ui-button-secondary ui-g-6 menu-button"
+      <button pButton class="ui-button-secondary ui-g-6 menu-button"
               [routerLink]="['./maps']"
               (click)="displaySidebar = false"
               icon="fa fa-map fa-2x">
         <span>{{'publishedMaps'|translate}}</span>
       </button>
 
-    <button pButton class="ui-button-secondary ui-g-6 menu-button"
+      <button pButton class="ui-button-secondary ui-g-6 menu-button"
               [routerLink]="['./users']"
               (click)="displaySidebar = false"
-              icon="fa fa-users fa-2x" >
+              icon="fa fa-users fa-2x">
         <span>{{'users.header'|translate}}</span>
       </button>
-    <button pButton class="ui-button-secondary ui-g-6 menu-button"
+      <button pButton class="ui-button-secondary ui-g-6 menu-button"
               [routerLink]="['./permissionGroups']"
               (click)="displaySidebar = false"
-              icon="fa fa-lock fa-2x" >
+              icon="fa fa-lock fa-2x">
         <span>{{'user.permissionGroups'|translate}}</span>
       </button>
 
-    <button pButton class="ui-button-secondary ui-g-6 menu-button"
+      <button pButton class="ui-button-secondary ui-g-6 menu-button"
               [routerLink]="['./changePassword']"
               (click)="displaySidebar = false"
-              icon="fa fa-key fa-2x" >
+              icon="fa fa-key fa-2x">
         <span>{{'changePassword.header'|translate}}</span>
       </button>
-    <button pButton class="ui-button-secondary ui-g-6 menu-button"
+      <button pButton class="ui-button-secondary ui-g-6 menu-button"
               id="logout" [routerLink]="['./logout']"
               (click)="displaySidebar = false; isUserLoggedIn = false;"
-              icon="fa fa-sign-out fa-2x" >
+              icon="fa fa-sign-out fa-2x">
         <span>{{'logout'|translate}}</span>
       </button>
-  </p-sidebar>
-</div>
-<div class="ui-g-12 ui-md-12 ui-lg-12">
-  <router-outlet></router-outlet>
-</div>
+    </p-sidebar>
+    <div class="ui-g-12 ui-md-11 ui-lg-11">
+      <p-breadcrumb [model]="items"></p-breadcrumb>
+    </div>
+    <div class="ui-g-12 ui-md-1 ui-lg-1">
+      <button pButton
+              id="menu" (click)="displaySidebar = true"
+              icon="fa fa-bars" iconPos="left">
+      </button>
+    </div>
+  </div>
+  <div class="ui-g">
+    <div class="ui-g-12 ui-md-12 ui-lg-12">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
 </ng-template>
 <ng-template #not_logged_in>
-  <app-auth></app-auth>
+  <app-auth id="auth"></app-auth>
 </ng-template>
+

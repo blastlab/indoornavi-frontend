@@ -82,3 +82,22 @@ body{
 .ui-breadcrumb a {
   color: inherit;
 }
+
+#menu {
+  float: right;
+  height: 40px;
+  width: 40px;
+}
+
+#auth {
+  width: 400px;
+  height: 400px;
+
+  position: absolute;
+  top:0;
+  bottom: 0;
+  left: 25px;
+  right: 0;
+
+  margin: auto;
+}

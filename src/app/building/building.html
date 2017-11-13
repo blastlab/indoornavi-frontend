@@ -18,13 +18,15 @@
     <td class="building-name">{{building.name}}</td>
     <td>
       <button pButton class="ui-button-success"
+              id="goTo-floor"
               (click)="openBuilding(building)"
-              title="{{'Enter'|translate}}"
+              pTooltip="{{'go.to.floors'|translate}}"
               icon="fa-level-down" iconPos="left"
       ></button>
     </td>
     <td>
       <button pButton class="ui-button-warning"
+              id="edit-building"
               [appHasPermission]="'BUILDING_UPDATE'"
               (click)="editBuilding(building)"
               pTooltip="{{'edit'|translate}}"
@@ -33,6 +35,7 @@
     </td>
     <td>
       <button pButton class="ui-button-danger"
+              id="remove-building"
               [appHasPermission]="'BUILDING_DELETE'"
               (click)="removeBuilding(i)"
               pTooltip="{{'remove'|translate}}"

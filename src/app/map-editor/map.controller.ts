@@ -34,6 +34,9 @@ export class MapControllerComponent implements OnInit {
           this.imageUploaded = !!floor.imageId;
           this.floor = floor;
           this.floorService.getBuildingWithFloors(buildingId).subscribe((building: Building) => {
+            /*
+            todo: should be change for singular request after marge with newest backend version
+             */
             this.buildingService.getComplexWithBuildings(complexId).subscribe((complex: Complex) => {
               this.breadcrumbsService.publishIsReady([
                 {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},

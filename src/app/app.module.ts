@@ -9,7 +9,7 @@ import {ComplexDialogComponent} from './complex/dilaog/complex.dialog';
 import {ComplexConfirmComponent} from './complex/complex.confirm';
 import {ToastService} from './utils/toast/toast.service';
 import {HttpService} from './utils/http/http.service';
-import {AppComponent} from './app.component';
+import {BreadcrumbsComponent} from './app.component';
 import {RouterModule} from '@angular/router';
 import {BuildingComponent} from './building/building';
 import {BuildingDialogComponent} from './building/dialog/building.dialog';
@@ -96,7 +96,7 @@ export function HttpLoaderFactory(http: Http) {
     BuildingConfirmComponent,
     FloorComponent,
     FloorDialogComponent,
-    AppComponent,
+    BreadcrumbsComponent,
     MapControllerComponent,
     MapViewerComponent,
     MapUploaderComponent,
@@ -197,7 +197,7 @@ export function HttpLoaderFactory(http: Http) {
     AreaService,
     Md5,
     BreadcrumbService
-  ], bootstrap: [AppComponent]
+  ], bootstrap: [BreadcrumbsComponent]
 })
 
 export class AppModule {

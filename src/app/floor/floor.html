@@ -23,12 +23,13 @@
       <button pButton class="ui-button-success"
               id="goTo-map"
               (click)="openMap(floor)"
-              pTooltip="{{'enter'|translate}}"
+              pTooltip="{{'go.to.map'|translate}}"
               icon="fa fa-level-down" iconPos="left"
       ></button>
     </td>
     <td>
       <button pButton class="ui-button-warning"
+              id="edit-floor"
               [appHasPermission]="'FLOOR_UPDATE'"
               (click)="editFloor(floor)"
               pTooltip="{{'edit'|translate}}"
@@ -37,6 +38,7 @@
     </td>
     <td>
       <button pButton class="ui-button-danger"
+              id="remove-floor"
               [appHasPermission]="'FLOOR_DELETE'"
               (click)="removeFloor(i)"
               pTooltip="{{'remove'|translate}}"

@@ -8,7 +8,7 @@ import {BreadcrumbService} from './utils/breadcrumbs/breadcrumb.service';
   selector: 'app-root',
   templateUrl: './app.html'
 })
-export class AppComponent implements OnInit {
+export class BreadcrumbsComponent implements OnInit {
   public isUserLoggedIn: boolean;
   public isDisplayedInIFrame: boolean = false;
 
