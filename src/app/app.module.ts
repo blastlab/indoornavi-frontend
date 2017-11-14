@@ -76,7 +76,7 @@ import {ActionBarComponent} from 'app/map-editor/action-bar/actionbar';
 import {AreaService} from './area/area.service';
 import {Md5} from 'ts-md5/dist/md5';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {ButtonModule, PanelMenuModule, ToolbarModule, BreadcrumbModule, TooltipModule, MenuItem} from 'primeng/primeng';
+import {ButtonModule, PanelMenuModule, ToolbarModule, BreadcrumbModule, TooltipModule} from 'primeng/primeng';
 import {SidebarModule} from 'primeng/components/sidebar/sidebar';
 import {BreadcrumbService} from './utils/breadcrumbs/breadcrumb.service';
 
