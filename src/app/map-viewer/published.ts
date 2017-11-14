@@ -13,7 +13,7 @@ import {
   PublishedMap
 } from './published.type';
 import {PublishedService} from './published.service';
-import {MapViewerService} from '../map-editor/map.viewer.service';
+import {MapViewerService} from '../map-editor/map.editor.service';
 import {IconService, NaviIcons} from 'app/utils/drawing/icon.service';
 import {DrawBuilder, GroupCreated} from './published.builder';
 import * as d3 from 'd3';
@@ -22,8 +22,8 @@ import Dictionary from 'typescript-collections/dist/lib/Dictionary';
 import {getRealDistanceInCentimeters} from '../map-editor/tool-bar/tools/scale/scale.type';
 import {Geometry} from '../utils/helper/geometry';
 import {Tag} from '../device/tag.type';
-import {AreaService} from '../area/area.service';
-import {Area} from '../area/area.type';
+import {AreaService} from '../shared/services/area/area.service';
+import {Area} from '../shared/services/area/area.type';
 
 @Component({
   templateUrl: './published.html',

@@ -43,7 +43,7 @@ export class PublishedListComponent implements OnInit {
     });
   }
 
-  openDialog(map: PublishedMap) {
+  public openDialog(map: PublishedMap) {
     this.dialogRef = this.dialog.open(PublishedDialogComponent, {width: '500px', height: '600px'});
     this.dialogRef.componentInstance.setMap(map);
     this.dialogRef.afterClosed().subscribe((savedMap: PublishedMap) => {
@@ -62,11 +62,11 @@ export class PublishedListComponent implements OnInit {
     });
   }
 
-  edit(map: PublishedMap) {
+  public edit(map: PublishedMap) {
     this.openDialog(map);
   }
 
-  remove(map: PublishedMap) {
+  public remove(map: PublishedMap) {
     this.publishedMapService.remove(map.id).subscribe(() => {
       const index = this.rows.findIndex((row: PublishedMap) => {
         return row.id === map.id;
@@ -78,14 +78,14 @@ export class PublishedListComponent implements OnInit {
     });
   }
 
-  goToEditor(map: PublishedMap): void {
+  public goToEditor(map: PublishedMap): void {
     const complexId = map.floor.building.complexId;
     const buildingId = map.floor.building.id;
     const floorId = map.floor.id;
     this.router.navigate(['complexes', complexId, 'buildings', buildingId, 'floors', floorId, 'map']);
   }
 
-  goToMap(map: PublishedMap) {
+  public goToMap(map: PublishedMap) {
     this.router.navigate(['maps', map.id]);
   }
 

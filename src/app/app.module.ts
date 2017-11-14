@@ -29,7 +29,7 @@ import {DeviceService} from './device/device.service';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {ImageUploadModule} from 'angular2-image-upload';
 import {MapControllerComponent} from './map-editor/map.controller';
-import {MapViewerComponent} from './map-editor/map.viewer';
+import {MapEditorComponent} from './map-editor/map.editor';
 import {MapUploaderComponent} from './map-editor/map.uploader';
 import {MapService} from './map-editor/map.service';
 import {HintBarComponent} from './map-editor/hint-bar/hint-bar';
@@ -48,7 +48,7 @@ import {AuthGuard, CanRead} from './auth/auth.guard';
 import {AuthService} from './auth/auth.service';
 import {ChangePasswordComponent} from './user/changePassword';
 import {SharedModule} from './utils/shared/shared.module';
-import {UnauthorizedComponent} from './utils/unauthorized/unauthorized';
+import {UnauthorizedComponent} from './unauthorized/unauthorized';
 import {PermissionGroupComponent} from './user/permissionGroup';
 import {PermissionGroupService} from './user/permissionGroup.service';
 import {AngularMultiSelectModule} from 'angular2-multiselect-dropdown/angular2-multiselect-dropdown';
@@ -68,12 +68,12 @@ import {PublishedComponent} from './map-viewer/published';
 import {PublishedListComponent} from './publications/list/published-list';
 import {appRoutes} from './app.routes';
 import {PublishedService} from './map-viewer/published.service';
-import {MapViewerService} from './map-editor/map.viewer.service';
+import {MapViewerService} from './map-editor/map.editor.service';
 import {PublishedDialogComponent} from './publications/dialog/published.dialog';
 import {ConfirmDialogComponent} from './utils/confirm-dialog/confirm.dialog';
 import {DeviceComponent} from './device/device.component';
 import {ActionBarComponent} from 'app/map-editor/action-bar/actionbar';
-import {AreaService} from './area/area.service';
+import {AreaService} from './shared/services/area/area.service';
 import {Md5} from 'ts-md5/dist/md5';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {ButtonModule, PanelMenuModule, ToolbarModule, BreadcrumbModule, TooltipModule} from 'primeng/primeng';
@@ -98,7 +98,7 @@ export function HttpLoaderFactory(http: Http) {
     FloorDialogComponent,
     BreadcrumbsComponent,
     MapControllerComponent,
-    MapViewerComponent,
+    MapEditorComponent,
     MapUploaderComponent,
     HintBarComponent,
     ToolbarComponent,

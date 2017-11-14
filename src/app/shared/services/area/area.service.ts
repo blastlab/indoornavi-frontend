@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Area} from './area.type';
-import {HttpService} from '../utils/http/http.service';
+import {HttpService} from '../../../utils/http/http.service';
 import {Observable} from 'rxjs/Rx';
 
 @Injectable()

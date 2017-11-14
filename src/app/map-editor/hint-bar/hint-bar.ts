@@ -32,12 +32,12 @@ export class HintBarComponent implements OnInit, OnChanges {
     });
   }
 
-  private setTranslations() {
-    this.translate.setDefaultLang('en');
-  }
-
   public setHint(msg: string) {
     this.hintMsg = msg;
+  }
+
+  private setTranslations() {
+    this.translate.setDefaultLang('en');
   }
 
 }

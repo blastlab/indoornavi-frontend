@@ -8,7 +8,7 @@ import {ChangePasswordComponent} from './user/changePassword';
 import {PermissionGroupComponent} from './user/permissionGroup';
 import {FloorComponent} from './floor/floor';
 import {MapControllerComponent} from './map-editor/map.controller';
-import {UnauthorizedComponent} from './utils/unauthorized/unauthorized';
+import {UnauthorizedComponent} from './unauthorized/unauthorized';
 import {PublishedListComponent} from './publications/list/published-list';
 import {PublishedComponent} from './map-viewer/published';
 import {DeviceComponent} from './device/device.component';

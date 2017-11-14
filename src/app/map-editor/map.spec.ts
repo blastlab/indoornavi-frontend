@@ -1,5 +1,5 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {MapViewerComponent} from './map.viewer';
+import {MapEditorComponent} from './map.editor';
 import {ScaleInputComponent} from './tool-bar/tools/scale/input/input';
 import {MaterialModule} from '@angular/material';
 import {ScaleHintService} from './tool-bar/tools/scale/hint/hint.service';
@@ -19,12 +19,12 @@ import {AcceptButtonsComponent} from '../utils/accept-buttons/accept-buttons';
 import {AcceptButtonsService} from '../utils/accept-buttons/accept-buttons.service';
 import {Observable} from 'rxjs/Observable';
 import {ScaleService} from './tool-bar/tools/scale/scale.service';
-import {MapViewerService} from './map.viewer.service';
+import {MapViewerService} from './map.editor.service';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
-describe('MapViewerComponent', () => {
-  let component: MapViewerComponent;
-  let fixture: ComponentFixture<MapViewerComponent>;
+describe('MapEditorComponent', () => {
+  let component: MapEditorComponent;
+  let fixture: ComponentFixture<MapEditorComponent>;
   const floor: Floor = <Floor> {
     imageId: 23
   };
@@ -39,7 +39,7 @@ describe('MapViewerComponent', () => {
         BrowserAnimationsModule
       ],
       declarations: [
-        MapViewerComponent,
+        MapEditorComponent,
         ScaleInputComponent,
         ScaleHintComponent,
         AcceptButtonsComponent],
@@ -61,7 +61,7 @@ describe('MapViewerComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MapViewerComponent);
+    fixture = TestBed.createComponent(MapEditorComponent);
     component = fixture.componentInstance;
     component.floor = floor;
     const mapService = fixture.debugElement.injector.get(MapService);
@@ -69,7 +69,7 @@ describe('MapViewerComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create MapViewerComponent', () => {
+  it('should create MapEditorComponent', () => {
     expect(component).toBeTruthy();
   });
 });

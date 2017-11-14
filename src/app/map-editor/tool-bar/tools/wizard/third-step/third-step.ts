@@ -38,6 +38,23 @@ export class ThirdStepComponent implements WizardStep {
     return (<AnchorSuggestedPositions>checkType.points) !== undefined;
   }
 
+  private static drawSuggestedPositions(positions: Array<Point>) {
+    const secondAnchor = d3.select('#map')
+      .data(positions);
+    for (let i = 0; i < positions.length; i++) {
+      secondAnchor.append('circle')
+        .attr('class', 'suggested-position')
+        .attr('cx', positions[i].x)
+        .attr('cy', -positions[i].y)
+        .attr('r', 5)
+        .style('stroke', 'yellow');
+    }
+  }
+
+  private static removeSuggestedPositions() {
+    d3.select('#map').selectAll('.suggested-position').remove();
+  }
+
   constructor(public translate: TranslateService,
               public dialog: MdDialog,
               private acceptButtonsService: AcceptButtonsService,
@@ -73,7 +90,7 @@ export class ThirdStepComponent implements WizardStep {
     this.translate.get('wizard.click.place.anchor', {id: this.data.anchorId}).subscribe((text: string) => {
       this.hintBar.publishHint(text);
     });
-    this.drawSuggestedPositions(this.data.points);
+    ThirdStepComponent.drawSuggestedPositions(this.data.points);
     map.on('click', () => {
       const coordinates: Point = {x: d3.event.offsetX, y: d3.event.offsetY};
       this.coordinates.push(coordinates);
@@ -96,7 +113,7 @@ export class ThirdStepComponent implements WizardStep {
     this.acceptButtonsService.publishVisibility(true);
     this.acceptButtonsService.decisionMade.first().subscribe(
       data => {
-        this.removeSuggestedPositions();
+        ThirdStepComponent.removeSuggestedPositions();
         if (data) {
           this.removeGroupDrag();
           this.goToNextStep();
@@ -107,32 +124,8 @@ export class ThirdStepComponent implements WizardStep {
       });
   }
 
-  private removeGroupDrag(): void {
-    const anchorGroup = d3.select('#map').select('#anchor' + this.data.anchorId);
-    anchorGroup.on('.drag', null);
-    anchorGroup.style('cursor', 'default');
-    anchorGroup.select('.pointer').attr('fill', 'rgba(0,0,0,0.7)');
-  }
-
   public goToNextStep(): void {
     this.nextStepIndex.emit(this.stepIndex + 1);
-  }
-
-  public drawSuggestedPositions(positions: Array<Point>) {
-    const secondAnchor = d3.select('#map')
-      .data(positions);
-    for (let i = 0; i < positions.length; i++) {
-      secondAnchor.append('circle')
-        .attr('class', 'suggested-position')
-        .attr('cx', positions[i].x)
-        .attr('cy', -positions[i].y)
-        .attr('r', 5)
-        .style('stroke', 'yellow');
-    }
-  }
-
-  private removeSuggestedPositions() {
-    d3.select('#map').selectAll('.suggested-position').remove();
   }
 
   public prepareToSend(data: WizardData): SocketMessage {
@@ -156,7 +149,7 @@ export class ThirdStepComponent implements WizardStep {
   public clean(): void {
     this.coordinates = [];
     if (!!this.data) {
-      this.removeSuggestedPositions();
+      ThirdStepComponent.removeSuggestedPositions();
       this.socketData.clear();
       d3.select('#map').select('#anchor' + this.data.anchorId).remove();
       this.data = null;
@@ -165,6 +158,13 @@ export class ThirdStepComponent implements WizardStep {
 
   public closeWizard(clean: boolean): void {
     this.clearView.emit(clean);
+  }
+
+  private removeGroupDrag(): void {
+    const anchorGroup = d3.select('#map').select('#anchor' + this.data.anchorId);
+    anchorGroup.on('.drag', null);
+    anchorGroup.style('cursor', 'default');
+    anchorGroup.select('.pointer').attr('fill', 'rgba(0,0,0,0.7)');
   }
 
 }

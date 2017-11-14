@@ -34,6 +34,36 @@ export class SecondStepComponent implements WizardStep {
     return '' + distance.anchorId;
   }
 
+  private static calculateDegree(sinkPosition: Point, anchorPosition: Point): number {
+    const rad2deg = 180 / Math.PI;
+    const degree = Math.atan2((sinkPosition.y - anchorPosition.y), (anchorPosition.x - sinkPosition.x)) * rad2deg;
+    return ((degree < 0) ? 360 + degree : degree);
+  }
+
+  private static isDistanceType(checkType: any): boolean {
+    return (<AnchorDistance>checkType.distance) !== undefined;
+  }
+
+  private static removeSinkDistance() {
+    d3.select('#map').select('#sinkDistance').remove();
+  }
+
+  private static drawSinkDistance(distance: number) {
+    const map = d3.select('#map');
+    const boxMargin = DrawingService.boxSize / 2;
+    const sinkX = map.select('.wizardSink').attr('x');
+    const sinkY = map.select('.wizardSink').attr('y');
+    map.append('circle')
+      .attr('id', 'sinkDistance')
+      .attr('cx', parseInt(sinkX, null) + boxMargin)
+      .attr('cy', parseInt(sinkY, null) + boxMargin)
+      .attr('r', distance)
+      .style('stroke', 'green')
+      .style('stroke-dasharray', '10,3')
+      .style('stroke-opacity', '0.9')
+      .style('fill', 'none');
+  }
+
   constructor(public translate: TranslateService,
               public dialog: MdDialog,
               private accButtons: AcceptButtonsService,
@@ -42,14 +72,10 @@ export class SecondStepComponent implements WizardStep {
   }
 
   public load(msg: any): void {
-    if (this.isDistanceType(msg)) {
+    if (SecondStepComponent.isDistanceType(msg)) {
       this.socketData.add(msg);
     }
     this.isLoading = (!this.socketData.size());
-  }
-
-  protected isDistanceType(checkType: any): boolean {
-    return (<AnchorDistance>checkType.distance) !== undefined;
   }
 
   public openDialog(): void {
@@ -73,7 +99,7 @@ export class SecondStepComponent implements WizardStep {
     this.translate.get('wizard.click.place.anchor', {id: this.data.anchorId}).subscribe((text: string) => {
       this.hintBar.publishHint(text);
     });
-    this.drawSinkDistance(this.data.distance);
+    SecondStepComponent.drawSinkDistance(this.data.distance);
     map.on('click', () => {
       const coordinates: Point = {x: d3.event.offsetX, y: d3.event.offsetY};
       this.coordinates.push(coordinates);
@@ -96,7 +122,7 @@ export class SecondStepComponent implements WizardStep {
     this.accButtons.publishVisibility(true);
     this.accButtons.decisionMade.first().subscribe(
       data => {
-        this.removeSinkDistance();
+        SecondStepComponent.removeSinkDistance();
         if (data) {
           this.removeGroupDrag();
           this.goToNextStep();
@@ -107,35 +133,8 @@ export class SecondStepComponent implements WizardStep {
       });
   }
 
-  private removeGroupDrag(): void {
-    const anchorGroup = d3.select('#map').select('#anchor' + this.data.anchorId);
-    anchorGroup.on('.drag', null);
-    anchorGroup.style('cursor', 'default');
-    anchorGroup.select('.pointer').attr('fill', 'rgba(0,0,0,0.7)');
-  }
-
   public goToNextStep(): void {
     this.nextStepIndex.emit(this.stepIndex + 1);
-  }
-
-  public drawSinkDistance(distance: number) {
-    const map = d3.select('#map');
-    const boxMargin = DrawingService.boxSize / 2;
-    const sinkX = map.select('.wizardSink').attr('x');
-    const sinkY = map.select('.wizardSink').attr('y');
-    map.append('circle')
-      .attr('id', 'sinkDistance')
-      .attr('cx', parseInt(sinkX, null) + boxMargin)
-      .attr('cy', parseInt(sinkY, null) + boxMargin)
-      .attr('r', distance)
-      .style('stroke', 'green')
-      .style('stroke-dasharray', '10,3')
-      .style('stroke-opacity', '0.9')
-      .style('fill', 'none');
-  }
-
-  private removeSinkDistance() {
-    d3.select('#map').select('#sinkDistance').remove();
   }
 
   public prepareToSend(data: WizardData): SecondStepMessage {
@@ -154,17 +153,11 @@ export class SecondStepComponent implements WizardStep {
       sinkShortId: data.sinkShortId,
       sinkPosition: data.sinkPosition,
       firstAnchorShortId: this.data.anchorId,
-      degree: this.calculateDegree(data.sinkPosition, this.coordinates[0]),
+      degree: SecondStepComponent.calculateDegree(data.sinkPosition, this.coordinates[0]),
       firstAnchorPosition: this.coordinates[0],
       secondAnchorPosition: null,
       secondAnchorShortId: null
     };
-  }
-
-  private calculateDegree(sinkPosition: Point, anchorPosition: Point): number {
-    const rad2deg = 180 / Math.PI;
-    const degree = Math.atan2((sinkPosition.y - anchorPosition.y), (anchorPosition.x - sinkPosition.x)) * rad2deg;
-    return ((degree < 0) ? 360 + degree : degree);
   }
 
   public clean(): void {
@@ -179,5 +172,12 @@ export class SecondStepComponent implements WizardStep {
 
   public closeWizard(clean: boolean): void {
     this.clearView.emit(clean);
+  }
+
+  private removeGroupDrag(): void {
+    const anchorGroup = d3.select('#map').select('#anchor' + this.data.anchorId);
+    anchorGroup.on('.drag', null);
+    anchorGroup.style('cursor', 'default');
+    anchorGroup.select('.pointer').attr('fill', 'rgba(0,0,0,0.7)');
   }
 }

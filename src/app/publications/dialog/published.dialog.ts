@@ -68,7 +68,7 @@ export class PublishedDialogComponent implements OnInit {
     this.setTranslations();
   }
 
-  complexChanged(complexId: number) {
+  public complexChanged(complexId: number) {
     this.selectedComplexId = complexId;
     this.selectedBuildingId = null;
     this.selectedFloorId = null;
@@ -77,7 +77,7 @@ export class PublishedDialogComponent implements OnInit {
     });
   }
 
-  buildingChanged(buildingId: number) {
+  public buildingChanged(buildingId: number) {
     this.selectedBuildingId = buildingId;
     this.selectedFloorId = null;
     this.floorService.getBuildingWithFloors(this.selectedBuildingId).subscribe((building: Building) => {
@@ -85,11 +85,11 @@ export class PublishedDialogComponent implements OnInit {
     });
   }
 
-  floorChanged(floorId: number) {
+  public floorChanged(floorId: number) {
     this.selectedFloorId = floorId;
   }
 
-  save(isValid: boolean) {
+  public save(isValid: boolean) {
     if (isValid) {
       const selectedFloor: Floor = this.floors.find((floor: Floor) => {
         return floor.id === this.selectedFloorId;
@@ -118,7 +118,7 @@ export class PublishedDialogComponent implements OnInit {
     }
   }
 
-  setMap(map: PublishedMap) {
+  public setMap(map: PublishedMap) {
     if (!!map) {
       this.selectedComplexId = map.floor.building.complexId;
       this.complexChanged(this.selectedComplexId);

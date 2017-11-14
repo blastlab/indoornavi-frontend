@@ -269,7 +269,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     };
   }
 
-  redrawPoints(): void {
+  private redrawPoints(): void {
     const drag = d3.drag()
       .on('drag', (_, i, circleSelections) => {
         this.pointDrag(d3.select(circleSelections[i]));

@@ -104,15 +104,6 @@ export class FirstStepComponent implements WizardStep {
       });
   }
 
-  private removeGroupDrag(): void {
-    const map = d3.select('#map');
-    const sinkGroup = map.select('#sink' + this.data.shortId);
-    map.style('cursor', 'default');
-    sinkGroup.on('.drag', null);
-    sinkGroup.style('cursor', 'default');
-    sinkGroup.select('.pointer').attr('fill', 'rgba(0,0,0,0.7)');
-  }
-
   public goToNextStep(): void {
     this.nextStepIndex.emit(this.stepIndex + 1);
   }
@@ -149,5 +140,14 @@ export class FirstStepComponent implements WizardStep {
 
   public closeWizard(clean: boolean): void {
     this.clearView.emit(clean);
+  }
+
+  private removeGroupDrag(): void {
+    const map = d3.select('#map');
+    const sinkGroup = map.select('#sink' + this.data.shortId);
+    map.style('cursor', 'default');
+    sinkGroup.on('.drag', null);
+    sinkGroup.style('cursor', 'default');
+    sinkGroup.select('.pointer').attr('fill', 'rgba(0,0,0,0.7)');
   }
 }

@@ -50,12 +50,12 @@ export class MapControllerComponent implements OnInit {
       });
   }
 
-  onImageUploaded(floor: Floor): void {
+ public onImageUploaded(floor: Floor): void {
     this.imageUploaded = true;
     this.floor = floor;
   }
 
-  setTool(eventData: Tool): void {
+  public setTool(eventData: Tool): void {
     this.activeTool = eventData;
   }
 }

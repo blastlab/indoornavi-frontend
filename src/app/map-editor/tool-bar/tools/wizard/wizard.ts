@@ -73,41 +73,6 @@ export class WizardComponent implements Tool {
     return ToolName.WIZARD;
   }
 
-  private setTranslations(): void {
-    this.translate.setDefaultLang('en');
-    this.translate.get('wizard.first.message').subscribe((value: string) => {
-      this.hintMessage = value;
-    });
-  }
-
-  private initWizard(): void {
-    this.steps = [this.firstStep, this.secondStep, this.thirdStep];
-    this.activeStep = this.firstStep;
-    this.activeStep.openDialog();
-    this.ngZone.runOutsideAngular(() => {
-      const stream = this.socketService.connect(Config.WEB_SOCKET_URL + 'wizard');
-      this.socketSubscription = stream.subscribe((socketMsg: any) => {
-        this.ngZone.run(() => {
-          this.activeStep.load(socketMsg);
-        });
-      });
-    });
-  }
-
-  private cleanAll(): void {
-    let stepIndex = this.activeStep.stepIndex;
-    while (stepIndex >= 0) {
-      this.steps[stepIndex].clean();
-      stepIndex--;
-    }
-  }
-
-  private destroySocket(): void {
-    if (this.socketSubscription) {
-      this.socketSubscription.unsubscribe();
-    }
-  }
-
   public wizardNextStep(nextStepIndex: number): void {
     this.wizardData = this.activeStep.updateWizardData(this.wizardData);
     const message: SocketMessage = this.activeStep.prepareToSend(this.wizardData);
@@ -166,14 +131,39 @@ export class WizardComponent implements Tool {
     this.activeStep.openDialog();
   }
 
-  public manualAnchors() {
-    this.dialogRef.close();
-    this.emitToggleActive();
+  private setTranslations(): void {
+    this.translate.setDefaultLang('en');
+    this.translate.get('wizard.first.message').subscribe((value: string) => {
+      this.hintMessage = value;
+    });
   }
 
-  public wizardAnchors() {
-    this.dialogRef.close();
-    this.emitToggleActive();
+  private initWizard(): void {
+    this.steps = [this.firstStep, this.secondStep, this.thirdStep];
+    this.activeStep = this.firstStep;
+    this.activeStep.openDialog();
+    this.ngZone.runOutsideAngular(() => {
+      const stream = this.socketService.connect(Config.WEB_SOCKET_URL + 'wizard');
+      this.socketSubscription = stream.subscribe((socketMsg: any) => {
+        this.ngZone.run(() => {
+          this.activeStep.load(socketMsg);
+        });
+      });
+    });
+  }
+
+  private cleanAll(): void {
+    let stepIndex = this.activeStep.stepIndex;
+    while (stepIndex >= 0) {
+      this.steps[stepIndex].clean();
+      stepIndex--;
+    }
+  }
+
+  private destroySocket(): void {
+    if (this.socketSubscription) {
+      this.socketSubscription.unsubscribe();
+    }
   }
 
 }
