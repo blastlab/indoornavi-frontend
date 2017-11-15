@@ -12,7 +12,7 @@ import {SocketService} from '../../utils/socket/socket.service';
 import {WebSocketService} from 'angular2-websocket-service';
 import {ToastService} from '../../utils/toast/toast.service';
 import {HintBarService} from '../hint-bar/hint-bar.service';
-import {AcceptButtonsService} from '../../utils/accept-buttons/accept-buttons.service';
+import {AcceptButtonsService} from '../../shared/components/accept-buttons/accept-buttons.service';
 import {DrawingService} from '../../utils/drawing/drawing.service';
 import {IconService} from '../../utils/drawing/icon.service';
 import {ScaleInputService} from './tools/scale/input/input.service';

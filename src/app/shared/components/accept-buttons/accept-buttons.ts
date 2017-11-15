@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
-import {Point} from '../../map-editor/map.type';
 import {AcceptButtonsService} from './accept-buttons.service';
+import {Point} from '../../../map-editor/map.type';
 
 @Component({
   selector: 'app-accept-buttons',

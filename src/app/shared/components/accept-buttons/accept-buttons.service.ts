@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
-import {Point} from '../../map-editor/map.type';
+import {Point} from '../../../map-editor/map.type';
 
 @Injectable()
 export class AcceptButtonsService {

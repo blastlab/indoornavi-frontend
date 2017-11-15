@@ -2,7 +2,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {ThirdStepComponent} from './third-step';
 import {HintBarService} from '../../../../hint-bar/hint-bar.service';
 import {DrawingService} from '../../../../../utils/drawing/drawing.service';
-import {AcceptButtonsService} from '../../../../../utils/accept-buttons/accept-buttons.service';
+import {AcceptButtonsService} from '../../../../../shared/components/accept-buttons/accept-buttons.service';
 import {TranslateModule} from '@ngx-translate/core';
 import {IconService} from '../../../../../utils/drawing/icon.service';
 

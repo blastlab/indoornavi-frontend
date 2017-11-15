@@ -5,7 +5,7 @@ import {TranslateService} from '@ngx-translate/core';
 import * as d3 from 'd3';
 import * as Collections from 'typescript-collections';
 import {Anchor} from '../../../../../device/anchor.type';
-import {AcceptButtonsService} from '../../../../../utils/accept-buttons/accept-buttons.service';
+import {AcceptButtonsService} from '../../../../../shared/components/accept-buttons/accept-buttons.service';
 import {Point} from '../../../../map.type';
 import {DrawingService, ObjectParams} from '../../../../../utils/drawing/drawing.service';
 import {NaviIcons} from '../../../../../utils/drawing/icon.service';
