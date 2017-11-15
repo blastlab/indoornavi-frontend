@@ -15,7 +15,6 @@ import {FloorComponent} from './floor/floor';
 import {FloorService} from './floor/floor.service';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
-// import {Ng2BreadcrumbModule} from 'ng2-breadcrumb/ng2-breadcrumb';
 import {WebSocketService} from 'angular2-websocket-service';
 import {SocketService} from './utils/socket/socket.service';
 import {DndModule} from 'ng2-dnd';
@@ -71,7 +70,6 @@ import {AreaService} from './area/area.service';
 import {Md5} from 'ts-md5/dist/md5';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {
-  ButtonModule,
   CheckboxModule,
   ConfirmationService,
   ConfirmDialogModule,
@@ -81,11 +79,16 @@ import {
   DropdownModule,
   InputTextModule,
   MultiSelectModule,
-  PickListModule
+  PickListModule,
+  SidebarModule,
+  ButtonModule,
+  PanelMenuModule,
+  ToolbarModule,
+  BreadcrumbModule,
+  TooltipModule
 } from 'primeng/primeng';
-// import {FocusModule} from 'angular-focus-directive';
-import {DragulaService} from 'ng2-dragula';
 import {AppAutoFocusDirective} from './utils/directive/autofocus.directive';
+import {BreadcrumbService} from './utils/breadcrumbs/breadcrumb.service';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -148,7 +151,6 @@ export function HttpLoaderFactory(http: Http) {
       }
     }),
     RouterModule.forRoot(appRoutes),
-    // Ng2BreadcrumbModule.forRoot(),
     DndModule.forRoot(),
     FlexLayoutModule,
     ImageUploadModule.forRoot(),
@@ -157,14 +159,19 @@ export function HttpLoaderFactory(http: Http) {
     DataTableModule,
     ButtonModule,
     DialogModule,
-    // FocusModule,
     ConfirmDialogModule,
     DragDropModule,
     DropdownModule,
     MultiSelectModule,
     InputTextModule,
     PickListModule,
-    CheckboxModule
+    CheckboxModule,
+    ButtonModule,
+    ToolbarModule,
+    PanelMenuModule,
+    SidebarModule,
+    BreadcrumbModule,
+    TooltipModule
   ],
   providers: [
     BuildingService,
@@ -198,9 +205,10 @@ export function HttpLoaderFactory(http: Http) {
     AreaService,
     Md5,
     ConfirmationService,
-    DragulaService
+    BreadcrumbService
   ], bootstrap: [AppComponent]
 })
 
 export class AppModule {
 }
+

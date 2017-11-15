@@ -1,9 +1,12 @@
-<h1 [translate]="'floor.header'"></h1>
-
-<div class="adding-section">
-  <button [appHasPermission]="'FLOOR_CREATE'" md-raised-button id="new-floor-button" type="button"
-          (click)="openDialog()">{{'add'|translate}}
-  </button>
+<p-toolbar>
+<div class="ui-toolbar-group-left">
+  <button pButton class="ui-button-secondary"
+          id="add-floor"
+          [appHasPermission]="'FLOOR_CREATE'"
+          (click)="openDialog()"
+          label="{{'add'|translate}}"
+          icon="fa fa-plus" iconPos="left"
+  ></button>
 </div>
 
 <p-dataTable [loading]="loading" [value]="building.floors" styleClass="auto">
@@ -12,15 +15,15 @@
   <p-column header="{{'th.actions'|translate}}" styleClass="col-button">
     <ng-template let-floor="rowData" let-i="rowIndex" pTemplate="body">
       <button
-        md-tooltip="{{'go.to.map'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="goTo(floor)" icon="fa-level-down">
+        pTooltip="{{'go.to.map'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="goTo(floor)" icon="fa-level-down">
       </button>
       <button
         [appHasPermission]="'FLOOR_UPDATE'"
-        md-tooltip="{{'edit'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="openDialog(floor)" icon="fa-edit">
+        pTooltip="{{'edit'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="openDialog(floor)" icon="fa-edit">
       </button>
       <button
         [appHasPermission]="'FLOOR_DELETE'"
-        md-tooltip="{{'remove'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="remove(i)" icon="fa-trash">
+        pTooltip="{{'remove'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="remove(i)" icon="fa-trash">
       </button>
     </ng-template>
   </p-column>

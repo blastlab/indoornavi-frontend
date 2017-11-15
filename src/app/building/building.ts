@@ -8,6 +8,7 @@ import {CrudComponent, CrudHelper} from '../utils/crud/crud.component';
 import {Complex} from '../complex/complex.type';
 import {ConfirmationService} from 'primeng/primeng';
 import {NgForm} from '@angular/forms';
+import {BreadcrumbService} from '../utils/breadcrumbs/breadcrumb.service';
 
 @Component({
   templateUrl: 'building.html',
@@ -26,7 +27,8 @@ export class BuildingComponent implements OnInit, CrudComponent {
               public translate: TranslateService,
               private router: Router,
               private route: ActivatedRoute,
-              private confirmationService: ConfirmationService) {
+              private confirmationService: ConfirmationService,
+              private breadcrumbsService: BreadcrumbService) {
   }
 
   ngOnInit(): void {
@@ -35,6 +37,10 @@ export class BuildingComponent implements OnInit, CrudComponent {
       this.buildingService.getComplexWithBuildings(complexId).subscribe((complex: Complex) => {
         this.complex = complex;
         this.loading = false;
+        this.breadcrumbsService.publishIsReady([
+          {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
+          {label: complex.name, disabled: true}
+        ]);
       });
     });
     this.translate.setDefaultLang('en');

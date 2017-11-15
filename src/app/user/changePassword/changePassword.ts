@@ -1,12 +1,13 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {UserService} from 'app/user/user.service';
 import {TranslateService} from '@ngx-translate/core';
 import {ToastService} from '../../utils/toast/toast.service';
+import {BreadcrumbService} from '../utils/breadcrumbs/breadcrumb.service';
 
 @Component({
   templateUrl: 'changePassword.html'
 })
-export class ChangePasswordComponent {
+export class ChangePasswordComponent implements OnInit {
 
   currentUserName: string;
   model = {
@@ -15,9 +16,20 @@ export class ChangePasswordComponent {
     newPasswordRepeat: ''
   };
 
-  constructor(private userService: UserService, public translateService: TranslateService, private toastService: ToastService) {
+  constructor(private userService: UserService,
+              public translateService: TranslateService,
+              private toastService: ToastService,
+              private breadcrumbService: BreadcrumbService) {
     translateService.setDefaultLang('en');
     this.currentUserName = JSON.parse(localStorage.getItem('currentUser'))['username'];
+  }
+
+  ngOnInit () {
+    this.translateService.get(`changePassword.header`).subscribe((value: string) => {
+      this.breadcrumbService.publishIsReady([
+        {label: value, disabled: true}
+      ]);
+    });
   }
 
   validatePasswords(): boolean {

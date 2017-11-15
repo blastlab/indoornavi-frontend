@@ -7,6 +7,7 @@ import {Router} from '@angular/router';
 import {CrudComponent, CrudHelper} from '../utils/crud/crud.component';
 import {ConfirmationService} from 'primeng/primeng';
 import {NgForm} from '@angular/forms';
+import {BreadcrumbService} from '../utils/breadcrumbs/breadcrumb.service';
 
 @Component({
   templateUrl: 'complex.html',
@@ -15,6 +16,7 @@ import {NgForm} from '@angular/forms';
 export class ComplexComponent implements OnInit, CrudComponent {
   complex: Complex;
   complexes: Complex[] = [];
+
   loading: boolean = true;
   displayDialog: boolean = false;
   private confirmBody: string;
@@ -24,7 +26,8 @@ export class ComplexComponent implements OnInit, CrudComponent {
               private toast: ToastService,
               public translate: TranslateService,
               private router: Router,
-              private confirmationService: ConfirmationService) {
+              private confirmationService: ConfirmationService,
+              private breadcrumbsService: BreadcrumbService) {
   }
 
   ngOnInit(): void {
@@ -34,6 +37,11 @@ export class ComplexComponent implements OnInit, CrudComponent {
     });
 
     this.translate.setDefaultLang('en');
+    this.translate.get(`complexes`).subscribe((value: string) => {
+      this.breadcrumbsService.publishIsReady([
+        {label: value, disabled: true}
+      ]);
+    });
     this.translate.get('confirm.body').subscribe((value: string) => {
       this.confirmBody = value;
     });

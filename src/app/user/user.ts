@@ -9,6 +9,7 @@ import {PermissionGroupService} from './permissionGroup/permissionGroup.service'
 import {CrudComponent, CrudHelper} from '../utils/crud/crud.component';
 import {NgForm} from '@angular/forms';
 import {ConfirmationService} from 'primeng/primeng';
+import {BreadcrumbService} from '../utils/breadcrumbs/breadcrumb.service';
 
 @Component({
   templateUrl: 'user.html',
@@ -31,15 +32,20 @@ export class UserComponent implements OnInit, CrudComponent {
               private toast: ToastService,
               private userService: UserService,
               private permissionGroupService: PermissionGroupService,
-              private confirmationService: ConfirmationService) {
+              private confirmationService: ConfirmationService,
+              private breadcrumbService: BreadcrumbService) {
   }
 
   ngOnInit(): void {
-    this.translateService.setDefaultLang('en');
-
     this.userService.getUsers().subscribe((users: User[]) => {
       this.users = users;
       this.loading = false;
+    });
+    this.translateService.setDefaultLang('en');
+    this.translateService.get(`users.header`).subscribe((value: string) => {
+      this.breadcrumbService.publishIsReady([
+        {label: value, disabled: true}
+      ]);
     });
 
     this.permissionGroupService.getPermissionGroups().subscribe((permissionGroups: PermissionGroup[]) => {
@@ -106,54 +112,4 @@ export class UserComponent implements OnInit, CrudComponent {
   validatePasswords(): void {
     this.passwordsEqual = (!this.user.password || !this.repeatPassword) || this.user.password === this.repeatPassword;
   }
-
-  // editUser(index: number): void {
-  //   this.createDialog({...this.users[index]});
-  //
-  //   this.dialogRef.componentInstance.selectedOptions = this.users[index].permissionGroups.map((permissionGroup: PermissionGroup) => {
-  //     return {id: permissionGroup.id, itemName: permissionGroup.name};
-  //   });
-  //
-  //   this.dialogRef.afterClosed().subscribe((updatedUser: User) => {
-  //     if (updatedUser !== undefined) {
-  //       this.users[index] = updatedUser;
-  //       this.toast.showSuccess('user.save.success');
-  //     }
-  //     this.dialogRef = null;
-  //   });
-  // }
-
-  // removeUser(index: number): void {
-  //   this.userService.remove(this.users[index].id).subscribe(() => {
-  //     this.users.splice(index, 1);
-  //     this.toast.showSuccess('user.remove.success');
-  //   }, (msg: string) => {
-  //     this.toast.showFailure(msg);
-  //   });
-  // }
-  //
-  // createUser(): void {
-  //   this.createDialog({
-  //     username: '',
-  //     password: '',
-  //     permissionGroups: []
-  //   });
-  //
-  //   this.dialogRef.afterClosed().subscribe((user: User) => {
-  //     if (user !== undefined) {
-  //       this.users.push(user);
-  //       this.toast.showSuccess('user.create.success');
-  //     }
-  //     this.dialogRef = null;
-  //   });
-  // }
-  //
-  // private createDialog(user: User) {
-  //   this.dialogRef = this.dialog.open(UserDialogComponent, {width: '500px', height: '600px'});
-  //   this.dialogRef.componentInstance.setEditMode(!!user.id);
-  //   this.dialogRef.componentInstance.user = user;
-  //   this.dialogRef.componentInstance.options = this.permissionGroups.map((permissionGroup: PermissionGroup) => {
-  //     return {id: permissionGroup.id, itemName: permissionGroup.name};
-  //   });
-  // }
 }

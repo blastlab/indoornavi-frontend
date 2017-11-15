@@ -1,6 +1,8 @@
-<button class="wizard-button" [ngClass]="{'active-tool' : active}" (click)="emitToggleActive()" >
-  <i class="material-icons">device_hub</i>
-</button>
+<button pButton class="ui-button-secondary"
+        [ngClass]="{'active-tool' : active}" (click)="emitToggleActive()"
+        pTooltip="{{'sinks.one.header'|translate}}"
+        icon="fa fa-sitemap" iconPos="left"
+></button>
 <app-first-step [floor]="floor" #firstStep (clearView)="wizardStopped($event)"
                 (nextStepIndex)="wizardNextStep($event)"></app-first-step>
 <app-second-step #secondStep (clearView)="wizardStopped($event)"
@@ -12,15 +14,24 @@
   <div class="wizard-dialog" *ngIf="!wizardCompleted">
     <h3 class="wizard-not-complete">{{'wizard.configuration.not.complete'|translate}}</h3>
     <div class="dialog-action">
-      <button class="warning-back-button" (click)="backToWizard()"
-              md-raised-button>{{'wizard.backToWizard'|translate}}</button>
-      <button class="warning-exit-button" (click)="wizardStopped(true)"></button>
+      <button pButton class="ui-button-secondary"
+              id="back-toWizard"
+              (click)="backToWizard()"
+              label="{{'wizard.backToWizard'|translate}}"
+      ></button>
+      <button pButton class="ui-button-secondary"
+              (click)="wizardStopped(true)"
+              label="{{'stop.wizard'|translate}}"
+      ></button>
     </div>
   </div>
   <div class="wizard-dialog" *ngIf="wizardCompleted">
     <h3 class="wizard-complete">{{'wizard.configuration.complete'|translate}}</h3>
     <div class="dialog-action">
-      <button class="dialog-exit-button" (click)="dialogRef.close()" ></button>
+      <button pButton class="ui-button-secondary"
+              id="exit-dialog"
+              (click)="dialogRef.close()"
+      ></button>
     </div>
   </div>
 </ng-template>

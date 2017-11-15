@@ -16,5 +16,10 @@
     </md-input-container>
   </div>
 
-  <button id="login-button" type="submit" md-raised-button (click)="login(username.value, password.value)">{{'login'|translate}}</button>
+  <button pButton class="ui-button-success"
+          id="login-button"
+          (click)="login(username.value, password.value)"
+          label="{{'login'|translate}}"
+          icon="fa fa-sign-in" iconPos="left"
+  ></button>
 </form>

@@ -24,6 +24,7 @@ export class HttpService {
 
   private static errorHandler(err: any): Observable<any> {
     if (err instanceof Response && err.status === 401) {
+      localStorage.removeItem('currentUser');
       HttpService.router.navigate(['/login'], {queryParams: {returnUrl: HttpService.router.routerState.snapshot.url}});
     }
     if (err instanceof Response && err.status === 404) {

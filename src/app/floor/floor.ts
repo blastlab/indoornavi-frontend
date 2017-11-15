@@ -8,6 +8,8 @@ import {Building} from '../building/building.type';
 import {CrudComponent, CrudHelper} from '../utils/crud/crud.component';
 import {ConfirmationService} from 'primeng/primeng';
 import {NgForm} from '@angular/forms';
+import {BreadcrumbService} from '../utils/breadcrumbs/breadcrumb.service';
+import {Complex} from '../complex/complex.type';
 
 @Component({
   templateUrl: 'floor.html',
@@ -26,7 +28,8 @@ export class FloorComponent implements OnInit, CrudComponent {
               public translate: TranslateService,
               private route: ActivatedRoute,
               private router: Router,
-              private confirmationService: ConfirmationService) {
+              private confirmationService: ConfirmationService,
+              private breadcrumbsService: BreadcrumbService) {
   }
 
   ngOnInit(): void {
@@ -36,6 +39,11 @@ export class FloorComponent implements OnInit, CrudComponent {
         this.floorService.getBuildingWithFloors(buildingId).subscribe((building: Building) => {
           this.building = building;
           this.loading = false;
+          this.breadcrumbsService.publishIsReady([
+            {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
+            {label: building.complex.name, routerLink: `/complexes/${this.building.complex.id}/buildings`, routerLinkActiveOptions: {exact: true}},
+            {label: building.name, disabled: true}
+          ]);
         });
       });
     this.translate.setDefaultLang('en');

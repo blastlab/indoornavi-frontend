@@ -1,8 +1,13 @@
-<h1 [translate]="'user.header'"></h1>
-
-<div class="adding-section">
-  <button [appHasPermission]="'USER_CREATE'" md-raised-button id="new-user-button" type="button" (click)="openDialog()">{{'add'|translate}}</button>
-</div>
+<p-toolbar>
+  <div class="ui-toolbar-group-left">
+    <button pButton class="ui-button-secondary"
+            [appHasPermission]="'USER_CREATE'"
+            (click)="openDialog()"
+            label="{{'add'|translate}}"
+            icon="fa fa-plus" iconPos="left"
+    ></button>
+  </div>
+</p-toolbar>
 
 <p-dataTable [loading]="loading" [value]="users" styleClass="auto">
   <p-column field="username" header="{{'user.username'|translate}}"></p-column>
@@ -20,11 +25,11 @@
     <ng-template let-user="rowData" let-i="rowIndex" pTemplate="body">
       <button
         [appHasPermission]="'USER_UPDATE'"
-        md-tooltip="{{'edit'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="openDialog(user)" icon="fa-edit">
+        pTooltip="{{'edit'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="openDialog(user)" icon="fa-edit">
       </button>
       <button
         [appHasPermission]="'USER_DELETE'"
-        md-tooltip="{{'remove'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="remove(i)" icon="fa-trash">
+        pTooltip="{{'remove'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="remove(i)" icon="fa-trash">
       </button>
     </ng-template>
   </p-column>
@@ -48,7 +53,8 @@
           <label for="username">{{'user.username'|translate}}</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input name="username" required [appAutoFocus]="displayDialog" pInputText id="username" [(ngModel)]="user.username" #usernameInput="ngModel" />
+          <input name="username" required [appAutoFocus]="displayDialog" pInputText id="username" [(ngModel)]="user.username"
+                 #usernameInput="ngModel"/>
         </div>
       </div>
       <div class="ui-g">
@@ -63,7 +69,8 @@
           <label for="password">{{'user.password'|translate}}</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input (keyup)="validatePasswords()" type="password" name="password" required pInputText id="password" [(ngModel)]="user.password" #passwordInput="ngModel" />
+          <input (keyup)="validatePasswords()" type="password" name="password" required pInputText id="password" [(ngModel)]="user.password"
+                 #passwordInput="ngModel"/>
         </div>
       </div>
       <div class="ui-g">
@@ -78,7 +85,8 @@
           <label for="repeatPassword">{{'user.repeatPassword'|translate}}</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input (keyup)="validatePasswords()" type="password" name="repeatPassword" required pInputText id="repeatPassword" [(ngModel)]="repeatPassword" #repeatPasswordInput="ngModel" />
+          <input (keyup)="validatePasswords()" type="password" name="repeatPassword" required pInputText id="repeatPassword"
+                 [(ngModel)]="repeatPassword" #repeatPasswordInput="ngModel"/>
         </div>
       </div>
       <div class="ui-g">
@@ -86,7 +94,8 @@
           <label for="permissionGroups">{{'user.permissionGroups'|translate}}</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <p-multiSelect name="permissionGroups" id="permissionGroups" [options]="permissionGroups" [(ngModel)]="user.permissionGroups" optionLabel="name"
+          <p-multiSelect name="permissionGroups" id="permissionGroups" [options]="permissionGroups" [(ngModel)]="user.permissionGroups"
+                         optionLabel="name"
                          [style]="{ width: '100%' }" dataKey="id">
           </p-multiSelect>
         </div>

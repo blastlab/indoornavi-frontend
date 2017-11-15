@@ -1,25 +1,25 @@
-<h1 [translate]="'building.header'"></h1>
-
-<div class="adding-section">
-  <button [appHasPermission]="'BUILDING_CREATE'" md-raised-button id="new-building-button" type="button" (click)="openDialog()">
-    {{'add'|translate}}
-  </button>
-</div>
+<p-toolbar>
+  <div class="ui-toolbar-group-left">
+    <button pButton class="ui-button-secondary" id="new-building-button" [appHasPermission]="'BUILDING_CREATE'" (click)="openDialog()"
+            label="{{'add'|translate}}"
+            icon="fa fa-plus" iconPos="left"></button>
+  </div>
+</p-toolbar>
 
 <p-dataTable [loading]="loading" [value]="complex.buildings" styleClass="auto">
   <p-column field="name" header="{{'building.name'|translate}}"></p-column>
   <p-column header="{{'th.actions'|translate}}" styleClass="col-button">
     <ng-template let-building="rowData" let-i="rowIndex" pTemplate="body">
       <button
-        md-tooltip="{{'go.to.floors'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="goTo(building)" icon="fa-level-down">
+        pTooltip="{{'go.to.floors'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="goTo(building)" icon="fa-level-down">
       </button>
       <button
         [appHasPermission]="'BUILDING_UPDATE'"
-        md-tooltip="{{'edit'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="openDialog(building)" icon="fa-edit">
+        pTooltip="{{'edit'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="openDialog(building)" icon="fa-edit">
       </button>
       <button
         [appHasPermission]="'BUILDING_DELETE'"
-        md-tooltip="{{'remove'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="remove(i)" icon="fa-trash">
+        pTooltip="{{'remove'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="remove(i)" icon="fa-trash">
       </button>
     </ng-template>
   </p-column>
@@ -42,7 +42,7 @@
         <label for="name">{{'building.name'|translate}}</label>
       </div>
       <div class="ui-g-12 ui-md-6 ui-lg-6">
-        <input required name="name" [appAutoFocus]="displayDialog" pInputText id="name" [(ngModel)]="building.name" #nameInput="ngModel" />
+        <input required name="name" [appAutoFocus]="displayDialog" pInputText id="name" [(ngModel)]="building.name" #nameInput="ngModel"/>
       </div>
     </div>
     <p-footer>

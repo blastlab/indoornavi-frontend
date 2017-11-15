@@ -7,6 +7,7 @@ import {PublishedDialogComponent} from '../dialog/published.dialog';
 import {Router} from '@angular/router';
 import {CrudComponentList, CrudHelper} from '../../utils/crud/crud.component';
 import {ConfirmationService} from 'primeng/primeng';
+import {BreadcrumbService} from '../../utils/breadcrumbs/breadcrumb.service';
 
 @Component({
   templateUrl: './published-list.html',
@@ -20,21 +21,27 @@ export class PublishedListComponent implements OnInit, CrudComponentList {
   @ViewChild(PublishedDialogComponent)
   private formDialog: PublishedDialogComponent;
 
+  private routeState: string;
+
   constructor(private publishedMapService: PublishedService,
               private translateService: TranslateService,
               private toastService: ToastService,
               private router: Router,
-              private confirmationService: ConfirmationService) {
+              private confirmationService: ConfirmationService,
+              private breadcrumbService: BreadcrumbService) {
   }
 
   ngOnInit() {
-    this.translateService.setDefaultLang('en');
-
     this.publishedMapService.getAll().subscribe((maps: PublishedMap[]) => {
       this.publishedMaps = maps;
       this.loading = false;
     });
-
+    this.translateService.setDefaultLang('en');
+    this.translateService.get(`publishedList.header`).subscribe((value: string) => {
+      this.breadcrumbService.publishIsReady([
+        {label: value, disabled: true}
+      ]);
+    });
     this.translateService.get('confirm.body').subscribe((value: string) => {
       this.confirmBody = value;
     });
