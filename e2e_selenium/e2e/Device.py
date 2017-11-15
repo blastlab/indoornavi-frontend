@@ -20,19 +20,16 @@ class Device:
     # Main function for devices
     def test(self):
         # Add anchor test - with correct credentials
-        self.__prepare_to_add_anchor()
+        self.__load_devices_page_and_check_if_device_already_exists()
         # Edit anchor test
-        self.__edit_last_anchor()
-
-    def __navigate_to_home(self):
-        print(colored('NAVIGATE TO HOME', 'green'))
+        self._should_edit_and_change_values_of_last_anchor()
 
     #
     # Test of adding anchor with correct credentials
     #
     """ Condition : correct credentials """
 
-    def __prepare_to_add_anchor(self):
+    def __should_load_devices_page_and_check_if_device_already_exists(self):
         print(colored('\nADD ANCHOR TEST', 'yellow'))
         print(colored('T2. Preparing to add anchor', 'green'))
 
@@ -56,13 +53,13 @@ class Device:
             self.__wb.find_element_by_id('shortId-'+self.__short_id)
         except NoSuchElementException:
             print(colored('+++ No element - call add anchor function', 'green'))
-            self.__add_anchor()
+            self.__should_add_and_check_if_device_is_displayed()
             return False
         print(colored('--- element Found - call remove anchor function', 'red'))
         self.__remove_anchor(self.__short_id)
-        self.__add_anchor()
+        self.__should_add_and_check_if_device_is_displayed()
 
-    def __add_anchor(self):
+    def __should_add_and_check_if_device_is_displayed(self):
         print(colored('\nADD ANCHOR TEST', 'yellow'))
         print(colored('T4. Start Add Anchor', 'green'))
 
@@ -116,7 +113,7 @@ class Device:
     # Test of editing anchor with correct credentials
     #
 
-    def __edit_last_anchor(self):
+    def _should_edit_and_change_values_of_last_anchor(self):
 
         expected_array = self.__compare_array
         result_array = []
@@ -171,26 +168,26 @@ class Device:
         # Step 2: properly data ?
         # Step 3: push variable to compare_array to check correctly data
 
-        WebDriverWait(self.__wb, 5).until(EC.presence_of_element_located((By.CLASS_NAME, 'mat-simple-snackbar-message')))
+        element_text = WebDriverWait(self.__wb, 5).until(EC.presence_of_element_located((By.CLASS_NAME, 'mat-simple-snackbar-message')))
         toast_device_saved_text = self.__wb.find_element_by_class_name('mat-simple-snackbar-message').text
 
         assert toast_device_saved_text == 'Device has been saved', '[Failure] The message is incorrect'
         # Print Success
         print(colored('T11.[Complete] Edit anchor functionality', 'green'))
         # Call function remove anchor
-        self.__remove_anchor(self.__new_short_id)
+        self.__should_remove_last_anchor(self.__new_short_id)
     #
     # Test of removing anchor
     #
 
-    def __remove_anchor(self, short_id):
+    def __should_remove_last_anchor(self, short_id):
         print(colored('\nREMOVE ANCHOR TEST', 'yellow'))
         remove_anchor_button = self.__wb.find_element_by_id('remove-'+short_id)
         remove_anchor_button.click()
 
         try:
             # Wait for message
-            WebDriverWait(self.__wb, 5).until(EC.presence_of_element_located((By.CLASS_NAME, 'mat-simple-snackbar-message')))
+            toast_device_removed_text = WebDriverWait(self.__wb, 5).until(EC.presence_of_element_located((By.CLASS_NAME, 'mat-simple-snackbar-message')))
             toast_device_removed_text = self.__wb.find_element_by_class_name('mat-simple-snackbar-message').text
             # Check the message content is displayed correctly
             assert toast_device_removed_text == 'Device has been removed', '[Failure] The message in toast is invalid'

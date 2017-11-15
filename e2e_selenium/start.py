@@ -3,7 +3,6 @@ from selenium import webdriver
 from e2e.Login import Login
 from e2e.Device import Device
 
-# Class Definition
 localUrl = 'http://localhost:4200/'
 wb = webdriver.Chrome('/home/motlowski/Downloads/chromedriver')
 wb.get(localUrl)
