@@ -18,51 +18,59 @@
           <span>{{'sinks.header'|translate}}</span>
         </button>
       </div>
-      <button pButton class="ui-button-secondary ui-g-6 menu-button"
-              [routerLink]="['./anchors']"
-              (click)="displaySidebar = false"
-              icon="fa fa-circle-o-notch fa-2x">
-        <span>{{'anchors.header'|translate}}</span>
-      </button>
+      <div class="ui-g">
+        <button pButton class="ui-button-secondary ui-g-6 menu-button"
+                [routerLink]="['./anchors']"
+                (click)="displaySidebar = false"
+                icon="fa fa-circle-o-notch fa-2x">
+          <span>{{'anchors.header'|translate}}</span>
+        </button>
 
-      <button pButton class="ui-button-secondary ui-g-6 menu-button"
-              [routerLink]="['./tags']"
-              (click)="displaySidebar = false"
-              icon="fa fa-tag fa-2x">
-        <span>{{'tags.header'|translate}}</span>
-      </button>
-      <button pButton class="ui-button-secondary ui-g-6 menu-button"
-              [routerLink]="['./maps']"
-              (click)="displaySidebar = false"
-              icon="fa fa-map fa-2x">
-        <span>{{'publishedMaps'|translate}}</span>
-      </button>
+        <button pButton class="ui-button-secondary ui-g-6 menu-button"
+                [routerLink]="['./tags']"
+                (click)="displaySidebar = false"
+                icon="fa fa-tag fa-2x">
+          <span>{{'tags.header'|translate}}</span>
+        </button>
+      </div>
+      <div class="ui-g">
+        <button pButton class="ui-button-secondary ui-g-6 menu-button"
+                [routerLink]="['./maps']"
+                (click)="displaySidebar = false"
+                icon="fa fa-map fa-2x">
+          <span>{{'publishedMaps'|translate}}</span>
+        </button>
 
-      <button pButton class="ui-button-secondary ui-g-6 menu-button"
-              [routerLink]="['./users']"
-              (click)="displaySidebar = false"
-              icon="fa fa-users fa-2x">
-        <span>{{'users.header'|translate}}</span>
-      </button>
-      <button pButton class="ui-button-secondary ui-g-6 menu-button"
-              [routerLink]="['./permissionGroups']"
-              (click)="displaySidebar = false"
-              icon="fa fa-lock fa-2x">
-        <span>{{'user.permissionGroups'|translate}}</span>
-      </button>
+        <button pButton class="ui-button-secondary ui-g-6 menu-button"
+                [routerLink]="['./users']"
+                (click)="displaySidebar = false"
+                icon="fa fa-users fa-2x">
+          <span>{{'users.header'|translate}}</span>
+        </button>
+      </div>
+      <div class="ui-g">
+        <button pButton class="ui-button-secondary ui-g-6 menu-button"
+                [routerLink]="['./permissionGroups']"
+                (click)="displaySidebar = false"
+                icon="fa fa-lock fa-2x">
+          <span>{{'user.permissionGroups'|translate}}</span>
+        </button>
 
-      <button pButton class="ui-button-secondary ui-g-6 menu-button"
-              [routerLink]="['./changePassword']"
-              (click)="displaySidebar = false"
-              icon="fa fa-key fa-2x">
-        <span>{{'changePassword.header'|translate}}</span>
-      </button>
-      <button pButton class="ui-button-secondary ui-g-6 menu-button"
-              id="logout" [routerLink]="['./logout']"
-              (click)="displaySidebar = false; isUserLoggedIn = false;"
-              icon="fa fa-sign-out fa-2x">
-        <span>{{'logout'|translate}}</span>
-      </button>
+        <button pButton class="ui-button-secondary ui-g-6 menu-button"
+                [routerLink]="['./changePassword']"
+                (click)="displaySidebar = false"
+                icon="fa fa-key fa-2x">
+          <span>{{'changePassword.header'|translate}}</span>
+        </button>
+      </div>
+      <div class="ui-g">
+        <button pButton class="ui-button-secondary ui-g-6 menu-button"
+                id="logout" [routerLink]="['./logout']"
+                (click)="displaySidebar = false; isUserLoggedIn = false;"
+                icon="fa fa-sign-out fa-2x">
+          <span>{{'logout'|translate}}</span>
+        </button>
+      </div>
     </p-sidebar>
     <div class="ui-g-12 ui-md-11 ui-lg-11">
       <p-breadcrumb [model]="items"></p-breadcrumb>

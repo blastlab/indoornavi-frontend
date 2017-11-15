@@ -8,11 +8,11 @@ import {BreadcrumbService} from './utils/breadcrumbs/breadcrumb.service';
   selector: 'app-root',
   templateUrl: './app.html'
 })
-export class BreadcrumbsComponent implements OnInit {
+export class AppComponent implements OnInit {
   public isUserLoggedIn: boolean;
   public isDisplayedInIFrame: boolean = false;
 
-  private items: MenuItem[];
+  private breadcrumbs: MenuItem[];
 
   constructor(private authGuard: AuthGuard, private route: ActivatedRoute, private breadcrumbService: BreadcrumbService, private cd: ChangeDetectorRef) {
     this.route.queryParams.subscribe((params: Params) => {
@@ -28,7 +28,7 @@ export class BreadcrumbsComponent implements OnInit {
 
   ngOnInit () {
     this.breadcrumbService.isReady().subscribe((breadcrumbs: MenuItem[]) => {
-      this.items = breadcrumbs;
+      this.breadcrumbs = breadcrumbs;
       this.cd.detectChanges();
     });
   }
