@@ -10,7 +10,6 @@ import {AngularMultiSelectModule} from 'angular2-multiselect-dropdown/angular2-m
 import {ConfirmDialogComponent} from '../confirm-dialog/confirm.dialog';
 import {ComplexDialogComponent} from '../../complex/dilaog/complex.dialog';
 import {DeviceDialogComponent} from '../../device/dialog/device.dialog';
-import {BuildingDialogComponent} from '../../building/dialog/building.dialog';
 import {FloorDialogComponent} from '../../floor/dialog/floor.dialog';
 import {PublishedDialogComponent} from '../../publications/dialog/published.dialog';
 
@@ -18,7 +17,6 @@ const DIALOGS = [
   ComplexDialogComponent,
   DeviceDialogComponent,
   ComplexConfirmComponent,
-  BuildingDialogComponent,
   BuildingConfirmComponent,
   FloorDialogComponent,
   UserDialogComponent,

@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {UserService} from 'app/user/user.service';
 import {TranslateService} from '@ngx-translate/core';
-import {ToastService} from '../utils/toast/toast.service';
+import {ToastService} from '../../utils/toast/toast.service';
 
 @Component({
   templateUrl: 'changePassword.html'

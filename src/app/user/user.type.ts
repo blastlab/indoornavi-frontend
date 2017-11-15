@@ -1,9 +1,12 @@
-export interface User {
+export class User {
   id?: number;
   username: string;
   password?: string;
   superUser?: boolean;
   permissionGroups: PermissionGroup[];
+
+  constructor() {
+  }
 }
 
 export interface Permission {
@@ -11,8 +14,11 @@ export interface Permission {
   name: string;
 }
 
-export interface PermissionGroup {
+export class PermissionGroup {
   id?: number;
   name: string;
-  permissions: Permission[];
+  permissions: Permission[] = [];
+
+  constructor() {
+  }
 }

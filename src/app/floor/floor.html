@@ -6,33 +6,52 @@
   </button>
 </div>
 
-<table cellpadding="10" cellspacing="0" dnd-sortable-container [sortableData]="floors">
-  <tr>
-    <th [translate]="'floor.level'"></th>
-    <th [translate]="'floor.name'"></th>
-    <th colspan="3" [translate]="'th.actions'"></th>
-  </tr>
-  <tr class="floor sortable" *ngFor="let floor of floors; let i = index" dnd-sortable [sortableIndex]="i"
-      (onDropSuccess)="rearrangeFloors()">
-    <td class="floor-level">{{floor.level}}</td>
-    <td class="floor-name">{{floor.name}}</td>
-    <td>
-      <button class="floor-map-button" (click)="openMap(floor)" md-mini-fab md-tooltip="{{'go.to.map'|translate}}"
-              mdTooltipPosition="above">
-        <i class="material-icons">map</i>
+<p-dataTable [loading]="loading" [value]="building.floors" styleClass="auto">
+  <p-column field="level" header="{{'floor.level'|translate}}"></p-column>
+  <p-column field="name" header="{{'floor.name'|translate}}"></p-column>
+  <p-column header="{{'th.actions'|translate}}" styleClass="col-button">
+    <ng-template let-floor="rowData" let-i="rowIndex" pTemplate="body">
+      <button
+        md-tooltip="{{'go.to.map'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="goTo(floor)" icon="fa-level-down">
       </button>
-    </td>
-    <td>
-      <button md-tooltip="{{'edit'|translate}}"[appHasPermission]="'FLOOR_UPDATE'" class="floor-edit-button" (click)="editFloor(floor)" md-mini-fab
-              mdTooltipPosition="above">
-        <i class="material-icons">mode_edit</i>
+      <button
+        [appHasPermission]="'FLOOR_UPDATE'"
+        md-tooltip="{{'edit'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="openDialog(floor)" icon="fa-edit">
       </button>
-    </td>
-    <td>
-      <button md-tooltip="{{'remove'|translate}}" [appHasPermission]="'FLOOR_DELETE'" class="floor-remove-button" (click)="removeFloor(i)" md-mini-fab
-              mdTooltipPosition="above">
-        <i class="material-icons">delete</i>
+      <button
+        [appHasPermission]="'FLOOR_DELETE'"
+        md-tooltip="{{'remove'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="remove(i)" icon="fa-trash">
       </button>
-    </td>
-  </tr>
-</table>
+    </ng-template>
+  </p-column>
+</p-dataTable>
+
+<p-dialog header="{{'floor.details'}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
+          [contentStyle]="{ overflow: 'visible' }"
+          [width]="800"
+          dismissableMask="true">
+  <form #floorForm novalidate>
+    <div class="ui-g" *ngIf="floor">
+      <div class="ui-g-offset-12 ui-md-offset-4 ui-lg-offset-4 ui-g-12 ui-md-2 ui-lg-2">
+        <label for="name">{{'floor.name'|translate}}</label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
+        <input name="name" [appAutoFocus]="displayDialog" pInputText id="name" [(ngModel)]="floor.name" #nameInput="ngModel"/>
+      </div>
+      <div class="ui-g-offset-12 ui-md-offset-4 ui-lg-offset-4 ui-g-12 ui-md-2 ui-lg-2">
+        <label for="level">{{'floor.level'|translate}}</label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
+        <input name="level" type="number" pInputText id="level" [(ngModel)]="floor.level" #levelInput="ngModel"/>
+      </div>
+    </div>
+    <p-footer>
+      <div class="ui-dialog-buttonpane ui-helper-clearfix">
+        <button type="button" pButton icon="fa-close" (click)="cancel()" label="{{'cancel'|translate}}"></button>
+        <button type="submit" pButton icon="fa-check" (click)="save(true)" label="{{'save'|translate}}"></button>
+      </div>
+    </p-footer>
+  </form>
+</p-dialog>
+
+<p-confirmDialog icon="fa fa-question-circle" width="425"></p-confirmDialog>

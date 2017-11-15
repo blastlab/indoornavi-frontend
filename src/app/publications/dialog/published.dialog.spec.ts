@@ -86,8 +86,8 @@ describe('PublishedDialogComponent', () => {
     // then
     expect(buildingService.getComplexWithBuildings).toHaveBeenCalledWith(1);
     expect(component.selectedComplexId).toBe(1);
-    expect(component.selectedBuildingId).toBe(null);
-    expect(component.selectedFloorId).toBe(null);
+    expect(component.building).toBe(null);
+    expect(component.selectedFloor).toBe(null);
   }));
 
   it('should set floors when building changed', inject([FloorService], (floorService: FloorService) => {
@@ -101,8 +101,8 @@ describe('PublishedDialogComponent', () => {
 
     // then
     expect(floorService.getBuildingWithFloors).toHaveBeenCalledWith(1);
-    expect(component.selectedBuildingId).toBe(1);
-    expect(component.selectedFloorId).toBe(null);
+    expect(component.building).toBe(1);
+    expect(component.selectedFloor).toBe(null);
   }));
 
   it('should do nothing when save is called on invalid form', inject([PublishedService], (publishedMapService: PublishedService) => {
@@ -133,7 +133,7 @@ describe('PublishedDialogComponent', () => {
           building: {name: 'test', complexId: 1},
           imageId: 1
         }];
-        component.selectedFloorId = 1;
+        component.selectedFloor = 1;
 
         // when
         component.save(true);
@@ -160,7 +160,7 @@ describe('PublishedDialogComponent', () => {
           name: 'test',
           building: {name: 'test', complexId: 1}
         }];
-        component.selectedFloorId = 1;
+        component.selectedFloor = 1;
 
         // when
         component.save(true);
@@ -187,7 +187,7 @@ describe('PublishedDialogComponent', () => {
           building: {name: 'test', complexId: 1},
           imageId: null
         }];
-        component.selectedFloorId = 1;
+        component.selectedFloor = 1;
 
         // when
         component.save(true);
@@ -253,8 +253,8 @@ describe('PublishedDialogComponent', () => {
 
       // then
       expect(component.selectedComplexId).toBe(99);
-      expect(component.selectedBuildingId).toBe(1);
-      expect(component.selectedFloorId).toBe(78);
+      expect(component.building).toBe(1);
+      expect(component.selectedFloor).toBe(78);
       expect(component.selectedTags.length).toBe(1);
       expect(component.selectedUsers.length).toBe(1);
       expect(component.selectedMap).toBe(expectedMap);

@@ -1,18 +1,18 @@
 /* You can add global styles to this file, and also import other style files */
-body{
+body {
   display: block;
   font-family: 'Roboto', sans-serif;
   margin: 20px 30px;
 }
-.adding-section{
+
+.adding-section {
   margin: 30px 0;
 }
-table tr td{
-  border-bottom: 1px solid #000;
-}
-.adding-section button{
+
+.adding-section button {
   margin: 15px 0;
 }
+
 .error-toast {
   background: #d92020 !important;
 }
@@ -30,7 +30,7 @@ table tr td{
   display: block;
 }
 
-.breadcrumb-item+.breadcrumb-item:before {
+.breadcrumb-item + .breadcrumb-item:before {
   content: '|'
 }
 
@@ -59,3 +59,50 @@ table tr td{
 }
 
 @import '~@angular/material/core/theming/prebuilt/deeppurple-amber.css';
+@import '~primeng/resources/primeng.css';
+@import '~primeng/resources/themes/ludvig/theme.css';
+@import '~font-awesome/css/font-awesome.css';
+
+table th.col-button, table td.col-button {
+  width: 1%;
+  white-space: nowrap;
+}
+
+table th.col-checkbox, table td.col-checkbox {
+  width: 1%;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.auto table {
+  table-layout: auto;
+}
+
+.ui-datatable-odd {
+  background: #ffffff;
+}
+
+.ui-datatable-even {
+  background: #F2F5F9;
+}
+
+.ui-inputtext {
+  width: 100%;
+}
+
+.device-list .ui-picklist-list {
+  height: 400px;
+}
+
+.device-list .ui-picklist-listwrapper button {
+  display: inline-block;
+  float: right;
+}
+
+.device-list .device-details {
+  font-size: 0.8em;
+}
+
+.ui-message {
+  font-size: 0.8em;
+}

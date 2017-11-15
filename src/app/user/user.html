@@ -1,29 +1,113 @@
 <h1 [translate]="'user.header'"></h1>
 
 <div class="adding-section">
-  <button [appHasPermission]="'USER_CREATE'" md-raised-button id="new-user-button" type="button" (click)="createUser()">{{'add'|translate}}</button>
+  <button [appHasPermission]="'USER_CREATE'" md-raised-button id="new-user-button" type="button" (click)="openDialog()">{{'add'|translate}}</button>
 </div>
 
-<table cellpadding="10" cellspacing="0">
-  <tr>
-    <th [translate]="'user.username'"></th>
-    <th [translate]="'user.superuser'"></th>
-    <th [translate]="'user.permissionGroups'"></th>
-    <th colspan="2" [translate]="'th.actions'"></th>
-  </tr>
-  <tr *ngFor="let user of users; let i = index">
-    <td id="{{user.username}}">{{user.username}}</td>
-    <td><md-checkbox [checked]=user.superUser [disabled]="true"></md-checkbox></td>
-    <td><span *ngFor="let pG of user.permissionGroups; let isLast=last">{{pG.name}}{{isLast ? '' : ', '}}</span></td>
-    <td>
-      <button md-tooltip="{{'edit'|translate}}" [appHasPermission]="'USER_UPDATE'" id="edit-{{user.username}}" class="edit-button" (click)="editUser(i)" md-mini-fab mdTooltipPosition="above">
-        <i class="material-icons">mode_edit</i>
+<p-dataTable [loading]="loading" [value]="users" styleClass="auto">
+  <p-column field="username" header="{{'user.username'|translate}}"></p-column>
+  <p-column header="{{'user.permissionGroups'|translate}}">
+    <ng-template let-user="rowData" pTemplate="body">
+      <span *ngFor="let pG of user.permissionGroups; let isLast=last">{{pG.name}}{{isLast ? '' : ', '}}</span>
+    </ng-template>
+  </p-column>
+  <p-column header="{{'user.superuser'|translate}}" styleClass="col-checkbox">
+    <ng-template let-user="rowData" pTemplate="body">
+      <p-checkbox [disabled]="true" [(ngModel)]="user.superUser" binary="true"></p-checkbox>
+    </ng-template>
+  </p-column>
+  <p-column header="{{'th.actions'|translate}}" styleClass="col-button">
+    <ng-template let-user="rowData" let-i="rowIndex" pTemplate="body">
+      <button
+        [appHasPermission]="'USER_UPDATE'"
+        md-tooltip="{{'edit'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="openDialog(user)" icon="fa-edit">
       </button>
-    </td>
-    <td>
-      <button md-tooltip="{{'remove'|translate}}" [appHasPermission]="'USER_DELETE'" id="remove-{{user.username}}" class="remove-button" *ngIf="!user.superUser" (click)="removeUser(i)" md-mini-fab md-mini-fab mdTooltipPosition="above">
-        <i class="material-icons">delete</i>
+      <button
+        [appHasPermission]="'USER_DELETE'"
+        md-tooltip="{{'remove'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="remove(i)" icon="fa-trash">
       </button>
-    </td>
-  </tr>
-</table>
+    </ng-template>
+  </p-column>
+</p-dataTable>
+
+<p-dialog header="{{'user.details'}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
+          [contentStyle]="{ overflow: 'visible' }"
+          [width]="800"
+          dismissableMask="true">
+  <div *ngIf="user">
+    <form #userForm="ngForm" novalidate>
+      <div class="ui-g">
+        <div class="ug-g-12 ui-md-4 ui-lg-4">
+          <div class="ui-message ui-messages-error ui-corner-all"
+               *ngIf="usernameInput.errors?.required && usernameInput.touched && usernameInput.dirty">
+            <i class="fa fa-warning"></i>
+            {{'user.username.required'|translate}}
+          </div>
+        </div>
+        <div class="ui-g-12 ui-md-2 ui-lg-2">
+          <label for="username">{{'user.username'|translate}}</label>
+        </div>
+        <div class="ui-g-12 ui-md-6 ui-lg-6">
+          <input name="username" required [appAutoFocus]="displayDialog" pInputText id="username" [(ngModel)]="user.username" #usernameInput="ngModel" />
+        </div>
+      </div>
+      <div class="ui-g">
+        <div class="ug-g-12 ui-md-4 ui-lg-4">
+          <div class="ui-message ui-messages-error ui-corner-all"
+               *ngIf="passwordInput.errors?.required && passwordInput.touched && passwordInput.dirty">
+            <i class="fa fa-warning"></i>
+            {{'user.password.required'|translate}}
+          </div>
+        </div>
+        <div class="ui-g-12 ui-md-2 ui-lg-2">
+          <label for="password">{{'user.password'|translate}}</label>
+        </div>
+        <div class="ui-g-12 ui-md-6 ui-lg-6">
+          <input (keyup)="validatePasswords()" type="password" name="password" required pInputText id="password" [(ngModel)]="user.password" #passwordInput="ngModel" />
+        </div>
+      </div>
+      <div class="ui-g">
+        <div class="ug-g-12 ui-md-4 ui-lg-4">
+          <div class="ui-message ui-messages-error ui-corner-all"
+               *ngIf="repeatPasswordInput.errors?.required && repeatPasswordInput.touched && repeatPasswordInput.dirty">
+            <i class="fa fa-warning"></i>
+            {{'user.repeatPassword.required'|translate}}
+          </div>
+        </div>
+        <div class="ui-g-12 ui-md-2 ui-lg-2">
+          <label for="repeatPassword">{{'user.repeatPassword'|translate}}</label>
+        </div>
+        <div class="ui-g-12 ui-md-6 ui-lg-6">
+          <input (keyup)="validatePasswords()" type="password" name="repeatPassword" required pInputText id="repeatPassword" [(ngModel)]="repeatPassword" #repeatPasswordInput="ngModel" />
+        </div>
+      </div>
+      <div class="ui-g">
+        <div class="ui-g-12 ui-md-2 ui-lg-2 ui-md-offset-4 ui-lg-offset-4">
+          <label for="permissionGroups">{{'user.permissionGroups'|translate}}</label>
+        </div>
+        <div class="ui-g-12 ui-md-6 ui-lg-6">
+          <p-multiSelect name="permissionGroups" id="permissionGroups" [options]="permissionGroups" [(ngModel)]="user.permissionGroups" optionLabel="name"
+                         [style]="{ width: '100%' }" dataKey="id">
+          </p-multiSelect>
+        </div>
+      </div>
+      <div class="ui-g">
+        <div class="ui-g-12 ui-message ui-messages-error ui-corner-all"
+             *ngIf="!passwordsEqual">
+          <i class="fa fa-warning"></i>
+          {{'user.passwords.mustEqual'|translate}}
+        </div>
+      </div>
+      <div>
+      </div>
+      <p-footer>
+        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+          <button type="button" pButton icon="fa-close" (click)="cancel()" label="{{'cancel'|translate}}"></button>
+          <button type="submit" pButton icon="fa-check" (click)="save(userForm.valid)" label="{{'save'|translate}}"></button>
+        </div>
+      </p-footer>
+    </form>
+  </div>
+</p-dialog>
+
+<p-confirmDialog icon="fa fa-question-circle" width="425"></p-confirmDialog>

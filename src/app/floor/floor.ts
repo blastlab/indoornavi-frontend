@@ -1,144 +1,103 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {Floor} from './floor.type';
 import {FloorService} from './floor.service';
-import {MdDialog, MdDialogRef} from '@angular/material';
-import {FloorDialogComponent} from './dialog/floor.dialog';
 import {ToastService} from '../utils/toast/toast.service';
-import {NgForm} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {Building} from '../building/building.type';
+import {CrudComponent, CrudHelper} from '../utils/crud/crud.component';
+import {ConfirmationService} from 'primeng/primeng';
+import {NgForm} from '@angular/forms';
 
 @Component({
   templateUrl: 'floor.html',
   styleUrls: ['floor.css']
 })
-export class FloorComponent implements OnInit {
-  floors: Array<Floor> = [];
-
+export class FloorComponent implements OnInit, CrudComponent {
   floor: Floor;
-  dialogRef: MdDialogRef<FloorDialogComponent>;
-
-  private building: Building;
-  private complexId: number;
-
+  building: Building = new Building();
+  loading: boolean = true;
+  displayDialog: boolean = false;
   @ViewChild('floorForm') floorForm: NgForm;
+  private confirmBody: string;
 
   constructor(private floorService: FloorService,
-              private dialog: MdDialog,
               private toast: ToastService,
               public translate: TranslateService,
               private route: ActivatedRoute,
-              private router: Router) {
+              private router: Router,
+              private confirmationService: ConfirmationService) {
   }
 
   ngOnInit(): void {
-    this.newFloor();
     this.route.params
-    // (+) converts string 'id' to a number
       .subscribe((params: Params) => {
         const buildingId = +params['buildingId'];
-        this.complexId = +params['complexId'];
         this.floorService.getBuildingWithFloors(buildingId).subscribe((building: Building) => {
-          this.floors = building.floors;
           this.building = building;
-          this.newFloor();
+          this.loading = false;
         });
       });
     this.translate.setDefaultLang('en');
   }
 
-  editFloor(floor: Floor): void {
-    this.dialogRef = this.dialog.open(FloorDialogComponent);
-    this.dialogRef.componentInstance.floor = {
-      level: floor.level,
-      name: floor.name,
-      building: floor.building,
-      id: floor.id
-    };
+  openDialog(floor: Floor): void {
+    if (!!floor) {
+      this.floor = {...floor};
+    } else {
+      this.floor = new Floor('', this.getCurrentMaxLevel() + 1, this.building);
+    }
+    this.displayDialog = true;
+  }
 
-    this.dialogRef.afterClosed().subscribe((newFloor: Floor) => {
-      if (newFloor !== undefined) {
-        floor.name = newFloor.name;
-        floor.level = newFloor.level;
-        floor.id = newFloor.id;
+  save(isValid: boolean): void {
+    (!!this.floor.id ?
+        this.floorService.updateFloor(this.floor)
+        :
+        this.floorService.addFloor(this.floor)
+    ).subscribe((savedFloor: Floor) => {
+      const isNew = !(!!this.floor.id);
+      if (isNew) {
+        this.toast.showSuccess('floor.create.success');
+      } else {
         this.toast.showSuccess('floor.save.success');
       }
-      this.dialogRef = null;
+      this.building.floors = <Floor[]>CrudHelper.add(savedFloor, this.building.floors, isNew).sort((a: Floor, b: Floor) => {
+        return a.level - b.level;
+      });
+    }, (err: string) => {
+      this.toast.showFailure(err);
+    });
+    this.displayDialog = false;
+  }
+
+  cancel(): void {
+    this.displayDialog = false;
+    this.floorForm.resetForm();
+  }
+
+  remove(index: number): void {
+    this.confirmationService.confirm({
+      message: this.confirmBody,
+      accept: () => {
+        const floorId: number = this.building.floors[index].id;
+        this.floorService.removeFloor(floorId).subscribe(() => {
+          this.building.floors = <Floor[]>CrudHelper.remove(index, this.building.floors);
+          this.toast.showSuccess('floor.remove.success');
+        }, (msg: string) => {
+          this.toast.showFailure(msg);
+        });
+      }
     });
   }
 
-  removeFloor(index: number): void {
-    this.floorService.removeFloor(this.floors[index].id).subscribe(() => {
-      this.floors.splice(index, 1);
-      this.toast.showSuccess('floor.remove.success');
-    }, (msg: string) => {
-      this.toast.showFailure(msg);
-    });
-  }
-
-  openDialog(): void {
-    this.dialogRef = this.dialog.open(FloorDialogComponent);
-    this.dialogRef.componentInstance.floor = {
-      level: this.getCurrentMaxLevel() + 1,
-      name: '',
-      building: this.building
-    };
-
-    this.dialogRef.afterClosed().subscribe(floor => {
-      if (floor !== undefined) {
-        this.floors.push(floor);
-        this.toast.showSuccess('floor.create.success');
-      }
-      this.dialogRef = null;
-    });
-  }
-
-  rearrangeFloors(): void {
-    for (let i = 0; i < this.floors.length; i++) {
-      // when floor position is first on list and next floor has lower level number than previous
-      if (i === 0 && this.floors.length > 1 && this.floors[i + 1].level < this.floors[i].level) {
-        this.floors[i].level = this.floors[i + 1].level - 1;
-        // [4,5,6] -> [6,4,5] -> [3,4,5]
-      }
-      // when floor position is not first on list and previous floor has higher level number -> change current level to previous floor level + 1
-      if (i > 0 && this.floors[i - 1].level >= this.floors[i].level) {
-        this.floors[i].level = parseInt(<any>this.floors[i - 1].level, 10) + 1;
-      }
-      // when floor position is not first and not last on list
-      // and previous and next floor levels are lower than current
-      // than set current level to next floor level + 1
-      if (i > 0 && i < this.floors.length - 1 &&
-        this.floors[i - 1].level < this.floors[i].level && this.floors[i + 1].level < this.floors[i].level) {
-        this.floors[i].level = parseInt(<any>this.floors[i - 1].level, 10) + 1;
-      }
-    }
-    this.floorService.updateFloors(this.floors).subscribe(() => {
-      this.toast.showSuccess('floor.order.success');
-    });
+  goTo(floor: Floor): void {
+    this.router.navigate(['/complexes', this.building.complex.id, 'buildings', this.building.id, 'floors', floor.id, 'map']);
   }
 
   private getCurrentMaxLevel(): number {
-    let result = -1;
-    let floorLevel: number;
-    for (const floorData of this.floors) {
-      floorLevel = parseInt(<any>floorData.level, 10);
-      if (floorLevel > result) {
-        result = floorLevel;
-      }
-    }
-    return result;
-  }
-
-  openMap(floor: Floor): void {
-    this.router.navigate(['/complexes', this.complexId, 'buildings', this.building.id, 'floors', floor.id, 'map']);
-  }
-
-  private newFloor(): void {
-    this.floor = {
-      level: this.getCurrentMaxLevel() + 1,
-      name: '',
-      building: this.building
-    };
+    return this.building.floors.length ? Math.max.apply(Math, this.building.floors.map((floor: Floor) => {
+      return floor.level;
+    })) : -1;
   }
 }
