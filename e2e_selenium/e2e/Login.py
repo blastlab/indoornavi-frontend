@@ -12,6 +12,9 @@ class Login():
 		self.__wb = wb
 
 	def test(self):
+		self.__should_log_in()
+
+	def __should_log_in(self):
 		print(colored('\nSTART '+self.__test_name, 'yellow'))
 
 		# Wait for login form
