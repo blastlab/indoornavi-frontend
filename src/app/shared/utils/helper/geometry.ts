@@ -1,4 +1,4 @@
-import {Line, Point} from '../../map-editor/map.type';
+import {Line, Point} from '../../../map-editor/map.type';
 
 export class Geometry {
 

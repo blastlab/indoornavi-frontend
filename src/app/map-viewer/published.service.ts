@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpService} from '../utils/http/http.service';
+import {HttpService} from '../shared/services/http/http.service';
 import {PublishedMap} from './published.type';
 import {Observable} from 'rxjs/Observable';
 

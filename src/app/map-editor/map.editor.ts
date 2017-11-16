@@ -1,6 +1,6 @@
 import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {Floor} from '../floor/floor.type';
-import {MapLoaderInformerService} from '../utils/map-loader-informer/map-loader-informer.service';
+import {MapLoaderInformerService} from '../shared/services/map-loader-informer/map-loader-informer.service';
 import {MapViewerService} from './map.editor.service';
 
 @Component({

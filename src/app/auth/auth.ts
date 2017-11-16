@@ -4,7 +4,7 @@ import {AuthResponse} from './auth.type';
 import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AuthGuard} from './auth.guard';
-import {ToastService} from '../utils/toast/toast.service';
+import {ToastService} from '../shared/utils/toast/toast.service';
 
 @Component({
   selector: 'app-auth',

@@ -1,11 +1,11 @@
 import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {MdDialog, MdDialogRef} from '@angular/material';
 import {Permission, PermissionGroup} from './user.type';
-import {ToastService} from '../utils/toast/toast.service';
+import {ToastService} from '../shared/utils/toast/toast.service';
 import {PermissionGroupService} from 'app/user/permissionGroup.service';
 import {TranslateService} from '@ngx-translate/core';
-import {Option} from '../utils/multiselect/multiselect.type';
-import {BreadcrumbService} from '../utils/breadcrumbs/breadcrumb.service';
+import {Option} from '../shared/utils/multiselect/multiselect.type';
+import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
 
 @Component({
   templateUrl: 'permissionGroup.html'

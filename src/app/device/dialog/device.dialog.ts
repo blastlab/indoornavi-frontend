@@ -2,7 +2,7 @@ import {OnInit, Component} from '@angular/core';
 import {MdDialogRef} from '@angular/material';
 import {Device} from '../device.type';
 import {DeviceService} from '../device.service';
-import {ToastService} from '../../utils/toast/toast.service';
+import {ToastService} from '../../shared/utils/toast/toast.service';
 import {Anchor} from '../anchor.type';
 import {Sink} from '../sink.type';
 

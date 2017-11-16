@@ -7,8 +7,8 @@ import * as Collections from 'typescript-collections';
 import {AnchorSuggestedPositions} from '../../../../../device/anchor.type';
 import {AcceptButtonsService} from '../../../../../shared/components/accept-buttons/accept-buttons.service';
 import {Point} from '../../../../map.type';
-import {NaviIcons} from '../../../../../utils/drawing/icon.service';
-import {DrawingService, ObjectParams} from '../../../../../utils/drawing/drawing.service';
+import {NaviIcons} from '../../../../../shared/services/drawing/icon.service';
+import {DrawingService, ObjectParams} from '../../../../../shared/services/drawing/drawing.service';
 import {HintBarService} from '../../../../hint-bar/hint-bar.service';
 import {SocketMessage, Step, WizardData} from '../wizard.type';
 

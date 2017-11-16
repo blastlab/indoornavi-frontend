@@ -4,12 +4,12 @@ import {BuildingService} from './building.service';
 import {MdDialog, MdDialogRef} from '@angular/material';
 import {BuildingDialogComponent} from './dialog/building.dialog';
 import {BuildingConfirmComponent} from './building.confirm';
-import {ToastService} from '../utils/toast/toast.service';
+import {ToastService} from '../shared/utils/toast/toast.service';
 import {NgForm} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {FloorService} from '../floor/floor.service';
-import {BreadcrumbService} from '../utils/breadcrumbs/breadcrumb.service';
+import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
 import {Complex} from '../complex/complex.type';
 
 @Component({

@@ -7,14 +7,14 @@ import {Scale} from './scale.type';
 import {Line, Point} from '../../../map.type';
 import {ScaleInputService} from './input/input.service';
 import {ScaleHintService} from './hint/hint.service';
-import {MapLoaderInformerService} from '../../../../utils/map-loader-informer/map-loader-informer.service';
+import {MapLoaderInformerService} from '../../../../shared/services/map-loader-informer/map-loader-informer.service';
 import {Subscription} from 'rxjs/Subscription';
-import {Geometry} from '../../../../utils/helper/geometry';
+import {Geometry} from '../../../../shared/utils/helper/geometry';
 import {HintBarService} from '../../../hint-bar/hint-bar.service';
 import {ActionBarService} from '../../../action-bar/actionbar.service';
 import {Configuration} from '../../../action-bar/actionbar.type';
 import {ScaleService} from './scale.service';
-import {Helper} from '../../../../utils/helper/helper';
+import {Helper} from '../../../../shared/utils/helper/helper';
 
 @Component({
   selector: 'app-scale',

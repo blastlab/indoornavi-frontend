@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ScaleInputService} from './input.service';
 import {Measure, Scale} from '../scale.type';
 import {ActivatedRoute, Params} from '@angular/router';
-import {ToastService} from '../../../../../utils/toast/toast.service';
+import {ToastService} from '../../../../../shared/utils/toast/toast.service';
 import {ScaleHintService} from '../hint/hint.service';
 import {ScaleService} from '../scale.service';
 

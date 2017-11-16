@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {MdDialogRef} from '@angular/material';
-import {ToastService} from '../utils/toast/toast.service';
+import {ToastService} from '../shared/utils/toast/toast.service';
 import {User} from './user.type';
 import {UserService} from './user.service';
 import {TranslateService} from '@ngx-translate/core';
-import {Option} from '../utils/multiselect/multiselect.type';
+import {Option} from '../shared/utils/multiselect/multiselect.type';
 
 @Component({
   templateUrl: './user.dialog.html',

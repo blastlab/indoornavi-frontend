@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {MdDialogRef} from '@angular/material';
 import {TranslateService} from '@ngx-translate/core';
 import {Floor} from '../floor.type';
-import {ToastService} from '../../utils/toast/toast.service';
+import {ToastService} from '../../shared/utils/toast/toast.service';
 import {FloorService} from '../floor.service';
 
 @Component({

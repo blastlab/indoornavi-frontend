@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {AppHasPermissionDirective} from '../directive/hasPermission.directive';
+import {AppHasPermissionDirective} from '../utils/directive/hasPermission.directive';
 
 @NgModule({
   declarations: [

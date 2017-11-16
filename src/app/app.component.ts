@@ -2,7 +2,7 @@ import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {AuthGuard} from './auth/auth.guard';
 import {ActivatedRoute, Params} from '@angular/router';
 import {MenuItem} from 'primeng/primeng';
-import {BreadcrumbService} from './utils/breadcrumbs/breadcrumb.service';
+import {BreadcrumbService} from './shared/services/breadcrumbs/breadcrumb.service';
 
 @Component({
   selector: 'app-root',

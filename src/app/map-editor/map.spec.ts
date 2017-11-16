@@ -7,11 +7,11 @@ import {ScaleInputService} from './tool-bar/tools/scale/input/input.service';
 import {FormsModule} from '@angular/forms';
 import {ScaleHintComponent} from './tool-bar/tools/scale/hint/hint';
 import {TranslateModule} from '@ngx-translate/core';
-import {MapLoaderInformerService} from '../utils/map-loader-informer/map-loader-informer.service';
+import {MapLoaderInformerService} from '../shared/services/map-loader-informer/map-loader-informer.service';
 import {RouterTestingModule} from '@angular/router/testing';
 import {FloorService} from '../floor/floor.service';
-import {HttpService} from '../utils/http/http.service';
-import {ToastService} from '../utils/toast/toast.service';
+import {HttpService} from '../shared/services/http/http.service';
+import {ToastService} from '../shared/utils/toast/toast.service';
 import {Floor} from '../floor/floor.type';
 import {MapService} from './map.service';
 import {AuthGuard} from '../auth/auth.guard';
@@ -21,6 +21,7 @@ import {Observable} from 'rxjs/Observable';
 import {ScaleService} from './tool-bar/tools/scale/scale.service';
 import {MapViewerService} from './map.editor.service';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {ButtonModule, TooltipModule} from 'primeng/primeng';
 
 describe('MapEditorComponent', () => {
   let component: MapEditorComponent;
@@ -36,7 +37,9 @@ describe('MapEditorComponent', () => {
         MaterialModule,
         FormsModule,
         RouterTestingModule,
-        BrowserAnimationsModule
+        BrowserAnimationsModule,
+        TooltipModule,
+        ButtonModule
       ],
       declarations: [
         MapEditorComponent,

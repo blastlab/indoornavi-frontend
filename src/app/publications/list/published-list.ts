@@ -3,10 +3,10 @@ import {PublishedService} from '../../map-viewer/published.service';
 import {PublishedMap} from '../../map-viewer/published.type';
 import {TranslateService} from '@ngx-translate/core';
 import {MdDialog, MdDialogRef} from '@angular/material';
-import {ToastService} from '../../utils/toast/toast.service';
+import {ToastService} from '../../shared/utils/toast/toast.service';
 import {PublishedDialogComponent} from '../dialog/published.dialog';
 import {ActivatedRoute, Router} from '@angular/router';
-import {BreadcrumbService} from '../../utils/breadcrumbs/breadcrumb.service';
+import {BreadcrumbService} from '../../shared/services/breadcrumbs/breadcrumb.service';
 
 @Component({
   templateUrl: './published-list.html',

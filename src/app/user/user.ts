@@ -3,10 +3,10 @@ import {TranslateService} from '@ngx-translate/core';
 import {UserDialogComponent} from './user.dialog';
 import {MdDialog, MdDialogRef} from '@angular/material';
 import {PermissionGroup, User} from './user.type';
-import {ToastService} from '../utils/toast/toast.service';
+import {ToastService} from '../shared/utils/toast/toast.service';
 import {UserService} from './user.service';
 import {PermissionGroupService} from './permissionGroup.service';
-import {BreadcrumbService} from '../utils/breadcrumbs/breadcrumb.service';
+import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
 
 @Component({
   templateUrl: 'user.html',

@@ -4,7 +4,7 @@ import {Tool} from '../tool';
 import {TranslateService} from '@ngx-translate/core';
 import {Subscription} from 'rxjs/Rx';
 import {Config} from '../../../../../config';
-import {SocketService} from '../../../../utils/socket/socket.service';
+import {SocketService} from '../../../../shared/services/socket/socket.service';
 import {WizardStep} from './wizard-step';
 import {FirstStepComponent} from './first-step/first-step';
 import {SecondStepComponent} from './second-step/second-step';

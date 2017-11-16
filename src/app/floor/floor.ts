@@ -3,12 +3,12 @@ import {Floor} from './floor.type';
 import {FloorService} from './floor.service';
 import {MdDialog, MdDialogRef} from '@angular/material';
 import {FloorDialogComponent} from './dialog/floor.dialog';
-import {ToastService} from '../utils/toast/toast.service';
+import {ToastService} from '../shared/utils/toast/toast.service';
 import {NgForm} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {Building} from '../building/building.type';
-import {BreadcrumbService} from '../utils/breadcrumbs/breadcrumb.service';
+import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
 import {Complex} from '../complex/complex.type';
 import {BuildingService} from '../building/building.service';
 

@@ -17,7 +17,6 @@ export class ConfirmDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // todo: why We are setting text language this way?
     this.translateService.setDefaultLang('en');
     this.translateService.get('ok').subscribe((value: string) => {
       this.confirmButtonText = value;

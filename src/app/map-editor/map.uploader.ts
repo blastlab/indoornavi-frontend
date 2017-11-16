@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {Floor} from '../floor/floor.type';
-import {ToastService} from '../utils/toast/toast.service';
+import {ToastService} from '../shared/utils/toast/toast.service';
 import {TranslateService} from '@ngx-translate/core';
 import {ImageUploadComponent} from 'angular2-image-upload/lib/image-upload/image-upload.component';
 import {Config} from '../../config';

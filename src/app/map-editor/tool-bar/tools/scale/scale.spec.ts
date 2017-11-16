@@ -1,20 +1,21 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-
 import {ScaleComponent} from './scale';
 import {TranslateModule} from '@ngx-translate/core';
 import {MaterialModule} from '@angular/material';
 import {ScaleHintService} from './hint/hint.service';
 import {ScaleInputService} from './input/input.service';
-import {MapLoaderInformerService} from '../../../../utils/map-loader-informer/map-loader-informer.service';
+import {MapLoaderInformerService} from '../../../../shared/services/map-loader-informer/map-loader-informer.service';
 import {Measure, Scale} from 'app/map-editor/tool-bar/tools/scale/scale.type';
 import {Floor} from '../../../../floor/floor.type';
 import {Line, Point} from '../../../map.type';
-import {Geometry} from '../../../../utils/helper/geometry';
+import {Geometry} from '../../../../shared/utils/helper/geometry';
 import {AuthGuard} from '../../../../auth/auth.guard';
 import {HintBarService} from '../../../hint-bar/hint-bar.service';
 import {ActionBarService} from '../../../action-bar/actionbar.service';
 import {RouterTestingModule} from '@angular/router/testing';
 import {ScaleService} from './scale.service';
+import {ButtonModule, TooltipModule} from 'primeng/primeng';
+import {HttpService} from '../../../../shared/services/http/http.service';
 
 
 describe('Scale', () => {
@@ -32,11 +33,13 @@ describe('Scale', () => {
       imports: [
         MaterialModule,
         TranslateModule.forRoot(),
-        RouterTestingModule
+        RouterTestingModule,
+        ButtonModule,
+        TooltipModule
       ],
       providers: [
         ScaleHintService, ScaleInputService, MapLoaderInformerService, AuthGuard, HintBarService, ActionBarService,
-        ScaleService
+        ScaleService, HttpService
       ]
     })
       .compileComponents();

@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 import {Headers, Http, RequestOptions, Response, ResponseContentType} from '@angular/http';
 import {Observable} from 'rxjs/Rx';
-import {Config} from '../../../config';
+import {Config} from '../../../../config';
 import 'rxjs/add/observable/throw';
 import {ActivatedRoute, Params, Router} from '@angular/router';
-import {AuthGuard} from '../../auth/auth.guard';
+import {AuthGuard} from '../../../auth/auth.guard';
 
 @Injectable()
 export class HttpService {

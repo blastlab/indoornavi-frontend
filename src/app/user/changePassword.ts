@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {UserService} from 'app/user/user.service';
 import {TranslateService} from '@ngx-translate/core';
-import {ToastService} from '../utils/toast/toast.service';
-import {BreadcrumbService} from '../utils/breadcrumbs/breadcrumb.service';
+import {ToastService} from '../shared/utils/toast/toast.service';
+import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
 
 @Component({
   templateUrl: 'changePassword.html'

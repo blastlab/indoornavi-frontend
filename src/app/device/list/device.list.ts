@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import * as Collections from 'typescript-collections';
 import {MdDialog, MdDialogRef} from '@angular/material';
-import {ToastService} from '../../utils/toast/toast.service';
+import {ToastService} from '../../shared/utils/toast/toast.service';
 import {Device} from '../device.type';
 import {DeviceService} from '../device.service';
 import {DeviceDialogComponent} from '../dialog/device.dialog';

@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, NgZone, OnInit} from '@angular/core';
 import {Config} from '../../config';
-import {SocketService} from '../utils/socket/socket.service';
+import {SocketService} from '../shared/services/socket/socket.service';
 import {Subscription} from 'rxjs/Subscription';
 import {ActivatedRoute, Params} from '@angular/router';
 import {
@@ -14,13 +14,13 @@ import {
 } from './published.type';
 import {PublishedService} from './published.service';
 import {MapViewerService} from '../map-editor/map.editor.service';
-import {IconService, NaviIcons} from 'app/utils/drawing/icon.service';
+import {IconService, NaviIcons} from 'app/shared/services/drawing/icon.service';
 import {DrawBuilder, GroupCreated} from './published.builder';
 import * as d3 from 'd3';
 import {Point} from '../map-editor/map.type';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
 import {getRealDistanceInCentimeters} from '../map-editor/tool-bar/tools/scale/scale.type';
-import {Geometry} from '../utils/helper/geometry';
+import {Geometry} from '../shared/utils/helper/geometry';
 import {Tag} from '../device/tag.type';
 import {AreaService} from '../shared/services/area/area.service';
 import {Area} from '../shared/services/area/area.type';

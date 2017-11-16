@@ -1,19 +1,21 @@
 import {UserComponent} from './user';
 import {UserService} from './user.service';
-import {ToastService} from '../utils/toast/toast.service';
+import {ToastService} from '../shared/utils/toast/toast.service';
 import {MaterialModule, MdDialog} from '@angular/material';
 import {async, TestBed} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {FormsModule} from '@angular/forms';
 import {HttpModule} from '@angular/http';
-import {DialogTestModule} from '../utils/dialog/dialog.test';
 import {TranslateModule} from '@ngx-translate/core';
 import {RouterTestingModule} from '@angular/router/testing';
-import {HttpService} from '../utils/http/http.service';
+import {HttpService} from '../shared/services/http/http.service';
 import {Observable} from 'rxjs/Observable';
-import {SharedModule} from '../utils/shared/shared.module';
+import {SharedModule} from '../shared/modules/shared.module';
 import {AuthGuard} from '../auth/auth.guard';
 import {PermissionGroupService} from './permissionGroup.service';
+import {ButtonModule, TooltipModule} from 'primeng/primeng';
+import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
 
 describe('User component', () => {
   let component: UserComponent;
@@ -29,16 +31,20 @@ describe('User component', () => {
         FormsModule,
         MaterialModule,
         HttpModule,
-        DialogTestModule,
         TranslateModule.forRoot(),
         RouterTestingModule,
-        SharedModule
+        SharedModule,
+        ButtonModule,
+        TooltipModule
       ],
       declarations: [
         UserComponent
       ],
       providers: [
-        UserService, HttpService, ToastService, MdDialog, AuthGuard, PermissionGroupService
+        UserService, HttpService, ToastService, MdDialog, AuthGuard, PermissionGroupService, BreadcrumbService
+      ],
+      schemas: [
+        CUSTOM_ELEMENTS_SCHEMA
       ]
     }).compileComponents();
 

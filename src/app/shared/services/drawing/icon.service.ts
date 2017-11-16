@@ -7,6 +7,10 @@ import {DomSanitizer} from '@angular/platform-browser';
  * /assets/material-icons/svg-sprites
  */
 
+/*
+* todo: change material icon to what We are using globally (awesome font)
+*/
+
 @Injectable()
 export class IconService {
   materialIcons: Dictionary<string, string> = new Dictionary<string, string>();

@@ -5,7 +5,7 @@ import {Floor} from '../floor/floor.type';
 import {Tool} from './tool-bar/tools/tool';
 import {Building} from '../building/building.type';
 import {Complex} from '../complex/complex.type';
-import {BreadcrumbService} from '../utils/breadcrumbs/breadcrumb.service';
+import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
 import {BuildingService} from '../building/building.service';
 
 @Component({

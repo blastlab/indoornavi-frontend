@@ -1,5 +1,4 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-
 import {ScaleInputComponent} from './input';
 import {TranslateModule} from '@ngx-translate/core';
 import {ScaleInputService} from './input.service';
@@ -8,14 +7,14 @@ import {BrowserModule} from '@angular/platform-browser';
 import {HttpModule} from '@angular/http';
 import {MaterialModule} from '@angular/material';
 import {ScaleHintService} from '../hint/hint.service';
-import {ActivatedRoute} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
 import {DndModule} from 'ng2-dnd';
 import {FloorService} from '../../../../../floor/floor.service';
-import {ToastService} from '../../../../../utils/toast/toast.service';
+import {ToastService} from '../../../../../shared/utils/toast/toast.service';
 import {AuthGuard} from '../../../../../auth/auth.guard';
 import {ScaleService} from '../scale.service';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {ButtonModule, TooltipModule} from 'primeng/primeng';
 
 describe('ScaleInputComponent', () => {
   let component: ScaleInputComponent;
@@ -32,7 +31,9 @@ describe('ScaleInputComponent', () => {
         HttpModule,
         RouterTestingModule,
         DndModule.forRoot(),
-        BrowserAnimationsModule
+        BrowserAnimationsModule,
+        ButtonModule,
+        TooltipModule
       ],
       providers: [
         ScaleInputService, ScaleHintService, FloorService, ToastService, AuthGuard, ScaleService

@@ -1,10 +1,10 @@
 import {Component, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Subscription} from 'rxjs/Rx';
-import {SocketService} from '../utils/socket/socket.service';
+import {SocketService} from '../shared/services/socket/socket.service';
 import {MdDialog, MdDialogRef} from '@angular/material';
 import {Config} from '../../config';
 import {TranslateService} from '@ngx-translate/core';
-import {ToastService} from '../utils/toast/toast.service';
+import {ToastService} from '../shared/utils/toast/toast.service';
 import {DeviceDialogComponent} from './dialog/device.dialog';
 import {DeviceListComponent} from './list/device.list';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -12,7 +12,7 @@ import {Tag} from './tag.type';
 import {Anchor} from './anchor.type';
 import {Sink} from './sink.type';
 import {DeviceService} from './device.service';
-import {BreadcrumbService} from '../utils/breadcrumbs/breadcrumb.service';
+import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
 
 @Component({
   templateUrl: './device.component.html',
@@ -90,11 +90,6 @@ export class DeviceComponent implements OnInit, OnDestroy {
     }
   }
 
-  // this method opens a component dialog and cannot be passed as service
-  // in addition this method needs a path that is taken from
-  // this.route.snapshot.path that is this component prop
-  // similar method is used in DeviceListComponent and has the same name
-  // this method opens dialog that adds device
   openDialog(): void {
     this.device = DeviceService.emptyDeviceObjectDependentOnPath(this.routeState);
     this.dialogRef = this.dialog.open(DeviceDialogComponent, {
