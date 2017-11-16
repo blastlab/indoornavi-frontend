@@ -13,6 +13,7 @@ import {CrudComponent, CrudHelper} from '../utils/crud/crud.component';
 import {Device} from './device.type';
 import {NgForm} from '@angular/forms';
 import {ConfirmationService} from 'primeng/primeng';
+import {BreadcrumbService} from '../utils/breadcrumbs/breadcrumb.service';
 
 @Component({
   templateUrl: './device.html',
@@ -40,7 +41,8 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
               private route: ActivatedRoute,
               private deviceService: DeviceService,
               private toast: ToastService,
-              private confirmationService: ConfirmationService) {
+              private confirmationService: ConfirmationService,
+              private breadcrumbService: BreadcrumbService) {
   }
 
   ngOnInit() {
@@ -50,6 +52,11 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     this.deviceService.setUrl(this.deviceType + '/');
     this.translate.get('confirm.body').subscribe((value: string) => {
       this.confirmBody = value;
+    });
+    this.translate.get(`${this.deviceType}.header`).subscribe((value: string) => {
+      this.breadcrumbService.publishIsReady([
+        {label: value, disabled: true}
+      ]);
     });
 
     this.ngZone.runOutsideAngular(() => {

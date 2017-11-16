@@ -1,13 +1,14 @@
 <p-toolbar>
-<div class="ui-toolbar-group-left">
-  <button pButton class="ui-button-secondary"
-          id="add-floor"
-          [appHasPermission]="'FLOOR_CREATE'"
-          (click)="openDialog()"
-          label="{{'add'|translate}}"
-          icon="fa fa-plus" iconPos="left"
-  ></button>
-</div>
+  <div class="ui-toolbar-group-left">
+    <button pButton class="ui-button-secondary"
+            id="add-floor"
+            [appHasPermission]="'FLOOR_CREATE'"
+            (click)="openDialog()"
+            label="{{'add'|translate}}"
+            icon="fa fa-plus" iconPos="left"
+    ></button>
+  </div>
+</p-toolbar>
 
 <p-dataTable [loading]="loading" [value]="building.floors" styleClass="auto">
   <p-column field="level" header="{{'floor.level'|translate}}"></p-column>

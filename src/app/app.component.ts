@@ -11,6 +11,7 @@ import {BreadcrumbService} from './utils/breadcrumbs/breadcrumb.service';
 export class AppComponent implements OnInit {
   public isUserLoggedIn: boolean;
   public isDisplayedInIFrame: boolean = false;
+  displaySidebar: boolean = false;
 
   private breadcrumbs: MenuItem[];
 
