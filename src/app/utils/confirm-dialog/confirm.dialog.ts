@@ -17,6 +17,7 @@ export class ConfirmDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // todo: why We are setting text language this way?
     this.translateService.setDefaultLang('en');
     this.translateService.get('ok').subscribe((value: string) => {
       this.confirmButtonText = value;
@@ -33,9 +34,11 @@ export class ConfirmDialogComponent implements OnInit {
     }
     if ('confirmButtonText' in data) {
       this.confirmButtonText = data['confirmButtonText'];
+      console.log(this.confirmButtonText);
     }
     if ('cancelButtonText' in data) {
       this.cancelButtonText = data['cancelButtonText'];
+      console.log(this.cancelButtonText);
     }
   }
 

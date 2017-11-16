@@ -1,0 +1,73 @@
+<h1 [translate]="'permissionGroup.header'"></h1>
+
+<div class="adding-section">
+    <button [appHasPermission]="'PERMISSION_GROUP_CREATE'" md-raised-button id="new-permissionGroup-button" type="button" (click)="openDialog()">
+        {{'add'|translate}}
+    </button>
+</div>
+
+<p-dataTable [loading]="loading" [value]="permissionGroups" styleClass="auto">
+  <p-column field="name" header="{{'permissionGroup.name'|translate}}"></p-column>
+  <p-column field="permissions" header="{{'permissionGroup.permissions'|translate}}">
+    <ng-template let-permissionGroup="rowData" pTemplate="body">
+      <span *ngFor="let permission of permissionGroup.permissions; let i = index">
+        {{permission.name}}<span *ngIf="i < permissionGroup.permissions.length - 1">, </span>
+      </span>
+    </ng-template>
+  </p-column>
+  <p-column header="{{'th.actions'|translate}}" styleClass="col-button">
+    <ng-template let-permissionGroup="rowData" let-i="rowIndex" pTemplate="body">
+      <button
+        [appHasPermission]="'PERMISSION_GROUP_UPDATE'"
+        md-tooltip="{{'edit'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="openDialog(permissionGroup)" icon="fa-edit">
+      </button>
+      <button
+        [appHasPermission]="'PERMISSION_GROUP_DELETE'"
+        md-tooltip="{{'remove'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="remove(i)" icon="fa-trash">
+      </button>
+    </ng-template>
+  </p-column>
+</p-dataTable>
+
+<p-dialog header="{{'permissionGroup.details'}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
+          [contentStyle]="{ overflow: 'visible' }"
+          [width]="800"
+          dismissableMask="true">
+  <form #permissionGroupForm="ngForm" novalidate>
+    <div *ngIf="permissionGroup">
+      <div class="ui-g">
+        <div class="ug-g-12 ui-md-4 ui-lg-4">
+          <div class="ui-message ui-messages-error ui-corner-all"
+               *ngIf="nameInput.errors?.required && nameInput.touched && nameInput.dirty">
+            <i class="fa fa-warning"></i>
+            {{'permissionGroup.name.required'|translate}}
+          </div>
+        </div>
+        <div class="ui-g-12 ui-md-2 ui-lg-2">
+          <label for="name">{{'permissionGroup.name'|translate}}</label>
+        </div>
+        <div class="ui-g-12 ui-md-6 ui-lg-6">
+          <input required name="name" [appAutoFocus]="displayDialog" pInputText id="name" [(ngModel)]="permissionGroup.name" #nameInput="ngModel" />
+        </div>
+      </div>
+      <div class="ui-g">
+        <div class="ui-g-12 ui-md-2 ui-lg-2 ui-md-offset-4 ui-lg-offset-4">
+          <label for="permissions">{{'permissionGroup.permissions'|translate}}</label>
+        </div>
+        <div class="ui-g-12 ui-md-6 ui-lg-6">
+          <p-multiSelect name="permissions" id="permissions" [options]="permissions" [(ngModel)]="permissionGroup.permissions" optionLabel="name"
+                         [style]="{ 'width': '100%' }" dataKey="id" [defaultLabel]="selectPermissionLabel">
+          </p-multiSelect>
+        </div>
+      </div>
+    </div>
+    <p-footer>
+      <div class="ui-dialog-buttonpane ui-helper-clearfix">
+        <button type="button" pButton icon="fa-close" (click)="cancel()" label="{{'cancel'|translate}}"></button>
+        <button type="submit" pButton icon="fa-check" (click)="save(permissionGroupForm.valid)" label="{{'save'|translate}}"></button>
+      </div>
+    </p-footer>
+  </form>
+</p-dialog>
+
+<p-confirmDialog icon="fa fa-question-circle" width="425"></p-confirmDialog>

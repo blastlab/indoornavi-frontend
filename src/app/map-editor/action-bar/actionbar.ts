@@ -1,4 +1,4 @@
-import {animate, ChangeDetectorRef, Component, Input, NgZone, OnDestroy, OnInit, state, style, transition, trigger, ViewRef} from '@angular/core';
+import {animate, ChangeDetectorRef, Component, Input, NgZone, OnDestroy, OnInit, state, style, transition, trigger, ViewChild} from '@angular/core';
 import {ActionBarService} from './actionbar.service';
 import {Floor} from '../../floor/floor.type';
 import {MapLoaderInformerService} from '../../utils/map-loader-informer/map-loader-informer.service';
@@ -38,7 +38,9 @@ export class ActionBarComponent implements OnInit, OnDestroy {
   private configurationLoadedSubscription: Subscription;
   private configurationChangedSubscription: Subscription;
   private timer: Timer;
-  private publishedDialogRef: MdDialogRef<PublishedDialogComponent>;
+
+  @ViewChild(PublishedDialogComponent)
+  private publishedMapDialog: PublishedDialogComponent;
 
   // confirm dialog data
   private confirmDialogRef: MdDialogRef<ConfirmDialogComponent>;
@@ -147,19 +149,25 @@ export class ActionBarComponent implements OnInit, OnDestroy {
     });
     this.confirmDialogRef.afterClosed().subscribe((okButtonClicked: boolean) => {
       if (okButtonClicked) {
-        this.publishedDialogRef = this.dialog.open(PublishedDialogComponent, {width: '500px', height: '600px'});
-        this.publishedDialogRef.componentInstance.setMap({
-          floor: this.floor,
-          users: [],
-          tags: []
+        const subscription = this.publishedMapDialog.open().subscribe((_: PublishedMap) => {
+          this.configurationService.publish().subscribe(() => {
+            this.afterPublishDone();
+            subscription.unsubscribe();
+          });
         });
-        this.publishedDialogRef.afterClosed().subscribe((savedMap: PublishedMap) => {
-          if (!!savedMap) {
-            this.configurationService.publish().subscribe(() => {
-              this.afterPublishDone();
-            });
-          }
-        });
+        // this.publishedDialogRef = this.dialog.open(PublishedDialogComponent, {width: '500px', height: '600px'});
+        // this.publishedDialogRef.componentInstance.setMap({
+        //   floor: this.floor,
+        //   users: [],
+        //   tags: []
+        // });
+        // this.publishedDialogRef.afterClosed().subscribe((savedMap: PublishedMap) => {
+        //   if (!!savedMap) {
+        //     this.configurationService.publish().subscribe(() => {
+        //       this.afterPublishDone();
+        //     });
+        //   }
+        // });
       } else if (okButtonClicked !== undefined) { // don't do it when user closed dialog giving no answer
         this.configurationService.publish().subscribe(() => {
           this.afterPublishDone();
@@ -194,7 +202,7 @@ export class ActionBarComponent implements OnInit, OnDestroy {
     this.saveButtonDisabled = true;
     this.updateUndoDialogBody(new Date());
     // if (!(this.cd as ViewRef).destroyed) {
-      this.cd.detectChanges();
+    this.cd.detectChanges();
     // }
   }
 

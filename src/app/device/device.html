@@ -1,0 +1,94 @@
+<p-toolbar>
+  <div class="ui-toolbar-group-left">
+    <button pButton class="ui-button-secondary"
+            id="open-dialog" [appHasPermission]="createPermission"
+            (click)="openDialog()"
+            label="{{'add'|translate}}"
+            icon="fa fa-plus" iconPos="left">
+    </button>
+  </div>
+</p-toolbar>
+
+<p-pickList class="device-list" [source]="notVerified" [target]="verified" dragdrop="true" [responsive]="true"
+            sourceHeader="{{'device.notVerified'|translate}}" targetHeader="{{'device.verified'|translate}}"
+            [showSourceControls]="false" [showTargetControls]="false" filterBy="shortId"
+            sourceFilterPlaceholder="{{'device.searchByShortId'|translate}}" targetFilterPlaceholder="{{'device.searchByShortId'|translate}}"
+            (onMoveToTarget)="onItemMoved($event.items)" (onMoveToSource)="onItemMoved($event.items)">
+  <ng-template let-device pTemplate="item">
+    <div class="ui-helper-clearfix">
+      <div class="ui-g">
+        <div class="ui-g-9 ui-md-9 ui-lg-9 device-details">
+          <div><b>{{'device.shortId'|translate}}:</b> {{device['shortId']}}</div>
+          <div><b>{{'device.longId'|translate}}:</b> {{device['longId']}}</div>
+          <div><b>{{'device.name'|translate}}:</b> {{device['name']}}</div>
+        </div>
+        <div class="ui-g-3 ui-md-3 ui-lg-3">
+          <button
+            [appHasPermission]="editPermission"
+            md-tooltip="{{'edit'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="openDialog(device)" icon="fa-edit">
+          </button>
+          <button
+            [appHasPermission]="deletePermission"
+            md-tooltip="{{'remove'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="remove(device)" icon="fa-trash">
+          </button>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</p-pickList>
+
+<p-dialog header="{{'device.details'}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
+          [contentStyle]="{ overflow: 'visible' }"
+          [width]="800"
+          dismissableMask="true">
+  <form #deviceForm="ngForm" novalidate>
+    <div *ngIf="device">
+      <div class="ui-g" >
+        <div class="ug-g-12 ui-md-4 ui-lg-4">
+          <div class="ui-message ui-messages-error ui-corner-all"
+               *ngIf="shortIdInput.errors?.required && shortIdInput.touched && shortIdInput.dirty">
+            <i class="fa fa-warning"></i>
+            {{'device.shortId.required'|translate}}
+          </div>
+        </div>
+        <div class="ui-g-12 ui-md-2 ui-lg-2">
+          <label for="shortId">{{'device.shortId'|translate}}</label>
+        </div>
+        <div class="ui-g-12 ui-md-6 ui-lg-6">
+          <input name="shortId" required [appAutoFocus]="displayDialog" pInputText id="shortId" [(ngModel)]="device.shortId" #shortIdInput="ngModel" />
+        </div>
+      </div>
+      <div class="ui-g" >
+        <div class="ug-g-12 ui-md-4 ui-lg-4">
+          <div class="ui-message ui-messages-error ui-corner-all"
+               *ngIf="longIdInput.errors?.required && longIdInput.touched && longIdInput.dirty">
+            <i class="fa fa-warning"></i>
+            {{'device.longId.required'|translate}}
+          </div>
+        </div>
+        <div class="ui-g-12 ui-md-2 ui-lg-2">
+          <label for="longId">{{'device.longId'|translate}}</label>
+        </div>
+        <div class="ui-g-12 ui-md-6 ui-lg-6">
+          <input name="longId" required pInputText id="longId" [(ngModel)]="device.longId" #longIdInput="ngModel" />
+        </div>
+      </div>
+      <div class="ui-g" >
+        <div class="ui-g-12 ui-md-2 ui-lg-2 ui-g-offset-12 ui-md-offset-4 ui-lg-offset-4">
+          <label for="name">{{'device.name'|translate}}</label>
+        </div>
+        <div class="ui-g-12 ui-md-6 ui-lg-6">
+          <input name="name" pInputText id="name" [(ngModel)]="device.name" #nameInput="ngModel" />
+        </div>
+      </div>
+      <p-footer>
+        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+          <button type="button" pButton icon="fa-close" (click)="cancel()" label="{{'cancel'|translate}}"></button>
+          <button type="submit" pButton icon="fa-check" (click)="save(deviceForm.valid)" label="{{'save'|translate}}"></button>
+        </div>
+      </p-footer>
+    </div>
+  </form>
+</p-dialog>
+
+<p-confirmDialog icon="fa fa-question-circle" width="425"></p-confirmDialog>

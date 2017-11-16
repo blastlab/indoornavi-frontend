@@ -17,7 +17,8 @@ export class AuthComponent implements OnInit {
               private router: Router,
               private route: ActivatedRoute,
               private authGuard: AuthGuard,
-              private toastService: ToastService) {
+              private toastService: ToastService
+  ) {
     translateService.setDefaultLang('en');
   }
 
@@ -25,6 +26,7 @@ export class AuthComponent implements OnInit {
     if (localStorage.getItem('currentUser')) {
       this.authService.logout();
       localStorage.removeItem('currentUser');
+      this.authGuard.toggleUserLoggedIn(false);
       this.router.navigate(['/login']);
     }
   }
