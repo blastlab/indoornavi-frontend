@@ -20,7 +20,7 @@ class Device:
     # Main function for devices
     def test(self):
         # Add anchor test - with correct credentials
-        self.__load_devices_page_and_check_if_device_already_exists()
+        self.__should_load_devices_page_and_check_if_device_already_exists()
         # Edit anchor test
         self._should_edit_and_change_values_of_last_anchor()
 
@@ -163,19 +163,22 @@ class Device:
         save_button = self.__wb.find_element_by_id('save-button')
         save_button.click()
 
-        # There should appear new anchor row with correctly data
-        # Step 1: displayed information ?
-        # Step 2: properly data ?
-        # Step 3: push variable to compare_array to check correctly data
+        # Wait for text message in appearing toast
+        try:
+            # Wait for toast with specific text
+            WebDriverWait(self.__wb, 5).until(EC.text_to_be_present_in_element((By.CLASS_NAME, 'mat-simple-snackbar-message'), 'Device has been saved'))
 
-        element_text = WebDriverWait(self.__wb, 5).until(EC.presence_of_element_located((By.CLASS_NAME, 'mat-simple-snackbar-message')))
-        toast_device_saved_text = self.__wb.find_element_by_class_name('mat-simple-snackbar-message').text
+            # Wait to toast disappear
+            try:
+                WebDriverWait(self.__wb, 2).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'mat-simple-snackbar-message')))
+            except TimeoutException:
+                print(colored('[Failure] Toast has not been disappeared', 'red'))
 
-        assert toast_device_saved_text == 'Device has been saved', '[Failure] The message is incorrect'
-        # Print Success
-        print(colored('T11.[Complete] Edit anchor functionality', 'green'))
-        # Call function remove anchor
-        self.__should_remove_last_anchor(self.__new_short_id)
+            # Call function remove anchor
+            self.__should_remove_last_anchor(self.__new_short_id)
+        except TimeoutException:
+            print(colored('[Failure] Toast has not been found', 'red'))
+            pass
     #
     # Test of removing anchor
     #
@@ -187,11 +190,12 @@ class Device:
 
         try:
             # Wait for message
-            toast_device_removed_text = WebDriverWait(self.__wb, 5).until(EC.presence_of_element_located((By.CLASS_NAME, 'mat-simple-snackbar-message')))
-            toast_device_removed_text = self.__wb.find_element_by_class_name('mat-simple-snackbar-message').text
-            # Check the message content is displayed correctly
-            assert toast_device_removed_text == 'Device has been removed', '[Failure] The message in toast is invalid'
-            print(colored('T12.[Complete] Remove anchor functionality', 'green'))
-
+            remove_toast = WebDriverWait(self.__wb, 5).until(EC.visibility_of_element_located((By.CLASS_NAME, 'mat-simple-snackbar-message')))
+            # Get text
+            remove_toast_text = remove_toast.text
+            # Check that if text is correct
+            assert remove_toast_text == 'Device has been removed', '[Failure] Element doesnt contain valid message'
         except TimeoutException:
             print(colored("[Failure] Wait for element too long", "red"))
+
+        print(colored('[Complete] Remove anchor functionality', 'green'))
