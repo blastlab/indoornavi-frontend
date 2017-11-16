@@ -133,9 +133,9 @@ table th.col-checkbox, table td.col-checkbox {
   width: 40px;
 }
 
-#auth {
+app-auth > div {
   width: 400px;
-  height: 400px;
+  height: 250px;
 
   position: absolute;
   top:0;

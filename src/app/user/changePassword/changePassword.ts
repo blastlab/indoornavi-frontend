@@ -15,6 +15,7 @@ export class ChangePasswordComponent implements OnInit {
     newPassword: '',
     newPasswordRepeat: ''
   };
+  passwordsEqual: boolean = true;
 
   constructor(private userService: UserService,
               public translateService: TranslateService,
@@ -32,8 +33,8 @@ export class ChangePasswordComponent implements OnInit {
     });
   }
 
-  validatePasswords(): boolean {
-    return this.model.newPassword !== this.model.newPasswordRepeat && (this.model.newPassword.length > 0 && this.model.newPasswordRepeat.length > 0);
+  validatePasswords(): void {
+    this.passwordsEqual = (!this.model.newPassword || !this.model.newPasswordRepeat) || this.model.newPassword === this.model.newPasswordRepeat;
   }
 
   save(isValid: boolean): void {

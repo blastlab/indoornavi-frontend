@@ -28,7 +28,6 @@ export class UserComponent implements OnInit, CrudComponent {
   private confirmBody: string;
 
   constructor(public translateService: TranslateService,
-              // private dialog: MdDialog,
               private toast: ToastService,
               private userService: UserService,
               private permissionGroupService: PermissionGroupService,
