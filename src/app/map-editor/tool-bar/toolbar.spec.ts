@@ -3,7 +3,7 @@ import {ToolbarComponent} from './toolbar';
 import {ScaleComponent} from './tools/scale/scale';
 import {WizardComponent} from './tools/wizard/wizard';
 import {TranslateModule} from '@ngx-translate/core';
-import {MaterialModule, MdDialog} from '@angular/material';
+import {MaterialModule} from '@angular/material';
 import {FirstStepComponent} from './tools/wizard/first-step/first-step';
 import {SecondStepComponent} from './tools/wizard/second-step/second-step';
 import {ThirdStepComponent} from './tools/wizard/third-step/third-step';
