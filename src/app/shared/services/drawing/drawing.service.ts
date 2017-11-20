@@ -65,7 +65,7 @@ export class DrawingService {
       .attr('fill', 'red');
   }
 
-  private markerAppend(group: d3.selector, boxMargin: number, objectParams: ObjectParams) {
+  private markerAppend(group: d3.selector, boxMargin: number, objectParams: ObjectParams): void {
     if (!objectParams.fill) {
       objectParams.fill = 'red';
     }
@@ -76,7 +76,7 @@ export class DrawingService {
       .attr('fill', objectParams.fill);
   }
 
-  private dragGroupBehavior() {
+  private dragGroupBehavior(): void {
     const map = d3.select('#map');
     const boxMargin = DrawingService.boxSize / 2;
     let dx = parseInt(d3.select(this).attr('x'), 10);

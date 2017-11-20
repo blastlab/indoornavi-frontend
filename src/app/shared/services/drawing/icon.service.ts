@@ -21,6 +21,10 @@ export class IconService {
       'hardware', 'image', 'maps', 'navigation', 'notification', 'places', 'social', 'toggle']);
   }
 
+  public getIcon(iconName: string): string {
+    return this.materialIcons.getValue(iconName);
+  }
+
   private loadCollections(collection: string[]) {
     for (let i = 0; i < collection.length; i++) {
       this.mdIconRegistry
@@ -34,10 +38,6 @@ export class IconService {
         }
       });
     }
-  }
-
-  public getIcon(iconName: string): string {
-    return this.materialIcons.getValue(iconName);
   }
 }
 
