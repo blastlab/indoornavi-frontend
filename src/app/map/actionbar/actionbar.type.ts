@@ -11,6 +11,6 @@ export interface Configuration {
 
 export interface ConfigurationData {
   sinks: Sink[];
-    anchors?: Anchor[];  // TODO delete `?` after DTO update
+  anchors: Anchor[];
   scale: Scale;
 }

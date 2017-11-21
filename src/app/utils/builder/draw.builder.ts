@@ -2,17 +2,17 @@ import * as d3 from 'd3';
 import {Point} from '../../map/map.type';
 
 export class DrawBuilder {
-  private appendable: d3.selection;
   private configuration: DrawConfiguration;
+  public container: d3.selection;
 
-  constructor(appendable: d3.selection,
+  constructor(container: d3.selection,
               configuration: DrawConfiguration) {
-    this.appendable = appendable;
+    this.container = container;
     this.configuration = configuration;
   }
 
   createGroup(): GroupCreated {
-    const group = this.appendable
+    const group = this.container
       .append('svg')
       .attr('id', this.configuration.id)
       .attr('class', this.configuration.clazz)
@@ -22,26 +22,29 @@ export class DrawBuilder {
     if (this.configuration.cursor) {
       group.style('cursor', this.configuration.cursor);
     }
-    return new GroupCreated(group);
+    return new GroupCreated(group, this.container);
   }
 }
 
 export class GroupCreated {
-  group: d3.selection;
+  domGroup: d3.selection;
+  container: d3.selection;
 
-  constructor(group: d3.selection) {
-    this.group = group;
+  constructor(domGroup: d3.selection,
+              container: d3.selection) {
+    this.domGroup = domGroup;
+    this.container = container;
   }
 
   place(coordinates: Point): GroupCreated {
-    this.group
+    this.domGroup
       .attr('x', coordinates.x)
       .attr('y', coordinates.y);
     return this;
   }
 
   move(coordinates: Point): GroupCreated {
-    this.group
+    this.domGroup
       .transition()
       .attr('x', coordinates.x)
       .attr('y', coordinates.y)
@@ -50,7 +53,7 @@ export class GroupCreated {
   }
 
   addIcon(coordinates: Point, icon: string): GroupCreated {
-    this.group
+    this.domGroup
       .append('svg')
       .attr('x', coordinates.x)
       .attr('y', coordinates.y)
@@ -61,7 +64,7 @@ export class GroupCreated {
   }
 
   addPointer(coordinates: Point, icon: string): GroupCreated {
-    this.group
+    this.domGroup
       .append('svg')
       .attr('x', coordinates.x)
       .attr('y', coordinates.y)
@@ -73,7 +76,7 @@ export class GroupCreated {
   }
 
   addText(coordinates: Point, text: string): GroupCreated {
-    this.group
+    this.domGroup
       .append('text')
       .attr('x', coordinates.x)
       .attr('y', coordinates.y)
@@ -83,7 +86,7 @@ export class GroupCreated {
   }
 
   remove(): void {
-    this.group.remove();
+    this.domGroup.remove();
   }
 }
 

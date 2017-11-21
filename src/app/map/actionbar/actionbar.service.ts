@@ -131,6 +131,28 @@ export class ActionBarService {
     return sinks;
   }
 
+  /*
+
+    public setSink(sink: Sink): void {
+      const sinks: Collections.Set<Sink> = this.getConfigurationSinks();
+      const sinkCopy = {...sink};
+      if (sinks.contains(sinkCopy)) {
+        sinks.remove(sinkCopy);
+      }
+      sinks.add(sinkCopy);
+      this.configuration.data.sinks = sinks.toArray();
+      this.sendConfigurationChangedEvent();
+    }
+
+    private getConfigurationSinks(): Collections.Set<Sink> {
+      const sinks = new Collections.Set<Sink>(ActionBarService.compareFn);
+      this.configuration.data.sinks.forEach((configurationSink: Sink) => {
+        sinks.add(configurationSink);
+      });
+      return sinks;
+    }
+  */
+
   private hashConfiguration(): string | Int32Array {
     return Md5.hashStr(JSON.stringify(this.configuration));
   }
