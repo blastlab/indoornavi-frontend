@@ -6,6 +6,12 @@ import * as d3 from 'd3';
 @Injectable()
 export class MapViewerService {
 
+  static maxZoomOut (imageWidth: number, imageHeight: number): number {
+    const zoomOutWidth: number = window.innerWidth / imageWidth;
+    const zoomOutHeight: number = window.innerHeight / imageHeight;
+    return (zoomOutWidth < zoomOutHeight) ? zoomOutWidth : zoomOutHeight;
+  }
+
   constructor(private mapService: MapService) {
   }
 
@@ -13,15 +19,19 @@ export class MapViewerService {
     return new Promise((resolve) => {
       const image = new Image();
       image.onload = () => {
-        const map = d3.select('#map');
 
-        // define pattern to use as fill attribute in rect
+        const map = d3.select('#map-layout'),
+              g = map.append('g'),
+              zoomed = () => {
+                g.attr('transform', d3.event.transform);
+              };
+
         map
           .attr('width', image.width)
           .attr('height', image.height)
           .append('defs')
           .append('pattern')
-          .attr('id', 'mapBackground')
+          .attr('id', 'map')
           .attr('patternUnits', 'userSpaceOnUse')
           .attr('width', image.width)
           .attr('height', image.height)
@@ -32,12 +42,22 @@ export class MapViewerService {
           .attr('width', image.width)
           .attr('height', image.height);
 
-        // use background image as fill attribute
+        g.append('rect')
+          .attr('width', image.width)
+          .attr('height', image.height)
+          .style('fill', 'url(#map)');
+
         map
           .append('rect')
           .attr('width', image.width)
           .attr('height', image.height)
-          .attr('fill', 'url(#mapBackground)');
+          .style('fill', 'none')
+          .style('pointer-events', 'all')
+          .call(d3.zoom()
+            .scaleExtent([MapViewerService.maxZoomOut(image.width, image.height), 1])
+            // todo: calculation of translateExtent to be set according to page layout
+            .translateExtent([[-window.innerWidth + 1000, -window.innerHeight + 400], [image.width * 2, image.height * 2]])
+            .on('zoom', zoomed));
 
         resolve(map);
       };
