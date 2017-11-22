@@ -40,6 +40,11 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private mapHeight: number;
   private scale: Scale;
 
+  private static calculateFromZoom () {
+    const scale = d3.select('#map').attr('scale');
+    console.log(scale);
+  }
+
   constructor(private translate: TranslateService,
               private scaleInput: ScaleInputService,
               private scaleHint: ScaleHintService,
@@ -90,9 +95,10 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     });
 
     this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe(() => {
-      const mapSvg = d3.select('#map');
-      this.mapWidth = mapSvg.attr('width');
-      this.mapHeight = mapSvg.attr('height');
+      ScaleComponent.calculateFromZoom();
+      // const mapSvg = d3.select('#map');
+      // mapSvg.attr('width') = mapSvg.attr('width');
+      // mapSvg.attr('height') = mapSvg.attr('height');
       this.createSvgGroupWithScale();
     });
 
@@ -145,7 +151,8 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     d3.select('#map')
       .append('g')
       .attr('id', 'scaleGroup')
-      .style('display', 'none');
+      .style('display', 'none')
+      .on('click', () => console.log('map clicked'));
     this.updateScaleGroup();
   }
 
@@ -400,10 +407,10 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     } else {
       circleSelection
         .attr('cx', (d) => {
-          return d.x = Math.max(0, Math.min(this.mapWidth, d3.event.x));
+          return d.x = Math.max(0, Math.min(d3.select('#map').attr('width'), d3.event.x));
         })
         .attr('cy', (d) => {
-          return d.y = Math.max(0, Math.min(this.mapHeight, d3.event.y));
+          return d.y = Math.max(0, Math.min(d3.select('#map').attr('height'), d3.event.y));
         });
     }
     this.redrawAllObjectsOnMap();
@@ -421,7 +428,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     if (Math.abs(potentialSlope) < lowerSlope) {
       circle
         .attr('cx', (d) => {
-          return d.x = Math.max(0, Math.min(this.mapWidth, d3.event.x));
+          return d.x = Math.max(0, Math.min(d3.select('#map').attr('width'), d3.event.x));
         })
         .attr('cy', (d) => {
           return d.y = secondPoint.y;
@@ -432,23 +439,23 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
           return d.x = secondPoint.x;
         })
         .attr('cy', (d) => {
-          return d.y = Math.max(0, Math.min(this.mapHeight, d3.event.y));
+          return d.y = Math.max(0, Math.min(d3.select('#map').attr('height'), d3.event.y));
         });
     } else if (potentialSlope < upperSlope && potentialSlope > lowerSlope) {
       circle
         .attr('cx', (d) => {
-          return d.x = Math.max(0, Math.min(this.mapWidth, secondPoint.x + ( d3.event.y - secondPoint.y)));
+          return d.x = Math.max(0, Math.min(d3.select('#map').attr('width'), secondPoint.x + ( d3.event.y - secondPoint.y)));
         })
         .attr('cy', (d) => {
-          return d.y = Math.max(0, Math.min(this.mapHeight, d3.event.y));
+          return d.y = Math.max(0, Math.min(d3.select('#map').attr('height'), d3.event.y));
         });
     } else if (potentialSlope > -upperSlope && potentialSlope < -lowerSlope) {
       circle
         .attr('cx', (d) => {
-          return d.x = Math.max(0, Math.min(this.mapWidth, secondPoint.x - ( d3.event.y - secondPoint.y)));
+          return d.x = Math.max(0, Math.min(d3.select('#map').attr('width'), secondPoint.x - ( d3.event.y - secondPoint.y)));
         })
         .attr('cy', (d) => {
-          return d.y = Math.max(0, Math.min(this.mapHeight, d3.event.y));
+          return d.y = Math.max(0, Math.min(d3.select('#map').attr('height'), d3.event.y));
         });
     }
   }
@@ -475,8 +482,8 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     const scaleInput = document.getElementById('scaleInput');
     const inputHeight = scaleInput.offsetHeight;
     const inputWidth = scaleInput.offsetWidth;
-    const x = Math.max(0, Math.min(tempX, this.mapWidth - inputWidth - 25));
-    const y = Math.max(inputHeight, Math.min(tempY, this.mapHeight - inputHeight));
+    const x = Math.max(0, Math.min(tempX, d3.select('#map').attr('width') - inputWidth - 25));
+    const y = Math.max(inputHeight, Math.min(tempY, d3.select('#map').attr('height') - inputHeight));
     const p = <Point>{
       x: x,
       y: y

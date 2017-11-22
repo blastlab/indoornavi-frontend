@@ -20,44 +20,32 @@ export class MapViewerService {
       const image = new Image();
       image.onload = () => {
 
-        const map = d3.select('#map-layout'),
-              g = map.append('g'),
-              zoomed = () => {
-                g.attr('transform', d3.event.transform);
-              };
+        const zoomed = () => {
+          g.attr('transform', d3.event.transform);
+        };
+        const map = d3.select('#map-upper-layer')
+            .attr('width', image.width)
+            .attr('height', image.height)
+          .call(d3.zoom()
+            .scaleExtent([MapViewerService.maxZoomOut(image.width, image.height), 1])
+            // todo: calculation of translateExtent to be set according to page layout,
+            .translateExtent([[-window.innerWidth + 100 , -window.innerHeight + 100], [image.width * 2, image.height * 2]])
+            .on('zoom', zoomed));
 
-        map
-          .attr('width', image.width)
-          .attr('height', image.height)
-          .append('defs')
-          .append('pattern')
-          .attr('id', 'map')
-          .attr('patternUnits', 'userSpaceOnUse')
-          .attr('width', image.width)
-          .attr('height', image.height)
-          .append('image')
+        const g = map.append('g');
+
+        g.attr('id', 'map')
+          .append('svg:image')
+          .attr('id', 'map-img')
           .attr('xlink:href', image.src)
           .attr('x', 0)
           .attr('y', 0)
           .attr('width', image.width)
-          .attr('height', image.height);
-
-        g.append('rect')
-          .attr('width', image.width)
           .attr('height', image.height)
-          .style('fill', 'url(#map)');
-
-        map
-          .append('rect')
-          .attr('width', image.width)
-          .attr('height', image.height)
-          .style('fill', 'none')
-          .style('pointer-events', 'all')
-          .call(d3.zoom()
-            .scaleExtent([MapViewerService.maxZoomOut(image.width, image.height), 1])
-            // todo: calculation of translateExtent to be set according to page layout
-            .translateExtent([[-window.innerWidth + 1000, -window.innerHeight + 400], [image.width * 2, image.height * 2]])
-            .on('zoom', zoomed));
+          .style('pointer-events', 'all').on('click', () => {
+              map.select('#map-upper-layers').style('pointer-events', 'none');
+              console.log('clicked');
+          });
 
         resolve(map);
       };
