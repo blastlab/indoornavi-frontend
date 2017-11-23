@@ -41,7 +41,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private mapWidth: number;
   private mapHeight: number;
   private scale: Scale;
-  private zoom: number;
+  private zoom: number = 1.0;
   private map2DTranslation: Point = {x: 0, y: 0};
 
   constructor(private translate: TranslateService,
@@ -77,15 +77,9 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   ngOnInit(): void {
     this.mapService.mapIsTransformed().subscribe((transformation: Transform) => {
-      if (!!transformation) {
-        this.zoom = transformation.k;
-        this.map2DTranslation.x = transformation.x;
-        this.map2DTranslation.y = transformation.y;
-      } else {
-        this.zoom = 1.0;
-        this.map2DTranslation.x = 0.0;
-        this.map2DTranslation.y = 0.0;
-      }
+      this.zoom = transformation.k;
+      this.map2DTranslation.x = transformation.x;
+      this.map2DTranslation.y = transformation.y;
       console.log(this.map2DTranslation, this.zoom);
     });
     this.createEmptyScale();
@@ -150,6 +144,8 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   public toolClicked(): void {
+    console.log('scale opened');
+    this.mapService.publishDrawingScale(true);
     this.clicked.emit(this);
   }
 
@@ -162,7 +158,9 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       .append('g')
       .attr('id', 'scaleGroup')
       .style('display', 'none')
-      .on('click', () => console.log('scale clicked'));
+      .on('click', () => {
+
+      });
     this.updateScaleGroup();
   }
 
@@ -417,10 +415,12 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     } else {
       circleSelection
         .attr('cx', (d) => {
-          return d.x = Math.max(0, Math.min(d3.select('#map').attr('width'), d3.event.x));
+          console.log(d3.event.x);
+          return d.x = Math.max(0, d3.event.x);
         })
         .attr('cy', (d) => {
-          return d.y = Math.max(0, Math.min(d3.select('#map').attr('height'), d3.event.y));
+          console.log(d3.event.y);
+          return d.y = Math.max(0, d3.event.y);
         });
     }
     this.redrawAllObjectsOnMap();
@@ -532,4 +532,3 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
 }
-

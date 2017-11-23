@@ -6,6 +6,7 @@ import {Transform} from './map.type';
 
 @Injectable()
 export class MapViewerService {
+  private scaleIsInDrawingProcess: boolean = false;
 
   static maxZoomOut (imageWidth: number, imageHeight: number): number {
     const zoomOutWidth: number = window.innerWidth / imageWidth;
@@ -16,16 +17,20 @@ export class MapViewerService {
   constructor(private mapService: MapService) {
   }
 
+
   drawMap(floor: Floor): Promise<d3.selection> {
     return new Promise((resolve) => {
       const image = new Image();
       image.onload = () => {
-
         const zoomed = () => {
           g.attr('transform', d3.event.transform);
           const transformation: Transform = d3.zoomTransform(document.getElementById('map-upper-layer'));
           this.mapService.publishMapTransformation(transformation);
         };
+
+        // this.mapService.scaleIsInDrawingProcess().subscribe(() => {
+        //   zoom.on('zoom', null);
+        // });
 
         // todo:
         // calculation of translateExtent to be set according to page layout, and image size,
@@ -38,7 +43,8 @@ export class MapViewerService {
           .select('#map-upper-layer')
           .attr('width', image.width)
           .attr('height', image.height)
-          .call(zoom);
+          .call(zoom)
+          .style('pointer-events', 'all');
 
         const g = map.append('g');
 
@@ -49,11 +55,8 @@ export class MapViewerService {
           .attr('x', 0)
           .attr('y', 0)
           .attr('width', image.width)
-          .attr('height', image.height)
-          .style('pointer-events', 'all').on('click', () => {
-              map.select('#map-upper-layers').style('pointer-events', 'none');
-              console.log('clicked');
-          });
+          .attr('height', image.height);
+
         resolve(map);
       };
       this.mapService.getImage(floor.imageId).subscribe((blob: Blob) => {

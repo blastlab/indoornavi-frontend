@@ -5,6 +5,7 @@ import {ActivatedRoute, Params} from '@angular/router';
 import {ToastService} from '../../../../../utils/toast/toast.service';
 import {ScaleHintService} from '../hint/hint.service';
 import {ScaleService} from '../scale.service';
+import {MapService} from '../../../../map.service';
 
 @Component({
   selector: 'app-scale-input',
@@ -28,7 +29,9 @@ export class ScaleInputComponent implements OnInit {
               private scaleHint: ScaleHintService,
               private route: ActivatedRoute,
               private toast: ToastService,
-              private scaleService: ScaleService) {
+              private scaleService: ScaleService,
+              private mapService: MapService
+  ) {
   }
 
   ngOnInit() {
@@ -57,6 +60,7 @@ export class ScaleInputComponent implements OnInit {
 
   public confirm(valid: boolean) {
     if (valid) {
+      this.mapService.publishDrawingScale(false);
       if (!this.scale.measure) {
         this.toast.showFailure('scale.measureNotSet');
         return;
