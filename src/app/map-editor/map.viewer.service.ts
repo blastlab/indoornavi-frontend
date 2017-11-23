@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {Floor} from '../floor/floor.type';
 import {MapService} from './map.service';
 import * as d3 from 'd3';
+import {Transform} from './map.type';
 
 @Injectable()
 export class MapViewerService {
@@ -22,6 +23,8 @@ export class MapViewerService {
 
         const zoomed = () => {
           g.attr('transform', d3.event.transform);
+          const transformation: Transform = d3.zoomTransform(document.getElementById('map-upper-layer'));
+          this.mapService.publishMapTransformation(transformation);
         };
 
         // todo:

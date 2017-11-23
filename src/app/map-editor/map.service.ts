@@ -4,11 +4,21 @@ import {Floor} from '../floor/floor.type';
 import {HttpService} from '../utils/http/http.service';
 import {ImageConfiguration} from './map.configuration.type';
 import {Transform} from './map.type';
-import * as d3 from 'd3';
+import {Subject} from 'rxjs/Subject';
 
 @Injectable()
 export class MapService {
+  private map2DTransformation = new Subject<Transform>();
+
   constructor(private httpService: HttpService) {
+  }
+
+  publishMapTransformation(transformation: Transform): void {
+    this.map2DTransformation.next(transformation);
+  }
+
+  mapIsTransformed(): Observable<Transform> {
+    return this.map2DTransformation.asObservable();
   }
 
   uploadImage(id: number, formData: FormData): Observable<Floor> {
@@ -21,9 +31,5 @@ export class MapService {
 
   getImage(id: number): Observable<Blob> {
     return this.httpService.doGetImage('images/' + id);
-  }
-
-  getMapTransformation() : Observable<Transform> {
-    return d3.zoomTransform(document.getElementById('map-upper-layer'))
   }
 }

@@ -16,6 +16,7 @@ import {Configuration} from '../../../action-bar/actionbar.type';
 import {ScaleService} from './scale.service';
 import {Helper} from '../../../../utils/helper/helper';
 import {log} from 'util';
+import {MapService} from '../../../map.service';
 
 @Component({
   selector: 'app-scale',
@@ -49,7 +50,8 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
               private mapLoaderInformer: MapLoaderInformerService,
               private hintBar: HintBarService,
               private configurationService: ActionBarService,
-              private scaleService: ScaleService) {
+              private scaleService: ScaleService,
+              private mapService: MapService) {
     this.setTranslations();
   }
 
@@ -74,6 +76,18 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
+    this.mapService.mapIsTransformed().subscribe((transformation: Transform) => {
+      if (!!transformation) {
+        this.zoom = transformation.k;
+        this.map2DTranslation.x = transformation.x;
+        this.map2DTranslation.y = transformation.y;
+      } else {
+        this.zoom = 1.0;
+        this.map2DTranslation.x = 0.0;
+        this.map2DTranslation.y = 0.0;
+      }
+      console.log(this.map2DTranslation, this.zoom);
+    });
     this.createEmptyScale();
     this.configurationLoadedSubscription = this.configurationService.configurationLoaded().subscribe((configuration: Configuration) => {
       this.drawScale(configuration.data.scale);
@@ -136,7 +150,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   public toolClicked(): void {
-    this.calculateMapTransformation();
     this.clicked.emit(this);
   }
 
@@ -518,18 +531,5 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.updateScaleGroup();
   }
 
-  private calculateMapTransformation () {
-    if (!!d3.zoomTransform(document.getElementById('map-upper-layer'))) {
-      const transformation: Transform = d3.zoomTransform(document.getElementById('map-upper-layer'));
-      console.log(transformation);
-      this.zoom = transformation.k;
-      this.map2DTranslation.x = transformation.x;
-      this.map2DTranslation.y = transformation.y;
-    } else {
-      this.zoom = 1.0;
-      this.map2DTranslation.x = 0.0;
-      this.map2DTranslation.y = 0.0;
-    }
-  }
 }
 
