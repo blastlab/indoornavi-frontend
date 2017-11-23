@@ -23,14 +23,19 @@ export class MapViewerService {
         const zoomed = () => {
           g.attr('transform', d3.event.transform);
         };
-        const map = d3.select('#map-upper-layer')
-            .attr('width', image.width)
-            .attr('height', image.height)
-          .call(d3.zoom()
-            .scaleExtent([MapViewerService.maxZoomOut(image.width, image.height), 1])
-            // todo: calculation of translateExtent to be set according to page layout,
-            .translateExtent([[-window.innerWidth + 100 , -window.innerHeight + 100], [image.width * 2, image.height * 2]])
-            .on('zoom', zoomed));
+
+        // todo:
+        // calculation of translateExtent to be set according to page layout, and image size,
+        const zoom = d3.zoom()
+          .scaleExtent([MapViewerService.maxZoomOut(image.width, image.height), 1])
+          .translateExtent([[-window.innerWidth + 100 , -window.innerHeight + 100], [image.width * 2, image.height * 2]])
+          .on('zoom', zoomed);
+
+        const map = d3
+          .select('#map-upper-layer')
+          .attr('width', image.width)
+          .attr('height', image.height)
+          .call(zoom);
 
         const g = map.append('g');
 
@@ -46,7 +51,6 @@ export class MapViewerService {
               map.select('#map-upper-layers').style('pointer-events', 'none');
               console.log('clicked');
           });
-
         resolve(map);
       };
       this.mapService.getImage(floor.imageId).subscribe((blob: Blob) => {

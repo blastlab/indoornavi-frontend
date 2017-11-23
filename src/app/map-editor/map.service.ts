@@ -3,6 +3,8 @@ import {Observable} from 'rxjs/Observable';
 import {Floor} from '../floor/floor.type';
 import {HttpService} from '../utils/http/http.service';
 import {ImageConfiguration} from './map.configuration.type';
+import {Transform} from './map.type';
+import * as d3 from 'd3';
 
 @Injectable()
 export class MapService {
@@ -19,5 +21,9 @@ export class MapService {
 
   getImage(id: number): Observable<Blob> {
     return this.httpService.doGetImage('images/' + id);
+  }
+
+  getMapTransformation() : Observable<Transform> {
+    return d3.zoomTransform(document.getElementById('map-upper-layer'))
   }
 }

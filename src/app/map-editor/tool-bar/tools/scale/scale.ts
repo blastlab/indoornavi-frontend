@@ -4,7 +4,7 @@ import {ToolName} from '../tools.enum';
 import * as d3 from 'd3';
 import {TranslateService} from '@ngx-translate/core';
 import {Scale} from './scale.type';
-import {Line, Point} from '../../../map.type';
+import {Line, Point, Transform} from '../../../map.type';
 import {ScaleInputService} from './input/input.service';
 import {ScaleHintService} from './hint/hint.service';
 import {MapLoaderInformerService} from '../../../../utils/map-loader-informer/map-loader-informer.service';
@@ -15,6 +15,7 @@ import {ActionBarService} from '../../../action-bar/actionbar.service';
 import {Configuration} from '../../../action-bar/actionbar.type';
 import {ScaleService} from './scale.service';
 import {Helper} from '../../../../utils/helper/helper';
+import {log} from 'util';
 
 @Component({
   selector: 'app-scale',
@@ -39,11 +40,8 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private mapWidth: number;
   private mapHeight: number;
   private scale: Scale;
-
-  private static calculateFromZoom () {
-    const scale = d3.select('#map').attr('scale');
-    console.log(scale);
-  }
+  private zoom: number;
+  private map2DTranslation: Point = {x: 0, y: 0};
 
   constructor(private translate: TranslateService,
               private scaleInput: ScaleInputService,
@@ -77,7 +75,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   ngOnInit(): void {
     this.createEmptyScale();
-
     this.configurationLoadedSubscription = this.configurationService.configurationLoaded().subscribe((configuration: Configuration) => {
       this.drawScale(configuration.data.scale);
     });
@@ -95,7 +92,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     });
 
     this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe(() => {
-      ScaleComponent.calculateFromZoom();
       // const mapSvg = d3.select('#map');
       // mapSvg.attr('width') = mapSvg.attr('width');
       // mapSvg.attr('height') = mapSvg.attr('height');
@@ -140,6 +136,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   public toolClicked(): void {
+    this.calculateMapTransformation();
     this.clicked.emit(this);
   }
 
@@ -152,7 +149,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       .append('g')
       .attr('id', 'scaleGroup')
       .style('display', 'none')
-      .on('click', () => console.log('map clicked'));
+      .on('click', () => console.log('scale clicked'));
     this.updateScaleGroup();
   }
 
@@ -520,4 +517,19 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.scaleHint.publishScale(this.scale);
     this.updateScaleGroup();
   }
+
+  private calculateMapTransformation () {
+    if (!!d3.zoomTransform(document.getElementById('map-upper-layer'))) {
+      const transformation: Transform = d3.zoomTransform(document.getElementById('map-upper-layer'));
+      console.log(transformation);
+      this.zoom = transformation.k;
+      this.map2DTranslation.x = transformation.x;
+      this.map2DTranslation.y = transformation.y;
+    } else {
+      this.zoom = 1.0;
+      this.map2DTranslation.x = 0.0;
+      this.map2DTranslation.y = 0.0;
+    }
+  }
 }
+
