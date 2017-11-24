@@ -2,13 +2,12 @@ import {GroupCreated} from './draw.builder';
 import * as d3 from 'd3';
 
 export class Draggable {
-  private mapAttributes: { width: number, height: number };
   public container: d3.selection;
   public domGroup: d3.selection;
-  public groupCreated: GroupCreated;
+  private isDraggedNow: boolean;
+  private mapAttributes: { width: number, height: number };
 
   constructor(groupCreated: GroupCreated) {
-    this.groupCreated = groupCreated;
     this.domGroup = groupCreated.domGroup;
     this.container = groupCreated.container;
     this.mapAttributes = {width: this.container.attr('width'), height: this.container.attr('height')};
@@ -18,13 +17,17 @@ export class Draggable {
     console.log('dragon');
     const dragGroup = d3.drag()
       .on('drag.draggable', () => {
+        this.isDraggedNow = true;
         this.dragGroupBehavior();
         if (withButtons) {
           this.dragAcceptButtonsBehavior();
         }
       })
       .on('end.draggable', () => {
-        this.updateConfiguration();
+        if (this.isDraggedNow) {
+          this.updateConfiguration();
+          this.isDraggedNow = !this.isDraggedNow;
+        }
       });
     this.domGroup.select('.pointer').attr('stroke', 'red');
     this.domGroup.style('cursor', 'move');

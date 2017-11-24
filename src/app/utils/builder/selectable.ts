@@ -2,13 +2,11 @@ import * as d3 from 'd3';
 import {GroupCreated} from './draw.builder';
 
 export class Selectable {
-  private domGroup: d3.selection;
+  public domGroup: d3.selection;
   public container: d3.selection;
-  public groupCreated: GroupCreated;
   private selected: boolean;
 
   constructor(group: GroupCreated) {
-    // this.groupCreated = groupCreated;
     this.domGroup = group.domGroup;
     this.domGroup.on('click', () => {
       this.selected = !this.selected;

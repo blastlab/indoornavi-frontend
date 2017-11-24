@@ -19,10 +19,7 @@ export class ConnectableDevice {
     this.container = groupCreated.container;
     this.device = device;
     this.handleHovering();
-  }
-
-  private dragGroupBehavior() {
-
+    this.dragMapDeviceBehavior();
   }
 
   private handleHovering() {
@@ -54,16 +51,22 @@ export class ConnectableDevice {
     }
   }
 
-  private dragMapDeviceBehavior() {
-    /* if (!!this.sinkConnections.length) {
-      this.sinkConnections.forEach((line: ConnectingLine) => {
-        line.connection.attr('x1', xAtMap);
-        line.connection.attr('y1', yAtMap);
+  public dragMapDeviceBehavior() {
+    console.log(this.domGroup);
+    const drag = d3.drag()
+      .on('drag.das', () => {
+        console.log('das');
       });
-    } else if (!!this.anchorConnection) {
-      this.anchorConnection.connection.attr('x2', xAtMap);
-      this.anchorConnection.connection.attr('y2', yAtMap);
-    }*/
+    this.domGroup.call(drag);
+    //  if (!!this.sinkConnections.length) {
+    //   this.sinkConnections.forEach((line: ConnectingLine) => {
+    //     line.connection.attr('x1', xAtMap);
+    //     line.connection.attr('y1', yAtMap);
+    //   });
+    // } else if (!!this.anchorConnection) {
+    //   this.anchorConnection.connection.attr('x2', xAtMap);
+    //   this.anchorConnection.connection.attr('y2', yAtMap);
+    // }
   }
 
 }
