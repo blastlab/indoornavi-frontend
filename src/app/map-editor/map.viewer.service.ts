@@ -3,10 +3,15 @@ import {Floor} from '../floor/floor.type';
 import {MapService} from './map.service';
 import * as d3 from 'd3';
 import {Transform} from './map.type';
+import {D3Service} from 'd3-ng2-service';
 
 @Injectable()
 export class MapViewerService {
-  private scaleIsInDrawingProcess: boolean = false;
+  private d3: any;
+  private dots: Dot[] = [
+    {x: 100, y: 100},
+    {x: 400, y: 400}
+  ];
 
   static maxZoomOut (imageWidth: number, imageHeight: number): number {
     const zoomOutWidth: number = window.innerWidth / imageWidth;
@@ -14,7 +19,8 @@ export class MapViewerService {
     return (zoomOutWidth < zoomOutHeight) ? zoomOutWidth : zoomOutHeight;
   }
 
-  constructor(private mapService: MapService) {
+  constructor(private mapService: MapService, private d3Service: D3Service) {
+    this.d3 = d3Service.getD3();
   }
 
 
@@ -22,15 +28,12 @@ export class MapViewerService {
     return new Promise((resolve) => {
       const image = new Image();
       image.onload = () => {
+
         const zoomed = () => {
           g.attr('transform', d3.event.transform);
           const transformation: Transform = d3.zoomTransform(document.getElementById('map-upper-layer'));
           this.mapService.publishMapTransformation(transformation);
         };
-
-        // this.mapService.scaleIsInDrawingProcess().subscribe(() => {
-        //   zoom.on('zoom', null);
-        // });
 
         // todo:
         // calculation of translateExtent to be set according to page layout, and image size,
@@ -42,9 +45,8 @@ export class MapViewerService {
         const map = d3
           .select('#map-upper-layer')
           .attr('width', image.width)
-          .attr('height', image.height)
-          .call(zoom)
-          .style('pointer-events', 'all');
+          .attr('height', image.height);
+
 
         const g = map.append('g');
 
@@ -57,6 +59,9 @@ export class MapViewerService {
           .attr('width', image.width)
           .attr('height', image.height);
 
+
+        map.call(zoom);
+
         resolve(map);
       };
       this.mapService.getImage(floor.imageId).subscribe((blob: Blob) => {
@@ -64,4 +69,9 @@ export class MapViewerService {
       });
     });
   }
+}
+
+export interface Dot {
+  x: number;
+  y: number;
 }

@@ -80,7 +80,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.zoom = transformation.k;
       this.map2DTranslation.x = transformation.x;
       this.map2DTranslation.y = transformation.y;
-      console.log(this.map2DTranslation, this.zoom);
+      // console.log(this.map2DTranslation, this.zoom);
     });
     this.createEmptyScale();
     this.configurationLoadedSubscription = this.configurationService.configurationLoaded().subscribe((configuration: Configuration) => {
@@ -145,7 +145,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   public toolClicked(): void {
     console.log('scale opened');
-    this.mapService.publishDrawingScale(true);
     this.clicked.emit(this);
   }
 
@@ -157,10 +156,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     d3.select('#map')
       .append('g')
       .attr('id', 'scaleGroup')
-      .style('display', 'none')
-      .on('click', () => {
-
-      });
+      .style('display', 'none');
     this.updateScaleGroup();
   }
 
@@ -228,7 +224,27 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       x: d3.event.offsetX,
       y: d3.event.offsetY
     };
-
+// private pointDrag(circleSelection: d3.selection): void {
+  //   if (this.pointsArray.length < 2) {
+  //     return;
+  //   }
+  //   const event: KeyboardEvent = <KeyboardEvent>window.event;
+  //   if (event.shiftKey) {
+  //     this.dragPointWithShift(circleSelection);
+  //   } else {
+  //     circleSelection
+  //       .attr('cx', (d) => {
+  //         // todo get max of drawing area
+  //         return d.x = Math.max(0, d3.event.x);
+  //       })
+  //       .attr('cy', (d) => {
+  //         // todo get max of drawing area
+  //         return d.y = Math.max(0, d3.event.y);
+  //       });
+  //
+  //   }
+  //   this.redrawAllObjectsOnMap();
+  // }
     if (!this.isFirstPointDrawn) {
       this.isFirstPointDrawn = true;
       this.pointsArray.push(point);
@@ -285,26 +301,54 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   redrawPoints(): void {
+    const callRedrawAllObjectsOnMapWithClassContext = () => {
+      this.redrawAllObjectsOnMap();
+    };
+
+    const subject = () => { return { x: d3.event.x, y: d3.event.y }};
+
+    const dragStart = (_, index: number, selections: d3.selection[]) => {
+      d3.event.sourceEvent.stopPropagation();
+      d3.select(selections[index]).classed("dragging", true);
+    };
+
+    const dragging = (d, index: number, selections: d3.selection[]) => {
+      const event: KeyboardEvent = <KeyboardEvent>window.event;
+      if (event.shiftKey) {
+        // todo:  calculate angle and approximate to axis and freeze aproximated axis dimension to second other point coordinates
+        const secondPoint = this.chooseNotDraggedPoint(d3.selectAll('circle'));
+        console.log(secondPoint);
+        const mousePosition = <Point>{
+          x: d3.event.x,
+          y: d3.event.y
+        };
+        const potentialSlope: number = Geometry.getSlope(secondPoint, mousePosition);
+        console.log(potentialSlope);
+      } else {
+
+      }
+      d3.select(selections[index]).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+      callRedrawAllObjectsOnMapWithClassContext();
+    };
+
+    const dragStop = (_, index: number, selections: d3.selection[]) => {
+      d3.select(selections[index]).classed("dragging", false);
+    };
+
     const drag = d3.drag()
-      .on('drag', (_, i, circleSelections) => {
-        this.pointDrag(d3.select(circleSelections[i]));
-      })
-      .on('end', () => {
-        this.setScalePoints();
-        this.configurationService.setScale(this.scale);
-      });
+      .subject(subject)
+      .on('start', dragStart)
+      .on('drag', dragging)
+      .on('end', dragStop);
 
     const points = this.scaleGroup.selectAll('circle');
+
     points.data(this.pointsArray).enter()
       .append('svg:circle')
       .classed('point', true)
       .style('cursor', 'all-scroll')
-      .attr('cx', (d) => {
-        return d.x;
-      })
-      .attr('cy', (d) => {
-        return d.y;
-      })
+      .attr('cx', d => d.x)
+      .attr('cy', d => d.y)
       .attr('r', 10)
       .attr('fill-opacity', 0)
       .call(drag);
@@ -321,35 +365,19 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       .append('svg:line')
       .classed('connectLine', true)
       .style('cursor', 'crosshair')
-      .attr('x1', (d) => {
-        return d.p1.x;
-      })
-      .attr('y1', (d) => {
-        return d.p1.y;
-      })
-      .attr('x2', (d) => {
-        return d.p2.x;
-      })
-      .attr('y2', (d) => {
-        return d.p2.y;
-      })
+      .attr('x1', d => d.p1.x)
+      .attr('y1', d => d.p1.y)
+      .attr('x2', d => d.p2.x)
+      .attr('y2', d => d.p2.y)
       .attr('stroke-width', 1)
       .attr('stroke', 'black');
 
     // update positions of old lines
     lines
-      .attr('x1', (d) => {
-        return d.p1.x;
-      })
-      .attr('y1', (d) => {
-        return d.p1.y;
-      })
-      .attr('x2', (d) => {
-        return d.p2.x;
-      })
-      .attr('y2', (d) => {
-        return d.p2.y;
-      });
+      .attr('x1', d => d.p1.x)
+      .attr('y1', d => d.p1.y)
+      .attr('x2', d => d.p2.x)
+      .attr('y2', d => d.p2.y);
   }
 
   private redrawEndings(): void {
@@ -359,72 +387,73 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       .classed('endings', true)
       .attr('stroke-width', 1)
       .attr('stroke', 'black')
-      .attr('x1', (d) => {
+      .attr('x1', d => {
         if (this.linesArray.length === 0) {
           return d.x + this.END_SIZE;
         }
         return d.x + Geometry.getVerticalEndingOffset(this.linesArray[0], this.END_SIZE);
       })
-      .attr('y1', (d) => {
+      .attr('y1', d => {
         if (this.linesArray.length === 0) {
           return d.y;
         }
         return d.y + Geometry.getHorizontalEndingOffset(this.linesArray[0], this.END_SIZE);
       })
-      .attr('x2', (d) => {
+      .attr('x2', d => {
         if (this.linesArray.length === 0) {
           return d.x - this.END_SIZE;
         }
         return d.x - Geometry.getVerticalEndingOffset(this.linesArray[0], this.END_SIZE);
       })
-      .attr('y2', (d) => {
+      .attr('y2', d => {
         if (this.linesArray.length === 0) {
           return d.y;
         }
         return d.y - Geometry.getHorizontalEndingOffset(this.linesArray[0], this.END_SIZE);
       })
-      .attr('transform', (d) => {
+      .attr('transform', d => {
         return 'rotate(' + 90 + ' ' + d.x + ' ' + d.y + ')';
       });
 
     endings
-      .attr('x1', (d) => {
+      .attr('x1', d => {
         return d.x + Geometry.getVerticalEndingOffset(this.linesArray[0], this.END_SIZE);
       })
-      .attr('y1', (d) => {
+      .attr('y1', d => {
         return d.y + Geometry.getHorizontalEndingOffset(this.linesArray[0], this.END_SIZE);
       })
-      .attr('x2', (d) => {
+      .attr('x2', d => {
         return d.x - Geometry.getVerticalEndingOffset(this.linesArray[0], this.END_SIZE);
       })
-      .attr('y2', (d) => {
+      .attr('y2', d => {
         return d.y - Geometry.getHorizontalEndingOffset(this.linesArray[0], this.END_SIZE);
       })
-      .attr('transform', (d) => {
+      .attr('transform', d => {
         return 'rotate(' + 90 + ' ' + d.x + ' ' + d.y + ')';
       });
   }
 
-  private pointDrag(circleSelection: d3.selection): void {
-    if (this.pointsArray.length < 2) {
-      return;
-    }
-    const event: KeyboardEvent = <KeyboardEvent>window.event;
-    if (event.shiftKey) {
-      this.dragPointWithShift(circleSelection);
-    } else {
-      circleSelection
-        .attr('cx', (d) => {
-          console.log(d3.event.x);
-          return d.x = Math.max(0, d3.event.x);
-        })
-        .attr('cy', (d) => {
-          console.log(d3.event.y);
-          return d.y = Math.max(0, d3.event.y);
-        });
-    }
-    this.redrawAllObjectsOnMap();
-  }
+  // private pointDrag(circleSelection: d3.selection): void {
+  //   if (this.pointsArray.length < 2) {
+  //     return;
+  //   }
+  //   const event: KeyboardEvent = <KeyboardEvent>window.event;
+  //   if (event.shiftKey) {
+  //     this.dragPointWithShift(circleSelection);
+  //   } else {
+  //     circleSelection
+  //       .attr('cx', (d) => {
+  //         // todo get max of drawing area
+  //         return d.x = Math.max(0, d3.event.x);
+  //       })
+  //       .attr('cy', (d) => {
+  //         // todo get max of drawing area
+  //         return d.y = Math.max(0, d3.event.y);
+  //       });
+  //
+  //   }
+  //   this.redrawAllObjectsOnMap();
+  // }
 
   private dragPointWithShift(circle: d3.selection): void {
     const secondPoint = this.chooseNotDraggedPoint(circle);
@@ -437,34 +466,34 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     const lowerSlope = 0.558; // arctan(22.5°)
     if (Math.abs(potentialSlope) < lowerSlope) {
       circle
-        .attr('cx', (d) => {
+        .attr('cx', d => {
           return d.x = Math.max(0, Math.min(d3.select('#map').attr('width'), d3.event.x));
         })
-        .attr('cy', (d) => {
+        .attr('cy', d => {
           return d.y = secondPoint.y;
         });
     } else if (Math.abs(potentialSlope) > upperSlope) {
       circle
-        .attr('cx', (d) => {
+        .attr('cx', d => {
           return d.x = secondPoint.x;
         })
-        .attr('cy', (d) => {
+        .attr('cy', d => {
           return d.y = Math.max(0, Math.min(d3.select('#map').attr('height'), d3.event.y));
         });
     } else if (potentialSlope < upperSlope && potentialSlope > lowerSlope) {
       circle
-        .attr('cx', (d) => {
+        .attr('cx', d => {
           return d.x = Math.max(0, Math.min(d3.select('#map').attr('width'), secondPoint.x + ( d3.event.y - secondPoint.y)));
         })
-        .attr('cy', (d) => {
+        .attr('cy', d => {
           return d.y = Math.max(0, Math.min(d3.select('#map').attr('height'), d3.event.y));
         });
     } else if (potentialSlope > -upperSlope && potentialSlope < -lowerSlope) {
       circle
-        .attr('cx', (d) => {
+        .attr('cx', d => {
           return d.x = Math.max(0, Math.min(d3.select('#map').attr('width'), secondPoint.x - ( d3.event.y - secondPoint.y)));
         })
-        .attr('cy', (d) => {
+        .attr('cy', d => {
           return d.y = Math.max(0, Math.min(d3.select('#map').attr('height'), d3.event.y));
         });
     }
