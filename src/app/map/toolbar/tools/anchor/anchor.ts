@@ -129,16 +129,14 @@ export class AnchorPlacerComponent implements Tool, OnInit {
   }
 
   private allowToDragAllAnchorsOnMap(): void {
-    console.log(this.mapDevices);
     this.mapDevices.forEach((expandable) => {
-      expandable.draggable.dragOn(false);
-      expandable.connectable.dragMapDeviceBehavior();
+      expandable.connectable.dragOn(false);
     });
   }
 
   private removeDragFromAllAnchorsOnMap() {
     this.mapDevices.forEach((expandable) => {
-      expandable.draggable.dragOff();
+      expandable.connectable.dragOff();
     });
   }
 
@@ -170,13 +168,6 @@ export class AnchorPlacerComponent implements Tool, OnInit {
     this.anchorPlacerController.resetChosenAnchor();
   }
 
-  /*
-    private removeGroupDrag(anchorGroup: d3.selection): void {
-      anchorGroup.on('.drag', null);
-      anchorGroup.style('cursor', 'default');
-      anchorGroup.select('.pointer').attr('fill', 'rgba(0,0,0,0.7)');
-    }*/
-
   public emitToggleActive(): void {
     this.clicked.emit(this);
   }
@@ -201,9 +192,8 @@ export class AnchorPlacerComponent implements Tool, OnInit {
     }
     const mapDevice: Expandable = {
       groupCreated: droppedDevice,
-      draggable: new Draggable(droppedDevice),
       selectable: new Selectable(droppedDevice),
-      connectable: new ConnectableDevice(droppedDevice, device)
+      connectable: new ConnectableDevice(droppedDevice)
     };
     this.mapDevices.push(mapDevice);
     return mapDevice;
@@ -214,9 +204,9 @@ export class AnchorPlacerComponent implements Tool, OnInit {
     const expandableMapObject = this.drawDevice(device, drawOptions, coordinates);
     this.accButtons.publishCoordinates(coordinates);
     this.accButtons.publishVisibility(true);
-    expandableMapObject.draggable.dragOn(true);
+    expandableMapObject.connectable.dragOn(true);
     this.accButtons.decisionMade.first().subscribe((decision) => {
-      // TODO Change after decision logic to allow adding anchors alone
+      // TODO Change after decision logic to allow adding anchors alone GET THIS LOGIC DONE ~!
       if (decision) {
         // this.removeGroupDrag(droppedAnchorGroup);
         // this.drawingService.applyDragBehavior(droppedAnchorGroup, false);

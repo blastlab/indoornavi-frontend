@@ -5,7 +5,8 @@ export class Draggable {
   public container: d3.selection;
   public domGroup: d3.selection;
   private isDraggedNow: boolean;
-  private mapAttributes: { width: number, height: number };
+  protected dragBehavior: d3.drag;
+  protected mapAttributes: { width: number, height: number };
 
   constructor(groupCreated: GroupCreated) {
     this.domGroup = groupCreated.domGroup;
@@ -14,8 +15,7 @@ export class Draggable {
   }
 
   public dragOn(withButtons: boolean) {
-    console.log('dragon');
-    const dragGroup = d3.drag()
+    this.dragBehavior = d3.drag()
       .on('drag.draggable', () => {
         this.isDraggedNow = true;
         this.dragGroupBehavior();
@@ -31,7 +31,7 @@ export class Draggable {
       });
     this.domGroup.select('.pointer').attr('stroke', 'red');
     this.domGroup.style('cursor', 'move');
-    this.domGroup.call(dragGroup);
+    this.domGroup.call(this.dragBehavior);
   }
 
   public dragOff() {

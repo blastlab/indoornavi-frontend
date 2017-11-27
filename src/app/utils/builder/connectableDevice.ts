@@ -1,25 +1,16 @@
-import {Device} from '../../device/device.type';
 import {ConnectingLine} from './connection';
 import * as d3 from 'd3';
 import {GroupCreated} from './draw.builder';
+import {Draggable} from './draggable';
 
 
-export class ConnectableDevice {
-  private device: Device;
-  public domGroup: d3.selection;
-  public container: d3.selection;
+export class ConnectableDevice extends Draggable {
   public sinkConnections: ConnectingLine[] = [];
   public anchorConnection: ConnectingLine;
-  public groupCreated: GroupCreated;
 
-  constructor(groupCreated: GroupCreated,
-              device: Device) {
-    this.groupCreated = groupCreated;
-    this.domGroup = groupCreated.domGroup;
-    this.container = groupCreated.container;
-    this.device = device;
+  constructor(groupCreated: GroupCreated) {
+    super(groupCreated);
     this.handleHovering();
-    this.dragMapDeviceBehavior();
   }
 
   private handleHovering() {
@@ -51,22 +42,35 @@ export class ConnectableDevice {
     }
   }
 
-  public dragMapDeviceBehavior() {
-    console.log(this.domGroup);
-    const drag = d3.drag()
-      .on('drag.das', () => {
-        console.log('das');
+  public dragOn(withButtons: boolean) {
+    super.dragOn(withButtons);
+    this.domGroup.call(this.dragBehavior.on('drag.test', () => {
+      this.dragMapDeviceBehavior();
+    }));
+  }
+
+  public dragOff() {
+    this.domGroup.on('drag.draggable', null);
+    this.domGroup.select('.pointer').attr('stroke', 'black');
+    this.domGroup.style('cursor', 'pointer');
+  }
+
+  private dragMapDeviceBehavior() {
+    let dx = parseInt(this.domGroup.attr('x'), 10);
+    let dy = parseInt(this.domGroup.attr('y'), 10);
+    dx += d3.event.dx;
+    dy += d3.event.dy;
+    const xAtMap = Math.max(0, Math.min(this.mapAttributes.width, dx));
+    const yAtMap = Math.max(0, Math.min(this.mapAttributes.height, dy));
+    if (!!this.sinkConnections.length) {
+      this.sinkConnections.forEach((line: ConnectingLine) => {
+        line.connection.attr('x1', xAtMap);
+        line.connection.attr('y1', yAtMap);
       });
-    this.domGroup.call(drag);
-    //  if (!!this.sinkConnections.length) {
-    //   this.sinkConnections.forEach((line: ConnectingLine) => {
-    //     line.connection.attr('x1', xAtMap);
-    //     line.connection.attr('y1', yAtMap);
-    //   });
-    // } else if (!!this.anchorConnection) {
-    //   this.anchorConnection.connection.attr('x2', xAtMap);
-    //   this.anchorConnection.connection.attr('y2', yAtMap);
-    // }
+    } else if (!!this.anchorConnection) {
+      this.anchorConnection.connection.attr('x2', xAtMap);
+      this.anchorConnection.connection.attr('y2', yAtMap);
+    }
   }
 
 }

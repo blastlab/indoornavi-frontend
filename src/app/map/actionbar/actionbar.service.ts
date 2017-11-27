@@ -9,6 +9,7 @@ import * as Collections from 'typescript-collections';
 import {Subject} from 'rxjs/Subject';
 import {Md5} from 'ts-md5/dist/md5';
 import {Helper} from '../../utils/helper/helper';
+import {Anchor} from '../../device/anchor.type';
 
 @Injectable()
 export class ActionBarService {
@@ -131,27 +132,24 @@ export class ActionBarService {
     return sinks;
   }
 
-  /*
-
-    public setSink(sink: Sink): void {
-      const sinks: Collections.Set<Sink> = this.getConfigurationSinks();
-      const sinkCopy = {...sink};
-      if (sinks.contains(sinkCopy)) {
-        sinks.remove(sinkCopy);
-      }
-      sinks.add(sinkCopy);
-      this.configuration.data.sinks = sinks.toArray();
-      this.sendConfigurationChangedEvent();
+  public setAnchor(anchor: Anchor): void {
+    const anchors: Collections.Set<Anchor> = this.getConfigurationAnchors();
+    const anchorCopy = {...anchor};
+    if (anchors.contains(anchorCopy)) {
+      anchors.remove(anchorCopy);
     }
+    anchors.add(anchorCopy);
+    this.configuration.data.anchors = anchors.toArray();
+    this.sendConfigurationChangedEvent();
+  }
 
-    private getConfigurationSinks(): Collections.Set<Sink> {
-      const sinks = new Collections.Set<Sink>(ActionBarService.compareFn);
-      this.configuration.data.sinks.forEach((configurationSink: Sink) => {
-        sinks.add(configurationSink);
-      });
-      return sinks;
-    }
-  */
+  private getConfigurationAnchors(): Collections.Set<Anchor> {
+    const anchors = new Collections.Set<Anchor>(ActionBarService.compareFn);
+    this.configuration.data.anchors.forEach((configurationAnchor: Anchor) => {
+      anchors.add(configurationAnchor);
+    });
+    return anchors;
+  }
 
   private hashConfiguration(): string | Int32Array {
     return Md5.hashStr(JSON.stringify(this.configuration));
