@@ -1,25 +1,36 @@
-<form #authForm="ngForm" novalidate>
-  <div class="form-control">
-    <md-input-container>
-      <input id="user-name-input" name="username" #username type="text"
-             mdInput
-             autofocus
-             placeholder="{{'user.username'|translate}}">
-    </md-input-container>
-  </div>
-
-  <div class="form-control">
-    <md-input-container>
-      <input id="user-password-input" name="password" #password type="password"
-             mdInput
-             placeholder="{{'user.password'|translate}}">
-    </md-input-container>
-  </div>
-
-  <button pButton class="ui-button-success"
+<div class="ui-state-default ui-corner-all">
+  <form #authForm="ngForm" novalidate>
+    <div class="ui-g">
+      <div class="ui-g-12">
+        <h4>IndoorNavi</h4>
+      </div>
+      <div class="ui-g-12">
+        <input
+          [appAutoFocus]="true"
+          id="user-name-input" name="username" #username type="text"
+          pInputText
+          autofocus
+          placeholder="{{'user.username'|translate}}">
+      </div>
+      <div class="ui-g-12">
+        <input
+          id="user-password-input" name="password" #password type="password"
+          pInputText
+          placeholder="{{'user.password'|translate}}">
+      </div>
+      <div class="ui-g-12 ui-message ui-messages-error ui-corner-all"
+           *ngIf="invalidCredentials">
+        <i class="fa fa-warning"></i>
+        {{'auth.invalid.credentials'|translate}}
+      </div>
+      <div class="ui-g-12">
+        <button
+          pButton
           id="login-button"
           (click)="login(username.value, password.value)"
           label="{{'login'|translate}}"
-          icon="fa fa-sign-in" iconPos="left"
-  ></button>
-</form>
+          icon="fa-sign-in" iconPos="left"></button>
+      </div>
+    </div>
+  </form>
+</div>

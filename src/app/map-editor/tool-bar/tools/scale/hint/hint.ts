@@ -22,7 +22,7 @@ export class ScaleHintComponent implements OnDestroy, OnInit {
   ngOnInit(): void {
     this.scaleHint = d3.select('#scaleHint');
 
-    this.scaleHintService.scaleChanged.subscribe(
+    this.scaleService.scaleChanged.subscribe(
       data => {
         this.scale = data;
         this.showScaleValue();
@@ -37,7 +37,7 @@ export class ScaleHintComponent implements OnDestroy, OnInit {
 
   public showScaleValue() {
     if (!!this.scale && !!this.scale.measure) {
-      let unit: String;
+      let unit: string;
       (this.scale.measure.toString() === Measure[Measure.CENTIMETERS]) ? unit = 'cm' : unit = 'm';
       this.translate.get('scale').subscribe((value: string) => {
         this.scaleHint

@@ -2,7 +2,7 @@
   <div class="ui-toolbar-group-left">
     <button pButton class="ui-button-secondary" id="new-building-button" [appHasPermission]="'BUILDING_CREATE'" (click)="openDialog()"
             label="{{'add'|translate}}"
-            icon="fa fa-plus" iconPos="left"></button>
+            icon="fa-plus" iconPos="left"></button>
   </div>
 </p-toolbar>
 
@@ -11,15 +11,15 @@
   <p-column header="{{'th.actions'|translate}}" styleClass="col-button">
     <ng-template let-building="rowData" let-i="rowIndex" pTemplate="body">
       <button
-        pTooltip="{{'go.to.floors'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="goTo(building)" icon="fa-level-down">
+        pTooltip="{{'go.to.floors'|translate}}" type="button" pButton (click)="goTo(building)" icon="fa-level-down">
       </button>
       <button
         [appHasPermission]="'BUILDING_UPDATE'"
-        pTooltip="{{'edit'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="openDialog(building)" icon="fa-edit">
+        pTooltip="{{'edit'|translate}}" type="button" pButton (click)="openDialog(building)" icon="fa-edit">
       </button>
       <button
         [appHasPermission]="'BUILDING_DELETE'"
-        pTooltip="{{'remove'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="remove(i)" icon="fa-trash">
+        pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(i)" icon="fa-trash">
       </button>
     </ng-template>
   </p-column>
