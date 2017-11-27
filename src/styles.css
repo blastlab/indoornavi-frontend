@@ -112,9 +112,13 @@ table th.col-checkbox, table td.col-checkbox {
   display: flex;
   -webkit-flex-direction: column-reverse;
   flex-direction: column-reverse;
-  height: 100px;
+  height: 75px;
   margin: 0;
   align-items: center;
+}
+
+#sidebar-menu .menu-button span:nth-child(1) {
+  font-size: small;
 }
 
 .ui-breadcrumb {

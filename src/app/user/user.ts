@@ -1,22 +1,19 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
-import {UserDialogComponent} from './user.dialog';
-import {MdDialogRef} from '@angular/material';
 import {PermissionGroup, User} from './user.type';
-import {ToastService} from '../utils/toast/toast.service';
 import {UserService} from './user.service';
 import {PermissionGroupService} from './permissionGroup/permissionGroup.service';
 import {CrudComponent, CrudHelper} from '../utils/crud/crud.component';
 import {NgForm} from '@angular/forms';
 import {ConfirmationService} from 'primeng/primeng';
 import {BreadcrumbService} from '../utils/breadcrumbs/breadcrumb.service';
+import {MessageServiceWrapper} from '../utils/message.service';
 
 @Component({
   templateUrl: 'user.html',
   styleUrls: ['user.css']
 })
 export class UserComponent implements OnInit, CrudComponent {
-  dialogRef: MdDialogRef<UserDialogComponent>;
   users: User[] = [];
   permissionGroups: PermissionGroup[] = [];
   loading: boolean = true;
@@ -28,7 +25,7 @@ export class UserComponent implements OnInit, CrudComponent {
   private confirmBody: string;
 
   constructor(public translateService: TranslateService,
-              private toast: ToastService,
+              private messageService: MessageServiceWrapper,
               private userService: UserService,
               private permissionGroupService: PermissionGroupService,
               private confirmationService: ConfirmationService,
@@ -65,13 +62,13 @@ export class UserComponent implements OnInit, CrudComponent {
       ).subscribe((savedUser: User) => {
         const isNew = !(!!this.user.id);
         if (isNew) {
-          this.toast.showSuccess('user.create.success');
+          this.messageService.success('user.create.success');
         } else {
-          this.toast.showSuccess('user.save.success');
+          this.messageService.success('user.save.success');
         }
         this.users = <User[]>CrudHelper.add(savedUser, this.users, isNew);
       }, (err: string) => {
-        this.toast.showFailure(err);
+        this.messageService.failed(err);
       });
       this.displayDialog = false;
       this.userForm.resetForm();
@@ -100,9 +97,9 @@ export class UserComponent implements OnInit, CrudComponent {
       accept: () => {
         this.userService.remove(this.users[index].id).subscribe(() => {
           this.users = <User[]>CrudHelper.remove(index, this.users);
-          this.toast.showSuccess('user.remove.success');
+          this.messageService.success('user.remove.success');
         }, (msg: string) => {
-          this.toast.showFailure(msg);
+          this.messageService.failed(msg);
         });
       }
     });

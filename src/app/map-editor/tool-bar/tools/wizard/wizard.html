@@ -1,38 +1,38 @@
-<button pButton class="ui-button-secondary"
-        [ngClass]="{'active-tool' : active}" (click)="emitToggleActive()"
-        pTooltip="{{'sinks.one.header'|translate}}"
-        icon="fa fa-sitemap" iconPos="left"
-></button>
-<app-first-step [floor]="floor" #firstStep (clearView)="wizardStopped($event)"
-                (nextStepIndex)="wizardNextStep($event)"></app-first-step>
-<app-second-step #secondStep (clearView)="wizardStopped($event)"
-                 (nextStepIndex)="wizardNextStep($event)"></app-second-step>
-<app-third-step #thirdStep (clearView)="wizardStopped($event)"
-                (nextStepIndex)="wizardNextStep($event)"></app-third-step>
+<button pButton
+        [ngClass]="{'active-tool' : active}" (click)="nextStep()"
+        pTooltip="{{'wizard.tooltip'|translate}}"
+        icon="fa-sitemap" iconPos="left">
+</button>
 
-<ng-template>
-  <div class="wizard-dialog" *ngIf="!wizardCompleted">
-    <h3 class="wizard-not-complete">{{'wizard.configuration.not.complete'|translate}}</h3>
-    <div class="dialog-action">
-      <button pButton class="ui-button-secondary"
-              id="back-toWizard"
-              (click)="backToWizard()"
-              label="{{'wizard.backToWizard'|translate}}"
-      ></button>
-      <button pButton class="ui-button-secondary"
-              (click)="wizardStopped(true)"
-              label="{{'stop.wizard'|translate}}"
-      ></button>
+<p-dialog header="{{'wizard.configuration.not.complete'|translate}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
+          [contentStyle]="{ overflow: 'visible' }"
+          [width]="600" [closable]="false">
+  <form #wizardForm="ngForm" novalidate>
+    <div class="ui-g">
+      <div class="ui-g-12">
+        {{title|translate}}
+      </div>
     </div>
-  </div>
-  <div class="wizard-dialog" *ngIf="wizardCompleted">
-    <h3 class="wizard-complete">{{'wizard.configuration.complete'|translate}}</h3>
-    <div class="dialog-action">
-      <button pButton class="ui-button-secondary"
-              id="exit-dialog"
-              (click)="dialogRef.close()"
-      ></button>
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-4 ui-lg-4">
+        <div class="ui-message ui-messages-error ui-corner-all"
+             *ngIf="displayError">
+          <i class="fa fa-warning"></i>
+          {{'field.required'|translate}}
+        </div>
+      </div>
+      <div class="ui-g-12 ui-md-1 ui-lg-1">
+        <p-progressSpinner pTooltip="{{'wizardStep.waitingForDevicesInfo'|translate}}" [style]="{width: '30px', height: '30px'}"></p-progressSpinner>
+      </div>
+      <div class="ui-g-12 ui-md-7 ui-lg-7">
+        <p-dropdown [disabled]="isLoading" id="options" autoWidth="false" [style]="{ width: '100%' }" name="options" [options]="options" [(ngModel)]="selected" placeholder="{{placeholder|translate}}"></p-dropdown>
+      </div>
     </div>
-  </div>
-</ng-template>
-
+    <p-footer>
+      <div class="ui-dialog-buttonpane ui-helper-clearfix">
+        <button type="submit" pButton icon="fa-arrow-right" (click)="placeOnMap()" label="{{'next'|translate}}"></button>
+        <button type="button" pButton icon="fa-arrow-left" (click)="previousStep()" label="{{'previous'|translate}}"></button>
+      </div>
+    </p-footer>
+  </form>
+</p-dialog>

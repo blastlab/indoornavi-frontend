@@ -1,8 +1,10 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {UserService} from 'app/user/user.service';
 import {TranslateService} from '@ngx-translate/core';
-import {ToastService} from '../../utils/toast/toast.service';
 import {BreadcrumbService} from '../../utils/breadcrumbs/breadcrumb.service';
+import {NgForm} from '@angular/forms';
+import {CrudHelper} from '../../utils/crud/crud.component';
+import {MessageServiceWrapper} from '../../utils/message.service';
 
 @Component({
   templateUrl: 'changePassword.html'
@@ -16,10 +18,11 @@ export class ChangePasswordComponent implements OnInit {
     newPasswordRepeat: ''
   };
   passwordsEqual: boolean = true;
+  @ViewChild('changePasswordForm') changePasswordForm: NgForm;
 
   constructor(private userService: UserService,
               public translateService: TranslateService,
-              private toastService: ToastService,
+              private messageService: MessageServiceWrapper,
               private breadcrumbService: BreadcrumbService) {
     translateService.setDefaultLang('en');
     this.currentUserName = JSON.parse(localStorage.getItem('currentUser'))['username'];
@@ -40,10 +43,12 @@ export class ChangePasswordComponent implements OnInit {
   save(isValid: boolean): void {
     if (isValid) {
       this.userService.changePassword({oldPassword: this.model.oldPassword, newPassword: this.model.newPassword}).subscribe(() => {
-        this.toastService.showSuccess('user.changePassword.success');
+        this.messageService.success('user.changePassword.success');
       }, (msg: string) => {
-        this.toastService.showFailure(msg);
+        this.messageService.failed(msg);
       });
+    } else {
+      CrudHelper.validateAllFields(this.changePasswordForm);
     }
   }
 }

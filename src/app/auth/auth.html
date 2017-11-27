@@ -1,5 +1,3 @@
-<!--<div class="ui-g">-->
-<!--<div class="ui-g-offset-0 ui-md-offset-4 ui-lg-offset-4 ui-g-12 ui-md-4 ui-lg-4">-->
 <div class="ui-state-default ui-corner-all">
   <form #authForm="ngForm" novalidate>
     <div class="ui-g">
@@ -20,6 +18,11 @@
           pInputText
           placeholder="{{'user.password'|translate}}">
       </div>
+      <div class="ui-g-12 ui-message ui-messages-error ui-corner-all"
+           *ngIf="invalidCredentials">
+        <i class="fa fa-warning"></i>
+        {{'auth.invalid.credentials'|translate}}
+      </div>
       <div class="ui-g-12">
         <button
           pButton
@@ -31,5 +34,3 @@
     </div>
   </form>
 </div>
-<!--</div>-->
-<!--</div>-->
