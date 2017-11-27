@@ -1,31 +1,51 @@
-from selenium import webdriver
+from base_page import BasePage
+from selenium.webdriver.common.by import By
 
-class LoginPage():
-    @attributes
+class LoginPage(BasePage):
 
-    def setUp(self):
-        # create a new Firefox session
-        self.driver = webdriver.Chrome()
-        self.driver.implicitly_wait(30)
-        self.driver.maximize_window()
-        # navigate to the application home page
-        self.driver.get("http://www.google.com/")
+    login_url='http://localhost:4200/'
+    # Login page locators
+    FORM_LOCATOR = (By.CSS_SELECTOR, 'div.ng-valid')
+    button_locator = (By.CSS_SELECTOR, 'span.mat-button-wrapper')
+    usr_input_locator = (By.ID, 'user-name-input')
+    usr_password_locator = (By.ID, 'user-name-password')
+    next_page_title_locator = (By.TAG_NAME, 'h1')
 
-    def test_search_by_text(self):
-        # get the search textbox
-        self.search_field = self.driver.find_element_by_name("q")
+    # input credentials
+    valid_username = 'admin'
+    valid_password = 'admin'
+    invalid_username = 'admin1'
+    invalid_password = 'admin1'
 
-        # enter search keyword and submit
-        self.search_field.send_keys("Selenium WebDriver Interview questions")
-        self.search_field.submit()
+    # test cases collection
 
-        #get the list of elements which are displayed after the search
-        #currently on result page usingfind_elements_by_class_namemethod
+    def check_page_loaded_correctly(self):
+        print('check_page_loaded_correctly')
+        # return 1
+        # print('BasePage.wait_for_element(self.form_locator)')
 
-        lists = self.driver.find_elements_by_class_name("r")
-        no=len(lists)
-        self.assertEqual(11, len(lists))
+        self.wait_for_element()
 
-    def tearDown(self):
-        # close the browser window
-        self.driver.quit()
+        # print(self.form_locator)
+        # print(self.form_locator)
+        # self.find_element(*self.__form_locator)
+        # return True if BasePage.wait_for_element(self.form_locator) else False
+
+    # def find_login_button(self):
+    #     # BasePage.wait_for_element(self.usr_input_locator)
+    #     # button_text = button.text
+    #     # print('button_text')
+    #     #
+    #     # print('test print find_login_button')
+    #     # print(button_text)
+    #     # return BasePage.find_element(self.button_locator).text
+    #
+    # # def login_with_valid_data(self):
+    # #
+    # #     # find element, clear & fill it
+    # #     BasePage.clear_and_fill_input(self.usr_input_locator, self.valid_username)
+    # #     BasePage.clear_and_fill_input(self.usr_password_locator, self.valid_password)
+    # #     BasePage.click_button(self.button_locator)
+    # #     # there should be complexes' page loaded & return complexes title
+    # #     return BasePage.wait_for_element(self.next_page_title_locator).text
+    #

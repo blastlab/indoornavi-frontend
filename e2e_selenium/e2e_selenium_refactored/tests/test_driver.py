@@ -2,11 +2,10 @@ from selenium import webdriver
 
 class TestDriver:
 
-    def setUp(self, page_uri):
-        self.url = 'http://localhost:4200/'
-        self.uri = page_uri
+    def setUp(self, page_url):
+        self.url = page_url
         self.webdriver = webdriver.Chrome()
-        self.webdriver.get(self.url+self.uri)
+        self.webdriver.get(self.url)
 
     def tearDown(self):
         self.driver.quit()
