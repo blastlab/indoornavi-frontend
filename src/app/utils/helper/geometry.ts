@@ -6,6 +6,10 @@ export class Geometry {
     return (p1.y - p2.y) / (p1.x - p2.x);
   }
 
+  static getArcus(p1: Point, p2: Point) {
+    return Math.asin((p2.y - p1.y) / Math.sqrt(Math.pow(p2.y - p1.y, 2) + Math.pow(p2.x - p1.x, 2))) * 180 / Math.PI;
+  };
+
   static getVerticalEndingOffset( line: Line, endSize: number): number {
     const slope = this.getSlope(line.p1, line.p2);
     if (isNaN(slope)) {

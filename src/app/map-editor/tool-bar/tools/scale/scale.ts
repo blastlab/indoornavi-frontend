@@ -15,7 +15,6 @@ import {ActionBarService} from '../../../action-bar/actionbar.service';
 import {Configuration} from '../../../action-bar/actionbar.type';
 import {ScaleService} from './scale.service';
 import {Helper} from '../../../../utils/helper/helper';
-import {log} from 'util';
 import {MapService} from '../../../map.service';
 
 @Component({
@@ -224,27 +223,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       x: d3.event.offsetX,
       y: d3.event.offsetY
     };
-// private pointDrag(circleSelection: d3.selection): void {
-  //   if (this.pointsArray.length < 2) {
-  //     return;
-  //   }
-  //   const event: KeyboardEvent = <KeyboardEvent>window.event;
-  //   if (event.shiftKey) {
-  //     this.dragPointWithShift(circleSelection);
-  //   } else {
-  //     circleSelection
-  //       .attr('cx', (d) => {
-  //         // todo get max of drawing area
-  //         return d.x = Math.max(0, d3.event.x);
-  //       })
-  //       .attr('cy', (d) => {
-  //         // todo get max of drawing area
-  //         return d.y = Math.max(0, d3.event.y);
-  //       });
-  //
-  //   }
-  //   this.redrawAllObjectsOnMap();
-  // }
     if (!this.isFirstPointDrawn) {
       this.isFirstPointDrawn = true;
       this.pointsArray.push(point);
@@ -314,20 +292,64 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
     const dragging = (d, index: number, selections: d3.selection[]) => {
       const event: KeyboardEvent = <KeyboardEvent>window.event;
-      if (event.shiftKey) {
-        // todo:  calculate angle and approximate to axis and freeze aproximated axis dimension to second other point coordinates
-        const secondPoint = this.chooseNotDraggedPoint(d3.selectAll('circle'));
-        console.log(secondPoint);
-        const mousePosition = <Point>{
-          x: d3.event.x,
-          y: d3.event.y
-        };
-        const potentialSlope: number = Geometry.getSlope(secondPoint, mousePosition);
-        console.log(potentialSlope);
+      const secondPoint: Point = <Point>{
+        x: 0,
+        y: 0
+      };
+      const mousePosition = <Point>{
+        x: d3.event.x,
+        y: d3.event.y
+      };
+      let x_Coords: number;
+      let y_Coords: number;
+      if (index === 0) {
+        secondPoint.x = selections[1].getAttribute('cx');
+        secondPoint.y = selections[1].getAttribute('cy');
       } else {
-
+        secondPoint.x = selections[0].getAttribute('cx');
+        secondPoint.y = selections[0].getAttribute('cy');
       }
-      d3.select(selections[index]).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+    // * (180 / Math.PI)
+      console.log(Geometry.getArcus(mousePosition, secondPoint));
+      // console.log(secondPoint);
+      // console.log(Geometry.getSlope(secondPoint, mousePosition));
+      // console.log(mousePosition, secondPoint);
+      const x_DifferenceBetweenPoints = secondPoint.x - mousePosition.x;
+      const y_DifferenceBetweenPoints = secondPoint.y - mousePosition.y;
+      const abs_x_DifferenceBetweenPoints = Math.abs(x_DifferenceBetweenPoints);
+      const abs_y_DifferenceBetweenPoints = Math.abs(y_DifferenceBetweenPoints);
+      // tg(45deg) = abs_x_DifferenceBetweenPoints / abs_y_DifferenceBetweenPoints = 1, for drawing 45 deg line
+      const tg_XY = abs_x_DifferenceBetweenPoints / abs_y_DifferenceBetweenPoints;
+      const tg_YX = abs_y_DifferenceBetweenPoints / abs_x_DifferenceBetweenPoints;
+      // const angleBetweenPoints = Math.atan(x_DifferenceBetweenPoints / y_DifferenceBetweenPoints);
+      // console.log(angleBetweenPoints, Math.tan(angleBetweenPoints));
+      if (event.shiftKey) {
+        if (tg_XY > .8 && tg_XY < 1.2 || tg_YX > .8 && tg_YX < 1.2) {
+          if (x_DifferenceBetweenPoints < 0 && y_DifferenceBetweenPoints > 0) {
+            x_Coords = mousePosition.x;
+            y_Coords = secondPoint.y - (mousePosition.x - secondPoint.x);
+          } else if (x_DifferenceBetweenPoints < 0 && y_DifferenceBetweenPoints < 0) {
+            x_Coords = mousePosition.x;
+            y_Coords = secondPoint.y + (mousePosition.x - secondPoint.x);
+          } else if (x_DifferenceBetweenPoints > 0 && y_DifferenceBetweenPoints < 0) {
+            x_Coords = mousePosition.x;
+            y_Coords = secondPoint.y - (mousePosition.x - secondPoint.x);
+          } else if (x_DifferenceBetweenPoints > 0 && y_DifferenceBetweenPoints > 0) {
+            x_Coords = mousePosition.x;
+            y_Coords = secondPoint.y - (secondPoint.x - mousePosition.x);
+          }
+        } else if (abs_x_DifferenceBetweenPoints > abs_y_DifferenceBetweenPoints) {
+          x_Coords = mousePosition.x;
+          y_Coords = secondPoint.y;
+        } else {
+          x_Coords = secondPoint.x;
+          y_Coords = mousePosition.y;
+        }
+      } else {
+        x_Coords = mousePosition.x;
+        y_Coords = mousePosition.y;
+      }
+      d3.select(selections[index]).attr("cx", d.x = x_Coords).attr("cy", d.y = y_Coords);
       callRedrawAllObjectsOnMapWithClassContext();
     };
 
@@ -433,71 +455,49 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       });
   }
 
-  // private pointDrag(circleSelection: d3.selection): void {
-  //   if (this.pointsArray.length < 2) {
-  //     return;
-  //   }
-  //   const event: KeyboardEvent = <KeyboardEvent>window.event;
-  //   if (event.shiftKey) {
-  //     this.dragPointWithShift(circleSelection);
-  //   } else {
-  //     circleSelection
-  //       .attr('cx', (d) => {
-  //         // todo get max of drawing area
-  //         return d.x = Math.max(0, d3.event.x);
+  // private dragPointWithShift(circle: d3.selection): void {
+  //   const secondPoint = this.chooseNotDraggedPoint(circle);
+  //   const mousePosition = <Point>{
+  //     x: d3.event.x,
+  //     y: d3.event.y
+  //   };
+  //   const potentialSlope: number = Geometry.getSlope(secondPoint, mousePosition);
+  //   const upperSlope = 3;
+  //   const lowerSlope = 0.558; // arctan(22.5°)
+  //   if (Math.abs(potentialSlope) < lowerSlope) {
+  //     circle
+  //       .attr('cx', d => {
+  //         return d.x = Math.max(0, Math.min(d3.select('#map').attr('width'), d3.event.x));
   //       })
-  //       .attr('cy', (d) => {
-  //         // todo get max of drawing area
-  //         return d.y = Math.max(0, d3.event.y);
+  //       .attr('cy', d => {
+  //         return d.y = secondPoint.y;
   //       });
-  //
+  //   } else if (Math.abs(potentialSlope) > upperSlope) {
+  //     circle
+  //       .attr('cx', d => {
+  //         return d.x = secondPoint.x;
+  //       })
+  //       .attr('cy', d => {
+  //         return d.y = Math.max(0, Math.min(d3.select('#map').attr('height'), d3.event.y));
+  //       });
+  //   } else if (potentialSlope < upperSlope && potentialSlope > lowerSlope) {
+  //     circle
+  //       .attr('cx', d => {
+  //         return d.x = Math.max(0, Math.min(d3.select('#map').attr('width'), secondPoint.x + ( d3.event.y - secondPoint.y)));
+  //       })
+  //       .attr('cy', d => {
+  //         return d.y = Math.max(0, Math.min(d3.select('#map').attr('height'), d3.event.y));
+  //       });
+  //   } else if (potentialSlope > -upperSlope && potentialSlope < -lowerSlope) {
+  //     circle
+  //       .attr('cx', d => {
+  //         return d.x = Math.max(0, Math.min(d3.select('#map').attr('width'), secondPoint.x - ( d3.event.y - secondPoint.y)));
+  //       })
+  //       .attr('cy', d => {
+  //         return d.y = Math.max(0, Math.min(d3.select('#map').attr('height'), d3.event.y));
+  //       });
   //   }
-  //   this.redrawAllObjectsOnMap();
   // }
-
-  private dragPointWithShift(circle: d3.selection): void {
-    const secondPoint = this.chooseNotDraggedPoint(circle);
-    const mousePosition = <Point>{
-      x: d3.event.x,
-      y: d3.event.y
-    };
-    const potentialSlope: number = Geometry.getSlope(secondPoint, mousePosition);
-    const upperSlope = 3;
-    const lowerSlope = 0.558; // arctan(22.5°)
-    if (Math.abs(potentialSlope) < lowerSlope) {
-      circle
-        .attr('cx', d => {
-          return d.x = Math.max(0, Math.min(d3.select('#map').attr('width'), d3.event.x));
-        })
-        .attr('cy', d => {
-          return d.y = secondPoint.y;
-        });
-    } else if (Math.abs(potentialSlope) > upperSlope) {
-      circle
-        .attr('cx', d => {
-          return d.x = secondPoint.x;
-        })
-        .attr('cy', d => {
-          return d.y = Math.max(0, Math.min(d3.select('#map').attr('height'), d3.event.y));
-        });
-    } else if (potentialSlope < upperSlope && potentialSlope > lowerSlope) {
-      circle
-        .attr('cx', d => {
-          return d.x = Math.max(0, Math.min(d3.select('#map').attr('width'), secondPoint.x + ( d3.event.y - secondPoint.y)));
-        })
-        .attr('cy', d => {
-          return d.y = Math.max(0, Math.min(d3.select('#map').attr('height'), d3.event.y));
-        });
-    } else if (potentialSlope > -upperSlope && potentialSlope < -lowerSlope) {
-      circle
-        .attr('cx', d => {
-          return d.x = Math.max(0, Math.min(d3.select('#map').attr('width'), secondPoint.x - ( d3.event.y - secondPoint.y)));
-        })
-        .attr('cy', d => {
-          return d.y = Math.max(0, Math.min(d3.select('#map').attr('height'), d3.event.y));
-        });
-    }
-  }
 
   private chooseNotDraggedPoint(circle: d3.selection): Point {
     const point: Point = <Point>{
@@ -505,11 +505,11 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       y: 0
     };
     if (this.scale.start.x === parseInt(circle.attr('cx'), 10) && this.scale.start.y === parseInt(circle.attr('cy'), 10)) {
-      point.x = this.scale.stop.x;
-      point.y = this.scale.stop.y;
-    } else {
       point.x = this.scale.start.x;
       point.y = this.scale.start.y;
+    } else {
+      point.x = this.scale.stop.x;
+      point.y = this.scale.stop.y;
     }
     return point;
   }
