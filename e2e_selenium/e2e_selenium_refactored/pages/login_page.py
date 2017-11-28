@@ -5,11 +5,13 @@ class LoginPage(BasePage):
 
     login_url='http://localhost:4200/'
     # Login page locators
-    FORM_LOCATOR = (By.CSS_SELECTOR, 'div.ng-valid')
-    button_locator = (By.CSS_SELECTOR, 'span.mat-button-wrapper')
+    form_locator = (By.CSS_SELECTOR, 'form.ng-valid')
+    button_locator = (By.ID, 'login-button')
+    button_text_locator = (By.CSS_SELECTOR, 'span.ui-button-text')
     usr_input_locator = (By.ID, 'user-name-input')
-    usr_password_locator = (By.ID, 'user-name-password')
-    next_page_title_locator = (By.TAG_NAME, 'h1')
+    usr_password_locator = (By.ID, 'user-password-input')
+    next_page_title_locator = (By.CSS_SELECTOR, 'span.ui-menuitem-text')
+    login_warning = (By.CSS_SELECTOR, 'div.ui-messages-error')
 
     # input credentials
     valid_username = 'admin'
@@ -20,32 +22,37 @@ class LoginPage(BasePage):
     # test cases collection
 
     def check_page_loaded_correctly(self):
-        print('check_page_loaded_correctly')
-        # return 1
-        # print('BasePage.wait_for_element(self.form_locator)')
+        return True if self.wait_for_element(self.form_locator) else False
 
-        self.wait_for_element()
+    def get_button_text(self):
+        login_button_text = self.find_element(*self.button_text_locator).text
+        return login_button_text
 
-        # print(self.form_locator)
-        # print(self.form_locator)
-        # self.find_element(*self.__form_locator)
-        # return True if BasePage.wait_for_element(self.form_locator) else False
+    def login_with_valid_data(self, option = 1):
 
-    # def find_login_button(self):
-    #     # BasePage.wait_for_element(self.usr_input_locator)
-    #     # button_text = button.text
-    #     # print('button_text')
-    #     #
-    #     # print('test print find_login_button')
-    #     # print(button_text)
-    #     # return BasePage.find_element(self.button_locator).text
-    #
-    # # def login_with_valid_data(self):
-    # #
-    # #     # find element, clear & fill it
-    # #     BasePage.clear_and_fill_input(self.usr_input_locator, self.valid_username)
-    # #     BasePage.clear_and_fill_input(self.usr_password_locator, self.valid_password)
-    # #     BasePage.click_button(self.button_locator)
-    # #     # there should be complexes' page loaded & return complexes title
-    # #     return BasePage.wait_for_element(self.next_page_title_locator).text
-    #
+        if option == 1:
+          username = self.valid_username
+          password = self.valid_password
+
+        elif option == 2:
+          username = self.valid_username
+          password = self.invalid_password
+
+        elif option == 3:
+          username = self.invalid_username
+          password = self.valid_password
+
+        # find element, clear & fill it
+        self.clear_and_fill_input(username, *self.usr_input_locator)
+        self.clear_and_fill_input(password, *self.usr_password_locator)
+        # click Login
+        self.click_button(*self.button_locator)
+        # there should be complexes' page loaded & return complexes title
+        if option == 1:
+          return self.wait_for_element(self.next_page_title_locator).text
+        else:
+          return self.is_element_present(self.login_warning)
+
+
+    # invalid data - password
+    # invalid data - username

@@ -7,5 +7,3 @@ class TestDriver:
         self.webdriver = webdriver.Chrome()
         self.webdriver.get(self.url)
 
-    def tearDown(self):
-        self.driver.quit()
