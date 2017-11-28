@@ -4,14 +4,14 @@ import {ComplexComponent} from './complex/complex';
 import {CanRead} from './auth/auth.guard';
 import {BuildingComponent} from './building/building';
 import {UserComponent} from './user/user';
-import {ChangePasswordComponent} from './user/changePassword';
-import {PermissionGroupComponent} from './user/permissionGroup';
+import {ChangePasswordComponent} from './user/changePassword/changePassword';
+import {PermissionGroupComponent} from './user/permissionGroup/permissionGroup';
 import {FloorComponent} from './floor/floor';
 import {MapControllerComponent} from './map-editor/map.controller';
 import {UnauthorizedComponent} from './utils/unauthorized/unauthorized';
 import {PublishedListComponent} from './publications/list/published-list';
 import {PublishedComponent} from './map-viewer/published';
-import {DeviceComponent} from './device/device.component';
+import {DeviceComponent} from './device/device';
 
 export const appRoutes: Routes = [
   {path: '', redirectTo: '/complexes', pathMatch: 'full'},

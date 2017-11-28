@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Tool} from '../tool';
 import {ToolName} from '../tools.enum';
 import * as d3 from 'd3';
@@ -10,11 +10,12 @@ import {ScaleHintService} from './hint/hint.service';
 import {MapLoaderInformerService} from '../../../../utils/map-loader-informer/map-loader-informer.service';
 import {Subscription} from 'rxjs/Subscription';
 import {Geometry} from '../../../../utils/helper/geometry';
-import {HintBarService} from '../../../hint-bar/hint-bar.service';
 import {ActionBarService} from '../../../action-bar/actionbar.service';
 import {Configuration} from '../../../action-bar/actionbar.type';
 import {ScaleService} from './scale.service';
 import {Helper} from '../../../../utils/helper/helper';
+import {HintBarService} from '../../../hint-bar/hintbar.service';
+import {ToolbarService} from '../../toolbar.service';
 import {MapService} from '../../../map.service';
 
 @Component({
@@ -23,10 +24,6 @@ import {MapService} from '../../../map.service';
   styleUrls: ['../tool.css']
 })
 export class ScaleComponent implements Tool, OnDestroy, OnInit {
-  @Output() clicked: EventEmitter<Tool> = new EventEmitter<Tool>();
-  public hintMessage: string;
-  private pointsArray: Array<Point> = [];
-  private linesArray: Array<Line> = [];
   public active: boolean = false;
   public isScaleDisplayed: boolean = false;
   public isScaleSet: boolean = false;
@@ -40,15 +37,19 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private mapWidth: number;
   private mapHeight: number;
   private scale: Scale;
+  private hintMessage: string;
+  private pointsArray: Point[] = [];
+  private linesArray: Line[] = [];
   private zoom: number = 1.0;
   private map2DTranslation: Point = {x: 0, y: 0};
 
   constructor(private translate: TranslateService,
-              private scaleInput: ScaleInputService,
+              private scaleInputService: ScaleInputService,
               private scaleHint: ScaleHintService,
               private mapLoaderInformer: MapLoaderInformerService,
-              private hintBar: HintBarService,
-              private configurationService: ActionBarService,
+              private hintBarService: HintBarService,
+              private toolbarService: ToolbarService,
+              private actionBarService: ActionBarService,
               private scaleService: ScaleService,
               private mapService: MapService) {
     this.setTranslations();
@@ -67,6 +68,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     if (this.configurationResetSubscription) {
       this.configurationResetSubscription.unsubscribe();
     }
+
     this.isScaleSet = false;
     this.scaleGroup.remove();
     this.pointsArray = [];
@@ -82,14 +84,16 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       // console.log(this.map2DTranslation, this.zoom);
     });
     this.createEmptyScale();
-    this.configurationLoadedSubscription = this.configurationService.configurationLoaded().subscribe((configuration: Configuration) => {
+
+    this.configurationLoadedSubscription = this.actionBarService.configurationLoaded().subscribe((configuration: Configuration) => {
       this.drawScale(configuration.data.scale);
     });
 
-    this.configurationResetSubscription = this.configurationService.configurationReset().subscribe((configuration: Configuration) => {
+    this.configurationResetSubscription = this.actionBarService.configurationReset().subscribe((configuration: Configuration) => {
       if (!configuration.data.scale) {
         this.isScaleSet = false;
         this.isFirstPointDrawn = false;
+        this.isScaleDisplayed = false;
       }
       this.scaleGroup.remove();
       this.createSvgGroupWithScale();
@@ -105,21 +109,29 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.createSvgGroupWithScale();
     });
 
-    this.saveButtonSubscription = this.scaleInput.confirmClicked.subscribe((scale: Scale) => {
-      this.clicked.emit(this);
+    this.saveButtonSubscription = this.scaleInputService.confirmClicked.subscribe((scale: Scale) => {
+      this.toolbarService.emitToolChanged(null);
+      // this.setInactive();
       this.isScaleSet = true;
       this.scale.realDistance = scale.realDistance;
       this.scale.measure = scale.measure;
-      this.configurationService.setScale(this.scale);
+      this.actionBarService.setScale(this.scale);
+      this.scaleService.publishScaleChanged(this.scale);
     });
 
     this.scaleHint.mouseHoverChanged.subscribe((overOrOut: string) => {
-      if (overOrOut === 'over') {
-        this.scaleGroup.style('display', 'flex');
-      } else {
-        this.scaleGroup.style('display', 'none');
+      if (this.active || this.isScaleSet) {
+        if (overOrOut === 'over') {
+          this.scaleGroup.style('display', 'flex');
+        } else {
+          this.scaleGroup.style('display', 'none');
+        }
       }
     });
+  }
+
+  getHintMessage(): string {
+    return this.hintMessage;
   }
 
   public getToolName(): ToolName {
@@ -130,7 +142,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.active = true;
     this.startCreatingScale();
     this.translate.get('scale.basic.msg').subscribe((value: string) => {
-      this.hintBar.publishHint(value);
+      this.hintBarService.emitHintMessage(value);
     });
   }
 
@@ -138,13 +150,12 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.hideScale();
     this.active = false;
     this.translate.get('hint.chooseTool').subscribe((value: string) => {
-      this.hintBar.publishHint(value);
+      this.hintBarService.emitHintMessage(value);
     });
   }
 
-  public toolClicked(): void {
-    console.log('scale opened');
-    this.clicked.emit(this);
+  public onClick(): void {
+    this.toolbarService.emitToolChanged(this);
   }
 
   private updateScaleGroup() {
@@ -223,6 +234,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       x: d3.event.offsetX,
       y: d3.event.offsetY
     };
+
     if (!this.isFirstPointDrawn) {
       this.isFirstPointDrawn = true;
       this.pointsArray.push(point);
@@ -278,7 +290,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     };
   }
 
-  redrawPoints(): void {
+  private redrawPoints(): void {
     const callRedrawAllObjectsOnMapWithClassContext = () => {
       this.redrawAllObjectsOnMap();
     };
@@ -287,11 +299,10 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
     const dragStart = (_, index: number, selections: d3.selection[]) => {
       d3.event.sourceEvent.stopPropagation();
-      d3.select(selections[index]).classed("dragging", true);
+      d3.select(selections[index]).classed('dragging', true);
     };
 
     const dragging = (d, index: number, selections: d3.selection[]) => {
-      console.log(selections);
       const event: KeyboardEvent = <KeyboardEvent>window.event;
       const secondPoint: Point = <Point>{
         x: 0,
@@ -304,57 +315,73 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       let x_Coords: number;
       let y_Coords: number;
       if (index === 0) {
-        secondPoint.x = selections[1].getAttribute('cx');
-        secondPoint.y = selections[1].getAttribute('cy');
+        secondPoint.x = this.pointsArray[1].x;
+        secondPoint.y = this.pointsArray[1].y;
       } else {
-        secondPoint.x = selections[0].getAttribute('cx');
-        secondPoint.y = selections[0].getAttribute('cy');
+        secondPoint.x = this.pointsArray[0].x;
+        secondPoint.y = this.pointsArray[0].y;
       }
-      console.log(Geometry.getArcus(mousePosition, secondPoint));
-      // console.log(secondPoint);
-      // console.log(Geometry.getSlope(secondPoint, mousePosition));
-      // console.log(mousePosition, secondPoint);
       const x_DifferenceBetweenPoints = secondPoint.x - mousePosition.x;
       const y_DifferenceBetweenPoints = secondPoint.y - mousePosition.y;
-      const abs_x_DifferenceBetweenPoints = Math.abs(x_DifferenceBetweenPoints);
-      const abs_y_DifferenceBetweenPoints = Math.abs(y_DifferenceBetweenPoints);
-      // tg(45deg) = abs_x_DifferenceBetweenPoints / abs_y_DifferenceBetweenPoints = 1, for drawing 45 deg line
-      const tg_XY = abs_x_DifferenceBetweenPoints / abs_y_DifferenceBetweenPoints;
-      const tg_YX = abs_y_DifferenceBetweenPoints / abs_x_DifferenceBetweenPoints;
-      // const angleBetweenPoints = Math.atan(x_DifferenceBetweenPoints / y_DifferenceBetweenPoints);
-      // console.log(angleBetweenPoints, Math.tan(angleBetweenPoints));
-      if (event.shiftKey) {
-        if (tg_XY > .8 && tg_XY < 1.2 || tg_YX > .8 && tg_YX < 1.2) {
-          if (x_DifferenceBetweenPoints < 0 && y_DifferenceBetweenPoints > 0) {
-            x_Coords = mousePosition.x;
-            y_Coords = secondPoint.y - (mousePosition.x - secondPoint.x);
-          } else if (x_DifferenceBetweenPoints < 0 && y_DifferenceBetweenPoints < 0) {
-            x_Coords = mousePosition.x;
-            y_Coords = secondPoint.y + (mousePosition.x - secondPoint.x);
-          } else if (x_DifferenceBetweenPoints > 0 && y_DifferenceBetweenPoints < 0) {
-            x_Coords = mousePosition.x;
-            y_Coords = secondPoint.y - (mousePosition.x - secondPoint.x);
-          } else if (x_DifferenceBetweenPoints > 0 && y_DifferenceBetweenPoints > 0) {
-            x_Coords = mousePosition.x;
-            y_Coords = secondPoint.y - (secondPoint.x - mousePosition.x);
+      const arcOfScale360 = Geometry.getArcus(mousePosition, secondPoint);
+      // if (event.shiftKey) {
+
+        const arcRelocationValue = 22.5;
+        if (arcOfScale360 % arcRelocationValue < 1) {
+          console.log(Math.floor(arcOfScale360));
+          const arc = Math.floor(arcOfScale360);
+          const radiansArc = arcToRadians => arcToRadians * Math.PI / 180;
+          let arcToCalculate = 0;
+          switch (arc) {
+            case 22:
+            case 23:
+              arcToCalculate = 22.5;
+              break;
+            case 67:
+            case 68:
+              arcToCalculate = 67.5;
+              break;
+            case 112:
+            case 113:
+              arcToCalculate = 102.5;
+              break;
+            case 157:
+            case 158:
+              arcToCalculate = 157.5;
+              break;
+            case 202:
+            case 203:
+              arcToCalculate = 202.5;
+              break;
+            case 247:
+            case 248:
+              arcToCalculate = 247.5;
+              break;
+            case 293:
+            case 297:
+              arcToCalculate = 293.5;
+              break;
+            case 337:
+            case 338:
+              arcToCalculate = 337.5;
+              break;
+            default:
+              arcToCalculate = arc;
           }
-        } else if (abs_x_DifferenceBetweenPoints > abs_y_DifferenceBetweenPoints) {
-          x_Coords = mousePosition.x;
-          y_Coords = secondPoint.y;
-        } else {
-          x_Coords = secondPoint.x;
-          y_Coords = mousePosition.y;
+            console.log(Math.sin(radiansArc(arcToCalculate)));
+          // const y_coords = mousePosition.y + x_DifferenceBetweenPoints *
         }
-      } else {
+
         x_Coords = mousePosition.x;
         y_Coords = mousePosition.y;
-      }
-      d3.select(selections[index]).attr("cx", d.x = x_Coords).attr("cy", d.y = y_Coords);
+      // }
+      d3.select(selections[index]).attr('cx', d.x = x_Coords).attr('cy', d.y = y_Coords);
       callRedrawAllObjectsOnMapWithClassContext();
     };
 
     const dragStop = (_, index: number, selections: d3.selection[]) => {
-      d3.select(selections[index]).classed("dragging", false);
+      d3.select(selections[index]).classed('dragging', false);
+      this.actionBarService.setScale(this.scale);
     };
 
     const drag = d3.drag()
@@ -427,7 +454,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
         }
         return d.x - Geometry.getVerticalEndingOffset(this.linesArray[0], this.END_SIZE);
       })
-      .attr('y2', d => {
+      .attr('y2', (d) => {
         if (this.linesArray.length === 0) {
           return d.y;
         }
@@ -555,8 +582,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.scale = Helper.deepCopy(scale);
       this.drawScaleFromConfiguration();
     }
-    this.scaleInput.publishScale(this.scale);
-    this.scaleHint.publishScale(this.scale);
+    this.scaleService.publishScaleChanged(this.scale);
     this.updateScaleGroup();
   }
 

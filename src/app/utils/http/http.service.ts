@@ -3,13 +3,13 @@ import {Headers, Http, RequestOptions, Response, ResponseContentType} from '@ang
 import {Observable} from 'rxjs/Rx';
 import {Config} from '../../../config';
 import 'rxjs/add/observable/throw';
-import {ActivatedRoute, Params, Router} from '@angular/router';
+import {ActivatedRoute, Params} from '@angular/router';
 import {AuthGuard} from '../../auth/auth.guard';
 
 @Injectable()
 export class HttpService {
 
-  private static router: Router;
+  private static authGuard: AuthGuard;
   private headers: Headers = new Headers();
   private options: RequestOptions = new RequestOptions({headers: this.headers});
 
@@ -24,7 +24,7 @@ export class HttpService {
 
   private static errorHandler(err: any): Observable<any> {
     if (err instanceof Response && err.status === 401) {
-      HttpService.router.navigate(['/login'], {queryParams: {returnUrl: HttpService.router.routerState.snapshot.url}});
+      HttpService.authGuard.toggleUserLoggedIn(false);
     }
     if (err instanceof Response && err.status === 404) {
       return Observable.throw('S_001');
@@ -35,8 +35,8 @@ export class HttpService {
     return Observable.throw('S_000');
   }
 
-  constructor(private http: Http, private router: Router, private authGuard: AuthGuard, private route: ActivatedRoute) {
-    HttpService.router = router;
+  constructor(private http: Http, private authGuard: AuthGuard, private route: ActivatedRoute) {
+    HttpService.authGuard = authGuard;
     route.queryParams.subscribe((params: Params) => {
       if (localStorage.getItem('currentUser')) {
         this.prepareAuthHeader();
@@ -72,10 +72,6 @@ export class HttpService {
 
   doDelete(url: string): Observable<any> {
     return this.http.delete(Config.API_URL + url, this.options).map(HttpService.extractData).catch(HttpService.errorHandler).first();
-  }
-
-  setResponseType(type: ResponseContentType): void {
-    this.options.responseType = type;
   }
 
   private prepareAuthHeader(apiKey?: string) {

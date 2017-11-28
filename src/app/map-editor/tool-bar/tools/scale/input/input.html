@@ -1,13 +1,23 @@
-<form #scaleForm="ngForm" novalidate>
-  <div id="scaleInput" [ngClass]="visible ? 'show-scale-input' : 'hide-scale-input'">
-    <md-input-container class="example-full-width">
-      <input mdInput placeholder="distance" pattern="\-?[\d]+" name="realDistance" [(ngModel)]="scale.realDistance"
-             required class="distance" autocomplete="off">
-      <md-icon mdTooltipPosition="above" mdTooltip="{{'scale.distance.hint'|translate}}" mdSuffix>help_outline</md-icon>
-    </md-input-container>
-    <md-select required [ngModelOptions]="{standalone: true}" placeholder="unit" [(ngModel)]="scale.measure" class="measure">
-      <md-option *ngFor="let measure of measures" [value]="measure">{{measure}}</md-option>
-    </md-select>
-    <button id="confirmScaleButton" md-fab md-raised-button md-button (click)="confirm(scaleForm.valid)">{{'ok'|translate}}</button>
-  </div>
-</form>
+<div id="scaleInput" class="ui-g" [ngClass]="visible ? 'show-scale-input' : 'hide-scale-input'">
+  <form novalidate>
+    <div class="ui-g-5">
+      <div class="ui-inputgroup">
+      <span class="ui-inputgroup-addon">
+          <i class="fa fa-question" pTooltip="{{'scale.distance.hint'|translate}}"></i>
+      </span>
+        <input name="distance" type="text" pInputText placeholder="{{'scale.distance.placeholder'|translate}}" [(ngModel)]="scale.realDistance"/>
+      </div>
+    </div>
+    <div class="ui-g-5">
+      <p-dropdown name="measure" [placeholder]="placeholder" [options]="measures" [(ngModel)]="scale.measure"
+                  [style]="{ width: '100%' }" autoWidth="false"></p-dropdown>
+    </div>
+    <div class="ui-g-2">
+      <button pButton class="ui-button-success"
+              (click)="confirm()"
+              pTooltip="{{'ok'|translate}}"
+              icon="fa-check-circle-o">
+      </button>
+    </div>
+  </form>
+</div>

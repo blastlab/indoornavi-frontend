@@ -1,15 +1,14 @@
-import {animate, ChangeDetectorRef, Component, Input, NgZone, OnDestroy, OnInit, state, style, transition, trigger, ViewRef} from '@angular/core';
+import {animate, ChangeDetectorRef, Component, Input, NgZone, OnDestroy, OnInit, state, style, transition, trigger, ViewChild} from '@angular/core';
 import {ActionBarService} from './actionbar.service';
 import {Floor} from '../../floor/floor.type';
 import {MapLoaderInformerService} from '../../utils/map-loader-informer/map-loader-informer.service';
 import {Subscription} from 'rxjs/Subscription';
 import {Timer} from '../../utils/timer/timer';
-import {MdDialog, MdDialogRef} from '@angular/material';
 import {PublishedDialogComponent} from '../../publications/dialog/published.dialog';
 import {PublishedMap} from '../../map-viewer/published.type';
-import {ConfirmDialogComponent} from '../../utils/confirm-dialog/confirm.dialog';
 import {TranslateService} from '@ngx-translate/core';
 import {Configuration} from './actionbar.type';
+import {ConfirmationService} from 'primeng/primeng';
 
 @Component({
   selector: 'app-actionbar',
@@ -38,10 +37,9 @@ export class ActionBarComponent implements OnInit, OnDestroy {
   private configurationLoadedSubscription: Subscription;
   private configurationChangedSubscription: Subscription;
   private timer: Timer;
-  private publishedDialogRef: MdDialogRef<PublishedDialogComponent>;
 
-  // confirm dialog data
-  private confirmDialogRef: MdDialogRef<ConfirmDialogComponent>;
+  @ViewChild(PublishedDialogComponent)
+  private publishedMapDialog: PublishedDialogComponent;
 
   // pre publish dialog data
   private publishConfirmButtonText: string;
@@ -56,9 +54,9 @@ export class ActionBarComponent implements OnInit, OnDestroy {
   constructor(private configurationService: ActionBarService,
               private mapLoaderInformer: MapLoaderInformerService,
               private ngZone: NgZone,
-              private dialog: MdDialog,
               private cd: ChangeDetectorRef,
-              private translateService: TranslateService) {
+              private translateService: TranslateService,
+              private confirmationService: ConfirmationService) {
   }
 
   ngOnInit() {
@@ -118,55 +116,33 @@ export class ActionBarComponent implements OnInit, OnDestroy {
   }
 
   public resetToPreviousPublication(): void {
-    this.confirmDialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: {
-        body: this.undoDialogBody,
-        confirmButtonText: this.undoConfirmButtonText,
-        cancelButtonText: this.undoCancelButtonText
-      }
-    });
-    this.confirmDialogRef.afterClosed().subscribe((okButtonClicked: boolean) => {
-      if (okButtonClicked) {
+    this.confirmationService.confirm({
+      message: this.undoDialogBody,
+      accept: () => {
         this.configurationService.undo().then(() => {
           this.publishButtonDisabled = true;
           this.resetButtonDisabled = true;
         });
       }
-
-      this.confirmDialogRef = null;
     });
   }
 
   public publish(): void {
-    this.confirmDialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: {
-        body: this.publishDialogBody,
-        confirmButtonText: this.publishConfirmButtonText,
-        cancelButtonText: this.publishCancelButtonText
-      }
-    });
-    this.confirmDialogRef.afterClosed().subscribe((okButtonClicked: boolean) => {
-      if (okButtonClicked) {
-        this.publishedDialogRef = this.dialog.open(PublishedDialogComponent, {width: '500px', height: '600px'});
-        this.publishedDialogRef.componentInstance.setMap({
-          floor: this.floor,
-          users: [],
-          tags: []
+    this.confirmationService.confirm({
+      message: this.publishDialogBody,
+      accept: () => {
+        const subscription = this.publishedMapDialog.openWithFloor(this.floor).subscribe((_: PublishedMap) => {
+          this.configurationService.publish().subscribe(() => {
+            this.afterPublishDone();
+            subscription.unsubscribe();
+          });
         });
-        this.publishedDialogRef.afterClosed().subscribe((savedMap: PublishedMap) => {
-          if (!!savedMap) {
-            this.configurationService.publish().subscribe(() => {
-              this.afterPublishDone();
-            });
-          }
-        });
-      } else if (okButtonClicked !== undefined) { // don't do it when user closed dialog giving no answer
+      },
+      reject: () => {
         this.configurationService.publish().subscribe(() => {
           this.afterPublishDone();
         });
       }
-
-      this.confirmDialogRef = null;
     });
   }
 
@@ -182,10 +158,7 @@ export class ActionBarComponent implements OnInit, OnDestroy {
     if (this.isAnimationDone) {
       this.messageSpanState = 'visible';
     }
-    // if (!(this.cd as ViewRef).destroyed) {
-    // console.log(this.cd);
     this.cd.detectChanges();
-    // }
   }
 
   private afterPublishDone(): void {
@@ -193,9 +166,7 @@ export class ActionBarComponent implements OnInit, OnDestroy {
     this.resetButtonDisabled = true;
     this.saveButtonDisabled = true;
     this.updateUndoDialogBody(new Date());
-    // if (!(this.cd as ViewRef).destroyed) {
-      this.cd.detectChanges();
-    // }
+    this.cd.detectChanges();
   }
 
   private setTranslations(): void {

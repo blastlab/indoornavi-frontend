@@ -47,7 +47,6 @@ export class MapViewerService {
           .attr('width', image.width)
           .attr('height', image.height);
 
-
         const g = map.append('g');
 
         g.attr('id', 'map')
@@ -58,7 +57,6 @@ export class MapViewerService {
           .attr('y', 0)
           .attr('width', image.width)
           .attr('height', image.height);
-
 
         map.call(zoom);
 

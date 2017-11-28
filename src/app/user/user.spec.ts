@@ -13,7 +13,7 @@ import {HttpService} from '../utils/http/http.service';
 import {Observable} from 'rxjs/Observable';
 import {SharedModule} from '../utils/shared/shared.module';
 import {AuthGuard} from '../auth/auth.guard';
-import {PermissionGroupService} from './permissionGroup.service';
+import {PermissionGroupService} from './permissionGroup/permissionGroup.service';
 
 describe('User component', () => {
   let component: UserComponent;

@@ -2,25 +2,31 @@
   <h2>Tools</h2>
   <ul class="tools-list">
     <li class="tool">
-      <app-scale (clicked)="setTool($event)"></app-scale>
+      <app-scale></app-scale>
     </li>
     <li>
-      <app-wizard [floor]="floor" (clicked)="setTool($event)"></app-wizard>
+      <app-wizard [floor]="floor"></app-wizard>
     </li>
     <li>
-      <button disabled="disabled">
-        <i class="icons">toll</i>
-      </button>
+      <button pButton class="ui-button-secondary"
+              disabled="disabled"
+              pTooltip="{{'toll'|translate}}"
+              icon="fa fa-usd" icoPos="left"
+      ></button>
     </li>
     <li>
-      <button disabled="disabled">
-        <i class="icons">timeline</i>
-      </button>
+      <button pButton class="ui-button-secondary"
+              disabled="disabled"
+              pTooltip="{{'timeline'|translate}}"
+              icon="fa fa-calendar" iconPos="left"
+      ></button>
     </li>
     <li>
-      <button disabled="disabled">
-        <i class="icons">settings_remote</i>
-      </button>
+      <button pButton class="ui-button-secondary"
+              disabled="disabled"
+              pTooltip="{{'settings.remote'|translate}}"
+              icon="fa fa-cogs" iconPos="left"
+      ></button>
     </li>
   </ul>
 </div>
