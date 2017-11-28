@@ -1,16 +1,16 @@
 import {ChangePasswordComponent} from './changePassword';
-import {UserService} from './user.service';
-import {ToastService} from '../utils/toast/toast.service';
+import {UserService} from '../user.service';
+import {ToastService} from '../../utils/toast/toast.service';
 import {MaterialModule, MdDialog} from '@angular/material';
 import {async, TestBed} from '@angular/core/testing';
-import {DialogTestModule} from '../utils/dialog/dialog.test';
+import {DialogTestModule} from '../../utils/dialog/dialog.test';
 import {BrowserModule} from '@angular/platform-browser';
-import {HttpService} from '../utils/http/http.service';
+import {HttpService} from '../../utils/http/http.service';
 import {FormsModule} from '@angular/forms';
 import {HttpModule} from '@angular/http';
 import {TranslateModule} from '@ngx-translate/core';
 import {Observable} from 'rxjs/Observable';
-import {AuthGuard} from '../auth/auth.guard';
+import {AuthGuard} from '../../auth/auth.guard';
 import {ActivatedRoute, Router} from '@angular/router';
 
 describe('Change password component', () => {

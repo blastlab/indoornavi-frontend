@@ -1,62 +1,51 @@
-<h1 [translate]="'publishedList.header'"></h1>
+<p-toolbar>
+  <div class="ui-toolbar-group-left">
+    <button pButton class="ui-button-secondary"
+            id="add-publishedMa"
+            [appHasPermission]="'MAP_CREATE'"
+            (click)="openDialog(null)"
+            label="{{'add'|translate}}"
+            icon="fa fa-plus" iconPos="left"
+    ></button>
+  </div>
+</p-toolbar>
 
-<div class="adding-section">
-  <button [appHasPermission]="'MAP_CREATE'" md-raised-button id="new-publishedList-button" type="button"
-          (click)="openDialog(null)">{{'add'|translate}}
-  </button>
-</div>
+<p-dataTable [loading]="loading" [value]="publishedMaps" styleClass="auto">
+  <p-column header="{{'publishedList.floor'|translate}}">
+    <ng-template let-publishedMap="rowData" pTemplate="body">
+      {{publishedMap.floor.displayName}}
+    </ng-template>
+  </p-column>
+  <p-column header="{{'publishedList.tags'|translate}}">
+    <ng-template let-publishedMap="rowData" pTemplate="body">
+      <span *ngIf="publishedMap.tags.length === 0"><i><small>{{'publishedList.empty'|translate}}</small></i></span>
+      <div *ngFor="let tag of publishedMap.tags">{{tag.shortId}} - {{tag.longId}}</div>
+    </ng-template>
+  </p-column>
+  <p-column header="{{'publishedList.users'|translate}}">
+    <ng-template let-publishedMap="rowData" pTemplate="body">
+      <span *ngIf="publishedMap.users.length === 0"><i><small>{{'publishedList.empty'|translate}}</small></i></span>
+      <div *ngFor="let user of publishedMap.users">{{user.username}}</div>
+    </ng-template>
+  </p-column>
+  <p-column header="{{'th.actions'|translate}}" styleClass="col-button">
+    <ng-template let-publishedMap="rowData" let-i="rowIndex" pTemplate="body">
+      <button pButton pTooltip="{{'go.to.map'|translate}}" (click)="goTo(publishedMap)"
+              mdTooltipPosition="above" icon="fa-map">
+      </button>
+      <button pButton pTooltip="{{'go.to.mapEditor'|translate}}" [appHasPermission]="'FLOOR_READ'" (click)="goToEditor(publishedMap)"
+              mdTooltipPosition="above" icon="fa-paint-brush">
+      </button>
+      <button pButton ngClass="editButton" pTooltip="{{'edit'|translate}}" [appHasPermission]="'MAP_UPDATE'" (click)="openDialog(publishedMap)"
+              mdTooltipPosition="above" icon="fa-edit">
+      </button>
+      <button pButton ngClass="deleteButton" pTooltip="{{'remove'|translate}}" [appHasPermission]="'MAP_DELETE'" (click)="remove(i)"
+              mdTooltipPosition="above" icon="fa-trash">
+      </button>
+    </ng-template>
+  </p-column>
+</p-dataTable>
 
-<!--<ngx-datatable-->
-  <!--class="material"-->
-  <!--[rows]="rows"-->
-  <!--[rowHeight]="'auto'"-->
-  <!--[columnMode]="'force'">-->
-  <!--<ngx-datatable-column prop="floor">-->
-    <!--<template let-column="column" ngx-datatable-header-template>-->
-      <!--{{'publishedList.floor'|translate}}-->
-    <!--</template>-->
-    <!--<template let-value="value" ngx-datatable-cell-template>-->
-      <!--{{value.displayName}}-->
-    <!--</template>-->
-  <!--</ngx-datatable-column>-->
+<app-published-dialog></app-published-dialog>
 
-  <!--<ngx-datatable-column prop="tags">-->
-    <!--<template let-column="column" ngx-datatable-header-template>-->
-      <!--{{'publishedList.tags'|translate}}-->
-    <!--</template>-->
-    <!--<template let-value="value" ngx-datatable-cell-template>-->
-      <!--<span *ngIf="value.length === 0"><i><small>{{'publishedList.empty'|translate}}</small></i></span>-->
-      <!--<div *ngFor="let tag of value">{{tag.shortId}} - {{tag.longId}}</div>-->
-    <!--</template>-->
-  <!--</ngx-datatable-column>-->
-
-  <!--<ngx-datatable-column prop="users">-->
-    <!--<template let-column="column" ngx-datatable-header-template>-->
-      <!--{{'publishedList.users'|translate}}-->
-    <!--</template>-->
-    <!--<template let-value="value" ngx-datatable-cell-template>-->
-      <!--<span *ngIf="value.length === 0"><i><small>{{'publishedList.empty'|translate}}</small></i></span>-->
-      <!--<div *ngFor="let user of value">{{user.username}}</div>-->
-    <!--</template>-->
-  <!--</ngx-datatable-column>-->
-
-  <!--<ngx-datatable-column>-->
-    <!--<template let-column="column" ngx-datatable-header-template>-->
-      <!--{{'th.actions'|translate}}-->
-    <!--</template>-->
-    <!--<template let-row="row" ngx-datatable-cell-template>-->
-      <!--<button md-tooltip="{{'go.to.map'|translate}}" md-mini-fab (click)="goToMap(row)" mdTooltipPosition="above">-->
-        <!--<i class="material-icons">map</i>-->
-      <!--</button>-->
-      <!--<button md-tooltip="{{'go.to.mapEditor'|translate}}" [appHasPermission]="'FLOOR_READ'" (click)="goToEditor(row)" md-mini-fab mdTooltipPosition="above">-->
-        <!--<i class="material-icons">format_paint</i>-->
-      <!--</button>-->
-      <!--<button ngClass="editButton" md-tooltip="{{'edit'|translate}}" [appHasPermission]="'MAP_UPDATE'" (click)="edit(row)" md-mini-fab mdTooltipPosition="above">-->
-        <!--<i class="material-icons">mode_edit</i>-->
-      <!--</button>-->
-      <!--<button ngClass="deleteButton" md-tooltip="{{'remove'|translate}}" [appHasPermission]="'MAP_DELETE'" (click)="remove(row)" md-mini-fab mdTooltipPosition="above">-->
-        <!--<i class="material-icons">delete</i>-->
-      <!--</button>-->
-    <!--</template>-->
-  <!--</ngx-datatable-column>-->
-<!--</ngx-datatable>-->
+<p-confirmDialog icon="fa-question-circle" width="425"></p-confirmDialog>

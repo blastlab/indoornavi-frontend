@@ -14,7 +14,6 @@ import {MaterialModule} from '@angular/material';
 import {DialogTestModule} from '../../utils/dialog/dialog.test';
 import {Measure} from '../tool-bar/tools/scale/scale.type';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {ChangeDetectorRef} from '@angular/core';
 
 class ConfigurationServiceMock {
   private configuration: Configuration;

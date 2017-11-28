@@ -13,10 +13,15 @@
     <!--</md-select>-->
   <!--</div>-->
   <div class="dialog-action">
-    <button *ngIf="!isLoading" class="dialog-place-button"
-            (click)="dialogRef.close(true)" [disabled]="!data">
-            </button>
-    <button class="dialog-cancel-button" (click)="dialogRef.close(false)"></button>
+    <button pButton class="ui-button-secondary"
+            *ngIf="!isLoading"
+            [disabled]="!data" (click)="dialogRef.close(true)"
+            label="Configure"
+    ></button>
+    <button pButton class="ui-button-secondary"
+            (click)="dialogRef.close(false)"
+            label="Set"
+    ></button>
   </div>
 </ng-template>
 

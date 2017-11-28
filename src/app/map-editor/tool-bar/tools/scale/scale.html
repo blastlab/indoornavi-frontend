@@ -1,3 +1,5 @@
-<button class="scale-button" [ngClass]="{'active-tool' : active}" (click)="toolClicked()" >
-  <i class="icons">linear_scale</i>
-</button>
+<button pButton class="ui-button-secondary"
+        [ngClass]="{'active-tool' : active}" (click)="toolClicked()"
+        pTooltip="{{'linear.scale'|translate}}"
+        icon="fa fa-arrows-h " iconPos="left"
+></button>
