@@ -65,7 +65,8 @@ export class ActionBarService {
           publishedDate: new Date().getMilliseconds(),
           data: {
             sinks: [],
-            scale: null
+            scale: null,
+            anchors: []
           }
         };
         this.latestPublishedConfiguration = this.configuration;
@@ -124,6 +125,16 @@ export class ActionBarService {
     this.sendConfigurationChangedEvent();
   }
 
+  public removeSink(sink: Sink): void {
+    const sinks: Collections.Set<Sink> = this.getConfigurationSinks();
+    const sinkCopy = {...sink};
+    if (sinks.contains(sinkCopy)) {
+      sinks.remove(sinkCopy);
+    }
+    this.configuration.data.sinks = sinks.toArray();
+    this.sendConfigurationChangedEvent();
+  }
+
   private getConfigurationSinks(): Collections.Set<Sink> {
     const sinks = new Collections.Set<Sink>(ActionBarService.compareFn);
     this.configuration.data.sinks.forEach((configurationSink: Sink) => {
@@ -139,6 +150,16 @@ export class ActionBarService {
       anchors.remove(anchorCopy);
     }
     anchors.add(anchorCopy);
+    this.configuration.data.anchors = anchors.toArray();
+    this.sendConfigurationChangedEvent();
+  }
+
+  public removeAnchor(anchor: Anchor): void {
+    const anchors: Collections.Set<Anchor> = this.getConfigurationAnchors();
+    const anchorCopy = {...anchor};
+    if (anchors.contains(anchorCopy)) {
+      anchors.remove(anchorCopy);
+    }
     this.configuration.data.anchors = anchors.toArray();
     this.sendConfigurationChangedEvent();
   }

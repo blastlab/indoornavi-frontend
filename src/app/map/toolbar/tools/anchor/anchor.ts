@@ -11,8 +11,7 @@ import * as d3 from 'd3';
 import {Sink} from '../../../../device/sink.type';
 import {Anchor} from '../../../../device/anchor.type';
 import {ActionBarService} from '../../../actionbar/actionbar.service';
-import {DrawBuilder, DrawConfiguration, GroupCreated} from '../../../../utils/builder/draw.builder';
-import {Draggable} from '../../../../utils/builder/draggable';
+import {DrawBuilder, DrawConfiguration} from '../../../../utils/builder/draw.builder';
 import {Subscription} from 'rxjs/Subscription';
 import {MapLoaderInformerService} from 'app/utils/map-loader-informer/map-loader-informer.service';
 import {ConnectingLine} from '../../../../utils/builder/connection';
@@ -163,8 +162,8 @@ export class AnchorPlacerComponent implements Tool, OnInit {
     });
   }
 
-  private removeChosenAnchor(mapAnchor: ConnectableDevice): void {
-    mapAnchor.domGroup.remove();
+  private removeChosenAnchor(mapAnchor: Expandable): void {
+    mapAnchor.connectable.domGroup.remove();
     this.anchorPlacerController.resetChosenAnchor();
   }
 
@@ -217,7 +216,7 @@ export class AnchorPlacerComponent implements Tool, OnInit {
         }
         // ->  this.configurationService.setSink(this.chosenSink);
       } else {
-        this.removeChosenAnchor(expandableMapObject.groupCreated.domGroup);
+        this.removeChosenAnchor(expandableMapObject);
       }
       this.anchorPlacerController.resetCoordinates();
       this.placementDone = true;
