@@ -291,6 +291,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     };
 
     const dragging = (d, index: number, selections: d3.selection[]) => {
+      console.log(selections);
       const event: KeyboardEvent = <KeyboardEvent>window.event;
       const secondPoint: Point = <Point>{
         x: 0,
@@ -309,7 +310,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
         secondPoint.x = selections[0].getAttribute('cx');
         secondPoint.y = selections[0].getAttribute('cy');
       }
-    // * (180 / Math.PI)
       console.log(Geometry.getArcus(mousePosition, secondPoint));
       // console.log(secondPoint);
       // console.log(Geometry.getSlope(secondPoint, mousePosition));
