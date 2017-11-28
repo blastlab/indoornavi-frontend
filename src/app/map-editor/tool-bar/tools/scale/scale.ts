@@ -324,9 +324,10 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       const x_DifferenceBetweenPoints = secondPoint.x - mousePosition.x;
       const y_DifferenceBetweenPoints = secondPoint.y - mousePosition.y;
       const arcOfScale360 = Geometry.getArcus(mousePosition, secondPoint);
-      // if (event.shiftKey) {
 
+      if (event.shiftKey) {
         const arcRelocationValue = 22.5;
+        let y_coords;
         if (arcOfScale360 % arcRelocationValue < 1) {
           console.log(Math.floor(arcOfScale360));
           const arc = Math.floor(arcOfScale360);
@@ -368,13 +369,15 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
             default:
               arcToCalculate = arc;
           }
-            console.log(Math.sin(radiansArc(arcToCalculate)));
-          // const y_coords = mousePosition.y + x_DifferenceBetweenPoints *
-        }
-
-        x_Coords = mousePosition.x;
-        y_Coords = mousePosition.y;
-      // }
+            console.log(Math.cos(radiansArc(arcToCalculate)));
+          // if(Math.sin(radiansArc(arcToCalculate)) != 0 && Math.sin(radiansArc(arcToCalculate)) < 1) {
+          const cosinus = Math.cos(radiansArc(arcToCalculate));
+            y_coords = Math.sqrt(Math.pow(x_DifferenceBetweenPoints,2) + Math.pow(y_DifferenceBetweenPoints, 2)) * cosinus;
+          console.log(y_coords, y_DifferenceBetweenPoints);
+        } else {}
+      }
+      x_Coords = mousePosition.x;
+      y_Coords = mousePosition.y;
       d3.select(selections[index]).attr('cx', d.x = x_Coords).attr('cy', d.y = y_Coords);
       callRedrawAllObjectsOnMapWithClassContext();
     };
