@@ -1,0 +1,32 @@
+#remaining-devices-list {
+  position: fixed;
+  float: right;
+  right: 90%;
+  overflow: hidden;
+  min-width: 25%;
+  top: 20%;
+  background-color: #2b2b2b;
+  color: antiquewhite;
+}
+
+#deviceNameFilter {
+  border-bottom: 1px black solid;
+  padding: 5px 10px;
+  width: 80%;
+}
+
+.form-control::-webkit-input-placeholder {
+  color: #BFBFBF;
+}
+
+.form-control:-moz-placeholder {
+  color: #BFBFBF;
+}
+
+.form-control::-moz-placeholder {
+  color: #BFBFBF;
+}
+
+.form-control:-ms-input-placeholder {
+  color: #BFBFBF;
+}

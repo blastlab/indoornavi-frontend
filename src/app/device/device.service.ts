@@ -8,14 +8,7 @@ export class DeviceService {
 
   private url: string;
 
-  constructor(protected httpService: HttpService) {
-  }
-
-  setUrl(url: string) {
-    this.url = url;
-  }
-
-  emptyDeviceObjectDepandentOnPath(path: string): object {
+  static emptyDeviceObjectDependentOnPath(path: string): object {
     return path === 'sinks' ?
       {
         id: null,
@@ -32,6 +25,26 @@ export class DeviceService {
         verified: false,
         name: ''
       };
+  }
+
+  static getDevicePermissionPrefix(deviceType: string): string {
+    switch (deviceType) {
+      case 'tags':
+        return 'TAG';
+      case 'anchors':
+        return 'ANCHOR';
+      case 'sinks':
+        return 'SINK';
+      default:
+        return 'TAG';
+    }
+  }
+
+  constructor(protected httpService: HttpService) {
+  }
+
+  setUrl(url: string) {
+    this.url = url;
   }
 
   create(device: Device): Observable<Device> {

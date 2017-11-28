@@ -1,7 +1,7 @@
 import {MdIconRegistry} from '@angular/material/icon/icon';
-import {DomSanitizer} from '@angular/platform-browser/src/security/dom_sanitization_service';
 import {Injectable} from '@angular/core';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
+import {DomSanitizer} from '@angular/platform-browser';
 
 /**
  * /assets/material-icons/svg-sprites

@@ -1,53 +1,73 @@
-<div fxFlexFill fxLayout="column">
-  <header *ngIf="!isDisplayedInIFrame">
-    <div fxFlex="50">
-      <breadcrumb></breadcrumb>
+<ng-container *ngIf="isUserLoggedIn; then logged_in else not_logged_in"></ng-container>
+<ng-template #logged_in>
+  <div *ngIf="!isDisplayedInIFrame" class="ui-g">
+    <p-sidebar id="sidebar-menu" [(visible)]="displaySidebar" position="right"
+               [baseZIndex]="10000">
+      <div class="ui-g">
+        <button pButton class="ui-button-secondary ui-g-12 ui-md-12 ui-lg-12 menu-button" [routerLink]="['./complexes']"
+                (click)="displaySidebar = false" icon="fa-building fa-lg">
+          <span>{{'complexes'|translate}}</span>
+        </button>
+      </div>
+      <div class="ui-g">
+        <button pButton class="ui-button-secondary ui-g-12 ui-md-4 ui-lg-4 menu-button" [routerLink]="['./sinks']"
+                (click)="displaySidebar = false" icon="fa-share-alt fa-lg">
+          <span>{{'sinks.header'|translate}}</span>
+        </button>
+        <button pButton class="ui-button-secondary ui-g-12 ui-md-4 ui-lg-4 menu-button" [routerLink]="['./anchors']"
+                (click)="displaySidebar = false" icon="fa-circle-o-notch fa-lg">
+          <span>{{'anchors.header'|translate}}</span>
+        </button>
+        <button pButton class="ui-button-secondary ui-g-12 ui-md-4 ui-lg-4 menu-button" [routerLink]="['./tags']"
+                (click)="displaySidebar = false" icon="fa-tag fa-lg">
+          <span>{{'tags.header'|translate}}</span>
+        </button>
+      </div>
+      <div class="ui-g">
+        <button pButton class="ui-button-secondary ui-g-12 ui-md-12 ui-lg-12 menu-button" [routerLink]="['./maps']"
+                (click)="displaySidebar = false" icon="fa-map fa-lg">
+          <span>{{'publishedMaps'|translate}}</span>
+        </button>
+      </div>
+      <div class="ui-g">
+        <button pButton class="ui-button-secondary ui-g-12 ui-md-6 ui-lg-6 menu-button" [routerLink]="['./permissionGroups']"
+                (click)="displaySidebar = false" icon="fa-lock fa-lg">
+          <span>{{'user.permissionGroups'|translate}}</span>
+        </button>
+        <button pButton class="ui-button-secondary ui-g-12 ui-md-6 ui-lg-6 menu-button" [routerLink]="['./users']"
+                (click)="displaySidebar = false" icon="fa-users fa-lg">
+          <span>{{'users.header'|translate}}</span>
+        </button>
+      </div>
+      <div class="ui-g">
+        <button pButton class="ui-button-secondary ui-g-12 ui-md-8 ui-lg-8 menu-button" [routerLink]="['./changePassword']"
+                (click)="displaySidebar = false" icon="fa-key fa-lg">
+          <span>{{'changePassword.header'|translate}}</span>
+        </button>
+        <button pButton class="ui-button-secondary ui-g-12 ui-md-4 ui-lg-4 menu-button" id="logout" [routerLink]="['./logout']"
+                (click)="displaySidebar = false; isUserLoggedIn = false;" icon="fa-sign-out fa-lg">
+          <span>{{'logout'|translate}}</span>
+        </button>
+      </div>
+    </p-sidebar>
+    <div class="ui-g-12 ui-md-11 ui-lg-11">
+      <p-breadcrumb [model]="breadcrumbs"></p-breadcrumb>
     </div>
-    <div fxFlex="50" fxLayoutAlign="end" *ngIf="isUserLoggedIn">
-      <button md-icon-button [mdMenuTriggerFor]="menu">
-        <md-icon>more_vert</md-icon>
+    <div class="ui-g-12 ui-md-1 ui-lg-1">
+      <button pButton
+              id="menu" (click)="displaySidebar = true"
+              icon="fa-bars">
       </button>
-      <md-menu #menu="mdMenu">
-        <button md-menu-item [routerLink]="['./complexes']">
-          <md-icon>domain</md-icon>
-          <span>Complexes</span>
-        </button>
-        <button md-menu-item [routerLink]="['./sinks']">
-          <md-icon>device_hub</md-icon>
-          <span>Sinks</span>
-        </button>
-        <button md-menu-item [routerLink]="['./anchors']">
-          <md-icon>toll</md-icon>
-          <span>Anchors</span>
-        </button>
-        <button md-menu-item [routerLink]="['./tags']">
-          <md-icon>settings_remote</md-icon>
-          <span>Tags</span>
-        </button>
-        <button md-menu-item [routerLink]="['./maps']">
-          <md-icon>map</md-icon>
-          <span>Published maps</span>
-        </button>
-        <button md-menu-item [routerLink]="['./users']">
-          <md-icon>account_circle</md-icon>
-          <span>Users</span>
-        </button>
-        <button md-menu-item [routerLink]="['./permissionGroups']">
-          <md-icon>group_work</md-icon>
-          <span>Permission Groups</span>
-        </button>
-        <button md-menu-item [routerLink]="['./changePassword']">
-          <md-icon>lock_outline</md-icon>
-          <span>Change Password</span>
-        </button>
-        <button md-menu-item [routerLink]="['./logout']">
-          <md-icon>directions_run</md-icon>
-          <span>Logout</span>
-        </button>
-      </md-menu>
     </div>
-  </header>
-  <div fxFlexFill>
-    <router-outlet></router-outlet>
   </div>
-</div>
+  <div class="ui-g">
+    <div class="ui-g-12 ui-md-12 ui-lg-12">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+  <p-growl [life]="2000"></p-growl>
+</ng-template>
+<ng-template #not_logged_in>
+  <app-auth></app-auth>
+</ng-template>
+

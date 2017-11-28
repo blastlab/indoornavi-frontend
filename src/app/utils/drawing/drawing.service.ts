@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {IconService, NaviIcons} from './icon.service';
 import * as d3 from 'd3';
-import {Point} from '../../map/map.type';
+import {Point} from '../../map-editor/map.type';
 
 @Injectable()
 export class DrawingService {

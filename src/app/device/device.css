@@ -1,16 +1,18 @@
-.devices-list {
-  float: left;
-  width: 50%;
+#device-arrows {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-h3.verified  {
-  color: #77f977
+#device-arrows div {
+  display: flex;
+  justify-content: center;
 }
 
-.row {
-  padding: 10px 0;
+#device-arrows div#hint {
+  font-size: 0.7em;
 }
 
-.drop-zone {
-  min-height: 200px;
+#device-arrows i {
+  margin: 0 8px;
 }

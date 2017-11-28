@@ -4,27 +4,27 @@ import {AuthResponse} from './auth.type';
 import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AuthGuard} from './auth.guard';
-import {ToastService} from '../utils/toast/toast.service';
 
 @Component({
-  templateUrl: 'auth.html',
-  styleUrls: []
+  selector: 'app-auth',
+  templateUrl: 'auth.html'
 })
 export class AuthComponent implements OnInit {
+  invalidCredentials: boolean = false;
+
   constructor(private authService: AuthService,
               translateService: TranslateService,
               private router: Router,
               private route: ActivatedRoute,
-              private authGuard: AuthGuard,
-              private toastService: ToastService) {
+              private authGuard: AuthGuard) {
     translateService.setDefaultLang('en');
   }
 
   ngOnInit(): void {
     if (localStorage.getItem('currentUser')) {
       this.authService.logout();
-      this.authGuard.toggleUserLoggedIn(false);
       localStorage.removeItem('currentUser');
+      this.authGuard.toggleUserLoggedIn(false);
       this.router.navigate(['/login']);
     }
   }
@@ -33,9 +33,9 @@ export class AuthComponent implements OnInit {
     this.authService.login({username: username, plainPassword: password}).subscribe((authResponse: AuthResponse) => {
       localStorage.setItem('currentUser', JSON.stringify({username: username, token: authResponse.token, permissions: authResponse.permissions}));
       this.authGuard.toggleUserLoggedIn(true);
-      this.toastService.forceHide();
+      this.invalidCredentials = false;
     }, () => {
-      this.toastService.showFailure('auth.invalid.credentials');
+      this.invalidCredentials = true;
     }, () => {
       this.router.navigate([this.route.snapshot.queryParams['returnUrl'] || '']);
     });

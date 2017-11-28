@@ -1,7 +1,9 @@
 import {browser, element, promise, by, protractor} from 'protractor';
+import {Utils} from './utils';
 
 export class AppPage {
   static getTitle() {
+    Utils.waitForElement(element(by.css('app-root h1')));
     return element(by.css('app-root h1')).getText();
   }
 
@@ -20,11 +22,9 @@ export class AppPage {
   }
 
   static getValidationErrors() {
-    return element(by.className('validation-errors'));
-  }
-
-  static getToast() {
-    return element(by.className('mat-simple-snackbar-message'));
+    const ValidationError = element(by.className('validation-errors'));
+    Utils.waitForElement(ValidationError);
+    return ValidationError;
   }
 
   static getById(id: string) {

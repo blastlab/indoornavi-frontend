@@ -18,8 +18,7 @@ describe('Change password component', () => {
     ChangePasswordPage.navigateToHome();
     ChangePasswordPage.changePassword('admin', 'test');
 
-    expect(AppPage.getToast().getText()).toBe('Your password has been changed.');
-
+    ChangePasswordPage.logout();
     ChangePasswordPage.loginWithNewPassword().then(() => {
       ChangePasswordPage.navigateToHome();
       ChangePasswordPage.changePassword('test', 'admin');

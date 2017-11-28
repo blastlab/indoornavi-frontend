@@ -15,6 +15,7 @@ import {HttpModule} from '@angular/http';
 import {ActivatedRoute} from '@angular/router';
 import {SharedModule} from '../utils/shared/shared.module';
 import {AuthGuard} from '../auth/auth.guard';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('BuildingComponent', () => {
 
@@ -27,7 +28,17 @@ describe('BuildingComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [BrowserModule, FormsModule, MaterialModule, HttpModule, DialogTestModule, TranslateModule.forRoot(), RouterTestingModule, SharedModule],
+      imports: [
+        BrowserModule,
+        FormsModule,
+        MaterialModule,
+        HttpModule,
+        DialogTestModule,
+        TranslateModule.forRoot(),
+        RouterTestingModule,
+        SharedModule,
+        BrowserAnimationsModule
+      ],
       declarations: [
         BuildingComponent
       ],

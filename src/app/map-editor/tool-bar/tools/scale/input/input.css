@@ -1,0 +1,19 @@
+.show-scale-input {
+  position: absolute;
+  display: flex;
+}
+
+#scaleInput {
+  background-color: whitesmoke;
+  border-radius: 5px;
+  box-shadow: #dfdfdf 2px 3px;
+  width: 400px;
+}
+
+.hide-scale-input {
+  display: none;
+}
+
+#scaleInput button.ui-button-success {
+  float: right;
+}

@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {Point} from '../../map/map.type';
+import {Point} from '../../map-editor/map.type';
 import {AcceptButtonsService} from './accept-buttons.service';
 
 @Component({
@@ -9,28 +9,31 @@ import {AcceptButtonsService} from './accept-buttons.service';
 })
 export class AcceptButtonsComponent {
   public visible: boolean = false;
-  private coords: Point;
+  private coordinates: Point;
 
-  constructor(private _accButtons: AcceptButtonsService) {
-    this._accButtons.coordinatesChanged.subscribe(
-      data => {
-        this.coords = data;
-        const buttons = document.getElementById('accept-buttons');
-        buttons.style.top = this.coords.y + 'px';
-        buttons.style.left = this.coords.x + 'px';
-      });
-    this._accButtons.visibilitySet.subscribe(
-      data => {
-        this.visible = data;
-      });
+  constructor(private acceptButtonsService: AcceptButtonsService) {
+    this.acceptButtonsService.coordinatesChanged.subscribe(data => {
+      this.coordinates = data;
+      const buttons = document.getElementById('accept-buttons');
+      buttons.style.visibility = 'hidden';
+      const checkButtonsVisibility = () => {
+        if (buttons.clientWidth !== 0) {
+          buttons.style.top = this.coordinates.y + 'px';
+          buttons.style.left = this.coordinates.x - (buttons.clientWidth / 2) + 'px';
+          buttons.style.visibility = 'visible';
+          clearInterval(interval);
+        }
+      };
+      const interval = setInterval(checkButtonsVisibility, 100);
+    });
+    this.acceptButtonsService.visibilitySet.subscribe(data => {
+      this.visible = data;
+    });
   }
 
   public decide(decision: boolean): void {
-    this._accButtons.publishDecision(decision);
-    this.hide();
-  }
-
-  private hide(): void {
+    this.acceptButtonsService.publishDecision(decision);
     this.visible = false;
   }
+
 }

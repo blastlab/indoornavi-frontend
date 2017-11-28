@@ -9,18 +9,17 @@ import {ToastService} from '../utils/toast/toast.service';
 import {Observable} from 'rxjs/Rx';
 import {DialogTestModule} from '../utils/dialog/dialog.test';
 import {DeviceService} from './device.service';
-import {DeviceListComponent} from './device.list';
-import {ActivatedRoute, Router, RouterModule} from '@angular/router';
+import {DeviceListComponent} from './list/device.list';
+import {ActivatedRoute, Router} from '@angular/router';
 import {SharedModule} from '../utils/shared/shared.module';
 import {AuthGuard} from '../auth/auth.guard';
-import {DeviceComponent} from './device.component';
+import {DeviceComponent} from './device';
 import {Sink} from './sink.type';
 
 describe('DevicesComponent', () => {
   let component: DeviceComponent;
   let fixture: ComponentFixture<DeviceComponent>;
   let mockActivatedRoute;
-
   let socketService: SocketService;
   let dialog: MdDialog;
   let toastService: ToastService;
@@ -38,8 +37,16 @@ describe('DevicesComponent', () => {
       ],
       declarations: [DeviceComponent, DeviceListComponent],
       providers: [
-        SocketService, WebSocketService, DeviceService, HttpService,
-        ToastService, MdDialog, {provide: Router, useClass: RouterModule}, {provide: ActivatedRoute, useValue: mockActivatedRoute}, AuthGuard]
+        DeviceService,
+        SocketService,
+        WebSocketService,
+        DeviceService,
+        HttpService,
+        ToastService,
+        MdDialog,
+        {provide: Router, useClass: class { navigate = jasmine.createSpy('navigate'); }},
+        {provide: ActivatedRoute, useValue: mockActivatedRoute},
+        AuthGuard]
     })
       .compileComponents();
 
