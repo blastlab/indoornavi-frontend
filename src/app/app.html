@@ -30,7 +30,8 @@
         </button>
       </div>
       <div class="ui-g">
-        <button pButton class="ui-button-secondary ui-g-12 ui-md-6 ui-lg-6 menu-button" [routerLink]="['./permissionGroups']"
+        <button pButton class="ui-button-secondary ui-g-12 ui-md-6 ui-lg-6 menu-button"
+                [routerLink]="['./permissionGroups']"
                 (click)="displaySidebar = false" icon="fa-lock fa-lg">
           <span>{{'user.permissionGroups'|translate}}</span>
         </button>
@@ -40,11 +41,13 @@
         </button>
       </div>
       <div class="ui-g">
-        <button pButton class="ui-button-secondary ui-g-12 ui-md-8 ui-lg-8 menu-button" [routerLink]="['./changePassword']"
+        <button pButton class="ui-button-secondary ui-g-12 ui-md-8 ui-lg-8 menu-button"
+                [routerLink]="['./changePassword']"
                 (click)="displaySidebar = false" icon="fa-key fa-lg">
           <span>{{'changePassword.header'|translate}}</span>
         </button>
-        <button pButton class="ui-button-secondary ui-g-12 ui-md-4 ui-lg-4 menu-button" id="logout" [routerLink]="['./logout']"
+        <button pButton class="ui-button-secondary ui-g-12 ui-md-4 ui-lg-4 menu-button" id="logout"
+                [routerLink]="['./logout']"
                 (click)="displaySidebar = false; isUserLoggedIn = false;" icon="fa-sign-out fa-lg">
           <span>{{'logout'|translate}}</span>
         </button>

@@ -1,20 +1,20 @@
 <div id="actionbar">
-    <button pButton class="ui-button-success"
-            id="save-draft"
-            [disabled]="saveButtonDisabled" (click)="saveDraft()"
-            label="{{'saveDraft'|translate}}"
-            icon="fa fa-floppy-o" iconPos="left"
-    ></button>
-    <button pButton class="ui-button-secondary"
-            [disabled]="resetButtonDisabled" (click)="resetToPreviousPublication()"
-            pTooltip="{{'resetToPrevious'|translate}}"
-            icon="fa fa-undo" iconPos="left"
-    ></button>
-    <button pButton class="ui-button-warning"
-            [disabled]="publishButtonDisabled" (click)="publish()"
-            pTooltip="{{'publish'|translate}}"
-            icon="fa fa-file-text" iconPos="left"
-    ></button>
+  <button pButton class="ui-button-success"
+          id="save-draft"
+          [disabled]="saveButtonDisabled" (click)="saveDraft()"
+          label="{{'saveDraft'|translate}}"
+          icon="fa fa-floppy-o" iconPos="left"
+  ></button>
+  <button pButton class="ui-button-secondary"
+          [disabled]="resetButtonDisabled" (click)="resetToPreviousPublication()"
+          pTooltip="{{'resetToPrevious'|translate}}"
+          icon="fa fa-undo" iconPos="left"
+  ></button>
+  <button pButton class="ui-button-warning"
+          [disabled]="publishButtonDisabled" (click)="publish()"
+          pTooltip="{{'publish'|translate}}"
+          icon="fa fa-file-text" iconPos="left"
+  ></button>
 
   <span [@messageState]="messageSpanState" (@messageState.done)="messageSpanAnimationDone()" id="message">The draft has been saved.</span>
 </div>

@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import * as Collections from 'typescript-collections';
 import {Point} from '../../../../map.type';
-import {ObjectParams} from '../../../../../utils/drawing/drawing.service';
+import {MapObjectParams} from '../../../../../utils/drawing/drawing.service';
 import {NaviIcons} from '../../../../../utils/drawing/icon.service';
 import {FirstStepMessage, Step, WizardData, WizardStep} from '../wizard.type';
 import {Sink} from '../../../../../device/sink.type';
@@ -28,7 +28,7 @@ export class FirstStep implements WizardStep {
     return [...items];
   }
 
-  getDrawingObjectParams(selectedItem: number): ObjectParams {
+  getDrawingObjectParams(selectedItem: number): MapObjectParams {
     return {
       id: 'sink' + selectedItem, iconName: NaviIcons.ANCHOR,
       groupClass: 'wizardSink', markerClass: 'sinkMarker', fill: 'blue'

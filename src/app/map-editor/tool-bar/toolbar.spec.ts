@@ -18,7 +18,7 @@ import {IconService} from '../../utils/drawing/icon.service';
 import {ScaleInputService} from './tools/scale/input/input.service';
 import {ScaleHintService} from './tools/scale/hint/hint.service';
 import {MapLoaderInformerService} from '../../utils/map-loader-informer/map-loader-informer.service';
-import {AnchorPlacerComponent} from './tools/anchor/anchor';
+import {DevicePlacerComponent} from './tools/anchor/device-placer';
 import {ActionBarService} from '../action-bar/actionbar.service';
 import {HttpService} from '../../utils/http/http.service';
 import {RouterTestingModule} from '@angular/router/testing';
@@ -35,7 +35,7 @@ describe('ToolbarComponent', () => {
     TestBed.configureTestingModule({
       imports: [TranslateModule.forRoot(), MaterialModule, FormsModule, RouterTestingModule],
       declarations: [ToolbarComponent, ScaleComponent, WizardComponent, FirstStepComponent, SecondStepComponent,
-        ThirdStepComponent, AnchorPlacerComponent],
+        ThirdStepComponent, DevicePlacerComponent],
       providers: [
         SocketService, WebSocketService, ToastService, HintBarService, AcceptButtonsService, DrawingService,
         IconService, ScaleComponent, WizardComponent, ScaleInputService, ScaleHintService, MapLoaderInformerService,
@@ -88,7 +88,7 @@ describe('ToolbarComponent', () => {
     expect(mockWizardTool.setActive).toHaveBeenCalled();
     expect(component.activeTool).toBeDefined();
     expect(component.activeTool).toEqual(mockWizardTool);
-});
+  });
 
   it('should set emitToolChanged tool as inactive if the same tool was active', () => {
     // given:

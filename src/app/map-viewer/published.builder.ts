@@ -98,6 +98,7 @@ export class DrawBuilder {
     return new GroupCreated(group);
   }
 }
+
 // TODO: to be moved to general catalogue containing interfaces
 export interface DrawConfiguration {
   id: string;

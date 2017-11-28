@@ -60,18 +60,23 @@
     </div>
 
     <div class="ui-g">
-      <div class="ui-g-12 ui-md-offset-4 ui-lg-offset-4 ui-md-2 ui-lg-2"><label for="tags">{{'publishedList.tags'|translate}}</label></div>
+      <div class="ui-g-12 ui-md-offset-4 ui-lg-offset-4 ui-md-2 ui-lg-2"><label for="tags">{{'publishedList.tags'|translate}}</label>
+      </div>
       <div class="ui-g-12 ui-md-6 ui-lg-6">
         <p-multiSelect defaultLabel="{{'publishedList.tags.select'|translate}}" name="tags" id="tags" [options]="tags"
-                       [(ngModel)]="selectedTags" optionLabel="shortId" [style]="{ width: '100%' }" dataKey="id"></p-multiSelect>
+                       [(ngModel)]="selectedTags" optionLabel="shortId" [style]="{ width: '100%' }"
+                       dataKey="id"></p-multiSelect>
       </div>
     </div>
 
     <div class="ui-g">
-      <div class="ui-g-12 ui-md-offset-4 ui-lg-offset-4 ui-md-2 ui-lg-2"><label for="users">{{'publishedList.users'|translate}}</label></div>
+      <div class="ui-g-12 ui-md-offset-4 ui-lg-offset-4 ui-md-2 ui-lg-2"><label for="users">{{'publishedList.users'|translate}}</label>
+      </div>
       <div class="ui-g-12 ui-md-6 ui-lg-6">
-        <p-multiSelect defaultLabel="{{'publishedList.users.select'|translate}}" name="users" id="users" [options]="users"
-                       [(ngModel)]="selectedUsers" optionLabel="username" [style]="{ width: '100%' }" dataKey="id"></p-multiSelect>
+        <p-multiSelect defaultLabel="{{'publishedList.users.select'|translate}}" name="users" id="users"
+                       [options]="users"
+                       [(ngModel)]="selectedUsers" optionLabel="username" [style]="{ width: '100%' }"
+                       dataKey="id"></p-multiSelect>
       </div>
     </div>
 
@@ -86,7 +91,8 @@
     <p-footer>
       <div class="ui-dialog-buttonpane ui-helper-clearfix">
         <button type="button" pButton icon="fa-close" (click)="cancel()" label="{{'cancel'|translate}}"></button>
-        <button type="button" pButton icon="fa-check" (click)="save(publishedMapForm.valid)" label="{{'save'|translate}}"></button>
+        <button type="button" pButton icon="fa-check" (click)="save(publishedMapForm.valid)"
+                label="{{'save'|translate}}"></button>
       </div>
     </p-footer>
   </form>

@@ -1,5 +1,5 @@
 import {Point} from '../../../map.type';
-import {ObjectParams} from '../../../../utils/drawing/drawing.service';
+import {MapObjectParams} from '../../../../utils/drawing/drawing.service';
 import {SelectItem} from 'primeng/primeng';
 
 export interface SocketMessage {
@@ -38,15 +38,26 @@ export enum Step {
 
 export interface WizardStep {
   load(items: SelectItem[], message: string): SelectItem[];
-  getDrawingObjectParams(selectedItem: number): ObjectParams;
+
+  getDrawingObjectParams(selectedItem: number): MapObjectParams;
+
   beforePlaceOnMap(selectedItem?: number): void;
+
   afterPlaceOnMap(): void;
+
   getBeforePlaceOnMapHint(): string;
+
   getAfterPlaceOnMapHint(): string;
+
   getPlaceholder(): string;
+
   getTitle(): string;
+
   setSelectedItemId(id: number);
+
   prepareToSend(wizardData: WizardData): SocketMessage;
+
   updateWizardData(wizardData: WizardData, id: number, coordinates: Point): void;
+
   clean(): void;
 }

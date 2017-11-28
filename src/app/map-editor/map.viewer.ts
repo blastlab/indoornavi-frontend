@@ -3,8 +3,8 @@ import * as d3 from 'd3';
 import {Floor} from '../floor/floor.type';
 import {MapLoaderInformerService} from '../utils/map-loader-informer/map-loader-informer.service';
 import {MapViewerService} from './map.viewer.service';
-import {AnchorPlacerController} from './toolbar/tools/anchor/anchor.controller';
 import {Anchor} from '../device/anchor.type';
+import {AnchorPlacerController} from './tool-bar/tools/anchor/device-placer.controller';
 
 @Component({
   selector: 'app-map-viewer',

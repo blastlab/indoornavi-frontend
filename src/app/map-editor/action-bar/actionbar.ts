@@ -1,4 +1,17 @@
-import {animate, ChangeDetectorRef, Component, Input, NgZone, OnDestroy, OnInit, state, style, transition, trigger, ViewChild} from '@angular/core';
+import {
+  animate,
+  ChangeDetectorRef,
+  Component,
+  Input,
+  NgZone,
+  OnDestroy,
+  OnInit,
+  state,
+  style,
+  transition,
+  trigger,
+  ViewChild
+} from '@angular/core';
 import {ActionBarService} from './actionbar.service';
 import {Floor} from '../../floor/floor.type';
 import {MapLoaderInformerService} from '../../utils/map-loader-informer/map-loader-informer.service';

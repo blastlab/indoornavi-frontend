@@ -2,9 +2,9 @@ import * as d3 from 'd3';
 import {AnchorSuggestedPositions} from '../../../../../device/anchor.type';
 import {Point} from '../../../../map.type';
 import {NaviIcons} from '../../../../../utils/drawing/icon.service';
-import {ObjectParams} from '../../../../../utils/drawing/drawing.service';
 import {SocketMessage, Step, WizardData, WizardStep} from '../wizard.type';
 import {SelectItem} from 'primeng/primeng';
+import {MapObjectParams} from '../../../../../utils/drawing/drawing.service';
 
 export class ThirdStep implements WizardStep {
   private selectedItemId: number;
@@ -36,7 +36,7 @@ export class ThirdStep implements WizardStep {
     }
   }
 
-  getDrawingObjectParams(selectedItem: number): ObjectParams {
+  getDrawingObjectParams(selectedItem: number): MapObjectParams {
     return {
       id: 'anchor' + selectedItem, iconName: NaviIcons.ANCHOR,
       groupClass: 'wizardAnchor', markerClass: 'anchorMarker', fill: 'green'

@@ -9,6 +9,7 @@
   </ng-template>
 
   <ng-template #not_uploaded>
-    <app-map-uploader [appHasPermission]="'FLOOR_UPDATE'" [floor]="floor" (imageUploaded)="onImageUploaded($event)"></app-map-uploader>
+    <app-map-uploader [appHasPermission]="'FLOOR_UPDATE'" [floor]="floor"
+                      (imageUploaded)="onImageUploaded($event)"></app-map-uploader>
   </ng-template>
 </div>

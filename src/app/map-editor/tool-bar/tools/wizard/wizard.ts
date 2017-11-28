@@ -221,22 +221,22 @@ export class WizardComponent implements Tool, OnInit {
   }
 
   saveConfiguration(): void {
-      const anchors: Anchor[] = [];
-      anchors.push(<Anchor>{
-        shortId: this.wizardData.firstAnchorShortId,
-        x: this.wizardData.firstAnchorPosition.x,
-        y: this.wizardData.firstAnchorPosition.y
-      });
-      anchors.push(<Anchor>{
-        shortId: this.wizardData.secondAnchorShortId,
-        x: this.wizardData.secondAnchorPosition.x,
-        y: this.wizardData.secondAnchorPosition.y
-      });
-      this.actionBarService.setSink(<Sink>{
-        shortId: this.wizardData.sinkShortId,
-        x: this.wizardData.sinkPosition.x,
-        y: this.wizardData.sinkPosition.y,
-        anchors: anchors
-      });
+    const anchors: Anchor[] = [];
+    anchors.push(<Anchor>{
+      shortId: this.wizardData.firstAnchorShortId,
+      x: this.wizardData.firstAnchorPosition.x,
+      y: this.wizardData.firstAnchorPosition.y
+    });
+    anchors.push(<Anchor>{
+      shortId: this.wizardData.secondAnchorShortId,
+      x: this.wizardData.secondAnchorPosition.x,
+      y: this.wizardData.secondAnchorPosition.y
+    });
+    this.actionBarService.setSink(<Sink>{
+      shortId: this.wizardData.sinkShortId,
+      x: this.wizardData.sinkPosition.x,
+      y: this.wizardData.sinkPosition.y,
+      anchors: anchors
+    });
   }
 }

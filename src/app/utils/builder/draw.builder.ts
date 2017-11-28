@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import {Point} from '../../map/map.type';
+import {Point} from '../../map-editor/map.type';
 
 export class DrawBuilder {
   private configuration: DrawConfiguration;

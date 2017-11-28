@@ -1,6 +1,7 @@
 <p-toolbar>
   <div class="ui-toolbar-group-left">
-    <button pButton class="ui-button-secondary" id="new-building-button" [appHasPermission]="'BUILDING_CREATE'" (click)="openDialog()"
+    <button pButton class="ui-button-secondary" id="new-building-button" [appHasPermission]="'BUILDING_CREATE'"
+            (click)="openDialog()"
             label="{{'add'|translate}}"
             icon="fa-plus" iconPos="left"></button>
   </div>
@@ -25,7 +26,8 @@
   </p-column>
 </p-dataTable>
 
-<p-dialog header="{{'building.details'}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
+<p-dialog header="{{'building.details'}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true"
+          showEffect="fade" [modal]="true"
           [contentStyle]="{ overflow: 'visible' }"
           [width]="800"
           dismissableMask="true">
@@ -42,13 +44,15 @@
         <label for="name">{{'building.name'|translate}}</label>
       </div>
       <div class="ui-g-12 ui-md-6 ui-lg-6">
-        <input required name="name" [appAutoFocus]="displayDialog" pInputText id="name" [(ngModel)]="building.name" #nameInput="ngModel"/>
+        <input required name="name" [appAutoFocus]="displayDialog" pInputText id="name" [(ngModel)]="building.name"
+               #nameInput="ngModel"/>
       </div>
     </div>
     <p-footer>
       <div class="ui-dialog-buttonpane ui-helper-clearfix">
         <button type="button" pButton icon="fa-close" (click)="cancel()" label="{{'cancel'|translate}}"></button>
-        <button type="submit" pButton icon="fa-check" (click)="save(buildingForm.valid)" label="{{'save'|translate}}"></button>
+        <button type="submit" pButton icon="fa-check" (click)="save(buildingForm.valid)"
+                label="{{'save'|translate}}"></button>
       </div>
     </p-footer>
   </form>

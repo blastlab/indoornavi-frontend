@@ -15,7 +15,6 @@ import {
 import {PublishedService} from './published.service';
 import {MapViewerService} from '../map-editor/map.viewer.service';
 import {IconService, NaviIcons} from 'app/utils/drawing/icon.service';
-import {DrawBuilder, GroupCreated} from '../utils/builder/draw.builder';
 import * as d3 from 'd3';
 import {Point} from '../map-editor/map.type';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
@@ -25,6 +24,7 @@ import {Tag} from '../device/tag.type';
 import {AreaService} from '../area/area.service';
 import {Area} from '../area/area.type';
 import {TranslateService} from '@ngx-translate/core';
+import {DrawBuilder, GroupCreated} from './published.builder';
 
 @Component({
   templateUrl: './published.html',

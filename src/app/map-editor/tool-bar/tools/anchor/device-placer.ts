@@ -1,8 +1,9 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {animate, state, style, transition, trigger} from '@angular/animations';
 import {Tool} from '../tool';
 import {ToolName} from '../tools.enum';
 import {TranslateService} from '@ngx-translate/core';
-import {AnchorPlacerController} from './anchor.controller';
+import {AnchorPlacerController} from './device-placer.controller';
 import {Point} from '../../../map.type';
 import {IconService, NaviIcons} from '../../../../utils/drawing/icon.service';
 import {AcceptButtonsService} from '../../../../utils/accept-buttons/accept-buttons.service';
@@ -18,11 +19,24 @@ import {ConnectableDevice} from 'app/utils/builder/connectableDevice';
 import {Selectable} from '../../../../utils/builder/selectable';
 import {Expandable} from '../../../../utils/builder/expandable';
 import {ActionBarService} from 'app/map-editor/action-bar/actionbar.service';
+import {ToolbarService} from '../../toolbar.service';
+import {DeviceService} from '../../../../device/device.service';
 
 @Component({
   selector: 'app-device-placer',
   templateUrl: './device-placer.html',
-  styleUrls: ['../tool.css']
+  styleUrls: ['../tool.css', './device-placer.css'],
+  animations: [
+    trigger('slideInOut', [
+      state('in', style({
+        transform: 'translate3d(100%, 0, 0)'
+      })),
+      state('out', style({
+        transform: 'translate3d(0, 0, 0)'
+      })),
+      transition('in <=> out', animate('400ms easeInOut'))
+    ]),
+  ]
 })
 export class DevicePlacerComponent implements Tool, OnInit {
   @Output() clicked: EventEmitter<Tool> = new EventEmitter<Tool>();
@@ -30,10 +44,17 @@ export class DevicePlacerComponent implements Tool, OnInit {
   private mapDevices: Expandable[] = [];
   private floorId: number;
   private hintMessage: string;
-  public chosenSink: Sink;
+  private chosenSink: Sink;
   private placementDone: boolean;
   private mapLoadedSubscription: Subscription;
-  protected map: d3.selection;
+  private map: d3.selection;
+
+  public remainingDevices: Device[] = [];
+  public anchors: Anchor[];
+  public sinks: Sink[];
+  private menuState: string = 'out';
+  public selectedDevice: Sink | Anchor;
+  public queryString;
 
   static isSinkType(checkType: any): boolean {
     return (<Sink>checkType.anchors) !== undefined;
@@ -42,8 +63,10 @@ export class DevicePlacerComponent implements Tool, OnInit {
   constructor(public translate: TranslateService,
               private anchorPlacerController: AnchorPlacerController,
               private accButtons: AcceptButtonsService,
+              private deviceService: DeviceService,
               private configurationService: ActionBarService,
               private mapLoaderInformer: MapLoaderInformerService,
+              private toolbarService: ToolbarService,
               private icons: IconService) {
     this.setTranslations();
   }
@@ -60,6 +83,8 @@ export class DevicePlacerComponent implements Tool, OnInit {
     this.getMapSelection();
     this.getConfiguredDevices();
     this.subscribeForAnchor();
+    this.fetchDevices();
+    this.controlListVisibility();
   }
 
   private getMapSelection(): void {
@@ -79,6 +104,50 @@ export class DevicePlacerComponent implements Tool, OnInit {
         this.drawAnchorsWithoutConnection(configuration.data.anchors);
       }
     });
+  }
+
+  private subscribeForAnchor() {
+    this.anchorPlacerController.chosenAnchor.subscribe((anchor) => {
+      if (!!anchor) {
+        this.placementDone = false;
+        this.anchorPlacerController.newCoordinates.first().subscribe((coords) => {
+          let coordinates: Point;
+          const map = d3.select('#map');
+          if (!coords) {
+            map.style('cursor', 'crosshair');
+            map.on('click', () => {
+              coordinates = {x: d3.event.offsetX, y: d3.event.offsetY};
+              map.on('click', null);
+              map.style('cursor', 'default');
+            });
+          } else {
+            coordinates = coords;
+          }
+          this.placeDeviceOnMap(anchor, coordinates);
+        });
+      }
+    });
+  }
+
+  private fetchDevices() {
+    this.deviceService.setUrl('anchors/');
+    this.deviceService.getAll().subscribe((devices: Device[]) => {
+      devices.forEach((device: Anchor | Sink) => {
+        if (device.verified) {
+          this.remainingDevices.push(device);
+        }
+      });
+    });
+  }
+
+  private controlListVisibility(): void {
+    this.anchorPlacerController.listVisibilitySet.subscribe(() => {
+      this.toggleMenu();
+    });
+  }
+
+  private toggleMenu() {
+    this.menuState = this.menuState === 'out' ? 'in' : 'out';
   }
 
   private drawConfiguredDevices(sinks: Array<Sink>): void {
@@ -102,12 +171,12 @@ export class DevicePlacerComponent implements Tool, OnInit {
     return connectingLine;
   }
 
+
   private drawAnchorsWithoutConnection(anchors: Array<Anchor>): void {
     anchors.forEach((anchor) => {
       this.drawDevice(anchor, this.buildAnchorDrawConfiguration(anchor), {x: anchor.x, y: anchor.y});
     });
   }
-
 
   public getToolName(): ToolName {
     return ToolName.ANCHOR;
@@ -142,29 +211,6 @@ export class DevicePlacerComponent implements Tool, OnInit {
   private removeDragFromAllAnchorsOnMap() {
     this.mapDevices.forEach((expandable) => {
       expandable.connectable.dragOff();
-    });
-  }
-
-  private subscribeForAnchor() {
-    this.anchorPlacerController.chosenAnchor.subscribe((anchor) => {
-      if (!!anchor) {
-        this.placementDone = false;
-        this.anchorPlacerController.newCoordinates.first().subscribe((coords) => {
-          let coordinates: Point;
-          const map = d3.select('#map');
-          if (!coords) {
-            map.style('cursor', 'crosshair');
-            map.on('click', () => {
-              coordinates = {x: d3.event.offsetX, y: d3.event.offsetY};
-              map.on('click', null);
-              map.style('cursor', 'default');
-            });
-          } else {
-            coordinates = coords;
-          }
-          this.placeDeviceOnMap(anchor, coordinates);
-        });
-      }
     });
   }
 

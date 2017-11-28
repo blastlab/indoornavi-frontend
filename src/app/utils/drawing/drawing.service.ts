@@ -5,6 +5,7 @@ import {Point} from '../../map-editor/map.type';
 
 @Injectable()
 export class DrawingService {
+  static boxSize = 100;
 
   constructor(private icons: IconService) {
   }
@@ -14,8 +15,7 @@ export class DrawingService {
     if (!objectParams.size) {
       objectParams.size = 24;
     }
-    const boxSize = 100;
-    const boxMargin = boxSize / 2;
+    const boxMargin = DrawingService.boxSize / 2;
     const map = d3.select('#map');
     const iconHalfSize = (objectParams.size / 2);
     const objectGroup = this.createGroup(map, objectParams,

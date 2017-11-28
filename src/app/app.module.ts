@@ -50,14 +50,9 @@ import {DrawingService} from './utils/drawing/drawing.service';
 import {IconService} from './utils/drawing/icon.service';
 import {ActionBarService} from './map-editor/action-bar/actionbar.service';
 import {D3Service} from 'd3-ng2-service';
-import {ScaleService} from './map/toolbar/tools/scale/scale.service';
-import {AnchorPlacerComponent} from './map/toolbar/tools/anchor/anchor';
-import {RemainingDevicesListComponent} from './map/toolbar/tools/anchor/map-anchors-list/map-anchors-list';
+import {DevicePlacerComponent} from './map-editor/tool-bar/tools/anchor/device-placer';
 import {AllFieldsFilter} from './utils/filters/allFieldsFilter';
-import {AnchorPlacerController} from './map/toolbar/tools/anchor/anchor.controller';
-import {PublishedComponent} from './published/published';
-import {PublishedListComponent} from './published/list/published-list';
-import {NgxDatatableModule} from '@swimlane/ngx-datatable';
+import {AnchorPlacerController} from './map-editor/tool-bar/tools/anchor/device-placer.controller';
 import {appRoutes} from './app.routes';
 import {PublishedService} from './map-viewer/published.service';
 import {MapViewerService} from './map-editor/map.viewer.service';
@@ -94,6 +89,9 @@ import {MessageService} from 'primeng/components/common/messageservice';
 import {MessageServiceWrapper} from './utils/message.service';
 import {ToolbarService} from './map-editor/tool-bar/toolbar.service';
 import {HintBarService} from './map-editor/hint-bar/hintbar.service';
+import {PublishedComponent} from './map-viewer/published';
+import {PublishedListComponent} from 'app/publications/list/published-list';
+import {ScaleService} from './map-editor/tool-bar/tools/scale/scale.service';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -126,8 +124,7 @@ export function HttpLoaderFactory(http: Http) {
     PublishedDialogComponent,
     DeviceComponent,
     AppAutoFocusDirective,
-    AnchorPlacerComponent,
-    RemainingDevicesListComponent,
+    DevicePlacerComponent,
     AllFieldsFilter
   ],
   entryComponents: [

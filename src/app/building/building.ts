@@ -89,16 +89,16 @@ export class BuildingComponent implements OnInit, CrudComponent {
 
   remove(index: number): void {
     this.confirmationService.confirm({
-        message: this.confirmBody,
-        accept: () => {
-          const buildingId: number = this.complex.buildings[index].id;
-          this.buildingService.removeBuilding(buildingId).subscribe(() => {
-            this.complex.buildings = <Building[]>CrudHelper.remove(index, this.complex.buildings);
-            this.messageService.success('building.remove.success');
-          }, (msg: string) => {
-            this.messageService.failed(msg);
-          });
-        }
+      message: this.confirmBody,
+      accept: () => {
+        const buildingId: number = this.complex.buildings[index].id;
+        this.buildingService.removeBuilding(buildingId).subscribe(() => {
+          this.complex.buildings = <Building[]>CrudHelper.remove(index, this.complex.buildings);
+          this.messageService.success('building.remove.success');
+        }, (msg: string) => {
+          this.messageService.failed(msg);
+        });
+      }
     });
   }
 

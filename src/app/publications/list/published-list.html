@@ -32,11 +32,14 @@
     <ng-template let-publishedMap="rowData" let-i="rowIndex" pTemplate="body">
       <button pButton pTooltip="{{'go.to.map'|translate}}" (click)="goTo(publishedMap)" icon="fa-map">
       </button>
-      <button pButton pTooltip="{{'go.to.mapEditor'|translate}}" [appHasPermission]="'FLOOR_READ'" (click)="goToEditor(publishedMap)" icon="fa-paint-brush">
+      <button pButton pTooltip="{{'go.to.mapEditor'|translate}}" [appHasPermission]="'FLOOR_READ'"
+              (click)="goToEditor(publishedMap)" icon="fa-paint-brush">
       </button>
-      <button pButton ngClass="editButton" pTooltip="{{'edit'|translate}}" [appHasPermission]="'MAP_UPDATE'" (click)="openDialog(publishedMap)" icon="fa-edit">
+      <button pButton ngClass="editButton" pTooltip="{{'edit'|translate}}" [appHasPermission]="'MAP_UPDATE'"
+              (click)="openDialog(publishedMap)" icon="fa-edit">
       </button>
-      <button pButton ngClass="deleteButton" pTooltip="{{'remove'|translate}}" [appHasPermission]="'MAP_DELETE'" (click)="remove(i)" icon="fa-trash">
+      <button pButton ngClass="deleteButton" pTooltip="{{'remove'|translate}}" [appHasPermission]="'MAP_DELETE'"
+              (click)="remove(i)" icon="fa-trash">
       </button>
     </ng-template>
   </p-column>

@@ -44,7 +44,11 @@ describe('DevicesComponent', () => {
         HttpService,
         ToastService,
         MdDialog,
-        {provide: Router, useClass: class { navigate = jasmine.createSpy('navigate'); }},
+        {
+          provide: Router, useClass: class {
+          navigate = jasmine.createSpy('navigate');
+        }
+        },
         {provide: ActivatedRoute, useValue: mockActivatedRoute},
         AuthGuard]
     })

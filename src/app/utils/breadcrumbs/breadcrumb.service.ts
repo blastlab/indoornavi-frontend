@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {MenuItem} from 'primeng/primeng';
 import {Subject} from 'rxjs/Subject';

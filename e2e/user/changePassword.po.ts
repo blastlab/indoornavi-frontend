@@ -36,7 +36,7 @@ export class ChangePasswordPage {
     }, 5000);
   }
 
-  static logout () {
+  static logout() {
     element(by.id('menu')).click();
     element(by.id('logout')).click();
   }

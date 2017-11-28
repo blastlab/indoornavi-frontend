@@ -30,7 +30,8 @@
   </p-column>
 </p-dataTable>
 
-<p-dialog header="{{'floor.details'}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
+<p-dialog header="{{'floor.details'}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true"
+          showEffect="fade" [modal]="true"
           [contentStyle]="{ overflow: 'visible' }"
           [width]="800"
           dismissableMask="true">
@@ -40,7 +41,8 @@
         <label for="name">{{'floor.name'|translate}}</label>
       </div>
       <div class="ui-g-12 ui-md-6 ui-lg-6">
-        <input name="name" [appAutoFocus]="displayDialog" pInputText id="name" [(ngModel)]="floor.name" #nameInput="ngModel"/>
+        <input name="name" [appAutoFocus]="displayDialog" pInputText id="name" [(ngModel)]="floor.name"
+               #nameInput="ngModel"/>
       </div>
     </div>
     <div class="ui-g">
@@ -55,13 +57,15 @@
         <label for="level">{{'floor.level'|translate}}</label>
       </div>
       <div class="ui-g-12 ui-md-6 ui-lg-6">
-        <input required name="level" type="number" pInputText id="level" [(ngModel)]="floor.level" #levelInput="ngModel"/>
+        <input required name="level" type="number" pInputText id="level" [(ngModel)]="floor.level"
+               #levelInput="ngModel"/>
       </div>
     </div>
     <p-footer>
       <div class="ui-dialog-buttonpane ui-helper-clearfix">
         <button type="button" pButton icon="fa-close" (click)="cancel()" label="{{'cancel'|translate}}"></button>
-        <button type="submit" pButton icon="fa-check" (click)="save(floorForm.valid)" label="{{'save'|translate}}"></button>
+        <button type="submit" pButton icon="fa-check" (click)="save(floorForm.valid)"
+                label="{{'save'|translate}}"></button>
       </div>
     </p-footer>
   </form>

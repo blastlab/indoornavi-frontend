@@ -81,7 +81,7 @@ describe('ActionBarComponent', () => {
         {
         provide: ActionBarService,
         useClass: ConfigurationServiceMock
-      },
+        },
         HttpService,
         AuthGuard,
         MapLoaderInformerService
