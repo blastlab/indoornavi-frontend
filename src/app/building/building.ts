@@ -1,7 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {Building} from './building.type';
 import {BuildingService} from './building.service';
-import {ToastService} from '../utils/toast/toast.service';
 import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {CrudComponent, CrudHelper} from '../utils/crud/crud.component';
@@ -9,6 +8,7 @@ import {Complex} from '../complex/complex.type';
 import {ConfirmationService} from 'primeng/primeng';
 import {NgForm} from '@angular/forms';
 import {BreadcrumbService} from '../utils/breadcrumbs/breadcrumb.service';
+import {MessageServiceWrapper} from '../utils/message.service';
 
 @Component({
   templateUrl: 'building.html',
@@ -23,7 +23,7 @@ export class BuildingComponent implements OnInit, CrudComponent {
   @ViewChild('buildingForm') buildingForm: NgForm;
 
   constructor(private buildingService: BuildingService,
-              private toast: ToastService,
+              private messageService: MessageServiceWrapper,
               public translate: TranslateService,
               private router: Router,
               private route: ActivatedRoute,
@@ -67,13 +67,13 @@ export class BuildingComponent implements OnInit, CrudComponent {
       ).subscribe((savedBuilding: Building) => {
         const isNew = !(!!this.building.id);
         if (isNew) {
-          this.toast.showSuccess('building.create.success');
+          this.messageService.success('building.create.success');
         } else {
-          this.toast.showSuccess('building.save.success');
+          this.messageService.success('building.save.success');
         }
         this.complex.buildings = <Building[]>CrudHelper.add(savedBuilding, this.complex.buildings, isNew);
       }, (err: string) => {
-        this.toast.showFailure(err);
+        this.messageService.failed(err);
       });
       this.buildingForm.resetForm();
       this.displayDialog = false;
@@ -94,9 +94,9 @@ export class BuildingComponent implements OnInit, CrudComponent {
           const buildingId: number = this.complex.buildings[index].id;
           this.buildingService.removeBuilding(buildingId).subscribe(() => {
             this.complex.buildings = <Building[]>CrudHelper.remove(index, this.complex.buildings);
-            this.toast.showSuccess('building.remove.success');
+            this.messageService.success('building.remove.success');
           }, (msg: string) => {
-            this.toast.showFailure(msg);
+            this.messageService.failed(msg);
           });
         }
     });

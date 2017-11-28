@@ -5,7 +5,7 @@
             [appHasPermission]="'MAP_CREATE'"
             (click)="openDialog(null)"
             label="{{'add'|translate}}"
-            icon="fa fa-plus" iconPos="left"
+            icon="fa-plus" iconPos="left"
     ></button>
   </div>
 </p-toolbar>
@@ -30,17 +30,13 @@
   </p-column>
   <p-column header="{{'th.actions'|translate}}" styleClass="col-button">
     <ng-template let-publishedMap="rowData" let-i="rowIndex" pTemplate="body">
-      <button pButton pTooltip="{{'go.to.map'|translate}}" (click)="goTo(publishedMap)"
-              mdTooltipPosition="above" icon="fa-map">
+      <button pButton pTooltip="{{'go.to.map'|translate}}" (click)="goTo(publishedMap)" icon="fa-map">
       </button>
-      <button pButton pTooltip="{{'go.to.mapEditor'|translate}}" [appHasPermission]="'FLOOR_READ'" (click)="goToEditor(publishedMap)"
-              mdTooltipPosition="above" icon="fa-paint-brush">
+      <button pButton pTooltip="{{'go.to.mapEditor'|translate}}" [appHasPermission]="'FLOOR_READ'" (click)="goToEditor(publishedMap)" icon="fa-paint-brush">
       </button>
-      <button pButton ngClass="editButton" pTooltip="{{'edit'|translate}}" [appHasPermission]="'MAP_UPDATE'" (click)="openDialog(publishedMap)"
-              mdTooltipPosition="above" icon="fa-edit">
+      <button pButton ngClass="editButton" pTooltip="{{'edit'|translate}}" [appHasPermission]="'MAP_UPDATE'" (click)="openDialog(publishedMap)" icon="fa-edit">
       </button>
-      <button pButton ngClass="deleteButton" pTooltip="{{'remove'|translate}}" [appHasPermission]="'MAP_DELETE'" (click)="remove(i)"
-              mdTooltipPosition="above" icon="fa-trash">
+      <button pButton ngClass="deleteButton" pTooltip="{{'remove'|translate}}" [appHasPermission]="'MAP_DELETE'" (click)="remove(i)" icon="fa-trash">
       </button>
     </ng-template>
   </p-column>

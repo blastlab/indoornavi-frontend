@@ -1,7 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {Floor} from './floor.type';
 import {FloorService} from './floor.service';
-import {ToastService} from '../utils/toast/toast.service';
 import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {Building} from '../building/building.type';
@@ -9,7 +8,7 @@ import {CrudComponent, CrudHelper} from '../utils/crud/crud.component';
 import {ConfirmationService} from 'primeng/primeng';
 import {NgForm} from '@angular/forms';
 import {BreadcrumbService} from '../utils/breadcrumbs/breadcrumb.service';
-import {Complex} from '../complex/complex.type';
+import {MessageServiceWrapper} from '../utils/message.service';
 
 @Component({
   templateUrl: 'floor.html',
@@ -24,12 +23,12 @@ export class FloorComponent implements OnInit, CrudComponent {
   private confirmBody: string;
 
   constructor(private floorService: FloorService,
-              private toast: ToastService,
               public translate: TranslateService,
               private route: ActivatedRoute,
               private router: Router,
               private confirmationService: ConfirmationService,
-              private breadcrumbsService: BreadcrumbService) {
+              private breadcrumbsService: BreadcrumbService,
+              private messageService: MessageServiceWrapper) {
   }
 
   ngOnInit(): void {
@@ -47,6 +46,9 @@ export class FloorComponent implements OnInit, CrudComponent {
         });
       });
     this.translate.setDefaultLang('en');
+    this.translate.get('confirm.body').subscribe((value: string) => {
+      this.confirmBody = value;
+    });
   }
 
   openDialog(floor: Floor): void {
@@ -59,24 +61,28 @@ export class FloorComponent implements OnInit, CrudComponent {
   }
 
   save(isValid: boolean): void {
-    (!!this.floor.id ?
-        this.floorService.updateFloor(this.floor)
-        :
-        this.floorService.addFloor(this.floor)
-    ).subscribe((savedFloor: Floor) => {
-      const isNew = !(!!this.floor.id);
-      if (isNew) {
-        this.toast.showSuccess('floor.create.success');
-      } else {
-        this.toast.showSuccess('floor.save.success');
-      }
-      this.building.floors = <Floor[]>CrudHelper.add(savedFloor, this.building.floors, isNew).sort((a: Floor, b: Floor) => {
-        return a.level - b.level;
+    if (isValid) {
+      (!!this.floor.id ?
+          this.floorService.updateFloor(this.floor)
+          :
+          this.floorService.addFloor(this.floor)
+      ).subscribe((savedFloor: Floor) => {
+        const isNew = !(!!this.floor.id);
+        if (isNew) {
+          this.messageService.success('floor.create.success');
+        } else {
+          this.messageService.success('floor.save.success');
+        }
+        this.building.floors = <Floor[]>CrudHelper.add(savedFloor, this.building.floors, isNew).sort((a: Floor, b: Floor) => {
+          return a.level - b.level;
+        });
+      }, (err: string) => {
+        this.messageService.failed(err);
       });
-    }, (err: string) => {
-      this.toast.showFailure(err);
-    });
-    this.displayDialog = false;
+      this.displayDialog = false;
+    } else {
+      CrudHelper.validateAllFields(this.floorForm);
+    }
   }
 
   cancel(): void {
@@ -91,9 +97,9 @@ export class FloorComponent implements OnInit, CrudComponent {
         const floorId: number = this.building.floors[index].id;
         this.floorService.removeFloor(floorId).subscribe(() => {
           this.building.floors = <Floor[]>CrudHelper.remove(index, this.building.floors);
-          this.toast.showSuccess('floor.remove.success');
+          this.messageService.success('floor.remove.success');
         }, (msg: string) => {
-          this.toast.showFailure(msg);
+          this.messageService.failed(msg);
         });
       }
     });

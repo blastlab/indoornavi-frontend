@@ -3,9 +3,8 @@ import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {Http, HttpModule} from '@angular/http';
 import {ComplexComponent} from './complex/complex';
-import {MaterialModule, MdButtonModule, MdCardModule, MdDialogModule, MdIconModule, MdIconRegistry} from '@angular/material';
+import {MdIconRegistry} from '@angular/material';
 import {ComplexService} from './complex/complex.service';
-import {ToastService} from './utils/toast/toast.service';
 import {HttpService} from './utils/http/http.service';
 import {AppComponent} from './app.component';
 import {RouterModule} from '@angular/router';
@@ -34,7 +33,6 @@ import {ScaleHintComponent} from './map-editor/tool-bar/tools/scale/hint/hint';
 import {ScaleHintService} from './map-editor/tool-bar/tools/scale/hint/hint.service';
 import {MapLoaderInformerService} from './utils/map-loader-informer/map-loader-informer.service';
 import {UserComponent} from './user/user';
-import {UserDialogComponent} from './user/user.dialog';
 import {UserService} from './user/user.service';
 import {AuthComponent} from './auth/auth';
 import {AuthGuard, CanRead} from './auth/auth.guard';
@@ -48,12 +46,8 @@ import {AngularMultiSelectModule} from 'angular2-multiselect-dropdown/angular2-m
 import {WizardComponent} from './map-editor/tool-bar/tools/wizard/wizard';
 import {AcceptButtonsComponent} from './utils/accept-buttons/accept-buttons';
 import {AcceptButtonsService} from './utils/accept-buttons/accept-buttons.service';
-import {FirstStepComponent} from './map-editor/tool-bar/tools/wizard/first-step/first-step';
-import {SecondStepComponent} from './map-editor/tool-bar/tools/wizard/second-step/second-step';
-import {ThirdStepComponent} from './map-editor/tool-bar/tools/wizard/third-step/third-step';
 import {DrawingService} from './utils/drawing/drawing.service';
 import {IconService} from './utils/drawing/icon.service';
-import {HintBarService} from './map-editor/hint-bar/hint-bar.service';
 import {ActionBarService} from './map-editor/action-bar/actionbar.service';
 import {D3Service} from 'd3-ng2-service';
 import {ScaleService} from './map-editor/tool-bar/tools/scale/scale.service';
@@ -63,13 +57,14 @@ import {appRoutes} from './app.routes';
 import {PublishedService} from './map-viewer/published.service';
 import {MapViewerService} from './map-editor/map.viewer.service';
 import {PublishedDialogComponent} from './publications/dialog/published.dialog';
-import {ConfirmDialogComponent} from './utils/confirm-dialog/confirm.dialog';
 import {DeviceComponent} from './device/device';
 import {ActionBarComponent} from 'app/map-editor/action-bar/actionbar';
 import {AreaService} from './area/area.service';
 import {Md5} from 'ts-md5/dist/md5';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {
+  BreadcrumbModule,
+  ButtonModule,
   CheckboxModule,
   ConfirmationService,
   ConfirmDialogModule,
@@ -77,18 +72,23 @@ import {
   DialogModule,
   DragDropModule,
   DropdownModule,
+  GrowlModule,
   InputTextModule,
   MultiSelectModule,
-  PickListModule,
-  SidebarModule,
-  ButtonModule,
+  OverlayPanelModule,
   PanelMenuModule,
+  PickListModule,
+  ProgressSpinnerModule,
+  SidebarModule,
   ToolbarModule,
-  BreadcrumbModule,
   TooltipModule
 } from 'primeng/primeng';
 import {AppAutoFocusDirective} from './utils/directive/autofocus.directive';
 import {BreadcrumbService} from './utils/breadcrumbs/breadcrumb.service';
+import {MessageService} from 'primeng/components/common/messageservice';
+import {MessageServiceWrapper} from './utils/message.service';
+import {ToolbarService} from './map-editor/tool-bar/toolbar.service';
+import {HintBarService} from './map-editor/hint-bar/hintbar.service';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -109,7 +109,6 @@ export function HttpLoaderFactory(http: Http) {
     ScaleInputComponent,
     ScaleHintComponent,
     UserComponent,
-    UserDialogComponent,
     AuthComponent,
     ChangePasswordComponent,
     UnauthorizedComponent,
@@ -117,29 +116,18 @@ export function HttpLoaderFactory(http: Http) {
     ActionBarComponent,
     WizardComponent,
     AcceptButtonsComponent,
-    FirstStepComponent,
-    SecondStepComponent,
-    ThirdStepComponent,
     PublishedComponent,
     PublishedListComponent,
     PublishedDialogComponent,
-    ConfirmDialogComponent,
     DeviceComponent,
     AppAutoFocusDirective
   ],
   entryComponents: [
-    UserDialogComponent,
     PublishedDialogComponent,
-    ConfirmDialogComponent
   ],
   imports: [
     BrowserModule,
-    MdDialogModule,
-    MdCardModule,
-    MdButtonModule,
-    MdIconModule,
     FormsModule,
-    MaterialModule,
     HttpModule,
     BrowserAnimationsModule,
     NoopAnimationsModule,
@@ -171,14 +159,16 @@ export function HttpLoaderFactory(http: Http) {
     PanelMenuModule,
     SidebarModule,
     BreadcrumbModule,
-    TooltipModule
+    TooltipModule,
+    GrowlModule,
+    ProgressSpinnerModule,
+    OverlayPanelModule
   ],
   providers: [
     BuildingService,
     FloorService,
     HttpService,
     ComplexService,
-    ToastService,
     WebSocketService,
     SocketService,
     DeviceService,
@@ -187,7 +177,6 @@ export function HttpLoaderFactory(http: Http) {
     DrawingService,
     MdIconRegistry,
     IconService,
-    HintBarService,
     MapService,
     ScaleInputService,
     ScaleHintService,
@@ -205,7 +194,11 @@ export function HttpLoaderFactory(http: Http) {
     AreaService,
     Md5,
     ConfirmationService,
-    BreadcrumbService
+    BreadcrumbService,
+    MessageService,
+    MessageServiceWrapper,
+    ToolbarService,
+    HintBarService
   ], bootstrap: [AppComponent]
 })
 

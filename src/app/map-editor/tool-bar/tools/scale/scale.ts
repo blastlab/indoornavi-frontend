@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Tool} from '../tool';
 import {ToolName} from '../tools.enum';
 import * as d3 from 'd3';
@@ -10,11 +10,12 @@ import {ScaleHintService} from './hint/hint.service';
 import {MapLoaderInformerService} from '../../../../utils/map-loader-informer/map-loader-informer.service';
 import {Subscription} from 'rxjs/Subscription';
 import {Geometry} from '../../../../utils/helper/geometry';
-import {HintBarService} from '../../../hint-bar/hint-bar.service';
 import {ActionBarService} from '../../../action-bar/actionbar.service';
 import {Configuration} from '../../../action-bar/actionbar.type';
 import {ScaleService} from './scale.service';
 import {Helper} from '../../../../utils/helper/helper';
+import {HintBarService} from '../../../hint-bar/hintbar.service';
+import {ToolbarService} from '../../toolbar.service';
 
 @Component({
   selector: 'app-scale',
@@ -22,10 +23,6 @@ import {Helper} from '../../../../utils/helper/helper';
   styleUrls: ['../tool.css']
 })
 export class ScaleComponent implements Tool, OnDestroy, OnInit {
-  @Output() clicked: EventEmitter<Tool> = new EventEmitter<Tool>();
-  public hintMessage: string;
-  private pointsArray: Array<Point> = [];
-  private linesArray: Array<Line> = [];
   public active: boolean = false;
   public isScaleDisplayed: boolean = false;
   public isScaleSet: boolean = false;
@@ -39,13 +36,17 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private mapWidth: number;
   private mapHeight: number;
   private scale: Scale;
+  private hintMessage: string;
+  private pointsArray: Point[] = [];
+  private linesArray: Line[] = [];
 
   constructor(private translate: TranslateService,
-              private scaleInput: ScaleInputService,
+              private scaleInputService: ScaleInputService,
               private scaleHint: ScaleHintService,
               private mapLoaderInformer: MapLoaderInformerService,
-              private hintBar: HintBarService,
-              private configurationService: ActionBarService,
+              private hintBarService: HintBarService,
+              private toolbarService: ToolbarService,
+              private actionBarService: ActionBarService,
               private scaleService: ScaleService) {
     this.setTranslations();
   }
@@ -63,6 +64,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     if (this.configurationResetSubscription) {
       this.configurationResetSubscription.unsubscribe();
     }
+
     this.isScaleSet = false;
     this.scaleGroup.remove();
     this.pointsArray = [];
@@ -73,14 +75,15 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   ngOnInit(): void {
     this.createEmptyScale();
 
-    this.configurationLoadedSubscription = this.configurationService.configurationLoaded().subscribe((configuration: Configuration) => {
+    this.configurationLoadedSubscription = this.actionBarService.configurationLoaded().subscribe((configuration: Configuration) => {
       this.drawScale(configuration.data.scale);
     });
 
-    this.configurationResetSubscription = this.configurationService.configurationReset().subscribe((configuration: Configuration) => {
+    this.configurationResetSubscription = this.actionBarService.configurationReset().subscribe((configuration: Configuration) => {
       if (!configuration.data.scale) {
         this.isScaleSet = false;
         this.isFirstPointDrawn = false;
+        this.isScaleDisplayed = false;
       }
       this.scaleGroup.remove();
       this.createSvgGroupWithScale();
@@ -96,21 +99,29 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.createSvgGroupWithScale();
     });
 
-    this.saveButtonSubscription = this.scaleInput.confirmClicked.subscribe((scale: Scale) => {
-      this.clicked.emit(this);
+    this.saveButtonSubscription = this.scaleInputService.confirmClicked.subscribe((scale: Scale) => {
+      this.toolbarService.emitToolChanged(null);
+      // this.setInactive();
       this.isScaleSet = true;
       this.scale.realDistance = scale.realDistance;
       this.scale.measure = scale.measure;
-      this.configurationService.setScale(this.scale);
+      this.actionBarService.setScale(this.scale);
+      this.scaleService.publishScaleChanged(this.scale);
     });
 
     this.scaleHint.mouseHoverChanged.subscribe((overOrOut: string) => {
-      if (overOrOut === 'over') {
-        this.scaleGroup.style('display', 'flex');
-      } else {
-        this.scaleGroup.style('display', 'none');
+      if (this.active || this.isScaleSet) {
+        if (overOrOut === 'over') {
+          this.scaleGroup.style('display', 'flex');
+        } else {
+          this.scaleGroup.style('display', 'none');
+        }
       }
     });
+  }
+
+  getHintMessage(): string {
+    return this.hintMessage;
   }
 
   public getToolName(): ToolName {
@@ -121,7 +132,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.active = true;
     this.startCreatingScale();
     this.translate.get('scale.basic.msg').subscribe((value: string) => {
-      this.hintBar.publishHint(value);
+      this.hintBarService.emitHintMessage(value);
     });
   }
 
@@ -129,12 +140,12 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.hideScale();
     this.active = false;
     this.translate.get('hint.chooseTool').subscribe((value: string) => {
-      this.hintBar.publishHint(value);
+      this.hintBarService.emitHintMessage(value);
     });
   }
 
-  public toolClicked(): void {
-    this.clicked.emit(this);
+  public onClick(): void {
+    this.toolbarService.emitToolChanged(this);
   }
 
   private updateScaleGroup() {
@@ -276,7 +287,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       })
       .on('end', () => {
         this.setScalePoints();
-        this.configurationService.setScale(this.scale);
+        this.actionBarService.setScale(this.scale);
       });
 
     const points = this.scaleGroup.selectAll('circle');
@@ -509,8 +520,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.scale = Helper.deepCopy(scale);
       this.drawScaleFromConfiguration();
     }
-    this.scaleInput.publishScale(this.scale);
-    this.scaleHint.publishScale(this.scale);
+    this.scaleService.publishScaleChanged(this.scale);
     this.updateScaleGroup();
   }
 }

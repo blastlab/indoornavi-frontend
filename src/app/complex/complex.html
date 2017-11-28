@@ -15,15 +15,15 @@
   <p-column header="{{'th.actions'|translate}}" styleClass="col-button">
     <ng-template let-complex="rowData" let-i="rowIndex" pTemplate="body">
       <button
-        pTooltip="{{'go.to.buildings'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="goTo(complex)" icon="fa-level-down">
+        pTooltip="{{'go.to.buildings'|translate}}" type="button" pButton (click)="goTo(complex)" icon="fa-level-down">
       </button>
       <button
         [appHasPermission]="'COMPLEX_UPDATE'"
-        pTooltip="{{'edit'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="openDialog(complex)" icon="fa-edit">
+        pTooltip="{{'edit'|translate}}" type="button" pButton (click)="openDialog(complex)" icon="fa-edit">
       </button>
       <button
         [appHasPermission]="'COMPLEX_DELETE'"
-        pTooltip="{{'remove'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="remove(i)" icon="fa-trash">
+        pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(i)" icon="fa-trash">
       </button>
     </ng-template>
   </p-column>

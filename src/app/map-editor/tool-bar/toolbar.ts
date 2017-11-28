@@ -1,5 +1,7 @@
-import {Component, EventEmitter, Input, OnDestroy, Output} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Tool} from './tools/tool';
+import {ToolbarService} from './toolbar.service';
+import {Subscription} from 'rxjs/Subscription';
 import {Floor} from '../../floor/floor.type';
 
 @Component({
@@ -7,40 +9,32 @@ import {Floor} from '../../floor/floor.type';
   templateUrl: './toolbar.html',
   styleUrls: ['./toolbar.css']
 })
-export class ToolbarComponent implements OnDestroy {
-  @Output() selectedTool: EventEmitter<Tool> = new EventEmitter<Tool>();
-  @Output() hint: EventEmitter<string> = new EventEmitter<string>();
-
+export class ToolbarComponent implements OnInit, OnDestroy {
   @Input() floor: Floor;
-  activeTool: Tool;
 
-  constructor() {
+  private activeTool: Tool;
+  private toolChangedSubscription: Subscription;
+
+  constructor(private toolbarService: ToolbarService) {
+  }
+
+  ngOnInit(): void {
+    this.toolChangedSubscription = this.toolbarService.onToolChanged().subscribe((tool: Tool) => {
+      const activate: boolean = (tool && this.activeTool !== tool);
+      if (!!this.activeTool) {
+        this.activeTool.setInactive();
+        this.activeTool = undefined;
+      }
+      if (activate) {
+        tool.setActive();
+        this.activeTool = tool;
+      }
+    });
   }
 
   ngOnDestroy() {
-    if (this.selectedTool) {
-      this.selectedTool.unsubscribe();
-    }
-    if (this.hint) {
-      this.hint.unsubscribe();
-    }
-  }
-
-  public setTool(eventTool: Tool): void {
-    const activate: boolean = (this.activeTool !== eventTool);
-    if (!!this.activeTool) {
-      this.activeTool.setInactive();
-      this.activeTool = undefined;
-    }
-    if (activate) {
-      eventTool.setActive();
-      this.activeTool = eventTool;
-    }
-    if (!!this.activeTool) {
-      this.selectedTool.emit(eventTool);
-      this.hint.emit(eventTool.hintMessage);
-    } else {
-      this.selectedTool.emit(null);
+    if (!!this.toolChangedSubscription) {
+      this.toolChangedSubscription.unsubscribe();
     }
   }
 }

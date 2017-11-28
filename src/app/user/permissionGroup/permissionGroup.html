@@ -1,10 +1,10 @@
-<h1 [translate]="'permissionGroup.header'"></h1>
-
-<div class="adding-section">
-    <button [appHasPermission]="'PERMISSION_GROUP_CREATE'" md-raised-button id="new-permissionGroup-button" type="button" (click)="openDialog()">
-        {{'add'|translate}}
-    </button>
-</div>
+<p-toolbar>
+  <div class="ui-toolbar-group-left">
+    <button pButton class="ui-button-secondary" id="new-permissionGroup-button" [appHasPermission]="'PERMISSION_GROUP_CREATE'" (click)="openDialog()"
+            label="{{'add'|translate}}"
+            icon="fa-plus" iconPos="left"></button>
+  </div>
+</p-toolbar>
 
 <p-dataTable [loading]="loading" [value]="permissionGroups" styleClass="auto">
   <p-column field="name" header="{{'permissionGroup.name'|translate}}"></p-column>
@@ -19,11 +19,11 @@
     <ng-template let-permissionGroup="rowData" let-i="rowIndex" pTemplate="body">
       <button
         [appHasPermission]="'PERMISSION_GROUP_UPDATE'"
-        md-tooltip="{{'edit'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="openDialog(permissionGroup)" icon="fa-edit">
+        pTooltip="{{'edit'|translate}}" type="button" pButton (click)="openDialog(permissionGroup)" icon="fa-edit">
       </button>
       <button
         [appHasPermission]="'PERMISSION_GROUP_DELETE'"
-        md-tooltip="{{'remove'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="remove(i)" icon="fa-trash">
+        pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(i)" icon="fa-trash">
       </button>
     </ng-template>
   </p-column>

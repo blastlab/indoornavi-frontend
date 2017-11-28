@@ -26,17 +26,17 @@ describe('HintBarComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create HintBarComponent and set hintMsg', () => {
+  it('should create HintBarComponent and set hintMessage', () => {
     expect(component).toBeTruthy();
-    expect(component.hintMsg).toBeDefined();
+    expect(component.hintMessage).toBeDefined();
   });
 
-  it('should set hintMsg into passed string', () => {
-    component.hintMsg = undefined;
-    expect(component.hintMsg).toBeUndefined();
+  it('should set hintMessage into passed string', () => {
+    component.hintMessage = undefined;
+    expect(component.hintMessage).toBeUndefined();
     component.setHint('testString!*.nG');
-    expect(component.hintMsg).toBeDefined();
-    expect(component.hintMsg).toEqual('testString!*.nG');
+    expect(component.hintMessage).toBeDefined();
+    expect(component.hintMessage).toEqual('testString!*.nG');
   });
 
 });

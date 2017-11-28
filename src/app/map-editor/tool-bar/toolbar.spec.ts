@@ -66,7 +66,7 @@ describe('ToolbarComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should set clicked tool as active if no tool is active', () => {
+  it('should set emitToolChanged tool as active if no tool is active', () => {
     // given:
     component.activeTool = undefined;
     // when:
@@ -77,7 +77,7 @@ describe('ToolbarComponent', () => {
     expect(mockScaleTool.setActive).toHaveBeenCalled();
   });
 
-  it('should set clicked tool as active if other tool was active', () => {
+  it('should set emitToolChanged tool as active if other tool was active', () => {
     // given
     component.activeTool = mockScaleTool;
     // when:
@@ -89,7 +89,7 @@ describe('ToolbarComponent', () => {
     expect(component.activeTool).toEqual(mockWizardTool);
 });
 
-  it('should set clicked tool as inactive if the same tool was active', () => {
+  it('should set emitToolChanged tool as inactive if the same tool was active', () => {
     // given:
     component.activeTool = mockWizardTool;
     // when:
