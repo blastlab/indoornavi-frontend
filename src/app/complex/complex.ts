@@ -1,13 +1,13 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {Complex} from './complex.type';
 import {ComplexService} from './complex.service';
-import {ToastService} from '../utils/toast/toast.service';
 import {TranslateService} from '@ngx-translate/core';
 import {Router} from '@angular/router';
 import {CrudComponent, CrudHelper} from '../utils/crud/crud.component';
 import {ConfirmationService} from 'primeng/primeng';
 import {NgForm} from '@angular/forms';
 import {BreadcrumbService} from '../utils/breadcrumbs/breadcrumb.service';
+import {MessageServiceWrapper} from '../utils/message.service';
 
 @Component({
   templateUrl: 'complex.html',
@@ -23,11 +23,11 @@ export class ComplexComponent implements OnInit, CrudComponent {
   @ViewChild('complexForm') complexForm: NgForm;
 
   constructor(private complexService: ComplexService,
-              private toast: ToastService,
               public translate: TranslateService,
               private router: Router,
               private confirmationService: ConfirmationService,
-              private breadcrumbsService: BreadcrumbService) {
+              private breadcrumbsService: BreadcrumbService,
+              private messageService: MessageServiceWrapper) {
   }
 
   ngOnInit(): void {
@@ -65,13 +65,13 @@ export class ComplexComponent implements OnInit, CrudComponent {
       ).subscribe((savedComplex: Complex) => {
         const isNew = !(!!this.complex.id);
         if (isNew) {
-          this.toast.showSuccess('complex.create.success');
+          this.messageService.success('complex.create.success');
         } else {
-          this.toast.showSuccess('complex.save.success');
+          this.messageService.success('complex.save.success');
         }
         this.complexes = <Complex[]>CrudHelper.add(savedComplex, this.complexes, isNew);
       }, (err: string) => {
-        this.toast.showFailure(err);
+        this.messageService.failed(err);
       });
       this.displayDialog = false;
       this.complexForm.resetForm();
@@ -92,9 +92,9 @@ export class ComplexComponent implements OnInit, CrudComponent {
         const complexId: number = this.complexes[index].id;
         this.complexService.removeComplex(complexId).subscribe(() => {
           this.complexes = <Complex[]>CrudHelper.remove(index, this.complexes);
-          this.toast.showSuccess('complex.remove.success');
+          this.messageService.success('complex.remove.success');
         }, (msg: string) => {
-          this.toast.showFailure(msg);
+          this.messageService.failed(msg);
         });
       }
     });

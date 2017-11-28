@@ -4,7 +4,7 @@
             id="open-dialog" [appHasPermission]="createPermission"
             (click)="openDialog()"
             label="{{'add'|translate}}"
-            icon="fa fa-plus" iconPos="left">
+            icon="fa-plus" iconPos="left">
     </button>
   </div>
 </p-toolbar>
@@ -25,11 +25,11 @@
         <div class="ui-g-3 ui-md-3 ui-lg-3">
           <button
             [appHasPermission]="editPermission"
-            md-tooltip="{{'edit'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="openDialog(device)" icon="fa-edit">
+            pTooltip="{{'edit'|translate}}" type="button" pButton (click)="openDialog(device)" icon="fa-edit">
           </button>
           <button
             [appHasPermission]="deletePermission"
-            md-tooltip="{{'remove'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="remove(device)" icon="fa-trash">
+            pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(device)" icon="fa-trash">
           </button>
         </div>
       </div>
@@ -44,7 +44,7 @@
   <form #deviceForm="ngForm" novalidate>
     <div *ngIf="device">
       <div class="ui-g" >
-        <div class="ug-g-12 ui-md-4 ui-lg-4">
+        <div class="ui-g-12 ui-md-4 ui-lg-4">
           <div class="ui-message ui-messages-error ui-corner-all"
                *ngIf="shortIdInput.errors?.required && shortIdInput.touched && shortIdInput.dirty">
             <i class="fa fa-warning"></i>
@@ -59,7 +59,7 @@
         </div>
       </div>
       <div class="ui-g" >
-        <div class="ug-g-12 ui-md-4 ui-lg-4">
+        <div class="ui-g-12 ui-md-4 ui-lg-4">
           <div class="ui-message ui-messages-error ui-corner-all"
                *ngIf="longIdInput.errors?.required && longIdInput.touched && longIdInput.dirty">
             <i class="fa fa-warning"></i>

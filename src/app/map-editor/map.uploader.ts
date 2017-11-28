@@ -1,11 +1,11 @@
 import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {Floor} from '../floor/floor.type';
-import {ToastService} from '../utils/toast/toast.service';
 import {TranslateService} from '@ngx-translate/core';
 import {ImageUploadComponent} from 'angular2-image-upload/lib/image-upload/image-upload.component';
 import {Config} from '../../config';
 import {MapService} from './map.service';
 import {ImageConfiguration} from './map.configuration.type';
+import {MessageServiceWrapper} from '../utils/message.service';
 
 @Component({
   selector: 'app-map-uploader',
@@ -25,7 +25,7 @@ export class MapUploaderComponent implements OnInit {
 
   constructor(private translateService: TranslateService,
               private mapService: MapService,
-              private toastService: ToastService) {
+              private messageService: MessageServiceWrapper) {
   }
 
   ngOnInit(): void {
@@ -47,7 +47,7 @@ export class MapUploaderComponent implements OnInit {
       });
     } else {
       this.imageUpload.deleteFile(evtData.file);
-      this.toastService.showFailure('map.upload.notAllowedType', {'file_types': this.allowedTypes.join(', ')});
+      this.messageService.failed('map.upload.notAllowedType', {'file_types': this.allowedTypes.join(', ')});
     }
   }
 

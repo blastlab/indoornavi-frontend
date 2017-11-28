@@ -10,7 +10,6 @@ import {FloorService} from '../../floor/floor.service';
 import {BuildingService} from 'app/building/building.service';
 import {TranslateService} from '@ngx-translate/core';
 import {PublishedService} from '../../map-viewer/published.service';
-import {ToastService} from '../../utils/toast/toast.service';
 import {DeviceService} from '../../device/device.service';
 import {Tag} from '../../device/tag.type';
 import {ActionBarService} from '../../map-editor/action-bar/actionbar.service';
@@ -20,6 +19,7 @@ import {CrudComponentForm, CrudHelper} from '../../utils/crud/crud.component';
 import {NgForm} from '@angular/forms';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
+import {MessageServiceWrapper} from '../../utils/message.service';
 
 @Component({
   selector: 'app-published-dialog',
@@ -51,7 +51,7 @@ export class PublishedDialogComponent implements OnInit, CrudComponentForm {
               private floorService: FloorService,
               private translateService: TranslateService,
               private publishedMapService: PublishedService,
-              private toastService: ToastService,
+              private messageService: MessageServiceWrapper,
               private actionBarService: ActionBarService) {
   }
 
@@ -78,6 +78,16 @@ export class PublishedDialogComponent implements OnInit, CrudComponentForm {
     return this.dialogClosed.asObservable();
   }
 
+  openWithFloor(floor: Floor): Observable<PublishedMap> {
+    this.complex = floor.building.complex;
+    this.complexChanged(this.complex);
+    this.building = floor.building;
+    this.buildingChanged(this.building);
+    this.floor = floor;
+    this.displayDialog = true;
+    return this.dialogClosed.asObservable();
+  }
+
   save(isValid: boolean) {
     if (isValid) {
       this.actionBarService.loadConfiguration(this.floor);
@@ -96,9 +106,9 @@ export class PublishedDialogComponent implements OnInit, CrudComponentForm {
             this.displayDialog = false;
             this.dialogClosed.next(savedMap);
             this.clean();
-            this.toastService.showSuccess('publishedList.save.success');
+            this.messageService.success('publishedList.save.success');
           }, (err: string) => {
-            this.toastService.showFailure(err);
+            this.messageService.failed(err);
           });
         }
       });

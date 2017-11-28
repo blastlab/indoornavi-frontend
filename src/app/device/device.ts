@@ -3,7 +3,6 @@ import {Subscription} from 'rxjs/Rx';
 import {SocketService} from '../utils/socket/socket.service';
 import {Config} from '../../config';
 import {TranslateService} from '@ngx-translate/core';
-import {ToastService} from '../utils/toast/toast.service';
 import {ActivatedRoute} from '@angular/router';
 import {Tag} from './tag.type';
 import {Anchor} from './anchor.type';
@@ -14,6 +13,7 @@ import {Device} from './device.type';
 import {NgForm} from '@angular/forms';
 import {ConfirmationService} from 'primeng/primeng';
 import {BreadcrumbService} from '../utils/breadcrumbs/breadcrumb.service';
+import {MessageServiceWrapper} from '../utils/message.service';
 
 @Component({
   templateUrl: './device.html',
@@ -36,11 +36,10 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
 
   constructor(private socketService: SocketService,
               public translate: TranslateService,
-              private toastService: ToastService,
+              private messageService: MessageServiceWrapper,
               private ngZone: NgZone,
               private route: ActivatedRoute,
               private deviceService: DeviceService,
-              private toast: ToastService,
               private confirmationService: ConfirmationService,
               private breadcrumbService: BreadcrumbService) {
   }
@@ -98,12 +97,12 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
           this.deviceService.create(this.device)
       ).subscribe(() => {
         if (isNew) {
-          this.toast.showSuccess('device.create.success');
+          this.messageService.success('device.create.success');
         } else {
-          this.toast.showSuccess('device.save.success');
+          this.messageService.success('device.save.success');
         }
       }, (err: string) => {
-        this.toast.showFailure(err);
+        this.messageService.failed(err);
       });
       this.displayDialog = false;
       this.deviceForm.resetForm();
@@ -132,9 +131,9 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       accept: () => {
         this.deviceService.remove(device.id).subscribe(() => {
           this.removeFromList(device);
-          this.toast.showSuccess('device.remove.success');
+          this.messageService.success('device.remove.success');
         }, (msg: string) => {
-          this.toast.showFailure(msg);
+          this.messageService.failed(msg);
         });
       }
     });
@@ -144,7 +143,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     movedDevices.forEach((device: Device) => {
       device.verified = !device.verified;
       this.deviceService.update(device).subscribe((savedDevice: Device) => {
-        this.toastService.showSuccess('device.save.success');
+        this.messageService.success('device.save.success');
       });
     });
   }

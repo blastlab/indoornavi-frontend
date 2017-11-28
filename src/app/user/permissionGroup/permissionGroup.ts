@@ -1,11 +1,11 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {Permission, PermissionGroup} from '../user.type';
-import {ToastService} from '../../utils/toast/toast.service';
 import {PermissionGroupService} from 'app/user/permissionGroup/permissionGroup.service';
 import {TranslateService} from '@ngx-translate/core';
 import {NgForm} from '@angular/forms';
 import {CrudComponent, CrudHelper} from '../../utils/crud/crud.component';
 import {ConfirmationService} from 'primeng/primeng';
+import {MessageServiceWrapper} from '../../utils/message.service';
 
 @Component({
   templateUrl: 'permissionGroup.html'
@@ -20,7 +20,7 @@ export class PermissionGroupComponent implements OnInit, CrudComponent {
   confirmBody: string;
   selectPermissionLabel: string;
 
-  constructor(private toast: ToastService,
+  constructor(private messageService: MessageServiceWrapper,
               private permissionGroupService: PermissionGroupService,
               private translateService: TranslateService,
               private confirmationService: ConfirmationService) {
@@ -57,15 +57,15 @@ export class PermissionGroupComponent implements OnInit, CrudComponent {
       const isNew = !(!!this.permissionGroup.id);
       this.permissionGroupService.save(this.permissionGroup).subscribe((permissionGroup: PermissionGroup) => {
         if (isNew) {
-          this.toast.showSuccess('permissionGroup.create.success');
+          this.messageService.success('permissionGroup.create.success');
         } else {
-          this.toast.showSuccess('permissionGroup.save.success');
+          this.messageService.success('permissionGroup.save.success');
         }
         this.permissionGroups = <PermissionGroup[]>CrudHelper.add(permissionGroup, this.permissionGroups, isNew);
         this.permissionGroupForm.resetForm();
         this.displayDialog = false;
       }, (err: string) => {
-        this.toast.showFailure(err);
+        this.messageService.failed(err);
       });
     } else {
       CrudHelper.validateAllFields(this.permissionGroupForm);
@@ -83,9 +83,9 @@ export class PermissionGroupComponent implements OnInit, CrudComponent {
       accept: () => {
         this.permissionGroupService.remove(this.permissionGroups[index].id).subscribe(() => {
           this.permissionGroups = <PermissionGroup[]>CrudHelper.remove(index, this.permissionGroups);
-          this.toast.showSuccess('permissionGroup.remove.success');
+          this.messageService.success('permissionGroup.remove.success');
         }, (err: string) => {
-          this.toast.showFailure(err);
+          this.messageService.failed(err);
         });
       }
     });

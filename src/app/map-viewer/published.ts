@@ -24,6 +24,7 @@ import {Geometry} from '../utils/helper/geometry';
 import {Tag} from '../device/tag.type';
 import {AreaService} from '../area/area.service';
 import {Area} from '../area/area.type';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   templateUrl: './published.html',
@@ -44,10 +45,12 @@ export class PublishedComponent implements OnInit, AfterViewInit {
               private publishedService: PublishedService,
               private mapViewerService: MapViewerService,
               private iconService: IconService,
-              private areaService: AreaService) {
+              private areaService: AreaService,
+              private translateService: TranslateService) {
   }
 
   ngOnInit() {
+    this.translateService.setDefaultLang('en');
     this.route.params.subscribe((params: Params) => {
       const mapId = +params['id'];
       this.publishedService.get(mapId).subscribe((map: PublishedMap) => {

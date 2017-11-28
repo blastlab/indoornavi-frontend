@@ -4,7 +4,7 @@
             [appHasPermission]="'USER_CREATE'"
             (click)="openDialog()"
             label="{{'add'|translate}}"
-            icon="fa fa-plus" iconPos="left"
+            icon="fa-plus" iconPos="left"
     ></button>
   </div>
 </p-toolbar>
@@ -25,11 +25,11 @@
     <ng-template let-user="rowData" let-i="rowIndex" pTemplate="body">
       <button
         [appHasPermission]="'USER_UPDATE'"
-        pTooltip="{{'edit'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="openDialog(user)" icon="fa-edit">
+        pTooltip="{{'edit'|translate}}" type="button" pButton (click)="openDialog(user)" icon="fa-edit">
       </button>
       <button
         [appHasPermission]="'USER_DELETE'"
-        pTooltip="{{'remove'|translate}}" mdTooltipPosition="above" type="button" pButton (click)="remove(i)" icon="fa-trash">
+        pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(i)" icon="fa-trash">
       </button>
     </ng-template>
   </p-column>

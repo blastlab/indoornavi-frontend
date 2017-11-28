@@ -3,15 +3,12 @@
           id="accepted-decision"
           *ngIf="visible"
           (click)="decide(true)"
-          label="{{'yes'|translate}}"
-          icon="fa fa-check-circle-o" iconPos="left"
+          icon="fa-check"
   ></button>
   <button pButton class="ui-button-danger"
           id="reject-decision"
-          class="decision negative"
           *ngIf="visible"
           (click)="decide(false)"
-          label="{{'no'|translate}}"
-          icon="fa fa-exclamation-circle" iconPos="left"
+          icon="fa-close"
   ></button>
 </span>

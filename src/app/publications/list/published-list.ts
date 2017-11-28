@@ -2,12 +2,12 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {PublishedService} from '../../map-viewer/published.service';
 import {PublishedMap} from '../../map-viewer/published.type';
 import {TranslateService} from '@ngx-translate/core';
-import {ToastService} from '../../utils/toast/toast.service';
 import {PublishedDialogComponent} from '../dialog/published.dialog';
 import {Router} from '@angular/router';
 import {CrudComponentList, CrudHelper} from '../../utils/crud/crud.component';
 import {ConfirmationService} from 'primeng/primeng';
 import {BreadcrumbService} from '../../utils/breadcrumbs/breadcrumb.service';
+import {MessageServiceWrapper} from '../../utils/message.service';
 
 @Component({
   templateUrl: './published-list.html',
@@ -25,7 +25,7 @@ export class PublishedListComponent implements OnInit, CrudComponentList {
 
   constructor(private publishedMapService: PublishedService,
               private translateService: TranslateService,
-              private toastService: ToastService,
+              private messageService: MessageServiceWrapper,
               private router: Router,
               private confirmationService: ConfirmationService,
               private breadcrumbService: BreadcrumbService) {
@@ -62,9 +62,9 @@ export class PublishedListComponent implements OnInit, CrudComponentList {
         const map = this.publishedMaps[index];
         this.publishedMapService.remove(map.id).subscribe(() => {
           this.publishedMaps = <PublishedMap[]>CrudHelper.remove(index, this.publishedMaps);
-          this.toastService.showSuccess('publishedList.remove.success');
+          this.messageService.success('publishedList.remove.success');
         }, (err) => {
-          this.toastService.showFailure(err);
+          this.messageService.failed(err);
         });
       }
     });
