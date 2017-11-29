@@ -1,6 +1,6 @@
 import {Point} from '../../../map.type';
-import {ObjectParams} from '../../../../utils/drawing/drawing.service';
 import {SelectItem} from 'primeng/primeng';
+import {ObjectParams} from '../../../../shared/services/drawing/drawing.service';
 
 export interface SocketMessage {
   step: Step;

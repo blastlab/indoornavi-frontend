@@ -1,9 +1,9 @@
 import {animate, ChangeDetectorRef, Component, Input, NgZone, OnDestroy, OnInit, state, style, transition, trigger, ViewChild} from '@angular/core';
 import {ActionBarService} from './actionbar.service';
 import {Floor} from '../../floor/floor.type';
-import {MapLoaderInformerService} from '../../utils/map-loader-informer/map-loader-informer.service';
+import {MapLoaderInformerService} from '../../shared/services/map-loader-informer/map-loader-informer.service';
 import {Subscription} from 'rxjs/Subscription';
-import {Timer} from '../../utils/timer/timer';
+import {Timer} from '../../shared/utils/timer/timer';
 import {PublishedDialogComponent} from '../../publications/dialog/published.dialog';
 import {PublishedMap} from '../../map-viewer/published.type';
 import {TranslateService} from '@ngx-translate/core';

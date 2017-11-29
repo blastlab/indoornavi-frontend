@@ -1,7 +1,7 @@
 import {inject, TestBed} from '@angular/core/testing';
 
 import {ActionBarService} from './actionbar.service';
-import {HttpService} from '../../utils/http/http.service';
+import {HttpService} from '../../shared/services/http/http.service';
 import {HttpModule} from '@angular/http';
 import {RouterTestingModule} from '@angular/router/testing';
 import {AuthGuard} from '../../auth/auth.guard';

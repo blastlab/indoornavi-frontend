@@ -1,11 +1,11 @@
 import * as d3 from 'd3';
 import {AnchorDistance} from '../../../../../device/anchor.type';
 import {Point} from '../../../../map.type';
-import {NaviIcons} from '../../../../../utils/drawing/icon.service';
-import {DrawingService, ObjectParams} from '../../../../../utils/drawing/drawing.service';
-import {SecondStepMessage, Step, WizardData, WizardStep} from '../wizard.type';
 import {SelectItem} from 'primeng/primeng';
-import {Geometry} from '../../../../../utils/helper/geometry';
+import {WizardData, WizardStep, SecondStepMessage, Step} from '../wizard.type';
+import {DrawingService, ObjectParams} from '../../../../../shared/services/drawing/drawing.service';
+import {NaviIcons} from 'app/shared/services/drawing/icon.service';
+import {Geometry} from '../../../../../shared/utils/helper/geometry';
 
 export class SecondStep implements WizardStep {
   private selectedItemId: number;
