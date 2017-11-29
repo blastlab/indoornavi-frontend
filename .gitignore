@@ -42,6 +42,7 @@ testem.log
 *.py[cod]
 /e2e_selenium/.idea
 /e2e_selenium/venv
+/e2e_selenium/e2e/reports
 
 # System Files
 .DS_Store
