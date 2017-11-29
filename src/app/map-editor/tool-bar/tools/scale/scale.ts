@@ -312,8 +312,8 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
         x: d3.event.x,
         y: d3.event.y
       };
-      let x_Coords: number;
-      let y_Coords: number;
+      let x: number;
+      let y: number;
       if (index === 0) {
         secondPoint.x = this.pointsArray[1].x;
         secondPoint.y = this.pointsArray[1].y;
@@ -321,64 +321,17 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
         secondPoint.x = this.pointsArray[0].x;
         secondPoint.y = this.pointsArray[0].y;
       }
-      const x_DifferenceBetweenPoints = secondPoint.x - mousePosition.x;
-      const y_DifferenceBetweenPoints = secondPoint.y - mousePosition.y;
-      const arcOfScale360 = Geometry.getArcus(mousePosition, secondPoint);
 
       if (event.shiftKey) {
-        const arcRelocationValue = 22.5;
-        let y_coords;
-        if (arcOfScale360 % arcRelocationValue < 1) {
-          console.log(Math.floor(arcOfScale360));
-          const arc = Math.floor(arcOfScale360);
-          const radiansArc = arcToRadians => arcToRadians * Math.PI / 180;
-          let arcToCalculate = 0;
-          switch (arc) {
-            case 22:
-            case 23:
-              arcToCalculate = 22.5;
-              break;
-            case 67:
-            case 68:
-              arcToCalculate = 67.5;
-              break;
-            case 112:
-            case 113:
-              arcToCalculate = 102.5;
-              break;
-            case 157:
-            case 158:
-              arcToCalculate = 157.5;
-              break;
-            case 202:
-            case 203:
-              arcToCalculate = 202.5;
-              break;
-            case 247:
-            case 248:
-              arcToCalculate = 247.5;
-              break;
-            case 293:
-            case 297:
-              arcToCalculate = 293.5;
-              break;
-            case 337:
-            case 338:
-              arcToCalculate = 337.5;
-              break;
-            default:
-              arcToCalculate = arc;
-          }
-            console.log(Math.cos(radiansArc(arcToCalculate)));
-          // if(Math.sin(radiansArc(arcToCalculate)) != 0 && Math.sin(radiansArc(arcToCalculate)) < 1) {
-          const cosinus = Math.cos(radiansArc(arcToCalculate));
-            y_coords = Math.sqrt(Math.pow(x_DifferenceBetweenPoints,2) + Math.pow(y_DifferenceBetweenPoints, 2)) * cosinus;
-          console.log(y_coords, y_DifferenceBetweenPoints);
-        } else {}
+        const deltaY = Geometry.getDeltaY(mousePosition, secondPoint);
+        x = mousePosition.x;
+        y = secondPoint.y - deltaY;
+      } else {
+        x = mousePosition.x;
+        y = mousePosition.y;
       }
-      x_Coords = mousePosition.x;
-      y_Coords = mousePosition.y;
-      d3.select(selections[index]).attr('cx', d.x = x_Coords).attr('cy', d.y = y_Coords);
+
+      d3.select(selections[index]).attr('cx', d.x = x).attr('cy', d.y = y);
       callRedrawAllObjectsOnMapWithClassContext();
     };
 
