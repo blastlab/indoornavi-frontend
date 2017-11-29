@@ -16,12 +16,12 @@ class BasePage(object):
         self.base_url = base_url
         self.driver = driver
 
-    def find_element(self, *locator):
+    def identify_element(self, *locator):
         return self.driver.find_element(*locator)
 
-    def is_element_present(self, *locator):
+    def is_element_present(self, locator):
         try:
-            self.driver.find_element(*locator)
+          element = self.wait_for_element(locator)
         except NoSuchElementException:
             return False
         return True
@@ -34,17 +34,13 @@ class BasePage(object):
         return self.driver.get(page_url)
 
     def clear_and_fill_input(self, text, *input_locator):
-        input_element = self.find_element(*input_locator)
+        input_element = self.identify_element(*input_locator)
         input_element.clear()
         input_element.send_keys(text)
 
     def click_button(self, *locator):
         button = self.driver.find_element(*locator)
         button.click()
-
-    def test_cases(self, test_cases, number):
-        return test_cases[number]
-
 
 
 

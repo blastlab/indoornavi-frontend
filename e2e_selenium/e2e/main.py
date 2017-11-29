@@ -1,4 +1,5 @@
 import unittest
+import HtmlTestRunner
 import os
 import sys
 cwd = os.getcwd()
@@ -7,4 +8,4 @@ from test_login_page import TestLoginPage
 
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(output=''))

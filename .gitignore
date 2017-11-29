@@ -38,9 +38,10 @@ testem.log
 /e2e/*.map
 
 # e2e_selenium
-__pycache__/
+*/__pycache__/
 *.py[cod]
 /e2e_selenium/.idea
+/e2e_selenium/venv
 
 # System Files
 .DS_Store

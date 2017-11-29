@@ -25,34 +25,43 @@ class LoginPage(BasePage):
         return True if self.wait_for_element(self.form_locator) else False
 
     def get_button_text(self):
-        login_button_text = self.find_element(*self.button_text_locator).text
+        login_button_text = self.identify_element(*self.button_text_locator).text
         return login_button_text
 
-    def login_with_valid_data(self, option = 1):
+    # There are 3 options :
+    # 1. Login with valid credentials
+    # 2. Login with invalid password
+    # 3. Login with invalid username
+
+    def login_process(self, option=1):
 
         if option == 1:
-          username = self.valid_username
-          password = self.valid_password
+            username = self.valid_username
+            password = self.valid_password
 
         elif option == 2:
-          username = self.valid_username
-          password = self.invalid_password
+            username = self.valid_username
+            password = self.invalid_password
 
         elif option == 3:
-          username = self.invalid_username
-          password = self.valid_password
+            username = self.invalid_username
+            password = self.valid_password
 
         # find element, clear & fill it
         self.clear_and_fill_input(username, *self.usr_input_locator)
         self.clear_and_fill_input(password, *self.usr_password_locator)
         # click Login
         self.click_button(*self.button_locator)
+
         # there should be complexes' page loaded & return complexes title
         if option == 1:
-          return self.wait_for_element(self.next_page_title_locator).text
-        else:
-          return self.is_element_present(self.login_warning)
+            print(option)
+            return self.wait_for_element(self.next_page_title_locator).text
 
+        elif option == 2:
+            print(option)
+            return self.is_element_present(self.login_warning)
 
-    # invalid data - password
-    # invalid data - username
+        elif option == 3:
+            print(option)
+            return self.is_element_present(self.login_warning)
