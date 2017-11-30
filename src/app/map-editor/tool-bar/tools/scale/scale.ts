@@ -324,9 +324,13 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
       if (event.shiftKey) {
         const deltaY = Geometry.getDeltaY(mousePosition, secondPoint);
-        const slope = Geometry.getSlope(mousePosition, secondPoint);
-        x = mousePosition.x;
-        y = secondPoint.y - deltaY;
+        if (!!deltaY) {
+          x = mousePosition.x;
+          y = secondPoint.y - deltaY;
+        } else {
+          x = secondPoint.x;
+          y = mousePosition.y;
+        }
       } else {
         x = mousePosition.x;
         y = mousePosition.y;
