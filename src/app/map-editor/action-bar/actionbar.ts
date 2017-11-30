@@ -1,17 +1,5 @@
-import {
-  animate,
-  ChangeDetectorRef,
-  Component,
-  Input,
-  NgZone,
-  OnDestroy,
-  OnInit,
-  state,
-  style,
-  transition,
-  trigger,
-  ViewChild
-} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {trigger, state, style, transition, animate} from '@angular/animations';
 import {ActionBarService} from './actionbar.service';
 import {Floor} from '../../floor/floor.type';
 import {MapLoaderInformerService} from '../../utils/map-loader-informer/map-loader-informer.service';
@@ -27,9 +15,6 @@ import {ConfirmationService} from 'primeng/primeng';
   selector: 'app-actionbar',
   templateUrl: './actionbar.html',
   styleUrls: ['./actionbar.css'],
-  /*
-  TODO: fix deprecated of animations
-   */
   animations: [
     trigger('messageState', [
       state('visible', style({opacity: 1, transform: 'scale(1.0)'})),

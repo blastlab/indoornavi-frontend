@@ -4,26 +4,26 @@ import {ScaleComponent} from './tools/scale/scale';
 import {WizardComponent} from './tools/wizard/wizard';
 import {TranslateModule} from '@ngx-translate/core';
 import {MaterialModule} from '@angular/material';
-import {FirstStepComponent} from './tools/wizard/first-step/first-step';
-import {SecondStepComponent} from './tools/wizard/second-step/second-step';
-import {ThirdStepComponent} from './tools/wizard/third-step/third-step';
 import {FormsModule} from '@angular/forms';
 import {SocketService} from '../../utils/socket/socket.service';
 import {WebSocketService} from 'angular2-websocket-service';
 import {ToastService} from '../../utils/toast/toast.service';
-import {HintBarService} from '../hint-bar/hint-bar.service';
 import {AcceptButtonsService} from '../../utils/accept-buttons/accept-buttons.service';
 import {DrawingService} from '../../utils/drawing/drawing.service';
 import {IconService} from '../../utils/drawing/icon.service';
 import {ScaleInputService} from './tools/scale/input/input.service';
 import {ScaleHintService} from './tools/scale/hint/hint.service';
 import {MapLoaderInformerService} from '../../utils/map-loader-informer/map-loader-informer.service';
-import {DevicePlacerComponent} from './tools/anchor/device-placer';
+import {DevicePlacerComponent} from './tools/device-placer/device-placer';
 import {ActionBarService} from '../action-bar/actionbar.service';
 import {HttpService} from '../../utils/http/http.service';
 import {RouterTestingModule} from '@angular/router/testing';
 import {AuthGuard} from '../../auth/auth.guard';
 import {ScaleService} from './tools/scale/scale.service';
+import {HintBarService} from '../hint-bar/hintbar.service';
+import {ThirdStep} from './tools/wizard/third-step/third-step';
+import {SecondStep} from './tools/wizard/second-step/second-step';
+import {FirstStep} from './tools/wizard/first-step/first-step';
 
 describe('ToolbarComponent', () => {
   let component: ToolbarComponent;
@@ -34,8 +34,8 @@ describe('ToolbarComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [TranslateModule.forRoot(), MaterialModule, FormsModule, RouterTestingModule],
-      declarations: [ToolbarComponent, ScaleComponent, WizardComponent, FirstStepComponent, SecondStepComponent,
-        ThirdStepComponent, DevicePlacerComponent],
+      declarations: [ToolbarComponent, ScaleComponent, WizardComponent, FirstStep, SecondStep,
+        ThirdStep, DevicePlacerComponent],
       providers: [
         SocketService, WebSocketService, ToastService, HintBarService, AcceptButtonsService, DrawingService,
         IconService, ScaleComponent, WizardComponent, ScaleInputService, ScaleHintService, MapLoaderInformerService,

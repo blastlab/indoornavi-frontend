@@ -4,7 +4,7 @@ import {Floor} from '../floor/floor.type';
 import {MapLoaderInformerService} from '../utils/map-loader-informer/map-loader-informer.service';
 import {MapViewerService} from './map.viewer.service';
 import {Anchor} from '../device/anchor.type';
-import {AnchorPlacerController} from './tool-bar/tools/anchor/device-placer.controller';
+import {AnchorPlacerController} from './tool-bar/tools/device-placer/device-placer.controller';
 
 @Component({
   selector: 'app-map-viewer',

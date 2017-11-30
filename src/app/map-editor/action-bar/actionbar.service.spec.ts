@@ -1,5 +1,4 @@
 import {inject, TestBed} from '@angular/core/testing';
-
 import {ActionBarService} from './actionbar.service';
 import {HttpService} from '../../utils/http/http.service';
 import {HttpModule} from '@angular/http';
@@ -11,6 +10,7 @@ import {Configuration} from './actionbar.type';
 import {Measure, Scale} from '../tool-bar/tools/scale/scale.type';
 import {Sink} from '../../device/sink.type';
 import {Anchor} from '../../device/anchor.type';
+import {Complex} from '../../complex/complex.type';
 
 describe('ActionBarService', () => {
   beforeEach(() => {
@@ -27,11 +27,12 @@ describe('ActionBarService', () => {
   it('should create empty configuration and emit event', (done: DoneFn) => {
     inject([ActionBarService, HttpService], (service: ActionBarService, httpService: HttpService) => {
       // given
+      const complex: Complex = {id: 1, name: 'complex1', buildings: []};
       const floor: Floor = {
         id: 1,
         level: 0,
         name: '',
-        building: {id: 1, name: '', complexId: 1}
+        building: {id: 1, name: '', complex}
       };
       spyOn(httpService, 'doGet').and.returnValue(Observable.of([]).delay(1000));
 
@@ -49,11 +50,12 @@ describe('ActionBarService', () => {
   it('should load configuration and emit event', (done: DoneFn) => {
     inject([ActionBarService, HttpService], (service: ActionBarService, httpService: HttpService) => {
       // given
+      const complex: Complex = {id: 1, name: 'complex1', buildings: []};
       const floor: Floor = {
         id: 1,
         level: 0,
         name: '',
-        building: {id: 1, name: '', complexId: 1}
+        building: {id: 1, name: '', complex}
       };
       spyOn(httpService, 'doGet').and.returnValue(Observable.of([{
         version: 1,
@@ -92,11 +94,12 @@ describe('ActionBarService', () => {
   it('should emit changed event when setting scale', (done: DoneFn) => {
     inject([ActionBarService, HttpService], (service: ActionBarService, httpService: HttpService) => {
       // given
+      const complex: Complex = {id: 1, name: 'complex1', buildings: []};
       const floor: Floor = {
         id: 1,
         level: 0,
         name: '',
-        building: {id: 1, name: '', complexId: 1}
+        building: {id: 1, name: '', complex}
       };
       spyOn(httpService, 'doGet').and.returnValue(Observable.of([]).delay(1000));
       spyOn(service, 'configurationChanged').and.callFake(() => {
@@ -145,11 +148,12 @@ describe('ActionBarService', () => {
   it('should emit changed event when adding sink', (done: DoneFn) => {
     inject([ActionBarService, HttpService], (service: ActionBarService, httpService: HttpService) => {
       // given
+      const complex: Complex = {id: 1, name: 'complex1', buildings: []};
       const floor: Floor = {
         id: 1,
         level: 0,
         name: '',
-        building: {id: 1, name: '', complexId: 1}
+        building: {id: 1, name: '', complex}
       };
       spyOn(httpService, 'doGet').and.returnValue(Observable.of([]).delay(1000));
       spyOn(service, 'configurationChanged').and.callFake(() => {
