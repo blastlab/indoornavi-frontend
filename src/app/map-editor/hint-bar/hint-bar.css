@@ -1,14 +1,7 @@
 #hint-bar {
-  position: absolute;
-  height: 30px;
-  width: 70%;
-  background-color: lightgray;
-  padding: 5px;
-  border: 1px;
-  top: 100%;
-  margin-top: -30px;
-  left: 20%;
-  box-sizing: border-box;
-  font-size: 80%;
+  background-color: #f4f4f4;
+  border: 1px solid #d9d9d9;
+  padding: 3px;
+  margin-top: 10px;
+  font-size: .8em;
 }
-

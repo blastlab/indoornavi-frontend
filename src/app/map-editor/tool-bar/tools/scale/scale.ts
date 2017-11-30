@@ -480,20 +480,20 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   private redrawInput(): void {
-    const tempX = (this.linesArray[0].p1.x + this.linesArray[0].p2.x) / 2;
-    const tempY = (this.linesArray[0].p1.y + this.linesArray[0].p2.y) / 2;
-
-    const scaleInput = document.getElementById('scaleInput');
-    const inputHeight = scaleInput.offsetHeight;
-    const inputWidth = scaleInput.offsetWidth;
-    const x = Math.max(0, Math.min(tempX, this.mapWidth - inputWidth - 25));
-    const y = Math.max(inputHeight, Math.min(tempY, this.mapHeight - inputHeight));
-    const p = <Point>{
-      x: x,
-      y: y
-    };
-    this.moveInputIfItEclipsesPoint(p, inputHeight, inputWidth);
-    this.scaleService.publishCoordinates(p);
+    // const tempX = (this.linesArray[0].p1.x + this.linesArray[0].p2.x) / 2;
+    // const tempY = (this.linesArray[0].p1.y + this.linesArray[0].p2.y) / 2;
+    //
+    // const scaleInput = document.getElementById('scaleInput');
+    // const inputHeight = scaleInput.offsetHeight;
+    // const inputWidth = scaleInput.offsetWidth;
+    // const x = Math.max(0, Math.min(tempX, this.mapWidth - inputWidth - 25));
+    // const y = Math.max(inputHeight, Math.min(tempY, this.mapHeight - inputHeight));
+    // const p = <Point>{
+    //   x: x,
+    //   y: y
+    // };
+    // this.moveInputIfItEclipsesPoint(p, inputHeight, inputWidth);
+    // this.scaleService.publishCoordinates(p);
   }
 
   private moveInputIfItEclipsesPoint(inputCoords: Point, inputHeight: number, inputWidth: number): void {

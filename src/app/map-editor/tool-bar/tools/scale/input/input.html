@@ -1,10 +1,34 @@
-<div id="scaleInput" class="ui-g" [ngClass]="visible ? 'show-scale-input' : 'hide-scale-input'">
+<!--<div id="scaleInput" class="ui-g" [ngClass]="visible ? 'show-scale-input' : 'hide-scale-input'">-->
+<!--<form novalidate>-->
+<!--<div class="ui-g-5">-->
+<!--<div class="ui-inputgroup">-->
+<!--<span class="ui-inputgroup-addon">-->
+<!--<i class="fa fa-question" pTooltip="{{'scale.distance.hint'|translate}}"></i>-->
+<!--</span>-->
+<!--<input name="distance" type="text" pInputText placeholder="{{'scale.distance.placeholder'|translate}}" [(ngModel)]="scale.realDistance"/>-->
+<!--</div>-->
+<!--</div>-->
+<!--<div class="ui-g-5">-->
+<!--<p-dropdown name="measure" [placeholder]="placeholder" [options]="measures" [(ngModel)]="scale.measure"-->
+<!--[style]="{ width: '100%' }" autoWidth="false"></p-dropdown>-->
+<!--</div>-->
+<!--<div class="ui-g-2">-->
+<!--<button pButton class="ui-button-success"-->
+<!--(click)="confirm()"-->
+<!--pTooltip="{{'ok'|translate}}"-->
+<!--icon="fa-check-circle-o">-->
+<!--</button>-->
+<!--</div>-->
+<!--</form>-->
+<!--</div>-->
+
+<app-tool-details #toolDetails>
   <form novalidate>
     <div class="ui-g-5">
       <div class="ui-inputgroup">
-      <span class="ui-inputgroup-addon">
-          <i class="fa fa-question" pTooltip="{{'scale.distance.hint'|translate}}"></i>
-      </span>
+  <span class="ui-inputgroup-addon">
+  <i class="fa fa-question" pTooltip="{{'scale.distance.hint'|translate}}"></i>
+  </span>
         <input name="distance" type="text" pInputText placeholder="{{'scale.distance.placeholder'|translate}}" [(ngModel)]="scale.realDistance"/>
       </div>
     </div>
@@ -20,4 +44,28 @@
       </button>
     </div>
   </form>
-</div>
+</app-tool-details>
+
+<!--<p-dialog [(visible)]="visible" id="scaleInput" (onChange)="changed">-->
+  <!--<form novalidate>-->
+    <!--<div class="ui-g-5">-->
+      <!--<div class="ui-inputgroup">-->
+  <!--<span class="ui-inputgroup-addon">-->
+  <!--<i class="fa fa-question" pTooltip="{{'scale.distance.hint'|translate}}"></i>-->
+  <!--</span>-->
+        <!--<input name="distance" type="text" pInputText placeholder="{{'scale.distance.placeholder'|translate}}" [(ngModel)]="scale.realDistance"/>-->
+      <!--</div>-->
+    <!--</div>-->
+    <!--<div class="ui-g-5">-->
+      <!--<p-dropdown name="measure" [placeholder]="placeholder" [options]="measures" [(ngModel)]="scale.measure"-->
+                  <!--[style]="{ width: '100%' }" autoWidth="false"></p-dropdown>-->
+    <!--</div>-->
+    <!--<div class="ui-g-2">-->
+      <!--<button pButton class="ui-button-success"-->
+              <!--(click)="confirm()"-->
+              <!--pTooltip="{{'ok'|translate}}"-->
+              <!--icon="fa-check-circle-o">-->
+      <!--</button>-->
+    <!--</div>-->
+  <!--</form>-->
+<!--</p-dialog>-->

@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ScaleInputService} from './input.service';
 import {Measure, Scale} from '../scale.type';
 import {ScaleService} from '../scale.service';
@@ -6,6 +6,7 @@ import {MessageServiceWrapper} from '../../../../../utils/message.service';
 import {SelectItem} from 'primeng/primeng';
 import {Subscription} from 'rxjs/Subscription';
 import {TranslateService} from '@ngx-translate/core';
+import {ToolDetailsComponent} from '../../../shared/details/tool-details';
 
 @Component({
   selector: 'app-scale-input',
@@ -22,6 +23,8 @@ export class ScaleInputComponent implements OnInit, OnDestroy {
   private coordinatesChangedSubscription: Subscription;
   private scaleChangedSubscription: Subscription;
   private scaleVisibilityChangedSubscription: Subscription;
+  @ViewChild('toolDetails')
+  toolDetails: ToolDetailsComponent;
 
   constructor(private messageService: MessageServiceWrapper,
               private scaleService: ScaleService,
@@ -56,7 +59,8 @@ export class ScaleInputComponent implements OnInit, OnDestroy {
 
     this.scaleVisibilityChangedSubscription = this.scaleService.scaleVisibilityChanged.subscribe(
       isScaleVisible => {
-        this.visible = isScaleVisible;
+        isScaleVisible ? this.toolDetails.show() : this.toolDetails.hide();
+        // this.visible = isScaleVisible;
       });
 
     this.scaleChangedSubscription = this.scaleService.scaleChanged.subscribe(
