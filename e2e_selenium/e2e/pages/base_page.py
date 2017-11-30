@@ -1,12 +1,4 @@
-import os
-import sys
-import time
-cwd = os.getcwd()
-sys.path.append(cwd + '/../components/elements_locators/')
-# from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.keys import Keys
 import selenium.webdriver.support.ui as ui
 from selenium.common.exceptions import NoSuchElementException
 
@@ -42,5 +34,7 @@ class BasePage(object):
         button = self.driver.find_element(*locator)
         button.click()
 
-
+    def count_of_inner_elements(self, *locator):
+        count = self.driver.find_elements(*locator)
+        return len(count)
 
