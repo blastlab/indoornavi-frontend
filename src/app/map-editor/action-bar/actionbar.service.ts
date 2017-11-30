@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpService} from '../../utils/http/http.service';
+import {HttpService} from '../../shared/services/http/http.service';
 import {Configuration, ConfigurationData} from './actionbar.type';
 import {Observable} from 'rxjs/Rx';
 import {Scale} from '../tool-bar/tools/scale/scale.type';
@@ -8,7 +8,7 @@ import {Floor} from '../../floor/floor.type';
 import * as Collections from 'typescript-collections';
 import {Subject} from 'rxjs/Subject';
 import {Md5} from 'ts-md5/dist/md5';
-import {Helper} from '../../utils/helper/helper';
+import {Helper} from '../../shared/utils/helper/helper';
 
 @Injectable()
 export class ActionBarService {

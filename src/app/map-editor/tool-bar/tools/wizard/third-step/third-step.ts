@@ -1,10 +1,10 @@
 import * as d3 from 'd3';
 import {AnchorSuggestedPositions} from '../../../../../device/anchor.type';
 import {Point} from '../../../../map.type';
-import {NaviIcons} from '../../../../../utils/drawing/icon.service';
-import {ObjectParams} from '../../../../../utils/drawing/drawing.service';
 import {SocketMessage, Step, WizardData, WizardStep} from '../wizard.type';
 import {SelectItem} from 'primeng/primeng';
+import {ObjectParams} from '../../../../../shared/services/drawing/drawing.service';
+import {NaviIcons} from '../../../../../shared/services/drawing/icon.service';
 
 export class ThirdStep implements WizardStep {
   private selectedItemId: number;

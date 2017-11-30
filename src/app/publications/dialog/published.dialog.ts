@@ -20,7 +20,6 @@ import {NgForm} from '@angular/forms';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {MessageServiceWrapper} from '../../utils/message.service';
-
 @Component({
   selector: 'app-published-dialog',
   templateUrl: './published.dialog.html',
@@ -43,7 +42,6 @@ export class PublishedDialogComponent implements OnInit, CrudComponentForm {
   validationError: string;
   dialogClosed: Subject<PublishedMap> = new Subject<PublishedMap>();
   @ViewChild('publishedMapForm') publishedMapForm: NgForm;
-
   constructor(private deviceService: DeviceService,
               private userService: UserService,
               private complexService: ComplexService,
@@ -54,30 +52,24 @@ export class PublishedDialogComponent implements OnInit, CrudComponentForm {
               private messageService: MessageServiceWrapper,
               private actionBarService: ActionBarService) {
   }
-
   ngOnInit() {
     this.deviceService.setUrl('tags');
     this.deviceService.getAll().subscribe((tags: Tag[]) => {
       this.tags = tags;
     });
-
     this.userService.getUsers().subscribe((users: User[]) => {
       this.users = users;
     });
-
     this.complexService.getComplexes().subscribe((complexes: Complex[]) => {
       this.complexes = complexes;
     });
-
     this.translateService.setDefaultLang('en');
   }
-
   open(publishedMap?: PublishedMap): Observable<PublishedMap> {
     this.setMap(publishedMap);
     this.displayDialog = true;
     return this.dialogClosed.asObservable();
   }
-
   openWithFloor(floor: Floor): Observable<PublishedMap> {
     this.complex = floor.building.complex;
     this.complexChanged(this.complex);
@@ -87,7 +79,6 @@ export class PublishedDialogComponent implements OnInit, CrudComponentForm {
     this.displayDialog = true;
     return this.dialogClosed.asObservable();
   }
-
   save(isValid: boolean) {
     if (isValid) {
       this.actionBarService.loadConfiguration(this.floor);
@@ -116,12 +107,10 @@ export class PublishedDialogComponent implements OnInit, CrudComponentForm {
       CrudHelper.validateAllFields(this.publishedMapForm);
     }
   }
-
   cancel() {
     this.displayDialog = false;
     this.clean();
   }
-
   complexChanged(complex: Complex) {
     this.complex = complex;
     this.building = null;
@@ -130,7 +119,6 @@ export class PublishedDialogComponent implements OnInit, CrudComponentForm {
       this.buildings = complexFromDb.buildings;
     });
   }
-
   buildingChanged(building: Building) {
     this.building = building;
     this.floor = null;
@@ -143,11 +131,9 @@ export class PublishedDialogComponent implements OnInit, CrudComponentForm {
       });
     });
   }
-
   floorChanged(floor: Floor) {
     this.floor = floor;
   }
-
   setMap(map: PublishedMap) {
     if (!!map) {
       this.publishedMap = map;
@@ -161,7 +147,6 @@ export class PublishedDialogComponent implements OnInit, CrudComponentForm {
       this.selectedMap = map;
     }
   }
-
   private clean() {
     this.complex = null;
     this.building = null;
