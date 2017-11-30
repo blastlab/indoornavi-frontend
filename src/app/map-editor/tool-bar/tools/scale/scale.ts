@@ -34,8 +34,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private configurationLoadedSubscription: Subscription;
   private configurationResetSubscription: Subscription;
   private scaleGroup = d3.select('#scaleGroup');
-  private mapWidth: number;
-  private mapHeight: number;
   private scale: Scale;
   private hintMessage: string;
   private pointsArray: Point[] = [];
@@ -81,7 +79,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.zoom = transformation.k;
       this.map2DTranslation.x = transformation.x;
       this.map2DTranslation.y = transformation.y;
-      // console.log(this.map2DTranslation, this.zoom);
     });
     this.createEmptyScale();
 
@@ -103,15 +100,12 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     });
 
     this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe(() => {
-      // const mapSvg = d3.select('#map');
-      // mapSvg.attr('width') = mapSvg.attr('width');
-      // mapSvg.attr('height') = mapSvg.attr('height');
       this.createSvgGroupWithScale();
     });
 
     this.saveButtonSubscription = this.scaleInputService.confirmClicked.subscribe((scale: Scale) => {
       this.toolbarService.emitToolChanged(null);
-      // this.setInactive();
+      this.setInactive();
       this.isScaleSet = true;
       this.scale.realDistance = scale.realDistance;
       this.scale.measure = scale.measure;
@@ -223,7 +217,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   private hideScale(): void {
     this.scaleService.changeVisibility(false);
-
     d3.select('#map').style('cursor', 'default');
     this.scaleGroup.style('display', 'none');
     d3.select('#map').on('click', null);
@@ -231,8 +224,8 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   private addPoint(): void {
     const point = <Point>{
-      x: d3.event.offsetX,
-      y: d3.event.offsetY
+      x: (d3.event.offsetX - this.map2DTranslation.x) / this.zoom,
+      y: (d3.event.offsetY - this.map2DTranslation.y) / this.zoom
     };
 
     if (!this.isFirstPointDrawn) {
@@ -443,21 +436,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       });
   }
 
-  // private chooseNotDraggedPoint(circle: d3.selection): Point {
-  //   const point: Point = <Point>{
-  //     x: 0,
-  //     y: 0
-  //   };
-  //   if (this.scale.start.x === parseInt(circle.attr('cx'), 10) && this.scale.start.y === parseInt(circle.attr('cy'), 10)) {
-  //     point.x = this.scale.start.x;
-  //     point.y = this.scale.start.y;
-  //   } else {
-  //     point.x = this.scale.stop.x;
-  //     point.y = this.scale.stop.y;
-  //   }
-  //   return point;
-  // }
-
   private redrawInput(): void {
     const tempX = (this.linesArray[0].p1.x + this.linesArray[0].p2.x) / 2;
     const tempY = (this.linesArray[0].p1.y + this.linesArray[0].p2.y) / 2;
@@ -502,5 +480,4 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.scaleService.publishScaleChanged(this.scale);
     this.updateScaleGroup();
   }
-
 }

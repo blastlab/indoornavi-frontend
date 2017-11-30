@@ -9,17 +9,10 @@ export class Geometry {
   static getDeltaY(p1: Point, p2: Point) {
     const arcRelocationValue = 22.5;
     const differenceBetweenPointsInX: number = p2.x - p1.x;
-    const arc: number = Math.asin((p2.y - p1.y) / Math.sqrt(Math.pow(p2.y - p1.y, 2) + Math.pow(p2.x - p1.x, 2))) * 180 / Math.PI;
     const radiansArc = (arcToRadians: number): number => arcToRadians * Math.PI / 180;
-    const calculateDeltaY = (arcToCalculateTangensFrom: number): number => differenceBetweenPointsInX * Math.tan(radiansArc(arcToCalculateTangensFrom));
-    let arcOfScale360: number;
-    if (arc > 0) {
-      arcOfScale360 = differenceBetweenPointsInX > 0 ? arc : 180 - arc;
-    } else {
-      arcOfScale360 = differenceBetweenPointsInX < 0 ? 180 - arc : 360 + arc;
-    }
-    let arcPositionValueClockwise: number =  Math.floor((arcOfScale360 + 11.25) / arcRelocationValue); // calculate angular position
+    let arcPositionValueClockwise: number =  Math.floor((360 - Geometry.calculateDegree(p1 , p2) + 11.25) / arcRelocationValue); // calculate angular position
     arcPositionValueClockwise = arcPositionValueClockwise === 0 ? 16 : arcPositionValueClockwise; // multiplying by 0 is null,
+    const calculateDeltaY = (arcToCalculateTangensFrom: number): number => differenceBetweenPointsInX * Math.tan(radiansArc(arcToCalculateTangensFrom));
     return arcPositionValueClockwise === 12 || arcPositionValueClockwise === 4 ? null : calculateDeltaY(arcPositionValueClockwise * arcRelocationValue);
   }
 

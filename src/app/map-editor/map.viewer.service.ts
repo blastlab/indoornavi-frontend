@@ -8,10 +8,6 @@ import {D3Service} from 'd3-ng2-service';
 @Injectable()
 export class MapViewerService {
   private d3: any;
-  private dots: Dot[] = [
-    {x: 100, y: 100},
-    {x: 400, y: 400}
-  ];
 
   static maxZoomOut (imageWidth: number, imageHeight: number): number {
     const zoomOutWidth: number = window.innerWidth / imageWidth;
@@ -35,8 +31,6 @@ export class MapViewerService {
           this.mapService.publishMapTransformation(transformation);
         };
 
-        // todo:
-        // calculation of translateExtent to be set according to page layout, and image size,
         const zoom = d3.zoom()
           .scaleExtent([MapViewerService.maxZoomOut(image.width, image.height), 1])
           .translateExtent([[-window.innerWidth + 100 , -window.innerHeight + 100], [image.width * 2, image.height * 2]])
@@ -67,9 +61,4 @@ export class MapViewerService {
       });
     });
   }
-}
-
-export interface Dot {
-  x: number;
-  y: number;
 }
