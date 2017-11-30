@@ -375,7 +375,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       .attr('stroke-width', 1)
       .attr('stroke', 'black');
 
-    // update positions of old lines
     lines
       .attr('x1', d => d.p1.x)
       .attr('y1', d => d.p1.y)
