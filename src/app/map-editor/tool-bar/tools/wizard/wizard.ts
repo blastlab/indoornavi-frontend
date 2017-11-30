@@ -4,22 +4,22 @@ import {Tool} from '../tool';
 import {TranslateService} from '@ngx-translate/core';
 import {Subscription} from 'rxjs/Rx';
 import {Config} from '../../../../../config';
-import {SocketService} from '../../../../utils/socket/socket.service';
+import {SocketService} from '../../../../shared/services/socket/socket.service';
 import {FirstStep} from './first-step/first-step';
+import {SecondStep} from './second-step/second-step';
+import {ActionBarService} from '../../../action-bar/actionbar.service';
 import {Sink} from '../../../../device/sink.type';
 import {Anchor} from '../../../../device/anchor.type';
 import {SocketMessage, WizardData, WizardStep} from './wizard.type';
 import {Floor} from '../../../../floor/floor.type';
 import {SelectItem} from 'primeng/primeng';
-import {SecondStep} from './second-step/second-step';
 import {ThirdStep} from './third-step/third-step';
 import {Point} from '../../../map.type';
-import {DrawingService} from '../../../../utils/drawing/drawing.service';
 import * as d3 from 'd3';
-import {AcceptButtonsService} from '../../../../utils/accept-buttons/accept-buttons.service';
 import {ToolbarService} from '../../toolbar.service';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
-import {ActionBarService} from '../../../action-bar/actionbar.service';
+import {DrawingService} from '../../../../shared/services/drawing/drawing.service';
+import {AcceptButtonsService} from '../../../../shared/components/accept-buttons/accept-buttons.service';
 
 @Component({
   selector: 'app-wizard',

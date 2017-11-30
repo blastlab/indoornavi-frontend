@@ -1,6 +1,5 @@
 import {Component, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Subscription} from 'rxjs/Rx';
-import {SocketService} from '../utils/socket/socket.service';
 import {Config} from '../../config';
 import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute} from '@angular/router';
@@ -12,8 +11,9 @@ import {CrudComponent, CrudHelper} from '../utils/crud/crud.component';
 import {Device} from './device.type';
 import {NgForm} from '@angular/forms';
 import {ConfirmationService} from 'primeng/primeng';
-import {BreadcrumbService} from '../utils/breadcrumbs/breadcrumb.service';
 import {MessageServiceWrapper} from '../utils/message.service';
+import {SocketService} from '../shared/services/socket/socket.service';
+import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
 
 @Component({
   templateUrl: './device.html',

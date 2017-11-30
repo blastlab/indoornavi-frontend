@@ -3,7 +3,7 @@ import {ActivatedRoute, Params} from '@angular/router';
 import {FloorService} from '../floor/floor.service';
 import {Floor} from '../floor/floor.type';
 import {Complex} from '../complex/complex.type';
-import {BreadcrumbService} from '../utils/breadcrumbs/breadcrumb.service';
+import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
 import {BuildingService} from '../building/building.service';
 
 @Component({

@@ -2,12 +2,12 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {PublishedService} from '../../map-viewer/published.service';
 import {PublishedMap} from '../../map-viewer/published.type';
 import {TranslateService} from '@ngx-translate/core';
-import {PublishedDialogComponent} from '../dialog/published.dialog';
 import {Router} from '@angular/router';
+import {BreadcrumbService} from '../../shared/services/breadcrumbs/breadcrumb.service';
 import {CrudComponentList, CrudHelper} from '../../utils/crud/crud.component';
 import {ConfirmationService} from 'primeng/primeng';
-import {BreadcrumbService} from '../../utils/breadcrumbs/breadcrumb.service';
 import {MessageServiceWrapper} from '../../utils/message.service';
+import {PublishedDialogComponent} from '../dialog/published.dialog';
 
 @Component({
   templateUrl: './published-list.html',
@@ -20,8 +20,6 @@ export class PublishedListComponent implements OnInit, CrudComponentList {
 
   @ViewChild(PublishedDialogComponent)
   private formDialog: PublishedDialogComponent;
-
-  private routeState: string;
 
   constructor(private publishedMapService: PublishedService,
               private translateService: TranslateService,
