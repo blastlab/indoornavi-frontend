@@ -1,3 +1,7 @@
-<p-dialog [(visible)]="visible" positionLeft="0" draggable="false">
-  <ng-content></ng-content>
-</p-dialog>
+<div class="ui-dialog ui-widget ui-widget-content" [@toggleDetails]="state" (onHide)="emitOnHide()">
+  <div class="ui-dialog-content">
+    <ng-content>
+      <!--contents placed between app-tool-details goes here-->
+    </ng-content>
+  </div>
+</div>

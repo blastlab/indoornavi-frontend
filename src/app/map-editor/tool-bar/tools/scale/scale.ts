@@ -84,6 +84,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
         this.isScaleSet = false;
         this.isFirstPointDrawn = false;
         this.isScaleDisplayed = false;
+        this.toolbarService.emitToolChanged(null);
       }
       this.scaleGroup.remove();
       this.createSvgGroupWithScale();
@@ -101,7 +102,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
     this.saveButtonSubscription = this.scaleInputService.confirmClicked.subscribe((scale: Scale) => {
       this.toolbarService.emitToolChanged(null);
-      // this.setInactive();
       this.isScaleSet = true;
       this.scale.realDistance = scale.realDistance;
       this.scale.measure = scale.measure;
@@ -117,6 +117,10 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
           this.scaleGroup.style('display', 'none');
         }
       }
+    });
+
+    this.scaleInputService.onVisibilityChange().subscribe(() => {
+      this.toolbarService.emitToolChanged(null);
     });
   }
 
@@ -168,7 +172,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.linesArray.push(this.createLine());
       this.redrawLine();
       this.redrawEndings();
-      this.redrawInput();
     }
   }
 
@@ -201,7 +204,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.redrawLine();
       this.redrawEndings();
       this.redrawPoints();
-      this.redrawInput();
     } else if (d3.select('#scaleGroup').empty()) {
       d3.select('#map').append('g')
         .attr('id', 'scaleGroup')
@@ -256,7 +258,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   private redrawAllObjectsOnMap(): void {
     this.redrawLine();
-    this.redrawInput();
     this.redrawEndings();
     this.redrawPoints();
   }
@@ -477,31 +478,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       point.y = this.scale.start.y;
     }
     return point;
-  }
-
-  private redrawInput(): void {
-    // const tempX = (this.linesArray[0].p1.x + this.linesArray[0].p2.x) / 2;
-    // const tempY = (this.linesArray[0].p1.y + this.linesArray[0].p2.y) / 2;
-    //
-    // const scaleInput = document.getElementById('scaleInput');
-    // const inputHeight = scaleInput.offsetHeight;
-    // const inputWidth = scaleInput.offsetWidth;
-    // const x = Math.max(0, Math.min(tempX, this.mapWidth - inputWidth - 25));
-    // const y = Math.max(inputHeight, Math.min(tempY, this.mapHeight - inputHeight));
-    // const p = <Point>{
-    //   x: x,
-    //   y: y
-    // };
-    // this.moveInputIfItEclipsesPoint(p, inputHeight, inputWidth);
-    // this.scaleService.publishCoordinates(p);
-  }
-
-  private moveInputIfItEclipsesPoint(inputCoords: Point, inputHeight: number, inputWidth: number): void {
-    this.pointsArray.forEach((point: Point) => {
-      if (point.x - 22 >= inputCoords.x && point.x - 25 <= inputCoords.x + inputWidth && point.y >= inputCoords.y && point.y <= inputCoords.y + inputHeight) {
-        inputCoords.y -= (inputHeight + this.END_SIZE);
-      }
-    });
   }
 
   private createEmptyScale(): void {

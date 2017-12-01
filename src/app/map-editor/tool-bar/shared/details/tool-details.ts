@@ -1,26 +1,40 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, Output} from '@angular/core';
+import {animate, state, style, transition, trigger} from '@angular/animations';
 
 @Component({
   selector: 'app-tool-details',
   templateUrl: './tool-details.html',
-  styleUrls: ['./tool-details.css']
+  styleUrls: ['./tool-details.css'],
+  animations: [
+    trigger('toggleDetails', [
+      state('open', style({
+        transform: 'translateY(0)'
+      })),
+      state('close', style({
+        transform: 'translateY(-100%)'
+      })),
+      transition('close <=> open', animate(300))
+    ])
+  ]
 })
-export class ToolDetailsComponent implements OnInit {
+export class ToolDetailsComponent {
 
-  visible: boolean = false;
+  state: string = 'close';
+  @Output() onHide: EventEmitter<any> = new EventEmitter();
 
   constructor() {
   }
 
-  ngOnInit() {
-  }
-
   show(): void {
-    this.visible = true;
+    this.state = 'open';
   }
 
   hide(): void {
-    this.visible = false;
+    this.state = 'close';
+  }
+
+  emitOnHide(): void {
+    this.onHide.next();
   }
 
 }

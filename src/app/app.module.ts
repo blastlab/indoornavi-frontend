@@ -41,7 +41,7 @@ import {PublishedService} from './map-viewer/published.service';
 import {PublishedDialogComponent} from './publications/dialog/published.dialog';
 import {ActionBarComponent} from 'app/map-editor/action-bar/actionbar';
 import {Md5} from 'ts-md5/dist/md5';
-import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {
   BreadcrumbModule,
   ButtonModule,
@@ -132,7 +132,6 @@ export function HttpLoaderFactory(http: Http) {
     FormsModule,
     HttpModule,
     BrowserAnimationsModule,
-    NoopAnimationsModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

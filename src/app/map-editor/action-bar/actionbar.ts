@@ -1,4 +1,4 @@
-import {animate, ChangeDetectorRef, Component, Input, NgZone, OnDestroy, OnInit, state, style, transition, trigger, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActionBarService} from './actionbar.service';
 import {Floor} from '../../floor/floor.type';
 import {MapLoaderInformerService} from '../../shared/services/map-loader-informer/map-loader-informer.service';
@@ -9,30 +9,19 @@ import {PublishedMap} from '../../map-viewer/published.type';
 import {TranslateService} from '@ngx-translate/core';
 import {Configuration} from './actionbar.type';
 import {ConfirmationService} from 'primeng/primeng';
+import {MessageServiceWrapper} from '../../utils/message.service';
 
 @Component({
   selector: 'app-actionbar',
   templateUrl: './actionbar.html',
   styleUrls: ['./actionbar.css'],
-  /*
-  TODO: fix deprecated of animations
-   */
-  animations: [
-    trigger('messageState', [
-      state('visible', style({opacity: 1, transform: 'scale(1.0)'})),
-      state('hidden', style({opacity: 0, transform: 'scale(0.0)'})),
-      transition('hidden <=> visible', animate(ActionBarService.SAVE_DRAFT_ANIMATION_TIME + 'ms')),
-    ])
-  ]
 })
 export class ActionBarComponent implements OnInit, OnDestroy {
   public static SAVE_DRAFT_TIMEOUT = 3000;
   public publishButtonDisabled = true;
   public saveButtonDisabled = true;
   public resetButtonDisabled = true;
-  public messageSpanState: string = 'hidden';
   @Input() floor: Floor;
-  private isAnimationDone: boolean = true;
   private mapLoadedSubscription: Subscription;
   private configurationLoadedSubscription: Subscription;
   private configurationChangedSubscription: Subscription;
@@ -42,21 +31,18 @@ export class ActionBarComponent implements OnInit, OnDestroy {
   private publishedMapDialog: PublishedDialogComponent;
 
   // pre publish dialog data
-  private publishConfirmButtonText: string;
-  private publishCancelButtonText: string;
   private publishDialogBody: string;
 
   // pre undo dialog data
-  private undoConfirmButtonText: string;
-  private undoCancelButtonText: string;
   private undoDialogBody: string;
 
   constructor(private configurationService: ActionBarService,
               private mapLoaderInformer: MapLoaderInformerService,
               private ngZone: NgZone,
+              private confirmationService: ConfirmationService,
               private cd: ChangeDetectorRef,
               private translateService: TranslateService,
-              private confirmationService: ConfirmationService) {
+              private messageService: MessageServiceWrapper) {
   }
 
   ngOnInit() {
@@ -118,6 +104,7 @@ export class ActionBarComponent implements OnInit, OnDestroy {
   public resetToPreviousPublication(): void {
     this.confirmationService.confirm({
       message: this.undoDialogBody,
+      key: 'preUndo',
       accept: () => {
         this.configurationService.undo().then(() => {
           this.publishButtonDisabled = true;
@@ -130,6 +117,7 @@ export class ActionBarComponent implements OnInit, OnDestroy {
   public publish(): void {
     this.confirmationService.confirm({
       message: this.publishDialogBody,
+      key: 'prePublish',
       accept: () => {
         const subscription = this.publishedMapDialog.openWithFloor(this.floor).subscribe((_: PublishedMap) => {
           this.configurationService.publish().subscribe(() => {
@@ -138,6 +126,7 @@ export class ActionBarComponent implements OnInit, OnDestroy {
           });
         });
       },
+      // TODO: we need to wait till they implement ability to react different on close than on reject https://github.com/primefaces/primeng/issues/3428
       reject: () => {
         this.configurationService.publish().subscribe(() => {
           this.afterPublishDone();
@@ -146,18 +135,11 @@ export class ActionBarComponent implements OnInit, OnDestroy {
     });
   }
 
-  public messageSpanAnimationDone(): void {
-    this.isAnimationDone = this.messageSpanState === 'hidden';
-    this.messageSpanState = 'hidden';
-  }
-
   private afterSaveDraftDone(): void {
     this.resetButtonDisabled = false;
     this.publishButtonDisabled = false;
     this.saveButtonDisabled = true;
-    if (this.isAnimationDone) {
-      this.messageSpanState = 'visible';
-    }
+    this.messageService.success('configuration.saveDraft.success');
     this.cd.detectChanges();
   }
 
@@ -166,25 +148,14 @@ export class ActionBarComponent implements OnInit, OnDestroy {
     this.resetButtonDisabled = true;
     this.saveButtonDisabled = true;
     this.updateUndoDialogBody(new Date());
+    this.messageService.success('configuration.publish.success');
     this.cd.detectChanges();
   }
 
   private setTranslations(): void {
     this.translateService.setDefaultLang('en');
-    this.translateService.get('configuration.prePublishConfirmDialog.yes').subscribe((value: string) => {
-      this.publishConfirmButtonText = value;
-    });
-    this.translateService.get('configuration.prePublishConfirmDialog.no').subscribe((value: string) => {
-      this.publishCancelButtonText = value;
-    });
     this.translateService.get('configuration.prePublishConfirmDialog.body').subscribe((value: string) => {
       this.publishDialogBody = value;
-    });
-    this.translateService.get('configuration.preUndoConfirmDialog.yes').subscribe((value: string) => {
-      this.undoConfirmButtonText = value;
-    });
-    this.translateService.get('configuration.preUndoConfirmDialog.no').subscribe((value: string) => {
-      this.undoCancelButtonText = value;
     });
   }
 
