@@ -1,0 +1,12 @@
+# Complexes migration
+1:
+  author: Maciej otlowski
+  comment: Creating complexes table.
+  tag: version-0.1
+  sql: |
+    CREATE TABLE `happies` (
+      `happyGuid` char(36) NOT NULL DEFAULT '',
+      PRIMARY KEY (`happyGuid`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  rollback: |
+    DROP TABLE happies;

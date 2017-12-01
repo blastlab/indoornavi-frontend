@@ -8,8 +8,3 @@ class ConstructionPage(object):
     def __init__(self, driver,  base_url='http://localhost:4200/'):
         self.base_url = base_url
         self.driver = driver
-
-
-
-
-

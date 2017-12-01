@@ -34,7 +34,19 @@ class BasePage(object):
         button = self.driver.find_element(*locator)
         button.click()
 
+    def get_text(self, *locator):
+        item_text = self.identify_element(*locator).text
+        return item_text
+
+    def check_title_is_correct(self, title, *locator):
+        element_text = self.identify_element(*locator).text
+        return True if element_text == title else False
+
+    # Methods recommended for : "Constructions"
+
     def count_of_inner_elements(self, *locator):
         count = self.driver.find_elements(*locator)
         return len(count)
+
+
 
