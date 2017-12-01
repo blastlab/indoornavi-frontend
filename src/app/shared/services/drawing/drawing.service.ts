@@ -52,8 +52,25 @@ export class DrawingService {
     this.markerAppend(objectGroup, boxMargin, objectParams);
     DrawingService.descriptionAppend(objectGroup, objectParams, boxMargin, markerPadding);
     DrawingService.dragAreaAppend(objectGroup, markerPadding, iconHalfSize);
+
+    // DRAGGING
+    const dragStart = (d, index, selection: d3.selection[]) => {
+      d3.event.sourceEvent.stopPropagation();
+      d3.select(selection[index]).classed('dragging', true);
+    };
+
+    const dragStop = (_, index, selection: d3.selection[]) => {
+      d3.select(selection[index]).classed('dragging', false);
+    };
+
+    const subject = () => { return { x: d3.event.x, y: d3.event.y }};
     const dragGroup = d3.drag()
-      .on('drag', this.dragGroupBehavior);
+      .subject(subject)
+      .on('start', dragStart)
+      .on('drag',this.dragGroupBehavior)
+      .on('end', dragStop);
+
+
     objectGroup.call(dragGroup);
     return objectGroup;
   }
@@ -84,8 +101,10 @@ export class DrawingService {
     dx += d3.event.dx;
     dy += d3.event.dy;
     d3.select(this)
-      .attr('x', Math.max(-boxMargin, Math.min(map.attr('width') - boxMargin, dx)))
-      .attr('y', Math.max(-boxMargin, Math.min(map.attr('height') - boxMargin, dy)));
+      .attr('x', dx)
+      .attr('y', dy);
+      // .attr('x', Math.max(-boxMargin, Math.min(map.attr('width') - boxMargin, dx)))
+      // .attr('y', Math.max(-boxMargin, Math.min(map.attr('height') - boxMargin, dy)));
     const buttons = d3.select('#accept-buttons');
     let bx = parseInt(buttons.style('left'), 10);
     let by = parseInt(buttons.style('top'), 10);
@@ -94,7 +113,6 @@ export class DrawingService {
     buttons.style('top', Math.max(0, Math.min((d3.select('#map').attr('height') - 100 ), by)) + 'px');
     buttons.style('left', Math.max(boxMargin, Math.min((d3.select('#map').attr('width') - boxMargin ), bx)) + 'px');
   }
-
 }
 
 export interface ObjectParams {
