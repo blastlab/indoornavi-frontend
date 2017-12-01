@@ -38,8 +38,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private hintMessage: string;
   private pointsArray: Point[] = [];
   private linesArray: Line[] = [];
-  private zoom: number = 1.0;
-  private map2DTranslation: Point = {x: 0, y: 0};
+  private map2DTranslation: Transform = {k: 1, x: 0, y: 0};
 
   constructor(private translate: TranslateService,
               private scaleInputService: ScaleInputService,
@@ -76,7 +75,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   ngOnInit(): void {
     this.mapService.mapIsTransformed().subscribe((transformation: Transform) => {
-      this.zoom = transformation.k;
+      this.map2DTranslation.k = transformation.k;
       this.map2DTranslation.x = transformation.x;
       this.map2DTranslation.y = transformation.y;
     });
@@ -224,8 +223,8 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   private addPoint(): void {
     const point = <Point>{
-      x: (d3.event.offsetX - this.map2DTranslation.x) / this.zoom,
-      y: (d3.event.offsetY - this.map2DTranslation.y) / this.zoom
+      x: (d3.event.offsetX - this.map2DTranslation.x) / this.map2DTranslation.k,
+      y: (d3.event.offsetY - this.map2DTranslation.y) / this.map2DTranslation.k
     };
 
     if (!this.isFirstPointDrawn) {

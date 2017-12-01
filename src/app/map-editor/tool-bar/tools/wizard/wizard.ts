@@ -14,12 +14,13 @@ import {SocketMessage, WizardData, WizardStep} from './wizard.type';
 import {Floor} from '../../../../floor/floor.type';
 import {SelectItem} from 'primeng/primeng';
 import {ThirdStep} from './third-step/third-step';
-import {Point} from '../../../map.type';
+import {Point, Transform} from '../../../map.type';
 import * as d3 from 'd3';
 import {ToolbarService} from '../../toolbar.service';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
 import {DrawingService} from '../../../../shared/services/drawing/drawing.service';
 import {AcceptButtonsService} from '../../../../shared/components/accept-buttons/accept-buttons.service';
+import {MapService} from '../../../map.service';
 
 @Component({
   selector: 'app-wizard',
@@ -43,6 +44,7 @@ export class WizardComponent implements Tool, OnInit {
   private socketSubscription: Subscription;
   private wizardData: WizardData = new WizardData();
   private hintMessage: string;
+  private map2DTranslation: Transform = {k: 1, x: 0, y: 0};
 
   constructor(public translate: TranslateService,
               private socketService: SocketService,
@@ -51,13 +53,19 @@ export class WizardComponent implements Tool, OnInit {
               private acceptButtons: AcceptButtonsService,
               private toolbarService: ToolbarService,
               private hintBarService: HintBarService,
-              private actionBarService: ActionBarService) {
+              private actionBarService: ActionBarService,
+              private mapService: MapService) {
   }
 
   ngOnInit() {
     this.setTranslations();
     this.steps = [new FirstStep(this.floor.id), new SecondStep(), new ThirdStep()];
     this.checkIsLoading();
+    this.mapService.mapIsTransformed().subscribe((transformation: Transform) => {
+      this.map2DTranslation.k = transformation.k;
+      this.map2DTranslation.x = transformation.x;
+      this.map2DTranslation.y = transformation.y;
+    });
   }
 
   nextStep() {
@@ -106,7 +114,7 @@ export class WizardComponent implements Tool, OnInit {
     this.stepChanged();
   }
 
-  public placeOnMap(): void {
+  placeOnMap(): void {
     if (!this.selected) { // Do not allow to go to the next step if there is no selected item
       this.displayError = true;
       return;
@@ -120,7 +128,7 @@ export class WizardComponent implements Tool, OnInit {
     const map: d3.selector = d3.select('#map');
     map.style('cursor', 'crosshair');
     map.on('click', () => {
-      this.coordinates = {x: d3.event.offsetX, y: d3.event.offsetY};
+      this.coordinates = {x: (d3.event.offsetX - this.map2DTranslation.x) / this.map2DTranslation.k, y: (d3.event.offsetY - this.map2DTranslation.y) / this.map2DTranslation.k};
       this.drawService.drawObject(this.activeStep.getDrawingObjectParams(this.selected), this.coordinates);
       map.on('click', null);
       map.style('cursor', 'default');

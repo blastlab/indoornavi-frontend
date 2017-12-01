@@ -13,7 +13,7 @@ const p1: Point = {x: 1, y: 1},
 
 describe('Geometry', () => {
   it('should return slope value', () => {
-    // than
+    // then
     expect(Geometry.getSlope(p1, p2)).toEqual(1);
     expect(Geometry.getSlope(p2, p3)).toEqual(-1);
     expect(Geometry.getSlope(p2, p2)).toEqual(NaN);
