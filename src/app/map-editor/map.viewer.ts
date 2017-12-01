@@ -4,7 +4,7 @@ import {Floor} from '../floor/floor.type';
 import {MapLoaderInformerService} from '../utils/map-loader-informer/map-loader-informer.service';
 import {MapViewerService} from './map.viewer.service';
 import {Anchor} from '../device/anchor.type';
-import {AnchorPlacerController} from './tool-bar/tools/device-placer/device-placer.controller';
+import {DevicePlacerController} from './tool-bar/tools/device-placer/device-placer.controller';
 
 @Component({
   selector: 'app-map-viewer',
@@ -17,7 +17,7 @@ export class MapViewerComponent implements OnInit {
   private imageLoaded: boolean = false;
 
   constructor(private mapLoaderInformer: MapLoaderInformerService,
-              private anchorTool: AnchorPlacerController,
+              private anchorTool: DevicePlacerController,
               private mapViewerService: MapViewerService) {
   }
 

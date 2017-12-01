@@ -52,7 +52,7 @@ import {ActionBarService} from './map-editor/action-bar/actionbar.service';
 import {D3Service} from 'd3-ng2-service';
 import {DevicePlacerComponent} from './map-editor/tool-bar/tools/device-placer/device-placer';
 import {AllFieldsFilter} from './utils/filters/allFieldsFilter';
-import {AnchorPlacerController} from './map-editor/tool-bar/tools/device-placer/device-placer.controller';
+import {DevicePlacerController} from './map-editor/tool-bar/tools/device-placer/device-placer.controller';
 import {appRoutes} from './app.routes';
 import {PublishedService} from './map-viewer/published.service';
 import {MapViewerService} from './map-editor/map.viewer.service';
@@ -193,7 +193,7 @@ export function HttpLoaderFactory(http: Http) {
     ActionBarService,
     PermissionGroupService,
     D3Service,
-    AnchorPlacerController,
+    DevicePlacerController,
     ScaleService,
     PublishedService,
     MapViewerService,

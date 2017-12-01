@@ -3,7 +3,7 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
 import {Tool} from '../tool';
 import {ToolName} from '../tools.enum';
 import {TranslateService} from '@ngx-translate/core';
-import {AnchorPlacerController} from './device-placer.controller';
+import {DevicePlacerController} from './device-placer.controller';
 import {Point} from '../../../map.type';
 import {IconService, NaviIcons} from '../../../../utils/drawing/icon.service';
 import {AcceptButtonsService} from '../../../../utils/accept-buttons/accept-buttons.service';
@@ -61,7 +61,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
   }
 
   constructor(public translate: TranslateService,
-              private anchorPlacerController: AnchorPlacerController,
+              private anchorPlacerController: DevicePlacerController,
               private accButtons: AcceptButtonsService,
               private deviceService: DeviceService,
               private configurationService: ActionBarService,

@@ -6,7 +6,7 @@ import {Anchor} from '../../../../device/anchor.type';
 import {Draggable} from '../../../../utils/builder/draggable';
 
 @Injectable()
-export class AnchorPlacerController {
+export class DevicePlacerController {
   private listVisibility: Subject<boolean> = new Subject<boolean>();
   private anchor: Subject<Anchor> = new Subject<Anchor>();
   private sink: Subject<Sink> = new Subject<Sink>();
