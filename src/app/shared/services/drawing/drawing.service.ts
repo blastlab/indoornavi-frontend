@@ -2,23 +2,15 @@ import {Injectable} from '@angular/core';
 import {IconService, NaviIcons} from './icon.service';
 import * as d3 from 'd3';
 import {Point} from '../../../map-editor/map.type';
+import {AcceptButtonsService} from '../../components/accept-buttons/accept-buttons.service';
 
 @Injectable()
 export class DrawingService {
   static boxSize: number = 100;
+  private id: string;
 
   private static transform(translation: Point): string {
     return 'translate(' + translation.x + ',' + translation.y + ')';
-  }
-
-  private static createGroup(map: d3.selector, objectParams: ObjectParams,
-                             coords: Point): d3.selector {
-    return map.append('svg')
-      .attr('id', objectParams.id)
-      .attr('class', objectParams.groupClass)
-      .attr('x', coords.x)
-      .attr('y', coords.y)
-      .style('cursor', 'move');
   }
 
   private static descriptionAppend(group: d3.selector, params: ObjectParams, margin: number, padding: number) {
@@ -33,7 +25,24 @@ export class DrawingService {
       .attr('r', iconHalfSize).attr('fill', dragBackground);
   }
 
-  constructor(private icons: IconService) {
+  private createGroup(map: d3.selector, objectParams: ObjectParams,
+                      coords: Point): d3.selector {
+    this.id = objectParams.id;
+    return map.append('svg')
+      .attr('id', objectParams.id)
+      .attr('class', objectParams.groupClass)
+      .attr('x', coords.x)
+      .attr('y', coords.y)
+      .style('cursor', 'move')
+      .on('mousedown', () => {
+        this.acceptButtons.publishVisibility(false);
+      })
+      .on('mouseup', () => {
+        this.acceptButtons.publishVisibility(true);
+      });
+  }
+
+  constructor(private icons: IconService, private acceptButtons: AcceptButtonsService) {
   }
 
   public drawObject(objectParams: ObjectParams,
@@ -44,7 +53,7 @@ export class DrawingService {
     const boxMargin = DrawingService.boxSize / 2;
     const map = d3.select('#map');
     const iconHalfSize = (objectParams.size / 2);
-    const objectGroup = DrawingService.createGroup(map, objectParams,
+    const objectGroup = this.createGroup(map, objectParams,
       {x: where.x - boxMargin, y: where.y - boxMargin});
     const iconPadding = boxMargin - iconHalfSize;
     const markerPadding = boxMargin + iconHalfSize;
@@ -67,7 +76,7 @@ export class DrawingService {
     const dragGroup = d3.drag()
       .subject(subject)
       .on('start', dragStart)
-      .on('drag',this.dragGroupBehavior)
+      .on('drag', this.dragGroupBehavior.bind(this))
       .on('end', dragStop);
 
 
@@ -94,13 +103,12 @@ export class DrawingService {
   }
 
   private dragGroupBehavior(): void {
-    const map = d3.select('#map');
     const boxMargin = DrawingService.boxSize / 2;
-    let dx = parseInt(d3.select(this).attr('x'), 10);
-    let dy = parseInt(d3.select(this).attr('y'), 10);
+    let dx = parseInt(d3.select('#' + this.id).attr('x'), 10);
+    let dy = parseInt(d3.select('#' + this.id).attr('y'), 10);
     dx += d3.event.dx;
     dy += d3.event.dy;
-    d3.select(this)
+    d3.select('#' + this.id)
       .attr('x', dx)
       .attr('y', dy);
       // .attr('x', Math.max(-boxMargin, Math.min(map.attr('width') - boxMargin, dx)))
@@ -112,6 +120,7 @@ export class DrawingService {
     by += d3.event.dy;
     buttons.style('top', Math.max(0, Math.min((d3.select('#map').attr('height') - 100 ), by)) + 'px');
     buttons.style('left', Math.max(boxMargin, Math.min((d3.select('#map').attr('width') - boxMargin ), bx)) + 'px');
+    this.acceptButtons.publishCoordinates({x: dx, y: dy + 30})
   }
 }
 

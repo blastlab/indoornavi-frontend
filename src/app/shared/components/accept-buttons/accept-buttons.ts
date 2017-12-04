@@ -40,7 +40,6 @@ export class AcceptButtonsComponent implements OnInit {
       const interval = setInterval(checkButtonsVisibility, 100);
     });
     this.acceptButtonsService.visibilitySet.subscribe(data => {
-      console.log(data);
       this.visible = data;
     });
   }
