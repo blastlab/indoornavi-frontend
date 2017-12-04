@@ -9,7 +9,6 @@ sys.path.append('/home/motlowski/Desktop/Indoornavi/frontend/e2e_selenium/e2e/pa
 from login_page import LoginPage
 from complexes_page import ComplexesPage
 
-
 class TestComplexesPage(unittest.TestCase):
 
     @classmethod
@@ -21,6 +20,7 @@ class TestComplexesPage(unittest.TestCase):
         cls.complexes_page = ComplexesPage(cls.webdriver)
         cls.option = 1
         # login before each test case
+        cls.complexes_page.create_complex_db_env()
         cls.page.login_process(cls.option)
 
     def multi_assertion(self):
@@ -58,6 +58,8 @@ class TestComplexesPage(unittest.TestCase):
         # 6/Remove Row
 
     def test_add_new_complex_correctly(self):
+
+        # self.complexes_page.create_complex_db_env()
         self.complexes_page.add_button_click()
         # Zmienic tytul modala
         # self.assertTrue(self.complexes_page.check_modal_title())
@@ -65,6 +67,7 @@ class TestComplexesPage(unittest.TestCase):
         # self.assertTrue(self.complexes_page.is_cancel_button_present())
         self.complexes_page.enter_complex_name()
         self.complexes_page.save_add_new_complex()
+
 
     @classmethod
     def tearDownClass(cls):

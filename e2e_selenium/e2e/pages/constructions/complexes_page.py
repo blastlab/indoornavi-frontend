@@ -3,8 +3,10 @@ import sys
 from selenium.webdriver.common.by import By
 cwd = os.getcwd()
 sys.path.append(cwd + '../pages/')
+sys.path.append(cwd + '../libraries/')
 from base_page import BasePage
 from selenium.common.exceptions import NoSuchElementException
+from pyquibase.pyquibase import Pyquibase
 
 class ComplexesPage(BasePage):
 
@@ -85,4 +87,14 @@ class ComplexesPage(BasePage):
     def add_new_complex(self):
         modal_title = self.identify_element(*self.add_button_text_locator).text
 
+    def create_complex_db_env(self):
 
+        pyquibase = Pyquibase.mysql(
+          host='localhost',
+          port=3306,
+          db_name='Navi',
+          username='root',
+          password='',
+          change_log_file='test-complexes.xml'
+        )
+        pyquibase.update()
