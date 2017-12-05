@@ -2,8 +2,8 @@ import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {AuthGuard} from './auth/auth.guard';
 import {ActivatedRoute, Params} from '@angular/router';
 import {MenuItem} from 'primeng/primeng';
-import {BreadcrumbService} from './utils/breadcrumbs/breadcrumb.service';
 import {Subscription} from 'rxjs/Subscription';
+import {BreadcrumbService} from './shared/services/breadcrumbs/breadcrumb.service';
 
 @Component({
   selector: 'app-root',

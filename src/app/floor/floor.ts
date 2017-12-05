@@ -7,8 +7,8 @@ import {Building} from '../building/building.type';
 import {CrudComponent, CrudHelper} from '../utils/crud/crud.component';
 import {ConfirmationService} from 'primeng/primeng';
 import {NgForm} from '@angular/forms';
-import {BreadcrumbService} from '../utils/breadcrumbs/breadcrumb.service';
 import {MessageServiceWrapper} from '../utils/message.service';
+import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
 
 @Component({
   templateUrl: 'floor.html',
