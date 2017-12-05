@@ -2,7 +2,6 @@
   <ng-container *ngIf="imageUploaded; then uploaded else not_uploaded"></ng-container>
 
   <ng-template #uploaded>
-    <app-actionbar [floor]="floor"></app-actionbar>
     <app-toolbar [floor]="floor"></app-toolbar>
     <app-map-viewer [floor]="floor"></app-map-viewer>
     <app-hint-bar></app-hint-bar>

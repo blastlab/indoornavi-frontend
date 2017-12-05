@@ -41,10 +41,19 @@ import {PublishedService} from './map-viewer/published.service';
 import {PublishedDialogComponent} from './publications/dialog/published.dialog';
 import {ActionBarComponent} from 'app/map-editor/action-bar/actionbar';
 import {Md5} from 'ts-md5/dist/md5';
-import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {
-  ButtonModule, PanelMenuModule, ToolbarModule, BreadcrumbModule, TooltipModule, ConfirmationService, GrowlModule, SidebarModule, CheckboxModule,
-  MultiSelectModule, ConfirmDialogModule
+  BreadcrumbModule,
+  ButtonModule,
+  CheckboxModule,
+  ConfirmationService,
+  ConfirmDialogModule,
+  GrowlModule,
+  MultiSelectModule,
+  PanelMenuModule,
+  SidebarModule,
+  ToolbarModule,
+  TooltipModule
 } from 'primeng/primeng';
 import {HintBarService} from './map-editor/hint-bar/hintbar.service';
 import {ToolbarService} from './map-editor/tool-bar/toolbar.service';
@@ -80,6 +89,7 @@ import {UnauthorizedComponent} from 'app/unauthorized/unauthorized';
 import {ChangePasswordComponent} from './user/changePassword/changePassword';
 import {MapEditorComponent} from './map-editor/map.editor';
 import {SharedModule} from './shared/modules/shared.module';
+import {ToolDetailsComponent} from './map-editor/tool-bar/shared/details/tool-details';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -111,7 +121,8 @@ export function HttpLoaderFactory(http: Http) {
     PublishedListComponent,
     PublishedDialogComponent,
     DeviceComponent,
-    AppAutoFocusDirective
+    AppAutoFocusDirective,
+    ToolDetailsComponent
   ],
   entryComponents: [
     PublishedDialogComponent,
@@ -121,7 +132,6 @@ export function HttpLoaderFactory(http: Http) {
     FormsModule,
     HttpModule,
     BrowserAnimationsModule,
-    NoopAnimationsModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
