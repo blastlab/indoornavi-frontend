@@ -15,8 +15,8 @@ import {Configuration} from '../../../action-bar/actionbar.type';
 import {ScaleService} from './scale.service';
 import {Helper} from '../../../../shared/utils/helper/helper';
 import {ToolbarService} from '../../toolbar.service';
-import {MapService} from '../../../map.service';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
+import {ZoomService} from '../../../zoom.service';
 
 @Component({
   selector: 'app-scale',
@@ -38,7 +38,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private hintMessage: string;
   private pointsArray: Point[] = [];
   private linesArray: Line[] = [];
-  private map2DTranslation: Transform = {k: 1, x: 0, y: 0};
 
   constructor(private translate: TranslateService,
               private scaleInputService: ScaleInputService,
@@ -48,7 +47,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
               private toolbarService: ToolbarService,
               private actionBarService: ActionBarService,
               private scaleService: ScaleService,
-              private mapService: MapService) {
+              private zoomService: ZoomService) {
     this.setTranslations();
   }
 
@@ -74,11 +73,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
-    this.mapService.mapIsTransformed().subscribe((transformation: Transform) => {
-      this.map2DTranslation.k = transformation.k;
-      this.map2DTranslation.x = transformation.x;
-      this.map2DTranslation.y = transformation.y;
-    });
     this.createEmptyScale();
 
     this.configurationLoadedSubscription = this.actionBarService.configurationLoaded().subscribe((configuration: Configuration) => {
@@ -222,10 +216,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   private addPoint(): void {
-    const point = <Point>{
-      x: (d3.event.offsetX - this.map2DTranslation.x) / this.map2DTranslation.k,
-      y: (d3.event.offsetY - this.map2DTranslation.y) / this.map2DTranslation.k
-    };
+    const point: Point = this.zoomService.calculate({x: d3.event.offsetX, y: d3.event.offsetY});
 
     if (!this.isFirstPointDrawn) {
       this.isFirstPointDrawn = true;

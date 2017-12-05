@@ -80,6 +80,8 @@ import {UnauthorizedComponent} from 'app/unauthorized/unauthorized';
 import {ChangePasswordComponent} from './user/changePassword/changePassword';
 import {MapEditorComponent} from './map-editor/map.editor';
 import {SharedModule} from './shared/modules/shared.module';
+import {ZoomService} from './map-editor/zoom.service';
+import {DrawBuilder} from './map-viewer/published.builder';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -189,7 +191,8 @@ export function HttpLoaderFactory(http: Http) {
     MessageService,
     MessageServiceWrapper,
     ToolbarService,
-    HintBarService
+    HintBarService,
+    ZoomService
   ], bootstrap: [AppComponent]
 })
 

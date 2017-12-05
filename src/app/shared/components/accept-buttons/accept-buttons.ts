@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {AcceptButtonsService} from './accept-buttons.service';
 import {Point, Transform} from '../../../map-editor/map.type';
-import {MapService} from '../../../map-editor/map.service';
+import {ZoomService} from '../../../map-editor/zoom.service';
 
 @Component({
   selector: 'app-accept-buttons',
@@ -11,28 +11,18 @@ import {MapService} from '../../../map-editor/map.service';
 export class AcceptButtonsComponent implements OnInit {
   public visible: boolean = false;
   private coordinates: Point;
-  private map2DTranslation: Transform = {
-    k: 1,
-    x: 0,
-    y: 0
-  };
 
-  constructor(private acceptButtonsService: AcceptButtonsService, private mapService: MapService) {
-    this.mapService.mapIsTransformed().subscribe((transformation: Transform) => {
-        this.map2DTranslation.k = transformation.k;
-        this.map2DTranslation.x = transformation.x;
-        this.map2DTranslation.y = transformation.y;
-    });
+  constructor(private acceptButtonsService: AcceptButtonsService, private zoomService: ZoomService) {
+
     this.acceptButtonsService.coordinatesChanged.subscribe(data => {
-      console.log(data);
-      console.log(this.map2DTranslation);
       this.coordinates = data;
       const buttons = document.getElementById('accept-buttons');
       buttons.style.visibility = 'hidden';
       const checkButtonsVisibility = () => {
         if (buttons.clientWidth !== 0) {
-          buttons.style.top = `${(this.coordinates.y + this.map2DTranslation.y) * this.map2DTranslation.k}px`;
-          buttons.style.left = `${(this.coordinates.x + this.map2DTranslation.x - (buttons.clientWidth / 2))  * this.map2DTranslation.k}px`;
+          const coordinates: Point = this.zoomService.calculate({x: this.coordinates.x, y: this.coordinates.y});
+          buttons.style.top = `${coordinates.y}px`;
+          buttons.style.left = `${coordinates.x}px`;
           buttons.style.visibility = 'visible';
           clearInterval(interval);
         }

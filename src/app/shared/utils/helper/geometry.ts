@@ -43,4 +43,5 @@ export class Geometry {
     const degree = Math.atan2((p1.y - p2.y), (p2.x - p1.x)) * rad2deg;
     return ((degree < 0) ? 360 + degree : degree);
   }
+
 }

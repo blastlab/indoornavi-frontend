@@ -3,6 +3,7 @@ import {IconService, NaviIcons} from './icon.service';
 import * as d3 from 'd3';
 import {Point} from '../../../map-editor/map.type';
 import {AcceptButtonsService} from '../../components/accept-buttons/accept-buttons.service';
+import {ZoomService} from '../../../map-editor/zoom.service';
 
 @Injectable()
 export class DrawingService {
@@ -25,24 +26,7 @@ export class DrawingService {
       .attr('r', iconHalfSize).attr('fill', dragBackground);
   }
 
-  private createGroup(map: d3.selector, objectParams: ObjectParams,
-                      coords: Point): d3.selector {
-    this.id = objectParams.id;
-    return map.append('svg')
-      .attr('id', objectParams.id)
-      .attr('class', objectParams.groupClass)
-      .attr('x', coords.x)
-      .attr('y', coords.y)
-      .style('cursor', 'move')
-      .on('mousedown', () => {
-        this.acceptButtons.publishVisibility(false);
-      })
-      .on('mouseup', () => {
-        this.acceptButtons.publishVisibility(true);
-      });
-  }
-
-  constructor(private icons: IconService, private acceptButtons: AcceptButtonsService) {
+  constructor(private icons: IconService, private acceptButtons: AcceptButtonsService, private zoomService: ZoomService) {
   }
 
   public drawObject(objectParams: ObjectParams,
@@ -63,12 +47,21 @@ export class DrawingService {
     DrawingService.dragAreaAppend(objectGroup, markerPadding, iconHalfSize);
 
     // DRAGGING
-    const dragStart = (d, index, selection: d3.selection[]) => {
+    const dragStart = (d, index: number, selection: d3.selection[]): void => {
       d3.event.sourceEvent.stopPropagation();
       d3.select(selection[index]).classed('dragging', true);
     };
 
-    const dragStop = (_, index, selection: d3.selection[]) => {
+    const dragging = (d, index: number, selections: d3.selection[]): void => {
+      console.log(d3.select(selections[index]).attr('x'));
+      const mousePosition = <Point>{
+        x: d3.event.x,
+        y: d3.event.y
+      };
+      d3.select(selections[index]).attr('x', mousePosition.x).attr('y', mousePosition.y);
+    };
+
+    const dragStop = (_, index, selection: d3.selection[]): void => {
       d3.select(selection[index]).classed('dragging', false);
     };
 
@@ -76,12 +69,30 @@ export class DrawingService {
     const dragGroup = d3.drag()
       .subject(subject)
       .on('start', dragStart)
-      .on('drag', this.dragGroupBehavior.bind(this))
+      // .on('drag', this.dragGroupBehavior.bind(this))
+      .on('drag', dragging)
       .on('end', dragStop);
 
 
     objectGroup.call(dragGroup);
     return objectGroup;
+  }
+
+  private createGroup(map: d3.selector, objectParams: ObjectParams,
+                      coordinates: Point): d3.selector {
+    this.id = objectParams.id;
+    return map.append('svg')
+      .attr('id', objectParams.id)
+      .attr('class', objectParams.groupClass)
+      .attr('x', coordinates.x)
+      .attr('y', coordinates.y)
+      .style('cursor', 'move')
+      .on('mousedown', () => {
+        this.acceptButtons.publishVisibility(false);
+      })
+      .on('mouseup', () => {
+        this.acceptButtons.publishVisibility(true);
+      })
   }
 
   private pointerAppend(group: d3.selector, pointerPadding: number): void {
@@ -106,11 +117,12 @@ export class DrawingService {
     const boxMargin = DrawingService.boxSize / 2;
     let dx = parseInt(d3.select('#' + this.id).attr('x'), 10);
     let dy = parseInt(d3.select('#' + this.id).attr('y'), 10);
+    const transition: Point = this.zoomService.calculate({x: d3.event.dx, y: d3.event.dy});
     dx += d3.event.dx;
     dy += d3.event.dy;
+    console.log(dx, transition.x, dy, transition.y);
     d3.select('#' + this.id)
-      .attr('x', dx)
-      .attr('y', dy);
+      .attr('x', dx).attr('y', dy);
       // .attr('x', Math.max(-boxMargin, Math.min(map.attr('width') - boxMargin, dx)))
       // .attr('y', Math.max(-boxMargin, Math.min(map.attr('height') - boxMargin, dy)));
     const buttons = d3.select('#accept-buttons');
@@ -120,7 +132,7 @@ export class DrawingService {
     by += d3.event.dy;
     buttons.style('top', Math.max(0, Math.min((d3.select('#map').attr('height') - 100 ), by)) + 'px');
     buttons.style('left', Math.max(boxMargin, Math.min((d3.select('#map').attr('width') - boxMargin ), bx)) + 'px');
-    this.acceptButtons.publishCoordinates({x: dx, y: dy + 30})
+    this.acceptButtons.publishCoordinates({x: dx, y: dy});
   }
 }
 

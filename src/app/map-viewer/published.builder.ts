@@ -1,5 +1,7 @@
 import * as d3 from 'd3';
 import {Point} from '../map-editor/map.type';
+import {DrawConfiguration} from './published.type';
+
 
 export class GroupCreated {
   group: d3.selection;
@@ -56,7 +58,7 @@ export class GroupCreated {
   addPolygon(points: Point[], settings?: Map<string, string>): GroupCreated {
     let pointsString = '';
     points.forEach((point: Point) => {
-      pointsString += `${point.x},${point.y} `;
+      pointsString += `${point.x},${point.y}`;
     });
     this.group
       .append('polygon')
@@ -76,13 +78,9 @@ export class GroupCreated {
 }
 
 export class DrawBuilder {
-  private appendable: d3.selection;
-  private configuration: DrawConfiguration;
 
-  constructor(appendable: d3.selection,
-              configuration: DrawConfiguration) {
-    this.appendable = appendable;
-    this.configuration = configuration;
+  constructor(private appendable: d3.selection,
+              private configuration: DrawConfiguration) {
   }
 
   createGroup(): GroupCreated {
@@ -97,10 +95,4 @@ export class DrawBuilder {
     }
     return new GroupCreated(group);
   }
-}
-// TODO: to be moved to general catalogue containing interfaces
-export interface DrawConfiguration {
-  id: string;
-  clazz: string;
-  cursor?: string;
 }
