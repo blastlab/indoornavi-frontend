@@ -23,4 +23,5 @@ export class AcceptButtonsService {
   publishCoordinates(val: Point) {
     this.coordinates.next(val);
   }
+
 }

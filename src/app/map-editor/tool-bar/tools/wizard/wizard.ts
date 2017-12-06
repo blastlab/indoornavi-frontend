@@ -14,11 +14,10 @@ import {SocketMessage, WizardData, WizardStep} from './wizard.type';
 import {Floor} from '../../../../floor/floor.type';
 import {SelectItem} from 'primeng/primeng';
 import {ThirdStep} from './third-step/third-step';
-import {Point, Transform} from '../../../map.type';
+import {Point} from '../../../map.type';
 import * as d3 from 'd3';
 import {ToolbarService} from '../../toolbar.service';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
-import {DrawingService} from '../../../../shared/services/drawing/drawing.service';
 import {AcceptButtonsService} from '../../../../shared/components/accept-buttons/accept-buttons.service';
 import {ZoomService} from '../../../zoom.service';
 import {DrawBuilder} from '../../../../map-viewer/published.builder';
@@ -48,9 +47,8 @@ export class WizardComponent implements Tool, OnInit {
   private hintMessage: string;
 
   constructor(public translate: TranslateService,
-              private socketService: SocketService,
-              // private drawService: DrawingService,
               private ngZone: NgZone,
+              private socketService: SocketService,
               private acceptButtons: AcceptButtonsService,
               private toolbarService: ToolbarService,
               private hintBarService: HintBarService,
@@ -127,8 +125,8 @@ export class WizardComponent implements Tool, OnInit {
     map.on('click', () => {
       this.coordinates = this.zoomService.calculate({x: d3.event.offsetX, y: d3.event.offsetY});
       const appendable = this.activeStep.getDrawingObjectParams(this.selected);
-      const drawBuilder = new DrawBuilder(d3.select('#map'), {id: appendable.id, clazz: appendable.groupClass});
-      const deviceOnMap = drawBuilder
+      const drawBuilder = new DrawBuilder(d3.select('#map'), {id: appendable.id, clazz: appendable.groupClass}, this.acceptButtons);
+      drawBuilder
         .createGroup()
         .addIcon({x: 0, y: 0}, this.iconService.getIcon(appendable.iconName))
         .addText({x: 0, y: 36}, appendable.id)

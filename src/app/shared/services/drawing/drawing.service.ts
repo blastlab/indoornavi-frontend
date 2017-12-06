@@ -53,7 +53,6 @@ export class DrawingService {
     };
 
     const dragging = (d, index: number, selections: d3.selection[]): void => {
-      console.log(d3.select(selections[index]).attr('x'));
       const mousePosition = <Point>{
         x: d3.event.x,
         y: d3.event.y
@@ -69,7 +68,6 @@ export class DrawingService {
     const dragGroup = d3.drag()
       .subject(subject)
       .on('start', dragStart)
-      // .on('drag', this.dragGroupBehavior.bind(this))
       .on('drag', dragging)
       .on('end', dragStop);
 

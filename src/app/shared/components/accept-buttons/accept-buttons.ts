@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {AcceptButtonsService} from './accept-buttons.service';
-import {Point, Transform} from '../../../map-editor/map.type';
+import {Point} from '../../../map-editor/map.type';
 import {ZoomService} from '../../../map-editor/zoom.service';
 
 @Component({
@@ -15,14 +15,14 @@ export class AcceptButtonsComponent implements OnInit {
   constructor(private acceptButtonsService: AcceptButtonsService, private zoomService: ZoomService) {
 
     this.acceptButtonsService.coordinatesChanged.subscribe(data => {
-      this.coordinates = data;
+      this.coordinates = this.zoomService.reverseCalculate(data);
+      // this.coordinates = {x: data.x, y: data.y};
       const buttons = document.getElementById('accept-buttons');
       buttons.style.visibility = 'hidden';
       const checkButtonsVisibility = () => {
         if (buttons.clientWidth !== 0) {
-          const coordinates: Point = this.zoomService.calculate({x: this.coordinates.x, y: this.coordinates.y});
-          buttons.style.top = `${coordinates.y}px`;
-          buttons.style.left = `${coordinates.x}px`;
+          buttons.style.top = `${this.coordinates.y + 40}px`;
+          buttons.style.left = `${this.coordinates.x - buttons.clientWidth / 2}px`;
           buttons.style.visibility = 'visible';
           clearInterval(interval);
         }

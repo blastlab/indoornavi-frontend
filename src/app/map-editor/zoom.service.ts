@@ -13,7 +13,11 @@ export class ZoomService {
   }
 
   public calculate (point: Point): Point {
-    return {x: (point.x - this.transformation.x) / this.transformation.k, y: (point.y - this.transformation.y) / this.transformation.k}
+    return {x: (point.x - this.transformation.x) / this.transformation.k, y: (point.y - this.transformation.y) / this.transformation.k};
+  }
+
+  public reverseCalculate(point: Point): Point {
+    return {x : point.x + this.transformation.x / this.transformation.k, y: point.y + this.transformation.y / this.transformation.k}
   }
 
 }
