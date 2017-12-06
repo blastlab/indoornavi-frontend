@@ -5,7 +5,6 @@ import {FirstStepMessage, Step, WizardData, WizardStep} from '../wizard.type';
 import {Sink} from '../../../../../device/sink.type';
 import {SelectItem} from 'primeng/primeng';
 import {NaviIcons} from '../../../../../shared/services/drawing/icon.service';
-import {ObjectParams} from '../../../../../shared/services/drawing/drawing.service';
 
 export class FirstStep implements WizardStep {
   private selectedItemId: number;
@@ -28,7 +27,7 @@ export class FirstStep implements WizardStep {
     return [...items];
   }
 
-  getDrawingObjectParams(selectedItem: number): ObjectParams {
+  getDrawingObjectParams(selectedItem: number) {
     return {
       id: 'sink' + selectedItem, iconName: NaviIcons.ANCHOR,
       groupClass: 'wizardSink', markerClass: 'sinkMarker', fill: 'blue'

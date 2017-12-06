@@ -3,7 +3,6 @@ import {AnchorDistance} from '../../../../../device/anchor.type';
 import {Point} from '../../../../map.type';
 import {SelectItem} from 'primeng/primeng';
 import {WizardData, WizardStep, SecondStepMessage, Step} from '../wizard.type';
-import {DrawingService, ObjectParams} from '../../../../../shared/services/drawing/drawing.service';
 import {NaviIcons} from 'app/shared/services/drawing/icon.service';
 import {Geometry} from '../../../../../shared/utils/helper/geometry';
 
@@ -37,7 +36,7 @@ export class SecondStep implements WizardStep {
     }
   }
 
-  getDrawingObjectParams(selectedItem: number): ObjectParams {
+  getDrawingObjectParams(selectedItem: number) {
     return {
       id: 'anchor' + selectedItem, iconName: NaviIcons.ANCHOR,
       groupClass: 'wizardAnchor', markerClass: 'anchorMarker', fill: 'green'
@@ -46,7 +45,7 @@ export class SecondStep implements WizardStep {
 
   beforePlaceOnMap(selectedItem: number): void {
     const map = d3.select('#map');
-    const boxMargin = DrawingService.boxSize / 2;
+    const boxMargin = 20 ;//todo: figure out was DrawingService.boxSize / 2
     const sinkX = map.select('.wizardSink').attr('x');
     const sinkY = map.select('.wizardSink').attr('y');
     map.append('circle')

@@ -1,14 +1,13 @@
-<span id="accept-buttons" [ngClass]="{'visible' : visible}">
+<app-tool-details #toolDetails>
+  <span>Please confirm device placement</span>
   <button pButton class="ui-button-success"
           id="accepted-decision"
-          *ngIf="visible"
           (click)="decide(true)"
           icon="fa-check"
   ></button>
   <button pButton class="ui-button-danger"
           id="reject-decision"
-          *ngIf="visible"
           (click)="decide(false)"
           icon="fa-close"
   ></button>
-</span>
+</app-tool-details>

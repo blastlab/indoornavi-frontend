@@ -29,6 +29,8 @@
 	"configuration.preUndoConfirmDialog.body": "Are you sure you want to reset current draft to the last publication state? ({{date}})",
 	"configuration.preUndoConfirmDialog.no": "No",
 	"configuration.preUndoConfirmDialog.yes": "Yes",
+  "configuration.publish.success": "Map has been published.",
+  "configuration.saveDraft.success": "Draft has been saved.",
 	"confirm": "Confirm",
 	"confirm.body": "Are you sure you want to perform this action?",
 	"DB_000": "Unknown database error. Please contact support.",

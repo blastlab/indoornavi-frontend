@@ -1,7 +1,6 @@
 import * as d3 from 'd3';
 import {Point} from '../map-editor/map.type';
 import {DrawConfiguration} from './published.type';
-import {AcceptButtonsService} from '../shared/components/accept-buttons/accept-buttons.service';
 
 
 export class GroupCreated {
@@ -73,47 +72,10 @@ export class GroupCreated {
     return this;
   }
 
-  remove(): void {
-    this.group.remove();
-  }
-}
-
-export class DrawBuilder {
-
-  constructor(private appendable: d3.selection,
-              private configuration: DrawConfiguration,
-              private acceptButtons: AcceptButtonsService
-              ) {
-  }
-
-
-  createGroup(): GroupCreated {
-    const callPublishCoordinationWithAccessToThisClassContext = (point: Point): void => {
-      this.acceptButtons.publishCoordinates(point);
-    };
-    const callPublishVisibilityWithAccessToThisClassContext = (value: boolean): void => {
-      this.acceptButtons.publishVisibility(value);
-    };
-
-    const group = this.appendable
-      .append('svg')
-      .attr('id', this.configuration.id)
-      .attr('class', this.configuration.clazz)
-      .attr('x', 0)
-      .attr('y', 0)
-      .on('mousedown', () => {
-        callPublishVisibilityWithAccessToThisClassContext(false);
-      })
-      .on('mouseup', () => {
-        callPublishVisibilityWithAccessToThisClassContext(true);
-      });
-    if (this.configuration.cursor) {
-      group.style('cursor', this.configuration.cursor);
-    }
-
+  setDraggable(): GroupCreated {
     const dragStart = (d, index: number, selection: d3.selection[]): void => {
       d3.event.sourceEvent.stopPropagation();
-      d3.select(selection[index]).classed('dragging', true);
+      this.group.classed('dragging', true);
     };
 
     const dragging = (d, index: number, selections: d3.selection[]): void => {
@@ -121,13 +83,11 @@ export class DrawBuilder {
         x: d3.event.x,
         y: d3.event.y
       };
-      d3.select(selections[index]).attr('x', mousePosition.x).attr('y', mousePosition.y);
-      callPublishCoordinationWithAccessToThisClassContext(mousePosition);
+      this.group.attr('x', mousePosition.x).attr('y', mousePosition.y);
     };
 
     const dragStop = (_, index, selection: d3.selection[]): void => {
-      d3.select(selection[index]).classed('dragging', false);
-      callPublishVisibilityWithAccessToThisClassContext(true);
+      this.group.classed('dragging', false);
     };
 
     const subject = () => { return { x: d3.event.x, y: d3.event.y }};
@@ -137,7 +97,35 @@ export class DrawBuilder {
       .on('drag', dragging)
       .on('end', dragStop);
 
-    return new GroupCreated(group.call(dragGroup));
+    this.group.call(dragGroup);
+
+    return this;
+  }
+
+  remove(): void {
+    this.group.remove();
+  }
+}
+
+export class DrawBuilder {
+
+  constructor(private appendable: d3.selection,
+              private configuration: DrawConfiguration
+              ) {
+  }
+
+  createGroup(): GroupCreated {
+    const group = this.appendable
+      .append('svg')
+      .attr('id', this.configuration.id)
+      .attr('class', this.configuration.clazz)
+      .attr('x', 0)
+      .attr('y', 0);
+    if (this.configuration.cursor) {
+      group.style('cursor', this.configuration.cursor);
+    }
+
+    return new GroupCreated(group);
   }
 
 }

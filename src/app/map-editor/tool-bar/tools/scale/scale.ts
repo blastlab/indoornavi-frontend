@@ -16,7 +16,7 @@ import {ScaleService} from './scale.service';
 import {Helper} from '../../../../shared/utils/helper/helper';
 import {ToolbarService} from '../../toolbar.service';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
-import {ZoomService} from '../../../zoom.service';
+import {MapViewerService} from '../../../map.editor.service';
 
 @Component({
   selector: 'app-scale',
@@ -47,7 +47,8 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
               private toolbarService: ToolbarService,
               private actionBarService: ActionBarService,
               private scaleService: ScaleService,
-              private zoomService: ZoomService) {
+              private mapViewerService: MapViewerService
+              ) {
     this.setTranslations();
   }
 
@@ -84,6 +85,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
         this.isScaleSet = false;
         this.isFirstPointDrawn = false;
         this.isScaleDisplayed = false;
+        this.toolbarService.emitToolChanged(null);
       }
       this.scaleGroup.remove();
       this.createSvgGroupWithScale();
@@ -114,6 +116,10 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
           this.scaleGroup.style('display', 'none');
         }
       }
+    });
+
+    this.scaleInputService.onVisibilityChange().subscribe(() => {
+      this.toolbarService.emitToolChanged(null);
     });
   }
 
@@ -165,7 +171,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.linesArray.push(this.createLine());
       this.redrawLine();
       this.redrawEndings();
-      this.redrawInput();
     }
   }
 
@@ -198,7 +203,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.redrawLine();
       this.redrawEndings();
       this.redrawPoints();
-      this.redrawInput();
     } else if (d3.select('#scaleGroup').empty()) {
       d3.select('#map').append('g')
         .attr('id', 'scaleGroup')
@@ -216,7 +220,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   private addPoint(): void {
-    const point: Point = this.zoomService.calculate({x: d3.event.offsetX, y: d3.event.offsetY});
+    const point: Point = this.mapViewerService.calculateTransition({x: d3.event.offsetX, y: d3.event.offsetY});
 
     if (!this.isFirstPointDrawn) {
       this.isFirstPointDrawn = true;
@@ -249,7 +253,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   private redrawAllObjectsOnMap(): void {
     this.redrawLine();
-    this.redrawInput();
     this.redrawEndings();
     this.redrawPoints();
   }

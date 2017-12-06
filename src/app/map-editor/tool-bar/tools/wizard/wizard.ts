@@ -19,9 +19,9 @@ import * as d3 from 'd3';
 import {ToolbarService} from '../../toolbar.service';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
 import {AcceptButtonsService} from '../../../../shared/components/accept-buttons/accept-buttons.service';
-import {ZoomService} from '../../../zoom.service';
 import {DrawBuilder} from '../../../../map-viewer/published.builder';
 import {IconService} from '../../../../shared/services/drawing/icon.service';
+import {MapViewerService} from '../../../map.editor.service';
 
 @Component({
   selector: 'app-wizard',
@@ -53,8 +53,9 @@ export class WizardComponent implements Tool, OnInit {
               private toolbarService: ToolbarService,
               private hintBarService: HintBarService,
               private actionBarService: ActionBarService,
-              private zoomService: ZoomService,
-              private iconService: IconService) {
+              private iconService: IconService,
+              private mapViewerService: MapViewerService
+              ) {
   }
 
   ngOnInit() {
@@ -123,14 +124,15 @@ export class WizardComponent implements Tool, OnInit {
     const map: d3.selector = d3.select('#map');
     map.style('cursor', 'crosshair');
     map.on('click', () => {
-      this.coordinates = this.zoomService.calculate({x: d3.event.offsetX, y: d3.event.offsetY});
+      this.coordinates = this.mapViewerService.calculateTransition({x: d3.event.offsetX, y: d3.event.offsetY});
       const appendable = this.activeStep.getDrawingObjectParams(this.selected);
-      const drawBuilder = new DrawBuilder(d3.select('#map'), {id: appendable.id, clazz: appendable.groupClass}, this.acceptButtons);
+      const drawBuilder = new DrawBuilder(d3.select('#map'), {id: appendable.id, clazz: appendable.groupClass});
       drawBuilder
         .createGroup()
         .addIcon({x: 0, y: 0}, this.iconService.getIcon(appendable.iconName))
         .addText({x: 0, y: 36}, appendable.id)
-        .place({x: this.coordinates.x, y: this.coordinates.y});
+        .place({x: this.coordinates.x, y: this.coordinates.y})
+        .setDraggable();
       map.on('click', null);
       map.style('cursor', 'default');
       this.showAcceptButtons();

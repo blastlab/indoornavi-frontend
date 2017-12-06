@@ -1,10 +1,10 @@
-<div id="scaleInput" class="ui-g" [ngClass]="visible ? 'show-scale-input' : 'hide-scale-input'">
+<app-tool-details #toolDetails (onHide)="emitScaleHide()">
   <form novalidate>
     <div class="ui-g-5">
       <div class="ui-inputgroup">
-      <span class="ui-inputgroup-addon">
-          <i class="fa fa-question" pTooltip="{{'scale.distance.hint'|translate}}"></i>
-      </span>
+  <span class="ui-inputgroup-addon">
+  <i class="fa fa-question" pTooltip="{{'scale.distance.hint'|translate}}"></i>
+  </span>
         <input name="distance" type="text" pInputText placeholder="{{'scale.distance.placeholder'|translate}}" [(ngModel)]="scale.realDistance"/>
       </div>
     </div>
@@ -13,11 +13,11 @@
                   [style]="{ width: '100%' }" autoWidth="false"></p-dropdown>
     </div>
     <div class="ui-g-2">
-      <button pButton class="ui-button-success"
+      <button pButton class="ui-button-success ui-rig"
               (click)="confirm()"
               pTooltip="{{'ok'|translate}}"
               icon="fa-check-circle-o">
       </button>
     </div>
   </form>
-</div>
+</app-tool-details>
