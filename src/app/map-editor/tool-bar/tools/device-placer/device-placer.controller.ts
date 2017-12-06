@@ -3,18 +3,20 @@ import {Subject} from 'rxjs/Subject';
 import {Point} from '../../../map.type';
 import {Sink} from '../../../../device/sink.type';
 import {Anchor} from '../../../../device/anchor.type';
-import {Draggable} from '../../../../utils/builder/draggable';
+import {Expandable} from '../../../../utils/builder/expandable';
 
 @Injectable()
 export class DevicePlacerController {
   private listVisibility: Subject<boolean> = new Subject<boolean>();
   private anchor: Subject<Anchor> = new Subject<Anchor>();
+  private droppedOnMap: Subject<Anchor> = new Subject<Anchor>();
   private sink: Subject<Sink> = new Subject<Sink>();
   private coordinates: Subject<Point> = new Subject<Point>();
-  private mapDevice: Subject<Draggable> = new Subject<Draggable>();
+  private mapDevice: Subject<Expandable> = new Subject<Expandable>();
 
   listVisibilitySet = this.listVisibility.asObservable();
   chosenAnchor = this.anchor.asObservable();
+  droppedDevice = this.droppedOnMap.asObservable();
   chosenSink = this.sink.asObservable();
   newCoordinates = this.coordinates.asObservable();
   selectedDevice = this.mapDevice.asObservable();
@@ -24,8 +26,8 @@ export class DevicePlacerController {
     this.listVisibility.next();
   }
 
-  setChosenAnchor(anchor: Anchor): void {
-    this.anchor.next(anchor);
+  setDroppedDevice(device: Anchor | Sink): void {
+    this.droppedOnMap.next(device);
   }
 
   resetChosenAnchor(): void {
@@ -48,7 +50,7 @@ export class DevicePlacerController {
     this.coordinates.next(undefined);
   }
 
-  selectDevice(device: Draggable): void {
+  selectDevice(device: Expandable): void {
     this.mapDevice.next(device);
   }
 

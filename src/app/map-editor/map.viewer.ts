@@ -41,7 +41,7 @@ export class MapViewerComponent implements OnInit {
 
   droppedObject(event) {
     if (isAnchorType(event.dragData)) {
-      this.anchorTool.setChosenAnchor(event.dragData);
+      this.anchorTool.setDroppedDevice(event.dragData);
       this.anchorTool.setCoordinates({x: event.mouseEvent.offsetX, y: event.mouseEvent.offsetY});
     }
     function isAnchorType(checkType: any): boolean {

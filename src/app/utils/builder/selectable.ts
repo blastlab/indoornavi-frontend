@@ -9,11 +9,6 @@ export class Selectable {
 
 
   constructor(private group: GroupCreated) {
-    this.group.domGroup.on('click', () => {
-      console.log(this.group.domGroup);
-      this.select();
-    });
-
   }
 
   private emitSelectedEvent() {
@@ -33,13 +28,23 @@ export class Selectable {
   }
 
   public select() {
-    this.group.domGroup.classed('selected', true);
+    // this.group.domGroup.classed('selected', true);
     this.emitSelectedEvent();
   }
 
   public deselect() {
-    this.group.domGroup.classed('selected', false);
+    // this.group.domGroup.classed('selected', false);
     this.emitDeselectedEvent();
+  }
+
+  public selectOn() {
+    this.group.domGroup.on('click.select', () => {
+      this.select();
+    });
+  }
+
+  public selectOff() {
+    this.group.domGroup.on('.click.select', null);
   }
 
 }
