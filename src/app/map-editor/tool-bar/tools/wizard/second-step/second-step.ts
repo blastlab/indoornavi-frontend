@@ -45,7 +45,7 @@ export class SecondStep implements WizardStep {
 
   beforePlaceOnMap(selectedItem: number): void {
     const map = d3.select('#map');
-    const boxMargin = 20 ;//todo: figure out was DrawingService.boxSize / 2
+    const boxMargin = 20 ;//todo: figure out what is it for, was DrawingService.boxSize / 2
     const sinkX = map.select('.wizardSink').attr('x');
     const sinkY = map.select('.wizardSink').attr('y');
     map.append('circle')

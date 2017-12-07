@@ -1,6 +1,5 @@
 import {Point} from '../../../map.type';
 import {SelectItem} from 'primeng/primeng';
-import {ObjectParams} from '../../../../shared/services/drawing/drawing.service';
 
 export interface SocketMessage {
   step: Step;
@@ -38,7 +37,7 @@ export enum Step {
 
 export interface WizardStep {
   load(items: SelectItem[], message: string): SelectItem[];
-  getDrawingObjectParams(selectedItem: number): ObjectParams;
+  getDrawingObjectParams(selectedItem: number);
   beforePlaceOnMap(selectedItem?: number): void;
   afterPlaceOnMap(): void;
   getBeforePlaceOnMapHint(): string;

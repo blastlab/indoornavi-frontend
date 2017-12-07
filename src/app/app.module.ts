@@ -68,7 +68,6 @@ import {MapLoaderInformerService} from './shared/services/map-loader-informer/ma
 import {IconService} from 'app/shared/services/drawing/icon.service';
 import {MdIconRegistry} from '@angular/material';
 import {AcceptButtonsService} from 'app/shared/components/accept-buttons/accept-buttons.service';
-import {DrawingService} from './shared/services/drawing/drawing.service';
 import {SocketService} from 'app/shared/services/socket/socket.service';
 import {ComplexService} from './complex/complex.service';
 import {HttpService} from './shared/services/http/http.service';
@@ -90,6 +89,7 @@ import {ChangePasswordComponent} from './user/changePassword/changePassword';
 import {MapEditorComponent} from './map-editor/map.editor';
 import {SharedModule} from './shared/modules/shared.module';
 import {ToolDetailsComponent} from './map-editor/tool-bar/shared/details/tool-details';
+import {DisableButtonsService} from './shared/services/buttons/disable-buttons.service';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -175,7 +175,6 @@ export function HttpLoaderFactory(http: Http) {
     DeviceService,
     MapService,
     AcceptButtonsService,
-    DrawingService,
     MdIconRegistry,
     IconService,
     MapService,
@@ -199,7 +198,8 @@ export function HttpLoaderFactory(http: Http) {
     MessageService,
     MessageServiceWrapper,
     ToolbarService,
-    HintBarService
+    HintBarService,
+    DisableButtonsService
   ], bootstrap: [AppComponent]
 })
 

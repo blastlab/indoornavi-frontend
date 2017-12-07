@@ -54,7 +54,14 @@ export class MapViewerService {
           .attr('x', 0)
           .attr('y', 0)
           .attr('width', image.width)
-          .attr('height', image.height);
+          .attr('height', image.height)
+          // todo: discus proper cursor for moving and zooming tasks on the map
+          .on('mousedown', () => {
+            d3.select('#map').style('cursor', 'move')
+          })
+          .on('mouseup', () => {
+          d3.select('#map').style('cursor', 'default')
+        });
 
         zoom
           .translateBy(map, (mapContainer.offsetWidth - image.width) / 2, (mapContainer.offsetHeight - image.height) / 2);

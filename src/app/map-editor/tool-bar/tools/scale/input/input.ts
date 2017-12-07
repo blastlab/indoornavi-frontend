@@ -82,6 +82,10 @@ export class ScaleInputComponent implements OnInit, OnDestroy {
       this.messageService.success('scale.setSuccess');
     }
   }
+  public reject() {
+    this.messageService.success('scale.changesRejected');
+    this.scaleInputService.publishSaveClicked(null);
+  }
 
   emitScaleHide() {
     this.scaleInputService.publishVisibilityChange(false);

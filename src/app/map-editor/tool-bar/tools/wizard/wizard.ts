@@ -22,6 +22,7 @@ import {AcceptButtonsService} from '../../../../shared/components/accept-buttons
 import {DrawBuilder} from '../../../../map-viewer/published.builder';
 import {IconService} from '../../../../shared/services/drawing/icon.service';
 import {MapViewerService} from '../../../map.editor.service';
+import {DisableButtonsService} from '../../../../shared/services/buttons/disable-buttons.service';
 
 @Component({
   selector: 'app-wizard',
@@ -45,6 +46,7 @@ export class WizardComponent implements Tool, OnInit {
   private socketSubscription: Subscription;
   private wizardData: WizardData = new WizardData();
   private hintMessage: string;
+  private wizardActivationButtonActive: boolean = true;
 
   constructor(public translate: TranslateService,
               private ngZone: NgZone,
@@ -54,7 +56,8 @@ export class WizardComponent implements Tool, OnInit {
               private hintBarService: HintBarService,
               private actionBarService: ActionBarService,
               private iconService: IconService,
-              private mapViewerService: MapViewerService
+              private mapViewerService: MapViewerService,
+              private disableButtonService: DisableButtonsService
               ) {
   }
 
@@ -62,6 +65,9 @@ export class WizardComponent implements Tool, OnInit {
     this.setTranslations();
     this.steps = [new FirstStep(this.floor.id), new SecondStep(), new ThirdStep()];
     this.checkIsLoading();
+    this.disableButtonService.detectMapEvent.subscribe((value: boolean) => {
+      this.wizardActivationButtonActive = value;
+    });
   }
 
   nextStep() {
@@ -80,12 +86,14 @@ export class WizardComponent implements Tool, OnInit {
         this.activeStep = null;
         this.currentIndex = 0;
         this.toolbarService.emitToolChanged(null);
+        this.disableButtonService.publishMapEventActive(false);
         return;
       }
       this.activeStep = this.steps[this.currentIndex];
     }
     this.stepChanged();
     this.displayDialog = true;
+    this.disableButtonService.publishMapEventActive(false);
   }
 
   previousStep() {
@@ -95,6 +103,7 @@ export class WizardComponent implements Tool, OnInit {
       this.selected = undefined;
       this.displayError = false;
       this.toolbarService.emitToolChanged(null);
+      this.disableButtonService.publishMapEventActive(true);
       return;
     } else if (this.currentIndex === 1) { // We need to reset socket connection, so we will get Sinks again
       this.closeSocket();
@@ -169,7 +178,7 @@ export class WizardComponent implements Tool, OnInit {
       this.hintBarService.emitHintMessage(value);
     });
     this.acceptButtons.publishVisibility(true);
-    this.acceptButtons.publishCoordinates({x: this.coordinates.x, y: this.coordinates.y});
+    // this.acceptButtons.publishCoordinates({x: this.coordinates.x, y: this.coordinates.y});
     this.acceptButtons.decisionMade.first().subscribe(
       data => {
         this.activeStep.setSelectedItemId(this.selected);

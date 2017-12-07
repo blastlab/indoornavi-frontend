@@ -73,12 +73,12 @@ export class GroupCreated {
   }
 
   setDraggable(): GroupCreated {
-    const dragStart = (d, index: number, selection: d3.selection[]): void => {
+    const dragStart = (d): void => {
       d3.event.sourceEvent.stopPropagation();
       this.group.classed('dragging', true);
     };
 
-    const dragging = (d, index: number, selections: d3.selection[]): void => {
+    const dragging = (): void => {
       const mousePosition = <Point>{
         x: d3.event.x,
         y: d3.event.y
@@ -86,7 +86,7 @@ export class GroupCreated {
       this.group.attr('x', mousePosition.x).attr('y', mousePosition.y);
     };
 
-    const dragStop = (_, index, selection: d3.selection[]): void => {
+    const dragStop = (): void => {
       this.group.classed('dragging', false);
     };
 
@@ -120,7 +120,11 @@ export class DrawBuilder {
       .attr('id', this.configuration.id)
       .attr('class', this.configuration.clazz)
       .attr('x', 0)
-      .attr('y', 0);
+      .attr('y', 0)
+      // todo: discus proper cursor for moving device around the map
+      .on('mousedown', () => {
+        d3.select('#map').style('cursor', 'pointer')
+      });
     if (this.configuration.cursor) {
       group.style('cursor', this.configuration.cursor);
     }

@@ -17,6 +17,7 @@ import {Helper} from '../../../../shared/utils/helper/helper';
 import {ToolbarService} from '../../toolbar.service';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
 import {MapViewerService} from '../../../map.editor.service';
+import {DisableButtonsService} from '../../../../shared/services/buttons/disable-buttons.service';
 
 @Component({
   selector: 'app-scale',
@@ -38,6 +39,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private hintMessage: string;
   private pointsArray: Point[] = [];
   private linesArray: Line[] = [];
+  private scaleActivationButtonActive: boolean = true;
 
   constructor(private translate: TranslateService,
               private scaleInputService: ScaleInputService,
@@ -47,7 +49,8 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
               private toolbarService: ToolbarService,
               private actionBarService: ActionBarService,
               private scaleService: ScaleService,
-              private mapViewerService: MapViewerService
+              private mapViewerService: MapViewerService,
+              private disableButtonService: DisableButtonsService
               ) {
     this.setTranslations();
   }
@@ -99,13 +102,15 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     });
 
     this.saveButtonSubscription = this.scaleInputService.confirmClicked.subscribe((scale: Scale) => {
+      if (!!scale) {
+        this.isScaleSet = true;
+        this.scale.realDistance = scale.realDistance;
+        this.scale.measure = scale.measure;
+        this.actionBarService.setScale(this.scale);
+        this.scaleService.publishScaleChanged(this.scale);
+      }
       this.toolbarService.emitToolChanged(null);
-      this.setInactive();
-      this.isScaleSet = true;
-      this.scale.realDistance = scale.realDistance;
-      this.scale.measure = scale.measure;
-      this.actionBarService.setScale(this.scale);
-      this.scaleService.publishScaleChanged(this.scale);
+      this.setInactive()
     });
 
     this.scaleHint.mouseHoverChanged.subscribe((overOrOut: string) => {
@@ -120,6 +125,9 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
     this.scaleInputService.onVisibilityChange().subscribe(() => {
       this.toolbarService.emitToolChanged(null);
+    });
+    this.disableButtonService.detectMapEvent.subscribe( (value: boolean) => {
+      this.scaleActivationButtonActive = value;
     });
   }
 
@@ -140,6 +148,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   public setInactive(): void {
+    this.disableButtonService.publishMapEventActive(true);
     this.hideScale();
     this.active = false;
     this.translate.get('hint.chooseTool').subscribe((value: string) => {
@@ -149,6 +158,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   public onClick(): void {
     this.toolbarService.emitToolChanged(this);
+    this.disableButtonService.publishMapEventActive(false);
   }
 
   private updateScaleGroup() {
