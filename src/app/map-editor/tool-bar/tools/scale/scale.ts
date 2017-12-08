@@ -4,7 +4,7 @@ import {ToolName} from '../tools.enum';
 import * as d3 from 'd3';
 import {TranslateService} from '@ngx-translate/core';
 import {Scale} from './scale.type';
-import {Line, Point, Transform} from '../../../map.type';
+import {Line, Point} from '../../../map.type';
 import {ScaleInputService} from './input/input.service';
 import {ScaleHintService} from './hint/hint.service';
 import {MapLoaderInformerService} from '../../../../shared/services/map-loader-informer/map-loader-informer.service';
@@ -36,6 +36,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private configurationResetSubscription: Subscription;
   private scaleGroup = d3.select('#scaleGroup');
   private scale: Scale;
+  private scaleBackup: Scale;
   private hintMessage: string;
   private pointsArray: Point[] = [];
   private linesArray: Line[] = [];
@@ -129,6 +130,16 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.disableButtonService.detectMapEvent.subscribe( (value: boolean) => {
       this.scaleActivationButtonActive = value;
     });
+    this.scaleInputService.rejected.subscribe(() => {
+      if (this.scaleBackup) {
+        this.scale = Helper.deepCopy(this.scaleBackup);
+        this.scaleGroup.remove();
+        this.createSvgGroupWithScale();
+        this.pointsArray = [];
+        this.linesArray = [];
+        this.drawScale(this.scale);
+      }
+    });
   }
 
   getHintMessage(): string {
@@ -159,6 +170,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   public onClick(): void {
     this.toolbarService.emitToolChanged(this);
     this.disableButtonService.publishMapEventActive(false);
+    this.isScaleSet ? this.scaleBackup = Helper.deepCopy(this.scale) : this.scaleBackup = null;
   }
 
   private updateScaleGroup() {
@@ -287,9 +299,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   private redrawPoints(): void {
-    const callRedrawAllObjectsOnMapWithClassContext = () => {
-      this.redrawAllObjectsOnMap();
-    };
 
     const subject = () => { return { x: d3.event.x, y: d3.event.y }};
 
@@ -331,9 +340,15 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
         x = mousePosition.x;
         y = mousePosition.y;
       }
-
+      const borderNorthWest: Point = this.mapViewerService.calculateTransition({x: d3.select('#map-upper-layer').attr('x'), y: d3.select('#map-upper-layer').attr('y')});
+      const borderSouthEast: Point = this.mapViewerService.calculateTransition({x: d3.select('#map-upper-layer').attr('width'), y: d3.select('#map-upper-layer').attr('height')});
+      x = x > borderNorthWest.x ? x : borderNorthWest.x;
+      x = x < borderSouthEast.x ? x : borderSouthEast.x;
+      y = y > borderNorthWest.y ? y : borderNorthWest.y;
+      y = y < borderSouthEast.y ? y : borderSouthEast.y;
       d3.select(selections[index]).attr('cx', d.x = x).attr('cy', d.y = y);
-      callRedrawAllObjectsOnMapWithClassContext();
+      this.redrawLine();
+      this.redrawEndings();
     };
 
     const dragStop = (_, index: number, selections: d3.selection[]) => {
@@ -436,31 +451,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       .attr('transform', d => {
         return 'rotate(' + 90 + ' ' + d.x + ' ' + d.y + ')';
       });
-  }
-
-  private redrawInput(): void {
-    const tempX = (this.linesArray[0].p1.x + this.linesArray[0].p2.x) / 2;
-    const tempY = (this.linesArray[0].p1.y + this.linesArray[0].p2.y) / 2;
-
-    const scaleInput = document.getElementById('scaleInput');
-    const inputHeight = scaleInput.offsetHeight;
-    const inputWidth = scaleInput.offsetWidth;
-    const x = Math.max(0, Math.min(tempX, d3.select('#map').attr('width') - inputWidth - 25));
-    const y = Math.max(inputHeight, Math.min(tempY, d3.select('#map').attr('height') - inputHeight));
-    const p = <Point>{
-      x: x,
-      y: y
-    };
-    this.moveInputIfItEclipsesPoint(p, inputHeight, inputWidth);
-    this.scaleService.publishCoordinates(p);
-  }
-
-  private moveInputIfItEclipsesPoint(inputCoords: Point, inputHeight: number, inputWidth: number): void {
-    this.pointsArray.forEach((point: Point) => {
-      if (point.x - 22 >= inputCoords.x && point.x - 25 <= inputCoords.x + inputWidth && point.y >= inputCoords.y && point.y <= inputCoords.y + inputHeight) {
-        inputCoords.y -= (inputHeight + this.END_SIZE);
-      }
-    });
   }
 
   private createEmptyScale(): void {

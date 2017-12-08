@@ -7,8 +7,10 @@ import {Observable} from 'rxjs/Observable';
 export class ScaleInputService {
   private saveClicked = new Subject<Scale>();
   private visibilityChanged = new Subject<boolean>();
+  private changesRejected = new Subject<void>();
 
-  public confirmClicked = this.saveClicked.asObservable();
+  confirmClicked = this.saveClicked.asObservable();
+  rejected = this.changesRejected.asObservable();
 
   onVisibilityChange(): Observable<boolean> {
     return this.visibilityChanged.asObservable();
@@ -20,5 +22,9 @@ export class ScaleInputService {
 
   publishVisibilityChange(value: boolean) {
     this.visibilityChanged.next(value);
+  }
+
+  publishChangesRejected() {
+    this.changesRejected.next();
   }
 }
