@@ -134,10 +134,8 @@ export class DevicePlacerComponent implements Tool, OnInit {
   }
 
   private getMapSelection(): void {
-    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((loaded) => {
-      this.mapLoaderInformer.getMapSelection().subscribe((map): d3.selection => {
-        this.map = map;
-      });
+    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapLoaded) => {
+      this.map = mapLoaded;
     });
   }
 
@@ -215,6 +213,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
     const managedSelectable: Subscription = mapDevice.selectable.onSelected().subscribe((selectedMapDevice): d3.selection => {
       const id = DevicePlacerComponent.getShortIdFromSelection(selectedMapDevice);
       const selectedDevice = this.findMapDeviceByShortId(id);
+      // TODO mark selected
     });
     this.managedSelectables.push(managedSelectable);
   }
