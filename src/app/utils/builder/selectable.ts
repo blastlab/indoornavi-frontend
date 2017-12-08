@@ -6,6 +6,7 @@ import {Subject} from 'rxjs/Subject';
 export class Selectable {
   private selectedEmitter: Subject<d3.selection> = new Subject<d3.selection>();
   private deselectedEmitter: Subject<d3.selection> = new Subject<d3.selection>();
+  private hasBorder: boolean;
 
 
   constructor(private group: GroupCreated) {
@@ -30,10 +31,12 @@ export class Selectable {
   public select() {
     // this.group.domGroup.classed('selected', true);
     this.emitSelectedEvent();
+    this.createBorderBox();
     // this.selectOff();
   }
 
   public deselect() {
+    this.removeBorderBox();
     // this.group.domGroup.classed('selected', false);
     this.emitDeselectedEvent();
   }
@@ -48,4 +51,16 @@ export class Selectable {
     this.group.domGroup.on('.click.select', null);
   }
 
+  private createBorderBox() {
+    this.removeBorderBox();
+    this.group.addBorderBox();
+    this.hasBorder = true;
+  }
+
+  private removeBorderBox() {
+    if (this.hasBorder) {
+      this.group.removeBorderBox();
+      this.hasBorder = false;
+    }
+  }
 }

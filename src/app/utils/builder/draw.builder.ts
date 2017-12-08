@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
 import {Point} from '../../map-editor/map.type';
+import {Helper} from 'app/utils/helper/helper';
 
 export class DrawBuilder {
   private configuration: DrawConfiguration;
@@ -88,6 +89,33 @@ export class GroupCreated {
   remove(): void {
     this.domGroup.remove();
   }
+
+  addBorderBox() {
+    const parentElement: SVGElement = this.domGroup._groups['0']['0'];
+    const domRect: DOMRectInit = parentElement.getBoundingClientRect();
+    const boxWidth = 2;
+    const padding: {x: number , y: number} = Helper.getChildrenExtremeValues(parentElement);
+    const paddingX = padding.x * 1 + boxWidth * 1; // intentional usage
+    const paddingY = padding.y - boxWidth - 6;
+    this.domGroup
+      .append('rect')
+      .classed('group-border-box', true)
+      .attr('x', paddingX)
+      .attr('y', paddingY)
+      .attr('width', (domRect.width * 1 + boxWidth * 2))
+      .attr('height', (domRect.height * 1 + boxWidth * 2))
+      .attr('stroke', 'green')
+      .attr('stroke-width', boxWidth)
+      .attr('opacity', '0.5')
+      .attr('stroke-linecap', 'round')
+      .attr('stroke-dasharray', '20,10,5,5,5,10')
+      .attr('fill', 'none');
+  }
+
+  removeBorderBox() {
+    this.domGroup.select('rect.group-border-box').remove();
+  }
+
 }
 
 export interface DrawConfiguration {
