@@ -7,14 +7,12 @@ import {Expandable} from '../../../../utils/builder/expandable';
 
 @Injectable()
 export class DevicePlacerController {
-  private listVisibility: Subject<boolean> = new Subject<boolean>();
   private anchor: Subject<Anchor> = new Subject<Anchor>();
   private droppedOnMap: Subject<Anchor> = new Subject<Anchor>();
   private sink: Subject<Sink> = new Subject<Sink>();
   private coordinates: Subject<Point> = new Subject<Point>();
   private mapDevice: Subject<Expandable> = new Subject<Expandable>();
 
-  listVisibilitySet = this.listVisibility.asObservable();
   chosenAnchor = this.anchor.asObservable();
   droppedDevice = this.droppedOnMap.asObservable();
   chosenSink = this.sink.asObservable();
@@ -22,12 +20,8 @@ export class DevicePlacerController {
   selectedDevice = this.mapDevice.asObservable();
 
 
-  toggleListVisibility(): void {
-    this.listVisibility.next();
-  }
-
-  setDroppedDevice(device: Anchor | Sink): void {
-    this.droppedOnMap.next(device);
+  deviceDropped(): void {
+    this.droppedOnMap.next();
   }
 
   resetChosenAnchor(): void {

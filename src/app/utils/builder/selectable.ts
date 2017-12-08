@@ -30,6 +30,7 @@ export class Selectable {
   public select() {
     // this.group.domGroup.classed('selected', true);
     this.emitSelectedEvent();
+    // this.selectOff();
   }
 
   public deselect() {

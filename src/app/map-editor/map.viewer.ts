@@ -3,7 +3,6 @@ import * as d3 from 'd3';
 import {Floor} from '../floor/floor.type';
 import {MapLoaderInformerService} from '../utils/map-loader-informer/map-loader-informer.service';
 import {MapViewerService} from './map.viewer.service';
-import {Anchor} from '../device/anchor.type';
 import {DevicePlacerController} from './tool-bar/tools/device-placer/device-placer.controller';
 
 @Component({
@@ -17,7 +16,7 @@ export class MapViewerComponent implements OnInit {
   private imageLoaded: boolean = false;
 
   constructor(private mapLoaderInformer: MapLoaderInformerService,
-              private anchorTool: DevicePlacerController,
+              private devicePlacerController: DevicePlacerController,
               private mapViewerService: MapViewerService) {
   }
 
@@ -40,12 +39,11 @@ export class MapViewerComponent implements OnInit {
   }
 
   droppedObject(event) {
-    if (isAnchorType(event.dragData)) {
-      this.anchorTool.setDroppedDevice(event.dragData);
-      this.anchorTool.setCoordinates({x: event.mouseEvent.offsetX, y: event.mouseEvent.offsetY});
-    }
-    function isAnchorType(checkType: any): boolean {
-      return (<Anchor>checkType.verified) !== undefined;
+    const pDragType = event.dataTransfer.getData('text');
+    if (pDragType === 'devices') {
+      this.devicePlacerController.deviceDropped();
+      this.devicePlacerController.setCoordinates(
+        {x: event.offsetX, y: event.offsetY});
     }
   }
 

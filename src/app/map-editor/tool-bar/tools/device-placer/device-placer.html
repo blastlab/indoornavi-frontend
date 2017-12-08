@@ -4,7 +4,7 @@
         icon="fa-list-ul">
 </button>
 
-<div id="remaining-devices-list" [@slideInOut]="menuState">
+<div id="remaining-devices-list" [@slideInOut]="listState">
   <table cellpadding="10" cellspacing="0">
     <tr>
       <th colspan="2" class="remaining-devices-header">
@@ -43,8 +43,7 @@
     </tr>
     <ng-container>
       <tr *ngFor="let device of remainingDevices | allFieldsFilter:queryString; let i = index"
-          dnd-draggable [dragEnabled]="true" [dragData]="device" (onDragStart)="toggleMenu()"
-          [dropZones]="['map-container']" (onDropSuccess)="placeDeviceOnMap(event)">
+          pDraggable="devices" (onDragStart)="dragDeviceStarted(device)" (onDragEnd)="dragDeviceEnded()">
         <td>{{device.shortId}}</td>
         <td>{{device.longId}}</td>
         <td>{{device.name}}</td>

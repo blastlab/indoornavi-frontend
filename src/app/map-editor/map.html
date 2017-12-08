@@ -1,6 +1,5 @@
-<div id="map-container" class="drop-zone" dnd-droppable
-     [dropZones]="['map-container']" (onDropSuccess)="droppedObject($event)">
-  <svg id="map"></svg>
+<div id="map-container">
+  <svg id="map" class="drop-zone" pDroppable="devices" (onDrop)="droppedObject($event)"></svg>
   <app-scale-input></app-scale-input>
   <app-scale-hint></app-scale-hint>
   <app-accept-buttons></app-accept-buttons>
