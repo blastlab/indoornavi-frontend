@@ -1,13 +1,14 @@
 import * as d3 from 'd3';
 import {Point} from '../map-editor/map.type';
 import {DrawConfiguration} from './published.type';
+import {MapViewerService} from '../map-editor/map.editor.service';
 
 
 export class GroupCreated {
   group: d3.selection;
   transitionEnded: boolean = true;
 
-  constructor(group: d3.selection) {
+  constructor(group: d3.selection, private mapViewerService: MapViewerService) {
     this.group = group;
   }
 
@@ -83,7 +84,11 @@ export class GroupCreated {
         x: d3.event.x,
         y: d3.event.y
       };
-      this.group.attr('x', mousePosition.x).attr('y', mousePosition.y);
+      // offsetFromBorder[0] gives left and upper border offset, and offsetFromBorder[1] gives right and bottom border offset, sign is giving a direction of offset
+      const offsetFromBorder = [{x : 0, y: 0}, {x: -100, y: -40}]; // todo: set offset form icon values of width and height or other if suggested, rethink left side offset if
+      // needed
+      const eventPosition: Point = this.mapViewerService.calculateInMapEditorRangeEvent({x: mousePosition.x, y: mousePosition.y}, offsetFromBorder);
+      this.group.attr('x', eventPosition.x).attr('y', eventPosition.y);
     };
 
     const dragStop = (): void => {
@@ -110,7 +115,8 @@ export class GroupCreated {
 export class DrawBuilder {
 
   constructor(private appendable: d3.selection,
-              private configuration: DrawConfiguration
+              private configuration: DrawConfiguration,
+              private mapViewerService: MapViewerService
               ) {
   }
 
@@ -129,7 +135,7 @@ export class DrawBuilder {
       group.style('cursor', this.configuration.cursor);
     }
 
-    return new GroupCreated(group);
+    return new GroupCreated(group, this.mapViewerService);
   }
 
 }

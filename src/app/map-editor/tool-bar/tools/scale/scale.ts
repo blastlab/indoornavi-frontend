@@ -340,13 +340,10 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
         x = mousePosition.x;
         y = mousePosition.y;
       }
-      const borderNorthWest: Point = this.mapViewerService.calculateTransition({x: d3.select('#map-upper-layer').attr('x'), y: d3.select('#map-upper-layer').attr('y')});
-      const borderSouthEast: Point = this.mapViewerService.calculateTransition({x: d3.select('#map-upper-layer').attr('width'), y: d3.select('#map-upper-layer').attr('height')});
-      x = x > borderNorthWest.x ? x : borderNorthWest.x;
-      x = x < borderSouthEast.x ? x : borderSouthEast.x;
-      y = y > borderNorthWest.y ? y : borderNorthWest.y;
-      y = y < borderSouthEast.y ? y : borderSouthEast.y;
-      d3.select(selections[index]).attr('cx', d.x = x).attr('cy', d.y = y);
+      // offsetFromBorder[0] gives left and upper border offset, and offsetFromBorder[1] gives right and bottom border offset, sign is giving a direction of offset
+      const offsetFromBorder = [{x : 5, y: 5}, {x: -5, y: -5}];
+      const eventPosition: Point = this.mapViewerService.calculateInMapEditorRangeEvent({x: x, y: y}, offsetFromBorder);
+      d3.select(selections[index]).attr('cx', d.x = eventPosition.x).attr('cy', d.y = eventPosition.y);
       this.redrawLine();
       this.redrawEndings();
     };

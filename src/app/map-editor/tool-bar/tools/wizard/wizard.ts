@@ -135,7 +135,7 @@ export class WizardComponent implements Tool, OnInit {
     map.on('click', () => {
       this.coordinates = this.mapViewerService.calculateTransition({x: d3.event.offsetX, y: d3.event.offsetY});
       const appendable = this.activeStep.getDrawingObjectParams(this.selected);
-      const drawBuilder = new DrawBuilder(d3.select('#map'), {id: appendable.id, clazz: appendable.groupClass});
+      const drawBuilder = new DrawBuilder(d3.select('#map'), {id: appendable.id, clazz: appendable.groupClass}, this.mapViewerService);
       drawBuilder
         .createGroup()
         .addIcon({x: 0, y: 0}, this.iconService.getIcon(appendable.iconName))

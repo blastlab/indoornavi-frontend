@@ -87,5 +87,14 @@ export class MapViewerService {
     return {x: (point.x - this.transformation.x) / this.transformation.k, y: (point.y - this.transformation.y) / this.transformation.k};
   }
 
+  public calculateInMapEditorRangeEvent(point: Point, offset : Point[]): Point {
+    const borderNorthWest: Point = this.calculateTransition({x: d3.select('#map-upper-layer').attr('x'), y: d3.select('#map-upper-layer').attr('y')});
+    const borderSouthEast: Point = this.calculateTransition({x: d3.select('#map-upper-layer').attr('width'), y: d3.select('#map-upper-layer').attr('height')});
+    point.x = point.x > borderNorthWest.x + offset[0].x ? point.x : borderNorthWest.x + offset[0].x;
+    point.x = point.x < borderSouthEast.x + offset[1].x ? point.x : borderSouthEast.x + offset[1].x;
+    point.y = point.y > borderNorthWest.y + offset[0].y ? point.y : borderNorthWest.y + offset[0].y;
+    point.y = point.y < borderSouthEast.y + offset[1].y ? point.y : borderSouthEast.y + offset[1].y;
+    return {x: point.x, y: point.y};
+  }
 
 }
