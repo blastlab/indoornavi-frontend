@@ -74,7 +74,7 @@ export class GroupCreated {
   }
 
   setDraggable(): GroupCreated {
-    const dragStart = (d): void => {
+    const dragStart = (): void => {
       d3.event.sourceEvent.stopPropagation();
       this.group.classed('dragging', true);
     };
@@ -85,8 +85,8 @@ export class GroupCreated {
         y: d3.event.y
       };
       // offsetFromBorder[0] gives left and upper border offset, and offsetFromBorder[1] gives right and bottom border offset, sign is giving a direction of offset
-      const offsetFromBorder = [{x : 0, y: 0}, {x: -100, y: -40}]; // todo: set offset form icon values of width and height or other if suggested, rethink left side offset if
-      // needed
+      // todo: set offset form icon values of width and height or other if suggested
+      const offsetFromBorder = [{x : 0, y: 0}, {x: -25, y: -25}];
       const eventPosition: Point = this.mapViewerService.calculateInMapEditorRangeEvent({x: mousePosition.x, y: mousePosition.y}, offsetFromBorder);
       this.group.attr('x', eventPosition.x).attr('y', eventPosition.y);
     };

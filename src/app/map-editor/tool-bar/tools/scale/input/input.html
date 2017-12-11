@@ -17,19 +17,19 @@
 
     </div>
     <div class="ui-g-3">
-      <div class="ui-toolbar-group-left">
-        <button id="confirm-decision"
-                pButton class="ui-button-success"
-                (click)="confirm()"
-                pTooltip="{{'ok'|translate}}"
-                icon="fa-check-circle-o">
-        </button>
+      <div class="ui-toolbar-group-right">
         <button id="reject-decision"
                 pButton class="ui-button-danger"
                 (click)="reject()"
                 icon="fa-close"
-                pTooltip="{{'no'|translate}}"
+                pTooltip="{{'cancel'|translate}}"
         ></button>
+        <button id="confirm-decision"
+                pButton class="ui-button-success"
+                (click)="confirm()"
+                pTooltip="{{'ok'|translate}}"
+                icon="fa-check">
+        </button>
       </div>
     </div>
   </form>

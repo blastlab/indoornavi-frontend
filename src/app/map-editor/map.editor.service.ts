@@ -7,6 +7,12 @@ import {Point, Transform} from './map.type';
 @Injectable()
 export class MapViewerService {
 
+  public static MAP_LAYER_SELECTOR_ID: string = 'map';
+  private static MAP_UPPER_LAYER_SELECTOR_ID: string = 'map-upper-layer';
+  private static MAP_CONTAINER_SELECTOR_ID: string = 'map-container';
+
+  private transformation: Transform = {x: 0, y: 0, k: 1};
+
   static maxTranslate(mapContainer: HTMLElement, image: HTMLImageElement): [[number, number], [number, number]] {
     const width = Math.max(mapContainer.offsetWidth, image.width),
       height = Math.max(mapContainer.offsetHeight, image.height);
@@ -17,8 +23,6 @@ export class MapViewerService {
     }
   }
 
-  private transformation: Transform = {x: 0, y: 0, k: 1};
-
   constructor(private mapService: MapService) {
   }
 
@@ -27,11 +31,11 @@ export class MapViewerService {
       const image = new Image();
       image.onload = () => {
 
-        const mapContainer = document.getElementById('map-container');
+        const mapContainer = document.getElementById(MapViewerService.MAP_CONTAINER_SELECTOR_ID);
 
         const zoomed = () => {
           g.attr('transform', d3.event.transform);
-          this.transformation = d3.zoomTransform(document.getElementById('map-upper-layer'));
+          this.transformation = d3.zoomTransform(document.getElementById(MapViewerService.MAP_UPPER_LAYER_SELECTOR_ID));
         };
 
         const zoom = d3.zoom()
@@ -40,14 +44,14 @@ export class MapViewerService {
           .on('zoom', zoomed);
 
         const map = d3
-          .select('#map-upper-layer')
+          .select(`#${MapViewerService.MAP_UPPER_LAYER_SELECTOR_ID}`)
           .attr('width', mapContainer.offsetWidth)
           .attr('height', mapContainer.offsetHeight);
 
         const g = map.append('g');
 
         g
-          .attr('id', 'map')
+          .attr('id', MapViewerService.MAP_LAYER_SELECTOR_ID)
           .append('svg:image')
           .attr('id', 'map-img')
           .attr('xlink:href', image.src)
@@ -57,10 +61,10 @@ export class MapViewerService {
           .attr('height', image.height)
           // todo: discus proper cursor for moving and zooming tasks on the map
           .on('mousedown', () => {
-            d3.select('#map').style('cursor', 'move')
+            d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`).style('cursor', 'move')
           })
           .on('mouseup', () => {
-          d3.select('#map').style('cursor', 'default')
+          d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`).style('cursor', 'default')
         });
 
         zoom
@@ -83,18 +87,16 @@ export class MapViewerService {
     });
   }
 
-  public calculateTransition (point: Point): Point {
+  calculateTransition (point: Point): Point {
     return {x: (point.x - this.transformation.x) / this.transformation.k, y: (point.y - this.transformation.y) / this.transformation.k};
   }
-
-  public calculateInMapEditorRangeEvent(point: Point, offset : Point[]): Point {
-    const borderNorthWest: Point = this.calculateTransition({x: d3.select('#map-upper-layer').attr('x'), y: d3.select('#map-upper-layer').attr('y')});
-    const borderSouthEast: Point = this.calculateTransition({x: d3.select('#map-upper-layer').attr('width'), y: d3.select('#map-upper-layer').attr('height')});
+  calculateInMapEditorRangeEvent(point: Point, offset: Point[]): Point {
+    const borderNorthWest: Point = this.calculateTransition({x: d3.select(`#${MapViewerService.MAP_UPPER_LAYER_SELECTOR_ID}`).attr('x'), y: d3.select(`#${MapViewerService.MAP_UPPER_LAYER_SELECTOR_ID}`).attr('y')});
+    const borderSouthEast: Point = this.calculateTransition({x: d3.select(`#${MapViewerService.MAP_UPPER_LAYER_SELECTOR_ID}`).attr('width'), y: d3.select(`#${MapViewerService.MAP_UPPER_LAYER_SELECTOR_ID}`).attr('height')});
     point.x = point.x > borderNorthWest.x + offset[0].x ? point.x : borderNorthWest.x + offset[0].x;
     point.x = point.x < borderSouthEast.x + offset[1].x ? point.x : borderSouthEast.x + offset[1].x;
     point.y = point.y > borderNorthWest.y + offset[0].y ? point.y : borderNorthWest.y + offset[0].y;
     point.y = point.y < borderSouthEast.y + offset[1].y ? point.y : borderSouthEast.y + offset[1].y;
     return {x: point.x, y: point.y};
   }
-
 }

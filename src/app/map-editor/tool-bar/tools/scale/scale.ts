@@ -17,7 +17,7 @@ import {Helper} from '../../../../shared/utils/helper/helper';
 import {ToolbarService} from '../../toolbar.service';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
 import {MapViewerService} from '../../../map.editor.service';
-import {DisableButtonsService} from '../../../../shared/services/buttons/disable-buttons.service';
+import {DisableButtonsService} from '../../../../shared/services/menu-buttons/disable-buttons.service';
 
 @Component({
   selector: 'app-scale',
@@ -25,6 +25,8 @@ import {DisableButtonsService} from '../../../../shared/services/buttons/disable
   styleUrls: ['../tool.css']
 })
 export class ScaleComponent implements Tool, OnDestroy, OnInit {
+  private static SCALE_GROUP_SELECTOR_ID = 'scaleGroup';
+
   public active: boolean = false;
   public isScaleDisplayed: boolean = false;
   public isScaleSet: boolean = false;
@@ -34,7 +36,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private saveButtonSubscription: Subscription;
   private configurationLoadedSubscription: Subscription;
   private configurationResetSubscription: Subscription;
-  private scaleGroup = d3.select('#scaleGroup');
+  private scaleGroup = d3.select(`#${ScaleComponent.SCALE_GROUP_SELECTOR_ID}`);
   private scale: Scale;
   private scaleBackup: Scale;
   private hintMessage: string;
@@ -174,13 +176,13 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   private updateScaleGroup() {
-    this.scaleGroup = d3.select('#scaleGroup');
+    this.scaleGroup = d3.select(ScaleComponent.SCALE_GROUP_SELECTOR_ID);
   }
 
   private createSvgGroupWithScale(): void {
-    d3.select('#map')
+    d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`)
       .append('g')
-      .attr('id', 'scaleGroup')
+      .attr('id', ScaleComponent.SCALE_GROUP_SELECTOR_ID)
       .style('display', 'none');
     this.updateScaleGroup();
   }
@@ -206,7 +208,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private startCreatingScale(): void {
     this.scaleGroup.style('display', 'flex');
 
-    const mapBackground = d3.select('#map');
+    const mapBackground = d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`);
     mapBackground.style('cursor', 'crosshair');
 
     if (this.linesArray.length !== 1) {
@@ -220,14 +222,14 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.scaleService.changeVisibility(true);
     }
 
-    if (!d3.select('#scaleGroup').empty() && this.isScaleSet) {
-      d3.select('#scaleGroup').style('display', 'flex');
+    if (!d3.select(`#${ScaleComponent.SCALE_GROUP_SELECTOR_ID}`).empty() && this.isScaleSet) {
+      d3.select(`#${ScaleComponent.SCALE_GROUP_SELECTOR_ID}`).style('display', 'flex');
       this.redrawLine();
       this.redrawEndings();
       this.redrawPoints();
-    } else if (d3.select('#scaleGroup').empty()) {
-      d3.select('#map').append('g')
-        .attr('id', 'scaleGroup')
+    } else if (d3.select(`#${ScaleComponent.SCALE_GROUP_SELECTOR_ID}`).empty()) {
+      d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`).append('g')
+        .attr('id', ScaleComponent.SCALE_GROUP_SELECTOR_ID)
         .style('display', 'flex');
     }
 
@@ -236,9 +238,9 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   private hideScale(): void {
     this.scaleService.changeVisibility(false);
-    d3.select('#map').style('cursor', 'default');
+    d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`).style('cursor', 'default');
     this.scaleGroup.style('display', 'none');
-    d3.select('#map').on('click', null);
+    d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`).on('click', null);
   }
 
   private addPoint(): void {
@@ -260,7 +262,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.redrawAllObjectsOnMap();
       this.setScaleVisible();
       this.scaleGroup.style('display', 'flex');
-      d3.select('#map').on('click', null);
+      d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`).on('click', null);
     }
   }
 
@@ -350,7 +352,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
     const dragStop = (_, index: number, selections: d3.selection[]) => {
       d3.select(selections[index]).classed('dragging', false);
-      this.actionBarService.setScale(this.scale);
     };
 
     const drag = d3.drag()

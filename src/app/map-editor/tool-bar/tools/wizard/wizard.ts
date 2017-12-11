@@ -22,7 +22,7 @@ import {AcceptButtonsService} from '../../../../shared/components/accept-buttons
 import {DrawBuilder} from '../../../../map-viewer/published.builder';
 import {IconService} from '../../../../shared/services/drawing/icon.service';
 import {MapViewerService} from '../../../map.editor.service';
-import {DisableButtonsService} from '../../../../shared/services/buttons/disable-buttons.service';
+import {DisableButtonsService} from '../../../../shared/services/menu-buttons/disable-buttons.service';
 
 @Component({
   selector: 'app-wizard',
@@ -130,12 +130,12 @@ export class WizardComponent implements Tool, OnInit {
     this.displayError = false;
     this.activeStep.beforePlaceOnMap(this.selected);
     this.displayDialog = false;
-    const map: d3.selector = d3.select('#map');
+    const map: d3.selector = d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`);
     map.style('cursor', 'crosshair');
     map.on('click', () => {
       this.coordinates = this.mapViewerService.calculateTransition({x: d3.event.offsetX, y: d3.event.offsetY});
       const appendable = this.activeStep.getDrawingObjectParams(this.selected);
-      const drawBuilder = new DrawBuilder(d3.select('#map'), {id: appendable.id, clazz: appendable.groupClass}, this.mapViewerService);
+      const drawBuilder = new DrawBuilder(d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`), {id: appendable.id, clazz: appendable.groupClass}, this.mapViewerService);
       drawBuilder
         .createGroup()
         .addIcon({x: 0, y: 0}, this.iconService.getIcon(appendable.iconName))
@@ -178,7 +178,6 @@ export class WizardComponent implements Tool, OnInit {
       this.hintBarService.emitHintMessage(value);
     });
     this.acceptButtons.publishVisibility(true);
-    // this.acceptButtons.publishCoordinates({x: this.coordinates.x, y: this.coordinates.y});
     this.acceptButtons.decisionMade.first().subscribe(
       data => {
         this.activeStep.setSelectedItemId(this.selected);
@@ -210,7 +209,7 @@ export class WizardComponent implements Tool, OnInit {
   }
 
   private removeGroupDrag(): void {
-    const map = d3.select('#map');
+    const map = d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`);
     const selections: d3.selection[] = [
       map.select('#anchor' + this.selected),
       map.select('#sink' + this.selected)

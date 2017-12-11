@@ -89,7 +89,7 @@ import {ChangePasswordComponent} from './user/changePassword/changePassword';
 import {MapEditorComponent} from './map-editor/map.editor';
 import {SharedModule} from './shared/modules/shared.module';
 import {ToolDetailsComponent} from './map-editor/tool-bar/shared/details/tool-details';
-import {DisableButtonsService} from './shared/services/buttons/disable-buttons.service';
+import {DisableButtonsService} from './shared/services/menu-buttons/disable-buttons.service';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);

@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {AcceptButtonsService} from './accept-buttons.service';
 import {ToolDetailsComponent} from '../../../map-editor/tool-bar/shared/details/tool-details';
-import {DisableButtonsService} from '../../services/buttons/disable-buttons.service';
+import {DisableButtonsService} from '../../services/menu-buttons/disable-buttons.service';
 
 @Component({
   selector: 'app-accept-buttons',
