@@ -48,16 +48,16 @@ export class DevicePlacerComponent implements Tool, OnInit {
   private hintMessage: string;
   private floorId: number;
   private mapLoadedSubscription: Subscription;
+  private handledSelection: Subscription;
   private map: d3.selection;
-  private anchors: Anchor[];
-  private sinks: Sink[];
   private mapDevices: Expandable[] = [];
-  private chosenSink: Sink;
-  private selectedDevice: Sink | Anchor;
+  private verifiedDevices: Array<Sink|Anchor>;
   private placementDone: boolean = true;
   private managedSelectables: Subscription[];
+  private chosenSink: Sink;
+  private chosenAnchor: Anchor;
 
-  static getShortIdFromSelection(selection: d3.selection): number {
+  static getShortIdFromGroupSelection(selection: d3.selection): number {
     return parseInt(selection._groups[0][0].id, 10);
   }
 
@@ -69,7 +69,8 @@ export class DevicePlacerComponent implements Tool, OnInit {
     return {
       id: `${anchor.shortId}`,
       clazz: `anchor`,
-      cursor: `pointer`
+      cursor: `pointer`,
+      color: `green`
     };
   }
 
@@ -77,7 +78,8 @@ export class DevicePlacerComponent implements Tool, OnInit {
     return {
       id: `${sink.shortId}`,
       clazz: `sink anchor`,
-      cursor: `pointer`
+      cursor: `pointer`,
+      color: `orange`
     };
   }
 
@@ -107,12 +109,11 @@ export class DevicePlacerComponent implements Tool, OnInit {
     return this.hintMessage;
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.getMapSelection();
     this.getConfiguredDevices();
     this.subscribeForDroppedDevice();
     this.fetchDevices();
-    // this.toggleList();
   }
 
   setActive(): void {
@@ -151,7 +152,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
     });
   }
 
-  private subscribeForDroppedDevice() {
+  private subscribeForDroppedDevice(): void {
     this.devicePlacerController.droppedDevice.subscribe(() => {
       if (!!this.draggedDevice) {
         this.placementDone = false;
@@ -174,33 +175,40 @@ export class DevicePlacerComponent implements Tool, OnInit {
     });
   }
 
-  private fetchDevices() {
+  private fetchDevices(): void {
+    this.verifiedDevices = [];
     this.deviceService.setUrl('anchors/');
     this.deviceService.getAll().subscribe((anchors: Anchor[]) => {
       anchors.forEach((anchor: Anchor) => {
-        if (anchor.verified && !anchor.floorId) {
-          this.remainingDevices.push(anchor);
+        if (anchor.verified) {
+          this.verifiedDevices.push(anchor);
+          if (!anchor.floorId) {
+            this.remainingDevices.push(anchor);
+          }
         }
       });
     });
     this.deviceService.setUrl('sinks/');
     this.deviceService.getAll().subscribe((sinks: Sink[]) => {
-      const testingArr: Sink[] = [];
       sinks.forEach((sink: Sink) => {
-        testingArr.push(sink);
-        if (sink.verified && !sink.floorId) {
-          this.remainingDevices.push(sink);
+        if (sink.verified) {
+          this.verifiedDevices.push(sink);
+          if (!sink.floorId) {
+            this.remainingDevices.push(sink);
+          }
         }
       });
+      console.log('this.verifiedDevices');
+      console.log(this.verifiedDevices);
     });
   }
 
-  dragDeviceStarted(device: Anchor | Sink) {
+  public dragDeviceStarted(device: Anchor | Sink): void {
     this.draggedDevice = device;
     this.toggleList();
   }
 
-  dragDeviceEnded() {
+  public dragDeviceEnded(): void {
     if (this.draggedDevice && this.placementDone) {
       this.toggleList();
     }
@@ -208,12 +216,12 @@ export class DevicePlacerComponent implements Tool, OnInit {
   }
 
 
-  private manageSelectable(mapDevice: Expandable): void {
+  private manageSingleSelectable(mapDevice: Expandable): void {
     mapDevice.selectable.selectOn();
     const managedSelectable: Subscription = mapDevice.selectable.onSelected().subscribe((selectedMapDevice): d3.selection => {
-      const id = DevicePlacerComponent.getShortIdFromSelection(selectedMapDevice);
-      const selectedDevice = this.findMapDeviceByShortId(id);
-      // TODO mark selected
+      const deviceShortId = DevicePlacerComponent.getShortIdFromGroupSelection(selectedMapDevice);
+      const selectedDevice = this.findMapDevice(deviceShortId);
+      this.devicePlacerController.selectDevice(selectedDevice);
     });
     this.managedSelectables.push(managedSelectable);
   }
@@ -221,7 +229,22 @@ export class DevicePlacerComponent implements Tool, OnInit {
   private activateAllSelectablesBahavior(): void {
     this.managedSelectables = [];
     this.mapDevices.forEach((mapDevice: Expandable) => {
-      this.manageSelectable(mapDevice);
+      this.manageSingleSelectable(mapDevice);
+    });
+    this.handleSelectedDevices();
+  }
+
+  private handleSelectedDevices(): void {
+    this.handledSelection = this.devicePlacerController.getSelectedDevice()
+      .subscribe( (selectedDevice) => {
+      // TODO select anchor and sink logic
+        console.log(selectedDevice);
+      const handledDevice = this.findVerifiedDevice(DevicePlacerComponent.getShortIdFromGroupSelection(selectedDevice.groupCreated.domGroup));
+        (DevicePlacerComponent.isSinkType(handledDevice))
+          ? console.log('sink')
+          : console.log('anchor') ;
+      // TODO mark selected
+      selectedDevice.selectable.setBorderBox('red');
     });
   }
 
@@ -232,12 +255,17 @@ export class DevicePlacerComponent implements Tool, OnInit {
     this.managedSelectables.forEach( (selectableSubscription) => {
       selectableSubscription.unsubscribe();
     });
-    this.managedSelectables = [];
+    this.handledSelection.unsubscribe();
   }
 
-  private findMapDeviceByShortId(shortId: number): Expandable {
+  private findMapDevice(shortId: number): Expandable {
     return this.mapDevices.find( (mapDevice: Expandable) => {
-      return DevicePlacerComponent.getShortIdFromSelection(mapDevice.groupCreated.domGroup) === shortId;
+      return shortId === DevicePlacerComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.domGroup);
+    });
+  }
+  private findVerifiedDevice(shortId: number): Sink|Anchor {
+    return this.verifiedDevices.find( (verifiedDevice: Sink|Anchor) => {
+      return shortId === verifiedDevice.shortId;
     });
   }
 
@@ -266,7 +294,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
     return ToolName.ANCHOR;
   }
 
-  private toggleList() {
+  private toggleList(): void {
     this.listState = this.listState === 'out' ? 'in' : 'out';
   }
 
@@ -276,7 +304,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
     });
   }
 
-  private removeDragFromAllAnchorsOnMap() {
+  private removeDragFromAllAnchorsOnMap(): void {
     this.mapDevices.forEach((expandable) => {
       expandable.connectable.dragOff();
     });
@@ -287,10 +315,6 @@ export class DevicePlacerComponent implements Tool, OnInit {
     this.devicePlacerController.resetChosenAnchor();
   }
 
-  public emitToggleActive(): void {
-    this.clicked.emit(this);
-  }
-
   private setTranslations(): void {
     this.translate.setDefaultLang('en');
     this.translate.get('anchor.first.message').subscribe((value: string) => {
@@ -298,7 +322,8 @@ export class DevicePlacerComponent implements Tool, OnInit {
     });
   }
 
-  private drawDevice(device: Device, deviceConfig: DrawConfiguration, coordinates: Point): Expandable {
+  private drawDevice(device: Device, deviceConfig: DrawConfiguration,
+                     coordinates: Point): Expandable {
     const drawBuilder = new DrawBuilder(this.map, deviceConfig);
     const droppedDevice = drawBuilder.createGroup()
       .place(coordinates)
@@ -337,7 +362,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
           // this.chosenSink.anchors.push(device);
         }
         // TODO subscribe on selected event and push to managedArray
-        this.manageSelectable(expandableMapObject);
+        this.manageSingleSelectable(expandableMapObject);
         // ->  this.configurationService.setSink(this.chosenSink);
       } else {
         this.removeChosenAnchor(expandableMapObject);

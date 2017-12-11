@@ -23,18 +23,25 @@ export class DrawBuilder {
     if (this.configuration.cursor) {
       group.style('cursor', this.configuration.cursor);
     }
-    return new GroupCreated(group, this.container);
+    return (this.configuration.color)
+      ? new GroupCreated(group, this.container, this.configuration.color)
+      : new GroupCreated(group, this.container);
   }
 }
 
 export class GroupCreated {
   domGroup: d3.selection;
   container: d3.selection;
+  private color: string = 'black';
 
   constructor(domGroup: d3.selection,
-              container: d3.selection) {
+              container: d3.selection,
+              colored?: string) {
     this.domGroup = domGroup;
     this.container = container;
+    if (colored) {
+      this.color = colored;
+    }
   }
 
   place(coordinates: Point): GroupCreated {
@@ -59,8 +66,8 @@ export class GroupCreated {
       .attr('x', coordinates.x)
       .attr('y', coordinates.y)
       .html(icon)
-      .attr('stroke', 'black')
-      .attr('fill', 'black');
+      .attr('stroke', this.color)
+      .attr('fill', this.color);
     return this;
   }
 
@@ -81,7 +88,7 @@ export class GroupCreated {
       .append('text')
       .attr('x', coordinates.x)
       .attr('y', coordinates.y)
-      .attr('fill', 'black')
+      .attr('fill', this.color)
       .text(text);
     return this;
   }
@@ -90,7 +97,8 @@ export class GroupCreated {
     this.domGroup.remove();
   }
 
-  addBorderBox() {
+  addBorderBox(defineColor?: string) {
+    const boxColor = (defineColor) ? defineColor : this.color;
     const parentElement: SVGElement = this.domGroup._groups['0']['0'];
     const domRect: DOMRectInit = parentElement.getBoundingClientRect();
     const boxWidth = 2;
@@ -104,7 +112,7 @@ export class GroupCreated {
       .attr('y', paddingY)
       .attr('width', (domRect.width * 1 + boxWidth * 2))
       .attr('height', (domRect.height * 1 + boxWidth * 2))
-      .attr('stroke', 'green')
+      .attr('stroke', boxColor)
       .attr('stroke-width', boxWidth)
       .attr('opacity', '0.5')
       .attr('stroke-linecap', 'round')
@@ -116,10 +124,29 @@ export class GroupCreated {
     this.domGroup.select('rect.group-border-box').remove();
   }
 
+  changeColor(newColor) {
+    const parentElement: SVGElement = this.domGroup._groups['0']['0'];
+    const childrenCount: number = parentElement.childElementCount;
+    const children: NodeList = parentElement.childNodes;
+    for (let i = 0; i < childrenCount; i++) {
+      const classed = children[i].attributes['class'];
+      if (!classed || (!!classed && classed.value !== 'pointer' && classed.value !== 'group-border-box' )) {
+        const child = d3.select(children[i]);
+        if (child.attr('stroke') !== null) {
+          child.attr('stroke', newColor)
+        }
+        if (child.attr('fill') !== null) {
+          child.attr('fill', newColor);
+        }
+      }
+    }
+  }
+
 }
 
 export interface DrawConfiguration {
   id: string;
   clazz: string;
   cursor?: string;
+  color?: string;
 }

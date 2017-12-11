@@ -1,39 +1,23 @@
 import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
 import {Point} from '../../../map.type';
-import {Sink} from '../../../../device/sink.type';
-import {Anchor} from '../../../../device/anchor.type';
 import {Expandable} from '../../../../utils/builder/expandable';
+import {Observable} from 'rxjs/Observable';
 
 @Injectable()
 export class DevicePlacerController {
-  private anchor: Subject<Anchor> = new Subject<Anchor>();
-  private droppedOnMap: Subject<Anchor> = new Subject<Anchor>();
-  private sink: Subject<Sink> = new Subject<Sink>();
+  private droppedOnMap: Subject<any> = new Subject();
   private coordinates: Subject<Point> = new Subject<Point>();
-  private mapDevice: Subject<Expandable> = new Subject<Expandable>();
+  private selectedDevice: Subject<Expandable> = new Subject<Expandable>();
+  private anchor: Subject<Expandable> = new Subject<Expandable>();
+  private sink: Subject<Expandable> = new Subject<Expandable>();
 
-  chosenAnchor = this.anchor.asObservable();
   droppedDevice = this.droppedOnMap.asObservable();
-  chosenSink = this.sink.asObservable();
   newCoordinates = this.coordinates.asObservable();
-  selectedDevice = this.mapDevice.asObservable();
 
 
   deviceDropped(): void {
     this.droppedOnMap.next();
-  }
-
-  resetChosenAnchor(): void {
-    this.anchor.next(undefined);
-  }
-
-  setChosenSink(sink: Sink): void {
-    this.sink.next(sink);
-  }
-
-  resetChosenSink(): void {
-    this.sink.next(undefined);
   }
 
   setCoordinates(coords: Point): void {
@@ -44,12 +28,40 @@ export class DevicePlacerController {
     this.coordinates.next(undefined);
   }
 
+  setChosenAnchor(anchor: Expandable): void {
+    this.anchor.next(anchor);
+  }
+
+  getChosenAnchor(): Observable<Expandable> {
+    return this.anchor.asObservable()
+  }
+
+  resetChosenAnchor(): void {
+    this.anchor.next(undefined);
+  }
+
+  setChosenSink(sink: Expandable): void {
+    this.sink.next(sink);
+  }
+
+  getChosenSink(): Observable<Expandable> {
+    return this.sink.asObservable()
+  }
+
+  resetChosenSink(): void {
+    this.sink.next(undefined);
+  }
+
   selectDevice(device: Expandable): void {
-    this.mapDevice.next(device);
+    this.selectedDevice.next(device);
+  }
+
+  getSelectedDevice(): Observable<Expandable> {
+    return this.selectedDevice.asObservable()
   }
 
   deselectDevice(): void {
-    this.mapDevice.next(undefined);
+    this.selectedDevice.next(undefined);
   }
 
 }

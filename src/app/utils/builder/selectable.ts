@@ -31,7 +31,6 @@ export class Selectable {
   public select() {
     // this.group.domGroup.classed('selected', true);
     this.emitSelectedEvent();
-    this.createBorderBox();
     // this.selectOff();
   }
 
@@ -49,11 +48,12 @@ export class Selectable {
 
   public selectOff() {
     this.group.domGroup.on('.click.select', null);
+    this.removeBorderBox(); // TODO <- remove by deselecting only selectedDevices
   }
 
-  private createBorderBox() {
+  public setBorderBox(defineColor?: string) {
     this.removeBorderBox();
-    this.group.addBorderBox();
+    this.group.addBorderBox(defineColor);
     this.hasBorder = true;
   }
 
