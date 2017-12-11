@@ -6,14 +6,15 @@ sys.path.append(cwd + '../pages/')
 sys.path.append(cwd + '../libraries/')
 from base_page import BasePage
 from selenium.common.exceptions import NoSuchElementException
-from pyquibase.pyquibase import Pyquibase
+
 
 class ComplexesPage(BasePage):
 
     login_url = 'http://localhost:4200/complexes'
     complex_table_header = 'Complex name'
     complex_modal_title = 'Add new complex'
-    new_complex_name = 'Test new complex'
+    new_complex_name = 'Test new complexees'
+    csv_filename = 'complex.csv'
 
     ### LOCATORS
     # Complexes page locators
@@ -32,6 +33,12 @@ class ComplexesPage(BasePage):
     cancel_button = (By.XPATH, '//button[@ng-reflect-label="Cancel"]')
     # Input
     new_complex_input = (By.CSS_SELECTOR, 'form div div input#name')
+
+    # Database
+    # Prepare environment
+    def create_complex_db_env(self):
+        return self.create_db_env(self.csv_filename)
+    # Check is there the new row
 
     # Site launch
     def get_add_button_text(self):
@@ -64,6 +71,7 @@ class ComplexesPage(BasePage):
     # Add complex
     def add_button_click(self):
         return self.click_button(*self.add_button_complex)
+
     # For Modal component
     def check_modal_title(self):
         string = 'Add new complex'
@@ -75,26 +83,16 @@ class ComplexesPage(BasePage):
     def is_cancel_button_present(self):
         return self.is_element_present(self.cancel_button)
 
-    # def is_input_label_present(self):
-
     def enter_complex_name(self):
         return self.clear_and_fill_input(self.new_complex_name, *self.new_complex_input)
 
     def save_add_new_complex(self):
         return self.click_button(*self.save_button)
 
-    # Main Functionalities
+    # Main Functionality
     def add_new_complex(self):
         modal_title = self.identify_element(*self.add_button_text_locator).text
 
-    def create_complex_db_env(self):
 
-        pyquibase = Pyquibase.mysql(
-          host='localhost',
-          port=3306,
-          db_name='Navi',
-          username='root',
-          password='',
-          change_log_file='test-complexes.xml'
-        )
-        pyquibase.update()
+
+

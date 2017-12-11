@@ -43,32 +43,17 @@ class TestComplexesPage(unittest.TestCase):
     def test_complexes_page_is_loaded_correctly(self):
         self.assertTrue(self.multi_assertion())
 
-    # [TC004] Test of adding complex correctly
-    # [TC005] Test of adding complex with too long name
-    # [TC006] Test of adding complex with too short name
-    # [TC007] Test of adding complex with exisitng name
-    # [TC008] Test of adding complex with forbidden signs
-    # def test_add_complex_correctly(self):
-        # 1/Click add button
-        # 2/Modal window with title
-        # 3/Save and Cancel Button
-        # 4/Fill Input
-        # 5/Save Click and redirect
-        # 6/Check if element is displayed & in addition growl with text
-        # 6/Remove Row
-
     def test_add_new_complex_correctly(self):
 
-        # self.complexes_page.create_complex_db_env()
         self.complexes_page.add_button_click()
         # Zmienic tytul modala
         # self.assertTrue(self.complexes_page.check_modal_title())
-        # self.assertTrue(self.complexes_page.is_save_button_present())
-        # self.assertTrue(self.complexes_page.is_cancel_button_present())
+        self.assertTrue(self.complexes_page.is_save_button_present())
+        self.assertTrue(self.complexes_page.is_cancel_button_present())
         self.complexes_page.enter_complex_name()
         self.complexes_page.save_add_new_complex()
 
-
     @classmethod
     def tearDownClass(cls):
+        # cls.complexes_page.rollback_db('testik')
         cls.webdriver.quit()
