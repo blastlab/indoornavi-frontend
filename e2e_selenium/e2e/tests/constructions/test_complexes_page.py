@@ -2,12 +2,10 @@ import os
 import sys
 import unittest
 from selenium import webdriver
-from test_driver import TestDriver
-cwd = os.getcwd()
-sys.path.append(cwd + 'pages/')
-sys.path.append('/home/motlowski/Desktop/Indoornavi/frontend/e2e_selenium/e2e/pages/constructions')
-from login_page import LoginPage
-from complexes_page import ComplexesPage
+from tests.test_driver import TestDriver
+#from .tests.test_driver import TestDriver
+from pages.constructions.complexes_page import ComplexesPage
+from pages.login_page import LoginPage
 
 class TestComplexesPage(unittest.TestCase):
 

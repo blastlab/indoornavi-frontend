@@ -2,10 +2,8 @@ import os
 import sys
 import unittest
 from selenium import webdriver
-from test_driver import TestDriver
-cwd = os.getcwd()
-sys.path.append(cwd + '/pages/')
-from login_page import LoginPage
+from tests.test_driver import TestDriver
+from pages.login_page import LoginPage
 
 class TestLoginPage(unittest.TestCase):
 

@@ -1,10 +1,7 @@
 import os
 import sys
 from selenium.webdriver.common.by import By
-cwd = os.getcwd()
-sys.path.append(cwd + '../pages/')
-sys.path.append(cwd + '../libraries/')
-from base_page import BasePage
+from pages.base_page import BasePage
 from selenium.common.exceptions import NoSuchElementException
 
 

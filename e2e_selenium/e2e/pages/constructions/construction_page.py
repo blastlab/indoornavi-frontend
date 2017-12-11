@@ -1,7 +1,7 @@
 from selenium.webdriver.support import expected_conditions as EC
 import selenium.webdriver.support.ui as ui
 from selenium.common.exceptions import NoSuchElementException
-from base_page import BasePage
+from pages.base_page import BasePage
 
 class ConstructionPage(object):
 
