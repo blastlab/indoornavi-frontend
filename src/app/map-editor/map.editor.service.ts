@@ -62,10 +62,8 @@ export class MapViewerService {
           // todo: discus proper cursor for moving and zooming tasks on the map
           .on('mousedown', () => {
             d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`).style('cursor', 'move')
-          })
-          .on('mouseup', () => {
-          d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`).style('cursor', 'default')
-        });
+          });
+
 
         zoom
           .translateBy(map, (mapContainer.offsetWidth - image.width) / 2, (mapContainer.offsetHeight - image.height) / 2);

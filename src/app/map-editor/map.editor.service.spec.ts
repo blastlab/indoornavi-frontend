@@ -21,6 +21,8 @@ describe('MapViewerService', () => {
   }));
 
   it('should calculate transition', inject([MapViewerService], (mapViewerService) => {
+    // given
+    // when
     const p1: Point = {
       x: 0,
       y: 0
@@ -29,6 +31,7 @@ describe('MapViewerService', () => {
       x: 10,
       y: 10
     };
+    // then
     expect(mapViewerService.calculateTransition(p1).x).toEqual(0);
     expect(mapViewerService.calculateTransition(p1).y).toEqual(0);
     expect(mapViewerService.calculateTransition(p2).x).toEqual(10);

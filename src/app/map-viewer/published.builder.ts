@@ -125,11 +125,16 @@ export class DrawBuilder {
       .append('svg')
       .attr('id', this.configuration.id)
       .attr('class', this.configuration.clazz)
+      .attr('overflow', 'visible')
       .attr('x', 0)
       .attr('y', 0)
+      .classed('pointer', true)
       // todo: discus proper cursor for moving device around the map
       .on('mousedown', () => {
-        d3.select('#map').style('cursor', 'pointer')
+        d3.select(`#${this.configuration.id}`).style('cursor', 'pointer')
+      })
+      .on('mouseup', () => {
+        d3.select(`#${this.configuration.id}`).style('cursor', 'move')
       });
     if (this.configuration.cursor) {
       group.style('cursor', this.configuration.cursor);

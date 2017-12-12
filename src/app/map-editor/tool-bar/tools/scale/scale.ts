@@ -176,7 +176,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   private updateScaleGroup() {
-    this.scaleGroup = d3.select(ScaleComponent.SCALE_GROUP_SELECTOR_ID);
+    this.scaleGroup = d3.select(`#${ScaleComponent.SCALE_GROUP_SELECTOR_ID}`);
   }
 
   private createSvgGroupWithScale(): void {

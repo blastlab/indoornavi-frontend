@@ -20,7 +20,7 @@ import {ToolbarService} from '../../toolbar.service';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
 import {AcceptButtonsService} from '../../../../shared/components/accept-buttons/accept-buttons.service';
 import {DrawBuilder} from '../../../../map-viewer/published.builder';
-import {IconService} from '../../../../shared/services/drawing/icon.service';
+import {IconService, NaviIcons} from '../../../../shared/services/drawing/icon.service';
 import {MapViewerService} from '../../../map.editor.service';
 import {DisableButtonsService} from '../../../../shared/services/menu-buttons/disable-buttons.service';
 
@@ -134,12 +134,13 @@ export class WizardComponent implements Tool, OnInit {
     map.style('cursor', 'crosshair');
     map.on('click', () => {
       this.coordinates = this.mapViewerService.calculateTransition({x: d3.event.offsetX, y: d3.event.offsetY});
-      const appendable = this.activeStep.getDrawingObjectParams(this.selected);
-      const drawBuilder = new DrawBuilder(d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`), {id: appendable.id, clazz: appendable.groupClass}, this.mapViewerService);
+      const device = this.activeStep.getDrawingObjectParams(this.selected);
+      const drawBuilder = new DrawBuilder(map, {id: device.id, clazz: device.groupClass}, this.mapViewerService);
       drawBuilder
         .createGroup()
-        .addIcon({x: 0, y: 0}, this.iconService.getIcon(appendable.iconName))
-        .addText({x: 0, y: 36}, appendable.id)
+        .addIcon({x: -12, y: -12}, this.iconService.getIcon(NaviIcons.POINTER))
+        .addIcon({x: 0, y: 0}, this.iconService.getIcon(device.iconName))
+        .addText({x: 0, y: 36}, device.id)
         .place({x: this.coordinates.x, y: this.coordinates.y})
         .setDraggable();
       map.on('click', null);
