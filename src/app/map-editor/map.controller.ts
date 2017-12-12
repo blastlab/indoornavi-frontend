@@ -7,8 +7,7 @@ import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.servi
 import {BuildingService} from '../building/building.service';
 
 @Component({
-  templateUrl: 'map.controller.html',
-  styleUrls: ['./map.css']
+  templateUrl: 'map.controller.html'
 })
 export class MapControllerComponent implements OnInit {
   imageUploaded: boolean;

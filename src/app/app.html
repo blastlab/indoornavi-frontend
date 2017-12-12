@@ -1,4 +1,4 @@
-<ng-container *ngIf="isUserLoggedIn; then logged_in else not_logged_in"></ng-container>
+<ng-container *ngIf="isUserLoggedIn || isDisplayedInIFrame; then logged_in else not_logged_in"></ng-container>
 <ng-template #logged_in>
   <div *ngIf="!isDisplayedInIFrame" class="ui-g">
     <p-sidebar id="sidebar-menu" [(visible)]="displaySidebar" position="right"
