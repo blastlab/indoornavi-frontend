@@ -25,6 +25,7 @@ import {Tag} from '../device/tag.type';
 import {AreaService} from '../shared/services/area/area.service';
 import {Area} from '../shared/services/area/area.type';
 import {TranslateService} from '@ngx-translate/core';
+import {ZoomService} from '../map-editor/zoom.service';
 
 @Component({
   templateUrl: './published.html',
@@ -46,7 +47,8 @@ export class PublishedComponent implements OnInit, AfterViewInit {
               private mapViewerService: MapViewerService,
               private iconService: IconService,
               private areaService: AreaService,
-              private translateService: TranslateService) {
+              private translateService: TranslateService
+              ) {
   }
 
   ngOnInit() {

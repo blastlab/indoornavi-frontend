@@ -2,16 +2,19 @@ import {Injectable} from '@angular/core';
 import {Floor} from '../floor/floor.type';
 import {MapService} from './map.service';
 import * as d3 from 'd3';
-import {Point, Transform} from './map.type';
+import {Transform} from './map.type';
+import {Subject} from 'rxjs/Subject';
 
 @Injectable()
 export class MapViewerService {
 
   public static MAP_LAYER_SELECTOR_ID: string = 'map';
-  private static MAP_UPPER_LAYER_SELECTOR_ID: string = 'map-upper-layer';
+  public static MAP_UPPER_LAYER_SELECTOR_ID: string = 'map-upper-layer';
   private static MAP_CONTAINER_SELECTOR_ID: string = 'map-container';
 
-  private transformation: Transform = {x: 0, y: 0, k: 1};
+  private transformation = new Subject<Transform>();
+
+  isTransformed = this.transformation.asObservable();
 
   static maxTranslate(mapContainer: HTMLElement, image: HTMLImageElement): [[number, number], [number, number]] {
     const width = Math.max(mapContainer.offsetWidth, image.width),
@@ -26,6 +29,10 @@ export class MapViewerService {
   constructor(private mapService: MapService) {
   }
 
+  publishTransformation (transformation: Transform) {
+    this.transformation.next(transformation)
+  }
+
   drawMap(floor: Floor): Promise<d3.selection> {
     return new Promise((resolve) => {
       const image = new Image();
@@ -35,7 +42,7 @@ export class MapViewerService {
 
         const zoomed = () => {
           g.attr('transform', d3.event.transform);
-          this.transformation = d3.zoomTransform(document.getElementById(MapViewerService.MAP_UPPER_LAYER_SELECTOR_ID));
+          this.publishTransformation(d3.zoomTransform(document.getElementById(MapViewerService.MAP_UPPER_LAYER_SELECTOR_ID)));
         };
 
         const zoom = d3.zoom()
@@ -59,7 +66,6 @@ export class MapViewerService {
           .attr('y', 0)
           .attr('width', image.width)
           .attr('height', image.height)
-          // todo: discus proper cursor for moving and zooming tasks on the map
           .on('mousedown', () => {
             d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`).style('cursor', 'move')
           });
@@ -85,16 +91,4 @@ export class MapViewerService {
     });
   }
 
-  calculateTransition (point: Point): Point {
-    return {x: (point.x - this.transformation.x) / this.transformation.k, y: (point.y - this.transformation.y) / this.transformation.k};
-  }
-  calculateInMapEditorRangeEvent(point: Point, offset: Point[]): Point {
-    const borderNorthWest: Point = this.calculateTransition({x: d3.select(`#${MapViewerService.MAP_UPPER_LAYER_SELECTOR_ID}`).attr('x'), y: d3.select(`#${MapViewerService.MAP_UPPER_LAYER_SELECTOR_ID}`).attr('y')});
-    const borderSouthEast: Point = this.calculateTransition({x: d3.select(`#${MapViewerService.MAP_UPPER_LAYER_SELECTOR_ID}`).attr('width'), y: d3.select(`#${MapViewerService.MAP_UPPER_LAYER_SELECTOR_ID}`).attr('height')});
-    point.x = point.x > borderNorthWest.x + offset[0].x ? point.x : borderNorthWest.x + offset[0].x;
-    point.x = point.x < borderSouthEast.x + offset[1].x ? point.x : borderSouthEast.x + offset[1].x;
-    point.y = point.y > borderNorthWest.y + offset[0].y ? point.y : borderNorthWest.y + offset[0].y;
-    point.y = point.y < borderSouthEast.y + offset[1].y ? point.y : borderSouthEast.y + offset[1].y;
-    return {x: point.x, y: point.y};
-  }
 }

@@ -14,7 +14,7 @@ import {SocketMessage, WizardData, WizardStep} from './wizard.type';
 import {Floor} from '../../../../floor/floor.type';
 import {SelectItem} from 'primeng/primeng';
 import {ThirdStep} from './third-step/third-step';
-import {Point} from '../../../map.type';
+import {Point, Transform} from '../../../map.type';
 import * as d3 from 'd3';
 import {ToolbarService} from '../../toolbar.service';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
@@ -23,6 +23,7 @@ import {DrawBuilder} from '../../../../map-viewer/published.builder';
 import {IconService, NaviIcons} from '../../../../shared/services/drawing/icon.service';
 import {MapViewerService} from '../../../map.editor.service';
 import {DisableButtonsService} from '../../../../shared/services/menu-buttons/disable-buttons.service';
+import {ZoomService} from '../../../zoom.service';
 
 @Component({
   selector: 'app-wizard',
@@ -47,6 +48,7 @@ export class WizardComponent implements Tool, OnInit {
   private wizardData: WizardData = new WizardData();
   private hintMessage: string;
   private wizardActivationButtonActive: boolean = true;
+  private transformation: Transform = {x: 0, y: 0, k: 1};
 
   constructor(public translate: TranslateService,
               private ngZone: NgZone,
@@ -67,6 +69,9 @@ export class WizardComponent implements Tool, OnInit {
     this.checkIsLoading();
     this.disableButtonService.detectMapEvent.subscribe((value: boolean) => {
       this.wizardActivationButtonActive = value;
+    });
+    this.mapViewerService.isTransformed.subscribe((transformation: Transform) => {
+      this.transformation = transformation;
     });
   }
 
@@ -133,7 +138,7 @@ export class WizardComponent implements Tool, OnInit {
     const map: d3.selector = d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`);
     map.style('cursor', 'crosshair');
     map.on('click', () => {
-      this.coordinates = this.mapViewerService.calculateTransition({x: d3.event.offsetX, y: d3.event.offsetY});
+      this.coordinates = ZoomService.calculateTransition({x: d3.event.offsetX, y: d3.event.offsetY}, this.transformation);
       const device = this.activeStep.getDrawingObjectParams(this.selected);
       const drawBuilder = new DrawBuilder(map, {id: device.id, clazz: device.groupClass}, this.mapViewerService);
       drawBuilder
