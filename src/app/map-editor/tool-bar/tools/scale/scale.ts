@@ -4,7 +4,7 @@ import {ToolName} from '../tools.enum';
 import * as d3 from 'd3';
 import {TranslateService} from '@ngx-translate/core';
 import {Scale} from './scale.type';
-import {Line, Point, Transform} from '../../../map.type';
+import {Line, Point} from '../../../map.type';
 import {ScaleInputService} from './input/input.service';
 import {ScaleHintService} from './hint/hint.service';
 import {MapLoaderInformerService} from '../../../../shared/services/map-loader-informer/map-loader-informer.service';
@@ -44,7 +44,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private pointsArray: Point[] = [];
   private linesArray: Line[] = [];
   private scaleActivationButtonActive: boolean = true;
-  private transformation: Transform = {x: 0, y: 0, k: 1};
 
   constructor(private translate: TranslateService,
               private scaleInputService: ScaleInputService,
@@ -54,8 +53,8 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
               private toolbarService: ToolbarService,
               private actionBarService: ActionBarService,
               private scaleService: ScaleService,
-              private mapViewerService: MapViewerService,
               private disableButtonService: DisableButtonsService,
+              private zoomService: ZoomService
               ) {
     this.setTranslations();
   }
@@ -143,9 +142,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
         this.linesArray = [];
         this.drawScale(this.scale);
       }
-    });
-    this.mapViewerService.isTransformed.subscribe((transformation: Transform) => {
-      this.transformation = transformation;
     });
   }
 
@@ -249,7 +245,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   private addPoint(): void {
-    const point: Point = ZoomService.calculateTransition({x: d3.event.offsetX, y: d3.event.offsetY}, this.transformation);
+    const point: Point = this.zoomService.calculateTransition({x: d3.event.offsetX, y: d3.event.offsetY});
 
     if (!this.isFirstPointDrawn) {
       this.isFirstPointDrawn = true;
@@ -347,9 +343,11 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
         x = mousePosition.x;
         y = mousePosition.y;
       }
-      // offsetFromBorder[0] gives left and upper border offset, and offsetFromBorder[1] gives right and bottom border offset, sign is giving a direction of offset
+      // offsetFromBorder[0] gives left and upper border offset,
+      // and offsetFromBorder[1] gives right and bottom border offset,
+      // sign is giving a direction of the offset
       const offsetFromBorder = [{x : 5, y: 5}, {x: -5, y: -5}];
-      const eventPosition: Point = ZoomService.calculateInMapEditorRangeEvent({x: x, y: y}, offsetFromBorder, this.transformation);
+      const eventPosition: Point = this.zoomService.calculateInMapEditorRangeEvent({x: x, y: y}, offsetFromBorder);
       d3.select(selections[index]).attr('cx', d.x = eventPosition.x).attr('cy', d.y = eventPosition.y);
       this.redrawLine();
       this.redrawEndings();

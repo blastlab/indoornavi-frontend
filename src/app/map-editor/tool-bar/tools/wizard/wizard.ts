@@ -14,7 +14,7 @@ import {SocketMessage, WizardData, WizardStep} from './wizard.type';
 import {Floor} from '../../../../floor/floor.type';
 import {SelectItem} from 'primeng/primeng';
 import {ThirdStep} from './third-step/third-step';
-import {Point, Transform} from '../../../map.type';
+import {Point} from '../../../map.type';
 import * as d3 from 'd3';
 import {ToolbarService} from '../../toolbar.service';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
@@ -48,7 +48,6 @@ export class WizardComponent implements Tool, OnInit {
   private wizardData: WizardData = new WizardData();
   private hintMessage: string;
   private wizardActivationButtonActive: boolean = true;
-  private transformation: Transform = {x: 0, y: 0, k: 1};
 
   constructor(public translate: TranslateService,
               private ngZone: NgZone,
@@ -58,8 +57,8 @@ export class WizardComponent implements Tool, OnInit {
               private hintBarService: HintBarService,
               private actionBarService: ActionBarService,
               private iconService: IconService,
-              private mapViewerService: MapViewerService,
-              private disableButtonService: DisableButtonsService
+              private disableButtonService: DisableButtonsService,
+              private zoomService: ZoomService
               ) {
   }
 
@@ -69,9 +68,6 @@ export class WizardComponent implements Tool, OnInit {
     this.checkIsLoading();
     this.disableButtonService.detectMapEvent.subscribe((value: boolean) => {
       this.wizardActivationButtonActive = value;
-    });
-    this.mapViewerService.isTransformed.subscribe((transformation: Transform) => {
-      this.transformation = transformation;
     });
   }
 
@@ -138,9 +134,9 @@ export class WizardComponent implements Tool, OnInit {
     const map: d3.selector = d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`);
     map.style('cursor', 'crosshair');
     map.on('click', () => {
-      this.coordinates = ZoomService.calculateTransition({x: d3.event.offsetX, y: d3.event.offsetY}, this.transformation);
+      this.coordinates = this.zoomService.calculateTransition({x: d3.event.offsetX, y: d3.event.offsetY});
       const device = this.activeStep.getDrawingObjectParams(this.selected);
-      const drawBuilder = new DrawBuilder(map, {id: device.id, clazz: device.groupClass}, this.mapViewerService);
+      const drawBuilder = new DrawBuilder(map, {id: device.id, clazz: device.groupClass}, this.zoomService);
       drawBuilder
         .createGroup()
         .addIcon({x: -12, y: -12}, this.iconService.getIcon(NaviIcons.POINTER))

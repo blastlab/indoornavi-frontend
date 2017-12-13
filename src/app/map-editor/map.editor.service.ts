@@ -11,26 +11,26 @@ export class MapViewerService {
   public static MAP_LAYER_SELECTOR_ID: string = 'map';
   public static MAP_UPPER_LAYER_SELECTOR_ID: string = 'map-upper-layer';
   private static MAP_CONTAINER_SELECTOR_ID: string = 'map-container';
-
-  private transformation = new Subject<Transform>();
-
-  isTransformed = this.transformation.asObservable();
+  private static transformation = new Subject<Transform>();
 
   static maxTranslate(mapContainer: HTMLElement, image: HTMLImageElement): [[number, number], [number, number]] {
-    const width = Math.max(mapContainer.offsetWidth, image.width),
+      const width = Math.max(mapContainer.offsetWidth, image.width),
       height = Math.max(mapContainer.offsetHeight, image.height);
-    if (image.width < mapContainer.offsetWidth && image.height < mapContainer.offsetHeight) {
-      return [[-width + image.width, -height + image.height], [width, height]]
-    } else {
-      return [[-100, -100], [width + 100, height + 100]];
+      if (image.width < mapContainer.offsetWidth && image.height < mapContainer.offsetHeight) {
+          return [[-width + image.width, -height + image.height], [width, height]]
+        } else {
+          return [[-100, -100], [width + 100, height + 100]];
+        }
     }
+  static mapIsTransformed () {
+    return MapViewerService.transformation.asObservable();
+  }
+
+  static publishTransformation (transformation: Transform) {
+    MapViewerService.transformation.next(transformation);
   }
 
   constructor(private mapService: MapService) {
-  }
-
-  publishTransformation (transformation: Transform) {
-    this.transformation.next(transformation)
   }
 
   drawMap(floor: Floor): Promise<d3.selection> {
@@ -42,7 +42,7 @@ export class MapViewerService {
 
         const zoomed = () => {
           g.attr('transform', d3.event.transform);
-          this.publishTransformation(d3.zoomTransform(document.getElementById(MapViewerService.MAP_UPPER_LAYER_SELECTOR_ID)));
+          MapViewerService.publishTransformation(d3.zoomTransform(document.getElementById(MapViewerService.MAP_UPPER_LAYER_SELECTOR_ID)));
         };
 
         const zoom = d3.zoom()

@@ -47,7 +47,8 @@ export class PublishedComponent implements OnInit, AfterViewInit {
               private mapViewerService: MapViewerService,
               private iconService: IconService,
               private areaService: AreaService,
-              private translateService: TranslateService
+              private translateService: TranslateService,
+              private zoomService: ZoomService
               ) {
   }
 
@@ -110,7 +111,7 @@ export class PublishedComponent implements OnInit, AfterViewInit {
     const coordinates: Point = this.scaleCoordinates(data.coordinates.point),
       deviceId: number = data.coordinates.tagShortId;
     if (!this.isOnMap(deviceId)) {
-      const drawBuilder = new DrawBuilder(this.d3map, {id: `tag-${deviceId}`, clazz: 'tag'}, this.mapViewerService);
+      const drawBuilder = new DrawBuilder(this.d3map, {id: `tag-${deviceId}`, clazz: 'tag'}, this.zoomService);
       const tagOnMap = drawBuilder
         .createGroup()
         .addIcon({x: 0, y: 0}, this.iconService.getIcon(NaviIcons.TAG))
@@ -158,7 +159,7 @@ export class PublishedComponent implements OnInit, AfterViewInit {
     settings.set('fill', 'grey');
     this.areaService.getAllByFloor(floorId).subscribe((areas: Area[]) => {
       areas.forEach((area: Area) => {
-        const drawBuilder = new DrawBuilder(this.d3map, {id: `area-${area.id}`, clazz: 'area'}, this.mapViewerService);
+        const drawBuilder = new DrawBuilder(this.d3map, {id: `area-${area.id}`, clazz: 'area'}, this.zoomService);
         const scaledPoints = area.buffer.map((point: Point) => {
           return this.scaleCoordinates(point);
         });

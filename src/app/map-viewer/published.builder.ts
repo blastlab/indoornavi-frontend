@@ -1,20 +1,14 @@
 import * as d3 from 'd3';
-import {Point, Transform} from '../map-editor/map.type';
+import {Point} from '../map-editor/map.type';
 import {DrawConfiguration} from './published.type';
 import {ZoomService} from '../map-editor/zoom.service';
-import {MapViewerService} from '../map-editor/map.editor.service';
-
 
 export class GroupCreated {
   group: d3.selection;
   transitionEnded: boolean = true;
-  private transformation: Transform = {x: 0, y: 0, k: 1};
 
-  constructor(group: d3.selection, private mapViewerService: MapViewerService) {
+  constructor(group: d3.selection, private zoomService: ZoomService) {
     this.group = group;
-    this.mapViewerService.isTransformed.subscribe((transformation: Transform) => {
-      this.transformation = transformation;
-    });
   }
 
   place(coordinates: Point): GroupCreated {
@@ -89,10 +83,12 @@ export class GroupCreated {
         x: d3.event.x,
         y: d3.event.y
       };
-      // offsetFromBorder[0] gives left and upper border offset, and offsetFromBorder[1] gives right and bottom border offset, sign is giving a direction of offset
+      // offsetFromBorder[0] gives left and upper border offset,
+      // and offsetFromBorder[1] gives right and bottom border offset,
+      // sign is giving a direction of the offset
       // todo: set offset form icon values of width and height or other if suggested
       const offsetFromBorder = [{x : 0, y: 0}, {x: -25, y: -25}];
-      const eventPosition: Point = ZoomService.calculateInMapEditorRangeEvent({x: mousePosition.x, y: mousePosition.y}, offsetFromBorder, this.transformation);
+      const eventPosition: Point = this.zoomService.calculateInMapEditorRangeEvent({x: mousePosition.x, y: mousePosition.y}, offsetFromBorder);
       this.group.attr('x', eventPosition.x).attr('y', eventPosition.y);
     };
 
@@ -121,7 +117,7 @@ export class DrawBuilder {
 
   constructor(private appendable: d3.selection,
               private configuration: DrawConfiguration,
-              private mapViewerService: MapViewerService
+              private zoomService: ZoomService
               ) {
   }
 
@@ -144,7 +140,6 @@ export class DrawBuilder {
     if (this.configuration.cursor) {
       group.style('cursor', this.configuration.cursor);
     }
-    return new GroupCreated(group, this.mapViewerService);
+    return new GroupCreated(group, this.zoomService);
   }
-
 }
