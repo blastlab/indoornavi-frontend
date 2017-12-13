@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {Floor} from '../floor/floor.type';
 import {MapService} from './map.service';
 import * as d3 from 'd3';
+import {MapSvg} from '../map/map.type';
 
 @Injectable()
 export class MapViewerService {
@@ -73,7 +74,7 @@ export class MapViewerService {
             .attr('height', mapContainer.offsetHeight);
         });
 
-        resolve(map);
+        resolve(<MapSvg>{ layer: map, container: g });
       };
       this.mapService.getImage(floor.imageId).subscribe((blob: Blob) => {
         image.src = URL.createObjectURL(blob);

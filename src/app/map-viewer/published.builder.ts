@@ -70,6 +70,16 @@ export class GroupCreated {
     return this;
   }
 
+  addCircle(coordinates: Point, r: number) {
+    this.group
+      .append('circle')
+      .attr('r', r)
+      .attr('cx', coordinates.x)
+      .attr('cy', coordinates.y)
+      .style('fill', 'black');
+    return this;
+  }
+
   remove(): void {
     this.group.remove();
   }

@@ -16,6 +16,7 @@ import {ScaleService} from './scale.service';
 import {Helper} from '../../../../shared/utils/helper/helper';
 import {ToolbarService} from '../../toolbar.service';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
+import {MapSvg} from '../../../../map/map.type';
 
 @Component({
   selector: 'app-scale',
@@ -93,9 +94,9 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.drawScale(configuration.data.scale);
     });
 
-    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapSvg: d3.selection) => {
-      this.mapWidth = mapSvg.attr('width');
-      this.mapHeight = mapSvg.attr('height');
+    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapSvg: MapSvg) => {
+      this.mapWidth = mapSvg.container.attr('width');
+      this.mapHeight = mapSvg.container.attr('height');
       this.createSvgGroupWithScale();
     });
 

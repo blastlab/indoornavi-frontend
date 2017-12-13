@@ -25,6 +25,7 @@ import {AreaService} from '../shared/services/area/area.service';
 import {Area} from '../shared/services/area/area.type';
 import {TranslateService} from '@ngx-translate/core';
 import {MapLoaderInformerService} from '../shared/services/map-loader-informer/map-loader-informer.service';
+import {MapSvg} from '../map/map.type';
 
 @Component({
   templateUrl: './published.html',
@@ -56,8 +57,8 @@ export class PublishedComponent implements OnInit, AfterViewInit {
       this.publishedService.get(mapId).subscribe((map: PublishedMap) => {
         this.activeMap = map;
         if (this.activeMap.floor.imageId != null) {
-          this.mapLoaderInformer.loadCompleted().subscribe((d3map: d3.selection) => {
-            this.d3map = d3map;
+          this.mapLoaderInformer.loadCompleted().subscribe((mapSvg: MapSvg) => {
+            this.d3map = mapSvg.container;
             this.drawAreas(map.floor.id);
             const realDistanceInCentimeters = getRealDistanceInCentimeters(this.activeMap.floor.scale);
             const pixels = Geometry.getDistanceBetweenTwoPoints(map.floor.scale.start, map.floor.scale.stop);

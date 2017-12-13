@@ -86,6 +86,7 @@ import {SharedModule} from './shared/modules/shared.module';
 import {ToolDetailsComponent} from './map-editor/tool-bar/shared/details/tool-details';
 import {MdIconRegistry} from '@angular/material';
 import {MapComponent} from './map/map';
+import {AreaComponent} from './map-editor/tool-bar/tools/area/area';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -118,7 +119,8 @@ export function HttpLoaderFactory(http: Http) {
     DeviceComponent,
     AppAutoFocusDirective,
     ToolDetailsComponent,
-    MapComponent
+    MapComponent,
+    AreaComponent
   ],
   entryComponents: [
     PublishedDialogComponent,

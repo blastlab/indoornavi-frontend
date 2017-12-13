@@ -2,41 +2,9 @@
   <div class="ui-toolbar-group-left">
     <app-scale></app-scale>
     <app-wizard [floor]="floor"></app-wizard>
+    <app-area></app-area>
   </div>
   <div class="ui-toolbar-group-right">
     <app-actionbar [floor]="floor"></app-actionbar>
   </div>
 </p-toolbar>
-
-<!--<div class="map-toolbar">-->
-<!--<h2>Tools</h2>-->
-<!--<ul class="tools-list">-->
-<!--<li class="tool">-->
-<!--<app-scale (clicked)="setTool($event)"></app-scale>-->
-<!--</li>-->
-<!--<li>-->
-<!--<app-wizard [floor]="floor" (clicked)="setTool($event)"></app-wizard>-->
-<!--</li>-->
-<!--<li>-->
-<!--<button pButton class="ui-button-secondary"-->
-<!--disabled="disabled"-->
-<!--pTooltip="{{'toll'|translate}}"-->
-<!--icon="fa fa-usd" icoPos="left"-->
-<!--&gt;</button>-->
-<!--</li>-->
-<!--<li>-->
-<!--<button pButton class="ui-button-secondary"-->
-<!--disabled="disabled"-->
-<!--pTooltip="{{'timeline'|translate}}"-->
-<!--icon="fa fa-calendar" iconPos="left"-->
-<!--&gt;</button>-->
-<!--</li>-->
-<!--<li>-->
-<!--<button pButton class="ui-button-secondary"-->
-<!--disabled="disabled"-->
-<!--pTooltip="{{'settings.remote'|translate}}"-->
-<!--icon="fa fa-cogs" iconPos="left"-->
-<!--&gt;</button>-->
-<!--</li>-->
-<!--</ul>-->
-<!--</div>-->
