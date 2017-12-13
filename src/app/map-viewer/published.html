@@ -1,3 +1,1 @@
-<div id="map-container">
-  <svg id="map"></svg>
-</div>
+<app-map *ngIf="!!activeMap" [floor]="activeMap.floor"></app-map>

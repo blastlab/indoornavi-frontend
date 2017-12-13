@@ -13,7 +13,6 @@ import {
   PublishedMap
 } from './published.type';
 import {PublishedService} from './published.service';
-import {MapViewerService} from '../map-editor/map.editor.service';
 import {IconService, NaviIcons} from 'app/shared/services/drawing/icon.service';
 import {DrawBuilder, GroupCreated} from './published.builder';
 import * as d3 from 'd3';
@@ -25,6 +24,7 @@ import {Tag} from '../device/tag.type';
 import {AreaService} from '../shared/services/area/area.service';
 import {Area} from '../shared/services/area/area.type';
 import {TranslateService} from '@ngx-translate/core';
+import {MapLoaderInformerService} from '../shared/services/map-loader-informer/map-loader-informer.service';
 
 @Component({
   templateUrl: './published.html',
@@ -43,7 +43,7 @@ export class PublishedComponent implements OnInit, AfterViewInit {
               private socketService: SocketService,
               private route: ActivatedRoute,
               private publishedService: PublishedService,
-              private mapViewerService: MapViewerService,
+              private mapLoaderInformer: MapLoaderInformerService,
               private iconService: IconService,
               private areaService: AreaService,
               private translateService: TranslateService) {
@@ -56,7 +56,7 @@ export class PublishedComponent implements OnInit, AfterViewInit {
       this.publishedService.get(mapId).subscribe((map: PublishedMap) => {
         this.activeMap = map;
         if (this.activeMap.floor.imageId != null) {
-          this.mapViewerService.drawMap(this.activeMap.floor).then((d3map: d3.selection) => {
+          this.mapLoaderInformer.loadCompleted().subscribe((d3map: d3.selection) => {
             this.d3map = d3map;
             this.drawAreas(map.floor.id);
             const realDistanceInCentimeters = getRealDistanceInCentimeters(this.activeMap.floor.scale);
@@ -118,6 +118,12 @@ export class PublishedComponent implements OnInit, AfterViewInit {
     } else {
       this.tagsOnMap.getValue(deviceId).move(coordinates);
     }
+
+    if (this.originListeningOnEvent.containsKey('coordinates')) {
+      this.originListeningOnEvent.getValue('coordinates').forEach((event: MessageEvent) => {
+        event.source.postMessage({type: 'coordinates', coordinates: data}, event.origin);
+      })
+    }
   }
 
   private setSocketConfiguration() {
@@ -132,7 +138,6 @@ export class PublishedComponent implements OnInit, AfterViewInit {
 
       this.socketSubscription = stream.subscribe((data: MeasureSocketData) => {
         this.ngZone.run(() => {
-
           if (this.isCoordinatesData(data)) {
             this.handleCoordinatesData(<CoordinatesSocketData> data);
           } else if (this.isEventData(data)) {
