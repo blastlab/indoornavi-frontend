@@ -1,5 +1,3 @@
-import os
-import sys
 from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
 from selenium.common.exceptions import NoSuchElementException
@@ -11,7 +9,7 @@ class ComplexesPage(BasePage):
     complex_table_header = 'Complex name'
     complex_modal_title = 'Add new complex'
     new_complex_name = 'Test new complexees'
-    csv_filename = 'complex.csv'
+    xml_filename = 'src/test-complexes.xml'
 
     ### LOCATORS
     # Complexes page locators
@@ -23,6 +21,7 @@ class ComplexesPage(BasePage):
     empty_table = (By.CSS_SELECTOR, 'td.ui-datatable-emptymessage')
     # Add complex - locators
     modal_window = (By.CLASS_NAME, 'ui-dialog-title')
+    last_table_row = (By.CLASS_NAME, 'ui-cell-data')
     # Buttons
     dropdown_button = (By.CSS_SELECTOR, 'button#menu')
     add_button_complex = (By.CSS_SELECTOR, 'button#add-complex')
@@ -34,8 +33,7 @@ class ComplexesPage(BasePage):
     # Database
     # Prepare environment
     def create_complex_db_env(self):
-        return self.create_db_env(self.csv_filename)
-    # Check is there the new row
+        return self.create_db_env(self.xml_filename)
 
     # Site launch
     def get_add_button_text(self):
@@ -65,6 +63,9 @@ class ComplexesPage(BasePage):
         else:
            return True
 
+    def if_complex_appear(self):
+        return self.if_row_appear_on_list(self.last_table_row)
+
     # Add complex
     def add_button_click(self):
         return self.click_button(*self.add_button_complex)
@@ -89,6 +90,7 @@ class ComplexesPage(BasePage):
     # Main Functionality
     def add_new_complex(self):
         modal_title = self.identify_element(*self.add_button_text_locator).text
+
 
 
 

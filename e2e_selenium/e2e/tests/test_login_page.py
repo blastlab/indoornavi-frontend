@@ -1,5 +1,3 @@
-import os
-import sys
 import unittest
 from selenium import webdriver
 from tests.test_driver import TestDriver

@@ -3,6 +3,7 @@ import selenium.webdriver.support.ui as ui
 from selenium.common.exceptions import NoSuchElementException
 import csv
 import mysql.connector
+from pyquibase.pyquibase import Pyquibase
 
 class BasePage(object):
 
@@ -12,41 +13,18 @@ class BasePage(object):
 
     # Connections
     # Prepare environment
-    def create_db_env(self, filename):
-        # db connection
-        db = mysql.connector.connect(user='root', password='', host='127.0.0.1', database='Navi')
-        cursor = db.cursor()
-        # let to cascade deleting
-        cursor.execute('SET FOREIGN_KEY_CHECKS=0;')
-        # clear data table
-        cursor.execute('TRUNCATE TABLE complex')
-        # return default settings
-        cursor.execute('SET FOREIGN_KEY_CHECKS=1;')
-        db.commit()
-        # variables
-        query_array = []
-        sql_statement = "INSERT INTO complex (id, name) VALUES (%s, %s)"
-        # read from csv file
-        with open(filename, 'r') as theFile:
-            reader = csv.DictReader(theFile)
-            for line in reader:
-                query_array.append((line['id'], line['name']))
+    def create_db_env(self, file_path):
 
-        # begin transaction
-        try:
-            cursor.executemany(sql_statement, query_array)
-            db.commit()
+        pyquibase = Pyquibase.mysql(
+          host='localhost',
+          port=3306,
+          db_name='Navi',
+          username='root',
+          password='',
+          change_log_file=file_path
+        )
+        pyquibase.update()
 
-        except:
-            db.rollback()
-
-        cursor.close()
-
-    def if_exist_in_db(self, record):
-        # connect to db
-        db = mysql.connector.connect(user='root', password='', host='127.0.0.1', database='Navi')
-        cursor = db.cursor()
-        cursor.execute('SELECT name FROM TABLE complex')
     # Front
     def identify_element(self, *locator):
         return self.driver.find_element(*locator)
@@ -87,5 +65,12 @@ class BasePage(object):
     def count_of_inner_elements(self, *locator):
         count = self.driver.find_elements(*locator)
         return len(count)
+
+    def if_row_appear_on_list(self, *locator):
+
+        elements = self.driver.find_elements(*locator);
+        print(elements)
+        element = elements.get(list.size() - 1);
+        print(element)
 
 

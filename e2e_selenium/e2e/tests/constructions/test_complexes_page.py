@@ -1,9 +1,6 @@
-import os
-import sys
 import unittest
 from selenium import webdriver
 from tests.test_driver import TestDriver
-#from .tests.test_driver import TestDriver
 from pages.constructions.complexes_page import ComplexesPage
 from pages.login_page import LoginPage
 
@@ -44,12 +41,18 @@ class TestComplexesPage(unittest.TestCase):
     def test_add_new_complex_correctly(self):
 
         self.complexes_page.add_button_click()
-        # Zmienic tytul modala
+        # TODO Zmienic tytul modala
         # self.assertTrue(self.complexes_page.check_modal_title())
         self.assertTrue(self.complexes_page.is_save_button_present())
         self.assertTrue(self.complexes_page.is_cancel_button_present())
         self.complexes_page.enter_complex_name()
         self.complexes_page.save_add_new_complex()
+        # TODO sprawdzic czy wpis pojawil sie na liscie
+        # self.complexes_page.if_complex_appear()
+        # TODO sprawdzic czy wpis zostal dodany w bazie danych
+        # wait 10 sec
+        # self.webdriver.implicitly_wait(10)
+        # self.complexes_page.if_complex_created()
 
     @classmethod
     def tearDownClass(cls):
