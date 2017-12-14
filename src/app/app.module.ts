@@ -89,7 +89,6 @@ import {ChangePasswordComponent} from './user/changePassword/changePassword';
 import {MapEditorComponent} from './map-editor/map.editor';
 import {SharedModule} from './shared/modules/shared.module';
 import {ToolDetailsComponent} from './map-editor/tool-bar/shared/details/tool-details';
-import {DisableButtonsService} from './shared/services/menu-buttons/disable-buttons.service';
 import {ZoomService} from './map-editor/zoom.service';
 
 export function HttpLoaderFactory(http: Http) {
@@ -200,7 +199,6 @@ export function HttpLoaderFactory(http: Http) {
     MessageServiceWrapper,
     ToolbarService,
     HintBarService,
-    DisableButtonsService,
     ZoomService
   ], bootstrap: [AppComponent]
 })

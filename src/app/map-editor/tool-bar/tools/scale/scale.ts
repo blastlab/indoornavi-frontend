@@ -17,7 +17,6 @@ import {Helper} from '../../../../shared/utils/helper/helper';
 import {ToolbarService} from '../../toolbar.service';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
 import {MapViewerService} from '../../../map.editor.service';
-import {DisableButtonsService} from '../../../../shared/services/menu-buttons/disable-buttons.service';
 import {ZoomService} from '../../../zoom.service';
 
 @Component({
@@ -53,7 +52,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
               private toolbarService: ToolbarService,
               private actionBarService: ActionBarService,
               private scaleService: ScaleService,
-              private disableButtonService: DisableButtonsService,
               private zoomService: ZoomService
               ) {
     this.setTranslations();
@@ -130,8 +128,8 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.scaleInputService.onVisibilityChange().subscribe(() => {
       this.toolbarService.emitToolChanged(null);
     });
-    this.disableButtonService.detectMapEvent.subscribe( (value: boolean) => {
-      this.scaleActivationButtonActive = value;
+    this.toolbarService.onToolChanged().subscribe((tool: Tool) => {
+      !!tool ? this.scaleActivationButtonActive = false : this.scaleActivationButtonActive = true;
     });
     this.scaleInputService.rejected.subscribe(() => {
       if (this.scaleBackup) {
@@ -162,7 +160,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   public setInactive(): void {
-    this.disableButtonService.publishMapEventActive(true);
     this.hideScale();
     this.active = false;
     this.translate.get('hint.chooseTool').subscribe((value: string) => {
@@ -172,7 +169,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   public onClick(): void {
     this.toolbarService.emitToolChanged(this);
-    this.disableButtonService.publishMapEventActive(false);
     this.isScaleSet ? this.scaleBackup = Helper.deepCopy(this.scale) : this.scaleBackup = null;
   }
 

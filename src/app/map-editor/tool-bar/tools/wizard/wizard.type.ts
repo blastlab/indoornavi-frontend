@@ -37,7 +37,7 @@ export enum Step {
 
 export interface WizardStep {
   load(items: SelectItem[], message: string): SelectItem[];
-  getDrawingObjectParams(selectedItem: number);
+  getDrawingObjectParams(selectedItem: number): ObjectParams;
   beforePlaceOnMap(selectedItem?: number): void;
   afterPlaceOnMap(): void;
   getBeforePlaceOnMapHint(): string;
@@ -48,4 +48,12 @@ export interface WizardStep {
   prepareToSend(wizardData: WizardData): SocketMessage;
   updateWizardData(wizardData: WizardData, id: number, coordinates: Point): void;
   clean(): void;
+}
+
+export interface ObjectParams {
+  id: string;
+  iconName: string;
+  groupClass: string;
+  markerClass: string;
+  fill: string;
 }

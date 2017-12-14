@@ -10,7 +10,7 @@ import {SecondStep} from './second-step/second-step';
 import {ActionBarService} from '../../../action-bar/actionbar.service';
 import {Sink} from '../../../../device/sink.type';
 import {Anchor} from '../../../../device/anchor.type';
-import {SocketMessage, WizardData, WizardStep} from './wizard.type';
+import {ObjectParams, SocketMessage, WizardData, WizardStep} from './wizard.type';
 import {Floor} from '../../../../floor/floor.type';
 import {SelectItem} from 'primeng/primeng';
 import {ThirdStep} from './third-step/third-step';
@@ -22,7 +22,6 @@ import {AcceptButtonsService} from '../../../../shared/components/accept-buttons
 import {DrawBuilder} from '../../../../map-viewer/published.builder';
 import {IconService, NaviIcons} from '../../../../shared/services/drawing/icon.service';
 import {MapViewerService} from '../../../map.editor.service';
-import {DisableButtonsService} from '../../../../shared/services/menu-buttons/disable-buttons.service';
 import {ZoomService} from '../../../zoom.service';
 
 @Component({
@@ -57,7 +56,6 @@ export class WizardComponent implements Tool, OnInit {
               private hintBarService: HintBarService,
               private actionBarService: ActionBarService,
               private iconService: IconService,
-              private disableButtonService: DisableButtonsService,
               private zoomService: ZoomService
               ) {
   }
@@ -66,8 +64,8 @@ export class WizardComponent implements Tool, OnInit {
     this.setTranslations();
     this.steps = [new FirstStep(this.floor.id), new SecondStep(), new ThirdStep()];
     this.checkIsLoading();
-    this.disableButtonService.detectMapEvent.subscribe((value: boolean) => {
-      this.wizardActivationButtonActive = value;
+    this.toolbarService.onToolChanged().subscribe((tool: Tool) => {
+      !!tool ? this.wizardActivationButtonActive = false : this.wizardActivationButtonActive = true;
     });
   }
 
@@ -87,14 +85,12 @@ export class WizardComponent implements Tool, OnInit {
         this.activeStep = null;
         this.currentIndex = 0;
         this.toolbarService.emitToolChanged(null);
-        this.disableButtonService.publishMapEventActive(false);
         return;
       }
       this.activeStep = this.steps[this.currentIndex];
     }
     this.stepChanged();
     this.displayDialog = true;
-    this.disableButtonService.publishMapEventActive(false);
   }
 
   previousStep() {
@@ -104,7 +100,6 @@ export class WizardComponent implements Tool, OnInit {
       this.selected = undefined;
       this.displayError = false;
       this.toolbarService.emitToolChanged(null);
-      this.disableButtonService.publishMapEventActive(true);
       return;
     } else if (this.currentIndex === 1) { // We need to reset socket connection, so we will get Sinks again
       this.closeSocket();
@@ -135,7 +130,7 @@ export class WizardComponent implements Tool, OnInit {
     map.style('cursor', 'crosshair');
     map.on('click', () => {
       this.coordinates = this.zoomService.calculateTransition({x: d3.event.offsetX, y: d3.event.offsetY});
-      const device = this.activeStep.getDrawingObjectParams(this.selected);
+      const device: ObjectParams = this.activeStep.getDrawingObjectParams(this.selected);
       const drawBuilder = new DrawBuilder(map, {id: device.id, clazz: device.groupClass}, this.zoomService);
       drawBuilder
         .createGroup()
