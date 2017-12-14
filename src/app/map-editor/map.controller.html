@@ -3,7 +3,10 @@
 
   <ng-template #uploaded>
     <app-toolbar [floor]="floor"></app-toolbar>
-    <app-map-viewer [floor]="floor"></app-map-viewer>
+    <app-map [floor]="floor">
+      <app-scale-input></app-scale-input>
+      <app-accept-buttons></app-accept-buttons>
+    </app-map>
     <app-hint-bar></app-hint-bar>
   </ng-template>
 

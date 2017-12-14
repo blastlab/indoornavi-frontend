@@ -82,10 +82,10 @@ import {AcceptButtonsComponent} from 'app/shared/components/accept-buttons/accep
 import {PermissionGroupComponent} from 'app/user/permissionGroup/permissionGroup';
 import {UnauthorizedComponent} from 'app/unauthorized/unauthorized';
 import {ChangePasswordComponent} from './user/changePassword/changePassword';
-import {MapEditorComponent} from './map-editor/map.editor';
 import {SharedModule} from './shared/modules/shared.module';
 import {ToolDetailsComponent} from './map-editor/tool-bar/shared/details/tool-details';
 import {MdIconRegistry} from '@angular/material';
+import {MapComponent} from './map/map';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -98,7 +98,6 @@ export function HttpLoaderFactory(http: Http) {
     FloorComponent,
     AppComponent,
     MapControllerComponent,
-    MapEditorComponent,
     MapUploaderComponent,
     HintBarComponent,
     ToolbarComponent,
@@ -118,7 +117,8 @@ export function HttpLoaderFactory(http: Http) {
     PublishedDialogComponent,
     DeviceComponent,
     AppAutoFocusDirective,
-    ToolDetailsComponent
+    ToolDetailsComponent,
+    MapComponent
   ],
   entryComponents: [
     PublishedDialogComponent,
