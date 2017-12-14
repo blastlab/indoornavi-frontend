@@ -5,7 +5,7 @@ from selenium.common.exceptions import NoSuchElementException
 
 class ComplexesPage(BasePage):
 
-    login_url = 'http://localhost:4200/complexes'
+    login_url = 'http://frontend:4200/complexes'
     complex_table_header = 'Complex name'
     complex_modal_title = 'Add new complex'
     new_complex_name = 'Test new complexees'

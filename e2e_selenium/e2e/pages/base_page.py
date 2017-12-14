@@ -7,7 +7,7 @@ from pyquibase.pyquibase import Pyquibase
 
 class BasePage(object):
 
-    def __init__(self, driver,  base_url='http://localhost:4200/'):
+    def __init__(self, driver,  base_url='http://frontend:4200/'):
         self.base_url = base_url
         self.driver = driver
 
@@ -16,7 +16,7 @@ class BasePage(object):
     def create_db_env(self, file_path):
 
         pyquibase = Pyquibase.mysql(
-          host='localhost',
+          host='db',
           port=3306,
           db_name='Navi',
           username='root',

@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import By
 
 class LoginPage(BasePage):
 
-    login_url='http://localhost:4200/'
+    login_url='http://frontend:4200/'
     # Login page locators
     form_locator = (By.CSS_SELECTOR, 'form.ng-valid')
     button_locator = (By.ID, 'login-button')
