@@ -12,6 +12,7 @@ import {UnauthorizedComponent} from './unauthorized/unauthorized';
 import {PublishedListComponent} from './publications/list/published-list';
 import {PublishedComponent} from './map-viewer/published';
 import {DeviceComponent} from './device/device';
+import {AnalyticsComponent} from './published/analytics/analytics';
 
 export const appRoutes: Routes = [
   {path: '', redirectTo: '/complexes', pathMatch: 'full'},
@@ -25,6 +26,7 @@ export const appRoutes: Routes = [
   {path: 'maps', component: PublishedListComponent, canActivate: [CanRead], data: {permission: 'MAP'}},
   {path: 'maps/:id', component: PublishedComponent, canActivate: [CanRead], data: {permission: 'MAP'}},
   {path: 'embedded/:id', component: PublishedComponent},
+  {path: 'maps/:id/analytics', component: AnalyticsComponent, canActivate: [CanRead], data: {permission: 'MAP'}},
   {path: 'users', component: UserComponent, canActivate: [CanRead], data: {permission: 'USER'}},
   {path: 'changePassword', component: ChangePasswordComponent, canActivate: [CanRead]},
   {path: 'permissionGroups', component: PermissionGroupComponent, canActivate: [CanRead], data: {permission: 'PERMISSION_GROUP'}},

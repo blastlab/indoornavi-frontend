@@ -86,6 +86,8 @@ import {MapEditorComponent} from './map-editor/map.editor';
 import {SharedModule} from './shared/modules/shared.module';
 import {ToolDetailsComponent} from './map-editor/tool-bar/shared/details/tool-details';
 import {MdIconRegistry} from '@angular/material';
+import {AnalyticsComponent} from './published/analytics/analytics';
+import {SocketConnectorComponent} from './published/socket-connector.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -114,11 +116,14 @@ export function HttpLoaderFactory(http: Http) {
     WizardComponent,
     AcceptButtonsComponent,
     PublishedComponent,
+    AnalyticsComponent,
     PublishedListComponent,
     PublishedDialogComponent,
     DeviceComponent,
     AppAutoFocusDirective,
-    ToolDetailsComponent
+    ToolDetailsComponent,
+    DeviceComponent,
+    SocketConnectorComponent
   ],
   entryComponents: [
     PublishedDialogComponent,
