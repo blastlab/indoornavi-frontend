@@ -52,7 +52,8 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
               private toolbarService: ToolbarService,
               private actionBarService: ActionBarService,
               private scaleService: ScaleService,
-              private zoomService: ZoomService
+              private zoomService: ZoomService,
+              private mapViewerService: MapViewerService
               ) {
     this.setTranslations();
   }

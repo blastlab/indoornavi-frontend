@@ -8,8 +8,8 @@ export class ZoomService {
 
   private transformation: Transform = {x: 0, y: 0, k: 1};
 
-  constructor () {
-    MapViewerService.mapIsTransformed().subscribe((transformation: Transform) => {
+  constructor (private mapViewerService: MapViewerService) {
+    mapViewerService.mapIsTransformed().subscribe((transformation: Transform) => {
       this.transformation = transformation;
     });
   }

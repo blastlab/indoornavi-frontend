@@ -4,6 +4,7 @@ import {MapService} from './map.service';
 import * as d3 from 'd3';
 import {Transform} from './map.type';
 import {Subject} from 'rxjs/Subject';
+import {Observable} from 'rxjs/Observable';
 
 @Injectable()
 export class MapViewerService {
@@ -11,7 +12,8 @@ export class MapViewerService {
   public static MAP_LAYER_SELECTOR_ID: string = 'map';
   public static MAP_UPPER_LAYER_SELECTOR_ID: string = 'map-upper-layer';
   private static MAP_CONTAINER_SELECTOR_ID: string = 'map-container';
-  private static transformation = new Subject<Transform>();
+  private transformation: Transform = {x: 0, y: 0, k: 1};
+  private transformationInformer = new Subject<Transform>();
 
   static maxTranslate(mapContainer: HTMLElement, image: HTMLImageElement): [[number, number], [number, number]] {
       const width = Math.max(mapContainer.offsetWidth, image.width),
@@ -22,12 +24,13 @@ export class MapViewerService {
           return [[-100, -100], [width + 100, height + 100]];
         }
     }
-  static mapIsTransformed () {
-    return MapViewerService.transformation.asObservable();
+  mapIsTransformed (): Observable<Transform> {
+    return this.transformationInformer.asObservable();
   }
 
-  static publishTransformation (transformation: Transform) {
-    MapViewerService.transformation.next(transformation);
+  transformationChanged (transformation: Transform): void {
+    // for testing purposes
+    !!transformation ? this.transformationInformer.next(transformation) : this.transformationInformer.next(this.transformation);
   }
 
   constructor(private mapService: MapService) {
@@ -42,7 +45,8 @@ export class MapViewerService {
 
         const zoomed = () => {
           g.attr('transform', d3.event.transform);
-          MapViewerService.publishTransformation(d3.zoomTransform(document.getElementById(MapViewerService.MAP_UPPER_LAYER_SELECTOR_ID)));
+          this.transformation = d3.zoomTransform(document.getElementById(MapViewerService.MAP_UPPER_LAYER_SELECTOR_ID));
+          this.transformationChanged(null);
         };
 
         const zoom = d3.zoom()
