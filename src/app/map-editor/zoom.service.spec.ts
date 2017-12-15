@@ -36,7 +36,7 @@ describe('ZoomService', () => {
     const transformation = {x: 0, y: 0, k: 1};
 
     // when
-    mapViewerService.transformationChanged(transformation);
+    mapViewerService.changeTransformation(transformation);
     const calculatedPoint_1 = zoomService.calculateTransition(p1);
     const calculatedPoint_2 = zoomService.calculateTransition(p2);
 
@@ -53,7 +53,7 @@ describe('ZoomService', () => {
     // given
     const transformation = {x: 10, y: 10, k: 1};
     // when
-    mapViewerService.transformationChanged(transformation);
+    mapViewerService.changeTransformation(transformation);
     const calculatedPoint_1 = zoomService.calculateTransition(p1);
     const calculatedPoint_2 = zoomService.calculateTransition(p2);
     // then
@@ -67,7 +67,7 @@ describe('ZoomService', () => {
     // given
     const transformation = {x: 0, y: 0, k: 1.6};
     // when
-    mapViewerService.transformationChanged(transformation);
+    mapViewerService.changeTransformation(transformation);
     const calculatedPoint_1 = zoomService.calculateTransition(p1);
     const calculatedPoint_2 = zoomService.calculateTransition(p2);
     // then
@@ -82,7 +82,7 @@ describe('ZoomService', () => {
     // given
     const transformation = {x: 55, y: 0, k: 1};
     // when
-    mapViewerService.transformationChanged(transformation);
+    mapViewerService.changeTransformation(transformation);
     const calculatedPoint_1 = zoomService.calculateTransition(p1);
     const calculatedPoint_2 = zoomService.calculateTransition(p2);
     // then
@@ -97,7 +97,7 @@ describe('ZoomService', () => {
     // given
     const transformation = {x: 0, y: 55, k: 1};
     // when
-    mapViewerService.transformationChanged(transformation);
+    mapViewerService.changeTransformation(transformation);
     const calculatedPoint_1 = zoomService.calculateTransition(p1);
     const calculatedPoint_2 = zoomService.calculateTransition(p2);
     // then
@@ -112,7 +112,7 @@ describe('ZoomService', () => {
     // given
     const transformation = {x: 100, y: 100, k: 2};
     // when
-    mapViewerService.transformationChanged(transformation);
+    mapViewerService.changeTransformation(transformation);
     const calculatedPoint_1 = zoomService.calculateTransition(p1);
     const calculatedPoint_2 = zoomService.calculateTransition(p2);
     // then

@@ -28,9 +28,8 @@ export class MapViewerService {
     return this.transformationInformer.asObservable();
   }
 
-  transformationChanged (transformation: Transform): void {
-    // for testing purposes
-    !!transformation ? this.transformationInformer.next(transformation) : this.transformationInformer.next(this.transformation);
+  changeTransformation (transformation: Transform): void {
+    this.transformationInformer.next(transformation);
   }
 
   constructor(private mapService: MapService) {
@@ -46,7 +45,7 @@ export class MapViewerService {
         const zoomed = () => {
           g.attr('transform', d3.event.transform);
           this.transformation = d3.zoomTransform(document.getElementById(MapViewerService.MAP_UPPER_LAYER_SELECTOR_ID));
-          this.transformationChanged(null);
+          this.changeTransformation(this.transformation);
         };
 
         const zoom = d3.zoom()
