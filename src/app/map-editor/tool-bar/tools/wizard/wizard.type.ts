@@ -1,6 +1,5 @@
 import {Point} from '../../../map.type';
 import {SelectItem} from 'primeng/primeng';
-import {ObjectParams} from '../../../../shared/services/drawing/drawing.service';
 
 export interface SocketMessage {
   step: Step;
@@ -49,4 +48,12 @@ export interface WizardStep {
   prepareToSend(wizardData: WizardData): SocketMessage;
   updateWizardData(wizardData: WizardData, id: number, coordinates: Point): void;
   clean(): void;
+}
+
+export interface ObjectParams {
+  id: string;
+  iconName: string;
+  groupClass: string;
+  markerClass: string;
+  fill: string;
 }

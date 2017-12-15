@@ -16,6 +16,8 @@ import {ScaleService} from './scale.service';
 import {Helper} from '../../../../shared/utils/helper/helper';
 import {ToolbarService} from '../../toolbar.service';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
+import {MapViewerService} from '../../../map.editor.service';
+import {ZoomService} from '../../../zoom.service';
 
 @Component({
   selector: 'app-scale',
@@ -23,6 +25,8 @@ import {HintBarService} from '../../../hint-bar/hintbar.service';
   styleUrls: ['../tool.css']
 })
 export class ScaleComponent implements Tool, OnDestroy, OnInit {
+  private static SCALE_GROUP_SELECTOR_ID = 'scaleGroup';
+
   public active: boolean = false;
   public isScaleDisplayed: boolean = false;
   public isScaleSet: boolean = false;
@@ -32,13 +36,13 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private saveButtonSubscription: Subscription;
   private configurationLoadedSubscription: Subscription;
   private configurationResetSubscription: Subscription;
-  private scaleGroup = d3.select('#scaleGroup');
-  private mapWidth: number;
-  private mapHeight: number;
+  private scaleGroup = d3.select(`#${ScaleComponent.SCALE_GROUP_SELECTOR_ID}`);
   private scale: Scale;
+  private scaleBackup: Scale;
   private hintMessage: string;
   private pointsArray: Point[] = [];
   private linesArray: Line[] = [];
+  private scaleActivationButtonActive: boolean = true;
 
   constructor(private translate: TranslateService,
               private scaleInputService: ScaleInputService,
@@ -47,7 +51,10 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
               private hintBarService: HintBarService,
               private toolbarService: ToolbarService,
               private actionBarService: ActionBarService,
-              private scaleService: ScaleService) {
+              private scaleService: ScaleService,
+              private zoomService: ZoomService,
+              private mapViewerService: MapViewerService
+              ) {
     this.setTranslations();
   }
 
@@ -94,18 +101,19 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     });
 
     this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapSvg: d3.selection) => {
-      this.mapWidth = mapSvg.attr('width');
-      this.mapHeight = mapSvg.attr('height');
       this.createSvgGroupWithScale();
     });
 
     this.saveButtonSubscription = this.scaleInputService.confirmClicked.subscribe((scale: Scale) => {
+      if (!!scale) {
+        this.isScaleSet = true;
+        this.scale.realDistance = scale.realDistance;
+        this.scale.measure = scale.measure;
+        this.actionBarService.setScale(this.scale);
+        this.scaleService.publishScaleChanged(this.scale);
+      }
       this.toolbarService.emitToolChanged(null);
-      this.isScaleSet = true;
-      this.scale.realDistance = scale.realDistance;
-      this.scale.measure = scale.measure;
-      this.actionBarService.setScale(this.scale);
-      this.scaleService.publishScaleChanged(this.scale);
+      this.setInactive()
     });
 
     this.scaleHint.mouseHoverChanged.subscribe((overOrOut: string) => {
@@ -120,6 +128,19 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
     this.scaleInputService.onVisibilityChange().subscribe(() => {
       this.toolbarService.emitToolChanged(null);
+    });
+    this.toolbarService.onToolChanged().subscribe((tool: Tool) => {
+      !!tool ? this.scaleActivationButtonActive = false : this.scaleActivationButtonActive = true;
+    });
+    this.scaleInputService.rejected.subscribe(() => {
+      if (this.scaleBackup) {
+        this.scale = Helper.deepCopy(this.scaleBackup);
+        this.scaleGroup.remove();
+        this.createSvgGroupWithScale();
+        this.pointsArray = [];
+        this.linesArray = [];
+        this.drawScale(this.scale);
+      }
     });
   }
 
@@ -149,16 +170,17 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   public onClick(): void {
     this.toolbarService.emitToolChanged(this);
+    this.isScaleSet ? this.scaleBackup = Helper.deepCopy(this.scale) : this.scaleBackup = null;
   }
 
   private updateScaleGroup() {
-    this.scaleGroup = d3.select('#scaleGroup');
+    this.scaleGroup = d3.select(`#${ScaleComponent.SCALE_GROUP_SELECTOR_ID}`);
   }
 
   private createSvgGroupWithScale(): void {
-    d3.select('#map')
+    d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`)
       .append('g')
-      .attr('id', 'scaleGroup')
+      .attr('id', ScaleComponent.SCALE_GROUP_SELECTOR_ID)
       .style('display', 'none');
     this.updateScaleGroup();
   }
@@ -184,7 +206,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private startCreatingScale(): void {
     this.scaleGroup.style('display', 'flex');
 
-    const mapBackground = d3.select('#map');
+    const mapBackground = d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`);
     mapBackground.style('cursor', 'crosshair');
 
     if (this.linesArray.length !== 1) {
@@ -198,14 +220,14 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.scaleService.changeVisibility(true);
     }
 
-    if (!d3.select('#scaleGroup').empty() && this.isScaleSet) {
-      d3.select('#scaleGroup').style('display', 'flex');
+    if (!d3.select(`#${ScaleComponent.SCALE_GROUP_SELECTOR_ID}`).empty() && this.isScaleSet) {
+      d3.select(`#${ScaleComponent.SCALE_GROUP_SELECTOR_ID}`).style('display', 'flex');
       this.redrawLine();
       this.redrawEndings();
       this.redrawPoints();
-    } else if (d3.select('#scaleGroup').empty()) {
-      d3.select('#map').append('g')
-        .attr('id', 'scaleGroup')
+    } else if (d3.select(`#${ScaleComponent.SCALE_GROUP_SELECTOR_ID}`).empty()) {
+      d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`).append('g')
+        .attr('id', ScaleComponent.SCALE_GROUP_SELECTOR_ID)
         .style('display', 'flex');
     }
 
@@ -214,17 +236,13 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   private hideScale(): void {
     this.scaleService.changeVisibility(false);
-
-    d3.select('#map').style('cursor', 'default');
+    d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`).style('cursor', 'default');
     this.scaleGroup.style('display', 'none');
-    d3.select('#map').on('click', null);
+    d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`).on('click', null);
   }
 
   private addPoint(): void {
-    const point = <Point>{
-      x: d3.event.offsetX,
-      y: d3.event.offsetY
-    };
+    const point: Point = this.zoomService.calculateTransition({x: d3.event.offsetX, y: d3.event.offsetY});
 
     if (!this.isFirstPointDrawn) {
       this.isFirstPointDrawn = true;
@@ -242,7 +260,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.redrawAllObjectsOnMap();
       this.setScaleVisible();
       this.scaleGroup.style('display', 'flex');
-      d3.select('#map').on('click', null);
+      d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`).on('click', null);
     }
   }
 
@@ -280,27 +298,76 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     };
   }
 
-  redrawPoints(): void {
+  private redrawPoints(): void {
+
+    const subject = () => { return { x: d3.event.x, y: d3.event.y }};
+
+    const dragStart = (_, index: number, selections: d3.selection[]) => {
+      d3.event.sourceEvent.stopPropagation();
+      d3.select(selections[index]).classed('dragging', true);
+    };
+
+    const dragging = (d, index: number, selections: d3.selection[]) => {
+      const event: KeyboardEvent = <KeyboardEvent>window.event;
+      const secondPoint: Point = <Point>{
+        x: 0,
+        y: 0
+      };
+      const mousePosition = <Point>{
+        x: d3.event.x,
+        y: d3.event.y
+      };
+      let x: number;
+      let y: number;
+      if (index === 0) {
+        secondPoint.x = this.pointsArray[1].x;
+        secondPoint.y = this.pointsArray[1].y;
+      } else {
+        secondPoint.x = this.pointsArray[0].x;
+        secondPoint.y = this.pointsArray[0].y;
+      }
+
+      if (event.shiftKey) {
+        const deltaY = Geometry.getDeltaY(mousePosition, secondPoint);
+        if (!!deltaY) {
+          x = mousePosition.x;
+          y = secondPoint.y - deltaY;
+        } else {
+          x = secondPoint.x;
+          y = mousePosition.y;
+        }
+      } else {
+        x = mousePosition.x;
+        y = mousePosition.y;
+      }
+      // offsetFromBorder[0] gives left and upper border offset,
+      // and offsetFromBorder[1] gives right and bottom border offset,
+      // sign is giving a direction of the offset
+      const offsetFromBorder = [{x : 5, y: 5}, {x: -5, y: -5}];
+      const eventPosition: Point = this.zoomService.calculateInMapEditorRangeEvent({x: x, y: y}, offsetFromBorder);
+      d3.select(selections[index]).attr('cx', d.x = eventPosition.x).attr('cy', d.y = eventPosition.y);
+      this.redrawLine();
+      this.redrawEndings();
+    };
+
+    const dragStop = (_, index: number, selections: d3.selection[]) => {
+      d3.select(selections[index]).classed('dragging', false);
+    };
+
     const drag = d3.drag()
-      .on('drag', (_, i, circleSelections) => {
-        this.pointDrag(d3.select(circleSelections[i]));
-      })
-      .on('end', () => {
-        this.setScalePoints();
-        this.actionBarService.setScale(this.scale);
-      });
+      .subject(subject)
+      .on('start', dragStart)
+      .on('drag', dragging)
+      .on('end', dragStop);
 
     const points = this.scaleGroup.selectAll('circle');
+
     points.data(this.pointsArray).enter()
       .append('svg:circle')
       .classed('point', true)
       .style('cursor', 'all-scroll')
-      .attr('cx', (d) => {
-        return d.x;
-      })
-      .attr('cy', (d) => {
-        return d.y;
-      })
+      .attr('cx', d => d.x)
+      .attr('cy', d => d.y)
       .attr('r', 10)
       .attr('fill-opacity', 0)
       .call(drag);
@@ -317,35 +384,18 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       .append('svg:line')
       .classed('connectLine', true)
       .style('cursor', 'crosshair')
-      .attr('x1', (d) => {
-        return d.p1.x;
-      })
-      .attr('y1', (d) => {
-        return d.p1.y;
-      })
-      .attr('x2', (d) => {
-        return d.p2.x;
-      })
-      .attr('y2', (d) => {
-        return d.p2.y;
-      })
+      .attr('x1', d => d.p1.x)
+      .attr('y1', d => d.p1.y)
+      .attr('x2', d => d.p2.x)
+      .attr('y2', d => d.p2.y)
       .attr('stroke-width', 1)
       .attr('stroke', 'black');
 
-    // update positions of old lines
     lines
-      .attr('x1', (d) => {
-        return d.p1.x;
-      })
-      .attr('y1', (d) => {
-        return d.p1.y;
-      })
-      .attr('x2', (d) => {
-        return d.p2.x;
-      })
-      .attr('y2', (d) => {
-        return d.p2.y;
-      });
+      .attr('x1', d => d.p1.x)
+      .attr('y1', d => d.p1.y)
+      .attr('x2', d => d.p2.x)
+      .attr('y2', d => d.p2.y);
   }
 
   private redrawEndings(): void {
@@ -355,19 +405,19 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       .classed('endings', true)
       .attr('stroke-width', 1)
       .attr('stroke', 'black')
-      .attr('x1', (d) => {
+      .attr('x1', d => {
         if (this.linesArray.length === 0) {
           return d.x + this.END_SIZE;
         }
         return d.x + Geometry.getVerticalEndingOffset(this.linesArray[0], this.END_SIZE);
       })
-      .attr('y1', (d) => {
+      .attr('y1', d => {
         if (this.linesArray.length === 0) {
           return d.y;
         }
         return d.y + Geometry.getHorizontalEndingOffset(this.linesArray[0], this.END_SIZE);
       })
-      .attr('x2', (d) => {
+      .attr('x2', d => {
         if (this.linesArray.length === 0) {
           return d.x - this.END_SIZE;
         }
@@ -379,104 +429,26 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
         }
         return d.y - Geometry.getHorizontalEndingOffset(this.linesArray[0], this.END_SIZE);
       })
-      .attr('transform', (d) => {
+      .attr('transform', d => {
         return 'rotate(' + 90 + ' ' + d.x + ' ' + d.y + ')';
       });
 
     endings
-      .attr('x1', (d) => {
+      .attr('x1', d => {
         return d.x + Geometry.getVerticalEndingOffset(this.linesArray[0], this.END_SIZE);
       })
-      .attr('y1', (d) => {
+      .attr('y1', d => {
         return d.y + Geometry.getHorizontalEndingOffset(this.linesArray[0], this.END_SIZE);
       })
-      .attr('x2', (d) => {
+      .attr('x2', d => {
         return d.x - Geometry.getVerticalEndingOffset(this.linesArray[0], this.END_SIZE);
       })
-      .attr('y2', (d) => {
+      .attr('y2', d => {
         return d.y - Geometry.getHorizontalEndingOffset(this.linesArray[0], this.END_SIZE);
       })
-      .attr('transform', (d) => {
+      .attr('transform', d => {
         return 'rotate(' + 90 + ' ' + d.x + ' ' + d.y + ')';
       });
-  }
-
-  private pointDrag(circleSelection: d3.selection): void {
-    if (this.pointsArray.length < 2) {
-      return;
-    }
-    const event: KeyboardEvent = <KeyboardEvent>window.event;
-    if (event.shiftKey) {
-      this.dragPointWithShift(circleSelection);
-    } else {
-      circleSelection
-        .attr('cx', (d) => {
-          return d.x = Math.max(0, Math.min(this.mapWidth, d3.event.x));
-        })
-        .attr('cy', (d) => {
-          return d.y = Math.max(0, Math.min(this.mapHeight, d3.event.y));
-        });
-    }
-    this.redrawAllObjectsOnMap();
-  }
-
-  private dragPointWithShift(circle: d3.selection): void {
-    const secondPoint = this.chooseNotDraggedPoint(circle);
-    const mousePosition = <Point>{
-      x: d3.event.x,
-      y: d3.event.y
-    };
-    const potentialSlope: number = Geometry.getSlope(secondPoint, mousePosition);
-    const upperSlope = 3;
-    const lowerSlope = 0.558; // arctan(22.5°)
-    if (Math.abs(potentialSlope) < lowerSlope) {
-      circle
-        .attr('cx', (d) => {
-          return d.x = Math.max(0, Math.min(this.mapWidth, d3.event.x));
-        })
-        .attr('cy', (d) => {
-          return d.y = secondPoint.y;
-        });
-    } else if (Math.abs(potentialSlope) > upperSlope) {
-      circle
-        .attr('cx', (d) => {
-          return d.x = secondPoint.x;
-        })
-        .attr('cy', (d) => {
-          return d.y = Math.max(0, Math.min(this.mapHeight, d3.event.y));
-        });
-    } else if (potentialSlope < upperSlope && potentialSlope > lowerSlope) {
-      circle
-        .attr('cx', (d) => {
-          return d.x = Math.max(0, Math.min(this.mapWidth, secondPoint.x + ( d3.event.y - secondPoint.y)));
-        })
-        .attr('cy', (d) => {
-          return d.y = Math.max(0, Math.min(this.mapHeight, d3.event.y));
-        });
-    } else if (potentialSlope > -upperSlope && potentialSlope < -lowerSlope) {
-      circle
-        .attr('cx', (d) => {
-          return d.x = Math.max(0, Math.min(this.mapWidth, secondPoint.x - ( d3.event.y - secondPoint.y)));
-        })
-        .attr('cy', (d) => {
-          return d.y = Math.max(0, Math.min(this.mapHeight, d3.event.y));
-        });
-    }
-  }
-
-  private chooseNotDraggedPoint(circle: d3.selection): Point {
-    const point: Point = <Point>{
-      x: 0,
-      y: 0
-    };
-    if (this.scale.start.x === parseInt(circle.attr('cx'), 10) && this.scale.start.y === parseInt(circle.attr('cy'), 10)) {
-      point.x = this.scale.stop.x;
-      point.y = this.scale.stop.y;
-    } else {
-      point.x = this.scale.start.x;
-      point.y = this.scale.start.y;
-    }
-    return point;
   }
 
   private createEmptyScale(): void {

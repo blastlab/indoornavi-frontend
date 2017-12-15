@@ -1,39 +1,26 @@
-import {Component} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {AcceptButtonsService} from './accept-buttons.service';
-import {Point} from '../../../map-editor/map.type';
+import {ToolDetailsComponent} from '../../../map-editor/tool-bar/shared/details/tool-details';
 
 @Component({
   selector: 'app-accept-buttons',
   templateUrl: './accept-buttons.html',
   styleUrls: ['./accept-buttons.css']
 })
-export class AcceptButtonsComponent {
-  public visible: boolean = false;
-  private coordinates: Point;
-
+export class AcceptButtonsComponent implements OnInit {
+  @ViewChild('toolDetails') toolDetails: ToolDetailsComponent;
   constructor(private acceptButtonsService: AcceptButtonsService) {
-    this.acceptButtonsService.coordinatesChanged.subscribe(data => {
-      this.coordinates = data;
-      const buttons = document.getElementById('accept-buttons');
-      buttons.style.visibility = 'hidden';
-      const checkButtonsVisibility = () => {
-        if (buttons.clientWidth !== 0) {
-          buttons.style.top = this.coordinates.y + 'px';
-          buttons.style.left = this.coordinates.x - (buttons.clientWidth / 2) + 'px';
-          buttons.style.visibility = 'visible';
-          clearInterval(interval);
-        }
-      };
-      const interval = setInterval(checkButtonsVisibility, 100);
-    });
-    this.acceptButtonsService.visibilitySet.subscribe(data => {
-      this.visible = data;
+
+  }
+
+  ngOnInit () {
+    this.acceptButtonsService.visibilitySet.subscribe((value: boolean) => {
+      this.toolDetails.show();
     });
   }
 
   public decide(decision: boolean): void {
     this.acceptButtonsService.publishDecision(decision);
-    this.visible = false;
+    this.toolDetails.hide();
   }
-
 }

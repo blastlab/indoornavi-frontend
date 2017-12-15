@@ -13,6 +13,8 @@ import {MapViewerService} from '../../map-editor/map.editor.service';
 import {AreaService} from '../../shared/services/area/area.service';
 import {IconService} from '../../shared/services/drawing/icon.service';
 import {Point} from '../../map-editor/map.type';
+import {ZoomService} from '../../map-editor/zoom.service';
+
 
 @Component({
   templateUrl: './analytics.html',
@@ -45,7 +47,9 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
               mapViewerService: MapViewerService,
               areaService: AreaService,
               translateService: TranslateService,
-              iconService: IconService) {
+              iconService: IconService,
+              zoomService: ZoomService
+              ) {
     super(ngZone,
       socketService,
       route,
@@ -53,7 +57,9 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       mapViewerService,
       areaService,
       translateService,
-      iconService);
+      iconService,
+      zoomService
+    );
   }
 
   protected init(): void {

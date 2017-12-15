@@ -64,7 +64,6 @@ import {PermissionGroupService} from './user/permissionGroup/permissionGroup.ser
 import {MapLoaderInformerService} from './shared/services/map-loader-informer/map-loader-informer.service';
 import {IconService} from 'app/shared/services/drawing/icon.service';
 import {AcceptButtonsService} from 'app/shared/components/accept-buttons/accept-buttons.service';
-import {DrawingService} from './shared/services/drawing/drawing.service';
 import {SocketService} from 'app/shared/services/socket/socket.service';
 import {ComplexService} from './complex/complex.service';
 import {HttpService} from './shared/services/http/http.service';
@@ -87,6 +86,7 @@ import {ToolDetailsComponent} from './map-editor/tool-bar/shared/details/tool-de
 import {MdIconRegistry} from '@angular/material';
 import {AnalyticsComponent} from './published/analytics/analytics';
 import {SocketConnectorComponent} from './published/socket-connector.component';
+import {ZoomService} from './map-editor/zoom.service';
 import {MapComponent} from './map/map';
 
 export function HttpLoaderFactory(http: Http) {
@@ -121,10 +121,10 @@ export function HttpLoaderFactory(http: Http) {
     DeviceComponent,
     AppAutoFocusDirective,
     ToolDetailsComponent,
-    MapComponent,
     ToolDetailsComponent,
     DeviceComponent,
-    SocketConnectorComponent
+    SocketConnectorComponent,
+    MapComponent
   ],
   entryComponents: [
     PublishedDialogComponent,
@@ -174,7 +174,6 @@ export function HttpLoaderFactory(http: Http) {
     DeviceService,
     MapService,
     AcceptButtonsService,
-    DrawingService,
     IconService,
     MapService,
     ScaleInputService,
@@ -197,7 +196,9 @@ export function HttpLoaderFactory(http: Http) {
     MessageServiceWrapper,
     ToolbarService,
     HintBarService,
-    MdIconRegistry
+    MdIconRegistry,
+    HintBarService,
+    ZoomService,
   ], bootstrap: [AppComponent]
 })
 

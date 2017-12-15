@@ -7,6 +7,7 @@ import {PublishedService} from '../../map-viewer/published.service';
 import {MapViewerService} from '../../map-editor/map.editor.service';
 import {AreaService} from '../../shared/services/area/area.service';
 import {IconService} from '../../shared/services/drawing/icon.service';
+import {ZoomService} from '../../map-editor/zoom.service';
 
 
 @Component({
@@ -22,7 +23,9 @@ export class PublishedComponent extends SocketConnectorComponent implements OnIn
               mapViewerService: MapViewerService,
               areaService: AreaService,
               translateService: TranslateService,
-              iconService: IconService) {
+              iconService: IconService,
+              zoomService: ZoomService
+              ) {
 
     super(
       ngZone,
@@ -32,7 +35,9 @@ export class PublishedComponent extends SocketConnectorComponent implements OnIn
       mapViewerService,
       areaService,
       translateService,
-      iconService);
+      iconService,
+      zoomService
+    );
   }
 
   // ngOnInit(): void {

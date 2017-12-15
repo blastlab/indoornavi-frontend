@@ -1,7 +1,10 @@
-<button pButton
+<button id="wizard-activation"
+        pButton
         [ngClass]="{'active-tool' : active}" (click)="nextStep()"
         pTooltip="{{'wizard.tooltip'|translate}}"
-        icon="fa-sitemap" iconPos="left">
+        icon="fa-sitemap" iconPos="left"
+        [disabled]="!wizardActivationButtonActive"
+>
 </button>
 
 <p-dialog header="{{'wizard.configuration.not.complete'|translate}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"

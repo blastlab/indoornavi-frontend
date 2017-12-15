@@ -20,6 +20,7 @@ import {DrawBuilder} from '../map-viewer/published.builder';
 import {TranslateService} from '@ngx-translate/core';
 import {Area} from 'app/shared/services/area/area.type';
 import {Config} from '../../config';
+import {ZoomService} from '../map-editor/zoom.service';
 
 @Component({
   templateUrl: './socket-connector.component.html',
@@ -44,7 +45,9 @@ export class SocketConnectorComponent implements OnInit {
               private mapViewerService: MapViewerService,
               private areaService: AreaService,
               private translateService: TranslateService,
-              private iconService: IconService) {
+              private iconService: IconService,
+              private zoomService: ZoomService
+              ) {
   }
 
   ngOnInit() {
@@ -121,7 +124,7 @@ export class SocketConnectorComponent implements OnInit {
     const coordinates: Point = this.scaleCoordinates(data.coordinates.point),
       deviceId: number = data.coordinates.tagShortId;
     if (!this.isOnMap(deviceId)) {
-      const drawBuilder = new DrawBuilder(this.d3map, {id: `tag-${deviceId}`, clazz: 'tag'});
+      const drawBuilder = new DrawBuilder(this.d3map, {id: `tag-${deviceId}`, clazz: 'tag'}, this.zoomService);
       const tagOnMap = drawBuilder
         .createGroup()
         .addIcon({x: 0, y: 0}, this.iconService.getIcon(NaviIcons.TAG))
@@ -185,7 +188,7 @@ export class SocketConnectorComponent implements OnInit {
     settings.set('fill', 'grey');
     this.areaService.getAllByFloor(floorId).subscribe((areas: Area[]) => {
       areas.forEach((area: Area) => {
-        const drawBuilder = new DrawBuilder(this.d3map, {id: `area-${area.id}`, clazz: 'area'});
+        const drawBuilder = new DrawBuilder(this.d3map, {id: `area-${area.id}`, clazz: 'area'}, this.zoomService);
         const scaledPoints = area.buffer.map((point: Point) => {
           return this.scaleCoordinates(point);
         });
