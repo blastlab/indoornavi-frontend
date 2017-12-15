@@ -26,6 +26,8 @@ import {Area} from '../shared/services/area/area.type';
 import {TranslateService} from '@ngx-translate/core';
 import {ZoomService} from '../map-editor/zoom.service';
 import {MapLoaderInformerService} from '../shared/services/map-loader-informer/map-loader-informer.service';
+import {MapViewerService} from '../map-editor/map.editor.service';
+
 
 @Component({
   templateUrl: './published.html',
@@ -108,10 +110,11 @@ export class PublishedComponent implements OnInit, AfterViewInit {
   }
 
   private handleCoordinatesData(data: CoordinatesSocketData) {
+    const map = d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`);
     const coordinates: Point = this.scaleCoordinates(data.coordinates.point),
       deviceId: number = data.coordinates.tagShortId;
     if (!this.isOnMap(deviceId)) {
-      const drawBuilder = new DrawBuilder(this.d3map, {id: `tag-${deviceId}`, clazz: 'tag'}, this.zoomService);
+      const drawBuilder = new DrawBuilder(map, {id: `tag-${deviceId}`, clazz: 'tag'}, this.zoomService);
       const tagOnMap = drawBuilder
         .createGroup()
         .addIcon({x: 0, y: 0}, this.iconService.getIcon(NaviIcons.TAG))
@@ -160,11 +163,12 @@ export class PublishedComponent implements OnInit, AfterViewInit {
 
   private drawAreas(floorId: number): void {
     const settings = new Map<string, string>();
+    const map = d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`);
     settings.set('opacity', '0.3');
     settings.set('fill', 'grey');
     this.areaService.getAllByFloor(floorId).subscribe((areas: Area[]) => {
       areas.forEach((area: Area) => {
-        const drawBuilder = new DrawBuilder(this.d3map, {id: `area-${area.id}`, clazz: 'area'}, this.zoomService);
+        const drawBuilder = new DrawBuilder(map, {id: `area-${area.id}`, clazz: 'area'}, this.zoomService);
         const scaledPoints = area.buffer.map((point: Point) => {
           return this.scaleCoordinates(point);
         });

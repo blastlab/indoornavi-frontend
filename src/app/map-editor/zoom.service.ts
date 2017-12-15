@@ -21,7 +21,7 @@ export class ZoomService {
   }
 
   calculateInMapEditorRangeEvent(point: Point, offset: Point[]): Point {
-    const selection = d3.select(`#${MapViewerService.MAP_UPPER_LAYER_SELECTOR_ID}`);
+    const selection: d3.selection = d3.select(`#${MapViewerService.MAP_UPPER_LAYER_SELECTOR_ID}`);
     const borderNorthWest: Point = this.calculateTransition({x: selection.attr('x'), y: selection.attr('y')});
     const borderSouthEast: Point = this.calculateTransition({x: selection.attr('width'), y: selection.attr('height')});
     point.x = point.x > borderNorthWest.x + offset[0].x ? point.x : borderNorthWest.x + offset[0].x;
