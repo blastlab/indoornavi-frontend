@@ -93,8 +93,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.drawScale(configuration.data.scale);
     });
 
-    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe(() => {
-      const mapSvg = d3.select('#map');
+    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapSvg: d3.selection) => {
       this.mapWidth = mapSvg.attr('width');
       this.mapHeight = mapSvg.attr('height');
       this.createSvgGroupWithScale();
