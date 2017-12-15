@@ -2,9 +2,9 @@ import {Injectable} from '@angular/core';
 import {Floor} from '../floor/floor.type';
 import {MapService} from './map.service';
 import * as d3 from 'd3';
-import {Transform} from './map.type';
 import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Observable';
+import {Transform} from './map.type';
 
 @Injectable()
 export class MapViewerService {
