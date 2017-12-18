@@ -9,10 +9,10 @@ import {PermissionGroupComponent} from './user/permissionGroup/permissionGroup';
 import {FloorComponent} from './floor/floor';
 import {MapControllerComponent} from './map-editor/map.controller';
 import {UnauthorizedComponent} from './unauthorized/unauthorized';
-import {PublishedListComponent} from './publications/list/published-list';
-import {PublishedComponent} from './map-viewer/published';
+import {PublishedListComponent} from './map-viewer/list/published-list';
+import {PublishedComponent} from './map-viewer/map-view/publications/publication';
 import {DeviceComponent} from './device/device';
-import {AnalyticsComponent} from './published/analytics/analytics';
+import {AnalyticsComponent} from './map-viewer/map-view/analytics/analytics';
 
 export const appRoutes: Routes = [
   {path: '', redirectTo: '/complexes', pathMatch: 'full'},

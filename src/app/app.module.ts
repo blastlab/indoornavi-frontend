@@ -31,11 +31,10 @@ import {AuthService} from './auth/auth.service';
 import {WizardComponent} from './map-editor/tool-bar/tools/wizard/wizard';
 import {ActionBarService} from './map-editor/action-bar/actionbar.service';
 import {ScaleService} from './map-editor/tool-bar/tools/scale/scale.service';
-import {PublishedComponent} from './map-viewer/published';
-import {PublishedListComponent} from './publications/list/published-list';
+import {PublishedListComponent} from './map-viewer/list/published-list';
 import {appRoutes} from './app.routes';
 import {PublishedService} from './map-viewer/published.service';
-import {PublishedDialogComponent} from './publications/dialog/published.dialog';
+import {PublishedDialogComponent} from './map-viewer/dialog/published.dialog';
 import {ActionBarComponent} from 'app/map-editor/action-bar/actionbar';
 import {Md5} from 'ts-md5/dist/md5';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -84,10 +83,11 @@ import {ChangePasswordComponent} from './user/changePassword/changePassword';
 import {SharedModule} from './shared/modules/shared.module';
 import {ToolDetailsComponent} from './map-editor/tool-bar/shared/details/tool-details';
 import {MdIconRegistry} from '@angular/material';
-import {AnalyticsComponent} from './published/analytics/analytics';
-import {SocketConnectorComponent} from './published/socket-connector.component';
+import {AnalyticsComponent} from './map-viewer/map-view/analytics/analytics';
+import {SocketConnectorComponent} from './map-viewer/map-view/socket-connector.component';
 import {ZoomService} from './map-editor/zoom.service';
 import {MapComponent} from './map/map';
+import {PublishedComponent} from './map-viewer/map-view/publications/publication';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
