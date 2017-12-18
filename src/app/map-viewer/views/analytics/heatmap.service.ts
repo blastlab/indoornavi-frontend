@@ -1,6 +1,8 @@
 import {HeatMapConfig, HeatMapCoordinates, HeatMapData, HeatMapSettingsExtended, HeatPoint, MapConfiguration} from './heat-map.type';
 import {Point} from '../../../map-editor/map.type';
 import * as H337 from 'heatmap.js'; // module name is heatmap.js
+// todo: change implementation to work with zoom
+
 
 export class HeatMapBuilder {
 
