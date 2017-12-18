@@ -8,19 +8,19 @@
 //     BuildingPage.destroyLastComplex();
 //   });
 //
-//   it('should open map-view maps list', () => {
+//   it('should open views maps list', () => {
 //     PublishedPage.navigateToPublishedList();
 //     expect(AppPage.getTitle()).toBe('Published maps');
 //   });
 //
-//   it('should create, edit and then remove map-view map', (done: DoneFn) => {
+//   it('should create, edit and then remove views map', (done: DoneFn) => {
 //     // first we need to create floor with uploaded image and scale set
 //     const elementName = 'Published Map Test Floor';
 //     MapPage.prepareAndOpenFloor(elementName);
 //     MapPage.uploadFile('map.jpg');
 //     PublishedPage.prepareScale();
 //
-//     // go back to map-view maps list
+//     // go back to views maps list
 //     PublishedPage.navigateToPublishedList();
 //     PublishedPage.getMapsCount().then((initialCount: number) => {
 //

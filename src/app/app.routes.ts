@@ -10,9 +10,9 @@ import {FloorComponent} from './floor/floor';
 import {MapControllerComponent} from './map-editor/map.controller';
 import {UnauthorizedComponent} from './unauthorized/unauthorized';
 import {PublishedListComponent} from './map-viewer/list/published-list';
-import {PublishedComponent} from './map-viewer/map-view/publications/publication';
+import {PublishedComponent} from './map-viewer/views/publications/publication';
 import {DeviceComponent} from './device/device';
-import {AnalyticsComponent} from './map-viewer/map-view/analytics/analytics';
+import {AnalyticsComponent} from './map-viewer/views/analytics/analytics';
 
 export const appRoutes: Routes = [
   {path: '', redirectTo: '/complexes', pathMatch: 'full'},

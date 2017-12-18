@@ -74,6 +74,7 @@ import {DragDropModule} from 'primeng/components/dragdrop/dragdrop';
 import {DropdownModule} from 'primeng/components/dropdown/dropdown';
 import {DialogModule} from 'primeng/components/dialog/dialog';
 import {DataTableModule} from 'primeng/components/datatable/datatable';
+import {SliderModule} from 'primeng/primeng';
 import {AppAutoFocusDirective} from './utils/directive/autofocus.directive';
 import {DeviceComponent} from 'app/device/device';
 import {AcceptButtonsComponent} from 'app/shared/components/accept-buttons/accept-buttons';
@@ -83,11 +84,11 @@ import {ChangePasswordComponent} from './user/changePassword/changePassword';
 import {SharedModule} from './shared/modules/shared.module';
 import {ToolDetailsComponent} from './map-editor/tool-bar/shared/details/tool-details';
 import {MdIconRegistry} from '@angular/material';
-import {AnalyticsComponent} from './map-viewer/map-view/analytics/analytics';
-import {SocketConnectorComponent} from './map-viewer/map-view/socket-connector.component';
+import {AnalyticsComponent} from './map-viewer/views/analytics/analytics';
+import {SocketConnectorComponent} from './map-viewer/views/socket-connector.component';
 import {ZoomService} from './map-editor/zoom.service';
 import {MapComponent} from './map/map';
-import {PublishedComponent} from './map-viewer/map-view/publications/publication';
+import {PublishedComponent} from './map-viewer/views/publications/publication';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -145,6 +146,7 @@ export function HttpLoaderFactory(http: Http) {
     ImageUploadModule.forRoot(),
     SharedModule,
     DataTableModule,
+    SliderModule,
     ButtonModule,
     DialogModule,
     ConfirmDialogModule,

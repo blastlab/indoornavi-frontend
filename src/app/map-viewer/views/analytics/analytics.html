@@ -1,0 +1,57 @@
+<p-toolbar id="map-toolbar">
+  <div class="ui-toolbar-group-left">
+    <div>
+      <button pButton pTooltip="{{'opacity'|translate}}" icon="fa-adjust"
+              [disabled]="playingAnimation" (click)="toggleSlider('opacity')">
+      </button>
+      <button pButton pTooltip="{{'blur'|translate}}" icon="fa-circle"
+               [disabled]="playingAnimation" (click)="toggleSlider('blur')">
+      </button>
+      <button pButton pTooltip="{{'path.length'|translate}}" icon="fa-arrows-h"
+              [disabled]="playingAnimation" (click)="toggleSlider('path')">
+      </button>
+      <button pButton pTooltip="{{'heat.persistence'|translate}}" icon="fa-thermometer-4"
+              [disabled]="playingAnimation" (click)="toggleSlider('heat')">
+      </button>
+    </div>
+  </div>
+  <div>
+    <p-slider
+      class="ui-g-5 ui-md-3 ui-lg-3"
+      *ngIf="opacitySliderView"
+      pTooltip="{{'opacity'|translate}}"
+      [(ngModel)]="heatMapSettings.opacity"
+      [min]="0.1" [max]="1"
+    ></p-slider>
+    <p-slider
+      class="ui-g-5 ui-md-3 ui-lg-3"
+      *ngIf="blurSliderView"
+      pTooltip="{{'blur'|translate}}"
+      [(ngModel)]="heatMapSettings.blur"
+      [min]="0.1" [max]="1"
+    ></p-slider>
+    <p-slider
+      class="ui-g-5 ui-md-3 ui-lg-3"
+      *ngIf="pathSliderView"
+      pTooltip="{{'path.length'|translate}}"
+      [(ngModel)]="heatMapSettings.path"
+      [min]="50" [max]="2000"
+    ></p-slider>
+    <p-slider
+      class="ui-g-5 ui-md-3 ui-lg-3"
+      *ngIf="heatSliderView"
+      pTooltip="{{'heat.persistence'|translate}}"
+      [(ngModel)]="heatMapSettings.heat"
+      [min]="2" [max]="50"
+    ></p-slider>
+  </div>
+  <div class="ui-toolbar-group-right">
+    <button pButton pTooltip="{{'show.heat.map'|translate}}" icon="fa-play"
+            [disabled]="playingAnimation" (click)="toggleHeatAnimation()">
+    </button>
+    <button pButton pTooltip="{{'stop.heat.map'|translate}}" icon="fa-stop"
+            [disabled]="!playingAnimation" (click)="toggleHeatAnimation()">
+    </button>
+  </div>
+</p-toolbar>
+<app-map *ngIf="!!activeMap" [floor]="activeMap.floor"></app-map>
