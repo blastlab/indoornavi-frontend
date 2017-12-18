@@ -84,7 +84,6 @@ import {ChangePasswordComponent} from './user/changePassword/changePassword';
 import {SharedModule} from './shared/modules/shared.module';
 import {ToolDetailsComponent} from './map-editor/tool-bar/shared/details/tool-details';
 import {MdIconRegistry} from '@angular/material';
-import {AnalyticsComponent} from './map-viewer/views/analytics/analytics';
 import {SocketConnectorComponent} from './map-viewer/views/socket-connector.component';
 import {ZoomService} from './map-editor/zoom.service';
 import {MapComponent} from './map/map';
@@ -116,7 +115,6 @@ export function HttpLoaderFactory(http: Http) {
     WizardComponent,
     AcceptButtonsComponent,
     PublishedComponent,
-    AnalyticsComponent,
     PublishedListComponent,
     PublishedDialogComponent,
     DeviceComponent,

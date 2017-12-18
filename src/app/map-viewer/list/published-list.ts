@@ -71,9 +71,6 @@ export class PublishedListComponent implements OnInit, CrudComponentList {
   goTo(map: PublishedMap): void {
     this.router.navigate(['maps', map.id]);
   }
-  goToAnalytics(map: PublishedMap): void {
-    this.router.navigate(['maps', map.id, 'analytics']);
-  }
 
   goToEditor(map: PublishedMap): void {
     const complexId = map.floor.building.complex.id;
