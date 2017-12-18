@@ -7,7 +7,7 @@ describe('MapLoaderInformerService', () => {
     service = new MapLoaderInformerService();
   });
 
-  it('should create', () => {
+  it('should be created', () => {
     expect(service).toBeTruthy();
   });
 

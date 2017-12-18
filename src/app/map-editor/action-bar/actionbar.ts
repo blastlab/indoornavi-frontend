@@ -4,7 +4,7 @@ import {Floor} from '../../floor/floor.type';
 import {MapLoaderInformerService} from '../../shared/services/map-loader-informer/map-loader-informer.service';
 import {Subscription} from 'rxjs/Subscription';
 import {Timer} from '../../shared/utils/timer/timer';
-import {PublishedDialogComponent} from '../../publications/dialog/published.dialog';
+import {PublishedDialogComponent} from '../../map-viewer/dialog/published.dialog';
 import {PublishedMap} from '../../map-viewer/published.type';
 import {TranslateService} from '@ngx-translate/core';
 import {Configuration} from './actionbar.type';

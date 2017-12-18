@@ -1,53 +1,55 @@
 import {AfterViewInit, Component, NgZone, OnInit} from '@angular/core';
-import {Config} from '../../config';
-import {SocketService} from '../shared/services/socket/socket.service';
 import {Subscription} from 'rxjs/Subscription';
-import {ActivatedRoute, Params} from '@angular/router';
-import {
-  AreaEventMode,
-  CommandType,
-  CoordinatesSocketData,
-  EventSocketData,
-  MeasureSocketData,
-  MeasureSocketDataType,
-  PublishedMap
-} from './published.type';
-import {PublishedService} from './published.service';
-import {IconService, NaviIcons} from 'app/shared/services/drawing/icon.service';
-import {DrawBuilder, GroupCreated} from './published.builder';
-import * as d3 from 'd3';
-import {Point} from '../map-editor/map.type';
+import {AreaEventMode, CommandType, CoordinatesSocketData, EventSocketData, MeasureSocketData, MeasureSocketDataType, PublishedMap} from '../published.type';
+import {Subject} from 'rxjs/Subject';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
-import {getRealDistanceInCentimeters} from '../map-editor/tool-bar/tools/scale/scale.type';
-import {Geometry} from '../shared/utils/helper/geometry';
-import {Tag} from '../device/tag.type';
-import {AreaService} from '../shared/services/area/area.service';
-import {Area} from '../shared/services/area/area.type';
+import {GroupCreated} from '../published.builder';
+import * as d3 from 'd3';
+import {SocketService} from '../../shared/services/socket/socket.service';
+import {ActivatedRoute, Params} from '@angular/router';
+import {PublishedService} from '../published.service';
+import {MapViewerService} from '../../map-editor/map.editor.service';
+import {AreaService} from '../../shared/services/area/area.service';
+import {IconService, NaviIcons} from '../../shared/services/drawing/icon.service';
+import {getRealDistanceInCentimeters} from 'app/map-editor/tool-bar/tools/scale/scale.type';
+import {Geometry} from 'app/shared/utils/helper/geometry';
+import {Observable} from 'rxjs/Observable';
+import {Tag} from 'app/device/tag.type';
+import {Point} from 'app/map-editor/map.type';
+import {DrawBuilder} from '../published.builder';
 import {TranslateService} from '@ngx-translate/core';
-import {MapLoaderInformerService} from '../shared/services/map-loader-informer/map-loader-informer.service';
+import {Area} from 'app/shared/services/area/area.type';
+import {Config} from '../../../config';
+import {ZoomService} from '../../map-editor/zoom.service';
+import {MapLoaderInformerService} from '../../shared/services/map-loader-informer/map-loader-informer.service';
 import {MapSvg} from '../map/map.type';
 
 @Component({
-  templateUrl: './published.html',
-  styleUrls: ['./published.css']
+  templateUrl: './socket-connector.component.html',
+  styleUrls: ['./socket-connector.component.css']
 })
-export class PublishedComponent implements OnInit, AfterViewInit {
-  private socketSubscription: Subscription;
-  private activeMap: PublishedMap;
-  private d3map: d3.selection = null;
+export class SocketConnectorComponent implements OnInit, AfterViewInit {
+  protected socketSubscription: Subscription;
+  protected activeMap: PublishedMap;
+  protected d3map: d3.selection = null;
+  protected pixelsToCentimeters: number;
+  protected transitionDurationTimeStep: number = 1000;
+  private dataReceived = new Subject<CoordinatesSocketData>();
+  private transitionEnded = new Subject<number>();
   private tagsOnMap: Dictionary<number, GroupCreated> = new Dictionary<number, GroupCreated>();
   private areasOnMap: Dictionary<number, GroupCreated> = new Dictionary<number, GroupCreated>();
   private originListeningOnEvent: Dictionary<string, MessageEvent[]> = new Dictionary<string, MessageEvent[]>();
-  private pixelsToCentimeters: number;
 
-  constructor(private ngZone: NgZone,
-              private socketService: SocketService,
-              private route: ActivatedRoute,
-              private publishedService: PublishedService,
+  constructor(protected ngZone: NgZone,
+              protected socketService: SocketService,
+              protected route: ActivatedRoute,
+              protected publishedService: PublishedService,
               private mapLoaderInformer: MapLoaderInformerService,
-              private iconService: IconService,
               private areaService: AreaService,
-              private translateService: TranslateService) {
+              private translateService: TranslateService,
+              private iconService: IconService,
+              private zoomService: ZoomService
+              ) {
   }
 
   ngOnInit() {
@@ -68,6 +70,7 @@ export class PublishedComponent implements OnInit, AfterViewInit {
         }
       });
     });
+    this.init();
   }
 
   ngAfterViewInit(): void {
@@ -83,6 +86,20 @@ export class PublishedComponent implements OnInit, AfterViewInit {
         });
       });
     }, false);
+  }
+
+  protected init() {
+    this.whenDataArrived().subscribe((data: CoordinatesSocketData) => {
+      this.handleCoordinatesData(data);
+    });
+  }
+
+  protected whenDataArrived(): Observable<CoordinatesSocketData> {
+    return this.dataReceived.asObservable();
+  }
+
+  protected whenTransitionEnded(): Observable<number> {
+    return this.transitionEnded.asObservable();
   }
 
   private isCoordinatesData(data: MeasureSocketData): boolean {
@@ -105,11 +122,12 @@ export class PublishedComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private handleCoordinatesData(data: CoordinatesSocketData) {
+  protected handleCoordinatesData(data: CoordinatesSocketData) {
+    const map = d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`);
     const coordinates: Point = this.scaleCoordinates(data.coordinates.point),
       deviceId: number = data.coordinates.tagShortId;
     if (!this.isOnMap(deviceId)) {
-      const drawBuilder = new DrawBuilder(this.d3map, {id: `tag-${deviceId}`, clazz: 'tag'});
+      const drawBuilder = new DrawBuilder(map, {id: `tag-${deviceId}`, clazz: 'tag'}, this.zoomService);
       const tagOnMap = drawBuilder
         .createGroup()
         .addIcon({x: 0, y: 0}, this.iconService.getIcon(NaviIcons.TAG))
@@ -117,13 +135,30 @@ export class PublishedComponent implements OnInit, AfterViewInit {
         .place({x: coordinates.x, y: coordinates.y});
       this.tagsOnMap.setValue(deviceId, tagOnMap);
     } else {
-      this.tagsOnMap.getValue(deviceId).move(coordinates);
+      this.moveTagOnMap(data);
     }
 
     if (this.originListeningOnEvent.containsKey('coordinates')) {
       this.originListeningOnEvent.getValue('coordinates').forEach((event: MessageEvent) => {
         event.source.postMessage({type: 'coordinates', coordinates: data}, event.origin);
       })
+    }
+  }
+
+  private moveTagOnMap(data: CoordinatesSocketData) {
+    const tag = this.tagsOnMap.getValue(data.coordinates.tagShortId);
+    if (tag.transitionEnded) {
+      tag.group
+        .transition()
+        .attr('x', data.coordinates.point.x)
+        .attr('y', data.coordinates.point.y)
+        .on('start', () => {
+          tag.transitionEnded = false;
+        })
+        .on('end', () => {
+          tag.transitionEnded = true;
+          this.transitionEnded.next(data.coordinates.tagShortId);
+        }).duration(this.transitionDurationTimeStep);
     }
   }
 
@@ -140,7 +175,7 @@ export class PublishedComponent implements OnInit, AfterViewInit {
       this.socketSubscription = stream.subscribe((data: MeasureSocketData) => {
         this.ngZone.run(() => {
           if (this.isCoordinatesData(data)) {
-            this.handleCoordinatesData(<CoordinatesSocketData> data);
+            this.dataReceived.next(<CoordinatesSocketData> data);
           } else if (this.isEventData(data)) {
             this.handleEventData(<EventSocketData> data);
           }
@@ -162,7 +197,7 @@ export class PublishedComponent implements OnInit, AfterViewInit {
     settings.set('fill', 'grey');
     this.areaService.getAllByFloor(floorId).subscribe((areas: Area[]) => {
       areas.forEach((area: Area) => {
-        const drawBuilder = new DrawBuilder(this.d3map, {id: `area-${area.id}`, clazz: 'area'});
+        const drawBuilder = new DrawBuilder(this.d3map, {id: `area-${area.id}`, clazz: 'area'}, this.zoomService);
         const scaledPoints = area.buffer.map((point: Point) => {
           return this.scaleCoordinates(point);
         });
@@ -207,7 +242,6 @@ export class PublishedComponent implements OnInit, AfterViewInit {
             this.tagsOnMap.remove(tagId);
           }
           break;
-
         case 'addEventListener':
           if (this.originListeningOnEvent.containsKey(data['args'])) {
             this.originListeningOnEvent.getValue(data['args']).push(event);

@@ -10,7 +10,7 @@ import {SecondStep} from './second-step/second-step';
 import {ActionBarService} from '../../../action-bar/actionbar.service';
 import {Sink} from '../../../../device/sink.type';
 import {Anchor} from '../../../../device/anchor.type';
-import {SocketMessage, WizardData, WizardStep} from './wizard.type';
+import {ObjectParams, SocketMessage, WizardData, WizardStep} from './wizard.type';
 import {Floor} from '../../../../floor/floor.type';
 import {SelectItem} from 'primeng/primeng';
 import {ThirdStep} from './third-step/third-step';
@@ -18,8 +18,11 @@ import {Point} from '../../../map.type';
 import * as d3 from 'd3';
 import {ToolbarService} from '../../toolbar.service';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
-import {DrawingService} from '../../../../shared/services/drawing/drawing.service';
 import {AcceptButtonsService} from '../../../../shared/components/accept-buttons/accept-buttons.service';
+import {DrawBuilder} from '../../../../map-viewer/published.builder';
+import {IconService, NaviIcons} from '../../../../shared/services/drawing/icon.service';
+import {MapViewerService} from '../../../map.editor.service';
+import {ZoomService} from '../../../zoom.service';
 
 @Component({
   selector: 'app-wizard',
@@ -43,21 +46,27 @@ export class WizardComponent implements Tool, OnInit {
   private socketSubscription: Subscription;
   private wizardData: WizardData = new WizardData();
   private hintMessage: string;
+  private wizardActivationButtonActive: boolean = true;
 
   constructor(public translate: TranslateService,
-              private socketService: SocketService,
-              private drawService: DrawingService,
               private ngZone: NgZone,
+              private socketService: SocketService,
               private acceptButtons: AcceptButtonsService,
               private toolbarService: ToolbarService,
               private hintBarService: HintBarService,
-              private actionBarService: ActionBarService) {
+              private actionBarService: ActionBarService,
+              private iconService: IconService,
+              private zoomService: ZoomService
+              ) {
   }
 
   ngOnInit() {
     this.setTranslations();
     this.steps = [new FirstStep(this.floor.id), new SecondStep(), new ThirdStep()];
     this.checkIsLoading();
+    this.toolbarService.onToolChanged().subscribe((tool: Tool) => {
+      !!tool ? this.wizardActivationButtonActive = false : this.wizardActivationButtonActive = true;
+    });
   }
 
   nextStep() {
@@ -106,7 +115,7 @@ export class WizardComponent implements Tool, OnInit {
     this.stepChanged();
   }
 
-  public placeOnMap(): void {
+  placeOnMap(): void {
     if (!this.selected) { // Do not allow to go to the next step if there is no selected item
       this.displayError = true;
       return;
@@ -117,11 +126,19 @@ export class WizardComponent implements Tool, OnInit {
     this.displayError = false;
     this.activeStep.beforePlaceOnMap(this.selected);
     this.displayDialog = false;
-    const map: d3.selector = d3.select('#map');
+    const map: d3.selector = d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`);
     map.style('cursor', 'crosshair');
     map.on('click', () => {
-      this.coordinates = {x: d3.event.offsetX, y: d3.event.offsetY};
-      this.drawService.drawObject(this.activeStep.getDrawingObjectParams(this.selected), this.coordinates);
+      this.coordinates = this.zoomService.calculateTransition({x: d3.event.offsetX, y: d3.event.offsetY});
+      const device: ObjectParams = this.activeStep.getDrawingObjectParams(this.selected);
+      const drawBuilder = new DrawBuilder(map, {id: device.id, clazz: device.groupClass}, this.zoomService);
+      drawBuilder
+        .createGroup()
+        .addIcon({x: -12, y: -12}, this.iconService.getIcon(NaviIcons.POINTER))
+        .addIcon({x: 0, y: 0}, this.iconService.getIcon(device.iconName))
+        .addText({x: 0, y: 36}, device.id)
+        .place({x: this.coordinates.x, y: this.coordinates.y})
+        .setDraggable();
       map.on('click', null);
       map.style('cursor', 'default');
       this.showAcceptButtons();
@@ -158,7 +175,6 @@ export class WizardComponent implements Tool, OnInit {
       this.hintBarService.emitHintMessage(value);
     });
     this.acceptButtons.publishVisibility(true);
-    this.acceptButtons.publishCoordinates({x: this.coordinates.x, y: this.coordinates.y + 30});
     this.acceptButtons.decisionMade.first().subscribe(
       data => {
         this.activeStep.setSelectedItemId(this.selected);
@@ -190,7 +206,7 @@ export class WizardComponent implements Tool, OnInit {
   }
 
   private removeGroupDrag(): void {
-    const map = d3.select('#map');
+    const map = d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`);
     const selections: d3.selection[] = [
       map.select('#anchor' + this.selected),
       map.select('#sink' + this.selected)

@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {PublishedMap} from '../../map-viewer/published.type';
+import {PublishedMap} from '../published.type';
 import {Floor} from '../../floor/floor.type';
 import {Building} from '../../building/building.type';
 import {Complex} from '../../complex/complex.type';
@@ -9,7 +9,7 @@ import {ComplexService} from '../../complex/complex.service';
 import {FloorService} from '../../floor/floor.service';
 import {BuildingService} from 'app/building/building.service';
 import {TranslateService} from '@ngx-translate/core';
-import {PublishedService} from '../../map-viewer/published.service';
+import {PublishedService} from '../published.service';
 import {DeviceService} from '../../device/device.service';
 import {Tag} from '../../device/tag.type';
 import {ActionBarService} from '../../map-editor/action-bar/actionbar.service';

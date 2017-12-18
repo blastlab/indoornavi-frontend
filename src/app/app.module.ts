@@ -31,11 +31,10 @@ import {AuthService} from './auth/auth.service';
 import {WizardComponent} from './map-editor/tool-bar/tools/wizard/wizard';
 import {ActionBarService} from './map-editor/action-bar/actionbar.service';
 import {ScaleService} from './map-editor/tool-bar/tools/scale/scale.service';
-import {PublishedComponent} from './map-viewer/published';
-import {PublishedListComponent} from './publications/list/published-list';
+import {PublishedListComponent} from './map-viewer/list/published-list';
 import {appRoutes} from './app.routes';
 import {PublishedService} from './map-viewer/published.service';
-import {PublishedDialogComponent} from './publications/dialog/published.dialog';
+import {PublishedDialogComponent} from './map-viewer/dialog/published.dialog';
 import {ActionBarComponent} from 'app/map-editor/action-bar/actionbar';
 import {Md5} from 'ts-md5/dist/md5';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -64,7 +63,6 @@ import {PermissionGroupService} from './user/permissionGroup/permissionGroup.ser
 import {MapLoaderInformerService} from './shared/services/map-loader-informer/map-loader-informer.service';
 import {IconService} from 'app/shared/services/drawing/icon.service';
 import {AcceptButtonsService} from 'app/shared/components/accept-buttons/accept-buttons.service';
-import {DrawingService} from './shared/services/drawing/drawing.service';
 import {SocketService} from 'app/shared/services/socket/socket.service';
 import {ComplexService} from './complex/complex.service';
 import {HttpService} from './shared/services/http/http.service';
@@ -85,6 +83,9 @@ import {ChangePasswordComponent} from './user/changePassword/changePassword';
 import {SharedModule} from './shared/modules/shared.module';
 import {ToolDetailsComponent} from './map-editor/tool-bar/shared/details/tool-details';
 import {MdIconRegistry} from '@angular/material';
+import {AnalyticsComponent} from './map-viewer/map-view/analytics/analytics';
+import {SocketConnectorComponent} from './map-viewer/map-view/socket-connector.component';
+import {ZoomService} from './map-editor/zoom.service';
 import {MapComponent} from './map/map';
 import {AreaComponent} from './map-editor/tool-bar/tools/area/area';
 
@@ -114,11 +115,15 @@ export function HttpLoaderFactory(http: Http) {
     WizardComponent,
     AcceptButtonsComponent,
     PublishedComponent,
+    AnalyticsComponent,
     PublishedListComponent,
     PublishedDialogComponent,
     DeviceComponent,
     AppAutoFocusDirective,
     ToolDetailsComponent,
+    ToolDetailsComponent,
+    DeviceComponent,
+    SocketConnectorComponent,
     MapComponent,
     AreaComponent
   ],
@@ -170,7 +175,6 @@ export function HttpLoaderFactory(http: Http) {
     DeviceService,
     MapService,
     AcceptButtonsService,
-    DrawingService,
     IconService,
     MapService,
     ScaleInputService,
@@ -193,7 +197,9 @@ export function HttpLoaderFactory(http: Http) {
     MessageServiceWrapper,
     ToolbarService,
     HintBarService,
-    MdIconRegistry
+    MdIconRegistry,
+    HintBarService,
+    ZoomService,
   ], bootstrap: [AppComponent]
 })
 

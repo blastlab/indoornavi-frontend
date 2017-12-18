@@ -10,8 +10,15 @@ services:
     container_name:
       frontend
     working_dir: /app
-    command: bash -c "npm install; ng serve --host=0.0.0.0"    
+    command: bash -c "npm install; ng serve --host=0.0.0.0 --disable-host-check"    
 
+  e2e_selenium:
+    build: e2e_selenium
+    container_name: e2e_selenium
+    volumes:
+      - ./e2e_selenium/e2e:/app
+    working_dir: /app
+    privileged: true
 
     
   core:

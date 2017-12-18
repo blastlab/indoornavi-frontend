@@ -146,3 +146,7 @@ app-auth > div {
 .ui-toolbar {
   margin-bottom: 10px;
 }
+
+.wizardSink, .wizardAnchor {
+  cursor: move;
+}
