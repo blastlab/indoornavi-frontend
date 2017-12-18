@@ -17,7 +17,7 @@
         <button class="device-list-delete" (click)="deleteSink()" [disabled]="!selectedDevice">
           <i class="material-icons">delete</i>
         </button>
-        <button class="device-list-select" (click)="selectDevice()" [disabled]="selectedDevice">
+        <button class="device-list-select" (click)="setSelectedDevice()" [disabled]="selectedDevice">
           <i class="material-icons">touch_app</i>
         </button>
       </th>

@@ -9,8 +9,6 @@ export class DevicePlacerController {
   private droppedOnMap: Subject<any> = new Subject();
   private coordinates: Subject<Point> = new Subject<Point>();
   private selectedDevice: Subject<Expandable> = new Subject<Expandable>();
-  private anchor: Subject<Expandable> = new Subject<Expandable>();
-  private sink: Subject<Expandable> = new Subject<Expandable>();
 
   droppedDevice = this.droppedOnMap.asObservable();
   newCoordinates = this.coordinates.asObservable();
@@ -28,40 +26,11 @@ export class DevicePlacerController {
     this.coordinates.next(undefined);
   }
 
-  setChosenAnchor(anchor: Expandable): void {
-    this.anchor.next(anchor);
-  }
-
-  getChosenAnchor(): Observable<Expandable> {
-    return this.anchor.asObservable()
-  }
-
-  resetChosenAnchor(): void {
-    this.anchor.next(undefined);
-  }
-
-  setChosenSink(sink: Expandable): void {
-    this.sink.next(sink);
-  }
-
-  getChosenSink(): Observable<Expandable> {
-    return this.sink.asObservable()
-  }
-
-  resetChosenSink(): void {
-    this.sink.next(undefined);
-  }
-
-  selectDevice(device: Expandable): void {
+  setSelectedDevice(device: Expandable): void {
     this.selectedDevice.next(device);
   }
 
   getSelectedDevice(): Observable<Expandable> {
     return this.selectedDevice.asObservable()
   }
-
-  deselectDevice(): void {
-    this.selectedDevice.next(undefined);
-  }
-
 }

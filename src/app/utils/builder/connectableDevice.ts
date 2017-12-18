@@ -13,35 +13,6 @@ export class ConnectableDevice extends Draggable {
     this.handleHovering();
   }
 
-  private handleHovering() {
-    this.domGroup.on('mouseover', () => {
-      this.showConnections();
-    });
-    this.domGroup.on('mouseout', () => {
-      this.hideConnections();
-    });
-  }
-
-  private showConnections() {
-    if (!!this.sinkConnections.length) {
-      this.sinkConnections.forEach((line: ConnectingLine) => {
-        line.connection.attr('stroke', 'orange');
-      });
-    } else if (!!this.anchorConnection) {
-      this.anchorConnection.connection.attr('stroke', 'orange');
-    }
-  }
-
-  private hideConnections() {
-    if (!!this.sinkConnections.length) {
-      this.sinkConnections.forEach((line: ConnectingLine) => {
-        line.connection.attr('stroke', 'none');
-      });
-    } else if (!!this.anchorConnection) {
-      this.anchorConnection.connection.attr('stroke', 'none');
-    }
-  }
-
   public dragOn(withButtons: boolean) {
     super.dragOn(withButtons);
     this.domGroup.call(this.dragBehavior.on('drag.test', () => {
@@ -53,6 +24,45 @@ export class ConnectableDevice extends Draggable {
     this.domGroup.on('drag.draggable', null);
     this.domGroup.select('.pointer').attr('stroke', 'black');
     this.domGroup.style('cursor', 'pointer');
+  }
+
+  public lockConnectionsToggle() {
+    if (!!this.sinkConnections.length) {
+      this.sinkConnections.forEach((line: ConnectingLine) => {
+        line.toggleLock();
+      });
+    } else if (!!this.anchorConnection) {
+      this.anchorConnection.toggleLock();
+    }
+  }
+
+  private handleHovering() {
+      this.domGroup.on('mouseover', () => {
+        this.showConnections();
+      });
+      this.domGroup.on('mouseout', () => {
+        this.hideConnections();
+      });
+  }
+
+  private showConnections() {
+    if (!!this.sinkConnections.length) {
+      this.sinkConnections.forEach((line: ConnectingLine) => {
+        line.show();
+      });
+    } else if (!!this.anchorConnection) {
+      this.anchorConnection.show();
+    }
+  }
+
+  private hideConnections() {
+    if (!!this.sinkConnections.length) {
+      this.sinkConnections.forEach((line: ConnectingLine) => {
+        line.hide();
+      });
+    } else if (!!this.anchorConnection) {
+      this.anchorConnection.hide();
+    }
   }
 
   private dragMapDeviceBehavior() {

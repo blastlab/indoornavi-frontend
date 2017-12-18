@@ -29,26 +29,23 @@ export class Selectable {
   }
 
   public select() {
-    // this.group.domGroup.classed('selected', true);
     this.emitSelectedEvent();
-    // this.selectOff();
   }
 
   public deselect() {
     this.removeBorderBox();
-    // this.group.domGroup.classed('selected', false);
     this.emitDeselectedEvent();
   }
 
   public selectOn() {
     this.group.domGroup.on('click.select', () => {
       this.select();
+      event.stopPropagation();
     });
   }
 
   public selectOff() {
     this.group.domGroup.on('.click.select', null);
-    this.removeBorderBox(); // TODO <- remove by deselecting only selectedDevices
   }
 
   public setBorderBox(defineColor?: string) {
