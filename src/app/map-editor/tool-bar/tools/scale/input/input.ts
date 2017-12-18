@@ -71,7 +71,7 @@ export class ScaleInputComponent implements OnInit, OnDestroy {
     }
   }
 
-  public confirm() {
+  confirm() {
     if (!this.scale.realDistance && !Number.isInteger(this.scale.realDistance)) {
       this.messageService.failed('scale.mustBeInteger');
       return;
@@ -81,6 +81,11 @@ export class ScaleInputComponent implements OnInit, OnDestroy {
       this.scaleInputService.publishSaveClicked(this.scale);
       this.messageService.success('scale.setSuccess');
     }
+  }
+  reject() {
+    this.messageService.success('scale.changesRejected');
+    this.scaleInputService.publishSaveClicked(null);
+    this.scaleInputService.publishChangesRejected();
   }
 
   emitScaleHide() {

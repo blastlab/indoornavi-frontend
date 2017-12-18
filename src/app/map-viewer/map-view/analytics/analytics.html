@@ -1,0 +1,74 @@
+<app-map *ngIf="!!activeMap" [floor]="activeMap.floor"></app-map>
+
+<div class="analytics-toolbar">
+  <h2>{{'tools'|translate}}</h2>
+  <ul class="tools-list">
+    <li>
+      <button pButton pTooltip="{{'go.to.map'|translate}}" (click)="goTo(publishedMap)" icon="fa-map">
+      </button>
+      <!--<button-->
+        <!--[disabled]="playingAnimation"-->
+        <!--(click)="toggleSlider('opacity')"-->
+        <!--md-mini-fab-->
+        <!--md-tooltip="{{'opacity'|translate}}" mdTooltipPosition="right">-->
+        <!--<i class="material-icons">brightness_7</i>-->
+      <!--</button>-->
+      <!--<md-slider [(ngModel)]="heatMapSettings.opacity"-->
+                 <!--class="analytics-slider"-->
+                 <!--*ngIf="opacitySliderView" min="0.1" max="1" step="0.1"></md-slider>-->
+    <!--</li>-->
+    <!--<li>-->
+      <!--<button-->
+        <!--[disabled]="playingAnimation"-->
+        <!--(click)="toggleSlider('blur')"-->
+        <!--md-mini-fab-->
+        <!--md-tooltip="{{'blur'|translate}}" mdTooltipPosition="right">-->
+        <!--<i class="material-icons">blur_on</i>-->
+      <!--</button>-->
+      <!--<md-slider [(ngModel)]="heatMapSettings.blur"-->
+                 <!--class="analytics-slider"-->
+                 <!--*ngIf="blurSliderView" min="0.1" max="1" step="0.1"></md-slider>-->
+    <!--</li>-->
+    <!--<li>-->
+      <!--<button-->
+        <!--[disabled]="playingAnimation"-->
+        <!--(click)="toggleSlider('path')"-->
+        <!--md-mini-fab-->
+        <!--md-tooltip="{{'path.length'|translate}}" mdTooltipPosition="right">-->
+        <!--<i class="material-icons">history</i>-->
+      <!--</button>-->
+      <!--<md-slider [(ngModel)]="heatMapSettings.path"-->
+                 <!--class="analytics-slider"-->
+                 <!--*ngIf="pathSliderView" min="50" max="2000" step="50"></md-slider>-->
+    <!--</li>-->
+    <!--<li>-->
+      <!--<button-->
+        <!--[disabled]="playingAnimation"-->
+        <!--(click)="toggleSlider('heat')"-->
+        <!--md-mini-fab-->
+        <!--md-tooltip="{{'heat.persistence'|translate}}" mdTooltipPosition="right">-->
+        <!--<i class="material-icons">hourglass_empty</i>-->
+      <!--</button>-->
+      <!--<md-slider [(ngModel)]="heatMapSettings.heat"-->
+                 <!--class="analytics-slider"-->
+                 <!--*ngIf="heatSliderView" min="2" max="50" step="1"></md-slider>-->
+    <!--</li>-->
+    <!--<hr/>-->
+    <!--<li>-->
+      <!--<button-->
+        <!--(click)="toggleHeatAnimation()"-->
+        <!--[disabled]="playingAnimation"-->
+        <!--md-mini-fab-->
+        <!--md-tooltip="{{'Show.heat.map'|translate}}" mdTooltipPosition="right">-->
+        <!--<i class="material-icons">play_arrow</i>-->
+      <!--</button>-->
+      <!--<button-->
+        <!--(click)="toggleHeatAnimation()"-->
+        <!--[disabled]="!playingAnimation"-->
+        <!--md-mini-fab-->
+        <!--md-tooltip="{{'stop.heat.map'|translate}}" mdTooltipPosition="right">-->
+        <!--<i class="material-icons">stop</i>-->
+      <!--</button>-->
+    </li>
+  </ul>
+</div>

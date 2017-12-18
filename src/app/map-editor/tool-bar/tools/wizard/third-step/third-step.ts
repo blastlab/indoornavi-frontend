@@ -3,7 +3,6 @@ import {AnchorSuggestedPositions} from '../../../../../device/anchor.type';
 import {Point} from '../../../../map.type';
 import {SocketMessage, Step, WizardData, WizardStep} from '../wizard.type';
 import {SelectItem} from 'primeng/primeng';
-import {ObjectParams} from '../../../../../shared/services/drawing/drawing.service';
 import {NaviIcons} from '../../../../../shared/services/drawing/icon.service';
 
 export class ThirdStep implements WizardStep {
@@ -36,7 +35,7 @@ export class ThirdStep implements WizardStep {
     }
   }
 
-  getDrawingObjectParams(selectedItem: number): ObjectParams {
+  getDrawingObjectParams(selectedItem: number) {
     return {
       id: 'anchor' + selectedItem, iconName: NaviIcons.ANCHOR,
       groupClass: 'wizardAnchor', markerClass: 'anchorMarker', fill: 'green'

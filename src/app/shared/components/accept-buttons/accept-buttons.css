@@ -1,10 +1,1 @@
-#accept-buttons {
-  display: none;
-  visibility: hidden;
-  position: absolute;
-}
 
-#accept-buttons.visible {
-  visibility: visible;
-  display: block;
-}

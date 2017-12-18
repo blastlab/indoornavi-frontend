@@ -3,7 +3,7 @@ import {Headers, Http, RequestOptions, Response, ResponseContentType} from '@ang
 import {Observable} from 'rxjs/Rx';
 import {Config} from '../../../../config';
 import 'rxjs/add/observable/throw';
-import {ActivatedRoute, Params, Router} from '@angular/router';
+import {ActivatedRoute, Params} from '@angular/router';
 import {AuthGuard} from '../../../auth/auth.guard';
 
 @Injectable()

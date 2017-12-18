@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {PublishedService} from '../../map-viewer/published.service';
-import {PublishedMap} from '../../map-viewer/published.type';
+import {PublishedService} from '../published.service';
+import {PublishedMap} from '../published.type';
 import {TranslateService} from '@ngx-translate/core';
 import {Router} from '@angular/router';
 import {BreadcrumbService} from '../../shared/services/breadcrumbs/breadcrumb.service';
@@ -70,6 +70,9 @@ export class PublishedListComponent implements OnInit, CrudComponentList {
 
   goTo(map: PublishedMap): void {
     this.router.navigate(['maps', map.id]);
+  }
+  goToAnalytics(map: PublishedMap): void {
+    this.router.navigate(['maps', map.id, 'analytics']);
   }
 
   goToEditor(map: PublishedMap): void {
