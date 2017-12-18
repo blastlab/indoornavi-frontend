@@ -1,17 +1,17 @@
 import {HeatMapConfig, HeatMapCoordinates, HeatMapData, HeatMapSettingsExtended, HeatPoint, MapConfiguration} from './heat-map.type';
 import {Point} from '../../../map-editor/map.type';
+import * as H337 from 'heatmap.js'; // module name is heatmap.js
 
 export class HeatMapBuilder {
-  private configuration: HeatMapConfig;
-  private h337: any;
 
-  constructor(configuration: HeatMapConfig) {
+  constructor(private configuration: HeatMapConfig) {
     this.configuration = configuration;
   }
 
   createHeatGroup(): HeatMapCreated {
-    const heatMapInstance = this.h337.create({
-      container: document.querySelector('#map-canvas'),
+    console.log(H337);
+    const heatMapInstance = H337.create({
+      container: document.querySelector('#map-container'),
       radius: this.configuration.radius,
       // backgroundColor: 'rgba(0,0,255,.6)',
       opacity: this.configuration.opacity,
@@ -54,8 +54,9 @@ export class HeatMapCreated {
   without loosing accuracy and need to store all given coordinates.
   Next algorithm searches for heatPoint in heatBuffer for given coordinates point, then:
   If heatPoint is in heatBuffer and his heat value allows to be increased, do so by preconfigured heat value step.
-  If found but heat value is to high, than it sets heat value to maximum possible value, if not found in heatBuffer, then:
-  Add this point on the end of heatBuffer with value equal to preconfigured heat value step, then:
+  If found but heat value is to high, than it sets heat value to maximum possible value,
+  If not found in heatBuffer, then:
+  Add this point on the end of heatBuffer array with value equal to preconfigured heat value step, then:
   Check the length of the heatBuffer and first take all items of heatBuffer from beginning to given preconfigured length and
   decrease heat down by preconfigured value and second remove first heat point in heatBuffer which is the oldest heatPoint in heatBuffer.
   */
@@ -97,6 +98,7 @@ export class HeatMapCreated {
   }
 
   public draw(): HeatMapCreated {
+    console.log('drawing');
     const data =  <HeatMapData> {
       max: this.heatValue * 5,
       min: 0,

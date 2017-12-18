@@ -34,9 +34,6 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     path: 100,
     heat: 20
   };
-  private mapStyle = {
-    'width': '2000px'
-  };
 
   public playingAnimation: boolean = false;
 
@@ -64,7 +61,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
 
   protected init(): void {
     /*
-    in the moment of creating svg #map, component doesn't know anything about its style
+    in the moment of creating svg #map-img, component doesn't know anything about its style
     so cannot set proper canvas size,
     we need to get picture size an set it before canvas creation
     const widthOfMapComponent = document.querySelector('#map').getAttribute('width');
