@@ -14,7 +14,7 @@
         <button class="device-list-deselect" (click)="deselectSink()" [disabled]="!chosenSink">
           <i class="material-icons">arrow_back</i>
         </button>
-        <button class="device-list-delete" (click)="deleteSink()" [disabled]="!selectedDevice">
+        <button class="device-list-delete" (click)="removeSelectedDevice()" [disabled]="!selectedDevice">
           <i class="material-icons">delete</i>
         </button>
         <button class="device-list-select" (click)="setSelectedDevice()" [disabled]="selectedDevice">

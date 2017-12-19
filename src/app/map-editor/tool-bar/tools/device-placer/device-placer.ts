@@ -114,6 +114,12 @@ export class DevicePlacerComponent implements Tool, OnInit {
     this.toolbarService.emitToolChanged(this);
   }
 
+  public removeSelectedDevice(): void {
+    this.removeFromConfiguration(this.selectedDevice);
+    this.findMapDevice(this.selectedDevice.shortId).groupCreated.remove();
+    this.clearSelections();
+  }
+
   getHintMessage(): string {
     return this.hintMessage;
   }
@@ -152,6 +158,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
   private getConfiguredDevices(): void {
     this.configurationService.configurationLoaded().first().subscribe((configuration) => {
       this.floorId = configuration.floorId;
+                                                            console.log(configuration);
       if (!!configuration.data.sinks) {
         this.drawConfiguredDevices(configuration.data.sinks);
       }
@@ -208,6 +215,10 @@ export class DevicePlacerComponent implements Tool, OnInit {
         }
       });
     });
+    console.log('this.verifiedDevices');
+    console.log(this.verifiedDevices);
+    console.log('this.remainingDevices');
+    console.log(this.remainingDevices);
   }
 
   public dragDeviceStarted(device: Anchor | Sink): void {
@@ -246,6 +257,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
       .subscribe( (selectedDevice) => {
         this.clearSelections();
         const handledDevice = this.findVerifiedDevice(DevicePlacerComponent.getShortIdFromGroupSelection(selectedDevice.groupCreated.domGroup));
+        console.log(handledDevice);
         this.setSelectedDevice(handledDevice);
         if (DevicePlacerComponent.isSinkType(handledDevice)) {
           this.chosenSink = <Sink>handledDevice;
@@ -383,21 +395,36 @@ export class DevicePlacerComponent implements Tool, OnInit {
       : DevicePlacerComponent.buildAnchorDrawConfiguration(<Anchor>device);
     const expandableMapObject = this.drawDevice(drawOptions, coordinates);
     // condition for marked connection
+    if (!!this.chosenSink && !DevicePlacerComponent.isSinkType(device)) {
+      console.log('anchorPlacedWithSinkSelected');
+    }
+    console.log(this.chosenSink);
     this.accButtons.publishCoordinates(coordinates);
     this.accButtons.publishVisibility(true);
     expandableMapObject.connectable.dragOn(true);
     this.accButtons.decisionMade.first().subscribe((decision) => {
       // TODO Change after decision logic to allow adding anchors alone GET THIS LOGIC DONE ~!
       if (decision) {
+        device.floorId = this.floorId;
+        device.x = coordinates.x;
+        device.y = coordinates.y;
         if (DevicePlacerComponent.isSinkType(device)) {
-          // TODO selection -> this.selectSink(<Sink>device);
+          console.log(device);
+          JSON.parse(JSON.stringify(device));
+          this.addSinkToConfiguration(<Sink>device);
+          console.log(' just add this sink to config');
+
+        } else if (!!this.chosenSink) {
+          this.addAnchorToConfiguredSink(device);
+          console.log('this.chosenSink.anchors.push(device);');
         } else {
-          // this.chosenSink.anchors.push(device);
+          this.addAnchorToConfiguration(device);
+          console.log('configuration.anchors.push(device);');
         }
         // TODO subscribe on selected event and push to managedArray
         this.manageSingleSelectable(expandableMapObject);
         expandableMapObject.selectable.select();
-        // ->  this.configurationService.setSink(this.chosenSink);
+        this.removeFromRemainingDevices(device);
       } else {
         this.removeChosenAnchor(expandableMapObject);
       }
@@ -405,6 +432,69 @@ export class DevicePlacerComponent implements Tool, OnInit {
       this.placementDone = true;
       this.toggleList();
     });
+  }
+
+  private removeFromRemainingDevices(device: Sink|Anchor) {
+    const index = this.remainingDevices.indexOf(device);
+    console.log('removeFromRemainingDevices');
+    console.log(this.remainingDevices);
+    console.log(index);
+    this.remainingDevices.splice(index, 1);
+    console.log(this.remainingDevices);
+  }
+
+  private addSinkToConfiguration(sink: Sink): void {
+    this.configurationService.setSink(sink);
+  }
+
+  private addAnchorToConfiguredSink(anchor: Anchor): void {
+    this.chosenSink.anchors.push(anchor);
+    this.configurationService.setSink(this.chosenSink);
+  }
+
+  private addAnchorToConfiguration(anchor: Anchor): void {
+    this.configurationService.setAnchor(anchor);
+  }
+
+  private removeFromConfiguration(device: Sink|Anchor): void {
+    const mapDevice = this.findMapDevice(device.shortId);
+    const isConnectedFlag = (!!mapDevice.connectable.anchorConnection || !!mapDevice.connectable.sinkConnections.length) ;
+    if (DevicePlacerComponent.isSinkType(device)) {
+                                                    console.log(' just remove this sink from config');
+      if (isConnectedFlag) {
+        const sinkWithConnections = <Sink>device;
+                                                    console.log('there will be 3options dialog here');
+        sinkWithConnections.anchors.forEach((connectedAnchor) => {
+          this.addAnchorToConfiguration(connectedAnchor);
+                                                    console.log('anchor disconnected');
+        });
+                                                    console.log('when it is not finished this deletes sink only (anchors are pushed to freedom)');
+      }
+      this.removeSinkFromConfiguration(<Sink>device)
+    } else {
+                                                    console.log(' just remove this anchor from config');
+      this.removeAnchorFromConfiguration(device);
+      if (isConnectedFlag) {
+                                                    console.log(' just remove this anchor... ... ... but it WAS CONNECTED!');
+      }
+                                                    console.log('configuration.anchors.REMOVE(device);');
+    }
+  }
+
+  private removeSinkFromConfiguration(sink: Sink): void {
+    this.configurationService.removeSink(sink);
+  }
+
+  private removeAnchorFromConfiguredSink(anchor: Anchor): void {
+                                                    console.log(this.chosenSink.anchors);
+    const index = this.chosenSink.anchors.indexOf(anchor);
+    this.chosenSink.anchors.splice(index, 1);
+    this.configurationService.setSink(this.chosenSink);
+                                                    console.log(this.chosenSink.anchors);
+  }
+
+  private removeAnchorFromConfiguration(anchor: Anchor): void {
+    this.configurationService.removeAnchor(anchor);
   }
 
 }
