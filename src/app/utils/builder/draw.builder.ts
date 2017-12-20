@@ -99,11 +99,11 @@ export class GroupCreated {
 
   addBorderBox(defineColor?: string) {
     const boxColor = (defineColor) ? defineColor : this.color;
-    const parentElement: SVGElement = this.domGroup._groups['0']['0'];
+    const parentElement: SVGElement = this.domGroup.node();
     const domRect: DOMRectInit = parentElement.getBoundingClientRect();
     const boxWidth = 2;
     const padding: {x: number , y: number} = Helper.getChildrenExtremeValues(parentElement);
-    const paddingX = padding.x * 1 + boxWidth * 1; // intentional usage
+    const paddingX = padding.x * 1 + boxWidth * 1;
     const paddingY = padding.y - boxWidth - 6;
     this.domGroup
       .append('rect')
@@ -125,7 +125,7 @@ export class GroupCreated {
   }
 
   changeColor(newColor) {
-    const parentElement: SVGElement = this.domGroup._groups['0']['0'];
+    const parentElement: SVGElement = this.domGroup.node();
     const childrenCount: number = parentElement.childElementCount;
     const children: NodeList = parentElement.childNodes;
     for (let i = 0; i < childrenCount; i++) {
