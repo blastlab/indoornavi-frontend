@@ -15,13 +15,13 @@ export class ConnectableDevice extends Draggable {
 
   public dragOn(withButtons: boolean) {
     super.dragOn(withButtons);
-    this.domGroup.call(this.dragBehavior.on('drag.test', () => {
+    this.domGroup.call(this.dragBehavior.on('drag.connectable', () => {
       this.dragMapDeviceBehavior();
     }));
   }
 
   public dragOff() {
-    this.domGroup.on('drag.draggable', null);
+    this.domGroup.on('.drag', null);
     this.domGroup.select('.pointer').attr('stroke', 'black');
     this.domGroup.style('cursor', 'pointer');
   }

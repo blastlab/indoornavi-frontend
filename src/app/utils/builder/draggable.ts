@@ -35,7 +35,7 @@ export class Draggable {
   }
 
   public dragOff() {
-    this.domGroup.on('drag.draggable', null);
+    this.domGroup.on('.drag', null);
     this.domGroup.select('.pointer').attr('stroke', 'black');
     this.domGroup.style('cursor', 'pointer');
   }
