@@ -49,4 +49,8 @@ export class ConnectingLine {
       .attr('pointer-events', 'none')
       .attr('stroke', 'none');
   }
+
+  public removeConnection(): void {
+    this.connection.remove();
+  }
 }

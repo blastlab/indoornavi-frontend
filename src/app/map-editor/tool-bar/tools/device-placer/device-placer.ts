@@ -13,6 +13,7 @@ import {Anchor} from '../../../../device/anchor.type';
 import {DrawBuilder, DrawConfiguration} from '../../../../utils/builder/draw.builder';
 import {Subscription} from 'rxjs/Subscription';
 import {MapLoaderInformerService} from 'app/utils/map-loader-informer/map-loader-informer.service';
+import {Configuration} from '../../../action-bar/actionbar.type';
 import {ConnectingLine} from '../../../../utils/builder/connection';
 import {ConnectableDevice} from 'app/utils/builder/connectableDevice';
 import {Selectable} from '../../../../utils/builder/selectable';
@@ -45,6 +46,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
   public queryString;
   private listState: string = 'out';
   private hintMessage: string;
+  private configuration: Configuration;
   private floorId: number;
   private mapLoadedSubscription: Subscription;
   private handledSelection: Subscription;
@@ -63,6 +65,10 @@ export class DevicePlacerComponent implements Tool, OnInit {
 
   static isSinkType(checkType: any): boolean {
     return (<Sink>checkType.anchors) !== undefined;
+  }
+
+  static hasSameShortId(device: Sink | Anchor, id: number): boolean {
+    return device.shortId === id;
   }
 
   static buildAnchorDrawConfiguration(anchor: Anchor): DrawConfiguration {
@@ -128,7 +134,6 @@ export class DevicePlacerComponent implements Tool, OnInit {
     this.getMapSelection();
     this.getConfiguredDevices();
     this.subscribeForDroppedDevice();
-    this.fetchDevices();
   }
 
   setActive(): void {
@@ -164,6 +169,8 @@ export class DevicePlacerComponent implements Tool, OnInit {
       if (!!configuration.data.anchors) {
         this.drawAnchorsWithoutConnection(configuration.data.anchors);
       }
+      this.configuration = configuration;
+      this.fetchDevices();
     });
   }
 
@@ -197,7 +204,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
       anchors.forEach((anchor: Anchor) => {
         if (anchor.verified) {
           this.verifiedDevices.push(anchor);
-          if (!anchor.floorId) {
+          if (!anchor.floorId && !this.isAnchorInConfiguration(anchor)) {
             this.remainingDevices.push(anchor);
           }
         }
@@ -208,12 +215,39 @@ export class DevicePlacerComponent implements Tool, OnInit {
       sinks.forEach((sink: Sink) => {
         if (sink.verified) {
           this.verifiedDevices.push(sink);
-          if (!sink.floorId) {
+          if (!sink.floorId && !this.isSinkInConfiguration(sink)) {
             this.remainingDevices.push(sink);
           }
         }
       });
     });
+  }
+
+  private isSinkInConfiguration(sink: Sink): boolean {
+    let sinkFound = false;
+    this.configuration.data.sinks.forEach((configSink) => {
+      if (DevicePlacerComponent.hasSameShortId(sink, configSink.shortId)) {
+        sinkFound = true;
+      }
+    });
+    return sinkFound;
+  }
+
+  private isAnchorInConfiguration(anchor: Anchor): boolean {
+    let anchorFound = false;
+    this.configuration.data.anchors.forEach((configAnchor) => {
+      if (DevicePlacerComponent.hasSameShortId(anchor, configAnchor.shortId)) {
+        anchorFound = true;
+      }
+    });
+    this.configuration.data.sinks.forEach((configSink) => {
+      configSink.anchors.forEach((anchorInSink) => {
+        if (DevicePlacerComponent.hasSameShortId(anchorInSink, anchor.shortId)) {
+          anchorFound = true;
+        }
+      })
+    });
+    return anchorFound;
   }
 
   public dragDeviceStarted(device: Anchor | Sink): void {
@@ -231,10 +265,10 @@ export class DevicePlacerComponent implements Tool, OnInit {
 
   private manageSingleSelectable(mapDevice: Expandable): void {
     mapDevice.selectable.selectOn();
-    const managedSelectable: Subscription = mapDevice.selectable.onSelected().subscribe((selectedMapDevice): d3.selection => {
+    const managedSelectable: Subscription = mapDevice.selectable.onSelected()
+      .subscribe((selectedMapDevice): d3.selection => {
       const deviceShortId = DevicePlacerComponent.getShortIdFromGroupSelection(selectedMapDevice);
-      const selectedDevice = this.findMapDevice(deviceShortId);
-      this.devicePlacerController.setSelectedDevice(selectedDevice);
+      this.devicePlacerController.setSelectedDevice(this.findMapDevice(deviceShortId));
     });
     this.managedSelectables.push(managedSelectable);
   }
@@ -388,8 +422,14 @@ export class DevicePlacerComponent implements Tool, OnInit {
       ? DevicePlacerComponent.buildSinkDrawConfiguration(<Sink>device)
       : DevicePlacerComponent.buildAnchorDrawConfiguration(<Anchor>device);
     const expandableMapObject = this.drawDevice(drawOptions, coordinates);
-    // condition for marked connection
+    let connectingLine: ConnectingLine;
     if (!!this.chosenSink && !DevicePlacerComponent.isSinkType(device)) {
+      const identifier = '' + this.chosenSink.shortId + device.shortId;
+      const mapSink = this.findMapDevice(this.chosenSink.shortId);
+      connectingLine = DevicePlacerComponent.createConnection(mapSink, expandableMapObject, identifier);
+      connectingLine.show();
+      connectingLine.toggleLock();
+      this.connectingLines.push(connectingLine);
     }
     this.accButtons.publishCoordinates(coordinates);
     this.accButtons.publishVisibility(true);
@@ -399,11 +439,10 @@ export class DevicePlacerComponent implements Tool, OnInit {
         device.x = coordinates.x;
         device.y = coordinates.y;
         if (DevicePlacerComponent.isSinkType(device)) {
-          JSON.parse(JSON.stringify(device));
           this.addSinkToConfiguration(<Sink>device);
-
         } else if (!!this.chosenSink) {
           this.addAnchorToConfiguredSink(device);
+          connectingLine.toggleLock();
         } else {
           this.addAnchorToConfiguration(device);
         }
@@ -411,6 +450,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
         expandableMapObject.selectable.select();
         this.removeFromRemainingDevices(device);
       } else {
+        this.removeConnectingLine(connectingLine);
         this.removeChosenAnchor(expandableMapObject);
       }
       this.devicePlacerController.resetCoordinates();
@@ -442,31 +482,46 @@ export class DevicePlacerComponent implements Tool, OnInit {
     const isConnectedFlag = (!!mapDevice.connectable.anchorConnection || !!mapDevice.connectable.sinkConnections.length) ;
     if (DevicePlacerComponent.isSinkType(device)) {
       if (isConnectedFlag) {
-        const sinkWithConnections = <Sink>device;
-        sinkWithConnections.anchors.forEach((connectedAnchor) => {
-          this.addAnchorToConfiguration(connectedAnchor);
-        });
+        // ask user about deletion decision
+          // option where anchors stay on map
+          const sinkWithConnections = <Sink>device;
+          sinkWithConnections.anchors.forEach((connectedAnchor) => {
+            this.addAnchorToConfiguration(connectedAnchor);
+          });
+          mapDevice.connectable.sinkConnections.forEach((sinkConnection) => {
+            this.removeConnectingLine(sinkConnection);
+          })
       }
       this.removeSinkFromConfiguration(<Sink>device)
     } else {
       this.removeAnchorFromConfiguration(device);
       if (isConnectedFlag) {
+        this.removeConnectingLine(mapDevice.connectable.anchorConnection);
       }
     }
   }
 
+  private removeConnectingLine(line: ConnectingLine): void {
+    const index = this.connectingLines.indexOf(line);
+    this.connectingLines.splice(index, 1);
+    line.removeConnection();
+  }
+
   private removeSinkFromConfiguration(sink: Sink): void {
     this.configurationService.removeSink(sink);
+    this.remainingDevices.push(sink);
   }
 
   private removeAnchorFromConfiguredSink(anchor: Anchor): void {
     const index = this.chosenSink.anchors.indexOf(anchor);
     this.chosenSink.anchors.splice(index, 1);
     this.configurationService.setSink(this.chosenSink);
+    this.remainingDevices.push(anchor);
   }
 
   private removeAnchorFromConfiguration(anchor: Anchor): void {
     this.configurationService.removeAnchor(anchor);
+    this.remainingDevices.push(anchor);
   }
 
 }

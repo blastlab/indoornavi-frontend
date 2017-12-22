@@ -42,7 +42,6 @@ export class Selectable {
       this.select();
       event.stopPropagation();
     });
-    console.log(this.group);
   }
 
   public selectOff() {
