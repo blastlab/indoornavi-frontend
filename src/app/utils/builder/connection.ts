@@ -35,6 +35,7 @@ export class ConnectingLine {
       this.connection.attr('stroke', 'none');
     }
   }
+
   public toggleLock (): void {
     this.lockVisibility = !this.lockVisibility;
   }

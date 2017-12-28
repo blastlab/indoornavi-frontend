@@ -5,11 +5,13 @@ import {Draggable} from './draggable';
 
 
 export class ConnectableDevice extends Draggable {
-  public sinkConnections: ConnectingLine[] = [];
+  public sinkConnections: ConnectingLine[];
   public anchorConnection: ConnectingLine;
 
   constructor(groupCreated: GroupCreated) {
     super(groupCreated);
+    this.sinkConnections = [];
+    this.anchorConnection = null;
     this.handleHovering();
   }
 
