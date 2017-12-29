@@ -208,6 +208,8 @@ export class DevicePlacerComponent implements Tool, OnInit {
           this.verifiedDevices.push(anchor);
           if (!anchor.floorId && !this.isAnchorInConfiguration(anchor)) {
             this.remainingDevices.push(anchor);
+          } else if (anchor.floorId === this.configuration.floorId) {
+            console.log(anchor);
           }
         }
       });
@@ -223,10 +225,14 @@ export class DevicePlacerComponent implements Tool, OnInit {
             } else {
               this.remainingDevices.push(sink);
             }
+          } else if (sink.floorId === this.configuration.floorId) {
+            console.log(sink);
           }
         }
       });
     });
+    console.log(this.verifiedDevices);
+    console.log(this.configuration);
   }
 
   private updateVerifiedSinkFromConfiguration(sink: Sink): void {
@@ -237,11 +243,10 @@ export class DevicePlacerComponent implements Tool, OnInit {
         sink.anchors = configSink.anchors;
       }
     });
-    console.log('sink ' + sink.shortId + ' updated');
-    console.log(sink.anchors);
   }
 
   private isSinkInConfiguration(sink: Sink): boolean {
+    // could be changed to simple findIndex( i => i.prop === obj.prop )
     let sinkFound = false;
     this.configuration.data.sinks.forEach((configSink) => {
       if (DevicePlacerComponent.hasSameShortId(sink, configSink.shortId)) {
@@ -526,6 +531,8 @@ export class DevicePlacerComponent implements Tool, OnInit {
     } else {
       if (isConnectedFlag) {
         this.removeConnectingLine(mapDevice.connectable.anchorConnection);
+        console.log('remove device');
+        console.log(device);
         this.removeAnchorFromConfiguredSink(device);
       } else {
         this.removeAnchorFromConfiguration(device);
@@ -548,7 +555,9 @@ export class DevicePlacerComponent implements Tool, OnInit {
   }
 
   private removeAnchorFromConfiguredSink(anchor: Anchor): void {
-    const index = this.chosenSink.anchors.indexOf(anchor);
+    // TODO use findIndex rather than indexOf! works now
+    const index = this.chosenSink.anchors.findIndex(a => a.shortId === anchor.shortId);
+    // check this where indexes were searched for // if (index === -1): never -> do not splice
     this.chosenSink.anchors.splice(index, 1);
     this.configurationService.setSink(this.chosenSink);
     this.remainingDevices.push(anchor);
