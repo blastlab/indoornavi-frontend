@@ -201,38 +201,32 @@ export class DevicePlacerComponent implements Tool, OnInit {
 
   private fetchDevices(): void {
     this.verifiedDevices = [];
-    this.deviceService.setUrl('anchors/');
-    this.deviceService.getAll().subscribe((anchors: Anchor[]) => {
-      anchors.forEach((anchor: Anchor) => {
-        if (anchor.verified) {
-          this.verifiedDevices.push(anchor);
-          if (!anchor.floorId && !this.isAnchorInConfiguration(anchor)) {
-            this.remainingDevices.push(anchor);
-          } else if (anchor.floorId === this.configuration.floorId) {
-            console.log(anchor);
-          }
-        }
-      });
-    });
     this.deviceService.setUrl('sinks/');
     this.deviceService.getAll().subscribe((sinks: Sink[]) => {
       sinks.forEach((sink: Sink) => {
         if (sink.verified) {
           this.verifiedDevices.push(sink);
-          if (!sink.floorId) {
-            if (this.isSinkInConfiguration(sink)) {
+          if (!sink.floorId || sink.floorId === this.configuration.floorId) {
+            if (this.getIndexOfSinkInConfiguration(sink) >= 0) {
               this.updateVerifiedSinkFromConfiguration(sink);
             } else {
               this.remainingDevices.push(sink);
             }
-          } else if (sink.floorId === this.configuration.floorId) {
-            console.log(sink);
           }
         }
       });
     });
-    console.log(this.verifiedDevices);
-    console.log(this.configuration);
+    this.deviceService.setUrl('anchors/');
+    this.deviceService.getAll().subscribe((anchors: Anchor[]) => {
+      anchors.forEach((anchor: Anchor) => {
+        if (anchor.verified) {
+          this.verifiedDevices.push(anchor);
+          if (this.getIndexOfAnchorInConfiguration(anchor) === -1 && (!anchor.floorId || anchor.floorId === this.configuration.floorId)) {
+            this.remainingDevices.push(anchor);
+          }
+        }
+      });
+    });
   }
 
   private updateVerifiedSinkFromConfiguration(sink: Sink): void {
@@ -245,32 +239,27 @@ export class DevicePlacerComponent implements Tool, OnInit {
     });
   }
 
-  private isSinkInConfiguration(sink: Sink): boolean {
-    // could be changed to simple findIndex( i => i.prop === obj.prop )
-    let sinkFound = false;
-    this.configuration.data.sinks.forEach((configSink) => {
-      if (DevicePlacerComponent.hasSameShortId(sink, configSink.shortId)) {
-        sinkFound = true;
-      }
-    });
-    return sinkFound;
+  private getIndexOfSinkInConfiguration(sink: Sink): number {
+    return this.configuration.data.sinks.findIndex(s => s.shortId === sink.shortId);
   }
 
-  private isAnchorInConfiguration(anchor: Anchor): boolean {
-    let anchorFound = false;
-    this.configuration.data.anchors.forEach((configAnchor) => {
-      if (DevicePlacerComponent.hasSameShortId(anchor, configAnchor.shortId)) {
-        anchorFound = true;
-      }
-    });
-    this.configuration.data.sinks.forEach((configSink) => {
-      configSink.anchors.forEach((anchorInSink) => {
-        if (DevicePlacerComponent.hasSameShortId(anchorInSink, anchor.shortId)) {
-          anchorFound = true;
+  private getIndexOfAnchorInConfiguration(anchor: Anchor): number {
+    let index = this.configuration.data.anchors.findIndex(a => a.shortId === anchor.shortId);
+    if (index >= 0) {
+      return index;
+    } else {
+      this.configuration.data.sinks.forEach((configSink) => {
+        const i = this.getIndexOfAnchorInSinkArray(anchor, configSink);
+        if (i >= 0) {
+          index = i;
         }
-      })
-    });
-    return anchorFound;
+      });
+    }
+    return index;
+  }
+
+  private getIndexOfAnchorInSinkArray(anchor: Anchor, sink: Sink): number {
+    return sink.anchors.findIndex(a => a.shortId === anchor.shortId);
   }
 
   public dragDeviceStarted(device: Anchor | Sink): void {
@@ -486,13 +475,21 @@ export class DevicePlacerComponent implements Tool, OnInit {
   }
 
   private removeFromRemainingDevices(device: Sink | Anchor) {
-    const index = this.remainingDevices.indexOf(device);
-    this.remainingDevices.splice(index, 1);
+    const index = this.remainingDevices.findIndex(d => d.shortId === device.shortId);
+    if (index >= 0) {
+      this.remainingDevices.splice(index, 1);
+    } else {
+      throw new Error(`Device with id: ${device.shortId} has been not found in remaining devices and cannot be removed.`);
+    }
   }
 
   private removeFromMapDevices(device: Expandable) {
-    const index = this.mapDevices.indexOf(device);
-    this.mapDevices.splice(index, 1);
+    const index = this.mapDevices.findIndex(d => d.groupCreated.domGroup === device.groupCreated.domGroup);
+    if (index >= 0) {
+      this.mapDevices.splice(index, 1);
+    } else {
+      throw new Error(`Device has been not found in map devices and cannot be removed.`);
+    }
   }
 
   private addSinkToConfiguration(sink: Sink): void {
@@ -542,11 +539,19 @@ export class DevicePlacerComponent implements Tool, OnInit {
 
   private removeConnectingLine(line: ConnectingLine): void {
     const connectedSink = line.connectedSink();
-    let index = connectedSink.sinkConnections.indexOf(line);
-    connectedSink.sinkConnections.splice(index, 1);
-    index = this.connectingLines.indexOf(line);
-    this.connectingLines.splice(index, 1);
-    line.removeConnection();
+    let index = connectedSink.sinkConnections.findIndex(l => l.id === line.id);
+    if (index >= 0) {
+      connectedSink.sinkConnections.splice(index, 1);
+    } else {
+      throw new Error(`Connection line with id: ${line.id} has been not found in sink and cannot be removed.`);
+    }
+    index = this.connectingLines.findIndex(l => l.id === line.id);
+    if (index >= 0) {
+      this.connectingLines.splice(index, 1);
+      line.removeConnection();
+    } else {
+      throw new Error(`Connection line with id: ${line.id} has been not found and cannot be removed.`);
+    }
   }
 
   private removeSinkFromConfiguration(sink: Sink): void {
@@ -555,12 +560,14 @@ export class DevicePlacerComponent implements Tool, OnInit {
   }
 
   private removeAnchorFromConfiguredSink(anchor: Anchor): void {
-    // TODO use findIndex rather than indexOf! works now
     const index = this.chosenSink.anchors.findIndex(a => a.shortId === anchor.shortId);
-    // check this where indexes were searched for // if (index === -1): never -> do not splice
-    this.chosenSink.anchors.splice(index, 1);
-    this.configurationService.setSink(this.chosenSink);
-    this.remainingDevices.push(anchor);
+    if (index >= 0) {
+      this.chosenSink.anchors.splice(index, 1);
+      this.configurationService.setSink(this.chosenSink);
+      this.remainingDevices.push(anchor);
+    } else {
+      throw new Error(`Anchor with id: ${anchor.shortId} has been not found in Sink connected anchors.`);
+    }
   }
 
   private removeAnchorFromConfiguration(anchor: Anchor): void {
