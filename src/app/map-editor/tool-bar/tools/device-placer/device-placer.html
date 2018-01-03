@@ -11,14 +11,11 @@
         <h2 class="remaining-devices-heading">{{'device-list.listOfDevices'|translate}}</h2>
       </th>
       <th>
-        <button class="device-list-deselect" (click)="modifyConnections()" [disabled]="!chosenSink">
-          <i class="material-icons">arrow_back</i>
-        </button>
         <button class="device-list-delete" (click)="removeSelectedDevice()" [disabled]="!selectedDevice">
           <i class="material-icons">delete</i>
         </button>
-        <button class="device-list-select" (click)="setSelectedDevice()" [disabled]="selectedDevice">
-          <i class="material-icons">touch_app</i>
+        <button class="device-list-deselect" (click)="modifyConnections()">
+          <i class="material-icons">timeline</i>
         </button>
       </th>
     </tr>

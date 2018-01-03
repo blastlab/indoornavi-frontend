@@ -9,7 +9,7 @@ export class Selectable {
   private hasBorder: boolean;
 
 
-  constructor(private group: GroupCreated) {
+  constructor(protected group: GroupCreated) {
   }
 
   private emitSelectedEvent() {

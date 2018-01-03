@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, HostListener, OnInit, Output} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {Tool} from '../tool';
 import {ToolName} from '../tools.enum';
@@ -21,6 +21,7 @@ import {Expandable} from '../../../../utils/builder/expandable';
 import {ActionBarService} from 'app/map-editor/action-bar/actionbar.service';
 import {ToolbarService} from '../../toolbar.service';
 import {DeviceService} from '../../../../device/device.service';
+import {HintBarService} from 'app/map-editor/hint-bar/hintbar.service';
 
 @Component({
   selector: 'app-device-placer',
@@ -58,6 +59,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
   private chosenSink: Sink;
   private selectedDevice: Anchor | Sink;
   private connectingLines: ConnectingLine[] = [];
+  private manipulatingConnections: boolean = false;
 
   static getShortIdFromGroupSelection(selection: d3.selection): number {
     return parseInt(selection.attr('id'), 10);
@@ -89,11 +91,13 @@ export class DevicePlacerComponent implements Tool, OnInit {
     };
   }
 
-  static createConnection(sink: Expandable, anchor: Expandable, id: string): ConnectingLine {
-    const connectingLine = new ConnectingLine(sink.connectable, anchor.connectable, id);
-    sink.connectable.sinkConnections.push(connectingLine);
-    anchor.connectable.anchorConnection = connectingLine;
-    return connectingLine;
+  static buildConnectingLineConfiguration(id: string | number): DrawConfiguration {
+    return {
+      id: `${id}`,
+      clazz: `connection`,
+      cursor: `inherit`,
+      color: `orange`
+    };
   }
 
   static deselectDevice(device: Expandable): void {
@@ -112,12 +116,36 @@ export class DevicePlacerComponent implements Tool, OnInit {
               private configurationService: ActionBarService,
               private mapLoaderInformer: MapLoaderInformerService,
               private toolbarService: ToolbarService,
-              private icons: IconService) {
+              private icons: IconService,
+              private hintBarService: HintBarService) {
     this.setTranslations();
   }
 
+  @HostListener('document:keydown.escape', [])
+  private handleEscapeKey() {
+    if (!this.selectedDevice && this.manipulatingConnections) {
+      this.translate.get('connections.manipulationTurnedOff').subscribe((value: string) => {
+        this.hintBarService.emitHintMessage(value);
+      });
+      this.endModificationMode();
+    }
+    if (this.selectedDevice) {
+      this.clearSelections();
+    }
+  }
+
+  @HostListener('document:keydown.delete', [])
+  private handleDeleteKey() {
+    if (this.selectedDevice) {
+      this.removeSelectedDevice();
+      this.clearSelections();
+    }
+  }
+
   public onClick(): void {
-    this.toolbarService.emitToolChanged(this);
+    (this.manipulatingConnections)
+      ? this.endModificationMode()
+      : this.toolbarService.emitToolChanged(this);
   }
 
   public removeSelectedDevice(): void {
@@ -126,6 +154,36 @@ export class DevicePlacerComponent implements Tool, OnInit {
     mapDevice.groupCreated.remove();
     this.clearSelections();
     this.removeFromMapDevices(mapDevice);
+  }
+
+  public modifyConnections(): void {
+    this.manipulatingConnections = true;
+    this.translate.get('connections.manipulationTurnedOn').subscribe((value: string) => {
+      this.hintBarService.emitHintMessage(value);
+    });
+    // this.clearSelections();
+    // hintbar -> select (click) a device to connect | translate
+    this.toggleList();
+    const handledSelection = this.devicePlacerController.getSelectedDevice().subscribe(selectedDevice => {
+      this.createLineAttachedToCursorAnd(selectedDevice);
+    })
+  }
+
+  private endModificationMode(): void {
+    this.manipulatingConnections = false;
+    this.toggleList();
+  }
+
+  private createConnection(sink: Expandable, anchor: Expandable, lineConfig: DrawConfiguration): ConnectingLine {
+    const drawBuilder = new DrawBuilder(this.map, lineConfig);
+    const connectingLine = new ConnectingLine(drawBuilder.createGroup(), sink.connectable, anchor.connectable, lineConfig.id);
+    sink.connectable.sinkConnections.push(connectingLine);
+    anchor.connectable.anchorConnection = connectingLine;
+    return connectingLine;
+  }
+
+  private createLineAttachedToCursorAnd(device: Expandable) {
+    console.log(device)
   }
 
   getHintMessage(): string {
@@ -166,7 +224,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
     this.configurationService.configurationLoaded().first().subscribe((configuration) => {
       this.floorId = configuration.floorId;
       if (!!configuration.data.sinks) {
-        this.drawConfiguredDevices(configuration.data.sinks);
+        this.drawSinksAndConnectedAnchors(configuration.data.sinks);
       }
       if (!!configuration.data.anchors) {
         this.drawAnchorsWithoutConnection(configuration.data.anchors);
@@ -357,7 +415,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
     });
   }
 
-  private drawConfiguredDevices(sinks: Array<Sink>): void {
+  private drawSinksAndConnectedAnchors(sinks: Array<Sink>): void {
     sinks.forEach((sink) => {
       const mapSink = this.drawDevice(DevicePlacerComponent.buildSinkDrawConfiguration(sink),
         {x: sink.x, y: sink.y});
@@ -365,7 +423,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
         const mapAnchor = this.drawDevice(DevicePlacerComponent.buildAnchorDrawConfiguration(anchor),
           {x: anchor.x, y: anchor.y});
         const identifier = '' + sink.shortId + anchor.shortId;
-        const connectingLine = DevicePlacerComponent.createConnection(mapSink, mapAnchor, identifier);
+        const connectingLine = this.createConnection(mapSink, mapAnchor, DevicePlacerComponent.buildConnectingLineConfiguration(identifier));
         this.connectingLines.push(connectingLine);
       });
     });
@@ -439,7 +497,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
     if (!!this.chosenSink && !DevicePlacerComponent.isSinkType(device)) {
       const identifier = '' + this.chosenSink.shortId + device.shortId;
       const mapSink = this.findMapDevice(this.chosenSink.shortId);
-      connectingLine = DevicePlacerComponent.createConnection(mapSink, expandableMapObject, identifier);
+      connectingLine = this.createConnection(mapSink, expandableMapObject, DevicePlacerComponent.buildConnectingLineConfiguration(identifier));
       connectingLine.show();
       connectingLine.toggleLock();
       this.connectingLines.push(connectingLine);
@@ -528,8 +586,6 @@ export class DevicePlacerComponent implements Tool, OnInit {
     } else {
       if (isConnectedFlag) {
         this.removeConnectingLine(mapDevice.connectable.anchorConnection);
-        console.log('remove device');
-        console.log(device);
         this.removeAnchorFromConfiguredSink(device);
       } else {
         this.removeAnchorFromConfiguration(device);
@@ -537,20 +593,20 @@ export class DevicePlacerComponent implements Tool, OnInit {
     }
   }
 
-  private removeConnectingLine(line: ConnectingLine): void {
-    const connectedSink = line.connectedSink();
-    let index = connectedSink.sinkConnections.findIndex(l => l.id === line.id);
+  private removeConnectingLine(connectingLine: ConnectingLine): void {
+    const connectedSink = connectingLine.connectedSink();
+    let index = connectedSink.sinkConnections.findIndex(l => l.id === connectingLine.id);
     if (index >= 0) {
       connectedSink.sinkConnections.splice(index, 1);
     } else {
-      throw new Error(`Connection line with id: ${line.id} has been not found in sink and cannot be removed.`);
+      throw new Error(`Connection with id: ${connectingLine.id} has been not found in sink and cannot be removed.`);
     }
-    index = this.connectingLines.findIndex(l => l.id === line.id);
+    index = this.connectingLines.findIndex(l => l.id === connectingLine.id);
     if (index >= 0) {
       this.connectingLines.splice(index, 1);
-      line.removeConnection();
+      connectingLine.removeConnection();
     } else {
-      throw new Error(`Connection line with id: ${line.id} has been not found and cannot be removed.`);
+      throw new Error(`Connection with id: ${connectingLine.id} has been not found and cannot be removed.`);
     }
   }
 

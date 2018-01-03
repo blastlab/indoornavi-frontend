@@ -1,22 +1,24 @@
 import * as d3 from 'd3';
 import {ConnectableDevice} from './connectableDevice';
 import {Point} from '../../map-editor/map.type';
+import {Selectable} from './selectable';
+import {GroupCreated} from './draw.builder';
 
-export class ConnectingLine {
+export class ConnectingLine extends Selectable {
   public id: string;
   public connection: d3.selection;
   private sink: ConnectableDevice;
   private anchor: ConnectableDevice;
-  private container: d3.selection;
   private lockVisibility: boolean = false;
 
-  constructor(sink: ConnectableDevice,
+  constructor(group: GroupCreated,
+              sink: ConnectableDevice,
               anchor: ConnectableDevice,
               id: string) {
+    super(group);
     this.sink = sink;
     this.anchor = anchor;
     this.id = id;
-    this.container = sink.container;
     this.drawConnectingLine();
   }
 
@@ -41,7 +43,7 @@ export class ConnectingLine {
   }
 
   private drawConnectingLine(): void {
-    this.connection = this.container.append('line')
+    this.connection = this.group.domGroup.append('line')
       .attr('id', this.id)
       .attr('x1', this.sink.domGroup.attr('x'))
       .attr('y1', this.sink.domGroup.attr('y'))
