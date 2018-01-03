@@ -38,8 +38,12 @@ export class ConnectingLine extends Selectable {
     }
   }
 
-  public toggleLock (): void {
-    this.lockVisibility = !this.lockVisibility;
+  public lock (): void {
+    this.lockVisibility = true;
+  }
+
+  public unlock (): void {
+    this.lockVisibility = false;
   }
 
   private drawConnectingLine(): void {

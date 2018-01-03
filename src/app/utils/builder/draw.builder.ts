@@ -147,6 +147,7 @@ export class GroupCreated {
 export interface DrawConfiguration {
   id: string;
   clazz: string;
+  name?: string;
   cursor?: string;
   color?: string;
 }

@@ -28,13 +28,23 @@ export class ConnectableDevice extends Draggable {
     this.domGroup.style('cursor', 'pointer');
   }
 
-  public lockConnectionsToggle() {
+  public lockConnections() {
     if (!!this.sinkConnections.length) {
       this.sinkConnections.forEach((line: ConnectingLine) => {
-        line.toggleLock();
+        line.lock();
       });
     } else if (!!this.anchorConnection) {
-      this.anchorConnection.toggleLock();
+      this.anchorConnection.lock();
+    }
+  }
+
+  public unlockConnections() {
+    if (!!this.sinkConnections.length) {
+      this.sinkConnections.forEach((line: ConnectingLine) => {
+        line.unlock();
+      });
+    } else if (!!this.anchorConnection) {
+      this.anchorConnection.unlock();
     }
   }
 
