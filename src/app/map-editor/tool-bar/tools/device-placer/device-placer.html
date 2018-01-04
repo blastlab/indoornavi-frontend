@@ -40,7 +40,7 @@
     </tr>
     <ng-container>
       <tr *ngFor="let device of remainingDevices | allFieldsFilter:queryString; let i = index"
-          pDraggable="devices" (onDragStart)="dragDeviceStarted(device)" (onDragEnd)="dragDeviceEnded()">
+          pDraggable="devices" (onDragStart)="dragDeviceStarted(device, $event)" (onDragEnd)="dragDeviceEnded()">
         <td>{{device.shortId}}</td>
         <td>{{device.longId}}</td>
         <td>{{device.name}}</td>

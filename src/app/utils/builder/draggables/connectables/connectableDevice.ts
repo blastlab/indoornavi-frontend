@@ -1,7 +1,7 @@
 import {ConnectingLine} from './connection';
 import * as d3 from 'd3';
-import {GroupCreated} from './draw.builder';
-import {Draggable} from './draggable';
+import {GroupCreated} from '../../draw.builder';
+import {Draggable} from '../draggable';
 
 
 export class ConnectableDevice extends Draggable {

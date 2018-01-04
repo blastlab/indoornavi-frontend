@@ -1,12 +1,11 @@
 import * as d3 from 'd3';
-import {GroupCreated} from './draw.builder';
+import {GroupCreated} from '../draw.builder';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 
 export class Selectable {
   private selectedEmitter: Subject<d3.selection> = new Subject<d3.selection>();
   private deselectedEmitter: Subject<d3.selection> = new Subject<d3.selection>();
-  private hasBorder: boolean;
 
 
   constructor(protected group: GroupCreated) {
@@ -33,7 +32,6 @@ export class Selectable {
   }
 
   public deselect() {
-    this.removeBorderBox();
     this.emitDeselectedEvent();
   }
 
@@ -46,18 +44,5 @@ export class Selectable {
 
   public selectOff() {
     this.group.domGroup.on('.click.select', null);
-  }
-
-  public setBorderBox(defineColor?: string) {
-    this.removeBorderBox();
-    this.group.addBorderBox(defineColor);
-    this.hasBorder = true;
-  }
-
-  private removeBorderBox() {
-    if (this.hasBorder) {
-      this.group.removeBorderBox();
-      this.hasBorder = false;
-    }
   }
 }

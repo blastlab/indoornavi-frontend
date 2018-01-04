@@ -14,14 +14,14 @@ import {DrawBuilder, DrawConfiguration} from '../../../../utils/builder/draw.bui
 import {Subscription} from 'rxjs/Subscription';
 import {MapLoaderInformerService} from 'app/utils/map-loader-informer/map-loader-informer.service';
 import {Configuration} from '../../../action-bar/actionbar.type';
-import {ConnectingLine} from '../../../../utils/builder/connection';
-import {ConnectableDevice} from 'app/utils/builder/connectableDevice';
-import {Selectable} from '../../../../utils/builder/selectable';
+import {ConnectingLine} from '../../../../utils/builder/draggables/connectables/connection';
+import {ConnectableDevice} from 'app/utils/builder/draggables/connectables/connectableDevice';
 import {Expandable} from '../../../../utils/builder/expandable';
 import {ActionBarService} from 'app/map-editor/action-bar/actionbar.service';
 import {ToolbarService} from '../../toolbar.service';
 import {DeviceService} from '../../../../device/device.service';
 import {HintBarService} from 'app/map-editor/hint-bar/hintbar.service';
+import {SelectableDevice} from '../../../../utils/builder/selectables/selectableDevice';
 
 @Component({
   selector: 'app-device-placer',
@@ -107,7 +107,8 @@ export class DevicePlacerComponent implements Tool, OnInit {
   }
 
   static markSinkSubselection(mapSink: Expandable, connectingLine: ConnectingLine): void {
-    mapSink.selectable.setBorderBox('orange');
+    const selectableDevice = <SelectableDevice>mapSink.selectable;
+      selectableDevice.setBorderBox('orange');
     DevicePlacerComponent.showSingleConnection(connectingLine);
   }
 
@@ -235,6 +236,10 @@ export class DevicePlacerComponent implements Tool, OnInit {
     this.deactivateAllSelectablesBahavior();
   }
 
+  public getToolName(): ToolName {
+    return ToolName.ANCHOR;
+  }
+
   private getMapSelection(): void {
     this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapLoaded) => {
       this.map = mapLoaded;
@@ -341,8 +346,18 @@ export class DevicePlacerComponent implements Tool, OnInit {
     return sink.anchors.findIndex(a => a.shortId === anchor.shortId);
   }
 
-  public dragDeviceStarted(device: Anchor | Sink): void {
+  public dragDeviceStarted(device: Anchor | Sink, event): void {
     this.draggedDevice = device;
+    const dragImage = document.createElementNS(`http://www.w3.org/200/svg`, `svg`);
+    dragImage.setAttributeNS(null, `x`, event.x);
+    dragImage.setAttributeNS(null, `y`, event.y);
+    dragImage.setAttributeNS(null, `stroke`, `black`);
+    dragImage.setAttributeNS(null, `fill`, `black`);
+    dragImage.innerHTML = this.icons.getIcon(NaviIcons.POINTER);
+    // console.log(dragImage);
+    // console.log(event);
+    event.dataTransfer.setDragImage(dragImage, event.x, event.y);
+    // console.log(event.dataTransfer);
     this.toggleList();
   }
 
@@ -396,7 +411,8 @@ export class DevicePlacerComponent implements Tool, OnInit {
           this.chosenSink = <Sink>this.findVerifiedDevice(DevicePlacerComponent.getShortIdFromGroupSelection(sinkAsConnectable.domGroup));
           DevicePlacerComponent.markSinkSubselection(this.findMapDevice(this.chosenSink.shortId), selectedDevice.connectable.anchorConnection);
         }
-        selectedDevice.selectable.setBorderBox('red');
+        const selectableDevice = <SelectableDevice>selectedDevice.selectable
+        selectableDevice.setBorderBox('red');
       });
   }
 
@@ -412,8 +428,8 @@ export class DevicePlacerComponent implements Tool, OnInit {
       DevicePlacerComponent.deselectDevice(this.findMapDevice(this.selectedDevice.shortId));
       const mapDevice = this.findMapDevice(this.selectedDevice.shortId);
       if (!!mapDevice.connectable.anchorConnection) {
-        // Here is a little bug // TODO fix connections management
-        mapDevice.connectable.unlockConnections();
+        // Here is a little bug or maybe not here =] // TODO fix connections management
+        // mapDevice.connectable.unlockConnections();
         mapDevice.connectable.anchorConnection.hide();
       }
     }
@@ -468,10 +484,6 @@ export class DevicePlacerComponent implements Tool, OnInit {
     });
   }
 
-  public getToolName(): ToolName {
-    return ToolName.ANCHOR;
-  }
-
   private toggleList(): void {
     this.listState = this.listState === 'out' ? 'in' : 'out';
   }
@@ -517,7 +529,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
     }
     const mapDevice: Expandable = {
       groupCreated: droppedDevice,
-      selectable: new Selectable(droppedDevice),
+      selectable: new SelectableDevice(droppedDevice),
       connectable: new ConnectableDevice(droppedDevice)
     };
     this.mapDevices.push(mapDevice);

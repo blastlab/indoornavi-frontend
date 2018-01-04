@@ -1,4 +1,4 @@
-import {GroupCreated} from './draw.builder';
+import {GroupCreated} from '../draw.builder';
 import * as d3 from 'd3';
 
 export class Draggable {
@@ -41,7 +41,7 @@ export class Draggable {
   }
 
   private updateConfiguration() {
-    alert('update config'); // TODO fire event for dragEnd as observable to mapDevice object
+    // alert('update config'); // TODO fire event for dragEnd as observable to mapDevice object
   }
 
   private dragGroupBehavior() {

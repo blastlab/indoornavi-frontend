@@ -1,8 +1,8 @@
 import * as d3 from 'd3';
 import {ConnectableDevice} from './connectableDevice';
-import {Point} from '../../map-editor/map.type';
-import {Selectable} from './selectable';
-import {GroupCreated} from './draw.builder';
+import {Point} from '../../../../map-editor/map.type';
+import {Selectable} from '../../selectables/selectable';
+import {GroupCreated} from '../../draw.builder';
 
 export class ConnectingLine extends Selectable {
   public id: string;
