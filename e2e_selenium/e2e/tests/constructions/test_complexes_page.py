@@ -31,7 +31,6 @@ class TestComplexesPage(unittest.TestCase):
         asserts.append(add_button_present)
         asserts.append(column_title_present)
         asserts.append(complexes_counter)
-
         # Check if there is any False in array
         return False if False in asserts else True
 
