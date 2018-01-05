@@ -46,13 +46,14 @@ class TestComplexesPage(unittest.TestCase):
         self.assertTrue(self.complexes_page.is_save_button_present())
         self.assertTrue(self.complexes_page.is_cancel_button_present())
         self.complexes_page.enter_complex_name()
+        # TODO sprawdzic ilosc wpisow przed dodaniem
+        # self.complexes_page.get_complexes_count()
         self.complexes_page.save_add_new_complex()
-        # TODO sprawdzic czy wpis pojawil sie na liscie
-        # self.complexes_page.if_complex_appear()
-        # TODO sprawdzic czy wpis zostal dodany w bazie danych
-        # wait 10 sec
-        # self.webdriver.implicitly_wait(10)
-        # self.complexes_page.if_complex_created()
+        # TODO sprawdzenie ilosci wpisow po dodaniu
+        # self.complexes_page.get_complexes_count()
+        # TODO sprawdzenie czy element sie pojawil
+        self.complexes_page.if_complex_appear()
+        self.assertEqual(self.complexes_page.if_complex_saved_in_db(), 'TestComplex')
 
     @classmethod
     def tearDownClass(cls):

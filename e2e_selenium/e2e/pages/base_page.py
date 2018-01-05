@@ -7,16 +7,31 @@ from pyquibase.pyquibase import Pyquibase
 
 class BasePage(object):
 
-    def __init__(self, driver,  base_url='http://frontend:4200/'):
+    def __init__(self, driver,  base_url='http://localhost:4200/'):
         self.base_url = base_url
         self.driver = driver
 
     # Connections
+    def if_exist_in_db(self):
+
+        db = mysql.connector.connect(user='root', password='', host='127.0.0.1', database='Navi')
+        cursor = db.cursor()
+        query = ("SELECT name FROM complex ORDER BY id DESC LIMIT 1")
+        cursor.execute(query)
+        last_complex_name = '';
+
+        for (name) in cursor:
+            last_complex_name = name[0]
+
+        cursor.close()
+        db.close()
+        return last_complex_name
+
     # Prepare environment
     def create_db_env(self, file_path):
 
         pyquibase = Pyquibase.mysql(
-          host='db',
+          host='localhost',
           port=3306,
           db_name='Navi',
           username='root',
@@ -66,11 +81,17 @@ class BasePage(object):
         count = self.driver.find_elements(*locator)
         return len(count)
 
-    def if_row_appear_on_list(self, *locator):
+    def count_of_elements(self, *locator):
+        return len(self.driver.find_elements(*locator))
 
-        elements = self.driver.find_elements(*locator);
-        print(elements)
-        element = elements.get(list.size() - 1);
-        print(element)
+    def if_row_appear_on_list(self):
+        table = self.identify_element(*self.table_class)
+        rows = table.find_elements(*self.table_row)
+        for row in rows:
+            row_text = row.text
+            print(row_text)
+        last_element = rows[0]
+        return last_element
+
 
 

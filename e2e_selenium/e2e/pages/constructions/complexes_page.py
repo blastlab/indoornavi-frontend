@@ -2,13 +2,12 @@ from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
 from selenium.common.exceptions import NoSuchElementException
 
-
 class ComplexesPage(BasePage):
 
-    login_url = 'http://frontend:4200/complexes'
+    login_url = 'http://localhost:4200/complexes'
     complex_table_header = 'Complex name'
     complex_modal_title = 'Add new complex'
-    new_complex_name = 'Test new complexees'
+    new_complex_name = 'TestComplex'
     xml_filename = 'src/test-complexes.xml'
 
     ### LOCATORS
@@ -21,7 +20,8 @@ class ComplexesPage(BasePage):
     empty_table = (By.CSS_SELECTOR, 'td.ui-datatable-emptymessage')
     # Add complex - locators
     modal_window = (By.CLASS_NAME, 'ui-dialog-title')
-    last_table_row = (By.CLASS_NAME, 'ui-cell-data')
+    table_row = (By.CLASS_NAME, 'ui-datatable-even')
+    table_class =(By.CLASS_NAME, 'ui-datatable-data')
     # Buttons
     dropdown_button = (By.CSS_SELECTOR, 'button#menu')
     add_button_complex = (By.CSS_SELECTOR, 'button#add-complex')
@@ -31,6 +31,9 @@ class ComplexesPage(BasePage):
     new_complex_input = (By.CSS_SELECTOR, 'form div div input#name')
 
     # Database
+    def if_complex_saved_in_db(self):
+        return self.if_exist_in_db()
+
     # Prepare environment
     def create_complex_db_env(self):
         return self.create_db_env(self.xml_filename)
@@ -64,7 +67,12 @@ class ComplexesPage(BasePage):
            return True
 
     def if_complex_appear(self):
-        return self.if_row_appear_on_list(self.last_table_row)
+        # print(self.if_row_appear_on_list())
+        print('\n\nsomething\n')
+
+    def get_complexes_count(self):
+        print(self.count_of_elements(*self.table_row))
+        # print(self.count_of_inner_elements)
 
     # Add complex
     def add_button_click(self):
