@@ -11,21 +11,31 @@ class BasePage(object):
         self.base_url = base_url
         self.driver = driver
 
-    # Connections
-    def if_exist_in_db(self):
+    # Select from db
+    def if_exist_in_db(self, query):
 
         db = mysql.connector.connect(user='root', password='', host='127.0.0.1', database='Navi')
         cursor = db.cursor()
-        query = ("SELECT name FROM complex ORDER BY id DESC LIMIT 1")
         cursor.execute(query)
         last_complex_name = '';
-
         for (name) in cursor:
             last_complex_name = name[0]
-
+        print(last_complex_name)
         cursor.close()
         db.close()
         return last_complex_name
+
+    # Truncate db
+
+    def truncate_db(self):
+
+        db = mysql.connector.connect(user='root', password='', host='127.0.0.1', database='Navi')
+        cursor = db.cursor()
+        cursor.execute('SET FOREIGN_KEY_CHECKS=0;')
+        cursor.execute('TRUNCATE complex')
+        cursor.execute('SET FOREIGN_KEY_CHECKS=1;')
+        cursor.close()
+        db.close()
 
     # Prepare environment
     def create_db_env(self, file_path):
@@ -57,6 +67,10 @@ class BasePage(object):
 
     def open_page(self, page_url):
         return self.driver.get(page_url)
+
+    def clear_input(self, *input_locator):
+        input_element = self.identify_element(*input_locator)
+        input_element.clear()
 
     def clear_and_fill_input(self, text, *input_locator):
         input_element = self.identify_element(*input_locator)

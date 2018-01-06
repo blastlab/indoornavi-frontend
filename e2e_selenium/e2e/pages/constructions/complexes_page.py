@@ -8,6 +8,7 @@ class ComplexesPage(BasePage):
     complex_table_header = 'Complex name'
     complex_modal_title = 'Add new complex'
     new_complex_name = 'TestComplex'
+    illegal_complex_name = '!@#^&$*()*&^@'
     xml_filename = 'src/test-complexes.xml'
 
     ### LOCATORS
@@ -21,7 +22,8 @@ class ComplexesPage(BasePage):
     # Add complex - locators
     modal_window = (By.CLASS_NAME, 'ui-dialog-title')
     table_row = (By.CLASS_NAME, 'ui-datatable-even')
-    table_class =(By.CLASS_NAME, 'ui-datatable-data')
+    table_class = (By.CLASS_NAME, 'ui-datatable-data')
+    created_complex_row = (By.XPATH, "//span[contains(text(),'TestComplex')]")
     # Buttons
     dropdown_button = (By.CSS_SELECTOR, 'button#menu')
     add_button_complex = (By.CSS_SELECTOR, 'button#add-complex')
@@ -29,10 +31,19 @@ class ComplexesPage(BasePage):
     cancel_button = (By.XPATH, '//button[@ng-reflect-label="Cancel"]')
     # Input
     new_complex_input = (By.CSS_SELECTOR, 'form div div input#name')
+    # Warning & Toasts
+    complex_added_toast = (By.XPATH, "//p[contains(text(),'Complex has been created.')]")
+    complex_name_warning = (By.CSS_SELECTOR, 'div.ui-messages-error')
+    # Db queries
+    # truncate_complex_table = ("TRUNCATE complex")
+    select_complexes = ("SELECT name FROM complex ORDER BY id DESC LIMIT 1")
 
     # Database
     def if_complex_saved_in_db(self):
-        return self.if_exist_in_db()
+        return self.if_exist_in_db(self.select_complexes)
+
+    def truncate_complex_table(self):
+        return self.truncate_db()
 
     # Prepare environment
     def create_complex_db_env(self):
@@ -66,14 +77,6 @@ class ComplexesPage(BasePage):
         else:
            return True
 
-    def if_complex_appear(self):
-        # print(self.if_row_appear_on_list())
-        print('\n\nsomething\n')
-
-    def get_complexes_count(self):
-        print(self.count_of_elements(*self.table_row))
-        # print(self.count_of_inner_elements)
-
     # Add complex
     def add_button_click(self):
         return self.click_button(*self.add_button_complex)
@@ -92,8 +95,23 @@ class ComplexesPage(BasePage):
     def enter_complex_name(self):
         return self.clear_and_fill_input(self.new_complex_name, *self.new_complex_input)
 
+    def enter_illegal_chars(self):
+        return self.clear_and_fill_input(self.illegal_complex_name, *self.new_complex_input)
+
     def save_add_new_complex(self):
         return self.click_button(*self.save_button)
+
+    def cancel_add_new_complex(self):
+        return self.click_button(*self.cancel_button)
+
+    def error_message_complex_name(self):
+        return self.wait_for_element(self.complex_name_warning).text
+
+    def is_new_complex_toast_present(self):
+        return True if self.is_element_present(self.complex_added_toast) else False
+
+    def is_new_complex_present(self):
+        return True if self.is_element_present(self.created_complex_row) else False
 
     # Main Functionality
     def add_new_complex(self):
