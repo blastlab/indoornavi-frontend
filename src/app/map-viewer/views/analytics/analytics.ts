@@ -14,7 +14,7 @@ import {Point} from '../../../map-editor/map.type';
 import {ZoomService} from '../../../map-editor/zoom.service';
 import {MapLoaderInformerService} from '../../../shared/services/map-loader-informer/map-loader-informer.service';
 import {CoordinatesSocketData} from '../../published.type';
-
+import {HexagonHeatmap} from './hexagon-heatmap.service';
 
 @Component({
   templateUrl: './analytics.html',
@@ -32,7 +32,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     opacity: 0.5,
     blur: 0.5,
     path: 100,
-    heat: 20
+    heat: 5
   };
 
   public playingAnimation: boolean = false;
@@ -94,6 +94,16 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
         this.drawHeatMap(tagShortId);
       }
     });
+    this.mapLoaderInformer.loadCompleted().subscribe((selection) => {
+      const id = 'map';
+      const map: any = document.getElementById(id);
+      const height = Number.parseInt(map.getAttribute('height'));
+      const width = Number.parseInt(map.getAttribute('width'));
+      const heatmap = new HexagonHeatmap(1500, 1500, 10, {left: 10, right: 10, top: 10, bottom: 10}, '#ff0000');
+      heatmap.toggleMouseEvents = true;
+      heatmap.create(id);
+    });
+
   }
 
   public toggleSlider(type: string): void {
@@ -149,6 +159,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
   private setHeatMap(data: CoordinatesSocketData): void {
     const coordinates: Point = data.coordinates.point,
       deviceId: number = data.coordinates.tagShortId;
+    console.log(coordinates);
     if (!this.isInHeatMapSet(deviceId)) {
       const heatMapBuilder = new HeatMapBuilder({
         pathLength: this.heatMapSettings.path,

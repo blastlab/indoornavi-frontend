@@ -200,10 +200,9 @@ export function HttpLoaderFactory(http: Http) {
     HintBarService,
     MdIconRegistry,
     HintBarService,
-    ZoomService,
+    ZoomService
   ], bootstrap: [AppComponent]
 })
 
 export class AppModule {
 }
-

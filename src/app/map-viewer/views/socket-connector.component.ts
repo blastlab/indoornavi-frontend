@@ -43,7 +43,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
               protected socketService: SocketService,
               protected route: ActivatedRoute,
               protected publishedService: PublishedService,
-              private mapLoaderInformer: MapLoaderInformerService,
+              protected mapLoaderInformer: MapLoaderInformerService,
               private areaService: AreaService,
               private translateService: TranslateService,
               private iconService: IconService,
@@ -58,7 +58,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       this.publishedService.get(mapId).subscribe((map: PublishedMap) => {
         this.activeMap = map;
         if (this.activeMap.floor.imageId != null) {
-          this.mapLoaderInformer.loadCompleted().subscribe((d3map: d3.selection) => {
+          this.mapLoaderInformer.loadCompleted().first().subscribe((d3map: d3.selection) => {
             this.d3map = d3map;
             this.drawAreas(map.floor.id);
             const realDistanceInCentimeters = getRealDistanceInCentimeters(this.activeMap.floor.scale);

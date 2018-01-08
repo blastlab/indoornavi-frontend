@@ -11,7 +11,6 @@ export class HeatMapBuilder {
   }
 
   createHeatGroup(): HeatMapCreated {
-    console.log(H337);
     const heatMapInstance = H337.create({
       container: document.querySelector('#map-container'),
       radius: this.configuration.radius,
@@ -100,7 +99,6 @@ export class HeatMapCreated {
   }
 
   public draw(): HeatMapCreated {
-    console.log('drawing');
     const data =  <HeatMapData> {
       max: this.heatValue * 5,
       min: 0,
