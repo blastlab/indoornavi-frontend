@@ -35,9 +35,9 @@ class TestComplexesPage(unittest.TestCase):
         # Check if there is any False in array
         return False if False in asserts else True
 
-    def test_complexes_page_is_loaded_correctly(self):
-        self.assertTrue(self.multi_assertion())
-
+    # def test_complexes_page_is_loaded_correctly(self):
+    #     self.assertTrue(self.multi_assertion())
+    #
     def test_add_new_complex_correctly(self):
 
         self.complexes_page.add_button_click()
@@ -58,15 +58,20 @@ class TestComplexesPage(unittest.TestCase):
         self.assertTrue(self.complexes_page.is_new_complex_present())
         # Check that new complex has been saved in db
         self.assertEqual(self.complexes_page.if_complex_saved_in_db(), 'TestComplex')
+    #
+    # def test_add_new_complex_negative_empty_input(self):
+    #     # 1.Check adding with empty input
+    #     self.complexes_page.add_button_click()
+    #     self.complexes_page.save_add_new_complex()
+    #     self.assertEqual(self.complexes_page.error_message_complex_name(), 'Complex name is required.')
+    #     self.complexes_page.cancel_add_new_complex()
 
-    def test_add_new_complex_negative_empty_input(self):
-        # 1.Check adding with empty input
-        self.complexes_page.add_button_click()
-        self.complexes_page.save_add_new_complex()
-        self.assertEqual(self.complexes_page.error_message_complex_name(), 'Complex name is required.')
-        self.complexes_page.cancel_add_new_complex()
+    def test_delete_complex(self):
+        # self.complexes_page.wait_for_remove_btn()
+        self.complexes_page.remove_button_click()
+        self.complexes_page.wait_for_remove_modal()
+        # print(remove_complex_click())
 
-    def test_
     # TODO do zrobienia walidacja na niedozwolone znaki
     # def test_add_new_complex_negative_illegal_characters(self):
     #     self.complexes_page.add_button_click()

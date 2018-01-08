@@ -29,11 +29,13 @@ class ComplexesPage(BasePage):
     add_button_complex = (By.CSS_SELECTOR, 'button#add-complex')
     save_button = (By.XPATH, '//button[@ng-reflect-label="Save"]')
     cancel_button = (By.XPATH, '//button[@ng-reflect-label="Cancel"]')
+    remove_last_complex_btn = (By.XPATH, '//button[@ng-reflect-app-has-permission="COMPLEX_DELETE"][last()]')
     # Input
     new_complex_input = (By.CSS_SELECTOR, 'form div div input#name')
     # Warning & Toasts
     complex_added_toast = (By.XPATH, "//p[contains(text(),'Complex has been created.')]")
     complex_name_warning = (By.CSS_SELECTOR, 'div.ui-messages-error')
+    remove_modal_window = (By.CLASS_NAME, 'ui - dialog')
     # Db queries
     # truncate_complex_table = ("TRUNCATE complex")
     select_complexes = ("SELECT name FROM complex ORDER BY id DESC LIMIT 1")
@@ -80,6 +82,16 @@ class ComplexesPage(BasePage):
     # Add complex
     def add_button_click(self):
         return self.click_button(*self.add_button_complex)
+
+    # Remove complex
+    # def wait_for_remove_btn(self):
+    #     return self.wait_for_element(self.remove_last_complex_btn)
+
+    def wait_for_remove_modal(self):
+        return self.wait_for_element(self.remove_modal_window)
+
+    def remove_button_click(self):
+        return self.click_button(*self.remove_last_complex_btn)
 
     # For Modal component
     def check_modal_title(self):
