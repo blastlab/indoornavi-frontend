@@ -38,6 +38,7 @@ class TestComplexesPage(unittest.TestCase):
     # def test_complexes_page_is_loaded_correctly(self):
     #     self.assertTrue(self.multi_assertion())
     #
+    # TC[001]
     def test_add_new_complex_correctly(self):
 
         self.complexes_page.add_button_click()
@@ -49,7 +50,7 @@ class TestComplexesPage(unittest.TestCase):
         # TODO sprawdzic ilosc wpisow przed dodaniem
         # self.complexes_page.get_complexes_count()
         self.complexes_page.save_add_new_complex()
-        # TODO sprawdzenie ilosci wpisow po dodanius
+        # TODO sprawdzenie ilosci wpisow po dodaniu
         # self.complexes_page.get_complexes_count()
         # TODO sprawdzenie czy toast sie wyswietlil
         # Check that toast is displayed
@@ -58,21 +59,17 @@ class TestComplexesPage(unittest.TestCase):
         self.assertTrue(self.complexes_page.is_new_complex_present())
         # Check that new complex has been saved in db
         self.assertEqual(self.complexes_page.if_complex_saved_in_db(), 'TestComplex')
-    #
+
+    # TC[002]
     # def test_add_new_complex_negative_empty_input(self):
     #     # 1.Check adding with empty input
     #     self.complexes_page.add_button_click()
     #     self.complexes_page.save_add_new_complex()
     #     self.assertEqual(self.complexes_page.error_message_complex_name(), 'Complex name is required.')
     #     self.complexes_page.cancel_add_new_complex()
-
-    def test_delete_complex(self):
-        # self.complexes_page.wait_for_remove_btn()
-        self.complexes_page.remove_button_click()
-        self.complexes_page.wait_for_remove_modal()
-        # print(remove_complex_click())
-
     # TODO do zrobienia walidacja na niedozwolone znaki
+
+    # TC[003]
     # def test_add_new_complex_negative_illegal_characters(self):
     #     self.complexes_page.add_button_click()
     #     self.complexes_page.enter_illegal_chars()
@@ -80,8 +77,75 @@ class TestComplexesPage(unittest.TestCase):
     #     self.assertEqual(self.complexes_page.error_message_complex_name(), 'Input field contains illegal characters.')
     #     self.complexes_page.cancel_add_new_complex()
 
+    # TC[004]
     # TODO do zrobienia walidacja na limit znakow
     # def test_add_complex_with_negative_minmax_charaters(self):
+
+    # TC[005]
+    def test_delete_complex_correctly(self):
+        # self.complexes_page.wait_for_remove_btn()
+        self.complexes_page.remove_button_click()
+        self.complexes_page.wait_for_remove_modal()
+        # TODO Zmienic tytul modala - Remove complex
+        # self.assertTrue(self.complexes_page.check_modal_title())
+        # TODO yes / no button is present
+        self.assertTrue(self.complexes_page.is_save_button_present())
+        self.assertTrue(self.complexes_page.is_cancel_button_present())
+        # TODO sprawdzenie zapytania "Are you sure..."
+        # TODO sprawdzic ilosc wpisow przed dodaniem
+        # self.complexes_page.get_complexes_count()
+        self.complexes_page.save_add_new_complex()
+        # TODO sprawdzenie ilosci wpisow po dodaniu
+        # self.complexes_page.get_complexes_count()
+        # TODO sprawdzenie czy toast sie wyswietlil
+        # Check that toast is displayed
+        self.assertTrue(self.complexes_page.is_new_complex_toast_present())
+        # TODO sprawdzenie czy wpis zniknął
+        # Check that new complex is disappeared
+        self.assertTrue(self.complexes_page.is_new_complex_present())
+        # TODO sprawdzenie czy wpis w bazie danych został usunięty
+        # Check that new complex has been saved in db
+        self.assertEqual(self.complexes_page.if_complex_saved_in_db(), 'TestComplex')
+
+    # TC[006]
+    def test_delete_complex_cancel(self):
+        print('TEST - DELETE - Cancel- removing complex')
+
+    # TC[007]
+    def test_delete_complex_click_outside_modal(self):
+        print('TEST - DELETE - Resignation - outside modal click')
+
+    # TC[008]
+    def test_edit_complex_correctly(self):
+        print('TEST - Edit complex')
+
+    # TC[009]
+    def test_edit_complex_correctly_negative_empty_input(self):
+        print('TEST - Edit complex - negative - empty input')
+
+    # TC[010]
+    def test_edit_complex_correctly_negative_empty_input(self):
+        print('TEST - Edit complex - negative - empty input')
+
+    # TC[011]
+    def test_edit_complex_correctly_negative_illegal_characters(self):
+        print('TEST - Edit complex - negative - illegal characters')
+
+    # TC[012]
+    # TODO do zrobienia walidacja na limit znakow
+    # def test_edit_complex_with_negative_minmax_charaters(self):
+
+    # TC[013]
+    def test_edit_complex_cancel(self):
+        print('TEST - EDIT - Cancel removing complex')
+
+    # TC[014]
+    def test_edit_complex_click_outside_modal(self):
+        print('TEST - EDIT - Resignation - outside modal click')
+
+    # TC[015]
+    def test_redirect_complex_to_buildings_page(self):
+        print('TEST - REDIRECTING')
 
     @classmethod
     def tearDownClass(cls):
