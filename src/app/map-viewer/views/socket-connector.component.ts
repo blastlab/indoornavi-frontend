@@ -32,7 +32,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   protected activeMap: PublishedMap;
   protected d3map: d3.selection = null;
   protected pixelsToCentimeters: number;
-  protected transitionDurationTimeStep: number = 1000;
+  protected transitionDurationTimeStep: number = 500;
   private dataReceived = new Subject<CoordinatesSocketData>();
   private transitionEnded = new Subject<number>();
   private tagsOnMap: Dictionary<number, GroupCreated> = new Dictionary<number, GroupCreated>();

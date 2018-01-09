@@ -26,7 +26,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
 
   public heatMapSettings = {
     path: 25000,
-    heatingTime: 100
+    heatingTime: 500
   };
 
   public playingAnimation: boolean = false;
