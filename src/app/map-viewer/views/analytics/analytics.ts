@@ -1,8 +1,5 @@
 import {ActivatedRoute} from '@angular/router';
 import {Component, NgZone, OnInit} from '@angular/core';
-import {HeatMapBuilder, HeatMapCreated} from './heatmap.service';
-import Dictionary from 'typescript-collections/dist/lib/Dictionary';
-import {HeatMapSettingsExtended} from './heat-map.type';
 import {TranslateService} from '@ngx-translate/core';
 import {SocketConnectorComponent} from '../socket-connector.component';
 import {TimeStepBuffer} from './analytics.type';
@@ -15,24 +12,21 @@ import {ZoomService} from '../../../map-editor/zoom.service';
 import {MapLoaderInformerService} from '../../../shared/services/map-loader-informer/map-loader-informer.service';
 import {CoordinatesSocketData} from '../../published.type';
 import {HexagonHeatmap} from './hexagon-heatmap.service';
+import * as d3 from 'd3';
 
 @Component({
   templateUrl: './analytics.html',
   styleUrls: ['./analytics.css']
 })
-export class AnalyticsComponent extends SocketConnectorComponent implements OnInit {
-  private heatMapSet: Dictionary<number, HeatMapCreated> = new Dictionary<number, HeatMapCreated>();
-  private opacitySliderView: boolean = false;
-  private blurSliderView: boolean = false;
+export class AnalyticsComponent extends SocketConnectorComponent implements OnInit {;
   private pathSliderView: boolean = false;
-  private heatSliderView: boolean = false;
   private timeStepBuffer: Array<TimeStepBuffer> = [];
-  private heatMapSettings: HeatMapSettingsExtended = {
-    radius: 20,
-    opacity: 0.5,
-    blur: 0.5,
-    path: 100,
-    heat: 5
+  private mapId = 'map';
+  private heatmap: HexagonHeatmap;
+
+  public heatMapSettings = {
+    path: 25000,
+    heatingTime: 100
   };
 
   public playingAnimation: boolean = false;
@@ -60,15 +54,9 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
   }
 
   protected init(): void {
-    /*
-    in the moment of creating svg #map-img, component doesn't know anything about its style
-    so cannot set proper canvas size,
-    we need to get picture size an set it before canvas creation
-    const widthOfMapComponent = document.querySelector('#map').getAttribute('width');
-    doesn't work as it is not set for this element in the process of DOM setting
-    mapStyle variable needs to be updated with proper width value of the map
-    before canvas is being created in the DOM
-    */
+    this.mapLoaderInformer.loadCompleted().first().subscribe((d3map: d3.selection) => {
+      this.createHexagonalHeatmapGrid(d3map);
+    });
     this.whenDataArrived().subscribe((data: CoordinatesSocketData) => {
       // update
       const timeOfDataStep: number = Date.now();
@@ -82,109 +70,45 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       const timeWhenTransitionIsFinished: number = Date.now() - this.transitionDurationTimeStep;
       for (let index = 0; index < this.timeStepBuffer.length; index ++) {
         if (this.timeStepBuffer[index].timeOfDataStep < timeWhenTransitionIsFinished) {
-          this.setHeatMap(this.timeStepBuffer[index].data);
-          this.timeStepBuffer.splice(index, 1);
+          this.playingAnimation ? this.heatUpHexes(this.timeStepBuffer[index].data) : null;
+          this.timeStepBuffer.splice(0, index);
         }
       }
-      if (!this.playingAnimation) {
-        // clean timeStepBuffer
-        this.timeStepBuffer = [];
-      } else {
-        // draw
-        this.drawHeatMap(tagShortId);
-      }
     });
-    this.mapLoaderInformer.loadCompleted().subscribe((selection) => {
-      const id = 'map';
-      const map: any = document.getElementById(id);
-      const height = Number.parseInt(map.getAttribute('height'));
-      const width = Number.parseInt(map.getAttribute('width'));
-      const heatmap = new HexagonHeatmap(1500, 1500, 10, {left: 10, right: 10, top: 10, bottom: 10}, '#ff0000');
-      heatmap.toggleMouseEvents = true;
-      heatmap.create(id);
-    });
-
   }
 
-  public toggleSlider(type: string): void {
-    switch (type) {
-      case 'opacity':
-        if (this.opacitySliderView) {
-          this.setAllSlidersViewToFalse();
-        } else {
-          this.setAllSlidersViewToFalse();
-          this.opacitySliderView = !this.opacitySliderView;
-        }
-        break;
-      case 'blur':
-        if (this.blurSliderView) {
-          this.setAllSlidersViewToFalse();
-        } else {
-          this.setAllSlidersViewToFalse();
-          this.blurSliderView = !this.blurSliderView;
-        }
-        break;
-      case 'path':
-        if (this.pathSliderView) {
-          this.setAllSlidersViewToFalse();
-        } else {
-          this.setAllSlidersViewToFalse();
-          this.pathSliderView = !this.pathSliderView;
-        }
-        break;
-      case 'heat':
-        if (this.heatSliderView) {
-          this.setAllSlidersViewToFalse();
-        } else {
-          this.setAllSlidersViewToFalse();
-          this.heatSliderView = !this.heatSliderView;
-        }
-        break;
-      default:
-        break;
-    }
+  public setPathLength (event) {
+    this.heatMapSettings.path = event;
+    this.heatmap.coolingDown = this.heatMapSettings.path;
+  }
+
+  public toggleSlider(): void {
+    this.pathSliderView = !this.pathSliderView;
   }
 
   public toggleHeatAnimation(): void {
     this.playingAnimation = !this.playingAnimation;
-    if (this.playingAnimation) {
-      this.setAllSlidersViewToFalse();
+    if (!this.playingAnimation) {
+      this.heatmap.coolDownImmediately();
     }
   }
 
-  protected isInHeatMapSet(deviceId: number): boolean {
-    return this.heatMapSet.containsKey(deviceId);
+  private heatUpHexes(data: CoordinatesSocketData): void {
+    const coordinates: Point = data.coordinates.point;
+    this.heatmap.feedWithCoordinates(coordinates);
+
   }
 
-  private setHeatMap(data: CoordinatesSocketData): void {
-    const coordinates: Point = data.coordinates.point,
-      deviceId: number = data.coordinates.tagShortId;
-    console.log(coordinates);
-    if (!this.isInHeatMapSet(deviceId)) {
-      const heatMapBuilder = new HeatMapBuilder({
-        pathLength: this.heatMapSettings.path,
-        heatValue: this.heatMapSettings.heat,
-        radius: this.heatMapSettings.radius,
-        opacity: this.heatMapSettings.opacity,
-        blur: this.heatMapSettings.blur
-      });
-      const heatMap = heatMapBuilder
-        .createHeatGroup();
-      this.heatMapSet.setValue(deviceId, heatMap);
-    }
-    if (this.playingAnimation) {
-      this.heatMapSet.getValue(deviceId).configure(this.heatMapSettings);
-      this.heatMapSet.getValue(deviceId).update(coordinates);
-    } else {
-      this.heatMapSet.getValue(deviceId).clean();
-    }
-  }
-
-  private drawHeatMap (deviceId) {
-    this.heatMapSet.getValue(deviceId).draw();
-  }
-
-  private setAllSlidersViewToFalse(): void {
-    this.opacitySliderView = this.blurSliderView = this.pathSliderView = this.heatSliderView = false;
+  private createHexagonalHeatmapGrid (mapNode, hexSize ?, colors ?) {
+    const height = Number.parseInt(mapNode.node().getBBox().height);
+    const width = Number.parseInt(mapNode.node().getBBox().width);
+    let hexRaduis: number;
+    // hexRadius set to tag icon size equal 20px x 20px square
+    !hexSize ? hexRaduis = 20 : hexRaduis = hexSize;
+    this.heatmap = new HexagonHeatmap(width, height, hexRaduis, '#ff0000');
+    this.heatmap.toggleMouseEvents = false;
+    this.heatmap.create(this.mapId);
+    this.heatmap.heatingUp = this.heatMapSettings.heatingTime;
+    this.heatmap.coolingDown = this.heatMapSettings.path;
   }
 }
