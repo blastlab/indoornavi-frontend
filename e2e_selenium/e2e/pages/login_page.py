@@ -1,9 +1,9 @@
 from pages.base_page import BasePage
 from selenium.webdriver.common.by import By
-
+from config import Config
 class LoginPage(BasePage):
 
-    login_url='http://frontend:4200/'
+    login_url=Config.front_hostname
     # Login page locators
     form_locator = (By.CSS_SELECTOR, 'form.ng-valid')
     button_locator = (By.ID, 'login-button')

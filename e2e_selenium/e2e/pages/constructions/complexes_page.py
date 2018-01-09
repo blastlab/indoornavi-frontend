@@ -1,11 +1,11 @@
 from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
 from selenium.common.exceptions import NoSuchElementException
-
+from config import Config
 
 class ComplexesPage(BasePage):
 
-    login_url = 'http://frontend:4200/complexes'
+    login_url = Config.front_hostname+'complexes/'
     complex_table_header = 'Complex name'
     complex_modal_title = 'Add new complex'
     new_complex_name = 'Test new complexees'

@@ -4,10 +4,11 @@ from selenium.common.exceptions import NoSuchElementException
 import csv
 import mysql.connector
 from pyquibase.pyquibase import Pyquibase
+from config import Config
 
 class BasePage(object):
 
-    def __init__(self, driver,  base_url='http://frontend:4200/'):
+    def __init__(self, driver,  base_url=Config.front_hostname):
         self.base_url = base_url
         self.driver = driver
 
@@ -16,7 +17,7 @@ class BasePage(object):
     def create_db_env(self, file_path):
 
         pyquibase = Pyquibase.mysql(
-          host='db',
+          host=Config.db_hostname,
           port=3306,
           db_name='Navi',
           username='root',
