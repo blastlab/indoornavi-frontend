@@ -61,8 +61,19 @@ class BasePage(object):
             return False
         return True
 
+    def is_element_disappear(self, locator):
+        try:
+          element = self.wait_for_element_disappear(locator)
+        except NoSuchElementException:
+            return False
+        return True
+
     def wait_for_element(self, locator):
         element = ui.WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(locator))
+        return element
+
+    def wait_for_element_disappear(self, locator):
+        element = ui.WebDriverWait(self.driver, 10).until_not(EC.presence_of_element_located(locator))
         return element
 
     def open_page(self, page_url):

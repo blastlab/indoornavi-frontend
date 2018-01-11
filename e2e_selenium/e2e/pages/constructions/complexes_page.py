@@ -24,15 +24,23 @@ class ComplexesPage(BasePage):
     table_row = (By.CLASS_NAME, 'ui-datatable-even')
     table_class = (By.CLASS_NAME, 'ui-datatable-data')
     created_complex_row = (By.XPATH, "//span[contains(text(),'TestComplex')]")
+    # Remove complex - locators
+    close_button  = (By.CSS_SELECTOR, 'span.fa-close')
+    remove_ask = (By.XPATH, "//span[contains(text(),'Are you sure you want to perform this action?')]")
+    yes_button = (By.XPATH, '//button[@ng-reflect-label="Yes"]')
+    no_button =  (By.XPATH, '//button[@ng-reflect-label="No"]')
     # Buttons
     dropdown_button = (By.CSS_SELECTOR, 'button#menu')
     add_button_complex = (By.CSS_SELECTOR, 'button#add-complex')
     save_button = (By.XPATH, '//button[@ng-reflect-label="Save"]')
     cancel_button = (By.XPATH, '//button[@ng-reflect-label="Cancel"]')
-    remove_last_complex_btn = (By.XPATH, '//button[@ng-reflect-app-has-permission="COMPLEX_DELETE"][last()]')
+    remove_last_complex_btn = (By.CSS_SELECTOR, 'tr:last-child > td.col-button > span > button:last-child')
+
+    # remove_last_complex_btn = (By.XPATH, '//button[@ng-reflect-app-has-permission="COMPLEX_DELETE"][last()]')
     # Input
     new_complex_input = (By.CSS_SELECTOR, 'form div div input#name')
     # Warning & Toasts
+    complex_removed_toast = (By.XPATH, "//p[contains(text(),'Complex has been removed.')]")
     complex_added_toast = (By.XPATH, "//p[contains(text(),'Complex has been created.')]")
     complex_name_warning = (By.CSS_SELECTOR, 'div.ui-messages-error')
     remove_modal_window = (By.CLASS_NAME, 'ui - dialog')
@@ -83,18 +91,7 @@ class ComplexesPage(BasePage):
     def add_button_click(self):
         return self.click_button(*self.add_button_complex)
 
-    # Remove complex
-    # def wait_for_remove_btn(self):
-    #     return self.wait_for_element(self.remove_last_complex_btn)
-
-    def wait_for_remove_modal(self):
-        return self.wait_for_element(self.remove_modal_window)
-
-    def remove_button_click(self):
-        return self.click_button(*self.remove_last_complex_btn)
-
-    # For Modal component
-    def check_modal_title(self):
+    def check_add_modal_title(self):
         string = 'Add new complex'
         return self.check_title_is_correct(string, *self.modal_window)
 
@@ -122,8 +119,46 @@ class ComplexesPage(BasePage):
     def is_new_complex_toast_present(self):
         return True if self.is_element_present(self.complex_added_toast) else False
 
+    def is_complex_disappear(self):
+        return True if self.is_element_disappear(self.complex_added_toast) else False
+
     def is_new_complex_present(self):
         return True if self.is_element_present(self.created_complex_row) else False
+
+    # Remove last complex
+    # def wait_for_remove_btn(self):
+    #     return self.wait_for_element(self.remove_last_complex_btn)
+
+    def remove_button_click(self):
+        return self.click_button(*self.remove_last_complex_btn)
+
+    def wait_for_remove_modal(self):
+        return self.wait_for_element(self.remove_modal_window)
+
+    def is_confirm_remove_window_present(self):
+        return self.is_element_present(self.remove_ask)
+
+    def is_yes_button_present(self):
+        return self.is_element_present(self.yes_button)
+
+    def is_no_button_present(self):
+        return self.is_element_present(self.no_button)
+
+    def click_yes_button(self):
+        return self.click_button(*self.yes_button)
+
+    def click_no_button(self):
+        return self.click_button(*self.no_button)
+
+    def is_remove_complex_toast_present(self):
+        return True if self.is_element_present(self.complex_removed_toast) else False
+
+    def is_removed_complex_disappeared(self):
+        return True if self.is_element_disappear(self.remove_last_complex_btn) else False
+
+    # For Modal component
+
+    # def check_remove_modal_is_present(self):
 
     # Main Functionality
     def add_new_complex(self):
