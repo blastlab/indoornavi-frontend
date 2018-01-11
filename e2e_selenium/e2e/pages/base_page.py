@@ -54,6 +54,11 @@ class BasePage(object):
     def identify_element(self, *locator):
         return self.driver.find_element(*locator)
 
+    def is_element_displayed(self, *locator):
+        element = self.identify_element(*locator)
+        displayed = element.is_displayed()
+        return displayed
+
     def is_element_present(self, locator):
         try:
           element = self.wait_for_element(locator)

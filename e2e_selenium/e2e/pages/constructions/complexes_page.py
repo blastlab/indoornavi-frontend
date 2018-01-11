@@ -8,6 +8,7 @@ class ComplexesPage(BasePage):
     complex_table_header = 'Complex name'
     complex_modal_title = 'Add new complex'
     new_complex_name = 'TestComplex'
+    edit_complex_name = 'TestEditComplex'
     illegal_complex_name = '!@#^&$*()*&^@'
     xml_filename = 'src/test-complexes.xml'
 
@@ -25,10 +26,14 @@ class ComplexesPage(BasePage):
     table_class = (By.CLASS_NAME, 'ui-datatable-data')
     created_complex_row = (By.XPATH, "//span[contains(text(),'TestComplex')]")
     # Remove complex - locators
-    close_button  = (By.CSS_SELECTOR, 'span.fa-close')
+    close_button = (By.CSS_SELECTOR, 'span.fa-close')
     remove_ask = (By.XPATH, "//span[contains(text(),'Are you sure you want to perform this action?')]")
     yes_button = (By.XPATH, '//button[@ng-reflect-label="Yes"]')
-    no_button =  (By.XPATH, '//button[@ng-reflect-label="No"]')
+    no_button = (By.XPATH, '//button[@ng-reflect-label="No"]')
+    # Edit complex - locators
+    edit_last_complex_btn = (By.CSS_SELECTOR, 'tr:last-child > td.col-button > span > button:nth-last-child(2)')
+    edit_complex_input = (By.CSS_SELECTOR, 'form div div input#name')
+    edited_complex_row = (By.XPATH, "//span[contains(text(),'TestEditComplex')]")
     # Buttons
     dropdown_button = (By.CSS_SELECTOR, 'button#menu')
     add_button_complex = (By.CSS_SELECTOR, 'button#add-complex')
@@ -38,10 +43,11 @@ class ComplexesPage(BasePage):
 
     # remove_last_complex_btn = (By.XPATH, '//button[@ng-reflect-app-has-permission="COMPLEX_DELETE"][last()]')
     # Input
-    new_complex_input = (By.CSS_SELECTOR, 'form div div input#name')
+    complex_input = (By.CSS_SELECTOR, 'form div div input#name')
     # Warning & Toasts
     complex_removed_toast = (By.XPATH, "//p[contains(text(),'Complex has been removed.')]")
     complex_added_toast = (By.XPATH, "//p[contains(text(),'Complex has been created.')]")
+    complex_edited_toast = (By.XPATH, "//p[contains(text(),'Complex has been saved.')]")
     complex_name_warning = (By.CSS_SELECTOR, 'div.ui-messages-error')
     remove_modal_window = (By.CLASS_NAME, 'ui - dialog')
     # Db queries
@@ -102,10 +108,10 @@ class ComplexesPage(BasePage):
         return self.is_element_present(self.cancel_button)
 
     def enter_complex_name(self):
-        return self.clear_and_fill_input(self.new_complex_name, *self.new_complex_input)
+        return self.clear_and_fill_input(self.new_complex_name, *self.complex_input)
 
     def enter_illegal_chars(self):
-        return self.clear_and_fill_input(self.illegal_complex_name, *self.new_complex_input)
+        return self.clear_and_fill_input(self.illegal_complex_name, *self.complex_input)
 
     def save_add_new_complex(self):
         return self.click_button(*self.save_button)
@@ -119,16 +125,13 @@ class ComplexesPage(BasePage):
     def is_new_complex_toast_present(self):
         return True if self.is_element_present(self.complex_added_toast) else False
 
-    def is_complex_disappear(self):
+    def is_complex_toast_disappear(self):
         return True if self.is_element_disappear(self.complex_added_toast) else False
 
     def is_new_complex_present(self):
         return True if self.is_element_present(self.created_complex_row) else False
 
     # Remove last complex
-    # def wait_for_remove_btn(self):
-    #     return self.wait_for_element(self.remove_last_complex_btn)
-
     def remove_button_click(self):
         return self.click_button(*self.remove_last_complex_btn)
 
@@ -137,6 +140,9 @@ class ComplexesPage(BasePage):
 
     def is_confirm_remove_window_present(self):
         return self.is_element_present(self.remove_ask)
+
+    def is_confirm_remove_window_displayed(self):
+        return self.is_element_displayed(*self.remove_ask)
 
     def is_yes_button_present(self):
         return self.is_element_present(self.yes_button)
@@ -156,6 +162,24 @@ class ComplexesPage(BasePage):
     def is_removed_complex_disappeared(self):
         return True if self.is_element_disappear(self.remove_last_complex_btn) else False
 
+    # Edit last complex
+    def edit_button_click(self):
+        return self.click_button(*self.edit_last_complex_btn)
+
+    def enter_edit_complex_name(self):
+        return self.clear_and_fill_input(self.edit_complex_name, *self.complex_input)
+
+    def is_edit_complex_toast_present(self):
+        return True if self.is_element_present(self.complex_edited_toast) else False
+
+    def is_edited_complex_present(self):
+        return True if self.is_element_present(self.edited_complex_row) else False
+
+    def clear_edit_input(self):
+        return self.clear_input(*self.complex_input)
+
+    def save_edit_complex_click(self):
+        return self.click_button(*self.save_button)
     # For Modal component
 
     # def check_remove_modal_is_present(self):

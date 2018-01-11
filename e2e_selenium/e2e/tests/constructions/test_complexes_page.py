@@ -58,19 +58,19 @@ class TestComplexesPage(unittest.TestCase):
         # Check that new complex is displayed
         self.assertTrue(self.complexes_page.is_new_complex_present())
         # Check that toast disappeared
-        self.assertTrue(self.complexes_page.is_complex_disappear())
+        self.assertTrue(self.complexes_page.is_complex_toast_disappear())
         # Check that new complex has been saved in db
         self.assertEqual(self.complexes_page.if_complex_saved_in_db(), 'TestComplex')
 
     # TC[002]
-    # def test_add_new_complex_negative_empty_input(self):
-    #     # 1.Check adding with empty input
-    #     self.complexes_page.add_button_click()
-    #     self.complexes_page.save_add_new_complex()
-    #     self.assertEqual(self.complexes_page.error_message_complex_name(), 'Complex name is required.')
-    #     self.complexes_page.cancel_add_new_complex()
-    # TODO do zrobienia walidacja na niedozwolone znaki
+    def test_add_new_complex_negative_empty_input(self):
+        # 1.Check adding with empty input
+        self.complexes_page.add_button_click()
+        self.complexes_page.save_add_new_complex()
+        self.assertEqual(self.complexes_page.error_message_complex_name(), 'Complex name is required.')
+        self.complexes_page.cancel_add_new_complex()
 
+    # TODO do zrobienia walidacja na niedozwolone znaki
     # TC[003]
     # def test_add_new_complex_negative_illegal_characters(self):
     #     self.complexes_page.add_button_click()
@@ -108,20 +108,49 @@ class TestComplexesPage(unittest.TestCase):
         self.assertEqual(self.complexes_page.if_complex_saved_in_db(), 'Test Industry')
 
     # TC[006]
-    def _test_delete_complex_cancel(self):
-        print('TEST - DELETE - Cancel- removing complex')
+    def test_delete_complex_cancel(self):
+        # Click last complex remove button
+        self.complexes_page.remove_button_click()
+        # Check that the confirm window present
+        self.assertTrue(self.complexes_page.is_confirm_remove_window_present())
+        # Check that yes / no button present
+        self.assertTrue(self.complexes_page.is_yes_button_present())
+        self.assertTrue(self.complexes_page.is_no_button_present())
+        self.complexes_page.click_no_button()
+        self.assertFalse(self.complexes_page.is_confirm_remove_window_displayed())
+        # Check that the confirm remove modal disappeared
+
 
     # TC[007]
+    # TODO Jesli uzytkownik kliknie poza modal, okno sie zamyka
     def _test_delete_complex_click_outside_modal(self):
         print('TEST - DELETE - Resignation - outside modal click')
 
     # TC[008]
-    def _test_edit_complex_correctly(self):
-        print('TEST - Edit complex')
+    def test_edit_complex_correctly(self):
+        self.complexes_page.edit_button_click()
+        # TODO Zmienic tytul modala -  Edit complex
+        # self.assertTrue(self.complexes_page.check_add_modal_title())
+        self.assertTrue(self.complexes_page.is_save_button_present())
+        self.assertTrue(self.complexes_page.is_cancel_button_present())
+        # TODO Check that the chosen element contains the same name
+        self.complexes_page.enter_edit_complex_name()
+        # Save click
+        self.complexes_page.save_edit_complex_click()
+        # Check that toast is displayed
+        self.assertTrue(self.complexes_page.is_edit_complex_toast_present())
+        # Check that new complex is displayed
+        self.assertTrue(self.complexes_page.is_edited_complex_present())
+        # Check that new complex has been saved in db
+        self.assertEqual(self.complexes_page.if_complex_saved_in_db(), 'TestEditComplex')
 
-    # TC[009]
-    def _test_edit_complex_correctly_negative_empty_input(self):
-        print('TEST - Edit complex - negative - empty input')
+    # TC[009] TODO dokonczyc test
+    def test_edit_complex_correctly_negative_empty_input(self):
+        self.complexes_page.edit_button_click()
+        self.complexes_page.clear_edit_input()
+        self.complexes_page.save_edit_complex_click()
+        self.assertEqual(self.complexes_page.error_message_complex_name(), 'Complex name is required.')
+        # self.complexes_page.cancel_add_new_complex()
 
     # TC[010]
     def _test_edit_complex_correctly_negative_empty_input(self):
