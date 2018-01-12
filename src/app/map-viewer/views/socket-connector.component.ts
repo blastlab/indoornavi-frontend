@@ -149,8 +149,8 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     if (tag.transitionEnded) {
       tag.group
         .transition()
-        .attr('x', data.coordinates.point.x)
-        .attr('y', data.coordinates.point.y)
+        .attr('x', data.coordinates.point.x + 18)
+        .attr('y', data.coordinates.point.y + 18)
         .on('start', () => {
           tag.transitionEnded = false;
         })

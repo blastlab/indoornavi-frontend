@@ -35,7 +35,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
 
   public heatMapSettings = {
     path: 25000,
-    heatingTime: 1000
+    heatingTime: 2000
   };
 
   public playingAnimation: boolean = false;
@@ -117,5 +117,3 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     this.heatmap.coolingDown = this.heatMapSettings.path;
   }
 }
-
-
