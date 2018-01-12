@@ -7,26 +7,35 @@ import {SocketService} from '../../../shared/services/socket/socket.service';
 import {PublishedService} from '../../published.service';
 import {AreaService} from '../../../shared/services/area/area.service';
 import {IconService} from '../../../shared/services/drawing/icon.service';
-import {Point} from '../../../map-editor/map.type';
 import {ZoomService} from '../../../map-editor/zoom.service';
 import {MapLoaderInformerService} from '../../../shared/services/map-loader-informer/map-loader-informer.service';
 import {CoordinatesSocketData} from '../../published.type';
-import {HexagonHeatmap} from './hexagon-heatmap.service';
+import {HexagonHeatMap} from './hexagon-heatmap.service';
 import * as d3 from 'd3';
 
 @Component({
   templateUrl: './analytics.html',
   styleUrls: ['./analytics.css']
 })
-export class AnalyticsComponent extends SocketConnectorComponent implements OnInit {;
+export class AnalyticsComponent extends SocketConnectorComponent implements OnInit {
   private pathSliderView: boolean = false;
   private timeStepBuffer: Array<TimeStepBuffer> = [];
   private mapId = 'map';
-  private heatmap: HexagonHeatmap;
+  private heatmap: HexagonHeatMap;
+  // hexRadius set to tag icon size equal 20px x 20px square
+  private hexSize: number = 20;
+  private gradient: string[] = [
+    '#ebff81',
+    '#fffb00',
+    '#ffaa00',
+    '#ff7300',
+    '#ff3700',
+    '#ff000c'
+  ];
 
   public heatMapSettings = {
     path: 25000,
-    heatingTime: 500
+    heatingTime: 1000
   };
 
   public playingAnimation: boolean = false;
@@ -55,7 +64,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
 
   protected init(): void {
     this.mapLoaderInformer.loadCompleted().first().subscribe((d3map: d3.selection) => {
-      this.createHexagonalHeatmapGrid(d3map);
+      this.createHexagonalHeatMapGrid(d3map);
     });
     this.whenDataArrived().subscribe((data: CoordinatesSocketData) => {
       // update
@@ -70,45 +79,43 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       const timeWhenTransitionIsFinished: number = Date.now() - this.transitionDurationTimeStep;
       for (let index = 0; index < this.timeStepBuffer.length; index ++) {
         if (this.timeStepBuffer[index].timeOfDataStep < timeWhenTransitionIsFinished) {
-          this.playingAnimation ? this.heatUpHexes(this.timeStepBuffer[index].data) : null;
+          if (this.playingAnimation) {
+            this.heatUpHexes(this.timeStepBuffer[index].data)
+          }
           this.timeStepBuffer.splice(0, index);
         }
       }
     });
   }
 
-  public setPathLength (event) {
+  setPathLength (event) {
     this.heatMapSettings.path = event;
     this.heatmap.coolingDown = this.heatMapSettings.path;
   }
 
-  public toggleSlider(): void {
+  toggleSlider(): void {
     this.pathSliderView = !this.pathSliderView;
   }
 
-  public toggleHeatAnimation(): void {
+  toggleHeatAnimation(): void {
     this.playingAnimation = !this.playingAnimation;
     if (!this.playingAnimation) {
-      this.heatmap.coolDownImmediately();
+      this.heatmap.eraseHitMap();
     }
   }
 
   private heatUpHexes(data: CoordinatesSocketData): void {
-    const coordinates: Point = data.coordinates.point;
-    this.heatmap.feedWithCoordinates(coordinates);
-
+    this.heatmap.feedWithCoordinates(data.coordinates.point);
   }
 
-  private createHexagonalHeatmapGrid (mapNode, hexSize ?, colors ?) {
+  private createHexagonalHeatMapGrid (mapNode) {
     const height = Number.parseInt(mapNode.node().getBBox().height);
     const width = Number.parseInt(mapNode.node().getBBox().width);
-    let hexRaduis: number;
-    // hexRadius set to tag icon size equal 20px x 20px square
-    !hexSize ? hexRaduis = 20 : hexRaduis = hexSize;
-    this.heatmap = new HexagonHeatmap(width, height, hexRaduis, '#ff0000');
-    this.heatmap.toggleMouseEvents = false;
+    this.heatmap = new HexagonHeatMap(width, height, this.hexSize, this.gradient);
     this.heatmap.create(this.mapId);
     this.heatmap.heatingUp = this.heatMapSettings.heatingTime;
     this.heatmap.coolingDown = this.heatMapSettings.path;
   }
 }
+
+

@@ -3,11 +3,11 @@ import * as d3Hexbin from 'd3-hexbin';
 import {Point} from '../../../map-editor/map.type';
 
 
-export class HexagonHeatmap {
+export class HexagonHeatMap {
   private strokeWidth: number = 1;
+  private maxOpacity: number  = 0.6;
   private heatingUpTime: number;
   private coolingDownTime: number;
-  private allowMouseEvents: boolean = false;
   private points: any[] = [];
   private hexGridTable: any[] = [];
   private svg: any;
@@ -17,46 +17,17 @@ export class HexagonHeatmap {
   constructor(private width: number,
               private height: number,
               private hexSize: number,
-              private heatColor: string) {
+              private heatColors: string[]) {
     this.width = width;
     this.height = height;
     this.hexSize = hexSize;
-    this.heatColor = heatColor;
+    this.heatColors = heatColors;
     this.margin = {left: hexSize, top: hexSize, right: hexSize, bottom: hexSize};
     this.calculatePoints();
   }
 
   create(id: string) {
-    // variables are located in method because d3.selections changes context of this key word
     const hexbin = d3Hexbin.hexbin().radius(this.hexSize);
-    const points = this.points;
-    const strokeColor = this.heatColor;
-    const mouseEvents = this.allowMouseEvents;
-    const heatingTime = this.heatingUpTime;
-    const coolingTime = this.coolingDownTime;
-    const strokeWidth = this.strokeWidth;
-    const hexGridTable = [];
-
-    // functions are located in method because d3.selections changes context of this key word
-    function heatUp(d) {
-      if (mouseEvents) {
-        const el = d3.select(this)
-          .transition()
-          .duration(heatingTime)
-          .style('fill-opacity', .5)
-          .style('stroke-opacity', .3);
-      }
-    }
-
-    function coolDown(d) {
-      if (mouseEvents) {
-        const el = d3.select(this)
-          .transition()
-          .duration(coolingTime)
-          .style('fill-opacity', 0)
-          .style('stroke-opacity', 0);
-      }
-    }
 
     this.svg = d3.select(`#${id}`).append('svg')
       .attr('width', this.width + this.margin.left + this.margin.right)
@@ -67,45 +38,37 @@ export class HexagonHeatmap {
 
     this.hexMap = this.svg.append('g')
       .selectAll('.hexagon')
-      .data(hexbin(points))
+      .data(hexbin(this.points))
       .enter().append('path')
       .attr('class', 'hexagon')
-      .attr('d', function (d, index, nodes) {
-        hexGridTable.push({x: d.x, y: d.y, element: nodes[index]});
+      .attr('d', (d, index, nodes) => {
+        this.hexGridTable.push({x: d.x, y: d.y, element: nodes[index]});
         return 'M' + d.x + ',' + d.y + hexbin.hexagon();
       })
-      .attr('stroke', function (d, i) {
-        return strokeColor;
-      })
+      .attr('heat', 0)
+      .attr('stroke', this.heatColors[0])
       .style('stroke-opacity', 0)
-      .attr('stroke-width', `${strokeWidth}px`)
-      .style('fill', function (d, i) {
-        return points[i][2];
-      })
-      .style('fill-opacity', 0)
-      .on('mouseover', heatUp)
-      .on('mouseout', coolDown);
-
-    this.hexGridTable = hexGridTable;
-
+      .attr('stroke-width', `${this.strokeWidth}px`)
+      .style('fill', this.heatColors[0])
+      .style('fill-opacity', 0);
   }
 
-  coolDownImmediately () {
+  eraseHitMap () {
     this.hexGridTable.forEach((hex: HexHeatElement) => {
-      d3.select(hex.element)
-        .transition()
-        .duration(1000)
-        .style('fill-opacity', 0)
-        .style('stroke-opacity', 0);
-    });
+      const element = d3.select(hex.element);
+      if (element.attr('heat') > 0) {
+        element
+          .transition()
+          .duration(1000)
+          .style('stroke-opacity', 0)
+          .style('fill-opacity', 0)
+          .attr('heat', 0);
+      }
+    })
   }
 
   feedWithCoordinates(data: Point) {
     this.fireHeatAtLocation(this.findHexIndex(data));
-  }
-
-  set toggleMouseEvents(value) {
-    this.allowMouseEvents = value;
   }
 
   set heatingUp(value) {
@@ -116,22 +79,51 @@ export class HexagonHeatmap {
     this.coolingDownTime = value;
   }
 
-  private fireHeatAtLocation = (hex: HexHeatElement) => {
-    // variables are located in method because d3.select changes context of this key word
+  private fireHeatAtLocation (hex: HexHeatElement) {
     if (!!hex) {
-      const heatingTime = this.heatingUpTime;
-      const coolingTime = this.coolingDownTime;
-      d3.select(hex.element)
+      const hexagon = d3.select(hex.element);
+
+      let heat = Number.parseInt(hexagon.attr('heat'));
+      if (heat < 5) {
+        heat++;
+      }
+      const color = this.heatColors[heat];
+
+      hexagon
         .transition()
-        .duration(heatingTime)
-        .style('fill-opacity', .3)
-        .style('stroke-opacity', .3)
-        .transition()
-        .duration(coolingTime)
-        .style('fill-opacity', 0)
-        .style('stroke-opacity', 0);
+        .duration(this.heatingUpTime)
+        .attr('heat', heat)
+        .style('fill-opacity', this.maxOpacity)
+        .style('stroke-opacity', this.maxOpacity)
+        .style('fill', () => color)
+        .attr('stroke', () => color)
+        .on('end', () => {
+          const coolDown = () => {
+            if (heat > 0) {
+              hexagon
+                .transition()
+                .on('end', () => {
+                  heat--;
+                  return coolDown;
+                })
+                .duration(this.coolingDownTime)
+                .attr('heat', heat)
+                .style('fill', () => {
+                  return this.heatColors[heat - 1]
+                })
+                .attr('stroke', () => this.heatColors[heat - 1]);
+            } else {
+              hexagon
+                .transition()
+                .duration(this.coolingDownTime)
+                .style('fill-opacity', 0)
+                .style('stroke-opacity', 0);
+            }
+          };
+          coolDown();
+        });
     }
-  };
+  }
 
   private findHexIndex = coordinates => {
     return this.hexGridTable.find(hex => hex.x > coordinates.x && hex.y > coordinates.y);
@@ -146,7 +138,7 @@ export class HexagonHeatmap {
   private calculatePoints(): void {
     for (let i = 0; i < this.calculateMap()[1]; i++) {
       for (let j = 0; j < this.calculateMap()[0]; j++) {
-        this.points.push([this.hexSize * j * 1.5, this.hexSize * i * 1.5, this.heatColor]);
+        this.points.push([this.hexSize * j * 1.5, this.hexSize * i * 1.5]);
       }
     }
   }
