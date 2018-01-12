@@ -6,6 +6,7 @@ class ComplexesPage(BasePage):
 
     login_url = 'http://localhost:4200/complexes'
     complex_table_header = 'Complex name'
+    buildings_table_header = 'Building name'
     complex_modal_title = 'Add new complex'
     new_complex_name = 'TestComplex'
     edit_complex_name = 'TestEditComplex'
@@ -34,14 +35,15 @@ class ComplexesPage(BasePage):
     edit_last_complex_btn = (By.CSS_SELECTOR, 'tr:last-child > td.col-button > span > button:nth-last-child(2)')
     edit_complex_input = (By.CSS_SELECTOR, 'form div div input#name')
     edited_complex_row = (By.XPATH, "//span[contains(text(),'TestEditComplex')]")
+    # Redirect complex to buildings page -locator
+    redirect_last_complex_btn = (By.CSS_SELECTOR, 'tr:last-child > td.col-button > span > button:first-of-type')
+    last_complex_row = (By.CSS_SELECTOR, 'tr:last-child > td:nth-child(1) > span')
     # Buttons
     dropdown_button = (By.CSS_SELECTOR, 'button#menu')
     add_button_complex = (By.CSS_SELECTOR, 'button#add-complex')
     save_button = (By.XPATH, '//button[@ng-reflect-label="Save"]')
     cancel_button = (By.XPATH, '//button[@ng-reflect-label="Cancel"]')
     remove_last_complex_btn = (By.CSS_SELECTOR, 'tr:last-child > td.col-button > span > button:last-child')
-
-    # remove_last_complex_btn = (By.XPATH, '//button[@ng-reflect-app-has-permission="COMPLEX_DELETE"][last()]')
     # Input
     complex_input = (By.CSS_SELECTOR, 'form div div input#name')
     # Warning & Toasts
@@ -79,8 +81,8 @@ class ComplexesPage(BasePage):
     def is_add_button_present(self):
         return True if self.is_element_present(self.add_button_complex) else False
 
-    def check_construction_column_title(self):
-        return self.check_title_is_correct(self.complex_table_header, *self.table_construction_name)
+    def check_construction_column_title(self, construction_table_header):
+        return self.check_title_is_correct(construction_table_header, *self.table_construction_name)
 
     def check_if_there_is_any_row(self):
         count = self.count_of_inner_elements(*self.table_rows)
@@ -121,6 +123,12 @@ class ComplexesPage(BasePage):
 
     def error_message_complex_name(self):
         return self.wait_for_element(self.complex_name_warning).text
+
+    def is_warning_error_present(self):
+        return self.is_element_present(self.complex_name_warning)
+
+    def is_error_message_displayed(self):
+        return self.is_element_displayed(*self.complex_name_warning)
 
     def is_new_complex_toast_present(self):
         return True if self.is_element_present(self.complex_added_toast) else False
@@ -166,6 +174,9 @@ class ComplexesPage(BasePage):
     def edit_button_click(self):
         return self.click_button(*self.edit_last_complex_btn)
 
+    def cancel_button_click(self):
+        return self.click_button(*self.cancel_button)
+
     def enter_edit_complex_name(self):
         return self.clear_and_fill_input(self.edit_complex_name, *self.complex_input)
 
@@ -176,18 +187,17 @@ class ComplexesPage(BasePage):
         return True if self.is_element_present(self.edited_complex_row) else False
 
     def clear_edit_input(self):
-        return self.clear_input(*self.complex_input)
+        return self.clear_text_input(*self.complex_input)
 
     def save_edit_complex_click(self):
         return self.click_button(*self.save_button)
-    # For Modal component
 
-    # def check_remove_modal_is_present(self):
+    def is_edit_modal_displayed(self):
+        return self.is_element_displayed(*self.modal_window)
 
-    # Main Functionality
-    def add_new_complex(self):
-        modal_title = self.identify_element(*self.add_button_text_locator).text
-
+    # Redirect to buildings page
+    def redirect_button_click(self):
+        return self.click_button(*self.redirect_last_complex_btn)
 
 
 

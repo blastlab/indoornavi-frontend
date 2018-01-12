@@ -63,7 +63,7 @@ class TestComplexesPage(unittest.TestCase):
         self.assertEqual(self.complexes_page.if_complex_saved_in_db(), 'TestComplex')
 
     # TC[002]
-    def test_add_new_complex_negative_empty_input(self):
+    def test_add_new_complex_negative_empty_input_and_cancel_click(self):
         # 1.Check adding with empty input
         self.complexes_page.add_button_click()
         self.complexes_page.save_add_new_complex()
@@ -145,36 +145,35 @@ class TestComplexesPage(unittest.TestCase):
         self.assertEqual(self.complexes_page.if_complex_saved_in_db(), 'TestEditComplex')
 
     # TC[009] TODO dokonczyc test
-    def test_edit_complex_correctly_negative_empty_input(self):
+    def test_edit_complex_negative_empty_input(self):
         self.complexes_page.edit_button_click()
         self.complexes_page.clear_edit_input()
         self.complexes_page.save_edit_complex_click()
         self.assertEqual(self.complexes_page.error_message_complex_name(), 'Complex name is required.')
-        # self.complexes_page.cancel_add_new_complex()
-
-    # TC[010]
-    def _test_edit_complex_correctly_negative_empty_input(self):
-        print('TEST - Edit complex - negative - empty input')
-
-    # TC[011]
-    def _test_edit_complex_correctly_negative_illegal_characters(self):
-        print('TEST - Edit complex - negative - illegal characters')
 
     # TC[012]
     # TODO do zrobienia walidacja na limit znakow
     # def test_edit_complex_with_negative_minmax_charaters(self):
 
     # TC[013]
-    def _test_edit_complex_cancel(self):
-        print('TEST - EDIT - Cancel removing complex')
+    def test_edit_complex_cancel(self):
+        # Click last complex edit button
+        self.complexes_page.edit_button_click()
+        # TODO Zmienic tytul modala -  Edit complex
+        # self.assertTrue(self.complexes_page.check_add_modal_title())
+        # Check that save / cancel button present
+        self.assertTrue(self.complexes_page.is_save_button_present())
+        self.assertTrue(self.complexes_page.is_cancel_button_present())
+        self.complexes_page.cancel_button_click()
+        self.assertFalse(self.complexes_page.is_edit_modal_displayed())
 
     # TC[014]
-    def _test_edit_complex_click_outside_modal(self):
-        print('TEST - EDIT - Resignation - outside modal click')
+    def test_redirect_complex_to_buildings_page(self):
+        # Click last complex redirect click
+        self.complexes_page.redirect_button_click()
+        # header = self.complexes_page.buildings_table_header
+        # self.assertTrue(self.complexes_page.check_construction_column_title(header))
 
-    # TC[015]
-    def _test_redirect_complex_to_buildings_page(self):
-        print('TEST - REDIRECTING')
 
     @classmethod
     def tearDownClass(cls):

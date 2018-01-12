@@ -1,6 +1,7 @@
 from selenium.webdriver.support import expected_conditions as EC
 import selenium.webdriver.support.ui as ui
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.keys import Keys
 import csv
 import mysql.connector
 from pyquibase.pyquibase import Pyquibase
@@ -88,6 +89,11 @@ class BasePage(object):
         input_element = self.identify_element(*input_locator)
         input_element.clear()
 
+    def clear_text_input(self, *input_locator):
+        input_element = self.identify_element(*input_locator)
+        length = len(input_element.get_attribute('value'))
+        input_element.send_keys(length * Keys.BACKSPACE)
+
     def clear_and_fill_input(self, text, *input_locator):
         input_element = self.identify_element(*input_locator)
         input_element.clear()
@@ -123,5 +129,7 @@ class BasePage(object):
         last_element = rows[0]
         return last_element
 
+    def sleep_app(self, integer):
+        return time.sleep(integer)
 
 
