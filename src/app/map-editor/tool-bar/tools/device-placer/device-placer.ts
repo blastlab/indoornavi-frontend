@@ -53,13 +53,15 @@ export class DevicePlacerComponent implements Tool, OnInit {
   private handledSelection: Subscription;
   private map: d3.selection;
   private mapDevices: Expandable[] = [];
+  private blockedDevices: Expandable[] = [];
   private verifiedDevices: Array<Anchor | Sink>;
   private placementDone: boolean = true;
   private managedSelectables: Subscription[];
   private chosenSink: Sink;
   private selectedDevice: Anchor | Sink;
   private connectingLines: ConnectingLine[] = [];
-  private manipulatingConnections: boolean = false;
+  private modifyingConnectionsFlag: Subscription;
+  private creatingConnection: d3.selection;
 
   static getShortIdFromGroupSelection(selection: d3.selection): number {
     return parseInt(selection.attr('id'), 10);
@@ -71,6 +73,10 @@ export class DevicePlacerComponent implements Tool, OnInit {
 
   static hasSameShortId(device: Sink | Anchor, id: number): boolean {
     return device.shortId === id;
+  }
+
+  static getMouseCoordinates(): Point {
+    return {x: d3.event.offsetX, y: d3.event.offsetY};
   }
 
   static buildAnchorDrawConfiguration(anchor: Anchor): DrawConfiguration {
@@ -103,12 +109,23 @@ export class DevicePlacerComponent implements Tool, OnInit {
   }
 
   static deselectDevice(device: Expandable): void {
+    if (!!device.connectable.anchorConnection) {
+      device.connectable.unlockConnections();
+      device.connectable.anchorConnection.hide();
+    }
     device.selectable.deselect();
+    const selectableDevice = <SelectableDevice>device.selectable;
+    selectableDevice.removeBorderBox();
   }
 
-  static markSinkSubselection(mapSink: Expandable, connectingLine: ConnectingLine): void {
-    const selectableDevice = <SelectableDevice>mapSink.selectable;
-      selectableDevice.setBorderBox('orange');
+  static unblockSelectableBehavior(expandable: Expandable): void {
+    expandable.connectable.handleHovering();
+    expandable.selectable.handleHovering();
+    expandable.selectable.selectOn();
+    expandable.groupCreated.resetColor();
+  }
+
+  static markSinkSubselection(connectingLine: ConnectingLine): void {
     DevicePlacerComponent.showSingleConnection(connectingLine);
   }
 
@@ -135,20 +152,21 @@ export class DevicePlacerComponent implements Tool, OnInit {
   }
 
   @HostListener('document:keydown.escape', [])
-  private handleEscapeKey() {
-    if (!this.selectedDevice && this.manipulatingConnections) {
+  private handleEscapeKey(): void {
+    if (!this.selectedDevice && !!this.modifyingConnectionsFlag) {
       this.translate.get('connections.manipulationTurnedOff').subscribe((value: string) => {
         this.hintBarService.emitHintMessage(value);
       });
-      this.endModificationMode();
+      this.endModificationConnections();
     }
     if (this.selectedDevice) {
+      if (!!this.creatingConnection) {this.resetConnecting()}
       this.clearSelections();
     }
   }
 
   @HostListener('document:keydown.delete', [])
-  private handleDeleteKey() {
+  private handleDeleteKey(): void {
     if (this.selectedDevice) {
       this.removeSelectedDevice();
       this.clearSelections();
@@ -156,12 +174,16 @@ export class DevicePlacerComponent implements Tool, OnInit {
   }
 
   public onClick(): void {
-    (this.manipulatingConnections)
-      ? this.endModificationMode()
-      : this.toolbarService.emitToolChanged(this);
+    if (!!this.modifyingConnectionsFlag) {
+      if (!!this.creatingConnection) {this.removeDashedLine()}
+        this.endModificationConnections();
+    } else {
+      this.toolbarService.emitToolChanged(this);
+    }
   }
 
   public removeSelectedDevice(): void {
+    if (!!this.creatingConnection) {this.resetConnecting()}
     this.removeFromConfiguration(this.selectedDevice);
     const mapDevice = this.findMapDevice(this.selectedDevice.shortId);
     mapDevice.groupCreated.remove();
@@ -175,22 +197,111 @@ export class DevicePlacerComponent implements Tool, OnInit {
     });
     // this.clearSelections();
     // hintbar -> select (click) a device to connect | translate
-    this.startModificationMode();
-    const handledSelection = this.devicePlacerController.getSelectedDevice().first().subscribe(selectedDevice => {
-      this.createLineAttachedToCursorAnd(selectedDevice);
-    })
+    if (!this.selectedDevice) {
+      this.subscribeForConnectableDevice();
+    } else if (!!this.findMapDevice(this.selectedDevice.shortId).connectable.anchorConnection) {
+      this.clearSelections();
+      this.subscribeForConnectableDevice();
+    } else {
+      this.map.on('mousemove', () => {
+        this.map.on('mousemove', null);
+        this.startCreatingConnection(this.findMapDevice(this.selectedDevice.shortId), DevicePlacerComponent.getMouseCoordinates());
+      });
+    }
+    this.startModifyingConnections();
+    // TODO manage created connections
   }
 
-  private startModificationMode(): void {
-    this.manipulatingConnections = true;
+  private subscribeForConnectableDevice(): void {
+    this.modifyingConnectionsFlag = this.devicePlacerController.getSelectedDevice().first().subscribe(selectedDevice => {
+      this.startCreatingConnection(selectedDevice, DevicePlacerComponent.getMouseCoordinates());
+    });
+  }
+
+  private resetConnecting(): void {
+    this.removeDashedLine();
+    this.turnOnSelectInAllBlockedDevices();
+    this.turnOffSelectInConnectedAnchors();
+    this.subscribeForConnectableDevice();
+  }
+
+  private removeDashedLine(): void {
+      this.creatingConnection.remove();
+      this.creatingConnection = null;
+      this.map.on('mousemove', null);
+  }
+
+  private startCreatingConnection(firstDevice: d3.selection, mousePosition: Point): void {
+    this.creatingConnection = this.createDashedLineAttachedToDevice(firstDevice, mousePosition);
+    this.turnOffSelectInMapDevicesByType(firstDevice);
+    this.map.on('mousemove', () => {
+      const mouseMapOffset = DevicePlacerComponent.getMouseCoordinates();
+      this.creatingConnection.attr('x2', mouseMapOffset.x);
+      this.creatingConnection.attr('y2', mouseMapOffset.y);
+    });
+   /* this.devicePlacerController.getSelectedDevice().subscribe(selectedDevice => {
+      if (firstDevice !== selectedDevice) {
+
+      }
+      mouseMapOffset = DevicePlacerComponent.getMouseCoordinates();
+      this.startCreatingConnection(firstSelection, mouseMapOffset);
+    })
+    */
+  }
+
+  private blockSelectableBehavior(expandable: Expandable): void {
+    expandable.selectable.selectOff();
+    expandable.groupCreated.changeColor(`gray`);
+    this.blockedDevices.push(expandable);
+  }
+
+  private turnOnSelectInAllBlockedDevices(): void {
+    this.blockedDevices.forEach(blockedDevice => {
+      DevicePlacerComponent.unblockSelectableBehavior(blockedDevice);
+    });
+    this.blockedDevices = [];
+  }
+
+  private turnOffSelectInMapDevicesByType(devicePassed: Expandable): void {
+    const verifiedDevice = this.findVerifiedDevice(DevicePlacerComponent.getShortIdFromGroupSelection(devicePassed.groupCreated.domGroup));
+    if (DevicePlacerComponent.isSinkType(verifiedDevice)) {
+      this.mapDevices.forEach((mapDevice) => {
+        const connectable = <ConnectableDevice>mapDevice.connectable;
+        const device = this.findVerifiedDevice(DevicePlacerComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.domGroup));
+        if (DevicePlacerComponent.isSinkType(device) || !!connectable.anchorConnection) {
+          this.blockSelectableBehavior(mapDevice);
+        }
+      });
+    } else {
+      this.mapDevices.forEach((mapDevice) => {
+        const device = this.findVerifiedDevice(DevicePlacerComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.domGroup));
+        if (!DevicePlacerComponent.isSinkType(device)) {
+          this.blockSelectableBehavior(mapDevice);
+        }
+      });
+    }
+  }
+
+  private turnOffSelectInConnectedAnchors(): void {
+    this.mapDevices.forEach((mapDevice) => {
+      const connectable = <ConnectableDevice>mapDevice.connectable;
+      if (!!connectable.anchorConnection) {
+        this.blockSelectableBehavior(mapDevice);
+      }
+    });
+  }
+
+  private startModifyingConnections(): void {
+    this.turnOffSelectInConnectedAnchors();
     this.removeDragFromAllAnchorsOnMap();
     this.toggleList();
-    console.log(this.connectingLines);
     this.showAllConnections();
   }
 
-  private endModificationMode(): void {
-    this.manipulatingConnections = false;
+  private endModificationConnections(): void {
+    this.modifyingConnectionsFlag.unsubscribe();
+    this.modifyingConnectionsFlag = null;
+    this.turnOnSelectInAllBlockedDevices();
     this.allowToDragAllAnchorsOnMap();
     this.toggleList();
     this.hideAllConnections()
@@ -204,8 +315,16 @@ export class DevicePlacerComponent implements Tool, OnInit {
     return connectingLine;
   }
 
-  private createLineAttachedToCursorAnd(device: Expandable) {
-    console.log(device)
+  private createDashedLineAttachedToDevice(device: Expandable, mousePosition: Point): d3.selection {
+    return this.map.append('line')
+      .attr('id', DevicePlacerComponent.getShortIdFromGroupSelection(device.groupCreated.domGroup))
+      .attr('x1', device.groupCreated.domGroup.attr('x'))
+      .attr('y1', device.groupCreated.domGroup.attr('y'))
+      .attr('x2', mousePosition.x)
+      .attr('y2', mousePosition.y)
+      .attr('pointer-events', 'none')
+      .attr('stroke', 'orange')
+      .style('stroke-dasharray', '5, 5');
   }
 
   getHintMessage(): string {
@@ -349,15 +468,15 @@ export class DevicePlacerComponent implements Tool, OnInit {
   public dragDeviceStarted(device: Anchor | Sink, event): void {
     this.draggedDevice = device;
     const dragImage = document.createElementNS(`http://www.w3.org/200/svg`, `svg`);
+    dragImage.setAttributeNS(null, `id`, `dragImage`);
     dragImage.setAttributeNS(null, `x`, event.x);
     dragImage.setAttributeNS(null, `y`, event.y);
     dragImage.setAttributeNS(null, `stroke`, `black`);
     dragImage.setAttributeNS(null, `fill`, `black`);
     dragImage.innerHTML = this.icons.getIcon(NaviIcons.POINTER);
-    // console.log(dragImage);
-    // console.log(event);
+    document.documentElement.appendChild(dragImage);
+    // this.map.append(dragImage);
     event.dataTransfer.setDragImage(dragImage, event.x, event.y);
-    // console.log(event.dataTransfer);
     this.toggleList();
   }
 
@@ -409,9 +528,9 @@ export class DevicePlacerComponent implements Tool, OnInit {
         } else if (!!selectedDevice.connectable.anchorConnection) {
           const sinkAsConnectable = selectedDevice.connectable.anchorConnection.connectedSink();
           this.chosenSink = <Sink>this.findVerifiedDevice(DevicePlacerComponent.getShortIdFromGroupSelection(sinkAsConnectable.domGroup));
-          DevicePlacerComponent.markSinkSubselection(this.findMapDevice(this.chosenSink.shortId), selectedDevice.connectable.anchorConnection);
+          DevicePlacerComponent.markSinkSubselection(selectedDevice.connectable.anchorConnection);
         }
-        const selectableDevice = <SelectableDevice>selectedDevice.selectable
+        const selectableDevice = <SelectableDevice>selectedDevice.selectable;
         selectableDevice.setBorderBox('red');
       });
   }
@@ -419,22 +538,16 @@ export class DevicePlacerComponent implements Tool, OnInit {
   private setSelectedDevice(selectedDevice: Anchor | Sink) {
     this.selectedDevice = selectedDevice;
     this.map.on('click.deselect', () => {
+      if (!!this.creatingConnection) {this.resetConnecting()}
       this.clearSelections();
     });
   }
 
   private clearSelections(): void {
-    if (!!this.selectedDevice && this.chosenSink !== this.selectedDevice) {
+    if (!!this.selectedDevice) {
       DevicePlacerComponent.deselectDevice(this.findMapDevice(this.selectedDevice.shortId));
-      const mapDevice = this.findMapDevice(this.selectedDevice.shortId);
-      if (!!mapDevice.connectable.anchorConnection) {
-        // Here is a little bug or maybe not here =] // TODO fix connections management
-        // mapDevice.connectable.unlockConnections();
-        mapDevice.connectable.anchorConnection.hide();
-      }
     }
     if (!!this.chosenSink) {
-      DevicePlacerComponent.deselectDevice(this.findMapDevice(this.chosenSink.shortId));
       this.chosenSink = null;
     }
     this.selectedDevice = null;

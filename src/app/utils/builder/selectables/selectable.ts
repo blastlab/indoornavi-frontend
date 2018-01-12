@@ -6,6 +6,7 @@ import {Subject} from 'rxjs/Subject';
 export class Selectable {
   private selectedEmitter: Subject<d3.selection> = new Subject<d3.selection>();
   private deselectedEmitter: Subject<d3.selection> = new Subject<d3.selection>();
+  private lockHovering: boolean;
 
 
   constructor(protected group: GroupCreated) {
@@ -35,14 +36,51 @@ export class Selectable {
     this.emitDeselectedEvent();
   }
 
+  public handleHovering() {
+    this.lockHovering = false;
+    const onMouseEnterListener = this.group.domGroup.on('mouseenter');
+    const onMouseLeaveListener = this.group.domGroup.on('mouseleave');
+    if (onMouseEnterListener === undefined) {
+      this.group.domGroup.on('mouseenter', () => {
+        if (!this.lockHovering) {
+          this.group.changeColor('red');
+        }
+      });
+    } else {
+        this.group.domGroup.on('mouseenter', () => {
+          if (!this.lockHovering) {
+            this.group.changeColor('red');
+          }
+          onMouseEnterListener();
+        });
+    }
+    if (onMouseLeaveListener === undefined) {
+        this.group.domGroup.on('mouseleave', () => {
+          if (!this.lockHovering) {
+            this.group.resetColor();
+          }
+        });
+    } else {
+        this.group.domGroup.on('mouseleave', () => {
+          if (!this.lockHovering) {
+            this.group.resetColor();
+          }
+          onMouseLeaveListener();
+        });
+    }
+  }
+
   public selectOn() {
     this.group.domGroup.on('click.select', () => {
       this.select();
       event.stopPropagation();
     });
+    this.handleHovering();
   }
 
   public selectOff() {
-    this.group.domGroup.on('.click.select', null);
+    this.group.domGroup.on('click.select', null);
+    this.lockHovering = true;
+    console.log(this.group.domGroup);
   }
 }

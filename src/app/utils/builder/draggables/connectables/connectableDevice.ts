@@ -48,8 +48,8 @@ export class ConnectableDevice extends Draggable {
     }
   }
 
-  private handleHovering() {
-      this.domGroup.on('mouseover', () => {
+  public handleHovering() {
+      this.domGroup.on('mouseenter', () => {
         this.showConnections();
       });
       this.domGroup.on('mouseout', () => {

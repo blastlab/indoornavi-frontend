@@ -32,16 +32,14 @@ export class DrawBuilder {
 export class GroupCreated {
   domGroup: d3.selection;
   container: d3.selection;
-  private color: string = 'black';
+  private color: string;
 
   constructor(domGroup: d3.selection,
               container: d3.selection,
               colored?: string) {
     this.domGroup = domGroup;
     this.container = container;
-    if (colored) {
-      this.color = colored;
-    }
+    this.color = (colored) ? colored : 'black';
   }
 
   place(coordinates: Point): GroupCreated {
@@ -140,6 +138,10 @@ export class GroupCreated {
         }
       }
     }
+  }
+
+  resetColor() {
+    this.changeColor(this.color);
   }
 
 }
