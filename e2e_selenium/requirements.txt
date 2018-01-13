@@ -2,3 +2,4 @@ selenium
 mysql-connector==2.1.4
 pyquibase
 pyvirtualdisplay
+html-testRunner
