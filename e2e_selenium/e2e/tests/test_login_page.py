@@ -7,7 +7,7 @@ class TestLoginPage(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.page_url  = LoginPage.login_url
+        cls.page_url = LoginPage.login_url
         cls.webdriver = webdriver
         TestDriver.setUp(cls, cls.page_url)
         cls.page = LoginPage(cls.webdriver)
@@ -22,6 +22,7 @@ class TestLoginPage(unittest.TestCase):
     # TC001
     def test_login_valid_credentials(self):
         self.__init_test_method()
+
         # [TS003].Clear form, fill with correct data and submit
         self.assertEqual(self.page.login_process(self.option), 'Complexes')
 

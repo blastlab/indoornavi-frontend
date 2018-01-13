@@ -4,6 +4,7 @@ from config import Config
 class LoginPage(BasePage):
 
     login_url=Config.front_hostname
+    redirect_url=login_url+'complexes'
     # Login page locators
     form_locator = (By.CSS_SELECTOR, 'form.ng-valid')
     button_locator = (By.ID, 'login-button')
