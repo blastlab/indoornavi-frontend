@@ -3,10 +3,10 @@ FROM python:3.5
 RUN apt-get update
 
 RUN apt-get update && apt-get install -y \
-	libgconf2-4 \ 
+	libgconf2-4 \
 	libnss3-1d \
 	libxss1 \
-	fonts-liberation \ 
+	fonts-liberation \
 	libappindicator1 \
 	xdg-utils \
 	software-properties-common \
@@ -37,7 +37,7 @@ RUN wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x
     tar -jxf phantomjs-2.1.1-linux-x86_64.tar.bz2 && cp phantomjs-2.1.1-linux-x86_64/bin/phantomjs /usr/local/bin/phantomjs
 
 COPY requirements.txt /
-RUN pip install -r requirements.txt
+RUN pip install -r requirements.txt && pip install html-testRunner
 
 
 ENV APP_HOME /usr/src/app
