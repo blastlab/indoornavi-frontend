@@ -32,7 +32,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   protected activeMap: PublishedMap;
   protected d3map: d3.selection = null;
   protected pixelsToCentimeters: number;
-  protected transitionDurationTimeStep: number = 500;
+  protected transitionDurationTimeStep: number = 1000;
   private dataReceived = new Subject<CoordinatesSocketData>();
   private transitionEnded = new Subject<number>();
   private tagsOnMap: Dictionary<number, GroupCreated> = new Dictionary<number, GroupCreated>();
@@ -97,8 +97,37 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     return this.dataReceived.asObservable();
   }
 
+  protected handleCoordinatesData(data: CoordinatesSocketData) {
+    const map = d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`);
+    const coordinates: Point = this.scaleCoordinates(data.coordinates.point),
+      deviceId: number = data.coordinates.tagShortId;
+    if (!this.isOnMap(deviceId)) {
+      const drawBuilder = new DrawBuilder(map, {id: `tag-${deviceId}`, clazz: 'tag'}, this.zoomService);
+      const tagOnMap = drawBuilder
+        .createGroup()
+        .addIcon({x: 0, y: 0}, this.iconService.getIcon(NaviIcons.TAG))
+        .addText({x: 0, y: 36}, `${deviceId}`)
+        .place({x: coordinates.x, y: coordinates.y});
+      this.tagsOnMap.setValue(deviceId, tagOnMap);
+    } else {
+      this.moveTagOnMap(data);
+    }
+    if (this.originListeningOnEvent.containsKey('coordinates')) {
+      this.originListeningOnEvent.getValue('coordinates').forEach((event: MessageEvent) => {
+        event.source.postMessage({type: 'coordinates', coordinates: data}, event.origin);
+      })
+    }
+  }
+
   protected whenTransitionEnded(): Observable<number> {
     return this.transitionEnded.asObservable();
+  }
+
+  protected scaleCoordinates(point: Point): Point {
+    return {
+      x: point.x / this.pixelsToCentimeters,
+      y: point.y / this.pixelsToCentimeters
+    };
   }
 
   private isCoordinatesData(data: MeasureSocketData): boolean {
@@ -121,36 +150,14 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     });
   }
 
-  protected handleCoordinatesData(data: CoordinatesSocketData) {
-    const map = d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`);
-    const coordinates: Point = this.scaleCoordinates(data.coordinates.point),
-      deviceId: number = data.coordinates.tagShortId;
-    if (!this.isOnMap(deviceId)) {
-      const drawBuilder = new DrawBuilder(map, {id: `tag-${deviceId}`, clazz: 'tag'}, this.zoomService);
-      const tagOnMap = drawBuilder
-        .createGroup()
-        .addIcon({x: 0, y: 0}, this.iconService.getIcon(NaviIcons.TAG))
-        .addText({x: 0, y: 36}, `${deviceId}`)
-        .place({x: coordinates.x, y: coordinates.y});
-      this.tagsOnMap.setValue(deviceId, tagOnMap);
-    } else {
-      this.moveTagOnMap(data);
-    }
-
-    if (this.originListeningOnEvent.containsKey('coordinates')) {
-      this.originListeningOnEvent.getValue('coordinates').forEach((event: MessageEvent) => {
-        event.source.postMessage({type: 'coordinates', coordinates: data}, event.origin);
-      })
-    }
-  }
-
   private moveTagOnMap(data: CoordinatesSocketData) {
     const tag = this.tagsOnMap.getValue(data.coordinates.tagShortId);
     if (tag.transitionEnded) {
+      const point: Point = this.scaleCoordinates(data.coordinates.point);
       tag.group
         .transition()
-        .attr('x', data.coordinates.point.x + 18)
-        .attr('y', data.coordinates.point.y + 18)
+        .attr('x', point.x + 18)
+        .attr('y', point.y + 18)
         .on('start', () => {
           tag.transitionEnded = false;
         })
@@ -182,13 +189,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       });
     });
   };
-
-  private scaleCoordinates(point: Point): Point {
-    return {
-      x: point.x / this.pixelsToCentimeters,
-      y: point.y / this.pixelsToCentimeters
-    };
-  }
 
   private drawAreas(floorId: number): void {
     const settings = new Map<string, string>();

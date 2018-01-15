@@ -19,7 +19,7 @@ import * as d3 from 'd3';
 })
 export class AnalyticsComponent extends SocketConnectorComponent implements OnInit {
   private pathSliderView: boolean = false;
-  private timeStepBuffer: Array<TimeStepBuffer> = [];
+  private timeStepBuffer: Map<number, TimeStepBuffer[]> = new Map();
   private mapId = 'map';
   private heatmap: HexagonHeatMap;
   // hexRadius set to tag icon size equal 20px x 20px square
@@ -69,20 +69,25 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     this.whenDataArrived().subscribe((data: CoordinatesSocketData) => {
       // update
       const timeOfDataStep: number = Date.now();
-      this.timeStepBuffer.push({data: data, timeOfDataStep: timeOfDataStep});
+      if (this.timeStepBuffer.has(data.coordinates.tagShortId)) {
+        this.timeStepBuffer.get(data.coordinates.tagShortId).push({data: data, timeOfDataStep: timeOfDataStep});
+      } else {
+        this.timeStepBuffer.set(data.coordinates.tagShortId, [{data: data, timeOfDataStep: timeOfDataStep}])
+      }
       this.handleCoordinatesData(data);
     });
 
     this.whenTransitionEnded().subscribe((tagShortId: number) => {
       // release to setHeatMap only those data that are in proper time step up to transition of the tag
       // from timeStepBuffer
+      const timeStepBuffer = this.timeStepBuffer.get(tagShortId);
       const timeWhenTransitionIsFinished: number = Date.now() - this.transitionDurationTimeStep;
-      for (let index = 0; index < this.timeStepBuffer.length; index ++) {
-        if (this.timeStepBuffer[index].timeOfDataStep < timeWhenTransitionIsFinished) {
+      for (let index = 0; index < timeStepBuffer.length; index ++) {
+        if (timeStepBuffer[index].timeOfDataStep < timeWhenTransitionIsFinished) {
           if (this.playingAnimation) {
-            this.heatUpHexes(this.timeStepBuffer[index].data)
+            this.heatUpHexes(timeStepBuffer[index].data);
           }
-          this.timeStepBuffer.splice(0, index);
+          timeStepBuffer.splice(0, index);
         }
       }
     });
@@ -100,12 +105,12 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
   toggleHeatAnimation(): void {
     this.playingAnimation = !this.playingAnimation;
     if (!this.playingAnimation) {
-      this.heatmap.eraseHitMap();
+      this.heatmap.eraseHeatMap();
     }
   }
 
   private heatUpHexes(data: CoordinatesSocketData): void {
-    this.heatmap.feedWithCoordinates(data.coordinates.point);
+    this.heatmap.feedWithCoordinates(this.scaleCoordinates(data.coordinates.point));
   }
 
   private createHexagonalHeatMapGrid (mapNode) {

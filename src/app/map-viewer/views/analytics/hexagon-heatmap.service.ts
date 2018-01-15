@@ -53,13 +53,14 @@ export class HexagonHeatMap {
       .style('fill-opacity', 0);
   }
 
-  eraseHitMap () {
+  eraseHeatMap () {
     this.hexGridTable.forEach((hex: HexHeatElement) => {
       const element = d3.select(hex.element);
       if (element.attr('heat') > 0) {
         element
           .transition()
-          .duration(1000)
+          .style('fill', this.heatColors[0])
+          .attr('stroke', this.heatColors[0])
           .style('stroke-opacity', 0)
           .style('fill-opacity', 0)
           .attr('heat', 0);
