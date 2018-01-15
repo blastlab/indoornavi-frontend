@@ -37,7 +37,7 @@ RUN wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x
     tar -jxf phantomjs-2.1.1-linux-x86_64.tar.bz2 && cp phantomjs-2.1.1-linux-x86_64/bin/phantomjs /usr/local/bin/phantomjs
 
 COPY requirements.txt /
-RUN pip install -r requirements.txt && pip install html-testRunner
+RUN pip install -r requirements.txt
 
 
 ENV APP_HOME /usr/src/app
