@@ -93,7 +93,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     });
   }
 
-  setPathLength (event) {
+  setPathLength (event): void {
     this.heatMapSettings.path = event;
     this.heatmap.coolingDown = this.heatMapSettings.path;
   }

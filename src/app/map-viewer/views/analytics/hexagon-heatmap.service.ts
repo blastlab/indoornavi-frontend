@@ -26,7 +26,7 @@ export class HexagonHeatMap {
     this.calculatePoints();
   }
 
-  create(id: string) {
+  create(id: string): void {
     const hexbin = d3Hexbin.hexbin().radius(this.hexSize);
 
     this.svg = d3.select(`#${id}`).append('svg')
@@ -53,7 +53,7 @@ export class HexagonHeatMap {
       .style('fill-opacity', 0);
   }
 
-  eraseHeatMap () {
+  eraseHeatMap (): void {
     this.hexGridTable.forEach((hex: HexHeatElement) => {
       const element = d3.select(hex.element);
       if (element.attr('heat') > 0) {
@@ -68,7 +68,7 @@ export class HexagonHeatMap {
     })
   }
 
-  feedWithCoordinates(data: Point) {
+  feedWithCoordinates(data: Point): void {
     this.fireHeatAtLocation(this.findHexIndex(data));
   }
 
@@ -80,7 +80,7 @@ export class HexagonHeatMap {
     this.coolingDownTime = value;
   }
 
-  private fireHeatAtLocation (hex: HexHeatElement) {
+  private fireHeatAtLocation (hex: HexHeatElement): void {
     if (!!hex) {
       const hexagon = d3.select(hex.element);
 
@@ -126,7 +126,7 @@ export class HexagonHeatMap {
     }
   }
 
-  private findHexIndex = coordinates => {
+  private findHexIndex (coordinates: Point): HexHeatElement {
     return this.hexGridTable.find(hex => hex.x > coordinates.x && hex.y > coordinates.y);
   };
 

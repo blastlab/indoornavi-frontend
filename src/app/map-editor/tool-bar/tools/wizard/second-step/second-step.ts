@@ -17,7 +17,7 @@ export class SecondStep implements WizardStep {
   constructor() {
   }
 
-  load(items: SelectItem[], message: any): SelectItem[] {
+  load (items: SelectItem[], message: any): SelectItem[] {
     if (SecondStep.isDistanceType(message)) {
       const anchorDistance: AnchorDistance = (<AnchorDistance>message);
       const item: SelectItem = {
@@ -36,14 +36,14 @@ export class SecondStep implements WizardStep {
     }
   }
 
-  getDrawingObjectParams(selectedItem: number) {
+  getDrawingObjectParams (selectedItem: number) {
     return {
       id: 'anchor' + selectedItem, iconName: NaviIcons.ANCHOR,
       groupClass: 'wizardAnchor', markerClass: 'anchorMarker', fill: 'green'
     };
   }
 
-  beforePlaceOnMap(selectedItem: number): void {
+  beforePlaceOnMap (selectedItem: number): void {
     const map = d3.select('#map');
     const boxMargin = 20 ;//todo: figure out what is it for, was DrawingService.boxSize / 2
     const sinkX = map.select('.wizardSink').attr('x');
@@ -61,19 +61,19 @@ export class SecondStep implements WizardStep {
       .style('fill', 'none');
   }
 
-  afterPlaceOnMap(): void {
+  afterPlaceOnMap (): void {
     d3.select('#map').select('#sinkDistance').remove();
   }
 
-  getBeforePlaceOnMapHint(): string {
+  getBeforePlaceOnMapHint (): string {
     return 'wizard.click.place.anchor';
   }
 
-  getAfterPlaceOnMapHint(): string {
+  getAfterPlaceOnMapHint (): string {
     return 'wizard.confirm.anchor';
   }
 
-  getPlaceholder(): string {
+  getPlaceholder (): string {
     return 'wizard.placeholder.selectAnchor';
   }
 
