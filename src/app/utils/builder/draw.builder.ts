@@ -122,6 +122,18 @@ export class GroupCreated {
     this.domGroup.select('rect.group-border-box').remove();
   }
 
+  strokeConnectingLineBold(): void {
+    if (this.domGroup.classed('connection')) {
+      this.domGroup.attr('stroke-width', '3');
+    }
+  }
+
+  strokeConnectingLineNormal(): void {
+    if (this.domGroup.classed('connection')) {
+      this.domGroup.attr('stroke-width', '1');
+    }
+  }
+
   changeColor(newColor) {
     const parentElement: SVGElement = this.domGroup.node();
     const childrenCount: number = parentElement.childElementCount;
@@ -139,6 +151,8 @@ export class GroupCreated {
       }
     }
   }
+
+
 
   resetColor() {
     this.changeColor(this.color);

@@ -5,72 +5,51 @@ import {Subject} from 'rxjs/Subject';
 
 export class Selectable {
   private selectedEmitter: Subject<d3.selection> = new Subject<d3.selection>();
-  private deselectedEmitter: Subject<d3.selection> = new Subject<d3.selection>();
-  private lockHovering: boolean;
+  private lockedSelecting: boolean;
 
 
   constructor(protected group: GroupCreated) {
   }
 
-  private emitSelectedEvent() {
+  private emitSelectedEvent(): void {
     this.selectedEmitter.next(this.group.domGroup);
-  }
-
-  private emitDeselectedEvent() {
-    this.deselectedEmitter.next(this.group.domGroup);
   }
 
   public onSelected(): Observable<d3.selection> {
     return this.selectedEmitter.asObservable();
   }
 
-  public onDeselected(): Observable<d3.selection> {
-    return this.deselectedEmitter.asObservable();
-  }
-
-  public select() {
+  public select(): void {
     this.emitSelectedEvent();
   }
 
-  public deselect() {
-    this.emitDeselectedEvent();
-  }
-
-  public handleHovering() {
-    this.lockHovering = false;
+  public handleHovering(): void {
+    this.lockedSelecting = false;
     const onMouseEnterListener = this.group.domGroup.on('mouseenter');
     const onMouseLeaveListener = this.group.domGroup.on('mouseleave');
     if (onMouseEnterListener === undefined) {
       this.group.domGroup.on('mouseenter', () => {
-        if (!this.lockHovering) {
-          this.group.changeColor('red');
-        }
+        this.colorSet();
       });
     } else {
         this.group.domGroup.on('mouseenter', () => {
-          if (!this.lockHovering) {
-            this.group.changeColor('red');
-          }
+          this.colorSet();
           onMouseEnterListener();
         });
     }
     if (onMouseLeaveListener === undefined) {
         this.group.domGroup.on('mouseleave', () => {
-          if (!this.lockHovering) {
-            this.group.resetColor();
-          }
+          this.colorReset();
         });
     } else {
         this.group.domGroup.on('mouseleave', () => {
-          if (!this.lockHovering) {
-            this.group.resetColor();
-          }
+          this.colorReset();
           onMouseLeaveListener();
         });
     }
   }
 
-  public selectOn() {
+  public selectOn(): void {
     this.group.domGroup.on('click.select', () => {
       this.select();
       event.stopPropagation();
@@ -78,9 +57,24 @@ export class Selectable {
     this.handleHovering();
   }
 
-  public selectOff() {
+  public selectOff(): void {
     this.group.domGroup.on('click.select', null);
-    this.lockHovering = true;
-    console.log(this.group.domGroup);
+    this.lockedSelecting = true;
   }
+
+  private colorSet(color?: string): void {
+    const setColor = (color) ? color : 'red';
+    if (!this.lockedSelecting) {
+      this.group.changeColor(setColor);
+      this.group.strokeConnectingLineBold();
+    }
+  }
+
+  private colorReset(): void {
+    if (!this.lockedSelecting) {
+      this.group.resetColor();
+      this.group.strokeConnectingLineNormal();
+    }
+  }
+
 }

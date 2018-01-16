@@ -38,11 +38,11 @@ export class ConnectingLine extends Selectable {
     }
   }
 
-  public lock (): void {
+  public lock(): void {
     this.lockVisibility = true;
   }
 
-  public unlock (): void {
+  public unlock(): void {
     this.lockVisibility = false;
   }
 
@@ -53,7 +53,7 @@ export class ConnectingLine extends Selectable {
       .attr('y1', this.sink.domGroup.attr('y'))
       .attr('x2', this.anchor.domGroup.attr('x'))
       .attr('y2', this.anchor.domGroup.attr('y'))
-      .attr('pointer-events', 'none')
+      .attr('stroke-linecap', 'round')
       .attr('stroke', 'none');
   }
 
