@@ -168,7 +168,7 @@ class TestComplexesPage(unittest.TestCase):
         self.assertFalse(self.complexes_page.is_edit_modal_displayed())
 
     # TC[014]
-    def test_redirect_complex_to_buildings_page(self):
+    def _test_redirect_complex_to_buildings_page(self):
         # Click last complex redirect click
         self.complexes_page.redirect_button_click()
         # header = self.complexes_page.buildings_table_header
