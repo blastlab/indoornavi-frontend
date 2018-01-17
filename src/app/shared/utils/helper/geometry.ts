@@ -44,4 +44,15 @@ export class Geometry {
     return ((degree < 0) ? 360 + degree : degree);
   }
 
+  static calculateDistanceInPixels(scaleLengthInPixels: number, scaleInCentimeters: number, realDistance: number): number {
+    return scaleLengthInPixels / scaleInCentimeters * realDistance;
+  }
+
+  static calculatePointPositionInPixels(scaleLengthInPixels: number, scaleInCentimeters: number, point: Point): Point {
+    return {
+      x: Geometry.calculateDistanceInPixels(scaleLengthInPixels, scaleInCentimeters, point.x),
+      y: Geometry.calculateDistanceInPixels(scaleLengthInPixels, scaleInCentimeters, point.y)
+    };
+  }
+
 }

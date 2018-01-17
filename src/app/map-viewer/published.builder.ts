@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import {Point} from '../map-editor/map.type';
 import {DrawConfiguration} from './published.type';
-import {ZoomService} from '../map-editor/zoom.service';
+import {ZoomService} from '../shared/services/zoom/zoom.service';
 
 export class GroupCreated {
   group: d3.selection;
@@ -86,7 +86,6 @@ export class GroupCreated {
       // offsetFromBorder[0] gives left and upper border offset,
       // and offsetFromBorder[1] gives right and bottom border offset,
       // sign is giving a direction of the offset
-      // todo: set offset form icon values of width and height or other if suggested
       const offsetFromBorder = [{x : 0, y: 0}, {x: -25, y: -25}];
       const eventPosition: Point = this.zoomService.calculateInMapEditorRangeEvent({x: mousePosition.x, y: mousePosition.y}, offsetFromBorder);
       this.group.attr('x', eventPosition.x).attr('y', eventPosition.y);
@@ -130,7 +129,6 @@ export class DrawBuilder {
       .attr('x', 0)
       .attr('y', 0)
       .classed('pointer', true)
-      // todo: discus proper cursor for moving device around the map
       .on('mousedown', () => {
         d3.select(`#${this.configuration.id}`).style('cursor', 'pointer')
       })

@@ -22,7 +22,12 @@ import {AcceptButtonsService} from '../../../../shared/components/accept-buttons
 import {DrawBuilder} from '../../../../map-viewer/published.builder';
 import {IconService, NaviIcons} from '../../../../shared/services/drawing/icon.service';
 import {MapViewerService} from '../../../map.editor.service';
-import {ZoomService} from '../../../zoom.service';
+import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
+import {Device} from '../../../../device/device.type';
+import {ScaleService} from '../../../../shared/services/scale/scale.service';
+import {Scale} from '../scale/scale.type';
+import {Geometry} from '../../../../shared/utils/helper/geometry';
+
 
 @Component({
   selector: 'app-wizard',
@@ -38,6 +43,7 @@ export class WizardComponent implements Tool, OnInit {
   isLoading: boolean = true;
   displayError: boolean;
   active: boolean = false;
+  private scale: Scale;
 
   private steps: WizardStep[];
   private activeStep: WizardStep;
@@ -56,7 +62,8 @@ export class WizardComponent implements Tool, OnInit {
               private hintBarService: HintBarService,
               private actionBarService: ActionBarService,
               private iconService: IconService,
-              private zoomService: ZoomService
+              private zoomService: ZoomService,
+              private scaleService: ScaleService
               ) {
   }
 
@@ -67,9 +74,12 @@ export class WizardComponent implements Tool, OnInit {
     this.toolbarService.onToolChanged().subscribe((tool: Tool) => {
       !!tool ? this.wizardActivationButtonActive = false : this.wizardActivationButtonActive = true;
     });
+    this.scaleService.scaleChanged.subscribe((scale: Scale) => {
+      this.scale = new Scale(scale);
+    });
   }
 
-  nextStep() {
+  nextStep(): void {
     if (!this.activeStep) { // init wizard
       this.toolbarService.emitToolChanged(this);
       this.activeStep = this.steps[this.currentIndex];
@@ -93,7 +103,7 @@ export class WizardComponent implements Tool, OnInit {
     this.displayDialog = true;
   }
 
-  previousStep() {
+  previousStep(): void {
     if (this.currentIndex === 0) { // current step if first so we close wizard
       this.activeStep = null;
       this.displayDialog = false;
@@ -188,18 +198,34 @@ export class WizardComponent implements Tool, OnInit {
       });
   }
 
-  private openSocket() {
+  private openSocket(): void {
     this.ngZone.runOutsideAngular(() => {
       const stream = this.socketService.connect(Config.WEB_SOCKET_URL + 'wizard');
       this.socketSubscription = stream.subscribe((message: any) => {
+        const scaleLengthInPixels = Geometry.getDistanceBetweenTwoPoints(this.scale.startPoint, this.scale.stopPoint);
+        const scaleInCentimeters = this.scale.getRealDistanceInCentimeters();
         this.ngZone.run(() => {
+          if (Object.keys(message).indexOf('distance') > 0) {
+            message.distance = Geometry.calculateDistanceInPixels(scaleLengthInPixels, scaleInCentimeters, message.distance);
+          } else if (Array.isArray(message)) {
+            message.forEach((item) => {
+              if (Object.keys(item).indexOf('anchors') > 0) {
+                item.anchors.forEach((anchor: Device) => {
+                  let point: Point = {x: anchor.x, y: anchor.y};
+                  point = Geometry.calculatePointPositionInPixels(scaleLengthInPixels, scaleInCentimeters, point);
+                  anchor.x = point.x;
+                  anchor.y = point.y;
+                });
+              }
+            });
+          }
           this.options = this.activeStep.load(this.options, message);
         });
       });
     });
   }
 
-  private closeSocket() {
+  private closeSocket(): void {
     if (!!this.socketSubscription) {
       this.socketSubscription.unsubscribe();
     }

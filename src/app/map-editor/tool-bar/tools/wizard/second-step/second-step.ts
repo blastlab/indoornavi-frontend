@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import {AnchorDistance} from '../../../../../device/anchor.type';
 import {Point} from '../../../../map.type';
 import {SelectItem} from 'primeng/primeng';
-import {WizardData, WizardStep, SecondStepMessage, Step} from '../wizard.type';
+import {WizardData, WizardStep, SecondStepMessage, Step, ObjectParams} from '../wizard.type';
 import {NaviIcons} from 'app/shared/services/drawing/icon.service';
 import {Geometry} from '../../../../../shared/utils/helper/geometry';
 
@@ -18,6 +18,7 @@ export class SecondStep implements WizardStep {
   }
 
   load(items: SelectItem[], message: any): SelectItem[] {
+    console.log(items, message);
     if (SecondStep.isDistanceType(message)) {
       const anchorDistance: AnchorDistance = (<AnchorDistance>message);
       const item: SelectItem = {
@@ -30,13 +31,14 @@ export class SecondStep implements WizardStep {
         this.distances.push(anchorDistance);
         items.push(item);
       }
+      console.log(items);
       return [...items];
     } else {
       return items;
     }
   }
 
-  getDrawingObjectParams(selectedItem: number) {
+  getDrawingObjectParams(selectedItem: number): ObjectParams {
     return {
       id: 'anchor' + selectedItem, iconName: NaviIcons.ANCHOR,
       groupClass: 'wizardAnchor', markerClass: 'anchorMarker', fill: 'green'
@@ -45,7 +47,7 @@ export class SecondStep implements WizardStep {
 
   beforePlaceOnMap(selectedItem: number): void {
     const map = d3.select('#map');
-    const boxMargin = 20 ;//todo: figure out what is it for, was DrawingService.boxSize / 2
+    const boxMargin = 20 ;
     const sinkX = map.select('.wizardSink').attr('x');
     const sinkY = map.select('.wizardSink').attr('y');
     map.append('circle')
@@ -53,6 +55,7 @@ export class SecondStep implements WizardStep {
       .attr('cx', parseInt(sinkX, 10) + boxMargin)
       .attr('cy', parseInt(sinkY, 10) + boxMargin)
       .attr('r', this.distances.find((distance: AnchorDistance) => {
+        console.log(distance);
         return distance.anchorId === selectedItem;
       }).distance)
       .style('stroke', 'green')
@@ -81,7 +84,7 @@ export class SecondStep implements WizardStep {
     return 'wizard.title.step2';
   }
 
-  setSelectedItemId(id: number) {
+  setSelectedItemId(id: number): void {
     this.selectedItemId = id;
   }
 
@@ -96,7 +99,7 @@ export class SecondStep implements WizardStep {
     };
   }
 
-  updateWizardData(data: WizardData, id: number, coordinates: Point) {
+  updateWizardData(data: WizardData, id: number, coordinates: Point): void {
     data.firstAnchorShortId = id;
     data.firstAnchorPosition = coordinates;
     data.degree = Geometry.calculateDegree(data.sinkPosition, coordinates);

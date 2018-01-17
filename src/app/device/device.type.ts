@@ -6,6 +6,7 @@ export class Device {
   verified: boolean;
   x?: number;
   y?: number;
+  floorId?: number;
 
   constructor(shortId: number, longId: number, verified: boolean, id?: number, name?: string, x?: number, y?: number) {
     this.id = id;

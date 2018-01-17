@@ -11,7 +11,6 @@ import {PublishedService} from '../published.service';
 import {MapViewerService} from '../../map-editor/map.editor.service';
 import {AreaService} from '../../shared/services/area/area.service';
 import {IconService, NaviIcons} from '../../shared/services/drawing/icon.service';
-import {getRealDistanceInCentimeters} from 'app/map-editor/tool-bar/tools/scale/scale.type';
 import {Geometry} from 'app/shared/utils/helper/geometry';
 import {Observable} from 'rxjs/Observable';
 import {Tag} from 'app/device/tag.type';
@@ -20,8 +19,9 @@ import {DrawBuilder} from '../published.builder';
 import {TranslateService} from '@ngx-translate/core';
 import {Area} from 'app/shared/services/area/area.type';
 import {Config} from '../../../config';
-import {ZoomService} from '../../map-editor/zoom.service';
+import {ZoomService} from '../../shared/services/zoom/zoom.service';
 import {MapLoaderInformerService} from '../../shared/services/map-loader-informer/map-loader-informer.service';
+import {Scale} from '../../map-editor/tool-bar/tools/scale/scale.type';
 
 @Component({
   templateUrl: './socket-connector.component.html',
@@ -38,6 +38,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   private tagsOnMap: Dictionary<number, GroupCreated> = new Dictionary<number, GroupCreated>();
   private areasOnMap: Dictionary<number, GroupCreated> = new Dictionary<number, GroupCreated>();
   private originListeningOnEvent: Dictionary<string, MessageEvent[]> = new Dictionary<string, MessageEvent[]>();
+  private scale: Scale;
 
   constructor(protected ngZone: NgZone,
               protected socketService: SocketService,
@@ -59,11 +60,12 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         this.activeMap = map;
         if (this.activeMap.floor.imageId != null) {
           this.mapLoaderInformer.loadCompleted().subscribe((d3map: d3.selection) => {
+            this.scale = new Scale(map.floor.scale);
             this.d3map = d3map;
             this.drawAreas(map.floor.id);
-            const realDistanceInCentimeters = getRealDistanceInCentimeters(this.activeMap.floor.scale);
-            const pixels = Geometry.getDistanceBetweenTwoPoints(map.floor.scale.start, map.floor.scale.stop);
-            this.pixelsToCentimeters = realDistanceInCentimeters / pixels;
+            const realDistanceInCentimeters = this.scale.getRealDistanceInCentimeters();
+            const scaleLengthInPixels = Geometry.getDistanceBetweenTwoPoints(map.floor.scale.start, map.floor.scale.stop);
+            this.pixelsToCentimeters = realDistanceInCentimeters / scaleLengthInPixels;
             this.initializeSocketConnection();
           });
         }

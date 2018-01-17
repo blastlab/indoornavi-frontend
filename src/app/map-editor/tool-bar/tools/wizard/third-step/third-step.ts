@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import {AnchorSuggestedPositions} from '../../../../../device/anchor.type';
 import {Point} from '../../../../map.type';
-import {SocketMessage, Step, WizardData, WizardStep} from '../wizard.type';
+import {ObjectParams, SocketMessage, Step, WizardData, WizardStep} from '../wizard.type';
 import {SelectItem} from 'primeng/primeng';
 import {NaviIcons} from '../../../../../shared/services/drawing/icon.service';
 
@@ -35,14 +35,14 @@ export class ThirdStep implements WizardStep {
     }
   }
 
-  getDrawingObjectParams(selectedItem: number) {
+  getDrawingObjectParams(selectedItem: number): ObjectParams {
     return {
       id: 'anchor' + selectedItem, iconName: NaviIcons.ANCHOR,
       groupClass: 'wizardAnchor', markerClass: 'anchorMarker', fill: 'green'
     };
   }
 
-  setSelectedItemId(id: number) {
+  setSelectedItemId(id: number): void {
     this.selectedItemId = id;
   }
 
@@ -86,7 +86,7 @@ export class ThirdStep implements WizardStep {
     };
   }
 
-  updateWizardData(data: WizardData, id: number, coordinates: Point) {
+  updateWizardData(data: WizardData, id: number, coordinates: Point): void {
     data.secondAnchorShortId = id;
     data.secondAnchorPosition = coordinates;
   }

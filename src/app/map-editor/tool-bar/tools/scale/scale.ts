@@ -12,12 +12,12 @@ import {Subscription} from 'rxjs/Subscription';
 import {Geometry} from '../../../../shared/utils/helper/geometry';
 import {ActionBarService} from '../../../action-bar/actionbar.service';
 import {Configuration} from '../../../action-bar/actionbar.type';
-import {ScaleService} from './scale.service';
+import {ScaleService} from '../../../../shared/services/scale/scale.service';
 import {Helper} from '../../../../shared/utils/helper/helper';
 import {ToolbarService} from '../../toolbar.service';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
 import {MapViewerService} from '../../../map.editor.service';
-import {ZoomService} from '../../../zoom.service';
+import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
 
 @Component({
   selector: 'app-scale',
@@ -52,8 +52,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
               private toolbarService: ToolbarService,
               private actionBarService: ActionBarService,
               private scaleService: ScaleService,
-              private zoomService: ZoomService,
-              private mapViewerService: MapViewerService
+              private zoomService: ZoomService
               ) {
     this.setTranslations();
   }
@@ -148,11 +147,11 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     return this.hintMessage;
   }
 
-  public getToolName(): ToolName {
+  getToolName(): ToolName {
     return ToolName.SCALE;
   }
 
-  public setActive(): void {
+  setActive(): void {
     this.active = true;
     this.startCreatingScale();
     this.translate.get('scale.basic.msg').subscribe((value: string) => {
@@ -160,7 +159,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     });
   }
 
-  public setInactive(): void {
+  setInactive(): void {
     this.hideScale();
     this.active = false;
     this.translate.get('hint.chooseTool').subscribe((value: string) => {
@@ -168,7 +167,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     });
   }
 
-  public onClick(): void {
+  onClick(): void {
     this.toolbarService.emitToolChanged(this);
     this.isScaleSet ? this.scaleBackup = Helper.deepCopy(this.scale) : this.scaleBackup = null;
   }
