@@ -9,5 +9,5 @@ from tests.constructions.test_complexes_page import TestComplexesPage
 
 if __name__ == '__main__':
 
-    # unittest.main()
-    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(output=''))
+    runner = HtmlTestRunner.HTMLTestRunner(output='')
+    unittest.main(testRunner=runner)

@@ -40,7 +40,7 @@ class TestComplexesPage(unittest.TestCase):
     #
     # TC[001]
     def test_add_new_complex_correctly(self):
-
+        """Test adding new complex correctly"""
         self.complexes_page.add_button_click()
         # TODO Zmienic tytul modala -  Add complex / Add new complex
         # self.assertTrue(self.complexes_page.check_add_modal_title())
@@ -64,6 +64,7 @@ class TestComplexesPage(unittest.TestCase):
 
     # TC[002]
     def test_add_new_complex_negative_empty_input_and_cancel_click(self):
+        """Test adding new complex with empty input"""
         # 1.Check adding with empty input
         self.complexes_page.add_button_click()
         self.complexes_page.save_add_new_complex()
@@ -85,6 +86,7 @@ class TestComplexesPage(unittest.TestCase):
 
     # TC[005]
     def test_delete_complex_correctly(self):
+        """Test deleting complex when input is empty"""
         # Click last complex remove button
         self.complexes_page.remove_button_click()
         # Check that the confirm window present
@@ -109,6 +111,7 @@ class TestComplexesPage(unittest.TestCase):
 
     # TC[006]
     def test_delete_complex_cancel(self):
+        """Test canceling delete complex """
         # Click last complex remove button
         self.complexes_page.remove_button_click()
         # Check that the confirm window present
@@ -128,6 +131,7 @@ class TestComplexesPage(unittest.TestCase):
 
     # TC[008]
     def test_edit_complex_correctly(self):
+        """Test editing complex correctly"""
         self.complexes_page.edit_button_click()
         # TODO Zmienic tytul modala -  Edit complex
         # self.assertTrue(self.complexes_page.check_add_modal_title())
@@ -146,6 +150,7 @@ class TestComplexesPage(unittest.TestCase):
 
     # TC[009] TODO dokonczyc test
     def test_edit_complex_negative_empty_input(self):
+        """Test editing complex when input is empty"""
         self.complexes_page.edit_button_click()
         self.complexes_page.clear_edit_input()
         self.complexes_page.save_edit_complex_click()
@@ -157,12 +162,12 @@ class TestComplexesPage(unittest.TestCase):
 
     # TC[013]
     def test_edit_complex_cancel(self):
+        """Test canceling edit complex"""
         # Click last complex edit button
         self.complexes_page.edit_button_click()
         # TODO Zmienic tytul modala -  Edit complex
         # self.assertTrue(self.complexes_page.check_add_modal_title())
-        # Check that save / cancel button present
-        self.assertTrue(self.complexes_page.is_save_button_present())
+        # Check that save / cancel button present        self.assertTrue(self.complexes_page.is_save_button_present())
         self.assertTrue(self.complexes_page.is_cancel_button_present())
         self.complexes_page.cancel_button_click()
         self.assertFalse(self.complexes_page.is_edit_modal_displayed())
