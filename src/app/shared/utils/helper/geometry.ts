@@ -48,6 +48,10 @@ export class Geometry {
     return scaleLengthInPixels / scaleInCentimeters * realDistance;
   }
 
+  static calculateDistanceInCentimeters(scaleLengthInPixels: number, scaleInCentimeters: number, pixelDistance: number): number {
+    return scaleInCentimeters / scaleLengthInPixels * pixelDistance;
+  }
+
   static calculatePointPositionInPixels(scaleLengthInPixels: number, scaleInCentimeters: number, point: Point): Point {
     return {
       x: Geometry.calculateDistanceInPixels(scaleLengthInPixels, scaleInCentimeters, point.x),

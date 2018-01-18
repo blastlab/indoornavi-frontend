@@ -18,21 +18,4 @@ export class ScaleService {
     this.scaleChangedEmitter.next(scale);
   }
 
-  // calculateMapDistance (realDistance: number): number {
-  //   const onMapDistance = this.scaleLengthInPixels / this.scale.realDistance * realDistance;
-  //   return this.scale.measure.toString() === Measure[Measure.CENTIMETERS] ?  onMapDistance : onMapDistance / 100;
-  // }
-  //
-  // calculateRealDistance (distanceInPixels: number): number {
-  //   const realDistance = this.scale.realDistance / this.scaleLengthInPixels * distanceInPixels;
-  //   return this.scale.measure.toString() === Measure[Measure.CENTIMETERS] ? realDistance : realDistance * 100;
-  // }
-  //
-  // calculateMapPoint (point: Point): Point {
-  //   return {x: this.calculateMapDistance(point.x), y: this.calculateMapDistance(point.y)};
-  // }
-  //
-  // calculateRealPoint(point: Point): Point {
-  //   return {x: this.calculateRealDistance(point.x), y: this.calculateRealDistance(point.y)};
-  // }
 }

@@ -18,7 +18,6 @@ export class SecondStep implements WizardStep {
   }
 
   load(items: SelectItem[], message: any): SelectItem[] {
-    console.log(items, message);
     if (SecondStep.isDistanceType(message)) {
       const anchorDistance: AnchorDistance = (<AnchorDistance>message);
       const item: SelectItem = {
@@ -31,7 +30,6 @@ export class SecondStep implements WizardStep {
         this.distances.push(anchorDistance);
         items.push(item);
       }
-      console.log(items);
       return [...items];
     } else {
       return items;
@@ -55,7 +53,6 @@ export class SecondStep implements WizardStep {
       .attr('cx', parseInt(sinkX, 10) + boxMargin)
       .attr('cy', parseInt(sinkY, 10) + boxMargin)
       .attr('r', this.distances.find((distance: AnchorDistance) => {
-        console.log(distance);
         return distance.anchorId === selectedItem;
       }).distance)
       .style('stroke', 'green')
