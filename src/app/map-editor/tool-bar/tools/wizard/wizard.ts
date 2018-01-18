@@ -27,7 +27,6 @@ import {Device} from '../../../../device/device.type';
 import {ScaleService} from '../../../../shared/services/scale/scale.service';
 import {Scale} from '../scale/scale.type';
 import {Geometry} from '../../../../shared/utils/helper/geometry';
-import {Configuration} from '../../../action-bar/actionbar.type';
 
 
 @Component({
@@ -44,6 +43,7 @@ export class WizardComponent implements Tool, OnInit {
   isLoading: boolean = true;
   displayError: boolean;
   active: boolean = false;
+  disabled: boolean = true;
   private scale: Scale;
 
   private steps: WizardStep[];
@@ -53,7 +53,6 @@ export class WizardComponent implements Tool, OnInit {
   private socketSubscription: Subscription;
   private wizardData: WizardData = new WizardData();
   private hintMessage: string;
-  private wizardActivationButtonActive: boolean = false;
 
   constructor(public translate: TranslateService,
               private ngZone: NgZone,
@@ -72,14 +71,8 @@ export class WizardComponent implements Tool, OnInit {
     this.setTranslations();
     this.steps = [new FirstStep(this.floor.id), new SecondStep(), new ThirdStep()];
     this.checkIsLoading();
-    this.toolbarService.onToolChanged().subscribe((tool: Tool) => {
-      !!tool ? this.wizardActivationButtonActive = false : this.wizardActivationButtonActive = true;
-    });
     this.scaleService.scaleChanged.subscribe((scale: Scale) => {
       this.scale = new Scale(scale);
-    });
-    this.actionBarService.configurationLoaded().subscribe((configuration: Configuration) => {
-      !!configuration.data.scale ? this.wizardActivationButtonActive = true : this.wizardActivationButtonActive = false;
     });
   }
 
@@ -156,7 +149,6 @@ export class WizardComponent implements Tool, OnInit {
       map.on('click', null);
       map.style('cursor', 'default');
       this.showAcceptButtons();
-      console.log({x: this.coordinates.x, y: this.coordinates.y});
     });
   }
 
@@ -167,6 +159,10 @@ export class WizardComponent implements Tool, OnInit {
   setInactive(): void {
     this.active = false;
     this.closeSocket();
+  }
+
+  setDisabled(value: boolean): void {
+    this.disabled = value;
   }
 
   getHintMessage(): string {

@@ -27,9 +27,10 @@ import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
 export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private static SCALE_GROUP_SELECTOR_ID = 'scaleGroup';
 
-  public active: boolean = false;
-  public isScaleDisplayed: boolean = false;
-  public isScaleSet: boolean = false;
+  active: boolean = false;
+  isScaleDisplayed: boolean = false;
+  disabled: boolean = false;
+  isScaleSet: boolean = false;
   private isFirstPointDrawn: boolean = false;
   private END_SIZE: number = 5;
   private mapLoadedSubscription: Subscription;
@@ -42,7 +43,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private hintMessage: string;
   private pointsArray: Point[] = [];
   private linesArray: Line[] = [];
-  private scaleActivationButtonActive: boolean = true;
 
   constructor(private translate: TranslateService,
               private scaleInputService: ScaleInputService,
@@ -128,9 +128,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.scaleInputService.onVisibilityChange().subscribe(() => {
       this.toolbarService.emitToolChanged(null);
     });
-    this.toolbarService.onToolChanged().subscribe((tool: Tool) => {
-      !!tool ? this.scaleActivationButtonActive = false : this.scaleActivationButtonActive = true;
-    });
     this.scaleInputService.rejected.subscribe(() => {
       if (this.scaleBackup) {
         this.scale = Helper.deepCopy(this.scaleBackup);
@@ -165,6 +162,10 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.translate.get('hint.chooseTool').subscribe((value: string) => {
       this.hintBarService.emitHintMessage(value);
     });
+  }
+
+  setDisabled(value: boolean): void {
+    this.disabled = value;
   }
 
   onClick(): void {
