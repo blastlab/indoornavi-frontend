@@ -19,22 +19,21 @@ class BasePage(object):
         db = mysql.connector.connect(user='root', password='', host='127.0.0.1', database='Navi')
         cursor = db.cursor()
         cursor.execute(query)
-        last_complex_name = '';
+        last_construction_name = '';
         for (name) in cursor:
-            last_complex_name = name[0]
-        print(last_complex_name)
+            last_construction_name = name[0]
         cursor.close()
         db.close()
-        return last_complex_name
+        return last_construction_name
 
     # Truncate db
-
     def truncate_db(self):
 
         db = mysql.connector.connect(user='root', password='', host='127.0.0.1', database='Navi')
         cursor = db.cursor()
         cursor.execute('SET FOREIGN_KEY_CHECKS=0;')
-        cursor.execute('TRUNCATE complex')
+        cursor.execute('TRUNCATE TABLE complex')
+        cursor.execute('TRUNCATE TABLE building')
         cursor.execute('SET FOREIGN_KEY_CHECKS=1;')
         cursor.close()
         db.close()
@@ -129,8 +128,5 @@ class BasePage(object):
             print(row_text)
         last_element = rows[0]
         return last_element
-
-    def sleep_app(self, integer):
-        return time.sleep(integer)
 
 
