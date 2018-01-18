@@ -39,7 +39,7 @@ class TestComplexesPage(unittest.TestCase):
     #     self.assertTrue(self.multi_assertion())
     #
     # TC[001]
-    def test_add_new_complex_correctly(self):
+    def _test_add_new_complex_correctly(self):
         """Test adding new complex correctly"""
         self.complexes_page.add_button_click()
         # TODO Zmienic tytul modala -  Add complex / Add new complex
@@ -85,8 +85,8 @@ class TestComplexesPage(unittest.TestCase):
     # def test_add_complex_with_negative_minmax_charaters(self):
 
     # TC[005]
-    def test_delete_complex_correctly(self):
-        """Test deleting complex when input is empty"""
+    def _test_delete_complex_correctly(self):
+        """Test deleting complex correctly"""
         # Click last complex remove button
         self.complexes_page.remove_button_click()
         # Check that the confirm window present
