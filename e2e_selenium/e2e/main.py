@@ -10,4 +10,3 @@ from tests.constructions.test_buildings_page import TestBuildingsPage
 if __name__ == '__main__':
 
     unittest.main()
-    # unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(output=''))

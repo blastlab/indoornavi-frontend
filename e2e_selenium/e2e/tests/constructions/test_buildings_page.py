@@ -1,7 +1,6 @@
 import unittest
 from selenium import webdriver
 from tests.test_driver import TestDriver
-from locators.locators import BaseLocators
 from pages.constructions.construction_page import ConstructionPage
 from pages.base_page import BasePage
 from pages.constructions.buildings_page import BuildingsPage
