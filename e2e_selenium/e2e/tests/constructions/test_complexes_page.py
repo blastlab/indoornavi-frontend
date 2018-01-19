@@ -19,7 +19,7 @@ class TestComplexesPage(unittest.TestCase):
         cls.construction_page = ConstructionPage(cls.webdriver, 'complex')
         cls.option = 1
         # login before each test case
-        cls.base_page.truncate_db()
+        cls.base_page.truncate_db('complex')
         cls.construction_page.create_construction_db_env()
         cls.page.login_process(cls.option)
 

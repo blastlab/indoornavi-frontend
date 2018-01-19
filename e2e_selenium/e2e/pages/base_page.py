@@ -27,13 +27,12 @@ class BasePage(object):
         return last_construction_name
 
     # Truncate db
-    def truncate_db(self):
+    def truncate_db(self, module_query):
 
         db = mysql.connector.connect(user='root', password='', host=Config.db_hostname, database='Navi')
         cursor = db.cursor()
         cursor.execute('SET FOREIGN_KEY_CHECKS=0;')
-        cursor.execute('TRUNCATE TABLE complex')
-        cursor.execute('TRUNCATE TABLE building')
+        cursor.execute("TRUNCATE TABLE " + module_query)
         cursor.execute('SET FOREIGN_KEY_CHECKS=1;')
         cursor.close()
         db.close()
