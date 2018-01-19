@@ -16,7 +16,7 @@ class BasePage(object):
     # Select from db
     def if_exist_in_db(self, query):
 
-        db = mysql.connector.connect(user='root', password='', host='127.0.0.1', database='Navi')
+        db = mysql.connector.connect(user='root', password='', host=Config.db_hostname, database='Navi')
         cursor = db.cursor()
         cursor.execute(query)
         last_construction_name = '';
@@ -29,7 +29,7 @@ class BasePage(object):
     # Truncate db
     def truncate_db(self):
 
-        db = mysql.connector.connect(user='root', password='', host='127.0.0.1', database='Navi')
+        db = mysql.connector.connect(user='root', password='', host=Config.db_hostname, database='Navi')
         cursor = db.cursor()
         cursor.execute('SET FOREIGN_KEY_CHECKS=0;')
         cursor.execute('TRUNCATE TABLE complex')

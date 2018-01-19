@@ -21,6 +21,7 @@ class TestLoginPage(unittest.TestCase):
 
     # TC001
     def test_login_valid_credentials(self):
+        """Test login with valid credentials"""
         self.__init_test_method()
 
         # [TS003].Clear form, fill with correct data and submit
@@ -28,6 +29,7 @@ class TestLoginPage(unittest.TestCase):
 
     # TC002 (invalid password) & TC003 (invalid username)
     def test_login_invalid_credentials(self):
+        """Test login with invalid credentials"""
         for option in range(2, 4):
             self.__init_test_method()
             self.assertTrue(self.page.login_process(option))

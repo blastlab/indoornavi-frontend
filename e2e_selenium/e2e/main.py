@@ -1,4 +1,5 @@
 import unittest
+import xmlrunner
 import HtmlTestRunner
 import os
 import sys
