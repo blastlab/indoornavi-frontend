@@ -72,7 +72,7 @@ export class WizardComponent implements Tool, OnInit {
     this.steps = [new FirstStep(this.floor.id), new SecondStep(), new ThirdStep()];
     this.checkIsLoading();
     this.scaleService.scaleChanged.subscribe((scale: Scale) => {
-      this.scale = new Scale(scale);
+      this.scale = new Scale(scale.start, scale.stop, scale.realDistance, scale.measure);
     });
   }
 
@@ -200,12 +200,10 @@ export class WizardComponent implements Tool, OnInit {
       this.activeStep.setSelectedItemId(this.selected);
       this.activeStep.clean();
     }
-    if (this.steps.length > 1) {
-      this.steps.forEach((step: WizardStep) => {
-        this.activeStep = step;
-        this.activeStep.clean();
-      });
-    }
+    this.steps.forEach((step: WizardStep) => {
+      this.activeStep = step;
+      this.activeStep.clean();
+    });
     this.activeStep = null;
     this.displayDialog = false;
     this.selected = undefined;
@@ -232,7 +230,6 @@ export class WizardComponent implements Tool, OnInit {
           this.removeGroupDrag();
           this.nextStep();
         } else {
-          console.log(this.activeStep);
           this.activeStep.clean();
           this.displayDialog = true;
         }

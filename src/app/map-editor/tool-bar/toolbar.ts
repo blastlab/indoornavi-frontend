@@ -31,15 +31,19 @@ export class ToolbarComponent implements OnInit, OnDestroy {
         this.toggleDisable(false);
       }
     });
-    this. configurationChanged = this.actionBarService.configurationChanged().subscribe(() => {
-      this.scaleSet = true;
+    this. configurationChanged = this.actionBarService.configurationChanged().subscribe((configuration: Configuration) => {
+      if (!!configuration.data.scale) {
+        this.scaleSet = true;
+      }
     });
     this.toolChangedSubscription = this.toolbarService.onToolChanged().subscribe((tool: Tool) => {
       const activate: boolean = (tool && this.activeTool !== tool);
       if (!!this.activeTool) {
         this.activeTool.setInactive();
         this.activeTool = undefined;
-        this.toggleDisable(false);
+        if (this.scaleSet) {
+          this.toggleDisable(false);
+        }
       }
       if (activate) {
         tool.setActive();
@@ -60,12 +64,9 @@ export class ToolbarComponent implements OnInit, OnDestroy {
     }
   }
 
-
   private toggleDisable(value: boolean): void {
-    if (this.scaleSet) {
-      this.tools.forEach((item: Tool) => {
-        item.setDisabled(value);
-      });
-    }
+    this.tools.forEach((item: Tool) => {
+      item.setDisabled(value);
+    });
   }
 }

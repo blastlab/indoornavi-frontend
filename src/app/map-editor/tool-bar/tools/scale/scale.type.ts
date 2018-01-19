@@ -7,19 +7,23 @@ export class Scale {
   realDistance: number;
   measure: Measure;
 
-  constructor(private scale: Scale) {
+  constructor(start: Point, stop: Point, realDistance: number, measure: Measure) {
+    this.start = start;
+    this.stop = stop;
+    this.realDistance = realDistance;
+    this.measure = measure;
   }
 
   get startPoint(): Point {
-    return this.scale.start;
+    return this.start;
   }
 
   get stopPoint(): Point {
-    return this.scale.stop;
+    return this.stop;
   }
 
   getRealDistanceInCentimeters(): number {
-    return this.scale.realDistance * (this.scale.measure.toString() === Measure[Measure.METERS] ? 100 : 1);
+    return this.realDistance * (this.measure.toString() === Measure[Measure.METERS] ? 100 : 1);
   };
 
 }
