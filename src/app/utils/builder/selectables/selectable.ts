@@ -24,26 +24,26 @@ export class Selectable {
   }
 
   public handleHovering(): void {
-    this.lockedSelecting = false;
+    this.unlockHovering();
     const onMouseEnterListener = this.group.domGroup.on('mouseenter');
     const onMouseLeaveListener = this.group.domGroup.on('mouseleave');
     if (onMouseEnterListener === undefined) {
       this.group.domGroup.on('mouseenter', () => {
-        this.colorSet();
+        this.highlightSet();
       });
     } else {
         this.group.domGroup.on('mouseenter', () => {
-          this.colorSet();
+          this.highlightSet();
           onMouseEnterListener();
         });
     }
     if (onMouseLeaveListener === undefined) {
         this.group.domGroup.on('mouseleave', () => {
-          this.colorReset();
+          this.highlightReset();
         });
     } else {
         this.group.domGroup.on('mouseleave', () => {
-          this.colorReset();
+          this.highlightReset();
           onMouseLeaveListener();
         });
     }
@@ -57,12 +57,20 @@ export class Selectable {
     this.handleHovering();
   }
 
-  public selectOff(): void {
-    this.group.domGroup.on('click.select', null);
+  public lockHovering(): void {
     this.lockedSelecting = true;
   }
 
-  private colorSet(color?: string): void {
+  public unlockHovering(): void {
+    this.lockedSelecting = false;
+  }
+
+  public selectOff(): void {
+    this.group.domGroup.on('click.select', null);
+    this.lockHovering();
+  }
+
+  public highlightSet(color?: string): void {
     const setColor = (color) ? color : 'red';
     if (!this.lockedSelecting) {
       this.group.changeColor(setColor);
@@ -70,7 +78,7 @@ export class Selectable {
     }
   }
 
-  private colorReset(): void {
+  public highlightReset(): void {
     if (!this.lockedSelecting) {
       this.group.resetColor();
       this.group.strokeConnectingLineNormal();

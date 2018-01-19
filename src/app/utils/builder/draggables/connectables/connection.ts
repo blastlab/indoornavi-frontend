@@ -26,6 +26,10 @@ export class ConnectingLine extends Selectable {
     return this.sink;
   }
 
+  public connectedAnchor(): ConnectableDevice {
+    return this.anchor;
+  }
+
   public show(): void {
     if (!this.lockVisibility) {
       this.connection.attr('stroke', 'orange');
@@ -58,6 +62,9 @@ export class ConnectingLine extends Selectable {
   }
 
   public removeConnection(): void {
+    this.sink = null;
+    this.anchor = null;
+    this.id = null;
     this.connection.remove();
   }
 }
