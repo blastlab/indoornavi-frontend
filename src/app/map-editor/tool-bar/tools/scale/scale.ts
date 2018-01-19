@@ -129,14 +129,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.toolbarService.emitToolChanged(null);
     });
     this.scaleInputService.rejected.subscribe(() => {
-      if (this.scaleBackup) {
-        this.scale = Helper.deepCopy(this.scaleBackup);
-        this.scaleGroup.remove();
-        this.createSvgGroupWithScale();
-        this.pointsArray = [];
-        this.linesArray = [];
-        this.drawScale(this.scale);
-      }
+      this.rejectChanges();
     });
   }
 
@@ -158,19 +151,31 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   setInactive(): void {
     this.hideScale();
+    this.rejectChanges();
     this.active = false;
     this.translate.get('hint.chooseTool').subscribe((value: string) => {
       this.hintBarService.emitHintMessage(value);
     });
   }
 
+  // implements Tool so needs to have this method
   setDisabled(value: boolean): void {
-    this.disabled = value;
   }
 
   onClick(): void {
     this.toolbarService.emitToolChanged(this);
     this.isScaleSet ? this.scaleBackup = Helper.deepCopy(this.scale) : this.scaleBackup = null;
+  }
+
+  private rejectChanges() {
+    if (this.scaleBackup) {
+      this.scale = Helper.deepCopy(this.scaleBackup);
+      this.scaleGroup.remove();
+      this.createSvgGroupWithScale();
+      this.pointsArray = [];
+      this.linesArray = [];
+      this.drawScale(this.scale);
+    }
   }
 
   private updateScaleGroup() {

@@ -51,8 +51,7 @@ export class ScaleInputComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.scaleVisibilityChangedSubscription = this.scaleService.scaleVisibilityChanged.subscribe(
-      isScaleVisible => {
+    this.scaleVisibilityChangedSubscription = this.scaleService.scaleVisibilityChanged.subscribe((isScaleVisible: boolean) => {
         isScaleVisible ? this.toolDetails.show() : this.toolDetails.hide();
       });
 

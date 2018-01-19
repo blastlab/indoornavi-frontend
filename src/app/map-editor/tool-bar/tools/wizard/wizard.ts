@@ -1,4 +1,4 @@
-import {Component, Input, NgZone, OnInit} from '@angular/core';
+import {Component, Input, NgZone, OnInit, QueryList, ViewChildren} from '@angular/core';
 import {ToolName} from '../tools.enum';
 import {Tool} from '../tool';
 import {TranslateService} from '@ngx-translate/core';
@@ -102,17 +102,13 @@ export class WizardComponent implements Tool, OnInit {
 
   previousStep(): void {
     if (this.currentIndex === 0) { // current step if first so we close wizard
-      this.activeStep = null;
-      this.displayDialog = false;
-      this.selected = undefined;
-      this.displayError = false;
+      this.cleanBeforeClosingWizard();
       this.toolbarService.emitToolChanged(null);
       return;
     } else if (this.currentIndex === 1) { // We need to reset socket connection, so we will get Sinks again
       this.closeSocket();
       this.openSocket();
     }
-
     this.currentIndex -= 1;
     this.activeStep = this.steps[this.currentIndex];
     this.activeStep.clean();
@@ -159,6 +155,9 @@ export class WizardComponent implements Tool, OnInit {
   setInactive(): void {
     this.active = false;
     this.closeSocket();
+    this.currentIndex = 0;
+    this.cleanBeforeClosingWizard();
+    this.acceptButtons.publishVisibility(false);
   }
 
   setDisabled(value: boolean): void {
@@ -171,6 +170,46 @@ export class WizardComponent implements Tool, OnInit {
 
   getToolName(): ToolName {
     return ToolName.WIZARD;
+  }
+
+  saveConfiguration(): void {
+    const anchors: Anchor[] = [];
+    const scaleLengthInPixels = Geometry.getDistanceBetweenTwoPoints(this.scale.startPoint, this.scale.stopPoint);
+    const scaleInCentimeters = this.scale.getRealDistanceInCentimeters();
+    const calculatePoint = (distance: number): number => Geometry.calculateDistanceInCentimeters(scaleLengthInPixels, scaleInCentimeters, distance);
+    anchors.push(<Anchor>{
+      shortId: this.wizardData.firstAnchorShortId,
+      x: calculatePoint(this.wizardData.firstAnchorPosition.x),
+      y: calculatePoint(this.wizardData.firstAnchorPosition.y)
+    });
+    anchors.push(<Anchor>{
+      shortId: this.wizardData.secondAnchorShortId,
+      x: calculatePoint(this.wizardData.secondAnchorPosition.x),
+      y: calculatePoint(this.wizardData.secondAnchorPosition.y)
+    });
+    this.actionBarService.setSink(<Sink>{
+      shortId: this.wizardData.sinkShortId,
+      x: calculatePoint(this.wizardData.sinkPosition.x),
+      y: calculatePoint(this.wizardData.sinkPosition.y),
+      anchors: anchors
+    });
+  }
+
+  private cleanBeforeClosingWizard(): void {
+    if (!!this.activeStep) {
+      this.activeStep.setSelectedItemId(this.selected);
+      this.activeStep.clean();
+    }
+    if (this.steps.length > 1) {
+      this.steps.forEach((step: WizardStep) => {
+        this.activeStep = step;
+        this.activeStep.clean();
+      });
+    }
+    this.activeStep = null;
+    this.displayDialog = false;
+    this.selected = undefined;
+    this.displayError = false;
   }
 
   private stepChanged() {
@@ -193,6 +232,7 @@ export class WizardComponent implements Tool, OnInit {
           this.removeGroupDrag();
           this.nextStep();
         } else {
+          console.log(this.activeStep);
           this.activeStep.clean();
           this.displayDialog = true;
         }
@@ -261,28 +301,5 @@ export class WizardComponent implements Tool, OnInit {
     this.translate.get('wizard.first.message').subscribe((text: string) => {
       this.hintMessage = text;
     });
-  }
-
-  saveConfiguration(): void {
-      const anchors: Anchor[] = [];
-      const scaleLengthInPixels = Geometry.getDistanceBetweenTwoPoints(this.scale.startPoint, this.scale.stopPoint);
-      const scaleInCentimeters = this.scale.getRealDistanceInCentimeters();
-      const calculatePoint = (distance: number): number => Geometry.calculateDistanceInCentimeters(scaleLengthInPixels, scaleInCentimeters, distance);
-      anchors.push(<Anchor>{
-        shortId: this.wizardData.firstAnchorShortId,
-        x: calculatePoint(this.wizardData.firstAnchorPosition.x),
-        y: calculatePoint(this.wizardData.firstAnchorPosition.y)
-      });
-      anchors.push(<Anchor>{
-        shortId: this.wizardData.secondAnchorShortId,
-        x: calculatePoint(this.wizardData.secondAnchorPosition.x),
-        y: calculatePoint(this.wizardData.secondAnchorPosition.y)
-      });
-      this.actionBarService.setSink(<Sink>{
-        shortId: this.wizardData.sinkShortId,
-        x: calculatePoint(this.wizardData.sinkPosition.x),
-        y: calculatePoint(this.wizardData.sinkPosition.y),
-        anchors: anchors
-      });
   }
 }

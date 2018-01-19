@@ -44,7 +44,6 @@ export class ToolbarComponent implements OnInit, OnDestroy {
       if (activate) {
         tool.setActive();
         this.activeTool = tool;
-        this.toggleDisable(true);
       }
     });
   }
@@ -63,8 +62,10 @@ export class ToolbarComponent implements OnInit, OnDestroy {
 
 
   private toggleDisable(value: boolean): void {
-    this.scaleSet ? this.tools.forEach((item: Tool) => {
-      item.setDisabled(value);
-    }) : this.tools.first.setDisabled(value);
+    if (this.scaleSet) {
+      this.tools.forEach((item: Tool) => {
+        item.setDisabled(value);
+      });
+    }
   }
 }

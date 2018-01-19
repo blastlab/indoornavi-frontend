@@ -15,7 +15,7 @@ export class AcceptButtonsComponent implements OnInit {
 
   ngOnInit () {
     this.acceptButtonsService.visibilitySet.subscribe((value: boolean) => {
-      this.toolDetails.show();
+      value ? this.toolDetails.show() : this.toolDetails.hide();
     });
   }
 
