@@ -19,7 +19,7 @@ class TestBuildingsPage(unittest.TestCase):
         cls.construction_page = ConstructionPage(cls.webdriver, 'building')
         cls.option = 1
         # login before each test case
-        cls.base_page.truncate_db('building')
+        cls.base_page.truncate_db()
         cls.construction_page.create_construction_db_env()
         cls.page.login_process(cls.option)
 
@@ -42,7 +42,6 @@ class TestBuildingsPage(unittest.TestCase):
         self.assertTrue(self.multi_assertion())
 
     def test_add_new_building_correctly(self):
-
         self.construction_page.redirect_button_click()
         self.construction_page.add_button_click()
         # TODO Zmienic tytul modala -  Add building / Add new building

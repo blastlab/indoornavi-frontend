@@ -40,6 +40,9 @@ class ConstructionPage(BasePage):
         else:
            return True
 
+    def is_redirect_button_present(self):
+        return True if self.is_element_present(self.base_locators.redirect_last_btn) else False
+
     def redirect_button_click(self):
         return self.click_button(*self.base_locators.redirect_last_btn)
 
@@ -142,7 +145,3 @@ class ConstructionPage(BasePage):
 
     def is_edit_modal_displayed(self):
         return self.is_element_displayed(*self.base_locators.modal_window)
-
-    # Redirect to constructions page
-    def redirect_button_click(self):
-        return self.click_button(*self.base_locators.redirect_last_btn)
