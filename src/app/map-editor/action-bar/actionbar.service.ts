@@ -9,6 +9,7 @@ import * as Collections from 'typescript-collections';
 import {Subject} from 'rxjs/Subject';
 import {Md5} from 'ts-md5/dist/md5';
 import {Helper} from '../../shared/utils/helper/helper';
+import {Area} from '../tool-bar/tools/area/area.type';
 
 @Injectable()
 export class ActionBarService {
@@ -55,6 +56,10 @@ export class ActionBarService {
     return this.latestPublishedConfiguration;
   }
 
+  public publish(): Observable<ConfigurationData> {
+    return this.httpService.doPost(ActionBarService.URL + this.configuration.floorId, {});
+  }
+
   public loadConfiguration(floor: Floor): void {
     this.httpService.doGet(ActionBarService.URL + floor.id).subscribe((configurations: Configuration[]) => {
       if (configurations.length === 0) {
@@ -79,10 +84,6 @@ export class ActionBarService {
       this.configurationHash = this.hashConfiguration();
       this.configurationLoadedEmitter.next(this.configuration);
     });
-  }
-
-  public publish(): Observable<ConfigurationData> {
-    return this.httpService.doPost(ActionBarService.URL + this.configuration.floorId, {});
   }
 
   public saveDraft(): Promise<void> {
@@ -120,6 +121,11 @@ export class ActionBarService {
     }
     sinks.add(sinkCopy);
     this.configuration.data.sinks = sinks.toArray();
+    this.sendConfigurationChangedEvent();
+  }
+
+  public setAreas(areas: Area[]): void {
+    this.configuration.data.areas = areas;
     this.sendConfigurationChangedEvent();
   }
 

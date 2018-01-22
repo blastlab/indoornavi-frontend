@@ -1,0 +1,3 @@
+.ui-g [class^=ui-g-].inner {
+  padding: 0;
+}

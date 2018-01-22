@@ -102,8 +102,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     });
 
     this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapSvg: MapSvg) => {
-      this.mapWidth = mapSvg.container.attr('width');
-      this.mapHeight = mapSvg.container.attr('height');
       this.createSvgGroupWithScale();
     });
 
@@ -158,17 +156,13 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   public setActive(): void {
     this.active = true;
     this.startCreatingScale();
-    this.translate.get('scale.basic.msg').subscribe((value: string) => {
-      this.hintBarService.emitHintMessage(value);
-    });
+    this.hintBarService.sendHintMessage('scale.basic.msg');
   }
 
   public setInactive(): void {
     this.hideScale();
     this.active = false;
-    this.translate.get('hint.chooseTool').subscribe((value: string) => {
-      this.hintBarService.emitHintMessage(value);
-    });
+    this.hintBarService.sendHintMessage('hint.chooseTool');
   }
 
   public onClick(): void {

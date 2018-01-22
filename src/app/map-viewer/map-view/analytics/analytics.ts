@@ -14,6 +14,7 @@ import {Point} from '../../../map-editor/map.type';
 import {ZoomService} from '../../../map-editor/zoom.service';
 import {MapLoaderInformerService} from '../../../shared/services/map-loader-informer/map-loader-informer.service';
 import {CoordinatesSocketData} from '../../published.type';
+import {Movable} from '../movable';
 
 
 @Component({
@@ -82,7 +83,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     this.whenTransitionEnded().subscribe((tagShortId: number) => {
       // release to setHeatMap only those data that are in proper time step up to transition of the tag
       // from timeStepBuffer
-      const timeWhenTransitionIsFinished: number = Date.now() - this.transitionDurationTimeStep;
+      const timeWhenTransitionIsFinished: number = Date.now() - Movable.TRANSITION_DURATION;
       for (let index = 0; index < this.timeStepBuffer.length; index ++) {
         if (this.timeStepBuffer[index].timeOfDataStep < timeWhenTransitionIsFinished) {
           this.setHeatMap(this.timeStepBuffer[index].data);

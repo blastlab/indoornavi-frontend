@@ -120,9 +120,7 @@ export class WizardComponent implements Tool, OnInit {
       this.displayError = true;
       return;
     }
-    this.translate.get(this.activeStep.getBeforePlaceOnMapHint()).subscribe((value: string) => {
-      this.hintBarService.emitHintMessage(value);
-    });
+    this.hintBarService.sendHintMessage(this.activeStep.getBeforePlaceOnMapHint());
     this.displayError = false;
     this.activeStep.beforePlaceOnMap(this.selected);
     this.displayDialog = false;
@@ -171,9 +169,7 @@ export class WizardComponent implements Tool, OnInit {
   }
 
   private showAcceptButtons(): void {
-    this.translate.get(this.activeStep.getAfterPlaceOnMapHint()).subscribe((value: string) => {
-      this.hintBarService.emitHintMessage(value);
-    });
+    this.hintBarService.sendHintMessage(this.activeStep.getAfterPlaceOnMapHint());
     this.acceptButtons.publishVisibility(true);
     this.acceptButtons.decisionMade.first().subscribe(
       data => {

@@ -44,6 +44,7 @@ import {
   CheckboxModule,
   ConfirmationService,
   ConfirmDialogModule,
+  ContextMenuModule,
   GrowlModule,
   MultiSelectModule,
   PanelMenuModule,
@@ -88,6 +89,10 @@ import {SocketConnectorComponent} from './map-viewer/map-view/socket-connector.c
 import {ZoomService} from './map-editor/zoom.service';
 import {MapComponent} from './map/map';
 import {AreaComponent} from './map-editor/tool-bar/tools/area/area';
+import {PublishedComponent} from './map-viewer/map-view/publications/publication';
+import {AreaDetailsComponent} from './map-editor/tool-bar/tools/area/details/area-details';
+import {AreaDetailsService} from './map-editor/tool-bar/tools/area/details/area-details.service';
+import {ContextMenuService} from './shared/wrappers/editable/editable.service';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -125,7 +130,8 @@ export function HttpLoaderFactory(http: Http) {
     DeviceComponent,
     SocketConnectorComponent,
     MapComponent,
-    AreaComponent
+    AreaComponent,
+    AreaDetailsComponent
   ],
   entryComponents: [
     PublishedDialogComponent,
@@ -163,7 +169,8 @@ export function HttpLoaderFactory(http: Http) {
     TooltipModule,
     GrowlModule,
     ProgressSpinnerModule,
-    OverlayPanelModule
+    OverlayPanelModule,
+    ContextMenuModule
   ],
   providers: [
     BuildingService,
@@ -200,6 +207,8 @@ export function HttpLoaderFactory(http: Http) {
     MdIconRegistry,
     HintBarService,
     ZoomService,
+    AreaDetailsService,
+    ContextMenuService
   ], bootstrap: [AppComponent]
 })
 
