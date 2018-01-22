@@ -29,7 +29,7 @@ import {ZoomService} from '../../shared/services/zoom/zoom.service';
 import {MapLoaderInformerService} from '../../shared/services/map-loader-informer/map-loader-informer.service';
 import {MapSvg} from '../../map/map.type';
 import {Area} from '../../map-editor/tool-bar/tools/area/area.type';
-import {Movable} from './movable';
+import {Movable} from '../map-view/movable';
 
 @Component({
   templateUrl: './socket-connector.component.html',
@@ -154,7 +154,8 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
 
   private moveTagOnMap(data: CoordinatesSocketData) {
     const tag: Movable = this.tagsOnMap.getValue(data.coordinates.tagShortId);
-    if (tag.transitionEnded) {
+    // !document.hidden is here to avoid queueing transitions and therefore browser freezes
+    if (tag.transitionEnded && !document.hidden) {
       tag.move(data.coordinates.point).then(() => {
         this.transitionEnded.next();
       });
