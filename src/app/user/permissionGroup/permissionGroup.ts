@@ -3,9 +3,9 @@ import {Permission, PermissionGroup} from '../user.type';
 import {PermissionGroupService} from 'app/user/permissionGroup/permissionGroup.service';
 import {TranslateService} from '@ngx-translate/core';
 import {NgForm} from '@angular/forms';
-import {CrudComponent, CrudHelper} from '../../utils/crud/crud.component';
+import {CrudComponent, CrudHelper} from '../../shared/components/crud/crud.component';
 import {ConfirmationService} from 'primeng/primeng';
-import {MessageServiceWrapper} from '../../utils/message.service';
+import {MessageServiceWrapper} from '../../shared/services/message/message.service';
 
 @Component({
   templateUrl: 'permissionGroup.html'

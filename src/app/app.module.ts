@@ -49,13 +49,14 @@ import {
   MultiSelectModule,
   PanelMenuModule,
   SidebarModule,
+  SliderModule,
   ToolbarModule,
   TooltipModule
 } from 'primeng/primeng';
 import {HintBarService} from './map-editor/hint-bar/hintbar.service';
 import {ToolbarService} from './map-editor/tool-bar/toolbar.service';
 import {AppComponent} from './app.component';
-import {MessageServiceWrapper} from './utils/message.service';
+import {MessageServiceWrapper} from './shared/services/message/message.service';
 import {MessageService} from 'primeng/components/common/messageservice';
 import {BreadcrumbService} from './shared/services/breadcrumbs/breadcrumb.service';
 import {AreaService} from './shared/services/area/area.service';
@@ -75,8 +76,7 @@ import {DragDropModule} from 'primeng/components/dragdrop/dragdrop';
 import {DropdownModule} from 'primeng/components/dropdown/dropdown';
 import {DialogModule} from 'primeng/components/dialog/dialog';
 import {DataTableModule} from 'primeng/components/datatable/datatable';
-import {SliderModule} from 'primeng/primeng';
-import {AppAutoFocusDirective} from './utils/directive/autofocus.directive';
+import {AppAutoFocusDirective} from './shared/directive/autofocus.directive';
 import {DeviceComponent} from 'app/device/device';
 import {AcceptButtonsComponent} from 'app/shared/components/accept-buttons/accept-buttons';
 import {PermissionGroupComponent} from 'app/user/permissionGroup/permissionGroup';

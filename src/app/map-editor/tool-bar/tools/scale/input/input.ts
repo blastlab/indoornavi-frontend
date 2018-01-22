@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ScaleInputService} from './input.service';
 import {Measure, Scale} from '../scale.type';
 import {ScaleService} from '../../../../../shared/services/scale/scale.service';
-import {MessageServiceWrapper} from '../../../../../utils/message.service';
+import {MessageServiceWrapper} from '../../../../../shared/services/message/message.service';
 import {SelectItem} from 'primeng/primeng';
 import {Subscription} from 'rxjs/Subscription';
 import {TranslateService} from '@ngx-translate/core';

@@ -5,7 +5,7 @@ import {ImageUploadComponent} from 'angular2-image-upload/lib/image-upload/image
 import {Config} from '../../config';
 import {MapService} from './map.service';
 import {ImageConfiguration} from './map.configuration.type';
-import {MessageServiceWrapper} from '../utils/message.service';
+import {MessageServiceWrapper} from '../shared/services/message/message.service';
 
 @Component({
   selector: 'app-map-uploader',

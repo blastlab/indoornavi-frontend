@@ -1,5 +1,5 @@
 import {Building} from '../building/building.type';
-import {CrudItem} from '../utils/crud/crud.component';
+import {CrudItem} from '../shared/components/crud/crud.component';
 
 export class Complex implements CrudItem {
   id?: number;

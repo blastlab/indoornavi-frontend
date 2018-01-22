@@ -5,7 +5,7 @@ import {ToolbarService} from '../../toolbar.service';
 import {MapLoaderInformerService} from '../../../../shared/services/map-loader-informer/map-loader-informer.service';
 import * as d3 from 'd3';
 import {Point} from '../../../map.type';
-import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../../../map-viewer/published.builder';
+import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../../../shared/utils/drawing/drawing.builder';
 import {MapSvg} from '../../../../map/map.type';
 import {ZoomService} from '../../../zoom.service';
 import {AreaDetailsService} from './details/area-details.service';

@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import {ContextMenuService} from './editable.service';
-import {SvgGroupWrapper} from '../../../map-viewer/published.builder';
+import {SvgGroupWrapper} from '../../utils/drawing/drawing.builder';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 

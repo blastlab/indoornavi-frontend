@@ -1,6 +1,6 @@
 import {Floor} from '../floor/floor.type';
 import {Complex} from '../complex/complex.type';
-import {CrudItem} from '../utils/crud/crud.component';
+import {CrudItem} from '../shared/components/crud/crud.component';
 
 export class Building implements CrudItem {
   id?: number;

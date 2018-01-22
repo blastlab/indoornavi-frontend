@@ -10,7 +10,7 @@ import {Helper} from '../../../../../shared/utils/helper/helper';
 import {Editable} from '../../../../../shared/wrappers/editable/editable';
 import {Point} from '../../../../map.type';
 import {AreaComponent} from '../area';
-import {MessageServiceWrapper} from '../../../../../utils/message.service';
+import {MessageServiceWrapper} from '../../../../../shared/services/message/message.service';
 
 @Component({
   selector: 'app-area-details',

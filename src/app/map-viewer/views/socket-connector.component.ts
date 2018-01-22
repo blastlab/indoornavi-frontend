@@ -11,7 +11,7 @@ import {
 } from '../published.type';
 import {Subject} from 'rxjs/Subject';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
-import {DrawBuilder, ElementType, SvgGroupWrapper} from '../published.builder';
+import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.builder';
 import * as d3 from 'd3';
 import {SocketService} from '../../shared/services/socket/socket.service';
 import {ActivatedRoute, Params} from '@angular/router';
@@ -29,7 +29,7 @@ import {ZoomService} from '../../shared/services/zoom/zoom.service';
 import {MapLoaderInformerService} from '../../shared/services/map-loader-informer/map-loader-informer.service';
 import {MapSvg} from '../../map/map.type';
 import {Area} from '../../map-editor/tool-bar/tools/area/area.type';
-import {Movable} from '../map-view/movable';
+import {Movable} from '../../shared/wrappers/movable/movable';
 
 @Component({
   templateUrl: './socket-connector.component.html',

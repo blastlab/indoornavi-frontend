@@ -7,8 +7,8 @@ import {ActivatedRoute, Params, Router} from '@angular/router';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
 import {Complex} from '../complex/complex.type';
 import {ConfirmationService} from 'primeng/primeng';
-import {MessageServiceWrapper} from '../utils/message.service';
-import {CrudComponent, CrudHelper} from '../utils/crud/crud.component';
+import {MessageServiceWrapper} from '../shared/services/message/message.service';
+import {CrudComponent, CrudHelper} from '../shared/components/crud/crud.component';
 
 @Component({
   templateUrl: 'building.html',
