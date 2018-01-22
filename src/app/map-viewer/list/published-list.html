@@ -32,9 +32,6 @@
     <ng-template let-publishedMap="rowData" let-i="rowIndex" pTemplate="body">
       <button pButton pTooltip="{{'go.to.map'|translate}}" (click)="goTo(publishedMap)" icon="fa-map">
       </button>
-      <button pButton ngClass="analiticsButton" pTooltip="{{'analytics'|translate}}"
-              (click)="goToAnalytics(publishedMap)" icon="fa-map-signs">
-      </button>
       <button pButton pTooltip="{{'go.to.mapEditor'|translate}}" [appHasPermission]="'FLOOR_READ'" (click)="goToEditor(publishedMap)" icon="fa-paint-brush">
       </button>
       <button pButton ngClass="editButton" pTooltip="{{'edit'|translate}}" [appHasPermission]="'MAP_UPDATE'" (click)="openDialog(publishedMap)" icon="fa-edit">

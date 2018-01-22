@@ -3,10 +3,10 @@ FROM python:3.5
 RUN apt-get update
 
 RUN apt-get update && apt-get install -y \
-	libgconf2-4 \ 
+	libgconf2-4 \
 	libnss3-1d \
 	libxss1 \
-	fonts-liberation \ 
+	fonts-liberation \
 	libappindicator1 \
 	xdg-utils \
 	software-properties-common \
