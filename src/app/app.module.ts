@@ -30,7 +30,7 @@ import {AuthGuard, CanRead} from './auth/auth.guard';
 import {AuthService} from './auth/auth.service';
 import {WizardComponent} from './map-editor/tool-bar/tools/wizard/wizard';
 import {ActionBarService} from './map-editor/action-bar/actionbar.service';
-import {ScaleService} from './map-editor/tool-bar/tools/scale/scale.service';
+import {ScaleService} from './shared/services/scale/scale.service';
 import {PublishedListComponent} from './map-viewer/list/published-list';
 import {appRoutes} from './app.routes';
 import {PublishedService} from './map-viewer/published.service';
@@ -85,9 +85,10 @@ import {SharedModule} from './shared/modules/shared.module';
 import {ToolDetailsComponent} from './map-editor/tool-bar/shared/details/tool-details';
 import {MdIconRegistry} from '@angular/material';
 import {SocketConnectorComponent} from './map-viewer/views/socket-connector.component';
-import {ZoomService} from './map-editor/zoom.service';
+import {ZoomService} from './shared/services/zoom/zoom.service';
 import {MapComponent} from './map/map';
 import {PublishedComponent} from './map-viewer/views/publications/publication';
+import {Scale} from './map-editor/tool-bar/tools/scale/scale.type';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -198,7 +199,7 @@ export function HttpLoaderFactory(http: Http) {
     HintBarService,
     MdIconRegistry,
     HintBarService,
-    ZoomService,
+    ZoomService
   ], bootstrap: [AppComponent]
 })
 

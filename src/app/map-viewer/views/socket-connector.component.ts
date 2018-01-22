@@ -11,7 +11,6 @@ import {PublishedService} from '../published.service';
 import {MapViewerService} from '../../map-editor/map.editor.service';
 import {AreaService} from '../../shared/services/area/area.service';
 import {IconService, NaviIcons} from '../../shared/services/drawing/icon.service';
-import {getRealDistanceInCentimeters} from 'app/map-editor/tool-bar/tools/scale/scale.type';
 import {Geometry} from 'app/shared/utils/helper/geometry';
 import {Observable} from 'rxjs/Observable';
 import {Tag} from 'app/device/tag.type';
@@ -20,7 +19,7 @@ import {DrawBuilder} from '../published.builder';
 import {TranslateService} from '@ngx-translate/core';
 import {Area} from 'app/shared/services/area/area.type';
 import {Config} from '../../../config';
-import {ZoomService} from '../../map-editor/zoom.service';
+import {ZoomService} from '../../shared/services/zoom/zoom.service';
 import {MapLoaderInformerService} from '../../shared/services/map-loader-informer/map-loader-informer.service';
 
 @Component({
@@ -61,9 +60,9 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           this.mapLoaderInformer.loadCompleted().subscribe((d3map: d3.selection) => {
             this.d3map = d3map;
             this.drawAreas(map.floor.id);
-            const realDistanceInCentimeters = getRealDistanceInCentimeters(this.activeMap.floor.scale);
-            const pixels = Geometry.getDistanceBetweenTwoPoints(map.floor.scale.start, map.floor.scale.stop);
-            this.pixelsToCentimeters = realDistanceInCentimeters / pixels;
+            const realDistanceInCentimeters = map.floor.scale.getRealDistanceInCentimeters();
+            const scaleLengthInPixels = Geometry.getDistanceBetweenTwoPoints(map.floor.scale.start, map.floor.scale.stop);
+            this.pixelsToCentimeters = realDistanceInCentimeters / scaleLengthInPixels;
             this.initializeSocketConnection();
           });
         }

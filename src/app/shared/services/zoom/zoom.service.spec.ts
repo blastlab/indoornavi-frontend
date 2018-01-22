@@ -1,12 +1,12 @@
-import {Point} from './map.type';
+import {Point} from '../../../map-editor/map.type';
 import {ZoomService} from './zoom.service';
-import {MapViewerService} from './map.editor.service';
+import {MapViewerService} from '../../../map-editor/map.editor.service';
 import {inject, TestBed} from '@angular/core/testing';
-import {MapService} from './map.service';
-import {HttpService} from '../shared/services/http/http.service';
+import {MapService} from '../../../map-editor/map.service';
+import {HttpService} from '../http/http.service';
 import {HttpModule} from '@angular/http';
 import {RouterTestingModule} from '@angular/router/testing';
-import {AuthGuard} from '../auth/auth.guard';
+import {AuthGuard} from '../../../auth/auth.guard';
 
 
 describe('ZoomService', () => {

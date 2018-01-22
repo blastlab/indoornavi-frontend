@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ScaleInputService} from './input.service';
 import {Measure, Scale} from '../scale.type';
-import {ScaleService} from '../scale.service';
+import {ScaleService} from '../../../../../shared/services/scale/scale.service';
 import {MessageServiceWrapper} from '../../../../../utils/message.service';
 import {SelectItem} from 'primeng/primeng';
 import {Subscription} from 'rxjs/Subscription';
@@ -51,8 +51,7 @@ export class ScaleInputComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.scaleVisibilityChangedSubscription = this.scaleService.scaleVisibilityChanged.subscribe(
-      isScaleVisible => {
+    this.scaleVisibilityChangedSubscription = this.scaleService.scaleVisibilityChanged.subscribe((isScaleVisible: boolean) => {
         isScaleVisible ? this.toolDetails.show() : this.toolDetails.hide();
       });
 

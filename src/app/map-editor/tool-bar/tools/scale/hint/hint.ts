@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import {TranslateService} from '@ngx-translate/core';
 import {Measure, Scale} from '../scale.type';
 import {ScaleHintService} from './hint.service';
-import {ScaleService} from '../scale.service';
+import {ScaleService} from '../../../../../shared/services/scale/scale.service';
 import {Geometry} from '../../../../../shared/utils/helper/geometry';
 
 @Component({

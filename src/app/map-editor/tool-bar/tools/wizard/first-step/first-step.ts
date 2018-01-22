@@ -56,7 +56,7 @@ export class FirstStep implements WizardStep {
     return 'wizard.title.step1';
   }
 
-  setSelectedItemId(id: number) {
+  setSelectedItemId(id: number): void {
     this.selectedItemId = id;
   }
 
@@ -67,7 +67,7 @@ export class FirstStep implements WizardStep {
     };
   }
 
-  updateWizardData(wizardData: WizardData, id: number, coordinates: Point) {
+  updateWizardData(wizardData: WizardData, id: number, coordinates: Point): void {
     wizardData.sinkShortId = id;
     wizardData.sinkPosition = coordinates;
   }

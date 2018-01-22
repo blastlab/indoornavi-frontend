@@ -12,12 +12,12 @@ import {Subscription} from 'rxjs/Subscription';
 import {Geometry} from '../../../../shared/utils/helper/geometry';
 import {ActionBarService} from '../../../action-bar/actionbar.service';
 import {Configuration} from '../../../action-bar/actionbar.type';
-import {ScaleService} from './scale.service';
+import {ScaleService} from '../../../../shared/services/scale/scale.service';
 import {Helper} from '../../../../shared/utils/helper/helper';
 import {ToolbarService} from '../../toolbar.service';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
 import {MapViewerService} from '../../../map.editor.service';
-import {ZoomService} from '../../../zoom.service';
+import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
 
 @Component({
   selector: 'app-scale',
@@ -27,9 +27,10 @@ import {ZoomService} from '../../../zoom.service';
 export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private static SCALE_GROUP_SELECTOR_ID = 'scaleGroup';
 
-  public active: boolean = false;
-  public isScaleDisplayed: boolean = false;
-  public isScaleSet: boolean = false;
+  active: boolean = false;
+  isScaleDisplayed: boolean = false;
+  disabled: boolean = false;
+  isScaleSet: boolean = false;
   private isFirstPointDrawn: boolean = false;
   private END_SIZE: number = 5;
   private mapLoadedSubscription: Subscription;
@@ -42,7 +43,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private hintMessage: string;
   private pointsArray: Point[] = [];
   private linesArray: Line[] = [];
-  private scaleActivationButtonActive: boolean = true;
 
   constructor(private translate: TranslateService,
               private scaleInputService: ScaleInputService,
@@ -52,8 +52,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
               private toolbarService: ToolbarService,
               private actionBarService: ActionBarService,
               private scaleService: ScaleService,
-              private zoomService: ZoomService,
-              private mapViewerService: MapViewerService
+              private zoomService: ZoomService
               ) {
     this.setTranslations();
   }
@@ -129,18 +128,8 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.scaleInputService.onVisibilityChange().subscribe(() => {
       this.toolbarService.emitToolChanged(null);
     });
-    this.toolbarService.onToolChanged().subscribe((tool: Tool) => {
-      !!tool ? this.scaleActivationButtonActive = false : this.scaleActivationButtonActive = true;
-    });
     this.scaleInputService.rejected.subscribe(() => {
-      if (this.scaleBackup) {
-        this.scale = Helper.deepCopy(this.scaleBackup);
-        this.scaleGroup.remove();
-        this.createSvgGroupWithScale();
-        this.pointsArray = [];
-        this.linesArray = [];
-        this.drawScale(this.scale);
-      }
+      this.rejectChanges();
     });
   }
 
@@ -148,11 +137,11 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     return this.hintMessage;
   }
 
-  public getToolName(): ToolName {
+  getToolName(): ToolName {
     return ToolName.SCALE;
   }
 
-  public setActive(): void {
+  setActive(): void {
     this.active = true;
     this.startCreatingScale();
     this.translate.get('scale.basic.msg').subscribe((value: string) => {
@@ -160,17 +149,33 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     });
   }
 
-  public setInactive(): void {
+  setInactive(): void {
     this.hideScale();
+    this.rejectChanges();
     this.active = false;
     this.translate.get('hint.chooseTool').subscribe((value: string) => {
       this.hintBarService.emitHintMessage(value);
     });
   }
 
-  public onClick(): void {
+  // implements Tool so needs to have this method
+  setDisabled(value: boolean): void {
+  }
+
+  onClick(): void {
     this.toolbarService.emitToolChanged(this);
     this.isScaleSet ? this.scaleBackup = Helper.deepCopy(this.scale) : this.scaleBackup = null;
+  }
+
+  private rejectChanges() {
+    if (this.scaleBackup) {
+      this.scale = Helper.deepCopy(this.scaleBackup);
+      this.scaleGroup.remove();
+      this.createSvgGroupWithScale();
+      this.pointsArray = [];
+      this.linesArray = [];
+      this.drawScale(this.scale);
+    }
   }
 
   private updateScaleGroup() {
