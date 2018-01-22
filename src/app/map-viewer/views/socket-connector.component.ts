@@ -21,7 +21,6 @@ import {Area} from 'app/shared/services/area/area.type';
 import {Config} from '../../../config';
 import {ZoomService} from '../../shared/services/zoom/zoom.service';
 import {MapLoaderInformerService} from '../../shared/services/map-loader-informer/map-loader-informer.service';
-import {Scale} from '../../map-editor/tool-bar/tools/scale/scale.type';
 
 @Component({
   templateUrl: './socket-connector.component.html',
@@ -38,7 +37,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   private tagsOnMap: Dictionary<number, GroupCreated> = new Dictionary<number, GroupCreated>();
   private areasOnMap: Dictionary<number, GroupCreated> = new Dictionary<number, GroupCreated>();
   private originListeningOnEvent: Dictionary<string, MessageEvent[]> = new Dictionary<string, MessageEvent[]>();
-  private scale: Scale;
 
   constructor(protected ngZone: NgZone,
               protected socketService: SocketService,
