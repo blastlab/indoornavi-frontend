@@ -60,10 +60,9 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         this.activeMap = map;
         if (this.activeMap.floor.imageId != null) {
           this.mapLoaderInformer.loadCompleted().subscribe((d3map: d3.selection) => {
-            this.scale = new Scale(map.floor.scale.start, map.floor.scale.stop, map.floor.scale.realDistance, map.floor.scale.measure);
             this.d3map = d3map;
             this.drawAreas(map.floor.id);
-            const realDistanceInCentimeters = this.scale.getRealDistanceInCentimeters();
+            const realDistanceInCentimeters = map.floor.scale.getRealDistanceInCentimeters();
             const scaleLengthInPixels = Geometry.getDistanceBetweenTwoPoints(map.floor.scale.start, map.floor.scale.stop);
             this.pixelsToCentimeters = realDistanceInCentimeters / scaleLengthInPixels;
             this.initializeSocketConnection();
