@@ -1,0 +1,64 @@
+<app-tool-details #toolDetails>
+  <form #areaDetailsForm="ngForm" novalidate>
+    <div class="ui-g">
+      <div class="ui-g-3">
+        <span class="ui-float-label">
+          <input pInputText name="name" id="name" type="text"
+                 [(ngModel)]="area.name"/>
+          <label for="name">{{'area.name.placeholder'|translate}}</label>
+        </span>
+      </div>
+      <div class="ui-g-4">
+        <div class="ui-g">
+          <div class="ui-g-4 inner">
+            <div class="ui-inputgroup">
+              <span class="ui-inputgroup-addon">
+                <i pTooltip="{{'area.offset.tooltip'|translate}}" class="fa fa-question"></i>
+              </span>
+              <span class="ui-float-label">
+                <input required pInputText name="offset-on_enter" id="offset-on_enter" type="number"
+                       [(ngModel)]="areaConfigurationOnEnter.offset"/>
+                <label for="offset-on_enter">{{'area.offset.placeholder'|translate}}</label>
+              </span>
+            </div>
+          </div>
+          <div class="ui-g-8 inner">
+            <p-multiSelect defaultLabel="{{'area.on_enter.select'|translate}}" name="on_enter" id="on_enter" [options]="tags"
+                           [(ngModel)]="areaConfigurationOnEnter.tags" optionLabel="shortId" [style]="{ width: '200px' }" dataKey="id"></p-multiSelect>
+          </div>
+        </div>
+      </div>
+      <div class="ui-g-4">
+        <div class="ui-g">
+          <div class="ui-g-4 inner">
+            <span class="ui-float-label">
+              <input required pInputText name="offset-on_leave" id="offset-on_leave" type="number"
+                     [(ngModel)]="areaConfigurationOnLeave.offset"/>
+              <label for="offset-on_leave">{{'area.offset.placeholder'|translate}}</label>
+            </span>
+          </div>
+          <div class="ui-g-8 inner">
+            <p-multiSelect defaultLabel="{{'area.on_leave.select'|translate}}" name="on_leave" id="on_leave" [options]="tags"
+                           [(ngModel)]="areaConfigurationOnLeave.tags" optionLabel="shortId" [style]="{ width: '200px' }" dataKey="id"></p-multiSelect>
+          </div>
+        </div>
+      </div>
+      <div class="ui-g-1">
+        <div class="ui-toolbar-group-right">
+          <button id="reject-decision"
+                  pButton class="ui-button-danger"
+                  (click)="reject()"
+                  icon="fa-close"
+                  pTooltip="{{'cancel'|translate}}">
+          </button>
+          <button id="confirm-decision"
+                  pButton class="ui-button-success"
+                  (click)="confirm(areaDetailsForm.valid)"
+                  pTooltip="{{'ok'|translate}}"
+                  icon="fa-check">
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</app-tool-details>

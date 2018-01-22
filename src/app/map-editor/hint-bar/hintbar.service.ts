@@ -4,13 +4,13 @@ import {Observable} from 'rxjs/Observable';
 
 @Injectable()
 export class HintBarService {
-  private hintMessageChanged = new Subject<string>();
+  private hintMessageReceived = new Subject<string>();
 
   onHintMessageReceived(): Observable<string> {
-    return this.hintMessageChanged.asObservable();
+    return this.hintMessageReceived.asObservable();
   }
 
-  emitHintMessage(value: string): void {
-    this.hintMessageChanged.next(value);
+  sendHintMessage(key: string): void {
+    this.hintMessageReceived.next(key);
   }
 }

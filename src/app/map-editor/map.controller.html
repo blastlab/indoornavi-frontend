@@ -3,10 +3,12 @@
 
   <ng-template #uploaded>
     <app-toolbar [floor]="floor"></app-toolbar>
-    <app-map [floor]="floor">
+    <app-map #map [floor]="floor">
+      <app-area-details [floor]="floor"></app-area-details>
       <app-scale-input></app-scale-input>
       <app-accept-buttons></app-accept-buttons>
     </app-map>
+    <p-contextMenu #contextMenu appendTo="body" [model]="contextMenuItems"></p-contextMenu>
     <app-hint-bar></app-hint-bar>
   </ng-template>
 

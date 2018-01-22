@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {Floor} from '../floor/floor.type';
 import {MapService} from './map.service';
 import * as d3 from 'd3';
+import {MapSvg} from '../map/map.type';
 import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Observable';
 import {Transform} from './map.type';
@@ -16,19 +17,20 @@ export class MapViewerService {
   private transformationInformer = new Subject<Transform>();
 
   static maxTranslate(mapContainer: HTMLElement, image: HTMLImageElement): [[number, number], [number, number]] {
-      const width = Math.max(mapContainer.offsetWidth, image.width),
+    const width = Math.max(mapContainer.offsetWidth, image.width),
       height = Math.max(mapContainer.offsetHeight, image.height);
-      if (image.width < mapContainer.offsetWidth && image.height < mapContainer.offsetHeight) {
-          return [[-width + image.width, -height + image.height], [width, height]]
-        } else {
-          return [[-100, -100], [width + 100, height + 100]];
-        }
+    if (image.width < mapContainer.offsetWidth && image.height < mapContainer.offsetHeight) {
+      return [[-width + image.width, -height + image.height], [width, height]]
+    } else {
+      return [[-100, -100], [width + 100, height + 100]];
     }
-  mapIsTransformed (): Observable<Transform> {
+  }
+
+  mapIsTransformed(): Observable<Transform> {
     return this.transformationInformer.asObservable();
   }
 
-  changeTransformation (transformation: Transform): void {
+  changeTransformation(transformation: Transform): void {
     this.transformationInformer.next(transformation);
   }
 
@@ -68,10 +70,10 @@ export class MapViewerService {
           .attr('x', 0)
           .attr('y', 0)
           .attr('width', image.width)
-          .attr('height', image.height)
-          .on('mousedown', () => {
-            d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`).style('cursor', 'move')
-          });
+          .attr('height', image.height);
+        // .on('mousedown', () => {
+        //   d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`).style('cursor', 'move')
+        // });
 
 
         zoom
@@ -86,12 +88,11 @@ export class MapViewerService {
             .attr('height', mapContainer.offsetHeight);
         });
 
-        resolve(map);
+        resolve(<MapSvg>{layer: map, container: g});
       };
       this.mapService.getImage(floor.imageId).subscribe((blob: Blob) => {
         image.src = URL.createObjectURL(blob);
       });
     });
   }
-
 }

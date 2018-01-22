@@ -150,3 +150,7 @@ app-auth > div {
 .wizardSink, .wizardAnchor {
   cursor: move;
 }
+
+#map {
+  cursor: move;
+}

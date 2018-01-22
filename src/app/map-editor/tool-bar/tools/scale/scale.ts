@@ -16,6 +16,7 @@ import {ScaleService} from '../../../../shared/services/scale/scale.service';
 import {Helper} from '../../../../shared/utils/helper/helper';
 import {ToolbarService} from '../../toolbar.service';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
+import {MapSvg} from '../../../../map/map.type';
 import {MapViewerService} from '../../../map.editor.service';
 import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
 
@@ -99,7 +100,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.drawScale(configuration.data.scale);
     });
 
-    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapSvg: d3.selection) => {
+    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapSvg: MapSvg) => {
       this.createSvgGroupWithScale();
     });
 
@@ -144,18 +145,14 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   setActive(): void {
     this.active = true;
     this.startCreatingScale();
-    this.translate.get('scale.basic.msg').subscribe((value: string) => {
-      this.hintBarService.emitHintMessage(value);
-    });
+    this.hintBarService.sendHintMessage('scale.basic.msg');
   }
 
   setInactive(): void {
     this.hideScale();
     this.rejectChanges();
     this.active = false;
-    this.translate.get('hint.chooseTool').subscribe((value: string) => {
-      this.hintBarService.emitHintMessage(value);
-    });
+    this.hintBarService.sendHintMessage('hint.chooseTool');
   }
 
   // implements Tool so needs to have this method

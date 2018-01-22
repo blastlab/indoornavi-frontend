@@ -1,9 +1,17 @@
 import {AfterViewInit, Component, NgZone, OnInit} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
-import {AreaEventMode, CommandType, CoordinatesSocketData, EventSocketData, MeasureSocketData, MeasureSocketDataType, PublishedMap} from '../published.type';
+import {
+  AreaEventMode,
+  CommandType,
+  CoordinatesSocketData,
+  EventSocketData,
+  MeasureSocketData,
+  MeasureSocketDataType,
+  PublishedMap
+} from '../published.type';
 import {Subject} from 'rxjs/Subject';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
-import {GroupCreated} from '../published.builder';
+import {DrawBuilder, ElementType, SvgGroupWrapper} from '../published.builder';
 import * as d3 from 'd3';
 import {SocketService} from '../../shared/services/socket/socket.service';
 import {ActivatedRoute, Params} from '@angular/router';
@@ -15,12 +23,13 @@ import {Geometry} from 'app/shared/utils/helper/geometry';
 import {Observable} from 'rxjs/Observable';
 import {Tag} from 'app/device/tag.type';
 import {Point} from 'app/map-editor/map.type';
-import {DrawBuilder} from '../published.builder';
 import {TranslateService} from '@ngx-translate/core';
-import {Area} from 'app/shared/services/area/area.type';
 import {Config} from '../../../config';
 import {ZoomService} from '../../shared/services/zoom/zoom.service';
 import {MapLoaderInformerService} from '../../shared/services/map-loader-informer/map-loader-informer.service';
+import {MapSvg} from '../../map/map.type';
+import {Area} from '../../map-editor/tool-bar/tools/area/area.type';
+import {Movable} from './movable';
 
 @Component({
   templateUrl: './socket-connector.component.html',
@@ -31,11 +40,10 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   protected activeMap: PublishedMap;
   protected d3map: d3.selection = null;
   protected pixelsToCentimeters: number;
-  protected transitionDurationTimeStep: number = 1000;
   private dataReceived = new Subject<CoordinatesSocketData>();
   private transitionEnded = new Subject<number>();
-  private tagsOnMap: Dictionary<number, GroupCreated> = new Dictionary<number, GroupCreated>();
-  private areasOnMap: Dictionary<number, GroupCreated> = new Dictionary<number, GroupCreated>();
+  private tagsOnMap: Dictionary<number, Movable> = new Dictionary<number, Movable>();
+  private areasOnMap: Dictionary<number, SvgGroupWrapper> = new Dictionary<number, SvgGroupWrapper>();
   private originListeningOnEvent: Dictionary<string, MessageEvent[]> = new Dictionary<string, MessageEvent[]>();
 
   constructor(protected ngZone: NgZone,
@@ -57,8 +65,8 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       this.publishedService.get(mapId).subscribe((map: PublishedMap) => {
         this.activeMap = map;
         if (this.activeMap.floor.imageId != null) {
-          this.mapLoaderInformer.loadCompleted().subscribe((d3map: d3.selection) => {
-            this.d3map = d3map;
+          this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg) => {
+            this.d3map = mapSvg.container;
             this.drawAreas(map.floor.id);
             const realDistanceInCentimeters = map.floor.scale.getRealDistanceInCentimeters();
             const scaleLengthInPixels = Geometry.getDistanceBetweenTwoPoints(map.floor.scale.start, map.floor.scale.stop);
@@ -126,11 +134,12 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       deviceId: number = data.coordinates.tagShortId;
     if (!this.isOnMap(deviceId)) {
       const drawBuilder = new DrawBuilder(map, {id: `tag-${deviceId}`, clazz: 'tag'}, this.zoomService);
-      const tagOnMap = drawBuilder
+      const tagOnMap: Movable = (<Movable>drawBuilder
         .createGroup()
         .addIcon({x: 0, y: 0}, this.iconService.getIcon(NaviIcons.TAG))
         .addText({x: 0, y: 36}, `${deviceId}`)
-        .place({x: coordinates.x, y: coordinates.y});
+        .place({x: coordinates.x, y: coordinates.y}))
+        .setShortId(deviceId);
       this.tagsOnMap.setValue(deviceId, tagOnMap);
     } else {
       this.moveTagOnMap(data);
@@ -144,19 +153,11 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   }
 
   private moveTagOnMap(data: CoordinatesSocketData) {
-    const tag = this.tagsOnMap.getValue(data.coordinates.tagShortId);
+    const tag: Movable = this.tagsOnMap.getValue(data.coordinates.tagShortId);
     if (tag.transitionEnded) {
-      tag.group
-        .transition()
-        .attr('x', data.coordinates.point.x)
-        .attr('y', data.coordinates.point.y)
-        .on('start', () => {
-          tag.transitionEnded = false;
-        })
-        .on('end', () => {
-          tag.transitionEnded = true;
-          this.transitionEnded.next(data.coordinates.tagShortId);
-        }).duration(this.transitionDurationTimeStep);
+      tag.move(data.coordinates.point).then(() => {
+        this.transitionEnded.next();
+      });
     }
   }
 
@@ -190,30 +191,27 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   }
 
   private drawAreas(floorId: number): void {
-    const settings = new Map<string, string>();
-    settings.set('opacity', '0.3');
-    settings.set('fill', 'grey');
-    this.areaService.getAllByFloor(floorId).subscribe((areas: Area[]) => {
+    this.areaService.getAllByFloor(floorId).first().subscribe((areas: Area[]) => {
       areas.forEach((area: Area) => {
         const drawBuilder = new DrawBuilder(this.d3map, {id: `area-${area.id}`, clazz: 'area'}, this.zoomService);
-        const scaledPoints = area.buffer.map((point: Point) => {
-          return this.scaleCoordinates(point);
-        });
         const areaOnMap = drawBuilder
           .createGroup()
-          .addPolygon(scaledPoints, settings);
+          .addPolygon(area.points);
+        areaOnMap.getLastElement(ElementType.POLYGON)
+          .style('opacity', Area.getCustomSettings().opacity)
+          .style('fill', Area.getCustomSettings().fill);
         this.areasOnMap.setValue(area.id, areaOnMap);
       });
     });
   }
 
   private handleEventData(data: EventSocketData) {
-    const areaOnMap: GroupCreated = this.areasOnMap.getValue(data.event.areaId);
+    const areaOnMap: SvgGroupWrapper = this.areasOnMap.getValue(data.event.areaId);
     if (!!areaOnMap) {
       if (data.event.mode.toString() === AreaEventMode[AreaEventMode.ON_ENTER]) {
-        areaOnMap.group.select('polygon').transition().attr('fill', 'red').delay(1000);
+        areaOnMap.getGroup().select('polygon').transition().attr('fill', 'red').delay(Movable.TRANSITION_DURATION);
       } else {
-        areaOnMap.group.select('polygon').transition().attr('fill', 'grey').delay(1000);
+        areaOnMap.getGroup().select('polygon').transition().attr('fill', 'grey').delay(Movable.TRANSITION_DURATION);
       }
     }
 
@@ -221,7 +219,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       this.originListeningOnEvent.getValue('area').forEach((event: MessageEvent) => {
         setTimeout(() => {
           event.source.postMessage({type: 'area', area: data.event}, event.origin);
-        }, 1000);
+        }, Movable.TRANSITION_DURATION);
       });
     }
   }

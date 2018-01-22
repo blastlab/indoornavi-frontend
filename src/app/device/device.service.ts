@@ -8,25 +8,6 @@ export class DeviceService {
 
   private url: string;
 
-  static emptyDeviceObjectDependentOnPath(path: string): object {
-    return path === 'sinks' ?
-      {
-        id: null,
-        shortId: null,
-        longId: null,
-        verified: false,
-        name: '',
-        configured: false
-      } :
-      {
-        id: null,
-        shortId: null,
-        longId: null,
-        verified: false,
-        name: ''
-      };
-  }
-
   static getDevicePermissionPrefix(deviceType: string): string {
     switch (deviceType) {
       case 'tags':

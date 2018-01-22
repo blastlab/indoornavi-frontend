@@ -44,6 +44,7 @@ import {
   CheckboxModule,
   ConfirmationService,
   ConfirmDialogModule,
+  ContextMenuModule,
   GrowlModule,
   MultiSelectModule,
   PanelMenuModule,
@@ -87,8 +88,11 @@ import {MdIconRegistry} from '@angular/material';
 import {SocketConnectorComponent} from './map-viewer/views/socket-connector.component';
 import {ZoomService} from './shared/services/zoom/zoom.service';
 import {MapComponent} from './map/map';
+import {AreaComponent} from './map-editor/tool-bar/tools/area/area';
+import {AreaDetailsComponent} from './map-editor/tool-bar/tools/area/details/area-details';
+import {AreaDetailsService} from './map-editor/tool-bar/tools/area/details/area-details.service';
+import {ContextMenuService} from './shared/wrappers/editable/editable.service';
 import {PublishedComponent} from './map-viewer/views/publications/publication';
-import {Scale} from './map-editor/tool-bar/tools/scale/scale.type';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -124,7 +128,9 @@ export function HttpLoaderFactory(http: Http) {
     ToolDetailsComponent,
     DeviceComponent,
     SocketConnectorComponent,
-    MapComponent
+    MapComponent,
+    AreaComponent,
+    AreaDetailsComponent
   ],
   entryComponents: [
     PublishedDialogComponent,
@@ -163,7 +169,8 @@ export function HttpLoaderFactory(http: Http) {
     TooltipModule,
     GrowlModule,
     ProgressSpinnerModule,
-    OverlayPanelModule
+    OverlayPanelModule,
+    ContextMenuModule
   ],
   providers: [
     BuildingService,
@@ -199,7 +206,9 @@ export function HttpLoaderFactory(http: Http) {
     HintBarService,
     MdIconRegistry,
     HintBarService,
-    ZoomService
+    ZoomService,
+    AreaDetailsService,
+    ContextMenuService
   ], bootstrap: [AppComponent]
 })
 
