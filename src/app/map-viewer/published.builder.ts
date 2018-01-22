@@ -19,7 +19,8 @@ export class GroupCreated {
   }
 
   move(coordinates: Point): GroupCreated {
-    if (this.transitionEnded) {
+    // !document.hidden is here to avoid queueing transitions and therefore browser freezes
+    if (this.transitionEnded && !document.hidden) {
       this.group
         .transition()
         .attr('x', coordinates.x)
