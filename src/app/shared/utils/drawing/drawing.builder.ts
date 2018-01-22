@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
-import {Point} from '../map-editor/map.type';
-import {DrawConfiguration} from './published.type';
-import {ZoomService} from '../shared/services/zoom/zoom.service';
+import {Point} from '../../../map-editor/map.type';
+import {DrawConfiguration} from '../../../map-viewer/published.type';
+import {ZoomService} from '../../services/zoom/zoom.service';
 
 export class SvgGroupWrapper {
   private elements: Map<ElementType, d3.selection[]> = new Map();

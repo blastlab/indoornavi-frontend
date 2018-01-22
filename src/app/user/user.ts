@@ -3,9 +3,9 @@ import {TranslateService} from '@ngx-translate/core';
 import {PermissionGroup, User} from './user.type';
 import {UserService} from './user.service';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
-import {CrudComponent, CrudHelper} from '../utils/crud/crud.component';
+import {CrudComponent, CrudHelper} from '../shared/components/crud/crud.component';
 import {NgForm} from '@angular/forms';
-import {MessageServiceWrapper} from 'app/utils/message.service';
+import {MessageServiceWrapper} from 'app/shared/services/message/message.service';
 import {ConfirmationService} from 'primeng/components/common/confirmationservice';
 import {PermissionGroupService} from 'app/user/permissionGroup/permissionGroup.service';
 

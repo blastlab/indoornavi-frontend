@@ -1,5 +1,5 @@
-import {SvgGroupWrapper} from '../published.builder';
-import {Point} from '../../map-editor/map.type';
+import {SvgGroupWrapper} from '../../utils/drawing/drawing.builder';
+import {Point} from '../../../map-editor/map.type';
 
 export class Movable extends SvgGroupWrapper {
   static TRANSITION_DURATION: number = 1000;
