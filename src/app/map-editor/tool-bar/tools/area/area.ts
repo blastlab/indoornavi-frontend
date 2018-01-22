@@ -7,7 +7,6 @@ import * as d3 from 'd3';
 import {Point} from '../../../map.type';
 import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../../../shared/utils/drawing/drawing.builder';
 import {MapSvg} from '../../../../map/map.type';
-import {ZoomService} from '../../../zoom.service';
 import {AreaDetailsService} from './details/area-details.service';
 import {Area, AreaBag} from './area.type';
 import {Editable} from '../../../../shared/wrappers/editable/editable';
@@ -18,6 +17,7 @@ import {Configuration} from '../../../action-bar/actionbar.type';
 import {isNumber} from 'util';
 import {Subscription} from 'rxjs/Subscription';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
+import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
 
 @Component({
   selector: 'app-area',
@@ -30,6 +30,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
   @Input() floor: Floor;
 
   active: boolean;
+  disabled: boolean;
   private firstPointSelection: d3.selection;
   private lastPointSelection: d3.selection;
   private lastPoint: Point;
@@ -184,6 +185,10 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     } else {
       this.toolbarService.emitToolChanged(this);
     }
+  }
+
+  setDisabled(value: boolean): void {
+    this.disabled = value;
   }
 
   private handleMouseClick(point: Point): void {
