@@ -57,6 +57,7 @@
     "karma-coverage-istanbul-reporter": "^0.2.0",
     "karma-jasmine": "~1.1.0",
     "karma-jasmine-html-reporter": "^0.2.2",
+    "karma-teamcity-reporter": "^1.1.0",
     "protractor": "^5.2.0",
     "sinon": "^1.17.4",
     "sinon-chai": "^2.14.0",

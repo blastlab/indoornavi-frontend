@@ -29,7 +29,7 @@ Uruchom `docker-compose exec frontend ng test --browsers Chrome_no_sandbox -w fa
 
 ### Testy e2e
 
-Uruchom `docker-compose exec frontend ng e2e`
+python3 e2e_selenium/e2e/main.py
 
 
 
