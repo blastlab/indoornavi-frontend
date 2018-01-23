@@ -23,13 +23,10 @@
       <th colspan="2" class="remaining-devices-subheader">
         <h3 class="remaining-devices-subheading">{{'device-list.searchByAllFields'|translate}}:</h3>
       </th>
-      <th *ngIf="remainingDevices.length">
+      <th>
         <input autofocus autocomplete="off" type="text"
                id="deviceNameFilter" class="form-control"
                placeholder="{{'filter.findByAllFields'|translate}}" [(ngModel)]="queryString">
-      </th>
-      <th *ngIf="!remainingDevices.length">
-        {{'device-list.noRemainingDevicesLeft'|translate}}
       </th>
     </tr>
     <tr>
@@ -37,6 +34,9 @@
       <th>{{'device.longId'|translate}}</th>
       <th>{{'device.name'|translate}}</th>
 
+    </tr>
+    <tr *ngIf="!remainingDevices.length">
+      <td colspan="3">{{'device-list.noRemainingDevicesLeft'|translate}}</td>
     </tr>
     <ng-container>
       <tr *ngFor="let device of remainingDevices | allFieldsFilter:queryString; let i = index"

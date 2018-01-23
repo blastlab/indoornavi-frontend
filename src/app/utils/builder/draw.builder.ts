@@ -60,6 +60,13 @@ export class GroupCreated {
 
   addIcon(coordinates: Point, icon: string): GroupCreated {
     this.domGroup
+      .append('circle')
+      .attr('cx', coordinates.x + 12)
+      .attr('cy', coordinates.y + 12)
+      .attr('r', '10px')
+      .classed('dragarea', true)
+      .attr('fill', 'transparent');
+    this.domGroup
       .append('svg')
       .attr('x', coordinates.x)
       .attr('y', coordinates.y)
@@ -70,6 +77,13 @@ export class GroupCreated {
   }
 
   addPointer(coordinates: Point, icon: string): GroupCreated {
+    this.domGroup
+      .append('circle')
+      .attr('cx', coordinates.x + 12)
+      .attr('cy', coordinates.y + 12)
+      .attr('r', '7px')
+      .classed('dragarea', true)
+      .attr('fill', 'transparent');
     this.domGroup
       .append('svg')
       .attr('x', coordinates.x)
@@ -140,7 +154,7 @@ export class GroupCreated {
     const children: NodeList = parentElement.childNodes;
     for (let i = 0; i < childrenCount; i++) {
       const classed = children[i].attributes['class'];
-      if (!classed || (!!classed && classed.value !== 'pointer' && classed.value !== 'group-border-box' )) {
+      if (!classed || (!!classed && classed.value !== 'pointer' && classed.value !== 'dragarea' && classed.value !== 'group-border-box' )) {
         const child = d3.select(children[i]);
         if (child.attr('stroke') !== null) {
           child.attr('stroke', newColor)

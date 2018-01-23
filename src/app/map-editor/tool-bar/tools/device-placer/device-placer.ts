@@ -320,14 +320,14 @@ export class DevicePlacerComponent implements Tool, OnInit {
     this.deviceService.getAll().subscribe((sinks: Sink[]) => {
       sinks.forEach((sink: Sink) => {
         if (sink.verified) {
-          this.verifiedDevices.push(sink);
           if (!sink.floorId || sink.floorId === this.configuration.floorId) {
             if (this.getIndexOfSinkInConfiguration(sink) >= 0) {
-              this.updateVerifiedSinkFromConfiguration(sink);
+              sink = this.updateSinkFromConfiguration(sink);
             } else {
               this.remainingDevices.push(sink);
             }
           }
+          this.verifiedDevices.push(sink);
         }
       });
     });
@@ -335,36 +335,49 @@ export class DevicePlacerComponent implements Tool, OnInit {
     this.deviceService.getAll().subscribe((anchors: Anchor[]) => {
       anchors.forEach((anchor: Anchor) => {
         if (anchor.verified) {
-          this.verifiedDevices.push(anchor);
           if (!anchor.floorId || anchor.floorId === this.configuration.floorId) {
             if (this.getIndexOfAnchorInConfiguration(anchor) >= 0) {
-              this.updateVerifiedAnchorFromConfiguration(anchor);
+              anchor = this.updateAnchorFromConfiguration(anchor);
             } else {
               this.remainingDevices.push(anchor);
             }
           }
+          this.verifiedDevices.push(anchor);
         }
       });
     });
   }
 
-  private updateVerifiedSinkFromConfiguration(sink: Sink): void {
+  private updateSinkFromConfiguration(sink: Sink): Sink {
+    let updated = sink;
     this.configuration.data.sinks.forEach((configSink) => {
       if (DevicePlacerComponent.hasSameShortId(sink, configSink.shortId)) {
-        sink.x = configSink.x;
-        sink.y = configSink.y;
-        sink.anchors = configSink.anchors;
+        updated = configSink;
       }
     });
+    return updated;
   }
 
-  private updateVerifiedAnchorFromConfiguration(anchor: Anchor): void {
+  private updateAnchorFromConfiguration(anchor: Anchor): Anchor {
+    let updated = anchor;
     this.configuration.data.anchors.forEach((configAnchor) => {
       if (DevicePlacerComponent.hasSameShortId(anchor, configAnchor.shortId)) {
-        anchor.x = configAnchor.x;
-        anchor.y = configAnchor.y;
+        updated = configAnchor;
       }
     });
+    return updated;
+  }
+
+  private updateDeviceCoordinatesFromMap(device: Anchor | Sink): Anchor | Sink {
+    const updated = device;
+    this.mapDevices.forEach( mapDevice => {
+      const identificator = DevicePlacerComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.domGroup);
+      if (DevicePlacerComponent.hasSameShortId(device, identificator)) {
+        updated.x = mapDevice.groupCreated.domGroup.attr('x');
+        updated.y = mapDevice.groupCreated.domGroup.attr('y');
+      }
+    });
+    return updated
   }
 
   private getIndexOfSinkInConfiguration(sink: Sink): number {
@@ -456,9 +469,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
               this.connectingLines.push(connectingLine);
               this.handleSelectableConnections();
               DevicePlacerComponent.showSingleConnection(connectingLine);
-              console.log(anchor);
-              console.log(sink);
-              this.addAnchorToConfiguredSink(anchor, sink);
+              this.setAnchorInConfiguredSink(anchor, sink);
               // TODO modify configuration
               this.clearSelections();
               this.resetConnecting();
@@ -582,7 +593,6 @@ export class DevicePlacerComponent implements Tool, OnInit {
     line.lockHovering();
     this.selectedLine = newSelectedLine;
     this.selectedLine.connection.on('dblclick', () => {
-      console.log('dblclick');
       this.disconnectBySelectedLine();
     });
     this.map.on('click', () => {
@@ -611,12 +621,18 @@ export class DevicePlacerComponent implements Tool, OnInit {
   }
 
   private disconnectBySelectedLine() {
-    console.log('lel');
     const anchorAsConnectable: ConnectableDevice = this.selectedLine.connectedAnchor();
+    const sinkAsConnectable: ConnectableDevice = this.selectedLine.connectedSink();
     const mapAnchor = this.findMapDevice(DevicePlacerComponent.getShortIdFromGroupSelection(anchorAsConnectable.domGroup));
+    let anchor = this.findVerifiedDevice(DevicePlacerComponent.getShortIdFromGroupSelection(anchorAsConnectable.domGroup));
+    let sink = <Sink>this.findVerifiedDevice(DevicePlacerComponent.getShortIdFromGroupSelection(sinkAsConnectable.domGroup));
     DevicePlacerComponent.unblockSelectableBehavior(mapAnchor);
     this.removeConnectingLine(this.selectedLine);
     this.clearSelectedLine();
+    sink = this.removeAnchorFromConfiguredSink(anchor, sink);
+    anchor = this.updateDeviceCoordinatesFromMap(anchor);
+    this.setNotConnectedAnchorInConfiguration(anchor);
+    this.setSinkInConfiguration(sink);
   }
 
   private createConnection(sink: Expandable, anchor: Expandable, lineConfig: DrawConfiguration): ConnectingLine {
@@ -775,7 +791,25 @@ export class DevicePlacerComponent implements Tool, OnInit {
       connectable: new ConnectableDevice(droppedDevice)
     };
     this.mapDevices.push(mapDevice);
+    this.subscribeForDraggedEvent(mapDevice);
     return mapDevice;
+  }
+
+  private subscribeForDraggedEvent(expandable: Expandable): void {
+    expandable.connectable.afterDragEvent().subscribe( (draggedDevice: d3.selection) => {
+      let device = this.findVerifiedDevice(DevicePlacerComponent.getShortIdFromGroupSelection(draggedDevice));
+      device = this.updateDeviceCoordinatesFromMap(device);
+      if (DevicePlacerComponent.isSinkType(device)) {
+        this.setSinkInConfiguration(<Sink>device)
+      } else if (!!expandable.connectable.anchorConnection) {
+        const sinkAsConnectable = expandable.connectable.anchorConnection.connectedSink();
+        const sink = <Sink>this.findVerifiedDevice(DevicePlacerComponent.getShortIdFromGroupSelection(sinkAsConnectable.domGroup));
+        sink.anchors.forEach( anchor => {this.updateDeviceCoordinatesFromMap(anchor)});
+        this.setSinkInConfiguration(sink);
+      } else {
+        this.setNotConnectedAnchorInConfiguration(device);
+      }
+    });
   }
 
   private placeDeviceOnMap(device: Anchor | Sink, coordinates: Point): void {
@@ -799,12 +833,12 @@ export class DevicePlacerComponent implements Tool, OnInit {
         device.x = coordinates.x;
         device.y = coordinates.y;
         if (DevicePlacerComponent.isSinkType(device)) {
-          this.addSinkToConfiguration(<Sink>device);
+          this.setSinkInConfiguration(<Sink>device);
         } else if (!!this.chosenSink) {
-          this.addAnchorToConfiguredSink(device, this.chosenSink);
+          this.setAnchorInConfiguredSink(device, this.chosenSink);
           DevicePlacerComponent.hideSingleConnection(connectingLine)
         } else {
-          this.addAnchorToConfiguration(device);
+          this.setNotConnectedAnchorInConfiguration(device);
         }
         this.manageSingleSelectable(expandableMapObject);
         expandableMapObject.selectable.select();
@@ -839,17 +873,17 @@ export class DevicePlacerComponent implements Tool, OnInit {
     }
   }
 
-  private addSinkToConfiguration(sink: Sink): void {
+  private setSinkInConfiguration(sink: Sink): void {
     this.configurationService.setSink(sink);
   }
 
-  private addAnchorToConfiguredSink(anchor: Anchor, sink: Sink): void {
-    this.chosenSink.anchors.push(anchor);
+  private setAnchorInConfiguredSink(anchor: Anchor, sink: Sink): void {
+    sink.anchors.push(anchor);
     this.configurationService.removeAnchor(anchor);
     this.configurationService.setSink(sink);
   }
 
-  private addAnchorToConfiguration(anchor: Anchor): void {
+  private setNotConnectedAnchorInConfiguration(anchor: Anchor): void {
     this.configurationService.setAnchor(anchor);
   }
 
@@ -865,7 +899,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
           const anchorOnMap = this.findMapDevice(connectedAnchor.shortId);
           this.removeConnectingLine(anchorOnMap.connectable.anchorConnection);
           anchorOnMap.connectable.anchorConnection = null;
-          this.addAnchorToConfiguration(connectedAnchor);
+          this.setNotConnectedAnchorInConfiguration(connectedAnchor);
         });
         mapDevice.connectable.sinkConnections.forEach((sinkConnection) => {
           this.removeConnectingLine(sinkConnection);
@@ -876,7 +910,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
     } else {
       if (!!mapDevice.connectable.anchorConnection) {
         this.removeConnectingLine(mapDevice.connectable.anchorConnection);
-        this.removeAnchorFromConfiguredSink(device);
+        this.removeAnchorFromConfiguredSink(device, this.chosenSink);
       } else {
         this.removeAnchorFromConfiguration(device);
       }
@@ -907,15 +941,16 @@ export class DevicePlacerComponent implements Tool, OnInit {
     this.remainingDevices.push(sink);
   }
 
-  private removeAnchorFromConfiguredSink(anchor: Anchor): void {
-    const index = this.chosenSink.anchors.findIndex(a => a.shortId === anchor.shortId);
+  private removeAnchorFromConfiguredSink(anchor: Anchor, sink: Sink): Sink {
+    const index = sink.anchors.findIndex(a => a.shortId === anchor.shortId);
     if (index >= 0) {
-      this.chosenSink.anchors.splice(index, 1);
-      this.configurationService.setSink(this.chosenSink);
+      sink.anchors.splice(index, 1);
+      this.configurationService.setSink(sink);
       this.remainingDevices.push(anchor);
     } else {
       throw new Error(`Anchor with id: ${anchor.shortId} has been not found in Sink connected anchors.`);
     }
+    return sink;
   }
 
   private removeAnchorFromConfiguration(anchor: Anchor): void {

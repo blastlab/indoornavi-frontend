@@ -1,10 +1,13 @@
 import {GroupCreated} from '../draw.builder';
 import * as d3 from 'd3';
+import {Subject} from 'rxjs/Subject';
+import {Observable} from 'rxjs/Observable';
 
 export class Draggable {
   public container: d3.selection;
   public domGroup: d3.selection;
   private isDraggedNow: boolean;
+  private draggedEmitter: Subject<d3.selection> = new Subject<d3.selection>();
   protected dragBehavior: d3.drag;
   protected mapAttributes: { width: number, height: number };
 
@@ -14,7 +17,7 @@ export class Draggable {
     this.mapAttributes = {width: this.container.attr('width'), height: this.container.attr('height')};
   }
 
-  public dragOn(withButtons: boolean) {
+  public dragOn(withButtons: boolean): void {
     this.dragBehavior = d3.drag()
       .on('drag.draggable', () => {
         this.isDraggedNow = true;
@@ -34,17 +37,21 @@ export class Draggable {
     this.domGroup.call(this.dragBehavior);
   }
 
-  public dragOff() {
+  public dragOff(): void {
     this.domGroup.on('.drag', null);
     this.domGroup.select('.pointer').attr('stroke', 'black');
     this.domGroup.style('cursor', 'pointer');
   }
 
-  private updateConfiguration() {
-    // alert('update config'); // TODO fire event for dragEnd as observable to mapDevice object
+  public afterDragEvent(): Observable<d3.selection> {
+    return this.draggedEmitter.asObservable();
   }
 
-  private dragGroupBehavior() {
+  private updateConfiguration(): void {
+    this.draggedEmitter.next(this.domGroup);
+  }
+
+  private dragGroupBehavior(): void {
     let dx = parseInt(this.domGroup.attr('x'), 10);
     let dy = parseInt(this.domGroup.attr('y'), 10);
     dx += d3.event.dx;
@@ -56,7 +63,7 @@ export class Draggable {
       .attr('y', yAtMap);
   }
 
-  private dragAcceptButtonsBehavior() {
+  private dragAcceptButtonsBehavior(): void {
     const buttons = d3.select('#accept-buttons');
     let bx = parseInt(buttons.style('left'), 10);
     let by = parseInt(buttons.style('top'), 10);
