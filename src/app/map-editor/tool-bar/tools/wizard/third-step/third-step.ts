@@ -1,9 +1,9 @@
 import * as d3 from 'd3';
 import {AnchorSuggestedPositions} from '../../../../../device/anchor.type';
 import {Point} from '../../../../map.type';
-import {NaviIcons} from '../../../../../utils/drawing/icon.service';
-import {SocketMessage, Step, WizardData, WizardStep} from '../wizard.type';
+import {ObjectParams, SocketMessage, Step, WizardData, WizardStep} from '../wizard.type';
 import {SelectItem} from 'primeng/primeng';
+import {NaviIcons} from '../../../../../shared/services/drawing/icon.service';
 import {MapObjectParams} from '../../../../../utils/drawing/drawing.service';
 
 export class ThirdStep implements WizardStep {
@@ -43,7 +43,7 @@ export class ThirdStep implements WizardStep {
     };
   }
 
-  setSelectedItemId(id: number) {
+  setSelectedItemId(id: number): void {
     this.selectedItemId = id;
   }
 
@@ -87,7 +87,7 @@ export class ThirdStep implements WizardStep {
     };
   }
 
-  updateWizardData(data: WizardData, id: number, coordinates: Point) {
+  updateWizardData(data: WizardData, id: number, coordinates: Point): void {
     data.secondAnchorShortId = id;
     data.secondAnchorPosition = coordinates;
   }

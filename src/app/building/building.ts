@@ -1,14 +1,14 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {Building} from './building.type';
 import {BuildingService} from './building.service';
+import {NgForm} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
-import {CrudComponent, CrudHelper} from '../utils/crud/crud.component';
+import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
 import {Complex} from '../complex/complex.type';
 import {ConfirmationService} from 'primeng/primeng';
-import {NgForm} from '@angular/forms';
-import {BreadcrumbService} from '../utils/breadcrumbs/breadcrumb.service';
-import {MessageServiceWrapper} from '../utils/message.service';
+import {MessageServiceWrapper} from '../shared/services/message/message.service';
+import {CrudComponent, CrudHelper} from '../shared/components/crud/crud.component';
 
 @Component({
   templateUrl: 'building.html',
@@ -106,5 +106,3 @@ export class BuildingComponent implements OnInit, CrudComponent {
     this.router.navigate(['/complexes', this.complex.id, 'buildings', building.id, 'floors']);
   }
 }
-
-

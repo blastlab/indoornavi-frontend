@@ -1,10 +1,10 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {UserService} from 'app/user/user.service';
 import {TranslateService} from '@ngx-translate/core';
-import {BreadcrumbService} from '../../utils/breadcrumbs/breadcrumb.service';
 import {NgForm} from '@angular/forms';
-import {CrudHelper} from '../../utils/crud/crud.component';
-import {MessageServiceWrapper} from '../../utils/message.service';
+import {MessageServiceWrapper} from '../../shared/services/message/message.service';
+import {CrudHelper} from '../../shared/components/crud/crud.component';
+import {BreadcrumbService} from '../../shared/services/breadcrumbs/breadcrumb.service';
 
 @Component({
   templateUrl: 'changePassword.html'

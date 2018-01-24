@@ -1,11 +1,10 @@
 import * as d3 from 'd3';
 import * as Collections from 'typescript-collections';
 import {Point} from '../../../../map.type';
-import {MapObjectParams} from '../../../../../utils/drawing/drawing.service';
-import {NaviIcons} from '../../../../../utils/drawing/icon.service';
-import {FirstStepMessage, Step, WizardData, WizardStep} from '../wizard.type';
+import {FirstStepMessage, ObjectParams, Step, WizardData, WizardStep} from '../wizard.type';
 import {Sink} from '../../../../../device/sink.type';
 import {SelectItem} from 'primeng/primeng';
+import {NaviIcons} from '../../../../../shared/services/drawing/icon.service';
 
 export class FirstStep implements WizardStep {
   private selectedItemId: number;
@@ -57,7 +56,7 @@ export class FirstStep implements WizardStep {
     return 'wizard.title.step1';
   }
 
-  setSelectedItemId(id: number) {
+  setSelectedItemId(id: number): void {
     this.selectedItemId = id;
   }
 
@@ -68,7 +67,7 @@ export class FirstStep implements WizardStep {
     };
   }
 
-  updateWizardData(wizardData: WizardData, id: number, coordinates: Point) {
+  updateWizardData(wizardData: WizardData, id: number, coordinates: Point): void {
     wizardData.sinkShortId = id;
     wizardData.sinkPosition = coordinates;
   }

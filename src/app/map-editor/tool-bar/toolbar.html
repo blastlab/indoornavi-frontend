@@ -1,35 +1,11 @@
-<div class="map-toolbar">
-  <h2>Tools</h2>
-  <ul class="tools-list">
-    <li class="tool">
-      <app-scale></app-scale>
-    </li>
-    <li>
-      <app-wizard [floor]="floor"></app-wizard>
-    </li>
-    <li>
-      <app-device-placer></app-device-placer>
-    </li>
-    <li>
-      <button pButton class="ui-button-secondary"
-              disabled="disabled"
-              pTooltip="{{'toll'|translate}}"
-              icon="fa fa-usd" iconPos="left"
-      ></button>
-    </li>
-    <li>
-      <button pButton class="ui-button-secondary"
-              disabled="disabled"
-              pTooltip="{{'timeline'|translate}}"
-              icon="fa fa-calendar" iconPos="left"
-      ></button>
-    </li>
-    <li>
-      <button pButton class="ui-button-secondary"
-              disabled="disabled"
-              pTooltip="{{'settings.remote'|translate}}"
-              icon="fa fa-cogs" iconPos="left"
-      ></button>
-    </li>
-  </ul>
-</div>
+<p-toolbar id="map-toolbar">
+  <div class="ui-toolbar-group-left">
+    <app-scale></app-scale>
+    <app-wizard #tool [floor]="floor"></app-wizard>
+    <app-area [floor]="floor"></app-area>
+    <app-device-placer></app-device-placer>
+  </div>
+  <div class="ui-toolbar-group-right">
+    <app-actionbar [floor]="floor"></app-actionbar>
+  </div>
+</p-toolbar>

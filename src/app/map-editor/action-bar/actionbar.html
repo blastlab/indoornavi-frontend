@@ -1,24 +1,34 @@
 <div id="actionbar">
-  <button pButton class="ui-button-success"
-          id="save-draft"
-          [disabled]="saveButtonDisabled" (click)="saveDraft()"
-          label="{{'saveDraft'|translate}}"
-          icon="fa fa-floppy-o" iconPos="left"
-  ></button>
-  <button pButton class="ui-button-secondary"
-          [disabled]="resetButtonDisabled" (click)="resetToPreviousPublication()"
-          pTooltip="{{'resetToPrevious'|translate}}"
-          icon="fa fa-undo" iconPos="left"
-  ></button>
-  <button pButton class="ui-button-warning"
-          [disabled]="publishButtonDisabled" (click)="publish()"
-          pTooltip="{{'publish'|translate}}"
-          icon="fa fa-file-text" iconPos="left"
-  ></button>
+    <!--menu-buttons are wrapped with span, so tooltip can be displayed even whenbutton is disabled -->
+  <span pTooltip="{{'saveDraft'|translate}}">
+    <buttonpButton
+            id="save-draft"
+            [disabled]="saveButtonDisabled" (click)="saveDraft()"
 
-  <span [@messageState]="messageSpanState" (@messageState.done)="messageSpanAnimationDone()" id="message">The draft has been saved.</span>
+            icon="fa -floppy-o" >
+    </button>
+    </span>
+  <span pTooltip="{{'resetToPrevious'|translate}}">
+    <button pButton
+            [disabled]="resetButtonDisabled" (click)="resetToPreviousPublication()"
+
+            icon="fa -undo" >
+    </button>
+    </span>
+  <span pTooltip="{{'publish'|translate}}">
+    <button pButton
+            [disabled]="publishButtonDisabled" (click)="publish()"
+
+            icon="fa -upload">
+    </button>
+
+  </span>
 </div>
 
 <app-published-dialog></app-published-dialog>
 
-<p-confirmDialog icon="fa-question-circle" width="425"></p-confirmDialog>
+<p-confirmDialog key="prePublish"
+                 rejectLabel="{{'configuration.prePublishConfirmDialog.no'|translate}}"
+                 acceptLabel="{{'configuration.prePublishConfirmDialog.yes'|translate}}" icon="fa-question-circle" width="625">
+</p-confirmDialog>
+<p-confirmDialog key="preUndo" icon="fa-question-circle" width="425"></p-confirmDialog>

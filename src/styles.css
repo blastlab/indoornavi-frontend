@@ -1,8 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 body {
-  display: block;
   font-family: 'Roboto', sans-serif;
-  margin: 20px 30px;
+  margin: 0.5em;
 }
 
 .error-toast {
@@ -42,12 +41,6 @@ body {
 
 .hidden {
   visibility: hidden;
-}
-
-#map-container {
-  max-width: 100%;
-  max-height: 800px;
-  overflow: auto;
 }
 
 @import '~@angular/material/core/theming/prebuilt/deeppurple-amber.css';
@@ -152,4 +145,12 @@ app-auth > div {
 
 .ui-toolbar {
   margin-bottom: 10px;
+}
+
+.wizardSink, .wizardAnchor {
+  cursor: move;
+}
+
+#map {
+  cursor: move;
 }

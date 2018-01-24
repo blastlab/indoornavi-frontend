@@ -1,0 +1,19 @@
+.ui-dialog {
+  left: 0 !important;
+  top: 0 !important;
+  position: absolute !important;
+}
+
+.ui-dialog .ui-dialog-content {
+  padding: 8px 0 0 0 !important;
+  overflow: visible;
+}
+
+.ui-dialog-content:before, .ui-dialog-content:after {
+  content: "";
+  display: table
+}
+
+.ui-dialog-content:after {
+  clear: both;
+}

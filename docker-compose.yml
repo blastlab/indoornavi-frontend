@@ -1,6 +1,6 @@
 version: '2'
 services:
-  
+
   frontend:
     image: teracy/angular-cli:1.0.0
     volumes:
@@ -10,10 +10,8 @@ services:
     container_name:
       frontend
     working_dir: /app
-    command: bash -c "npm install; ng serve --host=0.0.0.0 --disable-host-check"    
+    command: bash -c "npm install; ng serve --host=0.0.0.0 --disable-host-check"
 
-
-    
   core:
     build: backend
     container_name:
@@ -37,7 +35,7 @@ services:
       service: db
     container_name:
       db
-  
+
   liquibase:
     extends:
       file: backend/database/docker-compose.yml
@@ -51,7 +49,7 @@ services:
       service: core_compiler
     container_name:
       core_compiler
-  
+
 
 volumes:
   # For Liquibase container.

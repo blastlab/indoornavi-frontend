@@ -2,9 +2,13 @@
   <ng-container *ngIf="imageUploaded; then uploaded else not_uploaded"></ng-container>
 
   <ng-template #uploaded>
-    <app-actionbar [floor]="floor"></app-actionbar>
     <app-toolbar [floor]="floor"></app-toolbar>
-    <app-map-viewer [floor]="floor"></app-map-viewer>
+    <app-map #map [floor]="floor">
+      <app-area-details [floor]="floor"></app-area-details>
+      <app-scale-input></app-scale-input>
+      <app-accept-buttons></app-accept-buttons>
+    </app-map>
+    <p-contextMenu #contextMenu appendTo="body" [model]="contextMenuItems"></p-contextMenu>
     <app-hint-bar></app-hint-bar>
   </ng-template>
 

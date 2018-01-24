@@ -1,11 +1,10 @@
 import * as d3 from 'd3';
 import {AnchorDistance} from '../../../../../device/anchor.type';
 import {Point} from '../../../../map.type';
-import {NaviIcons} from '../../../../../utils/drawing/icon.service';
-import {DrawingService, MapObjectParams} from '../../../../../utils/drawing/drawing.service';
-import {SecondStepMessage, Step, WizardData, WizardStep} from '../wizard.type';
 import {SelectItem} from 'primeng/primeng';
-import {Geometry} from '../../../../../utils/helper/geometry';
+import {WizardData, WizardStep, SecondStepMessage, Step, ObjectParams} from '../wizard.type';
+import {NaviIcons} from 'app/shared/services/drawing/icon.service';
+import {Geometry} from '../../../../../shared/utils/helper/geometry';
 
 export class SecondStep implements WizardStep {
   private selectedItemId: number;
@@ -46,7 +45,7 @@ export class SecondStep implements WizardStep {
 
   beforePlaceOnMap(selectedItem: number): void {
     const map = d3.select('#map');
-    const boxMargin = DrawingService.boxSize / 2;
+    const boxMargin = 20 ;
     const sinkX = map.select('.wizardSink').attr('x');
     const sinkY = map.select('.wizardSink').attr('y');
     map.append('circle')
@@ -82,7 +81,7 @@ export class SecondStep implements WizardStep {
     return 'wizard.title.step2';
   }
 
-  setSelectedItemId(id: number) {
+  setSelectedItemId(id: number): void {
     this.selectedItemId = id;
   }
 
@@ -97,7 +96,7 @@ export class SecondStep implements WizardStep {
     };
   }
 
-  updateWizardData(data: WizardData, id: number, coordinates: Point) {
+  updateWizardData(data: WizardData, id: number, coordinates: Point): void {
     data.firstAnchorShortId = id;
     data.firstAnchorPosition = coordinates;
     data.degree = Geometry.calculateDegree(data.sinkPosition, coordinates);

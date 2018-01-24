@@ -2,12 +2,12 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {PermissionGroup, User} from './user.type';
 import {UserService} from './user.service';
-import {PermissionGroupService} from './permissionGroup/permissionGroup.service';
-import {CrudComponent, CrudHelper} from '../utils/crud/crud.component';
+import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
+import {CrudComponent, CrudHelper} from '../shared/components/crud/crud.component';
 import {NgForm} from '@angular/forms';
-import {ConfirmationService} from 'primeng/primeng';
-import {BreadcrumbService} from '../utils/breadcrumbs/breadcrumb.service';
-import {MessageServiceWrapper} from '../utils/message.service';
+import {MessageServiceWrapper} from 'app/shared/services/message/message.service';
+import {ConfirmationService} from 'primeng/components/common/confirmationservice';
+import {PermissionGroupService} from 'app/user/permissionGroup/permissionGroup.service';
 
 @Component({
   templateUrl: 'user.html',

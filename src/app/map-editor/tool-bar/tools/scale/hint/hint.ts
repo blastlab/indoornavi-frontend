@@ -3,12 +3,12 @@ import * as d3 from 'd3';
 import {TranslateService} from '@ngx-translate/core';
 import {Measure, Scale} from '../scale.type';
 import {ScaleHintService} from './hint.service';
-import {ScaleService} from '../scale.service';
+import {ScaleService} from '../../../../../shared/services/scale/scale.service';
+import {Geometry} from '../../../../../shared/utils/helper/geometry';
 
 @Component({
   selector: 'app-scale-hint',
-  templateUrl: './hint.html',
-  styleUrls: ['./hint.css']
+  templateUrl: './hint.html'
 })
 export class ScaleHintComponent implements OnDestroy, OnInit {
   private scale: Scale;
@@ -37,11 +37,11 @@ export class ScaleHintComponent implements OnDestroy, OnInit {
 
   public showScaleValue() {
     if (!!this.scale && !!this.scale.measure) {
-      let unit: string;
-      (this.scale.measure.toString() === Measure[Measure.CENTIMETERS]) ? unit = 'cm' : unit = 'm';
+      const unit = (this.scale.measure.toString() === Measure[Measure.CENTIMETERS]) ? 'cm' : 'm',
+        pixels = Math.round(Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop));
       this.translate.get('scale').subscribe((value: string) => {
         this.scaleHint
-          .text(value + ': ' + this.scale.realDistance + ' ' + unit);
+          .text(`${value}: ${pixels}px = ${this.scale.realDistance}${unit}`);
       });
     } else {
       this.translate.get('scale.isNotSet').subscribe((value: string) => {

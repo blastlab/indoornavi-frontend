@@ -1,11 +1,12 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ScaleInputService} from './input.service';
 import {Measure, Scale} from '../scale.type';
-import {ScaleService} from '../scale.service';
-import {MessageServiceWrapper} from '../../../../../utils/message.service';
+import {ScaleService} from '../../../../../shared/services/scale/scale.service';
+import {MessageServiceWrapper} from '../../../../../shared/services/message/message.service';
 import {SelectItem} from 'primeng/primeng';
 import {Subscription} from 'rxjs/Subscription';
 import {TranslateService} from '@ngx-translate/core';
+import {ToolDetailsComponent} from '../../../shared/details/tool-details';
 
 @Component({
   selector: 'app-scale-input',
@@ -13,13 +14,15 @@ import {TranslateService} from '@ngx-translate/core';
   styleUrls: ['./input.css']
 })
 export class ScaleInputComponent implements OnInit, OnDestroy {
+  @ViewChild('toolDetails')
+  toolDetails: ToolDetailsComponent;
+
   visible: boolean = false;
   scale: Scale;
   measures: SelectItem[] = [];
   // workaround for this: https://github.com/primefaces/primeng/issues/4485
   placeholder: string = '...';
-  private formContainer: HTMLElement;
-  private coordinatesChangedSubscription: Subscription;
+
   private scaleChangedSubscription: Subscription;
   private scaleVisibilityChangedSubscription: Subscription;
 
@@ -40,7 +43,6 @@ export class ScaleInputComponent implements OnInit, OnDestroy {
     this.translateService.get('scale.measure.select').subscribe((value: string) => {
       this.placeholder = value;
     });
-    this.formContainer = document.getElementById('scaleInput');
     const objValues = Object.keys(Measure).map(k => Measure[k]);
     this.measures = objValues.filter(v => typeof v === 'string').map((value: string) => {
       return {
@@ -48,15 +50,9 @@ export class ScaleInputComponent implements OnInit, OnDestroy {
         value: value
       }
     });
-    this.coordinatesChangedSubscription = this.scaleService.coordinatesChanged.subscribe(
-      coordinates => {
-        this.formContainer.style.top = coordinates.y + 'px';
-        this.formContainer.style.left = coordinates.x + 'px';
-      });
 
-    this.scaleVisibilityChangedSubscription = this.scaleService.scaleVisibilityChanged.subscribe(
-      isScaleVisible => {
-        this.visible = isScaleVisible;
+    this.scaleVisibilityChangedSubscription = this.scaleService.scaleVisibilityChanged.subscribe((isScaleVisible: boolean) => {
+        isScaleVisible ? this.toolDetails.show() : this.toolDetails.hide();
       });
 
     this.scaleChangedSubscription = this.scaleService.scaleChanged.subscribe(
@@ -66,12 +62,15 @@ export class ScaleInputComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.coordinatesChangedSubscription.unsubscribe();
-    this.scaleChangedSubscription.unsubscribe();
-    this.scaleVisibilityChangedSubscription.unsubscribe();
+    if (!!this.scaleChangedSubscription) {
+      this.scaleChangedSubscription.unsubscribe();
+    }
+    if (!!this.scaleVisibilityChangedSubscription) {
+      this.scaleVisibilityChangedSubscription.unsubscribe();
+    }
   }
 
-  public confirm() {
+  confirm() {
     if (!this.scale.realDistance && !Number.isInteger(this.scale.realDistance)) {
       this.messageService.failed('scale.mustBeInteger');
       return;
@@ -82,5 +81,13 @@ export class ScaleInputComponent implements OnInit, OnDestroy {
       this.messageService.success('scale.setSuccess');
     }
   }
+  reject() {
+    this.messageService.success('scale.changesRejected');
+    this.scaleInputService.publishSaveClicked(null);
+    this.scaleInputService.publishChangesRejected();
+  }
 
+  emitScaleHide() {
+    this.scaleInputService.publishVisibilityChange(false);
+  }
 }
