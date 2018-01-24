@@ -1,18 +1,18 @@
 import * as d3 from 'd3';
-import {GroupCreated} from '../draw.builder';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
+import {SvgGroupWrapper} from 'app/shared/utils/drawing/drawing.builder';
 
 export class Selectable {
   private selectedEmitter: Subject<d3.selection> = new Subject<d3.selection>();
   private lockedSelecting: boolean;
 
 
-  constructor(protected group: GroupCreated) {
+  constructor(protected group: SvgGroupWrapper) {
   }
 
   private emitSelectedEvent(): void {
-    this.selectedEmitter.next(this.group.domGroup);
+    this.selectedEmitter.next(this.group.group);
   }
 
   public onSelected(): Observable<d3.selection> {
@@ -25,24 +25,24 @@ export class Selectable {
 
   public handleHovering(): void {
     this.unlockHovering();
-    const onMouseEnterListener = this.group.domGroup.on('mouseenter');
-    const onMouseLeaveListener = this.group.domGroup.on('mouseleave');
+    const onMouseEnterListener = this.group.group.on('mouseenter');
+    const onMouseLeaveListener = this.group.group.on('mouseleave');
     if (onMouseEnterListener === undefined) {
-      this.group.domGroup.on('mouseenter', () => {
+      this.group.group.on('mouseenter', () => {
         this.highlightSet();
       });
     } else {
-        this.group.domGroup.on('mouseenter', () => {
+        this.group.group.on('mouseenter', () => {
           this.highlightSet();
           onMouseEnterListener();
         });
     }
     if (onMouseLeaveListener === undefined) {
-        this.group.domGroup.on('mouseleave', () => {
+        this.group.group.on('mouseleave', () => {
           this.highlightReset();
         });
     } else {
-        this.group.domGroup.on('mouseleave', () => {
+        this.group.group.on('mouseleave', () => {
           this.highlightReset();
           onMouseLeaveListener();
         });
@@ -50,7 +50,7 @@ export class Selectable {
   }
 
   public selectOn(): void {
-    this.group.domGroup.on('click.select', () => {
+    this.group.group.on('click.select', () => {
       this.select();
       event.stopPropagation();
     });
@@ -66,7 +66,7 @@ export class Selectable {
   }
 
   public selectOff(): void {
-    this.group.domGroup.on('click.select', null);
+    this.group.group.on('click.select', null);
     this.lockHovering();
   }
 

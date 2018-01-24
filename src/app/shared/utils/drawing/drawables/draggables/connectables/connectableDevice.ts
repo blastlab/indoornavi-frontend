@@ -1,15 +1,15 @@
 import {ConnectingLine} from './connection';
 import * as d3 from 'd3';
-import {GroupCreated} from '../../draw.builder';
 import {Draggable} from '../draggable';
+import {SvgGroupWrapper} from 'app/shared/utils/drawing/drawing.builder';
 
 
 export class ConnectableDevice extends Draggable {
   public sinkConnections: ConnectingLine[];
   public anchorConnection: ConnectingLine;
 
-  constructor(groupCreated: GroupCreated) {
-    super(groupCreated);
+  constructor(group: SvgGroupWrapper) {
+    super(group);
     this.sinkConnections = [];
     this.anchorConnection = null;
     this.handleHovering();
@@ -17,15 +17,15 @@ export class ConnectableDevice extends Draggable {
 
   public dragOn(withButtons: boolean) {
     super.dragOn(withButtons);
-    this.domGroup.call(this.dragBehavior.on('drag.connectable', () => {
+    this.group.call(this.dragBehavior.on('drag.connectable', () => {
       this.dragMapDeviceBehavior();
     }));
   }
 
   public dragOff() {
-    this.domGroup.on('.drag', null);
-    this.domGroup.select('.pointer').attr('stroke', 'black');
-    this.domGroup.style('cursor', 'pointer');
+    this.group.on('.drag', null);
+    this.group.select('.pointer').attr('stroke', 'black');
+    this.group.style('cursor', 'pointer');
   }
 
   public lockConnections() {
@@ -49,10 +49,10 @@ export class ConnectableDevice extends Draggable {
   }
 
   public handleHovering() {
-      this.domGroup.on('mouseenter', () => {
+      this.group.on('mouseenter', () => {
         this.showConnections();
       });
-      this.domGroup.on('mouseout', () => {
+      this.group.on('mouseout', () => {
         this.hideConnections();
       });
   }
@@ -78,8 +78,8 @@ export class ConnectableDevice extends Draggable {
   }
 
   private dragMapDeviceBehavior() {
-    let dx = parseInt(this.domGroup.attr('x'), 10);
-    let dy = parseInt(this.domGroup.attr('y'), 10);
+    let dx = parseInt(this.group.attr('x'), 10);
+    let dy = parseInt(this.group.attr('y'), 10);
     dx += d3.event.dx;
     dy += d3.event.dy;
     const xAtMap = Math.max(0, Math.min(this.mapAttributes.width, dx));

@@ -1,8 +1,7 @@
 import * as d3 from 'd3';
 import {ConnectableDevice} from './connectableDevice';
-import {Point} from '../../../../map-editor/map.type';
 import {Selectable} from '../../selectables/selectable';
-import {GroupCreated} from '../../draw.builder';
+import {SvgGroupWrapper} from '../../../drawing.builder';
 
 export class ConnectingLine extends Selectable {
   public id: string;
@@ -11,7 +10,7 @@ export class ConnectingLine extends Selectable {
   private anchor: ConnectableDevice;
   private lockVisibility: boolean = false;
 
-  constructor(group: GroupCreated,
+  constructor(group: SvgGroupWrapper,
               sink: ConnectableDevice,
               anchor: ConnectableDevice,
               id: string) {
@@ -51,12 +50,12 @@ export class ConnectingLine extends Selectable {
   }
 
   private drawConnectingLine(): void {
-    this.connection = this.group.domGroup.append('line')
+    this.connection = this.group.group.append('line')
       .attr('id', this.id)
-      .attr('x1', this.sink.domGroup.attr('x'))
-      .attr('y1', this.sink.domGroup.attr('y'))
-      .attr('x2', this.anchor.domGroup.attr('x'))
-      .attr('y2', this.anchor.domGroup.attr('y'))
+      .attr('x1', this.sink.group.attr('x'))
+      .attr('y1', this.sink.group.attr('y'))
+      .attr('x2', this.anchor.group.attr('x'))
+      .attr('y2', this.anchor.group.attr('y'))
       .attr('stroke-linecap', 'round')
       .attr('stroke', 'none');
   }

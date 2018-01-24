@@ -1,27 +1,23 @@
 <div id="actionbar">
     <!--menu-buttons are wrapped with span, so tooltip can be displayed even whenbutton is disabled -->
   <span pTooltip="{{'saveDraft'|translate}}">
-    <buttonpButton
+    <button pButton
             id="save-draft"
             [disabled]="saveButtonDisabled" (click)="saveDraft()"
-
-            icon="fa -floppy-o" >
+            icon="fa-floppy-o">
     </button>
     </span>
   <span pTooltip="{{'resetToPrevious'|translate}}">
     <button pButton
             [disabled]="resetButtonDisabled" (click)="resetToPreviousPublication()"
-
-            icon="fa -undo" >
+            icon="fa-undo">
     </button>
     </span>
   <span pTooltip="{{'publish'|translate}}">
     <button pButton
             [disabled]="publishButtonDisabled" (click)="publish()"
-
-            icon="fa -upload">
+            icon="fa-upload">
     </button>
-
   </span>
 </div>
 

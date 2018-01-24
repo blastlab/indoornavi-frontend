@@ -1,18 +1,18 @@
-import {GroupCreated} from '../draw.builder';
 import * as d3 from 'd3';
 import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Observable';
+import {SvgGroupWrapper} from '../../drawing.builder';
 
 export class Draggable {
   public container: d3.selection;
-  public domGroup: d3.selection;
+  public group: d3.selection;
   private isDraggedNow: boolean;
   private draggedEmitter: Subject<d3.selection> = new Subject<d3.selection>();
   protected dragBehavior: d3.drag;
   protected mapAttributes: { width: number, height: number };
 
-  constructor(groupCreated: GroupCreated) {
-    this.domGroup = groupCreated.domGroup;
+  constructor(groupCreated: SvgGroupWrapper) {
+    this.group = groupCreated.group;
     this.container = groupCreated.container;
     this.mapAttributes = {width: this.container.attr('width'), height: this.container.attr('height')};
   }
@@ -32,15 +32,15 @@ export class Draggable {
           this.isDraggedNow = !this.isDraggedNow;
         }
       });
-    this.domGroup.select('.pointer').attr('stroke', 'red');
-    this.domGroup.style('cursor', 'move');
-    this.domGroup.call(this.dragBehavior);
+    this.group.select('.pointer').attr('stroke', 'red');
+    this.group.style('cursor', 'move');
+    this.group.call(this.dragBehavior);
   }
 
   public dragOff(): void {
-    this.domGroup.on('.drag', null);
-    this.domGroup.select('.pointer').attr('stroke', 'black');
-    this.domGroup.style('cursor', 'pointer');
+    this.group.on('.drag', null);
+    this.group.select('.pointer').attr('stroke', 'black');
+    this.group.style('cursor', 'pointer');
   }
 
   public afterDragEvent(): Observable<d3.selection> {
@@ -48,17 +48,17 @@ export class Draggable {
   }
 
   private updateConfiguration(): void {
-    this.draggedEmitter.next(this.domGroup);
+    this.draggedEmitter.next(this.group);
   }
 
   private dragGroupBehavior(): void {
-    let dx = parseInt(this.domGroup.attr('x'), 10);
-    let dy = parseInt(this.domGroup.attr('y'), 10);
+    let dx = parseInt(this.group.attr('x'), 10);
+    let dy = parseInt(this.group.attr('y'), 10);
     dx += d3.event.dx;
     dy += d3.event.dy;
     const xAtMap = Math.max(0, Math.min(this.mapAttributes.width, dx));
     const yAtMap = Math.max(0, Math.min(this.mapAttributes.height, dy));
-    this.domGroup
+    this.group
       .attr('x', xAtMap)
       .attr('y', yAtMap);
   }

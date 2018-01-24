@@ -2,11 +2,20 @@ import * as d3 from 'd3';
 import {Point} from '../../../map-editor/map.type';
 import {DrawConfiguration} from '../../../map-viewer/published.type';
 import {ZoomService} from '../../services/zoom/zoom.service';
+import {Helper} from '../helper/helper';
 
 export class SvgGroupWrapper {
   private elements: Map<ElementType, d3.selection[]> = new Map();
+  container: d3.selection;
+  private color: string;
 
-  constructor(private group: d3.selection, private zoomService: ZoomService) {
+  constructor(public group: d3.selection,
+              container: d3.selection,
+              private zoomService: ZoomService,
+              colored?: string) {
+    this.group = group;
+    this.container = container;
+    this.color = (colored) ? colored : 'black';
   }
 
   place(coordinates: Point): SvgGroupWrapper {
@@ -17,11 +26,42 @@ export class SvgGroupWrapper {
   }
 
   addIcon(coordinates: Point, icon: string): SvgGroupWrapper {
-    const element: d3.selection = this.group
+    let element: d3.selection;
+    element = this.group
+      .append('circle')
+      .attr('cx', coordinates.x + 12)
+      .attr('cy', coordinates.y + 12)
+      .attr('r', '10px')
+      .classed('dragarea', true)
+      .attr('fill', 'transparent');
+    this.addElement(ElementType.DRAGAREA, element);
+    element = this.group
       .append('svg')
       .attr('x', coordinates.x)
       .attr('y', coordinates.y)
       .html(icon)
+      .attr('stroke', this.color)
+      .attr('fill', this.color);
+    this.addElement(ElementType.ICON, element);
+    return this;
+  }
+
+  addPointer(coordinates: Point, icon: string): SvgGroupWrapper {
+    let element: d3.selection;
+    element = this.group
+      .append('circle')
+      .attr('cx', coordinates.x + 12)
+      .attr('cy', coordinates.y + 12)
+      .attr('r', '7px')
+      .classed('dragarea', true)
+      .attr('fill', 'transparent');
+    this.addElement(ElementType.DRAGAREA, element);
+    element = this.group
+      .append('svg')
+      .attr('x', coordinates.x)
+      .attr('y', coordinates.y)
+      .html(icon)
+      .classed('pointer', true)
       .attr('stroke', 'black')
       .attr('fill', 'black');
     this.addElement(ElementType.ICON, element);
@@ -90,7 +130,10 @@ export class SvgGroupWrapper {
       // and offsetFromBorder[1] gives right and bottom border offset,
       // sign is giving a direction of the offset
       const offsetFromBorder = [{x: 0, y: 0}, {x: -25, y: -25}];
-      const eventPosition: Point = this.zoomService.calculateInMapEditorRangeEvent({x: mousePosition.x, y: mousePosition.y}, offsetFromBorder);
+      const eventPosition: Point = this.zoomService.calculateInMapEditorRangeEvent({
+        x: mousePosition.x,
+        y: mousePosition.y
+      }, offsetFromBorder);
       this.group.attr('x', d3.event.dx + parseInt(this.group.attr('x'), 10)).attr('y', d3.event.dy + parseInt(this.group.attr('y'), 10));
     };
 
@@ -106,14 +149,73 @@ export class SvgGroupWrapper {
       .on('start', dragStart)
       .on('drag', dragging)
       .on('end', dragStop);
-
     this.group.call(dragGroup);
-
     return this;
   }
 
   remove(): void {
     this.group.remove();
+  }
+
+  addBorderBox(defineColor?: string) {
+    const boxColor = (defineColor) ? defineColor : this.color;
+    const parentElement: SVGElement = this.group.node();
+    const domRect: DOMRectInit = parentElement.getBoundingClientRect();
+    const boxWidth = 2;
+    const padding: {x: number , y: number} = Helper.getChildrenExtremeValues(parentElement);
+    const paddingX = padding.x * 1 + boxWidth * 1;
+    const paddingY = padding.y - boxWidth - 6;
+    this.group
+      .append('rect')
+      .classed('group-border-box', true)
+      .attr('x', paddingX)
+      .attr('y', paddingY)
+      .attr('width', (domRect.width * 1 + boxWidth * 2))
+      .attr('height', (domRect.height * 1 + boxWidth * 2))
+      .attr('stroke', boxColor)
+      .attr('stroke-width', boxWidth)
+      .attr('opacity', '0.5')
+      .attr('stroke-linecap', 'round')
+      .attr('stroke-dasharray', '20,10,5,5,5,10')
+      .attr('fill', 'none');
+  }
+
+  removeBorderBox() {
+    this.group.select('rect.group-border-box').remove();
+  }
+
+  strokeConnectingLineBold(): void {
+    if (this.group.classed('connection')) {
+      this.group.attr('stroke-width', '3');
+    }
+  }
+
+  strokeConnectingLineNormal(): void {
+    if (this.group.classed('connection')) {
+      this.group.attr('stroke-width', '1');
+    }
+  }
+
+  changeColor(newColor) {
+    const parentElement: SVGElement = this.group.node();
+    const childrenCount: number = parentElement.childElementCount;
+    const children: NodeList = parentElement.childNodes;
+    for (let i = 0; i < childrenCount; i++) {
+      const classed = children[i].attributes['class'];
+      if (!classed || (!!classed && classed.value !== 'pointer' && classed.value !== 'dragarea' && classed.value !== 'group-border-box' )) {
+        const child = d3.select(children[i]);
+        if (child.attr('stroke') !== null) {
+          child.attr('stroke', newColor)
+        }
+        if (child.attr('fill') !== null) {
+          child.attr('fill', newColor);
+        }
+      }
+    }
+  }
+
+  resetColor() {
+    this.changeColor(this.color);
   }
 
   getGroup(): d3.selection {
@@ -170,9 +272,7 @@ export class DrawBuilder {
       .attr('class', this.configuration.clazz)
       .attr('overflow', 'visible')
       .attr('x', 0)
-      .attr('y', 0)
-      .classed('pointer', true)
-      .on('mousedown', () => {
+      .attr('y', 0).on('mousedown', () => {
         d3.select(`#${this.configuration.id}`).style('cursor', 'pointer')
       })
       .on('mouseup', () => {
@@ -181,7 +281,9 @@ export class DrawBuilder {
     if (this.configuration.cursor) {
       group.style('cursor', this.configuration.cursor);
     }
-    return new SvgGroupWrapper(group, this.zoomService);
+    return (this.configuration.color)
+      ? new SvgGroupWrapper(group, this.appendable, this.zoomService, this.configuration.color)
+      : new SvgGroupWrapper(group, this.appendable, this.zoomService);
   }
 }
 
@@ -190,5 +292,6 @@ export enum ElementType {
   TEXT,
   POLYGON,
   CIRCLE,
-  LINE
+  LINE,
+  DRAGAREA
 }

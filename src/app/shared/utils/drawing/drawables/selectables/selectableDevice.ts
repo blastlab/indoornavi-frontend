@@ -1,11 +1,11 @@
-import {GroupCreated} from '../draw.builder';
 import {Selectable} from './selectable';
+import {SvgGroupWrapper} from '../../drawing.builder';
 
 export class SelectableDevice extends Selectable {
   private hasBorder: boolean;
 
 
-  constructor(protected group: GroupCreated) {
+  constructor(protected group: SvgGroupWrapper) {
     super(group);
   }
 

@@ -27,7 +27,7 @@ export class FirstStep implements WizardStep {
     return [...items];
   }
 
-  getDrawingObjectParams(selectedItem: number): MapObjectParams {
+  getDrawingObjectParams(selectedItem: number): ObjectParams {
     return {
       id: 'sink' + selectedItem, iconName: NaviIcons.ANCHOR,
       groupClass: 'wizardSink', markerClass: 'sinkMarker', fill: 'blue'

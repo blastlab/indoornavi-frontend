@@ -5,24 +5,26 @@ import {ToolName} from '../tools.enum';
 import {TranslateService} from '@ngx-translate/core';
 import {DevicePlacerController} from './device-placer.controller';
 import {Point} from '../../../map.type';
-import {IconService, NaviIcons} from '../../../../utils/drawing/icon.service';
-import {AcceptButtonsService} from '../../../../utils/accept-buttons/accept-buttons.service';
+import {IconService, NaviIcons} from '../../../../shared/services/drawing/icon.service';
+import {AcceptButtonsService} from '../../../../shared/components/accept-buttons/accept-buttons.service';
 import * as d3 from 'd3';
 import {Sink} from '../../../../device/sink.type';
 import {Anchor} from '../../../../device/anchor.type';
-import {DrawBuilder, DrawConfiguration} from '../../../../utils/builder/draw.builder';
+import {DrawBuilder} from '../../../../shared/utils/drawing/drawing.builder';
 import {Subscription} from 'rxjs/Subscription';
-import {MapLoaderInformerService} from 'app/utils/map-loader-informer/map-loader-informer.service';
+import {MapLoaderInformerService} from '../../../../shared/services/map-loader-informer/map-loader-informer.service';
 import {Configuration} from '../../../action-bar/actionbar.type';
-import {ConnectingLine} from '../../../../utils/builder/draggables/connectables/connection';
-import {ConnectableDevice} from 'app/utils/builder/draggables/connectables/connectableDevice';
-import {Expandable} from '../../../../utils/builder/expandable';
+import {ConnectingLine} from '../../../../shared/utils/drawing/drawables/draggables/connectables/connection';
+import {ConnectableDevice} from 'app/shared/utils/drawing/drawables/draggables/connectables/connectableDevice';
+import {Expandable} from '../../../../shared/utils/drawing/drawables/expandable';
 import {ActionBarService} from 'app/map-editor/action-bar/actionbar.service';
 import {ToolbarService} from '../../toolbar.service';
 import {DeviceService} from '../../../../device/device.service';
 import {HintBarService} from 'app/map-editor/hint-bar/hintbar.service';
-import {SelectableDevice} from '../../../../utils/builder/selectables/selectableDevice';
-import {Selectable} from '../../../../utils/builder/selectables/selectable';
+import {SelectableDevice} from '../../../../shared/utils/drawing/drawables/selectables/selectableDevice';
+import {Selectable} from '../../../../shared/utils/drawing/drawables/selectables/selectable';
+import {DrawConfiguration} from 'app/map-viewer/published.type';
+import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
 
 @Component({
   selector: 'app-device-placer',
@@ -36,15 +38,16 @@ import {Selectable} from '../../../../utils/builder/selectables/selectable';
       state('out', style({
         transform: 'translate3d(0, 0, 0)'
       })),
-      transition('in <=> out', animate('400ms easeInOut'))
+      transition('in <=> out', animate('400ms ease-in-out'))
     ]),
   ]
 })
 export class DevicePlacerComponent implements Tool, OnInit {
   @Output() clicked: EventEmitter<Tool> = new EventEmitter<Tool>();
-  public active: boolean = false;
   public remainingDevices: Array<Anchor | Sink> = [];
   public queryString: string;
+  active: boolean = false;
+  disabled: boolean;
   private draggedDevice: Anchor | Sink;
   private listState: string = 'out';
   private hintMessage: string;
@@ -139,6 +142,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
               private configurationService: ActionBarService,
               private mapLoaderInformer: MapLoaderInformerService,
               private toolbarService: ToolbarService,
+              private zoomService: ZoomService,
               private icons: IconService,
               private hintBarService: HintBarService) {
     this.setTranslations();
@@ -148,7 +152,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
   private handleEscapeKey(): void {
     if (!this.selectedDevice && this.modifyingConnectionsFlag && !this.selectedLine) {
       this.translate.get('connections.manipulationTurnedOff').subscribe((value: string) => {
-        this.hintBarService.emitHintMessage(value);
+        this.hintBarService.sendHintMessage(value);
       });
       this.endModificationConnections();
     }
@@ -199,7 +203,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
 
   public modifyConnections(): void {
     this.translate.get('connections.manipulationTurnedOn').subscribe((value: string) => {
-      this.hintBarService.emitHintMessage(value);
+      this.hintBarService.sendHintMessage(value);
     });
     // this.clearSelections();
     // hintbar -> select (click) a device to connect | translate
@@ -269,6 +273,10 @@ export class DevicePlacerComponent implements Tool, OnInit {
 
   getToolName(): ToolName {
     return ToolName.ANCHOR;
+  }
+
+  setDisabled(value: boolean): void {
+    this.disabled = value;
   }
 
   private getMapSelection(): void {
@@ -371,10 +379,10 @@ export class DevicePlacerComponent implements Tool, OnInit {
   private updateDeviceCoordinatesFromMap(device: Anchor | Sink): Anchor | Sink {
     const updated = device;
     this.mapDevices.forEach( mapDevice => {
-      const identificator = DevicePlacerComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.domGroup);
+      const identificator = DevicePlacerComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.group);
       if (DevicePlacerComponent.hasSameShortId(device, identificator)) {
-        updated.x = mapDevice.groupCreated.domGroup.attr('x');
-        updated.y = mapDevice.groupCreated.domGroup.attr('y');
+        updated.x = mapDevice.groupCreated.group.attr('x');
+        updated.y = mapDevice.groupCreated.group.attr('y');
       }
     });
     return updated
@@ -438,13 +446,13 @@ export class DevicePlacerComponent implements Tool, OnInit {
       .subscribe((selectedDevice) => {
         const lastSelected = this.selectedDevice;
         this.clearSelections();
-        const handledDevice = this.findVerifiedDevice(DevicePlacerComponent.getShortIdFromGroupSelection(selectedDevice.groupCreated.domGroup));
+        const handledDevice = this.findVerifiedDevice(DevicePlacerComponent.getShortIdFromGroupSelection(selectedDevice.groupCreated.group));
         this.setSelectedDevice(handledDevice);
         if (DevicePlacerComponent.isSinkType(handledDevice)) {
           this.chosenSink = <Sink>handledDevice;
         } else if (!!selectedDevice.connectable.anchorConnection) {
           const sinkAsConnectable = selectedDevice.connectable.anchorConnection.connectedSink();
-          this.chosenSink = <Sink>this.findVerifiedDevice(DevicePlacerComponent.getShortIdFromGroupSelection(sinkAsConnectable.domGroup));
+          this.chosenSink = <Sink>this.findVerifiedDevice(DevicePlacerComponent.getShortIdFromGroupSelection(sinkAsConnectable.group));
           DevicePlacerComponent.markSinkSubselection(selectedDevice.connectable.anchorConnection);
         }
         const selectableDevice = <SelectableDevice>selectedDevice.selectable;
@@ -470,7 +478,6 @@ export class DevicePlacerComponent implements Tool, OnInit {
               this.handleSelectableConnections();
               DevicePlacerComponent.showSingleConnection(connectingLine);
               this.setAnchorInConfiguredSink(anchor, sink);
-              // TODO modify configuration
               this.clearSelections();
               this.resetConnecting();
             }
@@ -493,18 +500,18 @@ export class DevicePlacerComponent implements Tool, OnInit {
   }
 
   private turnOffSelectInMapDevicesByType(devicePassed: Expandable): void {
-    const verifiedDevice = this.findVerifiedDevice(DevicePlacerComponent.getShortIdFromGroupSelection(devicePassed.groupCreated.domGroup));
+    const verifiedDevice = this.findVerifiedDevice(DevicePlacerComponent.getShortIdFromGroupSelection(devicePassed.groupCreated.group));
     if (DevicePlacerComponent.isSinkType(verifiedDevice)) {
       this.mapDevices.forEach((mapDevice) => {
         const connectable = <ConnectableDevice>mapDevice.connectable;
-        const device = this.findVerifiedDevice(DevicePlacerComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.domGroup));
+        const device = this.findVerifiedDevice(DevicePlacerComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.group));
         if (DevicePlacerComponent.isSinkType(device) || !!connectable.anchorConnection) {
           this.blockSelectableBehavior(mapDevice);
         }
       });
     } else {
       this.mapDevices.forEach((mapDevice) => {
-        const device = this.findVerifiedDevice(DevicePlacerComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.domGroup));
+        const device = this.findVerifiedDevice(DevicePlacerComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.group));
         if (!DevicePlacerComponent.isSinkType(device)) {
           this.blockSelectableBehavior(mapDevice);
         }
@@ -516,7 +523,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
     let notConnectedAnchors = 0;
     const sinks: Expandable[] = [];
     this.mapDevices.forEach((mapDevice) => {
-      const device = this.findVerifiedDevice(DevicePlacerComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.domGroup));
+      const device = this.findVerifiedDevice(DevicePlacerComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.group));
       if (!DevicePlacerComponent.isSinkType(device)) {
         notConnectedAnchors++;
         const connectable = <ConnectableDevice>mapDevice.connectable;
@@ -623,9 +630,9 @@ export class DevicePlacerComponent implements Tool, OnInit {
   private disconnectBySelectedLine() {
     const anchorAsConnectable: ConnectableDevice = this.selectedLine.connectedAnchor();
     const sinkAsConnectable: ConnectableDevice = this.selectedLine.connectedSink();
-    const mapAnchor = this.findMapDevice(DevicePlacerComponent.getShortIdFromGroupSelection(anchorAsConnectable.domGroup));
-    let anchor = this.findVerifiedDevice(DevicePlacerComponent.getShortIdFromGroupSelection(anchorAsConnectable.domGroup));
-    let sink = <Sink>this.findVerifiedDevice(DevicePlacerComponent.getShortIdFromGroupSelection(sinkAsConnectable.domGroup));
+    const mapAnchor = this.findMapDevice(DevicePlacerComponent.getShortIdFromGroupSelection(anchorAsConnectable.group));
+    let anchor = this.findVerifiedDevice(DevicePlacerComponent.getShortIdFromGroupSelection(anchorAsConnectable.group));
+    let sink = <Sink>this.findVerifiedDevice(DevicePlacerComponent.getShortIdFromGroupSelection(sinkAsConnectable.group));
     DevicePlacerComponent.unblockSelectableBehavior(mapAnchor);
     this.removeConnectingLine(this.selectedLine);
     this.clearSelectedLine();
@@ -636,7 +643,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
   }
 
   private createConnection(sink: Expandable, anchor: Expandable, lineConfig: DrawConfiguration): ConnectingLine {
-    const drawBuilder = new DrawBuilder(this.map, lineConfig);
+    const drawBuilder = new DrawBuilder(this.map, lineConfig, this.zoomService);
     const connectingLine = new ConnectingLine(drawBuilder.createGroup(), sink.connectable, anchor.connectable, lineConfig.id);
     sink.connectable.sinkConnections.push(connectingLine);
     anchor.connectable.anchorConnection = connectingLine;
@@ -645,9 +652,9 @@ export class DevicePlacerComponent implements Tool, OnInit {
 
   private createDashedLineAttachedToDevice(device: Expandable, mousePosition: Point): d3.selection {
     return this.map.append('line')
-      .attr('id', DevicePlacerComponent.getShortIdFromGroupSelection(device.groupCreated.domGroup))
-      .attr('x1', device.groupCreated.domGroup.attr('x'))
-      .attr('y1', device.groupCreated.domGroup.attr('y'))
+      .attr('id', DevicePlacerComponent.getShortIdFromGroupSelection(device.groupCreated.group))
+      .attr('x1', device.groupCreated.group.attr('x'))
+      .attr('y1', device.groupCreated.group.attr('y'))
       .attr('x2', mousePosition.x)
       .attr('y2', mousePosition.y)
       .attr('pointer-events', 'none')
@@ -712,7 +719,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
 
   private findMapDevice(shortId: number): Expandable {
     return this.mapDevices.find((mapDevice: Expandable) => {
-      return shortId === DevicePlacerComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.domGroup);
+      return shortId === DevicePlacerComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.group);
     });
   }
 
@@ -759,7 +766,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
   }
 
   private removeChosenAnchor(mapAnchor: Expandable): void {
-    mapAnchor.connectable.domGroup.remove();
+    mapAnchor.connectable.group.remove();
     this.selectedDevice = null;
   }
 
@@ -772,7 +779,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
 
   private drawDevice(deviceConfig: DrawConfiguration,
                      coordinates: Point): Expandable {
-    const drawBuilder = new DrawBuilder(this.map, deviceConfig);
+    const drawBuilder = new DrawBuilder(this.map, deviceConfig, this.zoomService);
     const text = (deviceConfig.name !== null)
       ? `${deviceConfig.name}-${deviceConfig.id}`
       : `${deviceConfig.clazz}-${deviceConfig.id}`;
@@ -803,7 +810,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
         this.setSinkInConfiguration(<Sink>device)
       } else if (!!expandable.connectable.anchorConnection) {
         const sinkAsConnectable = expandable.connectable.anchorConnection.connectedSink();
-        const sink = <Sink>this.findVerifiedDevice(DevicePlacerComponent.getShortIdFromGroupSelection(sinkAsConnectable.domGroup));
+        const sink = <Sink>this.findVerifiedDevice(DevicePlacerComponent.getShortIdFromGroupSelection(sinkAsConnectable.group));
         sink.anchors.forEach( anchor => {this.updateDeviceCoordinatesFromMap(anchor)});
         this.setSinkInConfiguration(sink);
       } else {
@@ -825,7 +832,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
       DevicePlacerComponent.showSingleConnection(connectingLine);
       this.connectingLines.push(connectingLine);
     }
-    this.accButtons.publishCoordinates(coordinates);
+    // this.accButtons.publishCoordinates(coordinates); // deprecated
     this.accButtons.publishVisibility(true);
     expandableMapObject.connectable.dragOn(true);
     this.accButtons.decisionMade.first().subscribe((decision) => {
@@ -865,7 +872,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
   }
 
   private removeFromMapDevices(device: Expandable) {
-    const index = this.mapDevices.findIndex(d => d.groupCreated.domGroup === device.groupCreated.domGroup);
+    const index = this.mapDevices.findIndex(d => d.groupCreated.group === device.groupCreated.group);
     if (index >= 0) {
       this.mapDevices.splice(index, 1);
     } else {
@@ -889,7 +896,6 @@ export class DevicePlacerComponent implements Tool, OnInit {
 
   private removeFromConfiguration(device: Sink | Anchor): void {
     const mapDevice = this.findMapDevice(device.shortId);
-    const isConnectedFlag = (!!mapDevice.connectable.anchorConnection || !!mapDevice.connectable.sinkConnections.length);
     if (DevicePlacerComponent.isSinkType(device)) {
       if ((<Sink>device).anchors.length !== 0) {
         // ask user about deletion decision
