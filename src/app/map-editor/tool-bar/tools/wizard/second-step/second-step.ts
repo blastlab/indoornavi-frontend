@@ -36,7 +36,7 @@ export class SecondStep implements WizardStep {
     }
   }
 
-  getDrawingObjectParams(selectedItem: number): MapObjectParams {
+  getDrawingObjectParams (selectedItem: number): ObjectParams {
     return {
       id: 'anchor' + selectedItem, iconName: NaviIcons.ANCHOR,
       groupClass: 'wizardAnchor', markerClass: 'anchorMarker', fill: 'green'

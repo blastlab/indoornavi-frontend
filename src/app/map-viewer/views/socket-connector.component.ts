@@ -12,14 +12,13 @@ import {
 import {Subject} from 'rxjs/Subject';
 import {PublishedService} from '../published.service';
 import {MapViewerService} from '../../map-editor/map.editor.service';
-import {IconService, NaviIcons} from '../../shared/services/area/area.service';
-import * as d3 from 'd3';
-import {Point} from 'app/map-editor/map.type';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
 import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.builder';
+import * as d3 from 'd3';
 import {SocketService} from '../../shared/services/socket/socket.service';
 import {ActivatedRoute, Params} from '@angular/router';
 import {AreaService} from '../../shared/services/area/area.service';
+import {IconService, NaviIcons} from '../../shared/services/drawing/icon.service';
 import {Geometry} from 'app/shared/utils/helper/geometry';
 import {Observable} from 'rxjs/Observable';
 import {Tag} from 'app/device/tag.type';
@@ -31,6 +30,8 @@ import {MapLoaderInformerService} from '../../shared/services/map-loader-informe
 import {MapSvg} from '../../map/map.type';
 import {Area} from '../../map-editor/tool-bar/tools/area/area.type';
 import {Movable} from '../../shared/wrappers/movable/movable';
+import {Scale} from '../../map-editor/tool-bar/tools/scale/scale.type';
+
 @Component({
   templateUrl: './socket-connector.component.html',
   styleUrls: ['./socket-connector.component.css']
@@ -45,12 +46,13 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   private tagsOnMap: Dictionary<number, Movable> = new Dictionary<number, Movable>();
   private areasOnMap: Dictionary<number, SvgGroupWrapper> = new Dictionary<number, SvgGroupWrapper>();
   private originListeningOnEvent: Dictionary<string, MessageEvent[]> = new Dictionary<string, MessageEvent[]>();
+  private scale: Scale;
 
   constructor(protected ngZone: NgZone,
               protected socketService: SocketService,
               protected route: ActivatedRoute,
               protected publishedService: PublishedService,
-              private mapLoaderInformer: MapLoaderInformerService,
+              protected mapLoaderInformer: MapLoaderInformerService,
               private areaService: AreaService,
               private translateService: TranslateService,
               private iconService: IconService,
@@ -66,12 +68,15 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         this.activeMap = map;
         if (this.activeMap.floor.imageId != null) {
           this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg) => {
-            this.d3map = mapSvg.container;
-            this.drawAreas(map.floor.id);
-            const realDistanceInCentimeters = map.floor.scale.getRealDistanceInCentimeters();
-            const scaleLengthInPixels = Geometry.getDistanceBetweenTwoPoints(map.floor.scale.start, map.floor.scale.stop);
-            this.pixelsToCentimeters = realDistanceInCentimeters / scaleLengthInPixels;
-            this.initializeSocketConnection();
+            if (!!this.activeMap.floor.scale) {
+              this.scale = new Scale(this.activeMap.floor.scale);
+              this.d3map = mapSvg.container;
+              this.drawAreas(map.floor.id);
+              const realDistanceInCentimeters = this.scale.getRealDistanceInCentimeters();
+              const scaleLengthInPixels = Geometry.getDistanceBetweenTwoPoints(map.floor.scale.start, map.floor.scale.stop);
+              this.pixelsToCentimeters = realDistanceInCentimeters / scaleLengthInPixels;
+              this.initializeSocketConnection();
+            }
           });
         }
       });
@@ -104,8 +109,38 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     return this.dataReceived.asObservable();
   }
 
+  protected handleCoordinatesData(data: CoordinatesSocketData) {
+    const map = d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`);
+    const coordinates: Point = this.scaleCoordinates(data.coordinates.point),
+      deviceId: number = data.coordinates.tagShortId;
+    if (!this.isOnMap(deviceId)) {
+      const drawBuilder = new DrawBuilder(map, {id: `tag-${deviceId}`, clazz: 'tag'}, this.zoomService);
+      const tagOnMap: Movable = (<Movable>drawBuilder
+        .createGroup()
+        .addIcon({x: 0, y: 0}, this.iconService.getIcon(NaviIcons.TAG))
+        .addText({x: 0, y: 36}, `${deviceId}`)
+        .place({x: coordinates.x, y: coordinates.y}))
+        .setShortId(deviceId);
+      this.tagsOnMap.setValue(deviceId, tagOnMap);
+    } else {
+      this.moveTagOnMap(data);
+    }
+    if (this.originListeningOnEvent.containsKey('coordinates')) {
+      this.originListeningOnEvent.getValue('coordinates').forEach((event: MessageEvent) => {
+        event.source.postMessage({type: 'coordinates', coordinates: data}, event.origin);
+      })
+    }
+  }
+
   protected whenTransitionEnded(): Observable<number> {
     return this.transitionEnded.asObservable();
+  }
+
+  protected scaleCoordinates(point: Point): Point {
+    return {
+      x: point.x / this.pixelsToCentimeters,
+      y: point.y / this.pixelsToCentimeters
+    };
   }
 
   private isCoordinatesData(data: MeasureSocketData): boolean {
@@ -128,30 +163,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     });
   }
 
-  protected handleCoordinatesData(data: CoordinatesSocketData) {
-    const map = d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`);
-    const coordinates: Point = this.scaleCoordinates(data.coordinates.point),
-      deviceId: number = data.coordinates.tagShortId;
-    if (!this.isOnMap(deviceId)) {
-      const drawBuilder = new DrawBuilder(map, {id: `tag-${deviceId}`, clazz: 'tag'}, this.zoomService);
-      const tagOnMap: Movable = (<Movable>drawBuilder
-        .createGroup()
-        .addIcon({x: 0, y: 0}, this.iconService.getIcon(NaviIcons.TAG))
-        .addText({x: 0, y: 36}, `${deviceId}`)
-        .place({x: coordinates.x, y: coordinates.y}))
-        .setShortId(deviceId);
-      this.tagsOnMap.setValue(deviceId, tagOnMap);
-    } else {
-      this.moveTagOnMap(data);
-    }
-
-    if (this.originListeningOnEvent.containsKey('coordinates')) {
-      this.originListeningOnEvent.getValue('coordinates').forEach((event: MessageEvent) => {
-        event.source.postMessage({type: 'coordinates', coordinates: data}, event.origin);
-      })
-    }
-  }
-
   private moveTagOnMap(data: CoordinatesSocketData) {
     const tag: Movable = this.tagsOnMap.getValue(data.coordinates.tagShortId);
     // !document.hidden is here to avoid queueing transitions and therefore browser freezes
@@ -171,7 +182,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     this.ngZone.runOutsideAngular(() => {
       const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?client`);
       this.setSocketConfiguration();
-
       this.socketSubscription = stream.subscribe((data: MeasureSocketData) => {
         this.ngZone.run(() => {
           if (this.isCoordinatesData(data)) {
@@ -183,13 +193,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       });
     });
   };
-
-  private scaleCoordinates(point: Point): Point {
-    return {
-      x: point.x / this.pixelsToCentimeters,
-      y: point.y / this.pixelsToCentimeters
-    };
-  }
 
   private drawAreas(floorId: number): void {
     this.areaService.getAllByFloor(floorId).first().subscribe((areas: Area[]) => {

@@ -97,6 +97,7 @@ import {AreaDetailsComponent} from './map-editor/tool-bar/tools/area/details/are
 import {AreaDetailsService} from './map-editor/tool-bar/tools/area/details/area-details.service';
 import {ContextMenuService} from './shared/wrappers/editable/editable.service';
 import {PublishedComponent} from './map-viewer/views/publications/publication';
+import {AnalyticsComponent} from './map-viewer/views/analytics/analytics';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -137,7 +138,9 @@ export function HttpLoaderFactory(http: Http) {
     AreaDetailsComponent,
     AppAutoFocusDirective,
     DevicePlacerComponent,
-    AllFieldsFilter
+    AllFieldsFilter,
+    AreaDetailsComponent,
+    AnalyticsComponent
   ],
   entryComponents: [
     PublishedDialogComponent,

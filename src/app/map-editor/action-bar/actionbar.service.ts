@@ -184,7 +184,7 @@ export class ActionBarService {
 
   private sendConfigurationChangedEvent(): void {
     if (this.hashConfiguration() !== this.configurationHash) {
-      this.configurationChangedEmitter.next();
+      this.configurationChangedEmitter.next(this.configuration);
     }
   }
 

@@ -84,6 +84,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
     this.configurationLoadedSubscription = this.actionBarService.configurationLoaded().subscribe((configuration: Configuration) => {
       this.drawScale(configuration.data.scale);
+      this.isScaleSet ? this.scaleBackup = Helper.deepCopy(this.scale) : this.scaleBackup = null;
     });
 
     this.configurationResetSubscription = this.actionBarService.configurationReset().subscribe((configuration: Configuration) => {
@@ -107,13 +108,13 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.saveButtonSubscription = this.scaleInputService.confirmClicked.subscribe((scale: Scale) => {
       if (!!scale) {
         this.isScaleSet = true;
-        this.scale.realDistance = scale.realDistance;
-        this.scale.measure = scale.measure;
+        this.scale = scale;
         this.actionBarService.setScale(this.scale);
         this.scaleService.publishScaleChanged(this.scale);
+        this.scaleBackup = Helper.deepCopy(this.scale);
       }
       this.toolbarService.emitToolChanged(null);
-      this.setInactive()
+      this.setInactive();
     });
 
     this.scaleHint.mouseHoverChanged.subscribe((overOrOut: string) => {
@@ -150,7 +151,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   setInactive(): void {
     this.hideScale();
-    this.rejectChanges();
     this.active = false;
     this.hintBarService.sendHintMessage('hint.chooseTool');
   }
@@ -161,7 +161,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   onClick(): void {
     this.toolbarService.emitToolChanged(this);
-    this.isScaleSet ? this.scaleBackup = Helper.deepCopy(this.scale) : this.scaleBackup = null;
   }
 
   private rejectChanges() {
