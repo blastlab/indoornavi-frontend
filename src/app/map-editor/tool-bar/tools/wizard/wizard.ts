@@ -72,7 +72,7 @@ export class WizardComponent implements Tool, OnInit {
     this.steps = [new FirstStep(this.floor.id), new SecondStep(), new ThirdStep()];
     this.checkIsLoading();
     this.scaleService.scaleChanged.subscribe((scale: Scale) => {
-      this.scale = new Scale(scale.start, scale.stop, scale.realDistance, scale.measure);
+      this.scale = new Scale(scale);
     });
   }
 

@@ -30,6 +30,7 @@ import {MapLoaderInformerService} from '../../shared/services/map-loader-informe
 import {MapSvg} from '../../map/map.type';
 import {Area} from '../../map-editor/tool-bar/tools/area/area.type';
 import {Movable} from '../../shared/wrappers/movable/movable';
+import {Scale} from '../../map-editor/tool-bar/tools/scale/scale.type';
 
 @Component({
   templateUrl: './socket-connector.component.html',
@@ -45,6 +46,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   private tagsOnMap: Dictionary<number, Movable> = new Dictionary<number, Movable>();
   private areasOnMap: Dictionary<number, SvgGroupWrapper> = new Dictionary<number, SvgGroupWrapper>();
   private originListeningOnEvent: Dictionary<string, MessageEvent[]> = new Dictionary<string, MessageEvent[]>();
+  private scale: Scale;
 
   constructor(protected ngZone: NgZone,
               protected socketService: SocketService,
@@ -66,12 +68,17 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         this.activeMap = map;
         if (this.activeMap.floor.imageId != null) {
           this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg) => {
-            this.d3map = mapSvg.container;
-            this.drawAreas(map.floor.id);
-            const realDistanceInCentimeters = map.floor.scale.getRealDistanceInCentimeters();
-            const scaleLengthInPixels = Geometry.getDistanceBetweenTwoPoints(map.floor.scale.start, map.floor.scale.stop);
-            this.pixelsToCentimeters = realDistanceInCentimeters / scaleLengthInPixels;
-            this.initializeSocketConnection();
+            console.log(this.activeMap);
+            if (!!this.activeMap.floor.scale) {
+              this.scale = new Scale(this.activeMap.floor.scale);
+              this.d3map = mapSvg.container;
+              this.drawAreas(map.floor.id);
+              console.log(map.floor.id);
+              const realDistanceInCentimeters = this.scale.getRealDistanceInCentimeters();
+              const scaleLengthInPixels = Geometry.getDistanceBetweenTwoPoints(map.floor.scale.start, map.floor.scale.stop);
+              this.pixelsToCentimeters = realDistanceInCentimeters / scaleLengthInPixels;
+              this.initializeSocketConnection();
+            }
           });
         }
       });
@@ -171,7 +178,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     this.ngZone.runOutsideAngular(() => {
       const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?client`);
       this.setSocketConfiguration();
-
       this.socketSubscription = stream.subscribe((data: MeasureSocketData) => {
         this.ngZone.run(() => {
           if (this.isCoordinatesData(data)) {
