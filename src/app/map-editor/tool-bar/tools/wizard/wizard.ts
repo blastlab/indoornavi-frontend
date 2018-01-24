@@ -1,4 +1,4 @@
-import {Component, Input, NgZone, OnInit, QueryList, ViewChildren} from '@angular/core';
+import {Component, Input, NgZone, OnInit} from '@angular/core';
 import {ToolName} from '../tools.enum';
 import {Tool} from '../tool';
 import {TranslateService} from '@ngx-translate/core';
@@ -19,7 +19,7 @@ import * as d3 from 'd3';
 import {ToolbarService} from '../../toolbar.service';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
 import {AcceptButtonsService} from '../../../../shared/components/accept-buttons/accept-buttons.service';
-import {DrawBuilder} from '../../../../map-viewer/published.builder';
+import {DrawBuilder} from '../../../../shared/utils/drawing/drawing.builder';
 import {IconService, NaviIcons} from '../../../../shared/services/drawing/icon.service';
 import {MapViewerService} from '../../../map.editor.service';
 import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
@@ -72,7 +72,7 @@ export class WizardComponent implements Tool, OnInit {
     this.steps = [new FirstStep(this.floor.id), new SecondStep(), new ThirdStep()];
     this.checkIsLoading();
     this.scaleService.scaleChanged.subscribe((scale: Scale) => {
-      this.scale = new Scale(scale.start, scale.stop, scale.realDistance, scale.measure);
+      this.scale = new Scale(scale);
     });
   }
 
@@ -123,9 +123,7 @@ export class WizardComponent implements Tool, OnInit {
       this.displayError = true;
       return;
     }
-    this.translate.get(this.activeStep.getBeforePlaceOnMapHint()).subscribe((value: string) => {
-      this.hintBarService.emitHintMessage(value);
-    });
+    this.hintBarService.sendHintMessage(this.activeStep.getBeforePlaceOnMapHint());
     this.displayError = false;
     this.activeStep.beforePlaceOnMap(this.selected);
     this.displayDialog = false;
@@ -219,9 +217,7 @@ export class WizardComponent implements Tool, OnInit {
   }
 
   private showAcceptButtons(): void {
-    this.translate.get(this.activeStep.getAfterPlaceOnMapHint()).subscribe((value: string) => {
-      this.hintBarService.emitHintMessage(value);
-    });
+    this.hintBarService.sendHintMessage(this.activeStep.getAfterPlaceOnMapHint());
     this.acceptButtons.publishVisibility(true);
     this.acceptButtons.decisionMade.first().subscribe(
       data => {

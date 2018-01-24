@@ -31,9 +31,10 @@ export class ToolbarComponent implements OnInit, OnDestroy {
         this.toggleDisable(false);
       }
     });
-    this. configurationChanged = this.actionBarService.configurationChanged().subscribe((configuration: Configuration) => {
+    this.configurationChanged = this.actionBarService.configurationChanged().first().subscribe((configuration: Configuration) => {
       if (!!configuration.data.scale) {
         this.scaleSet = true;
+        this.toggleDisable(false);
       }
     });
     this.toolChangedSubscription = this.toolbarService.onToolChanged().subscribe((tool: Tool) => {
@@ -41,9 +42,6 @@ export class ToolbarComponent implements OnInit, OnDestroy {
       if (!!this.activeTool) {
         this.activeTool.setInactive();
         this.activeTool = undefined;
-        if (this.scaleSet) {
-          this.toggleDisable(false);
-        }
       }
       if (activate) {
         tool.setActive();
@@ -58,9 +56,6 @@ export class ToolbarComponent implements OnInit, OnDestroy {
     }
     if (!!this.configurationChanged) {
       this.configurationChanged.unsubscribe();
-    }
-    if(!!this.configurationLoaded) {
-      this.configurationLoaded.unsubscribe();
     }
   }
 

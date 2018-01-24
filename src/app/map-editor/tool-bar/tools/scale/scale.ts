@@ -16,6 +16,7 @@ import {ScaleService} from '../../../../shared/services/scale/scale.service';
 import {Helper} from '../../../../shared/utils/helper/helper';
 import {ToolbarService} from '../../toolbar.service';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
+import {MapSvg} from '../../../../map/map.type';
 import {MapViewerService} from '../../../map.editor.service';
 import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
 
@@ -83,6 +84,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
     this.configurationLoadedSubscription = this.actionBarService.configurationLoaded().subscribe((configuration: Configuration) => {
       this.drawScale(configuration.data.scale);
+      this.isScaleSet ? this.scaleBackup = Helper.deepCopy(this.scale) : this.scaleBackup = null;
     });
 
     this.configurationResetSubscription = this.actionBarService.configurationReset().subscribe((configuration: Configuration) => {
@@ -99,20 +101,20 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.drawScale(configuration.data.scale);
     });
 
-    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapSvg: d3.selection) => {
+    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapSvg: MapSvg) => {
       this.createSvgGroupWithScale();
     });
 
     this.saveButtonSubscription = this.scaleInputService.confirmClicked.subscribe((scale: Scale) => {
       if (!!scale) {
         this.isScaleSet = true;
-        this.scale.realDistance = scale.realDistance;
-        this.scale.measure = scale.measure;
+        this.scale = scale;
         this.actionBarService.setScale(this.scale);
         this.scaleService.publishScaleChanged(this.scale);
+        this.scaleBackup = Helper.deepCopy(this.scale);
       }
       this.toolbarService.emitToolChanged(null);
-      this.setInactive()
+      this.setInactive();
     });
 
     this.scaleHint.mouseHoverChanged.subscribe((overOrOut: string) => {
@@ -144,18 +146,13 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   setActive(): void {
     this.active = true;
     this.startCreatingScale();
-    this.translate.get('scale.basic.msg').subscribe((value: string) => {
-      this.hintBarService.emitHintMessage(value);
-    });
+    this.hintBarService.sendHintMessage('scale.basic.msg');
   }
 
   setInactive(): void {
     this.hideScale();
-    this.rejectChanges();
     this.active = false;
-    this.translate.get('hint.chooseTool').subscribe((value: string) => {
-      this.hintBarService.emitHintMessage(value);
-    });
+    this.hintBarService.sendHintMessage('hint.chooseTool');
   }
 
   // implements Tool so needs to have this method
@@ -164,7 +161,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   onClick(): void {
     this.toolbarService.emitToolChanged(this);
-    this.isScaleSet ? this.scaleBackup = Helper.deepCopy(this.scale) : this.scaleBackup = null;
   }
 
   private rejectChanges() {

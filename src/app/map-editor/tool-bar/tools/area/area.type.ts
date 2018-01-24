@@ -1,0 +1,48 @@
+import {Tag} from '../../../../device/tag.type';
+import {Point} from '../../../map.type';
+import {Editable} from '../../../../shared/wrappers/editable/editable';
+
+export class Area {
+  id: number;
+  name: string;
+  configurations: AreaConfiguration[] = [];
+  points: Point[] = [];
+  buffer: Point[];
+  floorId: number;
+
+  static getCustomSettings(): AreaCustomSettings {
+    return <AreaCustomSettings> {
+      opacity: '0.3',
+      fill: 'grey'
+    };
+  }
+
+  constructor(floorId: number) {
+    this.floorId = floorId;
+  }
+}
+
+export class AreaConfiguration {
+  offset: number;
+  tags: Tag[];
+  mode: Mode;
+
+  constructor(mode: Mode) {
+    this.mode = mode;
+  }
+}
+
+export enum Mode {
+  ON_ENTER,
+  ON_LEAVE
+}
+
+export interface AreaCustomSettings {
+  opacity: string;
+  fill: string;
+}
+
+export interface AreaBag {
+  dto: Area;
+  editable: Editable;
+}
