@@ -7,11 +7,11 @@ import {SocketService} from '../../../shared/services/socket/socket.service';
 import {PublishedService} from '../../published.service';
 import {AreaService} from '../../../shared/services/area/area.service';
 import {IconService} from '../../../shared/services/drawing/icon.service';
-import {ZoomService} from '../../../map-editor/zoom.service';
 import {MapLoaderInformerService} from '../../../shared/services/map-loader-informer/map-loader-informer.service';
 import {CoordinatesSocketData} from '../../published.type';
 import {HexagonHeatMap} from './hexagon-heatmap.service';
 import * as d3 from 'd3';
+import {ZoomService} from '../../../shared/services/zoom/zoom.service';
 
 @Component({
   templateUrl: './analytics.html',
