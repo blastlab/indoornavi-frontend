@@ -89,7 +89,6 @@ import {SocketConnectorComponent} from './map-viewer/views/socket-connector.comp
 import {ZoomService} from './map-editor/zoom.service';
 import {MapComponent} from './map/map';
 import {PublishedComponent} from './map-viewer/views/publications/publication';
-import { ZoomButtonsComponent } from './map-editor/tool-bar/zoom-buttons/zoom-bottons/zoom-buttons.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -126,8 +125,7 @@ export function HttpLoaderFactory(http: Http) {
     ToolDetailsComponent,
     DeviceComponent,
     SocketConnectorComponent,
-    MapComponent,
-    ZoomButtonsComponent
+    MapComponent
   ],
   entryComponents: [
     PublishedDialogComponent,
