@@ -12,4 +12,4 @@ from tests.constructions.test_floors_page import TestFloorsPage
 
 if __name__ == '__main__':
 
-    unittest.main()
+    unittest.main(testRunner=xmlrunner.XMLTestRunner(output='test-reports'),failfast=False, buffer=False, catchbreak=False)
