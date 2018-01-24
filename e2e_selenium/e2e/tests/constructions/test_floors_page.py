@@ -2,6 +2,7 @@ import unittest
 import time
 from selenium import webdriver
 from tests.test_driver import TestDriver
+from tests.constructions.test_base import TestBase
 from pages.constructions.construction_page import ConstructionPage
 from pages.base_page import BasePage
 from pages.constructions.floors_page import FloorsPage
@@ -24,26 +25,14 @@ class TestFloorsPage(unittest.TestCase):
         cls.construction_page.create_construction_db_env()
         cls.page.login_process(cls.option)
 
-    def multi_assertion(self):
-        # create list for all returned True or False
-        asserts = []
-        dropdown_present = self.construction_page.is_dropdown_button_present()
-        add_button_present = self.floors_page.is_add_button_present()
-        constr_counter = self.construction_page.check_if_there_is_any_row()
-
-        asserts.append(dropdown_present)
-        asserts.append(add_button_present)
-        asserts.append(constr_counter)
-        # Check if there is any False in array
-        return False if False in asserts else True
-
     # TC[001]
     def test_01_floors_page_is_loaded_correctly(self):
         """Test that floors page is loaded correctly"""
         self.construction_page.redirect_button_click()
+        # time.sleep(5)
         self.construction_page.is_redirect_button_present()
         self.construction_page.redirect_button_click()
-        self.assertTrue(self.multi_assertion())
+        self.assertTrue(TestBase.multi_assertion(self))
 
     # TC[002]
     def test_02_add_new_floor_correctly(self):

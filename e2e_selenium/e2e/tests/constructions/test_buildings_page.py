@@ -1,6 +1,8 @@
 import unittest
+import time
 from selenium import webdriver
 from tests.test_driver import TestDriver
+from tests.constructions.test_base import TestBase
 from pages.constructions.construction_page import ConstructionPage
 from pages.base_page import BasePage
 from pages.constructions.buildings_page import BuildingsPage
@@ -23,25 +25,13 @@ class TestBuildingsPage(unittest.TestCase):
         cls.construction_page.create_construction_db_env()
         cls.page.login_process(cls.option)
 
-    def multi_assertion(self):
-        # create list for all returned True or False
-        asserts = []
-        dropdown_present = self.construction_page.is_dropdown_button_present()
-        column_title_present = self.construction_page.check_construction_column_title()
-        constr_counter = self.construction_page.check_if_there_is_any_row()
-
-        asserts.append(dropdown_present)
-        asserts.append(column_title_present)
-        asserts.append(constr_counter)
-
-        # Check if there is any False in array
-        return False if False in asserts else True
-
-    def _test_construction_page_is_loaded_correctly(self):
+    def _test_building_page_is_loaded_correctly(self):
+        """Test that building page has been correctly loaded"""
         self.construction_page.redirect_button_click()
-        self.assertTrue(self.multi_assertion())
+        self.assertTrue(TestBase.multi_assertion(self))
 
     def test_add_new_building_correctly(self):
+        """Test adding new building correctly"""
         self.construction_page.redirect_button_click()
         self.construction_page.add_button_click()
         # TODO Zmienic tytul modala -  Add building / Add new building
@@ -66,6 +56,7 @@ class TestBuildingsPage(unittest.TestCase):
 
     # TC[002]
     def test_add_new_building_negative_empty_input_and_cancel_click(self):
+        """Test that building will be added with empty input"""
         # 1.Check adding with empty input
         self.construction_page.add_button_click()
         self.construction_page.save_add_new_construction()
@@ -75,6 +66,7 @@ class TestBuildingsPage(unittest.TestCase):
     # TODO do zrobienia walidacja na niedozwolone znaki
     # TC[003]
     def _test_add_new_building_negative_illegal_characters(self):
+        """Test that building will be added with illegal characters"""
         self.construction_page.add_button_click()
         self.construction_page.enter_illegal_chars()
         self.construction_page.save_add_new_construction()
@@ -87,6 +79,7 @@ class TestBuildingsPage(unittest.TestCase):
 
     # TC[005]
     def test_delete_building_correctly(self):
+        """Test that building will be deleted correctly"""
         # Click last building remove button
         self.construction_page.remove_button_click()
         # Check that the confirm window present
@@ -111,6 +104,7 @@ class TestBuildingsPage(unittest.TestCase):
 
     # TC[006]
     def test_delete_building_cancel(self):
+        """Test cancel of deleting building """
         # Click last building remove button
         self.construction_page.remove_button_click()
         # Check that the confirm window present
@@ -129,6 +123,7 @@ class TestBuildingsPage(unittest.TestCase):
 
     # TC[008]
     def test_edit_building_correctly(self):
+        """Test editing building correctly"""
         self.construction_page.edit_button_click()
         # TODO Zmienic tytul modala -  Edit building
         # self.assertTrue(self.construction_page.check_add_modal_title())
@@ -147,6 +142,7 @@ class TestBuildingsPage(unittest.TestCase):
 
     # TC[009] TODO dokonczyc test
     def test_edit_building_negative_empty_input(self):
+        """Test editing building with empty input"""
         self.construction_page.edit_button_click()
         self.construction_page.clear_edit_input()
         self.construction_page.save_edit_click()
@@ -158,6 +154,7 @@ class TestBuildingsPage(unittest.TestCase):
 
     # TC[013]
     def test_edit_building_cancel(self):
+        """Test cancel editing building"""
         # Click last building edit button
         self.construction_page.edit_button_click()
         # TODO Zmienic tytul modala -  Edit building

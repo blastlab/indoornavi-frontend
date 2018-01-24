@@ -7,9 +7,11 @@ from config import Config
 
 class ConstructionPage(BasePage):
 
-    def __init__(self, driver, module):
+    def __init__(self, driver, module_query):
         self.driver = driver
-        self.base_locators = BaseLocators(module)
+        self.module_query = module_query
+        self.module = self.module_query.title()
+        self.base_locators = BaseLocators(module_query)
 
     def if_saved_in_db(self):
         return self.if_exist_in_db(self.base_locators.select_construction)
@@ -24,24 +26,25 @@ class ConstructionPage(BasePage):
         return True if self.is_element_present(self.base_locators.add_button_construction) else False
 
     def check_construction_column_title(self):
-        return self.check_title_is_correct(self.base_locators.constructions_table_header, *self.base_locators.table_construction_name)
+        return self.check_title_is_correct(self.module + ' name', *self.base_locators.table_construction_name)
 
     def check_construction_column_title_after_redirect(self):
         return self.check_title_is_correct(self.base_locators.floors_table_header, *self.base_locators.table_construction_name_redirected)
 
     def check_if_there_is_any_row(self):
-        count = self.count_of_inner_elements(*self.base_locators.table_rows)
-        if count == 0:
+        table_content = self.wait_for_element(self.base_locators.table_content)
+        count_rows = self.count_of_inner_elements(*self.base_locators.table_rows)
+        if count_rows == 0:
           try:
             self.identify_element(*self.base_locators.empty_table).text == 'No records founds'
           except NoSuchElementException:
             return False
           return True
         else:
-           return True
+          return True
 
     def is_redirect_button_present(self):
-        return True if self.is_element_present(self.base_locators.redirect_last_btn) else False
+        return True if self.is_element_present(self.base_locators.remove_last_construction_btn) else False
 
     def redirect_button_click(self):
         return self.click_button(*self.base_locators.redirect_last_btn)

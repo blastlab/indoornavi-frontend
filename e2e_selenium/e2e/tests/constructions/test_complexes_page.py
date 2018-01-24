@@ -1,6 +1,7 @@
 import unittest
 from selenium import webdriver
 from tests.test_driver import TestDriver
+from tests.constructions.test_base import TestBase
 from pages.constructions.construction_page import ConstructionPage
 from pages.base_page import BasePage
 from pages.constructions.complexes_page import ComplexesPage
@@ -23,27 +24,14 @@ class TestComplexesPage(unittest.TestCase):
         cls.construction_page.create_construction_db_env()
         cls.page.login_process(cls.option)
 
-    def multi_assertion(self):
-        # create list for all returned True or False
-        asserts = []
-        dropdown_present = self.construction_page.is_dropdown_button_present()
-        add_button_present = self.complexes_page.is_add_button_present()
-        column_title_present = self.construction_page.check_construction_column_title()
-        constr_counter = self.construction_page.check_if_there_is_any_row()
-
-        asserts.append(dropdown_present)
-        asserts.append(add_button_present)
-        asserts.append(column_title_present)
-        asserts.append(constr_counter)
-        # Check if there is any False in array
-        return False if False in asserts else True
-
     def _test_complexes_page_is_loaded_correctly(self):
-        self.assertTrue(self.multi_assertion())
+        """Test that complexes page has been correctly loaded"""
+        self.assertTrue(TestBase.multi_assertion(self))
 
     # TC[001]
     def test_add_new_complex_correctly(self):
         """Test adding new complex correctly"""
+        self.assertTrue(TestBase.multi_assertion(self))
         self.complexes_page.add_button_click()
         # TODO Zmienic tytul modala -  Add complex / Add new complex
         # self.assertTrue(self.complexes_page.check_add_modal_title())

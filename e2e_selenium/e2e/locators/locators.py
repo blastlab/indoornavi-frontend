@@ -17,6 +17,7 @@ class BaseLocators(object):
 
         self.table_construction_name = (By.XPATH, '//table/thead/tr/th[1]/span')
         self.table_construction_name_redirected = (By.XPATH, '//table/thead/tr/th[2]/span')
+        self.table_content = (By.XPATH, '//p-datatable/div/div[1]/table/tbody')
         self.table_rows = (By.XPATH, '//p-datatable/div/div[1]/table/tbody/tr')
         self.empty_table = (By.CSS_SELECTOR, 'td.ui-datatable-emptymessage')
         ###
