@@ -12,6 +12,8 @@ import {CoordinatesSocketData} from '../../published.type';
 import {HexagonHeatMap} from './hexagon-heatmap.service';
 import * as d3 from 'd3';
 import {ZoomService} from '../../../shared/services/zoom/zoom.service';
+import {Movable} from '../../../shared/wrappers/movable/movable';
+import {MapSvg} from '../../../map/map.type';
 
 @Component({
   templateUrl: './analytics.html',
@@ -63,8 +65,8 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
   }
 
   protected init(): void {
-    this.mapLoaderInformer.loadCompleted().first().subscribe((d3map: d3.selection) => {
-      this.createHexagonalHeatMapGrid(d3map);
+    this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg) => {
+      this.createHexagonalHeatMapGrid(mapSvg.layer);
     });
     this.whenDataArrived().subscribe((data: CoordinatesSocketData) => {
       // update
@@ -81,7 +83,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       // release to setHeatMap only those data that are in proper time step up to transition of the tag
       // from timeStepBuffer
       const timeStepBuffer = this.timeStepBuffer.get(tagShortId);
-      const timeWhenTransitionIsFinished: number = Date.now() - this.transitionDurationTimeStep;
+      const timeWhenTransitionIsFinished: number = Date.now() - Movable.TRANSITION_DURATION;
       for (let index = 0; index < timeStepBuffer.length; index ++) {
         if (timeStepBuffer[index].timeOfDataStep < timeWhenTransitionIsFinished) {
           if (this.playingAnimation) {
@@ -113,7 +115,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     this.heatmap.feedWithCoordinates(this.scaleCoordinates(data.coordinates.point));
   }
 
-  private createHexagonalHeatMapGrid (mapNode) {
+  private createHexagonalHeatMapGrid (mapNode: d3.selection): void {
     const height = Number.parseInt(mapNode.node().getBBox().height);
     const width = Number.parseInt(mapNode.node().getBBox().width);
     this.heatmap = new HexagonHeatMap(width, height, this.hexSize, this.gradient);
