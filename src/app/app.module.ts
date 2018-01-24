@@ -205,4 +205,3 @@ export function HttpLoaderFactory(http: Http) {
 
 export class AppModule {
 }
-
