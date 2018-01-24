@@ -7,11 +7,11 @@ import {Tag} from './tag.type';
 import {Anchor} from './anchor.type';
 import {Sink} from './sink.type';
 import {DeviceService} from './device.service';
-import {CrudComponent, CrudHelper} from '../utils/crud/crud.component';
+import {CrudComponent, CrudHelper} from '../shared/components/crud/crud.component';
 import {Device} from './device.type';
 import {NgForm} from '@angular/forms';
 import {ConfirmationService} from 'primeng/primeng';
-import {MessageServiceWrapper} from '../utils/message.service';
+import {MessageServiceWrapper} from '../shared/services/message/message.service';
 import {SocketService} from '../shared/services/socket/socket.service';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
 

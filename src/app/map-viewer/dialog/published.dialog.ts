@@ -15,11 +15,12 @@ import {Tag} from '../../device/tag.type';
 import {ActionBarService} from '../../map-editor/action-bar/actionbar.service';
 import {Configuration} from '../../map-editor/action-bar/actionbar.type';
 import {SelectItem} from 'primeng/primeng';
-import {CrudComponentForm, CrudHelper} from '../../utils/crud/crud.component';
+import {CrudComponentForm, CrudHelper} from '../../shared/components/crud/crud.component';
 import {NgForm} from '@angular/forms';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
-import {MessageServiceWrapper} from '../../utils/message.service';
+import {MessageServiceWrapper} from '../../shared/services/message/message.service';
+
 @Component({
   selector: 'app-published-dialog',
   templateUrl: './published.dialog.html',

@@ -4,9 +4,9 @@ import {PublishedMap} from '../published.type';
 import {TranslateService} from '@ngx-translate/core';
 import {Router} from '@angular/router';
 import {BreadcrumbService} from '../../shared/services/breadcrumbs/breadcrumb.service';
-import {CrudComponentList, CrudHelper} from '../../utils/crud/crud.component';
+import {CrudComponentList, CrudHelper} from '../../shared/components/crud/crud.component';
 import {ConfirmationService} from 'primeng/primeng';
-import {MessageServiceWrapper} from '../../utils/message.service';
+import {MessageServiceWrapper} from '../../shared/services/message/message.service';
 import {PublishedDialogComponent} from '../dialog/published.dialog';
 
 @Component({
@@ -70,6 +70,10 @@ export class PublishedListComponent implements OnInit, CrudComponentList {
 
   goTo(map: PublishedMap): void {
     this.router.navigate(['maps', map.id]);
+  }
+
+  goToAnalytics(map: PublishedMap): void {
+    this.router.navigate(['maps', map.id, 'analytics']);
   }
 
   goToEditor(map: PublishedMap): void {

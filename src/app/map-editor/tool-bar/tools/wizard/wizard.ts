@@ -19,10 +19,15 @@ import * as d3 from 'd3';
 import {ToolbarService} from '../../toolbar.service';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
 import {AcceptButtonsService} from '../../../../shared/components/accept-buttons/accept-buttons.service';
-import {DrawBuilder} from '../../../../map-viewer/published.builder';
+import {DrawBuilder} from '../../../../shared/utils/drawing/drawing.builder';
 import {IconService, NaviIcons} from '../../../../shared/services/drawing/icon.service';
 import {MapViewerService} from '../../../map.editor.service';
-import {ZoomService} from '../../../zoom.service';
+import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
+import {Device} from '../../../../device/device.type';
+import {ScaleService} from '../../../../shared/services/scale/scale.service';
+import {Scale} from '../scale/scale.type';
+import {Geometry} from '../../../../shared/utils/helper/geometry';
+
 
 @Component({
   selector: 'app-wizard',
@@ -38,6 +43,8 @@ export class WizardComponent implements Tool, OnInit {
   isLoading: boolean = true;
   displayError: boolean;
   active: boolean = false;
+  disabled: boolean = true;
+  private scale: Scale;
 
   private steps: WizardStep[];
   private activeStep: WizardStep;
@@ -46,7 +53,6 @@ export class WizardComponent implements Tool, OnInit {
   private socketSubscription: Subscription;
   private wizardData: WizardData = new WizardData();
   private hintMessage: string;
-  private wizardActivationButtonActive: boolean = true;
 
   constructor(public translate: TranslateService,
               private ngZone: NgZone,
@@ -56,7 +62,8 @@ export class WizardComponent implements Tool, OnInit {
               private hintBarService: HintBarService,
               private actionBarService: ActionBarService,
               private iconService: IconService,
-              private zoomService: ZoomService
+              private zoomService: ZoomService,
+              private scaleService: ScaleService
               ) {
   }
 
@@ -64,12 +71,12 @@ export class WizardComponent implements Tool, OnInit {
     this.setTranslations();
     this.steps = [new FirstStep(this.floor.id), new SecondStep(), new ThirdStep()];
     this.checkIsLoading();
-    this.toolbarService.onToolChanged().subscribe((tool: Tool) => {
-      !!tool ? this.wizardActivationButtonActive = false : this.wizardActivationButtonActive = true;
+    this.scaleService.scaleChanged.subscribe((scale: Scale) => {
+      this.scale = new Scale(scale);
     });
   }
 
-  nextStep() {
+  nextStep(): void {
     if (!this.activeStep) { // init wizard
       this.toolbarService.emitToolChanged(this);
       this.activeStep = this.steps[this.currentIndex];
@@ -93,19 +100,15 @@ export class WizardComponent implements Tool, OnInit {
     this.displayDialog = true;
   }
 
-  previousStep() {
+  previousStep(): void {
     if (this.currentIndex === 0) { // current step if first so we close wizard
-      this.activeStep = null;
-      this.displayDialog = false;
-      this.selected = undefined;
-      this.displayError = false;
+      this.cleanBeforeClosingWizard();
       this.toolbarService.emitToolChanged(null);
       return;
     } else if (this.currentIndex === 1) { // We need to reset socket connection, so we will get Sinks again
       this.closeSocket();
       this.openSocket();
     }
-
     this.currentIndex -= 1;
     this.activeStep = this.steps[this.currentIndex];
     this.activeStep.clean();
@@ -120,9 +123,7 @@ export class WizardComponent implements Tool, OnInit {
       this.displayError = true;
       return;
     }
-    this.translate.get(this.activeStep.getBeforePlaceOnMapHint()).subscribe((value: string) => {
-      this.hintBarService.emitHintMessage(value);
-    });
+    this.hintBarService.sendHintMessage(this.activeStep.getBeforePlaceOnMapHint());
     this.displayError = false;
     this.activeStep.beforePlaceOnMap(this.selected);
     this.displayDialog = false;
@@ -152,6 +153,13 @@ export class WizardComponent implements Tool, OnInit {
   setInactive(): void {
     this.active = false;
     this.closeSocket();
+    this.currentIndex = 0;
+    this.cleanBeforeClosingWizard();
+    this.acceptButtons.publishVisibility(false);
+  }
+
+  setDisabled(value: boolean): void {
+    this.disabled = value;
   }
 
   getHintMessage(): string {
@@ -160,6 +168,44 @@ export class WizardComponent implements Tool, OnInit {
 
   getToolName(): ToolName {
     return ToolName.WIZARD;
+  }
+
+  saveConfiguration(): void {
+    const anchors: Anchor[] = [];
+    const scaleLengthInPixels = Geometry.getDistanceBetweenTwoPoints(this.scale.startPoint, this.scale.stopPoint);
+    const scaleInCentimeters = this.scale.getRealDistanceInCentimeters();
+    const calculatePoint = (distance: number): number => Geometry.calculateDistanceInCentimeters(scaleLengthInPixels, scaleInCentimeters, distance);
+    anchors.push(<Anchor>{
+      shortId: this.wizardData.firstAnchorShortId,
+      x: calculatePoint(this.wizardData.firstAnchorPosition.x),
+      y: calculatePoint(this.wizardData.firstAnchorPosition.y)
+    });
+    anchors.push(<Anchor>{
+      shortId: this.wizardData.secondAnchorShortId,
+      x: calculatePoint(this.wizardData.secondAnchorPosition.x),
+      y: calculatePoint(this.wizardData.secondAnchorPosition.y)
+    });
+    this.actionBarService.setSink(<Sink>{
+      shortId: this.wizardData.sinkShortId,
+      x: calculatePoint(this.wizardData.sinkPosition.x),
+      y: calculatePoint(this.wizardData.sinkPosition.y),
+      anchors: anchors
+    });
+  }
+
+  private cleanBeforeClosingWizard(): void {
+    if (!!this.activeStep) {
+      this.activeStep.setSelectedItemId(this.selected);
+      this.activeStep.clean();
+    }
+    this.steps.forEach((step: WizardStep) => {
+      this.activeStep = step;
+      this.activeStep.clean();
+    });
+    this.activeStep = null;
+    this.displayDialog = false;
+    this.selected = undefined;
+    this.displayError = false;
   }
 
   private stepChanged() {
@@ -171,9 +217,7 @@ export class WizardComponent implements Tool, OnInit {
   }
 
   private showAcceptButtons(): void {
-    this.translate.get(this.activeStep.getAfterPlaceOnMapHint()).subscribe((value: string) => {
-      this.hintBarService.emitHintMessage(value);
-    });
+    this.hintBarService.sendHintMessage(this.activeStep.getAfterPlaceOnMapHint());
     this.acceptButtons.publishVisibility(true);
     this.acceptButtons.decisionMade.first().subscribe(
       data => {
@@ -188,18 +232,34 @@ export class WizardComponent implements Tool, OnInit {
       });
   }
 
-  private openSocket() {
+  private openSocket(): void {
     this.ngZone.runOutsideAngular(() => {
       const stream = this.socketService.connect(Config.WEB_SOCKET_URL + 'wizard');
       this.socketSubscription = stream.subscribe((message: any) => {
+        const scaleLengthInPixels = Geometry.getDistanceBetweenTwoPoints(this.scale.startPoint, this.scale.stopPoint);
+        const scaleInCentimeters = this.scale.getRealDistanceInCentimeters();
         this.ngZone.run(() => {
+          if (Object.keys(message).indexOf('distance') > 0) {
+            message.distance = Geometry.calculateDistanceInPixels(scaleLengthInPixels, scaleInCentimeters, message.distance);
+          } else if (Array.isArray(message)) {
+            message.forEach((item) => {
+              if (Object.keys(item).indexOf('anchors') > 0) {
+                item.anchors.forEach((anchor: Device) => {
+                  let point: Point = {x: anchor.x, y: anchor.y};
+                  point = Geometry.calculatePointPositionInPixels(scaleLengthInPixels, scaleInCentimeters, point);
+                  anchor.x = point.x;
+                  anchor.y = point.y;
+                });
+              }
+            });
+          }
           this.options = this.activeStep.load(this.options, message);
         });
       });
     });
   }
 
-  private closeSocket() {
+  private closeSocket(): void {
     if (!!this.socketSubscription) {
       this.socketSubscription.unsubscribe();
     }
@@ -234,25 +294,5 @@ export class WizardComponent implements Tool, OnInit {
     this.translate.get('wizard.first.message').subscribe((text: string) => {
       this.hintMessage = text;
     });
-  }
-
-  saveConfiguration(): void {
-      const anchors: Anchor[] = [];
-      anchors.push(<Anchor>{
-        shortId: this.wizardData.firstAnchorShortId,
-        x: this.wizardData.firstAnchorPosition.x,
-        y: this.wizardData.firstAnchorPosition.y
-      });
-      anchors.push(<Anchor>{
-        shortId: this.wizardData.secondAnchorShortId,
-        x: this.wizardData.secondAnchorPosition.x,
-        y: this.wizardData.secondAnchorPosition.y
-      });
-      this.actionBarService.setSink(<Sink>{
-        shortId: this.wizardData.sinkShortId,
-        x: this.wizardData.sinkPosition.x,
-        y: this.wizardData.sinkPosition.y,
-        anchors: anchors
-      });
   }
 }

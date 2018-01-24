@@ -30,7 +30,7 @@ import {AuthGuard, CanRead} from './auth/auth.guard';
 import {AuthService} from './auth/auth.service';
 import {WizardComponent} from './map-editor/tool-bar/tools/wizard/wizard';
 import {ActionBarService} from './map-editor/action-bar/actionbar.service';
-import {ScaleService} from './map-editor/tool-bar/tools/scale/scale.service';
+import {ScaleService} from './shared/services/scale/scale.service';
 import {PublishedListComponent} from './map-viewer/list/published-list';
 import {appRoutes} from './app.routes';
 import {PublishedService} from './map-viewer/published.service';
@@ -44,17 +44,19 @@ import {
   CheckboxModule,
   ConfirmationService,
   ConfirmDialogModule,
+  ContextMenuModule,
   GrowlModule,
   MultiSelectModule,
   PanelMenuModule,
   SidebarModule,
+  SliderModule,
   ToolbarModule,
   TooltipModule
 } from 'primeng/primeng';
 import {HintBarService} from './map-editor/hint-bar/hintbar.service';
 import {ToolbarService} from './map-editor/tool-bar/toolbar.service';
 import {AppComponent} from './app.component';
-import {MessageServiceWrapper} from './utils/message.service';
+import {MessageServiceWrapper} from './shared/services/message/message.service';
 import {MessageService} from 'primeng/components/common/messageservice';
 import {BreadcrumbService} from './shared/services/breadcrumbs/breadcrumb.service';
 import {AreaService} from './shared/services/area/area.service';
@@ -74,8 +76,7 @@ import {DragDropModule} from 'primeng/components/dragdrop/dragdrop';
 import {DropdownModule} from 'primeng/components/dropdown/dropdown';
 import {DialogModule} from 'primeng/components/dialog/dialog';
 import {DataTableModule} from 'primeng/components/datatable/datatable';
-import {SliderModule} from 'primeng/primeng';
-import {AppAutoFocusDirective} from './utils/directive/autofocus.directive';
+import {AppAutoFocusDirective} from './shared/directive/autofocus.directive';
 import {DeviceComponent} from 'app/device/device';
 import {AcceptButtonsComponent} from 'app/shared/components/accept-buttons/accept-buttons';
 import {PermissionGroupComponent} from 'app/user/permissionGroup/permissionGroup';
@@ -85,9 +86,14 @@ import {SharedModule} from './shared/modules/shared.module';
 import {ToolDetailsComponent} from './map-editor/tool-bar/shared/details/tool-details';
 import {MdIconRegistry} from '@angular/material';
 import {SocketConnectorComponent} from './map-viewer/views/socket-connector.component';
-import {ZoomService} from './map-editor/zoom.service';
+import {ZoomService} from './shared/services/zoom/zoom.service';
 import {MapComponent} from './map/map';
+import {AreaComponent} from './map-editor/tool-bar/tools/area/area';
+import {AreaDetailsComponent} from './map-editor/tool-bar/tools/area/details/area-details';
+import {AreaDetailsService} from './map-editor/tool-bar/tools/area/details/area-details.service';
+import {ContextMenuService} from './shared/wrappers/editable/editable.service';
 import {PublishedComponent} from './map-viewer/views/publications/publication';
+import {AnalyticsComponent} from './map-viewer/views/analytics/analytics';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -123,7 +129,10 @@ export function HttpLoaderFactory(http: Http) {
     ToolDetailsComponent,
     DeviceComponent,
     SocketConnectorComponent,
-    MapComponent
+    MapComponent,
+    AreaComponent,
+    AreaDetailsComponent,
+    AnalyticsComponent
   ],
   entryComponents: [
     PublishedDialogComponent,
@@ -162,7 +171,8 @@ export function HttpLoaderFactory(http: Http) {
     TooltipModule,
     GrowlModule,
     ProgressSpinnerModule,
-    OverlayPanelModule
+    OverlayPanelModule,
+    ContextMenuModule
   ],
   providers: [
     BuildingService,
@@ -199,9 +209,10 @@ export function HttpLoaderFactory(http: Http) {
     MdIconRegistry,
     HintBarService,
     ZoomService,
+    AreaDetailsService,
+    ContextMenuService
   ], bootstrap: [AppComponent]
 })
 
 export class AppModule {
 }
-

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
-import {Point, Transform} from './map.type';
-import {MapViewerService} from './map.editor.service';
+import {Point, Transform} from '../../../map-editor/map.type';
+import {MapViewerService} from '../../../map-editor/map.editor.service';
 import * as d3 from 'd3';
 
 @Injectable()

@@ -29,14 +29,18 @@ export class HintBarComponent implements OnInit {
     this.toolbarService.onToolChanged().subscribe((tool: Tool) => {
       if (!!tool) {
         this.toolName = ToolName[tool.getToolName()];
-        this.hintMessage = tool.getHintMessage();
+        this.translate.get(tool.getHintMessage()).subscribe((translated: string) => {
+          this.hintMessage = translated;
+        });
       } else {
         this.toolName = ToolName[ToolName.NONE];
         this.hintMessage = this.defaultHintMessage;
       }
     });
-    this.hintBarService.onHintMessageReceived().subscribe((value: string) => {
-      this.hintMessage = value;
+    this.hintBarService.onHintMessageReceived().subscribe((key: string) => {
+      this.translate.get(key).subscribe((translated: string) => {
+        this.hintMessage = translated;
+      });
     });
   }
 }

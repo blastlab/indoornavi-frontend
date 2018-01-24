@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
-import {Scale} from './scale.type';
+import {Scale} from '../../../map-editor/tool-bar/tools/scale/scale.type';
 
 @Injectable()
 export class ScaleService {
@@ -17,4 +17,5 @@ export class ScaleService {
   publishScaleChanged(scale: Scale) {
     this.scaleChangedEmitter.next(scale);
   }
+
 }

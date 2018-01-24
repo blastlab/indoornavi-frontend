@@ -3,7 +3,7 @@
         [ngClass]="{'active-tool' : active}" (click)="nextStep()"
         pTooltip="{{'wizard.tooltip'|translate}}"
         icon="fa-sitemap" iconPos="left"
-        [disabled]="!wizardActivationButtonActive"
+        [disabled]="disabled"
 >
 </button>
 

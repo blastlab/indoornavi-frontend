@@ -6,4 +6,5 @@ export interface Tool {
   getToolName(): ToolName;
   setActive(): void;
   setInactive(): void;
+  setDisabled(value: boolean): void;
 }

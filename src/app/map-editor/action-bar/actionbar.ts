@@ -9,7 +9,7 @@ import {PublishedMap} from '../../map-viewer/published.type';
 import {TranslateService} from '@ngx-translate/core';
 import {Configuration} from './actionbar.type';
 import {ConfirmationService} from 'primeng/primeng';
-import {MessageServiceWrapper} from '../../utils/message.service';
+import {MessageServiceWrapper} from '../../shared/services/message/message.service';
 
 @Component({
   selector: 'app-actionbar',
