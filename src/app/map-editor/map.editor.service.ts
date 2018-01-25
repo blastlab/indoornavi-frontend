@@ -55,15 +55,13 @@ export class MapViewerService {
           .translateExtent(MapViewerService.maxTranslate(mapContainer, image))
           .on('zoom', zoomed);
 
-        const map = d3
-          .select(`#${MapViewerService.MAP_UPPER_LAYER_SELECTOR_ID}`)
+        const map = d3.select(`#${MapViewerService.MAP_UPPER_LAYER_SELECTOR_ID}`)
           .attr('width', mapContainer.offsetWidth)
           .attr('height', mapContainer.offsetHeight);
 
         const g = map.append('g');
 
-        g
-          .attr('id', MapViewerService.MAP_LAYER_SELECTOR_ID)
+        g.attr('id', MapViewerService.MAP_LAYER_SELECTOR_ID)
           .append('svg:image')
           .attr('id', 'map-img')
           .attr('xlink:href', image.src)
@@ -76,8 +74,7 @@ export class MapViewerService {
         // });
 
 
-        zoom
-          .translateBy(map, (mapContainer.offsetWidth - image.width) / 2, (mapContainer.offsetHeight - image.height) / 2);
+        zoom.translateBy(map, (mapContainer.offsetWidth - image.width) / 2, (mapContainer.offsetHeight - image.height) / 2);
         map.call(zoom);
 
         window.addEventListener('resize', () => {
