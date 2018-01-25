@@ -115,13 +115,12 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       deviceId: number = data.coordinates.tagShortId;
     if (!this.isOnMap(deviceId)) {
       const drawBuilder = new DrawBuilder(map, {id: `tag-${deviceId}`, clazz: 'tag'}, this.zoomService);
-      const tagOnMap: Movable = (<Movable>drawBuilder
+      const tagOnMap: SvgGroupWrapper = drawBuilder
         .createGroup()
         .addIcon({x: 0, y: 0}, this.iconService.getIcon(NaviIcons.TAG))
         .addText({x: 0, y: 36}, `${deviceId}`)
-        .place({x: coordinates.x, y: coordinates.y}))
-        .setShortId(deviceId);
-      this.tagsOnMap.setValue(deviceId, tagOnMap);
+        .place({x: coordinates.x, y: coordinates.y});
+      this.tagsOnMap.setValue(deviceId, new Movable(tagOnMap).setShortId(deviceId));
     } else {
       this.moveTagOnMap(data);
     }
