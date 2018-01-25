@@ -174,7 +174,7 @@ export class WizardComponent implements Tool, OnInit {
     const anchors: Anchor[] = [];
     const scaleLengthInPixels = Geometry.getDistanceBetweenTwoPoints(this.scale.startPoint, this.scale.stopPoint);
     const scaleInCentimeters = this.scale.getRealDistanceInCentimeters();
-    const calculatePoint = (distance: number): number => Geometry.calculateDistanceInCentimeters(scaleLengthInPixels, scaleInCentimeters, distance);
+    const calculatePoint = (distance: number): number => Math.round(Geometry.calculateDistanceInCentimeters(scaleLengthInPixels, scaleInCentimeters, distance));
     anchors.push(<Anchor>{
       shortId: this.wizardData.firstAnchorShortId,
       x: calculatePoint(this.wizardData.firstAnchorPosition.x),
