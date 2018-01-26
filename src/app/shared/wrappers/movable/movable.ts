@@ -1,10 +1,14 @@
-import {SvgGroupWrapper} from '../../utils/drawing/drawing.builder';
 import {Point} from '../../../map-editor/map.type';
+import {SvgGroupWrapper} from '../../utils/drawing/drawing.builder';
 
-export class Movable extends SvgGroupWrapper {
+export class Movable {
   static TRANSITION_DURATION: number = 1000;
   transitionEnded: boolean = true;
   shortId: number;
+
+  constructor(private svgGroupWrapper: SvgGroupWrapper) {
+
+  }
 
   setShortId(id: number) {
     this.shortId = id;
@@ -13,7 +17,7 @@ export class Movable extends SvgGroupWrapper {
 
   move(destination: Point): Promise<number> {
     return new Promise((resolve) => {
-      this.getGroup()
+      this.svgGroupWrapper.getGroup()
         .transition()
         .attr('x', destination.x)
         .attr('y', destination.y)
@@ -25,5 +29,9 @@ export class Movable extends SvgGroupWrapper {
           resolve(this.shortId);
         }).duration(Movable.TRANSITION_DURATION);
     });
+  }
+
+  remove() {
+    this.svgGroupWrapper.remove();
   }
 }
