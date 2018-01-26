@@ -2,7 +2,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import selenium.webdriver.support.ui as ui
 from selenium.common.exceptions import NoSuchElementException
 from pages.base_page import BasePage
-from locators.locators import BaseLocators
+from locators.construction_base_locators import ConstructionBaseLocators
 from config import Config
 
 class ConstructionPage(BasePage):
@@ -11,7 +11,7 @@ class ConstructionPage(BasePage):
         self.driver = driver
         self.module_query = module_query
         self.module = self.module_query.title()
-        self.base_locators = BaseLocators(module_query)
+        self.base_locators = ConstructionBaseLocators(module_query)
 
     def if_saved_in_db(self):
         return self.if_exist_in_db(self.base_locators.select_construction)

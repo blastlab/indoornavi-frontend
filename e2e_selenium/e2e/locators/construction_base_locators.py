@@ -1,6 +1,6 @@
 from selenium.webdriver.common.by import By
 
-class BaseLocators(object):
+class ConstructionBaseLocators(object):
 
     def __init__(self, module_query):
         self.module_query = module_query
