@@ -185,7 +185,8 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       this.socketSubscription = stream.subscribe((data: MeasureSocketData) => {
         this.ngZone.run(() => {
           if (this.isCoordinatesData(data)) {
-            this.dataReceived.next(<CoordinatesSocketData> data);
+            console.log(data);
+            this.dataReceived.next(<CoordinatesSocketData>data);
           } else if (this.isEventData(data)) {
             this.handleEventData(<EventSocketData> data);
           }
