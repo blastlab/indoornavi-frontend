@@ -51,7 +51,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
               protected socketService: SocketService,
               protected route: ActivatedRoute,
               protected publishedService: PublishedService,
-              private mapLoaderInformer: MapLoaderInformerService,
+              protected mapLoaderInformer: MapLoaderInformerService,
               private areaService: AreaService,
               private translateService: TranslateService,
               private iconService: IconService,
@@ -104,8 +104,44 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     return this.dataReceived.asObservable();
   }
 
+  protected handleCoordinatesData(data: CoordinatesSocketData) {
+    const map = d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`);
+    const coordinates: Point = Geometry.calculatePointPositionInPixels(
+        Geometry.getDistanceBetweenTwoPoints(
+          this.activeMap.floor.scale.start, this.activeMap.floor.scale.stop
+        ),
+        this.scale.getRealDistanceInCentimeters(),
+        data.coordinates.point
+      ),
+      deviceId: number = data.coordinates.tagShortId;
+    data.coordinates.point = coordinates;
+    if (!this.isOnMap(deviceId)) {
+      const drawBuilder = new DrawBuilder(map, {id: `tag-${deviceId}`, clazz: 'tag'}, this.zoomService);
+      const tagOnMap: SvgGroupWrapper = drawBuilder
+        .createGroup()
+        .addIcon({x: 0, y: 0}, this.iconService.getIcon(NaviIcons.TAG))
+        .addText({x: 0, y: 36}, `${deviceId}`)
+        .place({x: coordinates.x, y: coordinates.y});
+      this.tagsOnMap.setValue(deviceId, new Movable(tagOnMap).setShortId(deviceId));
+    } else {
+      this.moveTagOnMap(data);
+    }
+    if (this.originListeningOnEvent.containsKey('coordinates')) {
+      this.originListeningOnEvent.getValue('coordinates').forEach((event: MessageEvent) => {
+        event.source.postMessage({type: 'coordinates', coordinates: data}, event.origin);
+      })
+    }
+  }
+
   protected whenTransitionEnded(): Observable<number> {
     return this.transitionEnded.asObservable();
+  }
+
+  protected scaleCoordinates(point: Point): Point {
+    return {
+      x: point.x / this.pixelsToCentimeters,
+      y: point.y / this.pixelsToCentimeters
+    };
   }
 
   private isCoordinatesData(data: MeasureSocketData): boolean {
@@ -128,43 +164,12 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     });
   }
 
-  protected handleCoordinatesData(data: CoordinatesSocketData) {
-    const map = d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`);
-    const coordinates: Point = Geometry.calculatePointPositionInPixels(
-        Geometry.getDistanceBetweenTwoPoints(
-          this.activeMap.floor.scale.start, this.activeMap.floor.scale.stop
-        ),
-        this.scale.getRealDistanceInCentimeters(),
-        data.coordinates.point
-      ),
-      deviceId: number = data.coordinates.tagShortId;
-    data.coordinates.point = coordinates;
-    if (!this.isOnMap(deviceId)) {
-      const drawBuilder = new DrawBuilder(map, {id: `tag-${deviceId}`, clazz: 'tag'}, this.zoomService);
-      const tagOnMap: Movable = (<Movable>drawBuilder
-        .createGroup()
-        .addIcon({x: 0, y: 0}, this.iconService.getIcon(NaviIcons.TAG))
-        .addText({x: 0, y: 36}, `${deviceId}`)
-        .place({x: coordinates.x, y: coordinates.y}))
-        .setShortId(deviceId);
-      this.tagsOnMap.setValue(deviceId, tagOnMap);
-    } else {
-      this.moveTagOnMap(data);
-    }
-
-    if (this.originListeningOnEvent.containsKey('coordinates')) {
-      this.originListeningOnEvent.getValue('coordinates').forEach((event: MessageEvent) => {
-        event.source.postMessage({type: 'coordinates', coordinates: data}, event.origin);
-      })
-    }
-  }
-
   private moveTagOnMap(data: CoordinatesSocketData) {
     const tag: Movable = this.tagsOnMap.getValue(data.coordinates.tagShortId);
     // !document.hidden is here to avoid queueing transitions and therefore browser freezes
     if (tag.transitionEnded && !document.hidden) {
       tag.move(data.coordinates.point).then(() => {
-        this.transitionEnded.next();
+        this.transitionEnded.next(data.coordinates.tagShortId);
       });
     }
   }
@@ -178,11 +183,10 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     this.ngZone.runOutsideAngular(() => {
       const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?client`);
       this.setSocketConfiguration();
-
       this.socketSubscription = stream.subscribe((data: MeasureSocketData) => {
         this.ngZone.run(() => {
           if (this.isCoordinatesData(data)) {
-            this.dataReceived.next(<CoordinatesSocketData> data);
+            this.dataReceived.next(<CoordinatesSocketData>data);
           } else if (this.isEventData(data)) {
             this.handleEventData(<EventSocketData> data);
           }
