@@ -14,6 +14,7 @@ import * as d3 from 'd3';
 import {ZoomService} from '../../../shared/services/zoom/zoom.service';
 import {Movable} from '../../../shared/wrappers/movable/movable';
 import {MapSvg} from '../../../map/map.type';
+import {Geometry} from '../../../shared/utils/helper/geometry';
 
 @Component({
   templateUrl: './analytics.html',
@@ -112,7 +113,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
   }
 
   private heatUpHexes(data: CoordinatesSocketData): void {
-    this.heatmap.feedWithCoordinates(this.scaleCoordinates(data.coordinates.point));
+    this.heatmap.feedWithCoordinates(Geometry.transformFromSinkCoordinatesSystemToMapCoordinatesSystem(data.sinkPosition, data.coordinates.point, this.scale, this.mapHeight));
   }
 
   private createHexagonalHeatMapGrid (mapNode: d3.selection): void {

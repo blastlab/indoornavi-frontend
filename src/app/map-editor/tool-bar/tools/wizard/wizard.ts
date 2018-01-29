@@ -172,7 +172,7 @@ export class WizardComponent implements Tool, OnInit {
 
   saveConfiguration(): void {
     const anchors: Anchor[] = [];
-    const scaleLengthInPixels = Geometry.getDistanceBetweenTwoPoints(this.scale.startPoint, this.scale.stopPoint);
+    const scaleLengthInPixels = Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop);
     const scaleInCentimeters = this.scale.getRealDistanceInCentimeters();
     const calculatePoint = (distance: number): number => Math.round(Geometry.calculateDistanceInCentimeters(scaleLengthInPixels, scaleInCentimeters, distance));
     anchors.push(<Anchor>{
@@ -236,7 +236,7 @@ export class WizardComponent implements Tool, OnInit {
     this.ngZone.runOutsideAngular(() => {
       const stream = this.socketService.connect(Config.WEB_SOCKET_URL + 'wizard');
       this.socketSubscription = stream.subscribe((message: any) => {
-        const scaleLengthInPixels = Geometry.getDistanceBetweenTwoPoints(this.scale.startPoint, this.scale.stopPoint);
+        const scaleLengthInPixels = Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop);
         const scaleInCentimeters = this.scale.getRealDistanceInCentimeters();
         this.ngZone.run(() => {
           if (Object.keys(message).indexOf('distance') > 0) {

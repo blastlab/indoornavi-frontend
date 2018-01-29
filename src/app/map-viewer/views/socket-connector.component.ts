@@ -39,14 +39,14 @@ import {Scale} from '../../map-editor/tool-bar/tools/scale/scale.type';
 export class SocketConnectorComponent implements OnInit, AfterViewInit {
   protected socketSubscription: Subscription;
   protected activeMap: PublishedMap;
-  protected d3map: d3.selection = null;
-  protected pixelsToCentimeters: number;
+  protected d3map: MapSvg = null;
+  protected scale: Scale;
+  protected mapHeight: number;
   private dataReceived = new Subject<CoordinatesSocketData>();
   private transitionEnded = new Subject<number>();
   private tagsOnMap: Dictionary<number, Movable> = new Dictionary<number, Movable>();
   private areasOnMap: Dictionary<number, SvgGroupWrapper> = new Dictionary<number, SvgGroupWrapper>();
   private originListeningOnEvent: Dictionary<string, MessageEvent[]> = new Dictionary<string, MessageEvent[]>();
-  private scale: Scale;
 
   constructor(protected ngZone: NgZone,
               protected socketService: SocketService,
@@ -70,12 +70,10 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg) => {
             if (!!this.activeMap.floor.scale) {
               this.scale = new Scale(this.activeMap.floor.scale);
-              this.d3map = mapSvg.container;
+              this.d3map = mapSvg;
               this.drawAreas(map.floor.id);
-              const realDistanceInCentimeters = this.scale.getRealDistanceInCentimeters();
-              const scaleLengthInPixels = Geometry.getDistanceBetweenTwoPoints(map.floor.scale.start, map.floor.scale.stop);
-              this.pixelsToCentimeters = realDistanceInCentimeters / scaleLengthInPixels;
               this.initializeSocketConnection();
+              this.mapHeight = this.d3map.container.select(`#${MapViewerService.MAP_IMAGE_SELECTOR_ID}`).attr('height');
             }
           });
         }
@@ -110,11 +108,10 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   }
 
   protected handleCoordinatesData(data: CoordinatesSocketData) {
-    const map = d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`);
-    const coordinates: Point = this.scaleCoordinates(data.coordinates.point),
+    const coordinates: Point = Geometry.transformFromSinkCoordinatesSystemToMapCoordinatesSystem(data.sinkPosition, data.coordinates.point, this.scale, this.mapHeight),
       deviceId: number = data.coordinates.tagShortId;
     if (!this.isOnMap(deviceId)) {
-      const drawBuilder = new DrawBuilder(map, {id: `tag-${deviceId}`, clazz: 'tag'}, this.zoomService);
+      const drawBuilder = new DrawBuilder(this.d3map.container, {id: `tag-${deviceId}`, clazz: 'tag'}, this.zoomService);
       const tagOnMap: SvgGroupWrapper = drawBuilder
         .createGroup()
         .addIcon({x: 0, y: 0}, this.iconService.getIcon(NaviIcons.TAG))
@@ -122,7 +119,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         .place({x: coordinates.x, y: coordinates.y});
       this.tagsOnMap.setValue(deviceId, new Movable(tagOnMap).setShortId(deviceId));
     } else {
-      this.moveTagOnMap(data);
+      this.moveTagOnMap(coordinates, deviceId);
     }
     if (this.originListeningOnEvent.containsKey('coordinates')) {
       this.originListeningOnEvent.getValue('coordinates').forEach((event: MessageEvent) => {
@@ -133,13 +130,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
 
   protected whenTransitionEnded(): Observable<number> {
     return this.transitionEnded.asObservable();
-  }
-
-  protected scaleCoordinates(point: Point): Point {
-    return {
-      x: point.x / this.pixelsToCentimeters,
-      y: point.y / this.pixelsToCentimeters
-    };
   }
 
   private isCoordinatesData(data: MeasureSocketData): boolean {
@@ -162,12 +152,12 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private moveTagOnMap(data: CoordinatesSocketData) {
-    const tag: Movable = this.tagsOnMap.getValue(data.coordinates.tagShortId);
+  private moveTagOnMap(coordinates: Point, deviceId: number): void {
+    const tag: Movable = this.tagsOnMap.getValue(deviceId);
     // !document.hidden is here to avoid queueing transitions and therefore browser freezes
     if (tag.transitionEnded && !document.hidden) {
-      tag.move(data.coordinates.point).then(() => {
-        this.transitionEnded.next(data.coordinates.tagShortId);
+      tag.move(coordinates).then(() => {
+        this.transitionEnded.next(deviceId);
       });
     }
   }

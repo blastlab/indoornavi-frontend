@@ -1,4 +1,5 @@
 import {Line, Point} from '../../../map-editor/map.type';
+import {Scale} from '../../../map-editor/tool-bar/tools/scale/scale.type';
 
 export class Geometry {
 
@@ -59,4 +60,15 @@ export class Geometry {
     };
   }
 
+  static transformFromSinkCoordinatesSystemToMapCoordinatesSystem (
+    sinkCoordinatesFromSinkCoordinatesSystem: Point,
+    givenCoordinatesFromSinkCoordinatesSystem: Point,
+    scale: Scale,
+    mapHeight: number): Point {
+    const centimetersToPixels: number = scale.getRealDistanceInCentimeters() / Geometry.getDistanceBetweenTwoPoints(scale.start, scale.stop);
+    return {
+      x: (sinkCoordinatesFromSinkCoordinatesSystem.x + givenCoordinatesFromSinkCoordinatesSystem.x) / centimetersToPixels,
+      y: mapHeight - (sinkCoordinatesFromSinkCoordinatesSystem.y + givenCoordinatesFromSinkCoordinatesSystem.y) / centimetersToPixels,
+    };
+  }
 }

@@ -12,6 +12,7 @@ export class MapViewerService {
 
   public static MAP_LAYER_SELECTOR_ID: string = 'map';
   public static MAP_UPPER_LAYER_SELECTOR_ID: string = 'map-upper-layer';
+  public static MAP_IMAGE_SELECTOR_ID: string = 'map-img';
   private static MAP_CONTAINER_SELECTOR_ID: string = 'map-container';
   private transformation: Transform = {x: 0, y: 0, k: 1};
   private transformationInformer = new Subject<Transform>();

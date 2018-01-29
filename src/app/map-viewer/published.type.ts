@@ -22,6 +22,7 @@ export enum MeasureSocketDataType {
 
 export interface CoordinatesSocketData extends MeasureSocketData {
   coordinates: Coordinates;
+  sinkPosition: Point;
 }
 
 export interface EventSocketData extends MeasureSocketData {
