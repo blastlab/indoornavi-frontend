@@ -1,9 +1,10 @@
 import * as d3 from 'd3';
 import {AnchorSuggestedPositions} from '../../../../../device/anchor.type';
 import {Point} from '../../../../map.type';
-import {ObjectParams, SocketMessage, Step, WizardData, WizardStep} from '../wizard.type';
+import {ObjectParams, ScaleCalculations, SocketMessage, Step, WizardData, WizardStep} from '../wizard.type';
 import {SelectItem} from 'primeng/primeng';
 import {NaviIcons} from '../../../../../shared/services/drawing/icon.service';
+import {Geometry} from '../../../../../shared/utils/helper/geometry';
 
 export class ThirdStep implements WizardStep {
   private selectedItemId: number;
@@ -16,7 +17,7 @@ export class ThirdStep implements WizardStep {
   constructor() {
   }
 
-  load(items: SelectItem[], message: any): SelectItem[] {
+  load(items: SelectItem[], message: any, scaleCalculations: ScaleCalculations): SelectItem[] {
     if (ThirdStep.isPositionsType(message)) {
       const anchorSuggestedPositions: AnchorSuggestedPositions = (<AnchorSuggestedPositions>message);
       const item: SelectItem = {
@@ -26,7 +27,15 @@ export class ThirdStep implements WizardStep {
       if (!items.find((i: SelectItem) => {
           return i.value === item.value;
         })) {
-        this.suggestedPositions.push(anchorSuggestedPositions);
+        console.log(anchorSuggestedPositions.points);
+        this.suggestedPositions.push({
+          anchorId: anchorSuggestedPositions.anchorId,
+          points: [
+            Geometry.calculatePointPositionInPixels(scaleCalculations.scaleLengthInPixels, scaleCalculations.scaleInCentimeters, anchorSuggestedPositions.points[0]),
+            Geometry.calculatePointPositionInPixels(scaleCalculations.scaleLengthInPixels, scaleCalculations.scaleInCentimeters, anchorSuggestedPositions.points[1])
+          ]
+        });
+        console.log(this.suggestedPositions[0].points);
         items.push(item);
       }
       return [...items];
@@ -86,9 +95,9 @@ export class ThirdStep implements WizardStep {
     };
   }
 
-  updateWizardData(data: WizardData, id: number, coordinates: Point): void {
+  updateWizardData(data: WizardData, id: number, coordinates: Point, scaleCalculations: ScaleCalculations): void {
     data.secondAnchorShortId = id;
-    data.secondAnchorPosition = coordinates;
+    data.secondAnchorPosition = Geometry.calculatePointPositionInCentimeters(scaleCalculations.scaleLengthInPixels, scaleCalculations.scaleInCentimeters, coordinates);
   }
 
   clean(): void {

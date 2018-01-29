@@ -59,4 +59,11 @@ export class Geometry {
     };
   }
 
+  static calculatePointPositionInCentimeters(lengthInPixels: number, lengthInCentimeters: number, point: Point): Point {
+    return {
+      x: Geometry.calculateDistanceInCentimeters(lengthInPixels, lengthInCentimeters, point.x),
+      y: Geometry.calculateDistanceInCentimeters(lengthInPixels, lengthInCentimeters, point.y)
+    };
+  }
+
 }

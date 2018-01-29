@@ -30,6 +30,7 @@ import {MapLoaderInformerService} from '../../shared/services/map-loader-informe
 import {MapSvg} from '../../map/map.type';
 import {Area} from '../../map-editor/tool-bar/tools/area/area.type';
 import {Movable} from '../../shared/wrappers/movable/movable';
+import {Scale} from '../../map-editor/tool-bar/tools/scale/scale.type';
 
 @Component({
   templateUrl: './socket-connector.component.html',
@@ -39,12 +40,12 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   protected socketSubscription: Subscription;
   protected activeMap: PublishedMap;
   protected d3map: d3.selection = null;
-  protected pixelsToCentimeters: number;
   private dataReceived = new Subject<CoordinatesSocketData>();
   private transitionEnded = new Subject<number>();
   private tagsOnMap: Dictionary<number, Movable> = new Dictionary<number, Movable>();
   private areasOnMap: Dictionary<number, SvgGroupWrapper> = new Dictionary<number, SvgGroupWrapper>();
   private originListeningOnEvent: Dictionary<string, MessageEvent[]> = new Dictionary<string, MessageEvent[]>();
+  private scale: Scale;
 
   constructor(protected ngZone: NgZone,
               protected socketService: SocketService,
@@ -54,8 +55,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
               private areaService: AreaService,
               private translateService: TranslateService,
               private iconService: IconService,
-              private zoomService: ZoomService
-              ) {
+              private zoomService: ZoomService) {
   }
 
   ngOnInit() {
@@ -66,12 +66,12 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         this.activeMap = map;
         if (this.activeMap.floor.imageId != null) {
           this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg) => {
-            this.d3map = mapSvg.container;
-            this.drawAreas(map.floor.id);
-            const realDistanceInCentimeters = map.floor.scale.getRealDistanceInCentimeters();
-            const scaleLengthInPixels = Geometry.getDistanceBetweenTwoPoints(map.floor.scale.start, map.floor.scale.stop);
-            this.pixelsToCentimeters = realDistanceInCentimeters / scaleLengthInPixels;
-            this.initializeSocketConnection();
+            if (!!this.activeMap.floor.scale) {
+              this.scale = new Scale(this.activeMap.floor.scale);
+              this.d3map = mapSvg.container;
+              this.drawAreas(map.floor.id);
+              this.initializeSocketConnection();
+            }
           });
         }
       });
@@ -130,8 +130,15 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
 
   protected handleCoordinatesData(data: CoordinatesSocketData) {
     const map = d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`);
-    const coordinates: Point = this.scaleCoordinates(data.coordinates.point),
+    const coordinates: Point = Geometry.calculatePointPositionInPixels(
+        Geometry.getDistanceBetweenTwoPoints(
+          this.activeMap.floor.scale.start, this.activeMap.floor.scale.stop
+        ),
+        this.scale.getRealDistanceInCentimeters(),
+        data.coordinates.point
+      ),
       deviceId: number = data.coordinates.tagShortId;
+    data.coordinates.point = coordinates;
     if (!this.isOnMap(deviceId)) {
       const drawBuilder = new DrawBuilder(map, {id: `tag-${deviceId}`, clazz: 'tag'}, this.zoomService);
       const tagOnMap: Movable = (<Movable>drawBuilder
@@ -183,13 +190,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       });
     });
   };
-
-  private scaleCoordinates(point: Point): Point {
-    return {
-      x: point.x / this.pixelsToCentimeters,
-      y: point.y / this.pixelsToCentimeters
-    };
-  }
 
   private drawAreas(floorId: number): void {
     this.areaService.getAllByFloor(floorId).first().subscribe((areas: Area[]) => {

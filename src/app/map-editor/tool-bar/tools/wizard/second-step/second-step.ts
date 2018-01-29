@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import {AnchorDistance} from '../../../../../device/anchor.type';
 import {Point} from '../../../../map.type';
 import {SelectItem} from 'primeng/primeng';
-import {WizardData, WizardStep, SecondStepMessage, Step, ObjectParams} from '../wizard.type';
+import {ObjectParams, ScaleCalculations, SecondStepMessage, Step, WizardData, WizardStep} from '../wizard.type';
 import {NaviIcons} from 'app/shared/services/drawing/icon.service';
 import {Geometry} from '../../../../../shared/utils/helper/geometry';
 
@@ -17,7 +17,7 @@ export class SecondStep implements WizardStep {
   constructor() {
   }
 
-  load(items: SelectItem[], message: any): SelectItem[] {
+  load(items: SelectItem[], message: any, scaleCalculations: ScaleCalculations): SelectItem[] {
     if (SecondStep.isDistanceType(message)) {
       const anchorDistance: AnchorDistance = (<AnchorDistance>message);
       const item: SelectItem = {
@@ -27,6 +27,7 @@ export class SecondStep implements WizardStep {
       if (!items.find((i: SelectItem) => {
           return i.value === item.value;
         })) {
+        anchorDistance.distance = Geometry.calculateDistanceInPixels(scaleCalculations.scaleLengthInPixels, scaleCalculations.scaleInCentimeters, anchorDistance.distance);
         this.distances.push(anchorDistance);
         items.push(item);
       }
@@ -96,9 +97,9 @@ export class SecondStep implements WizardStep {
     };
   }
 
-  updateWizardData(data: WizardData, id: number, coordinates: Point): void {
+  updateWizardData(data: WizardData, id: number, coordinates: Point, scaleCalculations: ScaleCalculations): void {
     data.firstAnchorShortId = id;
-    data.firstAnchorPosition = coordinates;
+    data.firstAnchorPosition = Geometry.calculatePointPositionInCentimeters(scaleCalculations.scaleLengthInPixels, scaleCalculations.scaleInCentimeters, coordinates);
     data.degree = Geometry.calculateDegree(data.sinkPosition, coordinates);
   }
 

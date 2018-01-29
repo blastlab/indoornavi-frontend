@@ -10,7 +10,7 @@ import {SecondStep} from './second-step/second-step';
 import {ActionBarService} from '../../../action-bar/actionbar.service';
 import {Sink} from '../../../../device/sink.type';
 import {Anchor} from '../../../../device/anchor.type';
-import {ObjectParams, SocketMessage, WizardData, WizardStep} from './wizard.type';
+import {ObjectParams, ScaleCalculations, SocketMessage, WizardData, WizardStep} from './wizard.type';
 import {Floor} from '../../../../floor/floor.type';
 import {SelectItem} from 'primeng/primeng';
 import {ThirdStep} from './third-step/third-step';
@@ -23,7 +23,6 @@ import {DrawBuilder} from '../../../../shared/utils/drawing/drawing.builder';
 import {IconService, NaviIcons} from '../../../../shared/services/drawing/icon.service';
 import {MapViewerService} from '../../../map.editor.service';
 import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
-import {Device} from '../../../../device/device.type';
 import {ScaleService} from '../../../../shared/services/scale/scale.service';
 import {Scale} from '../scale/scale.type';
 import {Geometry} from '../../../../shared/utils/helper/geometry';
@@ -53,6 +52,7 @@ export class WizardComponent implements Tool, OnInit {
   private socketSubscription: Subscription;
   private wizardData: WizardData = new WizardData();
   private hintMessage: string;
+  private scaleCalculations: ScaleCalculations;
 
   constructor(public translate: TranslateService,
               private ngZone: NgZone,
@@ -72,7 +72,7 @@ export class WizardComponent implements Tool, OnInit {
     this.steps = [new FirstStep(this.floor.id), new SecondStep(), new ThirdStep()];
     this.checkIsLoading();
     this.scaleService.scaleChanged.subscribe((scale: Scale) => {
-      this.scale = new Scale(scale.start, scale.stop, scale.realDistance, scale.measure);
+      this.scale = scale;
     });
   }
 
@@ -80,10 +80,14 @@ export class WizardComponent implements Tool, OnInit {
     if (!this.activeStep) { // init wizard
       this.toolbarService.emitToolChanged(this);
       this.activeStep = this.steps[this.currentIndex];
+      this.scaleCalculations = {
+        scaleLengthInPixels: Geometry.getDistanceBetweenTwoPoints(this.scale.startPoint, this.scale.stopPoint),
+        scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
+      };
       this.openSocket();
     } else {
       this.activeStep.afterPlaceOnMap();
-      this.activeStep.updateWizardData(this.wizardData, this.selected, this.coordinates);
+      this.activeStep.updateWizardData(this.wizardData, this.selected, this.coordinates, this.scaleCalculations);
       const message: SocketMessage = this.activeStep.prepareToSend(this.wizardData);
       this.socketService.send(message);
       this.currentIndex += 1;
@@ -112,7 +116,7 @@ export class WizardComponent implements Tool, OnInit {
     this.currentIndex -= 1;
     this.activeStep = this.steps[this.currentIndex];
     this.activeStep.clean();
-    this.activeStep.updateWizardData(this.wizardData, this.selected, this.coordinates);
+    this.activeStep.updateWizardData(this.wizardData, this.selected, this.coordinates, this.scaleCalculations);
     const message: SocketMessage = this.activeStep.prepareToSend(this.wizardData);
     this.socketService.send(message);
     this.stepChanged();
@@ -171,24 +175,25 @@ export class WizardComponent implements Tool, OnInit {
   }
 
   saveConfiguration(): void {
+    console.log(this.wizardData);
     const anchors: Anchor[] = [];
-    const scaleLengthInPixels = Geometry.getDistanceBetweenTwoPoints(this.scale.startPoint, this.scale.stopPoint);
-    const scaleInCentimeters = this.scale.getRealDistanceInCentimeters();
-    const calculatePoint = (distance: number): number => Geometry.calculateDistanceInCentimeters(scaleLengthInPixels, scaleInCentimeters, distance);
+    // const scaleLengthInPixels = Geometry.getDistanceBetweenTwoPoints(this.scale.startPoint, this.scale.stopPoint);
+    // const scaleInCentimeters = this.scale.getRealDistanceInCentimeters();
+    // const calculatePoint = (distance: number): number => Geometry.calculateDistanceInCentimeters(scaleLengthInPixels, scaleInCentimeters, distance);
     anchors.push(<Anchor>{
       shortId: this.wizardData.firstAnchorShortId,
-      x: calculatePoint(this.wizardData.firstAnchorPosition.x),
-      y: calculatePoint(this.wizardData.firstAnchorPosition.y)
+      x: this.wizardData.firstAnchorPosition.x,
+      y: this.wizardData.firstAnchorPosition.y
     });
     anchors.push(<Anchor>{
       shortId: this.wizardData.secondAnchorShortId,
-      x: calculatePoint(this.wizardData.secondAnchorPosition.x),
-      y: calculatePoint(this.wizardData.secondAnchorPosition.y)
+      x: this.wizardData.secondAnchorPosition.x,
+      y: this.wizardData.secondAnchorPosition.y
     });
     this.actionBarService.setSink(<Sink>{
       shortId: this.wizardData.sinkShortId,
-      x: calculatePoint(this.wizardData.sinkPosition.x),
-      y: calculatePoint(this.wizardData.sinkPosition.y),
+      x: this.wizardData.sinkPosition.x,
+      y: this.wizardData.sinkPosition.y,
       anchors: anchors
     });
   }
@@ -236,24 +241,28 @@ export class WizardComponent implements Tool, OnInit {
     this.ngZone.runOutsideAngular(() => {
       const stream = this.socketService.connect(Config.WEB_SOCKET_URL + 'wizard');
       this.socketSubscription = stream.subscribe((message: any) => {
-        const scaleLengthInPixels = Geometry.getDistanceBetweenTwoPoints(this.scale.startPoint, this.scale.stopPoint);
-        const scaleInCentimeters = this.scale.getRealDistanceInCentimeters();
+        // const scaleLengthInPixels =
+        // const scaleInCentimeters = this.scale.getRealDistanceInCentimeters();
         this.ngZone.run(() => {
-          if (Object.keys(message).indexOf('distance') > 0) {
-            message.distance = Geometry.calculateDistanceInPixels(scaleLengthInPixels, scaleInCentimeters, message.distance);
-          } else if (Array.isArray(message)) {
-            message.forEach((item) => {
-              if (Object.keys(item).indexOf('anchors') > 0) {
-                item.anchors.forEach((anchor: Device) => {
-                  let point: Point = {x: anchor.x, y: anchor.y};
-                  point = Geometry.calculatePointPositionInPixels(scaleLengthInPixels, scaleInCentimeters, point);
-                  anchor.x = point.x;
-                  anchor.y = point.y;
-                });
-              }
-            });
-          }
-          this.options = this.activeStep.load(this.options, message);
+          // if (Object.keys(message).indexOf('distance') > 0) {
+          //   message.distance = Geometry.calculateDistanceInPixels(scaleLengthInPixels, scaleInCentimeters, message.distance);
+          // } else if (Object.keys(message).indexOf('points') > 0) {
+          //   console.log(message);
+          //   message.points[0] = Geometry.calculatePointPositionInPixels(scaleLengthInPixels, scaleInCentimeters, message.points[0]);
+          //   message.points[1] = Geometry.calculatePointPositionInPixels(scaleLengthInPixels, scaleInCentimeters, message.points[1]);
+          //   console.log(Geometry.calculatePointPositionInPixels(scaleLengthInPixels, scaleInCentimeters, message.points[0]));
+          //   console.log(Geometry.calculatePointPositionInPixels(scaleLengthInPixels, scaleInCentimeters, message.points[1]));
+          //   // message.points.forEach((point: Point) => {
+          //     // item.anchors.forEach((anchor: Device) => {
+          //     //   let point: Point = {x: anchor.x, y: anchor.y};
+          //     //   point = Geometry.calculatePointPositionInPixels(scaleLengthInPixels, scaleInCentimeters, point);
+          //       // anchor.x = point.x;
+          //       // anchor.y = point.y;
+          //     // });
+          //   // });
+          // }
+          console.log(message);
+          this.options = this.activeStep.load(this.options, message, this.scaleCalculations);
         });
       });
     });
