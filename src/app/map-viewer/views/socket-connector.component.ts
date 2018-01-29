@@ -167,7 +167,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     // !document.hidden is here to avoid queueing transitions and therefore browser freezes
     if (tag.transitionEnded && !document.hidden) {
       tag.move(data.coordinates.point).then(() => {
-        this.transitionEnded.next();
+        this.transitionEnded.next(data.coordinates.tagShortId);
       });
     }
   }
@@ -184,7 +184,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       this.socketSubscription = stream.subscribe((data: MeasureSocketData) => {
         this.ngZone.run(() => {
           if (this.isCoordinatesData(data)) {
-            console.log(data);
             this.dataReceived.next(<CoordinatesSocketData>data);
           } else if (this.isEventData(data)) {
             this.handleEventData(<EventSocketData> data);
