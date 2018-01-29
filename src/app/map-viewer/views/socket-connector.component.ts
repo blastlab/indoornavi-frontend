@@ -137,13 +137,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     return this.transitionEnded.asObservable();
   }
 
-  protected scaleCoordinates(point: Point): Point {
-    return {
-      x: point.x / this.pixelsToCentimeters,
-      y: point.y / this.pixelsToCentimeters
-    };
-  }
-
   private isCoordinatesData(data: MeasureSocketData): boolean {
     return !!this.d3map
       && MeasureSocketDataType[MeasureSocketDataType.COORDINATES] === data.type.toString();
