@@ -3,6 +3,7 @@ import {MapViewerService} from '../map-editor/map.editor.service';
 import {MapLoaderInformerService} from '../shared/services/map-loader-informer/map-loader-informer.service';
 import {Floor} from '../floor/floor.type';
 import {MapSvg} from './map.type';
+import {DevicePlacerController} from '../map-editor/tool-bar/tools/device-placer/device-placer.controller';
 
 @Component({
   selector: 'app-map',
@@ -14,6 +15,7 @@ export class MapComponent implements OnInit {
   private imageLoaded: boolean = false;
 
   constructor(private mapLoaderInformer: MapLoaderInformerService,
+              private devicePlacerController: DevicePlacerController,
               private mapViewerService: MapViewerService) {
   }
 
@@ -23,4 +25,15 @@ export class MapComponent implements OnInit {
       this.mapLoaderInformer.publishIsLoaded(mapSvg);
     });
   }
+
+  droppedObject(event) {
+    const pDragType = event.dataTransfer.getData('text');
+    if (pDragType === 'devices') {
+      this.devicePlacerController.deviceDropped();
+      this.devicePlacerController.setCoordinates(
+        {x: event.offsetX, y: event.offsetY});
+    }
+  }
+
+
 }

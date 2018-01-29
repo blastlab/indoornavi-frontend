@@ -158,7 +158,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
     }
     if (this.selectedDevice) {
       if (!!this.creatingConnection) {
-        this.resetConnecting()
+        this.resetConnecting();
       }
       this.clearSelections();
       this.handleSelectableConnections();
@@ -281,7 +281,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
 
   private getMapSelection(): void {
     this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapLoaded) => {
-      this.map = mapLoaded;
+      this.map = mapLoaded.container;
     });
   }
 
@@ -305,16 +305,15 @@ export class DevicePlacerComponent implements Tool, OnInit {
         this.placementDone = false;
         this.devicePlacerController.newCoordinates.first().subscribe((coords) => {
           let coordinates: Point;
-          const map = d3.select('#map');
           if (!coords) {
-            map.style('cursor', 'crosshair');
-            map.on('click', () => {
-              coordinates = {x: d3.event.offsetX, y: d3.event.offsetY};
-              map.on('click', null);
-              map.style('cursor', 'default');
+            this.map.style('cursor', 'crosshair');
+            this.map.on('click', () => {
+              coordinates = this.zoomService.calculateTransition({x: d3.event.offsetX, y: d3.event.offsetY});
+              this.map.on('click', null);
+              this.map.style('cursor', 'default');
             });
           } else {
-            coordinates = coords;
+            coordinates = this.zoomService.calculateTransition(coords);
           }
           this.placeDeviceOnMap(this.draggedDevice, coordinates);
         });
@@ -561,13 +560,15 @@ export class DevicePlacerComponent implements Tool, OnInit {
   }
 
   private startCreatingConnection(firstSelection: d3.selection, mousePosition: Point): void {
-    this.creatingConnection = this.createDashedLineAttachedToDevice(firstSelection, mousePosition);
+    const coordinates = this.zoomService.calculateTransition(mousePosition);
+    this.creatingConnection = this.createDashedLineAttachedToDevice(firstSelection, coordinates);
     this.turnOffSelectInMapDevicesByType(firstSelection);
     this.turnOffSelectInConnectingLines();
     this.map.on('mousemove', () => {
       const mouseMapOffset = DevicePlacerComponent.getMouseCoordinates();
-      this.creatingConnection.attr('x2', mouseMapOffset.x);
-      this.creatingConnection.attr('y2', mouseMapOffset.y);
+      const delta = this.zoomService.calculateTransition(mouseMapOffset);
+      this.creatingConnection.attr('x2', delta.x);
+      this.creatingConnection.attr('y2', delta.y);
     });
   }
 
@@ -675,7 +676,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
   }
 
   private deselectDevice(device: Expandable): void {
-    if (!!device.connectable.anchorConnection && !this.modifyingConnectionsFlag) { // unlock bug when creating a line then deselecting
+    if (!this.modifyingConnectionsFlag && !!device.connectable.anchorConnection) { // unlock bug when creating a line then deselecting
       device.connectable.unlockConnections();
       device.connectable.anchorConnection.hide();
     }
@@ -755,7 +756,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
 
   private allowToDragAllAnchorsOnMap(): void {
     this.mapDevices.forEach((expandable) => {
-      expandable.connectable.dragOn(false);
+      expandable.connectable.dragOn(/*false*/);
     });
   }
 
@@ -795,7 +796,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
     const mapDevice: Expandable = {
       groupCreated: droppedDevice,
       selectable: new SelectableDevice(droppedDevice),
-      connectable: new ConnectableDevice(droppedDevice)
+      connectable: new ConnectableDevice(droppedDevice, this.zoomService)
     };
     this.mapDevices.push(mapDevice);
     this.subscribeForDraggedEvent(mapDevice);
@@ -834,7 +835,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
     }
     // this.accButtons.publishCoordinates(coordinates); // deprecated
     this.accButtons.publishVisibility(true);
-    expandableMapObject.connectable.dragOn(true);
+    expandableMapObject.connectable.dragOn(/*true*/);
     this.accButtons.decisionMade.first().subscribe((decision) => {
       if (decision) {
         device.x = coordinates.x;

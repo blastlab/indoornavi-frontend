@@ -73,7 +73,7 @@ export class SvgGroupWrapper {
       .append('text')
       .attr('x', coordinates.x)
       .attr('y', coordinates.y)
-      .attr('fill', 'black')
+      .attr('fill', this.color)
       .text(text);
     this.addElement(ElementType.TEXT, element);
     return this;
@@ -272,12 +272,7 @@ export class DrawBuilder {
       .attr('class', this.configuration.clazz)
       .attr('overflow', 'visible')
       .attr('x', 0)
-      .attr('y', 0).on('mousedown', () => {
-        d3.select(`#${this.configuration.id}`).style('cursor', 'pointer')
-      })
-      .on('mouseup', () => {
-        d3.select(`#${this.configuration.id}`).style('cursor', 'move')
-      });
+      .attr('y', 0);
     if (this.configuration.cursor) {
       group.style('cursor', this.configuration.cursor);
     }

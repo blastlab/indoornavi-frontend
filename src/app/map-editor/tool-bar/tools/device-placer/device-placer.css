@@ -1,5 +1,6 @@
 #remaining-devices-list {
   position: fixed;
+  z-index: 11;
   float: right;
   right: 100%;
   overflow: hidden;
