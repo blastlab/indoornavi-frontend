@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite errors="0" failures="0" name="tests.test_login_page.TestLoginPage-20180125145935" skipped="0" tests="2" time="1.428">
-	<testcase classname="tests.test_login_page.TestLoginPage" name="test_login_invalid_credentials" time="0.773"/>
-	<testcase classname="tests.test_login_page.TestLoginPage" name="test_login_valid_credentials" time="0.655"/>
-	<system-out>
-<![CDATA[]]>	</system-out>
-	<system-err>
-<![CDATA[]]>	</system-err>
-</testsuite>
