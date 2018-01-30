@@ -43,7 +43,7 @@ testem.log
 /e2e_selenium/.idea
 /e2e_selenium/venv
 /e2e_selenium/e2e/reports
-
+/e2e_selenium/e2e/test-reports
 # System Files
 .DS_Store
 Thumbs.db
