@@ -43,12 +43,9 @@ class TestFloorsPage(unittest.TestCase):
         self.assertTrue(self.construction_page.is_save_button_present())
         self.assertTrue(self.construction_page.is_cancel_button_present())
         self.construction_page.enter_construction_name()
-        # TODO sprawdzic ilosc wpisow przed dodaniem
-        # self.complexes_page.get_complexes_count()
         self.construction_page.save_add_new_construction()
         # TODO sprawdzenie ilosci wpisow po dodaniu
         # self.complexes_page.get_complexes_count()
-        # TODO sprawdzenie czy toast sie wyswietlil
         # Check that toast is displayed
         self.assertTrue(self.construction_page.is_new_construction_toast_present())
         # Check that new complex is displayed
@@ -78,9 +75,9 @@ class TestFloorsPage(unittest.TestCase):
         # # # TODO sprawdzenie ilosci wgit pisow po usunieciu
         # Check that toast is displayed
         self.assertTrue(self.construction_page.is_remove_construction_toast_present())
-        # Check that new floor is disappeared
-        # self.assertTrue(self.construction_page.is_removed_floor_disappeared())
-        # Check that new floor has been saved in db -> now last floor name is Test Industry
+        # Check that toast is disappeared
+        self.assertTrue(self.construction_page.is_remove_construction_toast_disappeared())
+        # Check that new floor has been saved in db -> now last floor name is Test Floor B
         self.assertEqual(self.construction_page.if_saved_in_db(), 'Test Floor B')
 
     # TC[005]

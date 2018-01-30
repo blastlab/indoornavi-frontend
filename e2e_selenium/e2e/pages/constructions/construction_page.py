@@ -121,6 +121,9 @@ class ConstructionPage(BasePage):
     def is_remove_construction_toast_present(self):
         return True if self.is_element_present(self.base_locators.removed_toast) else False
 
+    def is_remove_construction_toast_disappeared(self):
+        return True if self.is_element_disappear(self.base_locators.removed_toast) else False
+
     def is_removed_construction_disappeared(self):
         return True if self.is_element_disappear(self.base_locators.remove_last_construction_btn) else False
 
