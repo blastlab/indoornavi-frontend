@@ -13,9 +13,12 @@ class DevicesPage(BasePage):
         self.module = self.module_query.title()
         self.base_locators = DevicesBaseLocators(module_query)
 
-    # Database preparing methods
+    # Database preparing methods & queries
     def create_devices_db_env(self):
         return self.create_db_env(self.base_locators.xml_filename)
+
+    def if_saved_in_db(self):
+        return self.if_exist_in_db(self.base_locators.select_device)
 
     # Devices - Preparing methods
     def dropdown_menu_click(self):
@@ -49,14 +52,14 @@ class DevicesPage(BasePage):
     def is_cancel_button_present(self):
         return self.is_element_present(self.base_locators.cancel_button)
 
-    def enter_new_device_name(self):
-        return self.clear_and_fill_input(self.base_locators.new_device_name, *self.base_locators.input)
+    def enter_new_device_name(self, name):
+        return self.clear_and_fill_input(name, *self.base_locators.input)
 
-    def enter_new_correct_short_id(self):
-        return self.clear_and_fill_input(self.base_locators.new_device_short_id, *self.base_locators.short_id_input)
+    def enter_new_correct_short_id(self, short_id):
+        return self.clear_and_fill_input(short_id, *self.base_locators.short_id_input)
 
-    def enter_new_correct_long_id(self):
-        return self.clear_and_fill_input(self.base_locators.new_device_long_id, *self.base_locators.long_id_input)
+    def enter_new_correct_long_id(self, long_id):
+        return self.clear_and_fill_input(long_id, *self.base_locators.long_id_input)
 
     def save_add_new_device_click(self):
         return self.click_button(*self.base_locators.save_button)

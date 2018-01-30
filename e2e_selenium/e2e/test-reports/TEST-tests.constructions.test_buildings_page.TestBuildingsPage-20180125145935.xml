@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite errors="0" failures="0" name="tests.constructions.test_buildings_page.TestBuildingsPage-20180125145935" skipped="0" tests="7" time="5.031">
+	<testcase classname="tests.constructions.test_buildings_page.TestBuildingsPage" name="test_add_new_building_correctly" time="2.964"/>
+	<testcase classname="tests.constructions.test_buildings_page.TestBuildingsPage" name="test_add_new_building_negative_empty_input_and_cancel_click" time="0.185"/>
+	<testcase classname="tests.constructions.test_buildings_page.TestBuildingsPage" name="test_delete_building_cancel" time="0.192"/>
+	<testcase classname="tests.constructions.test_buildings_page.TestBuildingsPage" name="test_delete_building_correctly" time="0.644"/>
+	<testcase classname="tests.constructions.test_buildings_page.TestBuildingsPage" name="test_edit_building_cancel" time="0.164"/>
+	<testcase classname="tests.constructions.test_buildings_page.TestBuildingsPage" name="test_edit_building_correctly" time="0.720"/>
+	<testcase classname="tests.constructions.test_buildings_page.TestBuildingsPage" name="test_edit_building_negative_empty_input" time="0.160"/>
+	<system-out>
+<![CDATA[]]>	</system-out>
+	<system-err>
+<![CDATA[]]>	</system-err>
+</testsuite>

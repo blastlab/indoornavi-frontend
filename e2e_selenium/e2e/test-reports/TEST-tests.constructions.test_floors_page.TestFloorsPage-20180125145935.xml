@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite errors="0" failures="0" name="tests.constructions.test_floors_page.TestFloorsPage-20180125145935" skipped="0" tests="6" time="6.295">
+	<testcase classname="tests.constructions.test_floors_page.TestFloorsPage" name="test_01_floors_page_is_loaded_correctly" time="1.179"/>
+	<testcase classname="tests.constructions.test_floors_page.TestFloorsPage" name="test_02_add_new_floor_correctly" time="2.851"/>
+	<testcase classname="tests.constructions.test_floors_page.TestFloorsPage" name="test_04_delete_floor_correctly" time="0.709"/>
+	<testcase classname="tests.constructions.test_floors_page.TestFloorsPage" name="test_05_delete_floor_cancel" time="0.167"/>
+	<testcase classname="tests.constructions.test_floors_page.TestFloorsPage" name="test_06_edit_floor_correctly" time="0.684"/>
+	<testcase classname="tests.constructions.test_floors_page.TestFloorsPage" name="test_07_edit_floor_negative_existing_level" time="0.706"/>
+	<system-out>
+<![CDATA[]]>	</system-out>
+	<system-err>
+<![CDATA[]]>	</system-err>
+</testsuite>

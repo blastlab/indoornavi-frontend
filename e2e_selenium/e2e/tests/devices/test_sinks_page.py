@@ -35,29 +35,45 @@ class TestSinksPage(unittest.TestCase):
         self.devices_page.add_button_click()
         self.assertTrue(self.devices_page.is_save_button_present())
         self.assertTrue(self.devices_page.is_cancel_button_present())
-        self.devices_page.enter_new_device_name()
-        self.devices_page.enter_new_correct_short_id()
-        self.devices_page.enter_new_correct_long_id()
+        self.devices_page.enter_new_device_name(self.devices_page.base_locators.new_device_name)
+        self.devices_page.enter_new_correct_short_id(self.devices_page.base_locators.new_device_short_id)
+        self.devices_page.enter_new_correct_long_id(self.devices_page.base_locators.new_device_long_id)
         self.devices_page.save_add_new_device_click()
-        # time.sleep(2)
-        # Check that the last row contains correct data
-        # expect = self.devices_page.expected_new_device()
-        # print(self.devices_page.if_new_device_is_displayed())
-        self.assertTrue(self.devices_page.if_new_device_is_displayed())
 
+        # Check the new device is displayed
+        self.assertTrue(self.devices_page.if_new_device_is_displayed())
         # Check the new device saved in db
-        self.assertTrue(self.devices_page.if_new_device_is_displayed())
-        # print(expect == result)
+        self.assertEqual(self.devices_page.if_saved_in_db(), 'TestSink')
 
-        # print(self.devices_page.expected_new_device().long_id)
-        # print(self.devices_page.expected_new_device().device_name)
-        #
-        # print(.short_id)
-        # print(self.devices_page.is_new_device_added_to_row().long_id)
-        # print(self.devices_page.is_new_device_added_to_row().device_name)
-        # self.assertTrue(self.devices_page.expected_new_device() == self.devices_page.is_new_device_added_to_row())
-        # print(self.devices_page.is_new_device_added_to_row())
+    def test_03_add_new_sink_negative_existing_short_id(self):
+        """Test that sink will be added with existing Short Id"""
+        self.devices_page.add_button_click()
+        self.assertTrue(self.devices_page.is_save_button_present())
+        self.assertTrue(self.devices_page.is_cancel_button_present())
+        self.devices_page.enter_new_device_name('TestSinkAddNegativeExistingShortId')
+        # Enter existing short Id
+        self.devices_page.enter_new_correct_short_id(self.devices_page.base_locators.new_device_short_id)
+        self.devices_page.enter_new_correct_long_id('999')
 
+
+    def _test_04_add_new_sink_negative_existing_long_id(self):
+        """Test that sink will be added with existing Long Id"""
+        self.devices_page.add_button_click()
+        self.assertTrue(self.devices_page.is_save_button_present())
+        self.assertTrue(self.devices_page.is_cancel_button_present())
+        self.devices_page.enter_new_device_name('TestSinkAddNegativeExistingLongId')
+        # Enter existing short Id
+        self.devices_page.enter_new_correct_short_id('999')
+        self.devices_page.enter_new_correct_long_id(self.devices_page.base_locators.new_device_long_id)
+
+    def _test_05_add_new_sink_negative_empty_short_id(self):
+        """Test that sink will be added with empty Short Id"""
+
+    def _test_06_add_new_sink_negative_empty_long_id(self):
+        """Test that sink will be added with empty Long Id"""
+
+    def _test_07_edit_last_sink_correctly(self):
+        """Test editing last sink correctly"""
 
     @classmethod
     def tearDownClass(cls):
