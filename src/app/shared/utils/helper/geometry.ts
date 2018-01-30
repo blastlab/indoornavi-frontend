@@ -1,5 +1,6 @@
 import {Line, Point} from '../../../map-editor/map.type';
 import {Scale} from '../../../map-editor/tool-bar/tools/scale/scale.type';
+import {log} from 'util';
 
 export class Geometry {
 
@@ -7,7 +8,7 @@ export class Geometry {
     return (p1.y - p2.y) / (p1.x - p2.x);
   }
 
-  static getDeltaY(p1: Point, p2: Point) {
+  static getDeltaY(p1: Point, p2: Point): number {
     // arcRelocationValue value can be in the future set to other value to increase or decrease angular pitch precision
     const arcPitchRelocationValue = 22.5;
     const differenceBetweenPointsInX: number = p2.x - p1.x;
@@ -60,15 +61,11 @@ export class Geometry {
     };
   }
 
-  static transformFromSinkCoordinatesSystemToMapCoordinatesSystem (
-    sinkCoordinatesFromSinkCoordinatesSystem: Point,
-    givenCoordinatesFromSinkCoordinatesSystem: Point,
-    scale: Scale,
-    mapHeight: number): Point {
-    const centimetersToPixels: number = scale.getRealDistanceInCentimeters() / Geometry.getDistanceBetweenTwoPoints(scale.start, scale.stop);
+  static calculatePointPositionInCentimeters(lengthInPixels: number, lengthInCentimeters: number, point: Point): Point {
     return {
-      x: (sinkCoordinatesFromSinkCoordinatesSystem.x + givenCoordinatesFromSinkCoordinatesSystem.x) / centimetersToPixels,
-      y: mapHeight - (sinkCoordinatesFromSinkCoordinatesSystem.y + givenCoordinatesFromSinkCoordinatesSystem.y) / centimetersToPixels,
+      x: Geometry.calculateDistanceInCentimeters(lengthInPixels, lengthInCentimeters, point.x),
+      y: Geometry.calculateDistanceInCentimeters(lengthInPixels, lengthInCentimeters, point.y)
     };
   }
+
 }

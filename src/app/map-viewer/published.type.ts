@@ -22,7 +22,6 @@ export enum MeasureSocketDataType {
 
 export interface CoordinatesSocketData extends MeasureSocketData {
   coordinates: Coordinates;
-  sinkPosition: Point;
 }
 
 export interface EventSocketData extends MeasureSocketData {
@@ -45,11 +44,6 @@ export interface Coordinates {
   point: Point;
   floorId: number;
   tagShortId: number;
-}
-
-export interface SocketCommand {
-  type: CommandType;
-  args: string;
 }
 
 export enum CommandType {
