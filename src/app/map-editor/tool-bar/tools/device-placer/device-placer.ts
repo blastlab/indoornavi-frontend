@@ -1,4 +1,4 @@
-import {Component, EventEmitter, HostListener, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, HostListener, OnInit, Output, ViewChild} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {Tool} from '../tool';
 import {ToolName} from '../tools.enum';
@@ -25,22 +25,12 @@ import {SelectableDevice} from '../../../../shared/utils/drawing/drawables/selec
 import {Selectable} from '../../../../shared/utils/drawing/drawables/selectables/selectable';
 import {DrawConfiguration} from 'app/map-viewer/published.type';
 import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
+import {ToolDetailsComponent} from '../../shared/details/tool-details';
 
 @Component({
   selector: 'app-device-placer',
   templateUrl: './device-placer.html',
-  styleUrls: ['../tool.css', './device-placer.css'],
-  animations: [
-    trigger('slideInOut', [
-      state('in', style({
-        transform: 'translate3d(125%, 0, 0)'
-      })),
-      state('out', style({
-        transform: 'translate3d(0, 0, 0)'
-      })),
-      transition('in <=> out', animate('400ms ease-in-out'))
-    ]),
-  ]
+  styleUrls: ['../tool.css', './device-placer.css']
 })
 export class DevicePlacerComponent implements Tool, OnInit {
   @Output() clicked: EventEmitter<Tool> = new EventEmitter<Tool>();
@@ -48,8 +38,9 @@ export class DevicePlacerComponent implements Tool, OnInit {
   public queryString: string;
   active: boolean = false;
   disabled: boolean;
+  @ViewChild(`toolDetails`) private devicesList: ToolDetailsComponent;
   private draggedDevice: Anchor | Sink;
-  private listState: string = 'out';
+  private listToolDetailsHidden = true;
   private hintMessage: string;
   private configuration: Configuration;
   private floorId: number;
@@ -205,8 +196,6 @@ export class DevicePlacerComponent implements Tool, OnInit {
     this.translate.get('connections.manipulationTurnedOn').subscribe((value: string) => {
       this.hintBarService.sendHintMessage(value);
     });
-    // this.clearSelections();
-    // hintbar -> select (click) a device to connect | translate
     if (!!this.selectedDevice) {
       const selectedMapDevice = this.findMapDevice(this.selectedDevice.shortId);
       if (!selectedMapDevice.connectable.anchorConnection) {
@@ -227,11 +216,12 @@ export class DevicePlacerComponent implements Tool, OnInit {
     dragImage.setAttributeNS(null, `id`, `dragImage`);
     dragImage.setAttributeNS(null, `x`, event.x);
     dragImage.setAttributeNS(null, `y`, event.y);
+    dragImage.setAttributeNS(null, `width`, `25`);
+    dragImage.setAttributeNS(null, `height`, `25`);
     dragImage.setAttributeNS(null, `stroke`, `black`);
     dragImage.setAttributeNS(null, `fill`, `black`);
     dragImage.innerHTML = this.icons.getIcon(NaviIcons.POINTER);
-    document.documentElement.appendChild(dragImage);
-    // this.map.append(dragImage);
+    this.map.style(`cursor`, `crosshair`);
     event.dataTransfer.setDragImage(dragImage, event.x, event.y);
     this.toggleList();
   }
@@ -240,6 +230,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
     if (this.draggedDevice && this.placementDone) {
       this.toggleList();
     }
+    this.map.style(`cursor`, `inherit`);
     this.draggedDevice = null;
   }
 
@@ -602,6 +593,7 @@ export class DevicePlacerComponent implements Tool, OnInit {
     this.selectedLine = newSelectedLine;
     this.selectedLine.connection.on('dblclick', () => {
       this.disconnectBySelectedLine();
+      event.stopPropagation();
     });
     this.map.on('click', () => {
       this.clearSelectedLine();
@@ -751,7 +743,8 @@ export class DevicePlacerComponent implements Tool, OnInit {
   }
 
   private toggleList(): void {
-    this.listState = this.listState === 'out' ? 'in' : 'out';
+    this.listToolDetailsHidden ? this.devicesList.show() : this.devicesList.hide();
+    this.listToolDetailsHidden = !this.listToolDetailsHidden;
   }
 
   private allowToDragAllAnchorsOnMap(): void {

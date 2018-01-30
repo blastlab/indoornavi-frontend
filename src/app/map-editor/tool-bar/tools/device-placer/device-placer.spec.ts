@@ -4,7 +4,7 @@ import {TranslateModule} from '@ngx-translate/core';
 import {MaterialModule} from '@angular/material';
 import {AuthGuard} from '../../../../auth/auth.guard';
 import {DndModule} from 'ng2-dnd';
-import {SharedModule} from 'app/utils/shared/shared.module';
+import {SharedModule} from '../../../../shared/modules/shared.module';
 
 describe('DevicePlacerComponent', () => {
   let component: DevicePlacerComponent;

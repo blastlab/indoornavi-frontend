@@ -45,7 +45,6 @@ export class WizardComponent implements Tool, OnInit {
   active: boolean = false;
   disabled: boolean = true;
   private scale: Scale;
-
   private steps: WizardStep[];
   private activeStep: WizardStep;
   private currentIndex: number = 0;

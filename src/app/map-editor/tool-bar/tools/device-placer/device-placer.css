@@ -1,8 +1,8 @@
 #remaining-devices-list {
-  position: fixed;
+  //position: fixed;
   z-index: 11;
-  float: right;
-  right: 100%;
+  //float: right;
+  //right: 100%;
   overflow: hidden;
   min-width: 25%;
   top: 20%;
