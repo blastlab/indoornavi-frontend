@@ -35,6 +35,9 @@ class BasePage(object):
         cursor.execute("TRUNCATE TABLE complex")
         cursor.execute("TRUNCATE TABLE building")
         cursor.execute("TRUNCATE TABLE floor")
+        cursor.execute("TRUNCATE TABLE sink")
+        cursor.execute("TRUNCATE TABLE anchor")
+        cursor.execute("TRUNCATE TABLE device")
         cursor.execute('SET FOREIGN_KEY_CHECKS=1;')
         cursor.close()
         db.close()
@@ -63,7 +66,7 @@ class BasePage(object):
 
     def is_element_present(self, locator):
         try:
-          element = self.wait_for_element(locator)
+          element = self.wait_for_element_visibility(locator)
         except NoSuchElementException:
             return False
         return True
@@ -76,11 +79,15 @@ class BasePage(object):
         return True
 
     def wait_for_element(self, locator):
-        element = ui.WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(locator))
+        element = ui.WebDriverWait(self.driver, 100).until(EC.presence_of_element_located(locator))
+        return element
+
+    def wait_for_element_visibility(self, locator):
+        element = ui.WebDriverWait(self.driver, 100).until(EC.visibility_of_element_located(locator))
         return element
 
     def wait_for_element_disappear(self, locator):
-        element = ui.WebDriverWait(self.driver, 10).until_not(EC.presence_of_element_located(locator))
+        element = ui.WebDriverWait(self.driver, 100).until_not(EC.presence_of_element_located(locator))
         return element
 
     def open_page(self, page_url):
@@ -104,8 +111,8 @@ class BasePage(object):
         button = self.driver.find_element(*locator)
         button.click()
 
-    def get_text(self, *locator):
-        item_text = self.identify_element(*locator).text
+    def get_text(self, locator):
+        item_text = self.wait_for_element_visibility(locator).text
         return item_text
 
     def check_title_is_correct(self, title, *locator):

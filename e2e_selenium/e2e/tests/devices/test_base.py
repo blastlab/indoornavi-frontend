@@ -3,14 +3,22 @@ from pages.devices.devices_page import DevicesPage
 
 class TestBase:
 
-    def multi_assertion(self):
+    def is_page_loaded_correctly(self):
         # create list for all returned True or False
-
         asserts = []
-        dropdown_present = self.construction_page.is_dropdown_button_present()
-        constr_counter = self.construction_page.check_if_there_is_any_row()
+        # Check Dropdown
+        dropdown_present = self.devices_page.is_dropdown_button_present()
+        # Check title
+        # device_title = self.devices_page.check_device_page_title()
+        # # Check Add Button
+        add_device_button = self.devices_page.is_add_button_present()
+        # # Check Table
+        devices_table = self.devices_page.is_devices_table_displayed()
 
         asserts.append(dropdown_present)
-        asserts.append(constr_counter)
+        # asserts.append(device_title)
+        asserts.append(add_device_button)
+        asserts.append(devices_table)
+
         # Check if there is any False in array
         return False if False in asserts else True
