@@ -122,7 +122,6 @@ export class ActionBarService {
     sinks.add(sinkCopy);
     this.configuration.data.sinks = sinks.toArray();
     this.sendConfigurationChangedEvent();
-    console.log(sinks);
   }
 
   public setAreas(areas: Area[]): void {

@@ -1,21 +1,18 @@
 import {Geometry} from './geometry';
-import {Line, Point} from '../../../map-editor/map.type';
-
-// when, given
-const p0: Point = {x: 0, y: 0},
-      p1: Point = {x: 1, y: 1},
-      p2: Point = {x: 2, y: 2},
-      p3: Point = {x: 3, y: 1},
-      p4: Point = {x: 1, y: 2},
-      p5: Point = {x: 5, y: 5},
-      p6: Point = {x: 4, y: 5},
-      line1: Line = {p1, p2},
-      line2: Line = {p2, p1};
+import {Point} from '../../../map-editor/map.type';
 
 const precisionRound = (number: number, precision: number): number => {
   const factor = Math.pow(10, precision);
   return Math.round(number * factor) / factor;
 };
+
+// when, given
+const p1: Point = {x: 1, y: 1},
+      p2: Point = {x: 2, y: 2},
+      p3: Point = {x: 3, y: 1},
+      p4: Point = {x: 1, y: 2},
+      p5: Point = {x: 5, y: 5},
+      p6: Point = {x: 4, y: 5};
 
 describe('Geometry', () => {
   it('should return slope value', () => {
@@ -38,18 +35,12 @@ describe('Geometry', () => {
   });
 
   it('should return horizontal ending offset value', () => {
-    line1.p1 = p1;
-    line1.p2 = p2;
-    line2.p1 = p1;
-    line2.p2 = p1;
     // then
     // should be close to sqrt from 2
-    expect(precisionRound(Geometry.getHorizontalEndingOffset(line1, 2), 2)).toEqual(1.41);
+    expect(precisionRound(Geometry.getHorizontalEndingOffset({p1, p2}, 2), 2)).toEqual(1.41);
     // should be close to sqrt from 2
-    expect(precisionRound(Geometry.getHorizontalEndingOffset(line1, 8), 2)).toEqual(5.66);
+    expect(precisionRound(Geometry.getHorizontalEndingOffset({p1, p2}, 8), 2)).toEqual(5.66);
 
-    // should return 0
-    expect(Geometry.getHorizontalEndingOffset(line2, 5)).toEqual(0);
   });
 
   it('should return distance between given points', () => {
@@ -73,21 +64,25 @@ describe('Geometry', () => {
   });
 
   it('should return distance in pixels', () => {
+    // then
     expect(Geometry.calculateDistanceInPixels(1999, 1999, 1)).toEqual(1);
     expect(Geometry.calculateDistanceInPixels(100, 200, 2)).toEqual(1);
   });
 
   it('should return distance in centimeters', () => {
+    // then
     expect(Geometry.calculateDistanceInCentimeters(1999, 1999, 1)).toEqual(1);
     expect(Geometry.calculateDistanceInCentimeters(200, 100, 2)).toEqual(1);
   });
 
   it('should return point position in pixels', () => {
+    // then
     expect(Geometry.calculatePointPositionInPixels(100, 50, p1).x).toEqual(p2.x);
     expect(Geometry.calculatePointPositionInPixels(200, 100, p1).y).toEqual(p2.y);
   });
 
   it('should return point position in centimeters', () => {
+    // then
     expect(Geometry.calculatePointPositionInCentimeters(100, 50, p2).x).toEqual(p1.x);
     expect(Geometry.calculatePointPositionInCentimeters(200, 100, p2).y).toEqual(p1.y);
   });

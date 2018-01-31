@@ -72,10 +72,12 @@ export class WizardComponent implements Tool, OnInit {
     this.checkIsLoading();
     this.scaleService.scaleChanged.subscribe((scale: ScaleDto) => {
       this.scale = new Scale(scale);
-      this.scaleCalculations = {
-        scaleLengthInPixels: Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
-        scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
-      };
+      if (!!this.scale.start && !!this.scale.stop) {
+        this.scaleCalculations = {
+          scaleLengthInPixels: Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
+          scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
+        };
+      }
     });
   }
 
@@ -86,10 +88,8 @@ export class WizardComponent implements Tool, OnInit {
       this.openSocket();
     } else {
       this.activeStep.afterPlaceOnMap();
-      console.log(this.wizardData);
       this.activeStep.updateWizardData(this.wizardData, this.selected, this.scaleCalculations);
       const message: SocketMessage = this.activeStep.prepareToSend(this.wizardData);
-      console.log(this.wizardData);
       this.socketService.send(message);
       this.currentIndex += 1;
       if (this.currentIndex === 3) { // No more steps, wizard configuration is done

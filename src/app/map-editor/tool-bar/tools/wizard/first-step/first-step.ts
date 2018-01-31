@@ -72,6 +72,7 @@ export class FirstStep implements WizardStep {
   }
 
   updateWizardData(wizardData: WizardData, id: number, scaleCalculations: ScaleCalculations): void {
+    console.log(scaleCalculations);
     wizardData.sinkShortId = id;
     wizardData.sinkPositionInPixels = this.coordinates;
     wizardData.sinkPosition = Geometry.calculatePointPositionInCentimeters(scaleCalculations.scaleLengthInPixels, scaleCalculations.scaleInCentimeters, this.coordinates);
