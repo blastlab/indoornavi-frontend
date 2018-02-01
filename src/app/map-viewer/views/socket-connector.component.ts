@@ -187,7 +187,8 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   private drawAreas(floorId: number): void {
     this.areaService.getAllByFloor(floorId).first().subscribe((areas: Area[]) => {
       areas.forEach((area: Area) => {
-        const drawBuilder = new DrawBuilder(this.d3map, {id: `area-${area.id}`, clazz: 'area'}, this.zoomService);
+        console.log(this.d3map);
+        const drawBuilder = new DrawBuilder(this.d3map.container, {id: `area-${area.id}`, clazz: 'area'}, this.zoomService);
         const areaOnMap = drawBuilder
           .createGroup()
           .addPolygon(area.points);
