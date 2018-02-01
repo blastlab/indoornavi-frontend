@@ -55,11 +55,11 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg) => {
+    this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg): void => {
       this.container = mapSvg.container;
       this.layer = mapSvg.layer;
 
-      this.actionBarService.configurationLoaded().first().subscribe((configuration: Configuration) => {
+      this.actionBarService.configurationLoaded().first().subscribe((configuration: Configuration): void => {
         if (!!configuration.data.areas) {
           configuration.data.areas.forEach((area: Area) => {
             this.areas.push({
@@ -71,7 +71,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
       });
     });
 
-    this.onDecisionMadeSubscription = this.areaDetailsService.onDecisionMade().subscribe((area: AreaBag) => {
+    this.onDecisionMadeSubscription = this.areaDetailsService.onDecisionMade().subscribe((area: AreaBag): void => {
       if (!area) { // rejected
         this.currentAreaGroup.remove();
         this.currentAreaGroup = null;
