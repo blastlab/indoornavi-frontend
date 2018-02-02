@@ -18,6 +18,7 @@ import {isNumber} from 'util';
 import {Subscription} from 'rxjs/Subscription';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
 import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
+import {Geometry} from '../../../../shared/utils/helper/geometry';
 
 @Component({
   selector: 'app-area',
@@ -61,7 +62,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
 
       this.actionBarService.configurationLoaded().first().subscribe((configuration: Configuration): void => {
         if (!!configuration.data.areas) {
-          configuration.data.areas.forEach((area: Area) => {
+          configuration.data.areas.forEach((area: Area): void => {
             this.areas.push({
               dto: area,
               editable: null
@@ -87,7 +88,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
           this.areas[index] = area;
         }
 
-        this.actionBarService.setAreas(this.areas.map((areaBag: AreaBag) => {
+        this.actionBarService.setAreas(this.areas.map((areaBag: AreaBag): Area => {
           return areaBag.dto;
         }));
       }
@@ -95,7 +96,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     if (!!this.onDecisionMadeSubscription) {
       this.onDecisionMadeSubscription.unsubscribe();
     }
@@ -115,12 +116,12 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     this.container.style('cursor', 'crosshair');
     this.currentAreaGroup = this.createBuilder().createGroup();
 
-    this.layer.on('click', (_, i: number, nodes: d3.selection[]) => {
+    this.layer.on('click', (_, i: number, nodes: d3.selection[]): void => {
       const coordinates: Point = this.zoomService.calculateTransition({x: d3.mouse(nodes[i])[0], y: d3.mouse(nodes[i])[1]});
       this.handleMouseClick(coordinates);
     });
 
-    this.layer.on('mousemove', (_, i: number, nodes: d3.selection[]) => {
+    this.layer.on('mousemove', (_, i: number, nodes: d3.selection[]): void => {
       if (!!this.firstPointSelection) {
         const coordinates: Point = this.zoomService.calculateTransition({x: d3.mouse(nodes[i])[0], y: d3.mouse(nodes[i])[1]});
         if (!!this.tempLine) {
@@ -132,7 +133,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     });
 
     let index = 0;
-    this.areas.forEach((areaBag: AreaBag) => {
+    this.areas.forEach((areaBag: AreaBag): void => {
       areaBag.editable = new Editable(this.createBuilder(index).createGroup(), this.contextMenuService);
       this.applyRightMouseButtonClick(areaBag.editable);
       areaBag.editable.onSelected().subscribe((selected: Editable) => {
@@ -142,14 +143,13 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
       index++;
     });
 
-    this.container.on('contextmenu', () => {
+    this.container.on('contextmenu', (): void => {
       d3.event.preventDefault();
       this.cleanGroup();
       this.firstPointSelection = null;
       this.lastPoint = null;
       this.tempLine = null;
-
-      this.areas.forEach((areaBag: AreaBag) => {
+      this.areas.forEach((areaBag: AreaBag): void => {
         this.applyRightMouseButtonClick(areaBag.editable);
       });
     });
@@ -157,9 +157,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
 
   setInactive(): void {
     this.active = false;
-
     this.container.style('cursor', 'move');
-
     this.layer.on('click', null);
     this.layer.on('mousemove', null);
     this.firstPointSelection = null;
@@ -168,7 +166,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     this.draggingElement = null;
     this.selectedEditable = null;
 
-    this.areas.forEach((areaBag: AreaBag) => {
+    this.areas.forEach((areaBag: AreaBag): void => {
       areaBag.editable.off();
       this.cleanGroup(areaBag.editable.groupWrapper);
       areaBag.editable.groupWrapper.remove();
@@ -191,20 +189,34 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     this.disabled = value;
   }
 
+  private handleShiftKeyEvent (coordinates: Point): Point {
+    const secondPoint: Point = this.getCurrentAreaPoints()[this.getCurrentAreaPoints().length - 1];
+    const deltaY = Geometry.getDeltaY(coordinates, secondPoint);
+    if (!!deltaY) {
+      coordinates.y = secondPoint.y - deltaY;
+    } else {
+      coordinates.x = secondPoint.x;
+    }
+    return coordinates;
+  }
+
   private handleMouseClick(point: Point): void {
     if (!this.firstPointSelection) {
       this.firstPointSelection = this.drawPoint(point);
-      this.areas.forEach((areaBag: AreaBag) => {
+      this.areas.forEach((areaBag: AreaBag): void => {
         areaBag.editable.off();
       });
     } else {
-      const currentAreaPoints: Point[] = this.getCurrentAreaPoints();
-      if (currentAreaPoints.length === 2) {
+      const event: KeyboardEvent = <KeyboardEvent>window.event;
+      if (event.shiftKey && this.getCurrentAreaPoints().length > 0) {
+        point = this.handleShiftKeyEvent(point);
+      }
+      if (this.getCurrentAreaPoints().length === 2) {
         this.hintBarService.sendHintMessage('area.hint.second');
       }
       this.cleanTempLine();
       this.drawLine(point);
-      if (this.isFirstPoint() || (this.isLastPoint() && currentAreaPoints.length > 2)) {
+      if (this.isFirstPoint() || (this.isLastPoint() && this.getCurrentAreaPoints().length > 2)) {
         this.createArea();
         return;
       }
@@ -219,24 +231,24 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
       .getLastElement(ElementType.CIRCLE);
 
     pointSelection
-      .on('mouseover', () => {
+      .on('mouseover', (): void => {
         pointSelection.style('fill', 'red');
       })
-      .on('mouseout', () => {
+      .on('mouseout', (): void => {
         pointSelection.style('fill', 'black');
       });
 
     return pointSelection;
   }
 
-  private drawLine(point: Point) {
+  private drawLine(point: Point): void {
     this.currentAreaGroup
       .addLine(this.lastPoint, point)
       .getLastElement(ElementType.LINE)
       .style('pointer-events', 'none');
   }
 
-  private drawTempLine() {
+  private drawTempLine(): void {
     this.tempLine = this.currentAreaGroup
       .addLine(this.lastPoint, this.lastPoint)
       .getLastElement(ElementType.LINE)
@@ -245,11 +257,16 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
       .classed('tempLine', true);
   }
 
-  private moveTempLine(coordinates: Point) {
+  private moveTempLine(coordinates: Point): void {
+    const event: KeyboardEvent = <KeyboardEvent>window.event;
+    if (event.shiftKey && this.getCurrentAreaPoints().length > 0) {
+      const endPoint: Point = this.handleShiftKeyEvent(coordinates);
+      this.tempLine.attr('x2', endPoint.x).attr('y2', endPoint.y);
+    }
     this.tempLine.attr('x2', coordinates.x).attr('y2', coordinates.y);
   }
 
-  private drawPolygon(points: Point[], group: SvgGroupWrapper = this.currentAreaGroup) {
+  private drawPolygon(points: Point[], group: SvgGroupWrapper = this.currentAreaGroup): Point[] {
     const polygon: d3.selection = group.addPolygon(points)
       .getLastElement(ElementType.POLYGON);
     polygon
@@ -280,24 +297,24 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     return points;
   }
 
-  private removePoints() {
+  private removePoints(): void {
     this.currentAreaGroup.removeElements(ElementType.CIRCLE);
   }
 
-  private removePolygon() {
+  private removePolygon(): void {
     this.currentAreaGroup.removeElements(ElementType.POLYGON);
   }
 
-  private cleanTempLine() {
+  private cleanTempLine(): void {
     this.tempLine = null;
     this.currentAreaGroup.removeLastElement(ElementType.LINE);
   }
 
-  private removeLines() {
+  private removeLines(): void {
     this.currentAreaGroup.removeElements(ElementType.LINE);
   }
 
-  private createArea() {
+  private createArea(): void {
     this.areaDetailsService.show();
     this.hintBarService.sendHintMessage('area.hint.third');
 
@@ -333,7 +350,8 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
       this.lastPointSelection.attr('cy') === d3.event.target.cy.baseVal.valueAsString;
   }
 
-  private handleCircleDrag() {
+  private handleCircleDrag(): void {
+    this.drawPolygon(this.getCurrentAreaPoints());
     this.removePolygon();
     this.draggingElement
       .attr('cx', d3.event.dx + parseInt(this.draggingElement.attr('cx'), 10))
@@ -341,34 +359,34 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     this.drawPolygon(this.getCurrentAreaPoints());
   }
 
-  private handlePolygonDrag() {
+  private handlePolygonDrag(): void {
     const group: d3.selection = this.currentAreaGroup.getGroup();
     group
       .attr('x', d3.event.dx + parseInt(group.attr('x'), 10))
       .attr('y', d3.event.dy + parseInt(group.attr('y'), 10));
   }
 
-  private applyDrag() {
+  private applyDrag(): void {
     this.currentAreaGroup.getGroup().call(
       d3.drag()
-        .on('drag', () => {
+        .on('drag', (): void => {
           if (this.draggingElement.node().nodeName === 'circle') {
             this.handleCircleDrag();
           } else {
             this.handlePolygonDrag();
           }
         })
-        .on('start', () => {
+        .on('start', (): void => {
           this.draggingElement = d3.select(d3.event.sourceEvent.target);
           d3.event.sourceEvent.stopPropagation();
         })
-        .on('end', () => {
+        .on('end', (): void => {
           this.draggingElement = null;
         })
     );
   }
 
-  private applyHover(points: Point[]) {
+  private applyHover(points: Point[]): void {
     points.forEach((point: Point) => {
       const drawnPoint: d3.selection = this.drawPoint(point);
       drawnPoint
@@ -383,7 +401,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     });
   }
 
-  private applyRightMouseButtonClick(editable: Editable) {
+  private applyRightMouseButtonClick(editable: Editable): void {
     editable.on({
       edit: () => {
         this.areaDetailsService.show();
@@ -401,17 +419,16 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
           this.currentAreaGroup.getGroup().selectAll('circle').remove();
           this.currentAreaGroup.getGroup().on('.drag', null);
           this.currentAreaGroup = areaBag.editable.groupWrapper;
-
           const points: Point[] = this.getCurrentAreaPoints(areaBag);
           this.applyHover(points);
           this.applyDrag();
         }
       },
-      remove: () => {
+      remove: (): void => {
         this.cleanGroup(this.selectedEditable.groupWrapper);
         const index = this.findSelectedAreaBagIndex();
         this.areas.splice(index, 1);
-        this.actionBarService.setAreas(this.areas.map((areaBag: AreaBag) => {
+        this.actionBarService.setAreas(this.areas.map((areaBag: AreaBag): Area => {
           return areaBag.dto;
         }));
       }
@@ -422,12 +439,12 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     if (!this.selectedEditable) {
       return -1;
     }
-    return this.areas.findIndex((areaBag: AreaBag) => {
+    return this.areas.findIndex((areaBag: AreaBag): boolean => {
       return areaBag.editable.groupWrapper.getGroup().attr('id') === this.selectedEditable.groupWrapper.getGroup().attr('id')
     });
   }
 
-  private cleanGroup(svgGroupWrapper: SvgGroupWrapper = this.currentAreaGroup) {
+  private cleanGroup(svgGroupWrapper: SvgGroupWrapper = this.currentAreaGroup): void {
     svgGroupWrapper.getGroup().selectAll('polygon')
       .on('mouseover', null)
       .on('mouseout', null);

@@ -303,12 +303,12 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
     const subject = () => { return { x: d3.event.x, y: d3.event.y }};
 
-    const dragStart = (_, index: number, selections: d3.selection[]) => {
+    const dragStart = (_, index: number, selections: d3.selection[]): void => {
       d3.event.sourceEvent.stopPropagation();
       d3.select(selections[index]).classed('dragging', true);
     };
 
-    const dragging = (d, index: number, selections: d3.selection[]) => {
+    const dragging = (d, index: number, selections: d3.selection[]): void => {
       const event: KeyboardEvent = <KeyboardEvent>window.event;
       const secondPoint: Point = <Point>{
         x: 0,
@@ -461,7 +461,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     };
   }
 
-  private drawScale(scale: Scale) {
+  private drawScale(scale: Scale): void {
     if (scale === null) {
       this.createEmptyScale();
     } else {

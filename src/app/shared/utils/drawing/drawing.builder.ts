@@ -89,16 +89,19 @@ export class SvgGroupWrapper {
       // offsetFromBorder[0] gives left and upper border offset,
       // and offsetFromBorder[1] gives right and bottom border offset,
       // sign is giving a direction of the offset
-      const offsetFromBorder = [{x: 0, y: 0}, {x: -25, y: -25}];
-      const eventPosition: Point = this.zoomService.calculateInMapEditorRangeEvent({x: mousePosition.x, y: mousePosition.y}, offsetFromBorder);
-      this.group.attr('x', d3.event.dx + parseInt(this.group.attr('x'), 10)).attr('y', d3.event.dy + parseInt(this.group.attr('y'), 10));
+      const offsetFromBorder = [{x: 0, y: 0}, {x: -30, y: -30}];
+      const eventPosition: Point = this.zoomService.calculateInMapEditorRangeEvent(
+        {x: mousePosition.x, y: mousePosition.y}
+        , offsetFromBorder
+      );
+      this.group.attr('x', eventPosition.x).attr('y', eventPosition.y);
     };
 
     const dragStop = (): void => {
       this.group.classed('dragging', false);
     };
 
-    const subject = () => {
+    const subject = (): Point => {
       return {x: d3.event.x, y: d3.event.y}
     };
     const dragGroup = d3.drag()
@@ -129,7 +132,7 @@ export class SvgGroupWrapper {
     return elements[elements.length - 1];
   }
 
-  removeElements(type: ElementType) {
+  removeElements(type: ElementType): void {
     const elements = this.elements.get(type);
     if (!!elements) {
       elements.forEach((element: d3.selection) => {
@@ -139,7 +142,7 @@ export class SvgGroupWrapper {
     }
   }
 
-  removeLastElement(type: ElementType) {
+  removeLastElement(type: ElementType): void {
     const elements = this.elements.get(type);
     if (!!elements) {
       elements[elements.length - 1].remove();
@@ -147,7 +150,7 @@ export class SvgGroupWrapper {
     }
   }
 
-  private addElement(type: ElementType, element: d3.selection) {
+  private addElement(type: ElementType, element: d3.selection): void {
     if (this.elements.has(type)) {
       this.elements.get(type).push(element);
     } else {

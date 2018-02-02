@@ -203,9 +203,11 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     const areaOnMap: SvgGroupWrapper = this.areasOnMap.getValue(data.event.areaId);
     if (!!areaOnMap) {
       if (data.event.mode.toString() === AreaEventMode[AreaEventMode.ON_ENTER]) {
-        areaOnMap.getGroup().select('polygon').transition().attr('fill', 'red').delay(Movable.TRANSITION_DURATION);
+        console.log(areaOnMap.getGroup().select('polygon'));
+        areaOnMap.getGroup().select('polygon').transition().style('fill', 'red').delay(Movable.TRANSITION_DURATION);
       } else {
-        areaOnMap.getGroup().select('polygon').transition().attr('fill', 'grey').delay(Movable.TRANSITION_DURATION);
+        console.log(areaOnMap.getGroup().select('polygon'));
+        areaOnMap.getGroup().select('polygon').transition().style('fill', 'grey').delay(Movable.TRANSITION_DURATION);
       }
     }
 
