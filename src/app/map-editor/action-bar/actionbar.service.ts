@@ -26,9 +26,9 @@ export class ActionBarService {
   private configurationHash: string | Int32Array;
 
   private static findLatestConfiguration(configurations: Configuration[]): Configuration {
-    return configurations.sort((a, b) => {
+    return configurations.sort((a, b): number => {
       return b.publishedDate - a.publishedDate;
-    }).find((configuration: Configuration) => {
+    }).find((configuration: Configuration): boolean => {
       return !!configuration.publishedDate;
     });
   }
@@ -61,7 +61,7 @@ export class ActionBarService {
   }
 
   public loadConfiguration(floor: Floor): void {
-    this.httpService.doGet(ActionBarService.URL + floor.id).subscribe((configurations: Configuration[]) => {
+    this.httpService.doGet(ActionBarService.URL + floor.id).subscribe((configurations: Configuration[]): void => {
       if (configurations.length === 0) {
         this.configuration = <Configuration>{
           floorId: floor.id,
@@ -87,9 +87,9 @@ export class ActionBarService {
   }
 
   public saveDraft(): Promise<void> {
-    return new Promise<void>((resolve) => {
+    return new Promise<void>((resolve: Function): void => {
       if (this.hashConfiguration() !== this.configurationHash) {
-        this.httpService.doPut(ActionBarService.URL, this.configuration).subscribe(() => {
+        this.httpService.doPut(ActionBarService.URL, this.configuration).subscribe((): void => {
           this.configurationHash = this.hashConfiguration();
           resolve();
         });
@@ -98,8 +98,8 @@ export class ActionBarService {
   }
 
   public undo(): Promise<Configuration> {
-    return new Promise<Configuration>((resolve) => {
-      this.httpService.doDelete(ActionBarService.URL + this.configuration.floorId).subscribe((configuration: Configuration) => {
+    return new Promise<Configuration>((resolve: Function): void => {
+      this.httpService.doDelete(ActionBarService.URL + this.configuration.floorId).subscribe((configuration: Configuration): void => {
         this.configuration = configuration;
         this.sendConfigurationResetEvent();
         this.configurationHash = this.hashConfiguration();
@@ -131,7 +131,7 @@ export class ActionBarService {
 
   private getConfigurationSinks(): Collections.Set<Sink> {
     const sinks = new Collections.Set<Sink>(ActionBarService.compareFn);
-    this.configuration.data.sinks.forEach((configurationSink: Sink) => {
+    this.configuration.data.sinks.forEach((configurationSink: Sink): void => {
       sinks.add(configurationSink);
     });
     return sinks;

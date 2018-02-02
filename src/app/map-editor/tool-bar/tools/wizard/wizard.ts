@@ -70,7 +70,7 @@ export class WizardComponent implements Tool, OnInit {
     this.setTranslations();
     this.steps = [new FirstStep(this.floor.id), new SecondStep(), new ThirdStep()];
     this.checkIsLoading();
-    this.scaleService.scaleChanged.subscribe((scale: ScaleDto) => {
+    this.scaleService.scaleChanged.subscribe((scale: ScaleDto): void => {
       this.scale = new Scale(scale);
       if (!!this.scale.start && !!this.scale.stop) {
         this.scaleCalculations = {
@@ -257,7 +257,7 @@ export class WizardComponent implements Tool, OnInit {
       map.select('#anchor' + this.selected),
       map.select('#sink' + this.selected)
     ];
-    selections.forEach((selection: d3.selection) => {
+    selections.forEach((selection: d3.selection): void => {
       if (!selection.empty()) {
         selection.on('.drag', null);
         selection.style('cursor', 'default');
@@ -267,8 +267,8 @@ export class WizardComponent implements Tool, OnInit {
     map.style('cursor', 'default');
   }
 
-  private checkIsLoading() {
-    setInterval(() => {
+  private checkIsLoading(): void {
+    setInterval((): void => {
       if (this.options.length) {
         this.isLoading = false;
       }
@@ -277,7 +277,7 @@ export class WizardComponent implements Tool, OnInit {
 
   private setTranslations(): void {
     this.translate.setDefaultLang('en');
-    this.translate.get('wizard.first.message').subscribe((text: string) => {
+    this.translate.get('wizard.first.message').subscribe((text: string): void => {
       this.hintMessage = text;
     });
   }
