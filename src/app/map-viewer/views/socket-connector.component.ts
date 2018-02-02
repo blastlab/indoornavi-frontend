@@ -1,14 +1,6 @@
 import {AfterViewInit, Component, NgZone, OnInit} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
-import {
-  AreaEventMode,
-  CommandType,
-  CoordinatesSocketData,
-  EventSocketData,
-  MeasureSocketData,
-  MeasureSocketDataType,
-  PublishedMap
-} from '../published.type';
+import {AreaEventMode, CommandType, CoordinatesSocketData, EventSocketData, MeasureSocketData, MeasureSocketDataType} from '../published.type';
 import {Subject} from 'rxjs/Subject';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
 import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.builder';
@@ -30,6 +22,9 @@ import {MapLoaderInformerService} from '../../shared/services/map-loader-informe
 import {MapSvg} from '../../map/map.type';
 import {Area} from '../../map-editor/tool-bar/tools/area/area.type';
 import {Movable} from '../../shared/wrappers/movable/movable';
+import {Scale} from '../../map-editor/tool-bar/tools/scale/scale.type';
+import {FloorService} from '../../floor/floor.service';
+import {Floor} from '../../floor/floor.type';
 
 @Component({
   templateUrl: './socket-connector.component.html',
@@ -37,7 +32,6 @@ import {Movable} from '../../shared/wrappers/movable/movable';
 })
 export class SocketConnectorComponent implements OnInit, AfterViewInit {
   protected socketSubscription: Subscription;
-  protected activeMap: PublishedMap;
   protected d3map: d3.selection = null;
   protected pixelsToCentimeters: number;
   private dataReceived = new Subject<CoordinatesSocketData>();
@@ -45,6 +39,8 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   private tagsOnMap: Dictionary<number, Movable> = new Dictionary<number, Movable>();
   private areasOnMap: Dictionary<number, SvgGroupWrapper> = new Dictionary<number, SvgGroupWrapper>();
   private originListeningOnEvent: Dictionary<string, MessageEvent[]> = new Dictionary<string, MessageEvent[]>();
+  private floor: Floor;
+  private tags: Tag[] = [];
 
   constructor(protected ngZone: NgZone,
               protected socketService: SocketService,
@@ -54,24 +50,30 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
               private areaService: AreaService,
               private translateService: TranslateService,
               private iconService: IconService,
-              private zoomService: ZoomService
+              private zoomService: ZoomService,
+              private floorService: FloorService
               ) {
   }
 
   ngOnInit() {
     this.translateService.setDefaultLang('en');
     this.route.params.subscribe((params: Params) => {
-      const mapId = +params['id'];
-      this.publishedService.get(mapId).subscribe((map: PublishedMap) => {
-        this.activeMap = map;
-        if (this.activeMap.floor.imageId != null) {
+      const floorId = +params['id'];
+      this.floorService.getFloor(floorId).subscribe((floor: Floor) => {
+        this.floor = floor;
+        if (floor.imageId != null) {
           this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg) => {
             this.d3map = mapSvg.container;
-            this.drawAreas(map.floor.id);
-            const realDistanceInCentimeters = map.floor.scale.getRealDistanceInCentimeters();
-            const scaleLengthInPixels = Geometry.getDistanceBetweenTwoPoints(map.floor.scale.start, map.floor.scale.stop);
-            this.pixelsToCentimeters = realDistanceInCentimeters / scaleLengthInPixels;
-            this.initializeSocketConnection();
+            this.publishedService.getTagsAvailableForUser(floor.id).subscribe((tags: Tag[]) => {
+              this.tags = tags;
+              this.drawAreas(floor.id);
+              if (!!floor.scale) {
+                const realDistanceInCentimeters = new Scale(floor.scale).getRealDistanceInCentimeters();
+                const scaleLengthInPixels = Geometry.getDistanceBetweenTwoPoints(floor.scale.start, floor.scale.stop);
+                this.pixelsToCentimeters = realDistanceInCentimeters / scaleLengthInPixels;
+                this.initializeSocketConnection();
+              }
+            });
           });
         }
       });
@@ -123,7 +125,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   }
 
   private extractTagsShortIds() {
-    return this.activeMap.tags.map((tag: Tag) => {
+    return this.tags.map((tag: Tag) => {
       return tag.shortId;
     });
   }
@@ -163,7 +165,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   }
 
   private setSocketConfiguration() {
-    this.socketService.send({type: CommandType[CommandType.SET_FLOOR], args: `${this.activeMap.floor.id}`});
+    this.socketService.send({type: CommandType[CommandType.SET_FLOOR], args: `${this.floor.id}`});
     this.socketService.send({type: CommandType[CommandType.SET_TAGS], args: `[${this.extractTagsShortIds()}]`});
   }
 

@@ -7,11 +7,11 @@ export class Scale {
   realDistance: number;
   measure: Measure;
 
-  constructor(start: Point, stop: Point, realDistance: number, measure: Measure) {
-    this.start = start;
-    this.stop = stop;
-    this.realDistance = realDistance;
-    this.measure = measure;
+  constructor(scale: Scale) {
+    this.start = scale.start;
+    this.stop = scale.stop;
+    this.realDistance = scale.realDistance;
+    this.measure = scale.measure;
   }
 
   get startPoint(): Point {
@@ -24,7 +24,7 @@ export class Scale {
 
   getRealDistanceInCentimeters(): number {
     return this.realDistance * (this.measure.toString() === Measure[Measure.METERS] ? 100 : 1);
-  };
+  }
 
 }
 

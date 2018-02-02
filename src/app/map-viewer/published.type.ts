@@ -3,9 +3,9 @@ import {Floor} from '../floor/floor.type';
 import {Point} from '../map-editor/map.type';
 import {Tag} from '../device/tag.type';
 
-export interface PublishedMap {
+export interface Publication {
   id?: number;
-  floor: Floor;
+  floors: Floor[];
   users: User[];
   tags: Tag[];
 }
@@ -61,4 +61,9 @@ export interface DrawConfiguration {
   id: string;
   clazz: string;
   cursor?: string;
+}
+
+export interface ValidationResult {
+  scaleSet?: boolean;
+  imageSet?: boolean
 }

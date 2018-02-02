@@ -150,7 +150,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   setInactive(): void {
     this.hideScale();
-    this.rejectChanges();
     this.active = false;
     this.hintBarService.sendHintMessage('hint.chooseTool');
   }

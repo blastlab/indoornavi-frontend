@@ -1,4 +1,4 @@
-import {OnInit, Component, NgZone} from '@angular/core';
+import {Component, NgZone, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {SocketConnectorComponent} from '../socket-connector.component';
 import {TranslateService} from '@ngx-translate/core';
@@ -8,6 +8,7 @@ import {AreaService} from '../../../shared/services/area/area.service';
 import {IconService} from '../../../shared/services/drawing/icon.service';
 import {ZoomService} from '../../../shared/services/zoom/zoom.service';
 import {MapLoaderInformerService} from '../../../shared/services/map-loader-informer/map-loader-informer.service';
+import {FloorService} from '../../../floor/floor.service';
 
 
 @Component({
@@ -24,7 +25,8 @@ export class PublishedComponent extends SocketConnectorComponent implements OnIn
               areaService: AreaService,
               translateService: TranslateService,
               iconService: IconService,
-              zoomService: ZoomService
+              zoomService: ZoomService,
+              floorService: FloorService
               ) {
 
     super(
@@ -36,7 +38,8 @@ export class PublishedComponent extends SocketConnectorComponent implements OnIn
       areaService,
       translateService,
       iconService,
-      zoomService
+      zoomService,
+      floorService
     );
   }
 
