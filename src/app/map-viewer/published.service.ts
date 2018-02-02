@@ -31,6 +31,6 @@ export class PublishedService {
   }
 
   getTagsAvailableForUser(floorId: number) {
-    return this.httpService.doGet(`${this.url}${floorId}/getTags`);
+    return this.httpService.doGet(`${this.url}${floorId}/tags`);
   }
 }
