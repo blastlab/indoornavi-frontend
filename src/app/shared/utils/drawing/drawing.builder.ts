@@ -82,19 +82,7 @@ export class SvgGroupWrapper {
     };
 
     const dragging = !!customDragging ? customDragging : (): void => {
-      const mousePosition = <Point>{
-        x: d3.event.x,
-        y: d3.event.y
-      };
-      // offsetFromBorder[0] gives left and upper border offset,
-      // and offsetFromBorder[1] gives right and bottom border offset,
-      // sign is giving a direction of the offset
-      const offsetFromBorder = [{x: 0, y: 0}, {x: -30, y: -30}];
-      const eventPosition: Point = this.zoomService.calculateInMapEditorRangeEvent(
-        {x: mousePosition.x, y: mousePosition.y}
-        , offsetFromBorder
-      );
-      this.group.attr('x', eventPosition.x).attr('y', eventPosition.y);
+      this.group.attr('x', d3.event.dx + parseInt(this.group.attr('x'), 10)).attr('y', d3.event.dy + parseInt(this.group.attr('y'), 10));
     };
 
     const dragStop = (): void => {
