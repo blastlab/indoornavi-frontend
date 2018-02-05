@@ -1,12 +1,11 @@
-<p-toolbar>
+<p-toolbar [appHasPermission]="'FLOOR_CREATE'">
   <div class="ui-toolbar-group-left">
     <button pButton class="ui-button-secondary"
             id="add-floor"
-            [appHasPermission]="'FLOOR_CREATE'"
             (click)="openDialog()"
             label="{{'add'|translate}}"
-            icon="fa fa-plus" iconPos="left"
-    ></button>
+            icon="fa-plus">
+    </button>
   </div>
 </p-toolbar>
 
@@ -15,8 +14,10 @@
   <p-column field="name" header="{{'floor.name'|translate}}"></p-column>
   <p-column header="{{'th.actions'|translate}}" styleClass="col-button">
     <ng-template let-floor="rowData" let-i="rowIndex" pTemplate="body">
-      <button
-        pTooltip="{{'go.to.map'|translate}}" type="button" pButton (click)="goTo(floor)" icon="fa-level-down">
+      <button [appHasPermission]="'PUBLICATION_READ'" pTooltip="{{'go.to.map'|translate}}" type="button" pButton (click)="goToMap(floor)" icon="fa-eye">
+      </button>
+      <button [appHasPermission]="'FLOOR_UPDATE'"
+              pTooltip="{{'go.to.mapEditor'|translate}}" type="button" pButton (click)="goToEditor(floor)" icon="fa-pencil">
       </button>
       <button
         [appHasPermission]="'FLOOR_UPDATE'"

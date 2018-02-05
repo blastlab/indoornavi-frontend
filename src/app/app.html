@@ -5,37 +5,37 @@
                [baseZIndex]="10000">
       <div class="ui-g">
         <button pButton class="ui-button-secondary ui-g-12 ui-md-12 ui-lg-12 menu-button" [routerLink]="['./complexes']"
-                (click)="displaySidebar = false" icon="fa-building fa-lg">
+                (click)="displaySidebar = false" icon="fa-building fa-lg" [appHasPermission]="'COMPLEX_READ'">
           <span>{{'complexes'|translate}}</span>
         </button>
       </div>
       <div class="ui-g">
         <button pButton class="ui-button-secondary ui-g-12 ui-md-4 ui-lg-4 menu-button" [routerLink]="['./sinks']"
-                (click)="displaySidebar = false" icon="fa-share-alt fa-lg">
+                (click)="displaySidebar = false" icon="fa-share-alt fa-lg" [appHasPermission]="'SINK_UPDATE'">
           <span>{{'sinks.header'|translate}}</span>
         </button>
         <button pButton class="ui-button-secondary ui-g-12 ui-md-4 ui-lg-4 menu-button" [routerLink]="['./anchors']"
-                (click)="displaySidebar = false" icon="fa-circle-o-notch fa-lg">
+                (click)="displaySidebar = false" icon="fa-circle-o-notch fa-lg" [appHasPermission]="'ANCHOR_UPDATE'">
           <span>{{'anchors.header'|translate}}</span>
         </button>
         <button pButton class="ui-button-secondary ui-g-12 ui-md-4 ui-lg-4 menu-button" [routerLink]="['./tags']"
-                (click)="displaySidebar = false" icon="fa-tag fa-lg">
+                (click)="displaySidebar = false" icon="fa-tag fa-lg" [appHasPermission]="'TAG_UPDATE'">
           <span>{{'tags.header'|translate}}</span>
         </button>
       </div>
       <div class="ui-g">
         <button pButton class="ui-button-secondary ui-g-12 ui-md-12 ui-lg-12 menu-button" [routerLink]="['./publications']"
-                (click)="displaySidebar = false" icon="fa-map fa-lg">
+                (click)="displaySidebar = false" icon="fa-map fa-lg" [appHasPermission]="'PUBLICATION_UPDATE'">
           <span>{{'publishedMaps'|translate}}</span>
         </button>
       </div>
       <div class="ui-g">
         <button pButton class="ui-button-secondary ui-g-12 ui-md-6 ui-lg-6 menu-button" [routerLink]="['./permissionGroups']"
-                (click)="displaySidebar = false" icon="fa-lock fa-lg">
+                (click)="displaySidebar = false" icon="fa-lock fa-lg"  [appHasPermission]="'PERMISSION_GROUP_UPDATE'">
           <span>{{'user.permissionGroups'|translate}}</span>
         </button>
         <button pButton class="ui-button-secondary ui-g-12 ui-md-6 ui-lg-6 menu-button" [routerLink]="['./users']"
-                (click)="displaySidebar = false" icon="fa-users fa-lg">
+                (click)="displaySidebar = false" icon="fa-users fa-lg"  [appHasPermission]="'USER_UPDATE'">
           <span>{{'users.header'|translate}}</span>
         </button>
       </div>
