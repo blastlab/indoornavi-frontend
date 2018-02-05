@@ -2,6 +2,7 @@ import {User} from '../user/user.type';
 import {Floor} from '../floor/floor.type';
 import {Point} from '../map-editor/map.type';
 import {Tag} from '../device/tag.type';
+import { SvgGroupWrapper } from 'app/shared/utils/drawing/drawing.builder';
 
 export interface PublishedMap {
   id?: number;
@@ -56,4 +57,15 @@ export interface DrawConfiguration {
   id: string;
   clazz: string;
   cursor?: string;
+}
+
+export interface PolylineData {
+  command: string;
+  args: Point;
+  id: string;
+}
+
+export interface Polyline {
+  id: string;
+  polyline: SvgGroupWrapper;
 }
