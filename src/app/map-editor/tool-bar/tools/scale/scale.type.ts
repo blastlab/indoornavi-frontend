@@ -1,25 +1,16 @@
 import {Point} from '../../../map.type';
 
+export class ScaleDto {
+  constructor(public start: Point,
+              public stop: Point,
+              public realDistance: number,
+              public measure: Measure) {}
+}
 
-export class Scale {
-  start: Point;
-  stop: Point;
-  realDistance: number;
-  measure: Measure;
+export class Scale extends ScaleDto {
 
-  constructor(scale: Scale) {
-    this.start = scale.start;
-    this.stop = scale.stop;
-    this.realDistance = scale.realDistance;
-    this.measure = scale.measure;
-  }
-
-  get startPoint(): Point {
-    return this.start;
-  }
-
-  get stopPoint(): Point {
-    return this.stop;
+  constructor(scale: ScaleDto) {
+    super(scale.start, scale.stop, scale.realDistance, scale.measure)
   }
 
   getRealDistanceInCentimeters(): number {

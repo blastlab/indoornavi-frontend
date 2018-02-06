@@ -24,10 +24,10 @@ export class ZoomService {
     const selection: d3.selection = d3.select(`#${MapViewerService.MAP_UPPER_LAYER_SELECTOR_ID}`);
     const borderNorthWest: Point = this.calculateTransition({x: selection.attr('x'), y: selection.attr('y')});
     const borderSouthEast: Point = this.calculateTransition({x: selection.attr('width'), y: selection.attr('height')});
-    point.x = point.x > borderNorthWest.x + offset[0].x ? point.x : borderNorthWest.x + offset[0].x;
-    point.x = point.x < borderSouthEast.x + offset[1].x ? point.x : borderSouthEast.x + offset[1].x;
-    point.y = point.y > borderNorthWest.y + offset[0].y ? point.y : borderNorthWest.y + offset[0].y;
-    point.y = point.y < borderSouthEast.y + offset[1].y ? point.y : borderSouthEast.y + offset[1].y;
+    point.x = (point.x > borderNorthWest.x + offset[0].x ? point.x : borderNorthWest.x + offset[0].x);
+    point.x = (point.x < borderSouthEast.x + offset[1].x ? point.x : borderSouthEast.x + offset[1].x);
+    point.y = (point.y > borderNorthWest.y + offset[0].y ? point.y : borderNorthWest.y + offset[0].y);
+    point.y = (point.y < borderSouthEast.y + offset[1].y ? point.y : borderSouthEast.y + offset[1].y);
     return {x: point.x, y: point.y};
   }
 }

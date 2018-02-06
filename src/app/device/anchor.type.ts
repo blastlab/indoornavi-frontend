@@ -11,5 +11,5 @@ export interface AnchorDistance {
 
 export interface AnchorSuggestedPositions {
   anchorId: number;
-  points: Array<Point>;
+  points: Point[];
 }

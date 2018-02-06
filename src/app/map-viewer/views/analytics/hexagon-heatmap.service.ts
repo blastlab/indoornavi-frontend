@@ -99,11 +99,11 @@ export class HexagonHeatMap {
         .style('fill', () => color)
         .attr('stroke', () => color)
         .on('end', () => {
-          const coolDown = () => {
-            if (heat > 0) {
+          const coolDown = (): void => {
+            if (heat > 1) {
               hexagon
                 .transition()
-                .on('end', () => {
+                .on('end', (): any => { // can return alpha function or string
                   heat--;
                   return coolDown;
                 })
@@ -112,7 +112,7 @@ export class HexagonHeatMap {
                 .style('fill', () => {
                   return this.heatColors[heat - 1]
                 })
-                .attr('stroke', () => this.heatColors[heat - 1]);
+                .attr('stroke', (): string => this.heatColors[heat - 1]);
             } else {
               hexagon
                 .transition()

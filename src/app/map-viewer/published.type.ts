@@ -46,11 +46,6 @@ export interface Coordinates {
   tagShortId: number;
 }
 
-export interface SocketCommand {
-  type: CommandType;
-  args: string;
-}
-
 export enum CommandType {
   SET_FLOOR,
   SET_TAGS,

@@ -23,7 +23,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
   private pathSliderView: boolean = false;
   private timeStepBuffer: Map<number, TimeStepBuffer[]> = new Map();
   private mapId = 'map';
-  private heatmap: HexagonHeatMap;
+  private heatMap: HexagonHeatMap;
   // hexRadius set to tag icon size equal 20px x 20px square
   private hexSize: number = 20;
   private gradient: string[] = [
@@ -36,7 +36,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
   ];
 
   public heatMapSettings = {
-    path: 25000,
+    path: 2500,
     heatingTime: 2000
   };
 
@@ -65,10 +65,10 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
   }
 
   protected init(): void {
-    this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg) => {
+    this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg): void => {
       this.createHexagonalHeatMapGrid(mapSvg.layer);
     });
-    this.whenDataArrived().subscribe((data: CoordinatesSocketData) => {
+    this.whenDataArrived().subscribe((data: CoordinatesSocketData): void => {
       // update
       const timeOfDataStep: number = Date.now();
       if (this.timeStepBuffer.has(data.coordinates.tagShortId)) {
@@ -78,8 +78,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       }
       this.handleCoordinatesData(data);
     });
-
-    this.whenTransitionEnded().subscribe((tagShortId: number) => {
+    this.whenTransitionEnded().subscribe((tagShortId: number): void => {
       // release to setHeatMap only those data that are in proper time step up to transition of the tag
       // from timeStepBuffer
       const timeStepBuffer = this.timeStepBuffer.get(tagShortId);
@@ -97,7 +96,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
 
   setPathLength (event): void {
     this.heatMapSettings.path = event;
-    this.heatmap.coolingDown = this.heatMapSettings.path;
+    this.heatMap.coolingDown = this.heatMapSettings.path;
   }
 
   toggleSlider(): void {
@@ -107,20 +106,20 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
   toggleHeatAnimation(): void {
     this.playingAnimation = !this.playingAnimation;
     if (!this.playingAnimation) {
-      this.heatmap.eraseHeatMap();
+      this.heatMap.eraseHeatMap();
     }
   }
 
   private heatUpHexes(data: CoordinatesSocketData): void {
-    this.heatmap.feedWithCoordinates(this.scaleCoordinates(data.coordinates.point));
+    this.heatMap.feedWithCoordinates(data.coordinates.point);
   }
 
   private createHexagonalHeatMapGrid (mapNode: d3.selection): void {
     const height = Number.parseInt(mapNode.node().getBBox().height);
     const width = Number.parseInt(mapNode.node().getBBox().width);
-    this.heatmap = new HexagonHeatMap(width, height, this.hexSize, this.gradient);
-    this.heatmap.create(this.mapId);
-    this.heatmap.heatingUp = this.heatMapSettings.heatingTime;
-    this.heatmap.coolingDown = this.heatMapSettings.path;
+    this.heatMap = new HexagonHeatMap(width, height, this.hexSize, this.gradient);
+    this.heatMap.create(this.mapId);
+    this.heatMap.heatingUp = this.heatMapSettings.heatingTime;
+    this.heatMap.coolingDown = this.heatMapSettings.path;
   }
 }

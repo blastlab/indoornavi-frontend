@@ -23,7 +23,7 @@ export class Editable {
         command: callbacks.remove
       }
     ]);
-    this.groupWrapper.getGroup().on('contextmenu', () => {
+    this.groupWrapper.getGroup().on('contextmenu', (): void => {
       d3.event.preventDefault();
       this.contextMenuService.openContextMenu();
       this.selected.next(this);
