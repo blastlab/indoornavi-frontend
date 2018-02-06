@@ -77,15 +77,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
               this.drawAreas(map.floor.id);
               this.initializeSocketConnection();
               this.mapHeight = this.d3map.container.select(`#${MapViewerService.MAP_IMAGE_SELECTOR_ID}`).attr('height');
-              // todo: delete below, it is set for debuuging
-              this.drawPolylines({id: '711', command: 'point', args: {x: 750, y: 600}});
-              this.drawPolylines({id: '711', command: 'point', args: {x: 800, y: 600}});
-              this.drawPolylines({id: '711', command: 'point', args: {x: 850, y: 600}});
-              this.drawPolylines({id: '711', command: 'point', args: {x: 900, y: 600}});
-              this.drawPolylines({id: '71', command: 'point', args: {x: 410, y: 600}});
-              this.drawPolylines({id: '71', command: 'point', args: {x: 400, y: 500}});
-              this.drawPolylines({id: '71', command: 'delete', args: {x: 400, y: 500}});
-              this.drawPolylines({id: '711', command: 'discard', args: {x: 900, y: 600}});
             }
           });
         }
@@ -261,20 +252,22 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   }
 
   private drawPolylines (data: PolylineData) {
-    // todo: calculate to proper zoom from ZoomService
+    const coordinates: Point = Geometry.calculatePointPositionInPixels(Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
+      this.scale.getRealDistanceInCentimeters(),
+      data['args']);
     const index: number = this.polylines.findIndex((polyline: Polyline): boolean  => polyline.id === data['id']);
     if (data['command'] === 'point') {
       if (index < 0) {
         const drawBuilder: DrawBuilder = new DrawBuilder(this.d3map.container, {id: `polylines-${data['id']}`, clazz: 'polylines'}, this.zoomService);
         const polyline: SvgGroupWrapper = drawBuilder
         .createGroup()
-        .addCircle(data['args'], this.circleRadius);
+        .addCircle(coordinates, this.circleRadius);
         this.polylines.push({id: data['id'], polyline: polyline});
       } else {
         const lastPoint: Point = {x: this.polylines[index].polyline.getLastElement(ElementType.CIRCLE).attr('cx'), y: this.polylines[index].polyline.getLastElement(ElementType.CIRCLE).attr('cy') };
         this.polylines[index].polyline
-        .addCircle(data['args'], this.circleRadius)
-        .addLine(lastPoint, data['args']);
+        .addCircle(coordinates, this.circleRadius)
+        .addLine(lastPoint, coordinates);
       }
     } else if (index > -1) {
       if (data['command'] === 'delete') {
