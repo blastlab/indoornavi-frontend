@@ -7,9 +7,7 @@ import {
   EventSocketData,
   MeasureSocketData,
   MeasureSocketDataType,
-  PublishedMap,
-  PolylineData,
-  Polyline
+  PublishedMap
 } from '../published.type';
 import {Subject} from 'rxjs/Subject';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
@@ -32,7 +30,7 @@ import {MapSvg} from '../../map/map.type';
 import {Area} from '../../map-editor/tool-bar/tools/area/area.type';
 import {Movable} from '../../shared/wrappers/movable/movable';
 import {Scale} from '../../map-editor/tool-bar/tools/scale/scale.type';
-import * as d3 from 'd3';
+import {Polyline} from '../../shared/utils/drawing/polyline.builder';
 
 @Component({
   templateUrl: './socket-connector.component.html',
@@ -49,8 +47,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   private tagsOnMap: Dictionary<number, Movable> = new Dictionary<number, Movable>();
   private areasOnMap: Dictionary<number, SvgGroupWrapper> = new Dictionary<number, SvgGroupWrapper>();
   private originListeningOnEvent: Dictionary<string, MessageEvent[]> = new Dictionary<string, MessageEvent[]>();
-  private circleRadius: number = 5;
-  private polylines: Polyline[] = [];
 
   constructor(protected ngZone: NgZone,
               protected socketService: SocketService,
@@ -92,6 +88,8 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           return;
         }
         this.publishedService.checkOrigin(params['api_key'], event.origin).subscribe((verified: boolean): void => {
+          console.log(verified);
+          console.log(event.origin);
           if (verified) {
             this.handleCommands(event);
           }
@@ -124,7 +122,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       this.moveTagOnMap(data.coordinates.point, deviceId);
     }
     if (this.originListeningOnEvent.containsKey('coordinates')) {
-      this.originListeningOnEvent.getValue('coordinates').forEach((event: MessageEvent) => {
+      this.originListeningOnEvent.getValue('coordinates').forEach((event: MessageEvent): void => {
         event.source.postMessage({type: 'coordinates', coordinates: data}, event.origin);
       })
     }
@@ -170,7 +168,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   }
 
   private initializeSocketConnection(): void {
-    this.ngZone.runOutsideAngular(() => {
+    this.ngZone.runOutsideAngular((): void => {
       const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?client`);
       this.setSocketConfiguration();
       this.socketSubscription = stream.subscribe((data: MeasureSocketData) => {
@@ -190,7 +188,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   };
 
   private drawAreas(floorId: number): void {
-    this.areaService.getAllByFloor(floorId).first().subscribe((areas: Area[]) => {
+    this.areaService.getAllByFloor(floorId).first().subscribe((areas: Area[]): void => {
       areas.forEach((area: Area) => {
         const drawBuilder: DrawBuilder = new DrawBuilder(this.d3map.container, {id: `area-${area.id}`, clazz: 'area'}, this.zoomService);
         const areaOnMap = drawBuilder
@@ -217,8 +215,8 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     }
 
     if (this.originListeningOnEvent.containsKey('area')) {
-      this.originListeningOnEvent.getValue('area').forEach((event: MessageEvent) => {
-        setTimeout(() => {
+      this.originListeningOnEvent.getValue('area').forEach((event: MessageEvent): void => {
+        setTimeout((): void => {
           event.source.postMessage({type: 'area', area: data.event}, event.origin);
         }, Movable.TRANSITION_DURATION);
       });
@@ -244,38 +242,14 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
             this.originListeningOnEvent.setValue(data['args'], [event]);
           }
           break;
-        case 'point' || 'delete' || 'discard':
-          if (!!data['id'] && Number.isInteger(data['args'].x) && Number.isInteger(data['args'].y)) this.drawPolylines(data);
+        case 'createPolyline':
+          console.log(this.addPolyline(data['args']));
           break;
       }
     }
   }
 
-  private drawPolylines (data: PolylineData) {
-    const coordinates: Point = Geometry.calculatePointPositionInPixels(Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
-      this.scale.getRealDistanceInCentimeters(),
-      data['args']);
-    const index: number = this.polylines.findIndex((polyline: Polyline): boolean  => polyline.id === data['id']);
-    if (data['command'] === 'point') {
-      if (index < 0) {
-        const drawBuilder: DrawBuilder = new DrawBuilder(this.d3map.container, {id: `polylines-${data['id']}`, clazz: 'polylines'}, this.zoomService);
-        const polyline: SvgGroupWrapper = drawBuilder
-        .createGroup()
-        .addCircle(coordinates, this.circleRadius);
-        this.polylines.push({id: data['id'], polyline: polyline});
-      } else {
-        const lastPoint: Point = {x: this.polylines[index].polyline.getLastElement(ElementType.CIRCLE).attr('cx'), y: this.polylines[index].polyline.getLastElement(ElementType.CIRCLE).attr('cy') };
-        this.polylines[index].polyline
-        .addCircle(coordinates, this.circleRadius)
-        .addLine(lastPoint, coordinates);
-      }
-    } else if (index > -1) {
-      if (data['command'] === 'delete') {
-        this.polylines[index].polyline.remove();
-      } else {
-        this.polylines[index].polyline.removeLastElement(ElementType.CIRCLE);
-        this.polylines[index].polyline.removeLastElement(ElementType.LINE);
-      }
-    }
+  private addPolyline (id: string): Polyline {
+    return new Polyline(this.d3map.container, {id: `polylines-${id}`, clazz: 'polylines'}, this.zoomService);
   }
 }

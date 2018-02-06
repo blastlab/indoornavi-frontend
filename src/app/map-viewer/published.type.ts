@@ -58,14 +58,3 @@ export interface DrawConfiguration {
   clazz: string;
   cursor?: string;
 }
-
-export interface PolylineData {
-  command: string;
-  args: Point;
-  id: string;
-}
-
-export interface Polyline {
-  id: string;
-  polyline: SvgGroupWrapper;
-}

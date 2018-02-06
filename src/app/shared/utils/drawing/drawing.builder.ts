@@ -149,9 +149,9 @@ export class SvgGroupWrapper {
 
 export class DrawBuilder {
 
-  constructor(private appendable: d3.selection,
-              private configuration: DrawConfiguration,
-              private zoomService: ZoomService) {
+  constructor(protected appendable: d3.selection,
+              protected configuration: DrawConfiguration,
+              protected zoomService: ZoomService) {
   }
 
   createGroup(): SvgGroupWrapper {
