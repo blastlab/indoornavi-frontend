@@ -7,7 +7,6 @@ import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../shared/utils/draw
 import {SocketService} from '../../shared/services/socket/socket.service';
 import {ActivatedRoute, Params} from '@angular/router';
 import {PublishedService} from '../published.service';
-import {MapViewerService} from '../../map-editor/map.editor.service';
 import {AreaService} from '../../shared/services/area/area.service';
 import {IconService, NaviIcons} from '../../shared/services/drawing/icon.service';
 import {Geometry} from 'app/shared/utils/helper/geometry';
@@ -33,7 +32,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   protected socketSubscription: Subscription;
   protected d3map: MapSvg = null;
   protected scale: Scale;
-  protected mapHeight: number;
   private dataReceived = new Subject<CoordinatesSocketData>();
   private transitionEnded = new Subject<number>();
   private tagsOnMap: Dictionary<number, Movable> = new Dictionary<number, Movable>();
@@ -50,8 +48,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
               private areaService: AreaService,
               private translateService: TranslateService,
               private iconService: IconService,
-              private zoomService: ZoomService
-              ,
+              private zoomService: ZoomService,
               private floorService: FloorService) {
   }
 
