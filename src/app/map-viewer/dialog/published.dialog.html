@@ -8,70 +8,93 @@
     <div class="ui-g">
       <div class="ui-g-12 ui-md-4 ui-lg-4">
         <div class="ui-message ui-messages-error ui-corner-all"
-             *ngIf="complexInput.errors?.required && complexInput.touched && complexInput.dirty">
+             *ngIf="complexesSelect.invalid && complexesSelect.touched && complexesSelect.dirty && complexesSelect.errors['minSelected']">
           <i class="fa fa-warning"></i>
           {{'publishedDialog.complex.required'|translate}}
         </div>
       </div>
-      <div class="ui-g-12 ui-md-2 ui-lg-2"><label for="complex">{{'publishedList.complex'|translate}}</label></div>
+      <div class="ui-g-12 ui-md-2 ui-lg-2"><label for="complexes">{{'publishedList.complex'|translate}}</label></div>
       <div class="ui-g-12 ui-md-6 ui-lg-6">
-        <p-dropdown autoWidth="false" [style]="{ width: '100%' }" required="true"
-                    #complexInput="ngModel" name="complex" id="complex" [options]="complexes" [(ngModel)]="complex"
-                    placeholder="{{'publishedList.complex.select'|translate}}" optionLabel="name"
-                    (onChange)="complexChanged($event.value)">
-        </p-dropdown>
+        <p-multiSelect #complexesSelect="ngModel" defaultLabel="{{'publishedList.complex.select'|translate}}" name="complexes" id="complexes" [options]="complexes"
+                       [(ngModel)]="selectedComplexes"  [style]="{ width: '100%' }" dataKey="id" optionLabel="name"
+                       (onChange)="complexChanged()"
+                        appMinSelected="1">
+        </p-multiSelect>
       </div>
     </div>
 
-    <div *ngIf="complex != null" class="ui-g">
+    <div *ngIf="selectedComplexes.length > 0" class="ui-g">
       <div class="ui-g-12 ui-md-4 ui-lg-4">
         <div class="ui-message ui-messages-error ui-corner-all"
-             *ngIf="buildingInput.errors?.required && buildingInput.touched && buildingInput.dirty">
+             *ngIf="buildingsSelect.invalid && buildingsSelect.touched && buildingsSelect.dirty && buildingsSelect.errors['minSelected']">
           <i class="fa fa-warning"></i>
           {{'publishedDialog.building.required'|translate}}
         </div>
       </div>
-      <div class="ui-g-12 ui-md-2 ui-lg-2"><label for="building">{{'publishedList.building'|translate}}</label></div>
+      <div class="ui-g-12 ui-md-2 ui-lg-2"><label for="buildings">{{'publishedList.building'|translate}}</label></div>
       <div class="ui-g-12 ui-md-6 ui-lg-6">
-        <p-dropdown autoWidth="false" [style]="{ width: '100%' }" required="true"
-                    #buildingInput="ngModel" name="building" id="building" [options]="buildings" [(ngModel)]="building"
-                    placeholder="{{'publishedList.building.select'|translate}}" optionLabel="name"
-                    (onChange)="buildingChanged($event.value)">
-        </p-dropdown>
+        <p-multiSelect #buildingsSelect="ngModel" defaultLabel="{{'publishedList.building.select'|translate}}" name="buildings" id="buildings" [options]="buildings"
+                       [(ngModel)]="selectedBuildings" [style]="{ width: '100%' }" dataKey="id" optionLabel="name"
+                       (onChange)="buildingChanged()"
+                       appMinSelected="1">
+          <ng-template let-building pTemplate="item">
+            <b>{{building.value.complex.name}}: </b> {{building.value.name}}
+          </ng-template>
+        </p-multiSelect>
       </div>
     </div>
 
-    <div *ngIf="building != null" class="ui-g">
+    <div *ngIf="selectedBuildings.length > 0" class="ui-g">
       <div class="ui-g-12 ui-md-4 ui-lg-4">
         <div class="ui-message ui-messages-error ui-corner-all"
-             *ngIf="floorInput.errors?.required && floorInput.touched && floorInput.dirty">
+             *ngIf="floorsSelect.invalid && floorsSelect.touched && floorsSelect.dirty && floorsSelect.errors['minSelected']">
           <i class="fa fa-warning"></i>
           {{'publishedDialog.floor.required'|translate}}
         </div>
       </div>
-      <div class="ui-g-12 ui-md-2 ui-lg-2"><label for="floor">{{'publishedList.floor'|translate}}</label></div>
+      <div class="ui-g-12 ui-md-2 ui-lg-2"><label for="floors">{{'publishedList.floor'|translate}}</label></div>
       <div class="ui-g-12 ui-md-6 ui-lg-6">
-        <p-dropdown autoWidth="false" [style]="{ width: '100%' }" required="true"
-                    #floorInput="ngModel" name="floor" id="floor" [options]="floors" [(ngModel)]="floor" dataKey="id"
-                    placeholder="{{'publishedList.floor.select'|translate}}"
-                    (onChange)="floorChanged($event.value)">
-        </p-dropdown>
+        <p-multiSelect #floorsSelect="ngModel" defaultLabel="{{'publishedList.floor.select'|translate}}" name="floors" id="floors" [options]="floors"
+                       [(ngModel)]="selectedFloors" [style]="{ width: '100%' }"
+                       appMinSelected="1">
+          <ng-template let-floor pTemplate="item">
+            <b>{{floor.value.building.name}}: </b> {{floor.value.level}}
+          </ng-template>
+        </p-multiSelect>
       </div>
     </div>
 
     <div class="ui-g">
-      <div class="ui-g-12 ui-md-offset-4 ui-lg-offset-4 ui-md-2 ui-lg-2"><label for="tags">{{'publishedList.tags'|translate}}</label></div>
+      <div class="ui-g-12 ui-md-4 ui-lg-4">
+        <div class="ui-message ui-messages-error ui-corner-all"
+             *ngIf="tagsSelect.invalid && tagsSelect.touched && tagsSelect.dirty && tagsSelect.errors['minSelected']">
+          <i class="fa fa-warning"></i>
+          {{'publishedDialog.tags.required'|translate}}
+        </div>
+      </div>
+      <div class="ui-g-12 ui-md-2 ui-lg-2"><label for="tags">{{'publishedList.tags'|translate}}</label></div>
       <div class="ui-g-12 ui-md-6 ui-lg-6">
-        <p-multiSelect defaultLabel="{{'publishedList.tags.select'|translate}}" name="tags" id="tags" [options]="tags"
-                       [(ngModel)]="selectedTags" optionLabel="shortId" [style]="{ width: '100%' }" dataKey="id"></p-multiSelect>
+        <p-multiSelect #tagsSelect="ngModel" defaultLabel="{{'publishedList.tags.select'|translate}}" name="tags" id="tags" [options]="tags"
+                       [(ngModel)]="selectedTags" optionLabel="shortId" [style]="{ width: '100%' }" dataKey="id"
+                        appMinSelected="1">
+        </p-multiSelect>
       </div>
     </div>
 
     <div class="ui-g">
-      <div class="ui-g-12 ui-md-offset-4 ui-lg-offset-4 ui-md-2 ui-lg-2"><label for="users">{{'publishedList.users'|translate}}</label></div>
+      <div class="ui-g-12 ui-md-4 ui-lg-4">
+        <div class="ui-message ui-messages-error ui-corner-all"
+             *ngIf="usersSelect.invalid && usersSelect.touched && usersSelect.dirty && usersSelect.errors['minSelected']">
+          <i class="fa fa-warning"></i>
+          {{'publishedDialog.users.required'|translate}}
+        </div>
+      </div>
+      <div class="ui-g-12 ui-md-2 ui-lg-2"><label for="users">{{'publishedList.users'|translate}}</label></div>
       <div class="ui-g-12 ui-md-6 ui-lg-6">
-        <p-multiSelect defaultLabel="{{'publishedList.users.select'|translate}}" name="users" id="users" [options]="users"
-                       [(ngModel)]="selectedUsers" optionLabel="username" [style]="{ width: '100%' }" dataKey="id"></p-multiSelect>
+        <p-multiSelect #usersSelect="ngModel" defaultLabel="{{'publishedList.users.select'|translate}}" name="users" id="users" [options]="users"
+                       [(ngModel)]="selectedUsers" optionLabel="username" [style]="{ width: '100%' }" dataKey="id"
+                        appMinSelected="1">
+        </p-multiSelect>
       </div>
     </div>
 

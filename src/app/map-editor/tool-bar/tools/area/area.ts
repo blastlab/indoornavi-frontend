@@ -30,8 +30,8 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
 
   @Input() floor: Floor;
 
-  active: boolean;
-  disabled: boolean;
+  active: boolean = false;
+  disabled: boolean = true;
   private firstPointSelection: d3.selection;
   private lastPointSelection: d3.selection;
   private lastPoint: Point;

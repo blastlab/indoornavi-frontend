@@ -15,7 +15,7 @@ export class Scale extends ScaleDto {
 
   getRealDistanceInCentimeters(): number {
     return this.realDistance * (this.measure.toString() === Measure[Measure.METERS] ? 100 : 1);
-  };
+  }
 
 }
 

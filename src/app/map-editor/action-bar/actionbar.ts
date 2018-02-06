@@ -1,11 +1,9 @@
-import {ChangeDetectorRef, Component, Input, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, NgZone, OnDestroy, OnInit} from '@angular/core';
 import {ActionBarService} from './actionbar.service';
 import {Floor} from '../../floor/floor.type';
 import {MapLoaderInformerService} from '../../shared/services/map-loader-informer/map-loader-informer.service';
 import {Subscription} from 'rxjs/Subscription';
 import {Timer} from '../../shared/utils/timer/timer';
-import {PublishedDialogComponent} from '../../map-viewer/dialog/published.dialog';
-import {PublishedMap} from '../../map-viewer/published.type';
 import {TranslateService} from '@ngx-translate/core';
 import {Configuration} from './actionbar.type';
 import {ConfirmationService} from 'primeng/primeng';
@@ -27,12 +25,6 @@ export class ActionBarComponent implements OnInit, OnDestroy {
   private configurationChangedSubscription: Subscription;
   private timer: Timer;
 
-  @ViewChild(PublishedDialogComponent)
-  private publishedMapDialog: PublishedDialogComponent;
-
-  // pre publish dialog data
-  private publishDialogBody: string;
-
   // pre undo dialog data
   private undoDialogBody: string;
 
@@ -46,6 +38,8 @@ export class ActionBarComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.translateService.setDefaultLang('en');
+
     this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe(() => {
       this.configurationService.loadConfiguration(this.floor);
     });
@@ -73,8 +67,6 @@ export class ActionBarComponent implements OnInit, OnDestroy {
         });
       });
     });
-
-    this.setTranslations();
   }
 
   ngOnDestroy(): void {
@@ -115,23 +107,8 @@ export class ActionBarComponent implements OnInit, OnDestroy {
   }
 
   public publish(): void {
-    this.confirmationService.confirm({
-      message: this.publishDialogBody,
-      key: 'prePublish',
-      accept: () => {
-        const subscription = this.publishedMapDialog.openWithFloor(this.floor).subscribe((_: PublishedMap) => {
-          this.configurationService.publish().subscribe(() => {
-            this.afterPublishDone();
-            subscription.unsubscribe();
-          });
-        });
-      },
-      // TODO: we need to wait till they implement ability to react different on close than on reject https://github.com/primefaces/primeng/issues/3428
-      reject: () => {
-        this.configurationService.publish().subscribe(() => {
-          this.afterPublishDone();
-        });
-      }
+    this.configurationService.publish().subscribe(() => {
+      this.afterPublishDone();
     });
   }
 
@@ -150,13 +127,6 @@ export class ActionBarComponent implements OnInit, OnDestroy {
     this.updateUndoDialogBody(new Date());
     this.messageService.success('configuration.publish.success');
     this.cd.detectChanges();
-  }
-
-  private setTranslations(): void {
-    this.translateService.setDefaultLang('en');
-    this.translateService.get('configuration.prePublishConfirmDialog.body').subscribe((value: string) => {
-      this.publishDialogBody = value;
-    });
   }
 
   private updateUndoDialogBody(date: Date): void {

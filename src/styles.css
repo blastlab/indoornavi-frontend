@@ -154,3 +154,7 @@ app-auth > div {
 #map {
   cursor: move;
 }
+
+.active-tool {
+  box-shadow: whitesmoke 2px 2px;
+}

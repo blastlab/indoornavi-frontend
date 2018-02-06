@@ -13,6 +13,7 @@ import {PublishedListComponent} from './map-viewer/list/published-list';
 import {PublishedComponent} from './map-viewer/views/publications/publication';
 import {DeviceComponent} from './device/device';
 import {AnalyticsComponent} from './map-viewer/views/analytics/analytics';
+
 export const appRoutes: Routes = [
   {path: '', redirectTo: '/complexes', pathMatch: 'full'},
   {path: 'login', component: AuthComponent},
@@ -22,8 +23,8 @@ export const appRoutes: Routes = [
   {path: 'anchors', component: DeviceComponent, canActivate: [CanRead], data: {permission: 'ANCHOR'}},
   {path: 'tags', component: DeviceComponent, canActivate: [CanRead], data: {permission: 'TAG'}},
   {path: 'sinks', component: DeviceComponent, canActivate: [CanRead], data: {permission: 'SINK'}},
-  {path: 'maps', component: PublishedListComponent, canActivate: [CanRead], data: {permission: 'MAP'}},
-  {path: 'maps/:id', component: PublishedComponent, canActivate: [CanRead], data: {permission: 'MAP'}},
+  {path: 'publications', component: PublishedListComponent, canActivate: [CanRead], data: {permission: 'PUBLICATION'}},
+  {path: 'publications/:id', component: PublishedComponent, canActivate: [CanRead], data: {permission: 'PUBLICATION'}},
   {path: 'embedded/:id', component: PublishedComponent},
   {path: 'maps/:id/analytics', component: AnalyticsComponent, canActivate: [CanRead], data: {permission: 'MAP'}},
   {path: 'users', component: UserComponent, canActivate: [CanRead], data: {permission: 'USER'}},
