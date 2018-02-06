@@ -157,6 +157,7 @@
 	"sinks.one.header": "Sink",
 	"stop.heat.map": "Stop Heat Map",
 	"stop.wizard": "Stop Wizard",
+  "tag.visibility.toggler": "Tag Visibility",
 	"tags.header": "Tags",
 	"tags.one.header": "Tag",
 	"th.actions": "Actions",

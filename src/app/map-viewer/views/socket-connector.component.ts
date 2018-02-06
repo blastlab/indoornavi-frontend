@@ -25,6 +25,8 @@ import {Movable} from '../../shared/wrappers/movable/movable';
 import {Scale} from '../../map-editor/tool-bar/tools/scale/scale.type';
 import {FloorService} from '../../floor/floor.service';
 import {Floor} from '../../floor/floor.type';
+import {TagVisibilityTogglerService} from '../../shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
+import {TagToggle} from '../../shared/components/tag-visibility-toggler/tag-toggle.type';
 
 @Component({
   templateUrl: './socket-connector.component.html',
@@ -46,13 +48,13 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
               protected socketService: SocketService,
               protected route: ActivatedRoute,
               protected publishedService: PublishedService,
-              private mapLoaderInformer: MapLoaderInformerService,
+              protected mapLoaderInformer: MapLoaderInformerService,
               private areaService: AreaService,
               private translateService: TranslateService,
               private iconService: IconService,
               private zoomService: ZoomService,
-              private floorService: FloorService
-              ) {
+              private floorService: FloorService,
+              private tagTogglerService: TagVisibilityTogglerService) {
   }
 
   ngOnInit() {
@@ -66,6 +68,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
             this.d3map = mapSvg.container;
             this.publishedService.getTagsAvailableForUser(floor.id).subscribe((tags: Tag[]) => {
               this.tags = tags;
+              this.tagTogglerService.setTags(tags);
               this.drawAreas(floor.id);
               if (!!floor.scale) {
                 const realDistanceInCentimeters = new Scale(floor.scale).getRealDistanceInCentimeters();
@@ -173,6 +176,9 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     this.ngZone.runOutsideAngular(() => {
       const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?client`);
       this.setSocketConfiguration();
+      this.tagTogglerService.onToggleTag().subscribe((tagToggle: TagToggle) => {
+        this.socketService.send({type: CommandType[CommandType.TOGGLE_TAG], args: tagToggle.tag.shortId});
+      });
 
       this.socketSubscription = stream.subscribe((data: MeasureSocketData) => {
         this.ngZone.run(() => {
@@ -186,7 +192,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     });
   };
 
-  private scaleCoordinates(point: Point): Point {
+  protected scaleCoordinates(point: Point): Point {
     return {
       x: point.x / this.pixelsToCentimeters,
       y: point.y / this.pixelsToCentimeters
