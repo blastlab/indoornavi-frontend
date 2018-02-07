@@ -95,6 +95,8 @@ import {ContextMenuService} from './shared/wrappers/editable/editable.service';
 import {PublishedComponent} from './map-viewer/views/publications/publication';
 import {AnalyticsComponent} from './map-viewer/views/analytics/analytics';
 import {MinSelectedValidator} from './shared/directive/minselected.directive';
+import {TagVisibilityTogglerComponent} from './shared/components/tag-visibility-toggler/tag-visibility-toggler';
+import {TagVisibilityTogglerService} from './shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -134,7 +136,8 @@ export function HttpLoaderFactory(http: Http) {
     AreaComponent,
     AreaDetailsComponent,
     AnalyticsComponent,
-    MinSelectedValidator
+    MinSelectedValidator,
+    TagVisibilityTogglerComponent
   ],
   entryComponents: [
     PublishedDialogComponent,
@@ -212,7 +215,8 @@ export function HttpLoaderFactory(http: Http) {
     HintBarService,
     ZoomService,
     AreaDetailsService,
-    ContextMenuService
+    ContextMenuService,
+    TagVisibilityTogglerService
   ], bootstrap: [AppComponent]
 })
 

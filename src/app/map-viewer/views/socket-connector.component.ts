@@ -23,6 +23,8 @@ import {Movable} from '../../shared/wrappers/movable/movable';
 import {Scale} from '../../map-editor/tool-bar/tools/scale/scale.type';
 import {FloorService} from '../../floor/floor.service';
 import {Floor} from '../../floor/floor.type';
+import {TagVisibilityTogglerService} from '../../shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
+import {TagToggle} from '../../shared/components/tag-visibility-toggler/tag-toggle.type';
 
 @Component({
   templateUrl: './socket-connector.component.html',
@@ -49,7 +51,9 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
               private translateService: TranslateService,
               private iconService: IconService,
               private zoomService: ZoomService,
-              private floorService: FloorService) {
+              private floorService: FloorService
+              ,
+              private tagTogglerService: TagVisibilityTogglerService) {
   }
 
   ngOnInit(): void {
@@ -63,6 +67,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
             this.d3map = mapSvg;
             this.publishedService.getTagsAvailableForUser(floor.id).subscribe((tags: Tag[]) => {
               this.tags = tags;
+              this.tagTogglerService.setTags(tags);
               if (!!floor.scale) {
                 this.scale = new Scale(this.floor.scale);
                 this.drawAreas(floor.id);
@@ -164,6 +169,10 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     this.ngZone.runOutsideAngular(() => {
       const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?client`);
       this.setSocketConfiguration();
+      this.tagTogglerService.onToggleTag().subscribe((tagToggle: TagToggle) => {
+        this.socketService.send({type: CommandType[CommandType.TOGGLE_TAG], args: tagToggle.tag.shortId});
+      });
+
       this.socketSubscription = stream.subscribe((data: MeasureSocketData) => {
         this.ngZone.run(() => {
           if (this.isCoordinatesData(data)) {

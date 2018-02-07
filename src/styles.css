@@ -48,12 +48,7 @@ body {
 @import '~primeng/resources/themes/ludvig/theme.css';
 @import '~font-awesome/css/font-awesome.css';
 
-table th.col-button, table td.col-button {
-  width: 1%;
-  white-space: nowrap;
-}
-
-table th.col-checkbox, table td.col-checkbox {
+table th.col-button, table td.col-button, table th.col-checkbox, table td.col-checkbox {
   width: 1%;
   white-space: nowrap;
   text-align: center;
