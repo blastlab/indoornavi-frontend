@@ -15,6 +15,7 @@ import {ZoomService} from '../../../shared/services/zoom/zoom.service';
 import {Movable} from '../../../shared/wrappers/movable/movable';
 import {MapSvg} from '../../../map/map.type';
 import {FloorService} from '../../../floor/floor.service';
+import {TagVisibilityTogglerService} from '../../../shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
 
 @Component({
   templateUrl: './analytics.html',
@@ -52,7 +53,8 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
               translateService: TranslateService,
               iconService: IconService,
               zoomService: ZoomService,
-              floorService: FloorService
+              floorService: FloorService,
+              tagTogglerService: TagVisibilityTogglerService
               ) {
     super(ngZone,
       socketService,
@@ -63,7 +65,8 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       translateService,
       iconService,
       zoomService,
-      floorService
+      floorService,
+      tagTogglerService
     );
   }
 

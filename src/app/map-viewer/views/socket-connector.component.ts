@@ -51,8 +51,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
               private translateService: TranslateService,
               private iconService: IconService,
               private zoomService: ZoomService,
-              private floorService: FloorService
-              ,
+              private floorService: FloorService,
               private tagTogglerService: TagVisibilityTogglerService) {
   }
 
