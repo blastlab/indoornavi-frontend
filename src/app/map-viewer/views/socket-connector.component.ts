@@ -29,7 +29,7 @@ import {MapSvg} from '../../map/map.type';
 import {Area} from '../../map-editor/tool-bar/tools/area/area.type';
 import {Movable} from '../../shared/wrappers/movable/movable';
 import {Scale} from '../../map-editor/tool-bar/tools/scale/scale.type';
-import {MapObjectService} from '../../shared/utils/drawing/map.object.service';
+import {MapObjectService, MapObjectType} from '../../shared/utils/drawing/map.object.service';
 
 @Component({
   templateUrl: './socket-connector.component.html',
@@ -206,10 +206,8 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     const areaOnMap: SvgGroupWrapper = this.areasOnMap.getValue(data.event.areaId);
     if (!!areaOnMap) {
       if (data.event.mode.toString() === AreaEventMode[AreaEventMode.ON_ENTER]) {
-        console.log(areaOnMap.getGroup().select('polygon'));
         areaOnMap.getGroup().select('polygon').transition().style('fill', 'red').delay(Movable.TRANSITION_DURATION);
       } else {
-        console.log(areaOnMap.getGroup().select('polygon'));
         areaOnMap.getGroup().select('polygon').transition().style('fill', 'grey').delay(Movable.TRANSITION_DURATION);
       }
     }
@@ -243,10 +241,18 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           }
           break;
         case 'createObject':
-          this.mapObjectService.create(this.d3map.container);
+          // check if map is loaded
+          if (!!this.d3map) {
+            const mapObjectId: number = this.mapObjectService.create(this.d3map.container);
+            event.source.postMessage({type: 'createObject', mapObjectId: mapObjectId}, event.origin)
+          }
           break;
         case 'drawObject':
           this.mapObjectService.draw(JSON.parse(data['args']));
+          break;
+        case 'removeObject':
+          this.mapObjectService.remove(JSON.parse(data['args']));
+          break;
       }
     }
   }

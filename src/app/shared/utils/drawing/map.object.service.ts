@@ -15,11 +15,13 @@ export class MapObjectService {
     this.objects.set(id, new DrawBuilder(container, {id: `map-object-${id}`, clazz: 'map-object'}).createGroup());
     return id;
   }
-  delete(id: number): void {
-    this.objects.get(id).remove();
-    this.objects.delete(id);
+
+  remove(objectMetadata: MapObjectMetadata): void {
+    this.objects.get(objectMetadata.object.id).remove();
+    this.objects.delete(objectMetadata.object.id);
   }
-  draw (objectMetadata: MapObjectMetadata) {
+
+  draw (objectMetadata: MapObjectMetadata): void {
     switch (objectMetadata.type) {
       case MapObjectType.POLYLINE:
         this.objects.get(objectMetadata.object.id).addPolyline((<Polyline>objectMetadata.object).points, this.pointRadius);
@@ -41,6 +43,6 @@ interface MapObjectMetadata {
   object: MapObject
 }
 
-enum MapObjectType {
+export enum MapObjectType {
   POLYLINE
 }
