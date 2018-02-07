@@ -137,7 +137,7 @@ export class WizardComponent implements Tool, OnInit {
     map.on('click', () => {
       const coordinates: Point = this.zoomService.calculateTransition({x: d3.event.offsetX, y: d3.event.offsetY});
       const device: ObjectParams = this.activeStep.getDrawingObjectParams(this.selected);
-      const drawBuilder = new DrawBuilder(map, {id: device.id, clazz: device.groupClass}, this.zoomService);
+      const drawBuilder = new DrawBuilder(map, {id: device.id, clazz: device.groupClass});
       drawBuilder
         .createGroup()
         .addIcon({x: -12, y: -12}, this.iconService.getIcon(NaviIcons.POINTER))

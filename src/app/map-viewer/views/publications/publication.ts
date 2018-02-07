@@ -6,8 +6,8 @@ import {SocketService} from '../../../shared/services/socket/socket.service';
 import {PublishedService} from '../../published.service';
 import {AreaService} from '../../../shared/services/area/area.service';
 import {IconService} from '../../../shared/services/drawing/icon.service';
-import {ZoomService} from '../../../shared/services/zoom/zoom.service';
 import {MapLoaderInformerService} from '../../../shared/services/map-loader-informer/map-loader-informer.service';
+import {MapObjectService} from '../../../shared/utils/drawing/map.object.service';
 
 
 @Component({
@@ -24,7 +24,7 @@ export class PublishedComponent extends SocketConnectorComponent implements OnIn
               areaService: AreaService,
               translateService: TranslateService,
               iconService: IconService,
-              zoomService: ZoomService
+              mapObjectService: MapObjectService
               ) {
 
     super(
@@ -36,7 +36,7 @@ export class PublishedComponent extends SocketConnectorComponent implements OnIn
       areaService,
       translateService,
       iconService,
-      zoomService
+      mapObjectService
     );
   }
 

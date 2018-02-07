@@ -14,6 +14,7 @@ import * as d3 from 'd3';
 import {ZoomService} from '../../../shared/services/zoom/zoom.service';
 import {Movable} from '../../../shared/wrappers/movable/movable';
 import {MapSvg} from '../../../map/map.type';
+import {MapObjectService} from '../../../shared/utils/drawing/map.object.service';
 
 @Component({
   templateUrl: './analytics.html',
@@ -50,7 +51,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
               areaService: AreaService,
               translateService: TranslateService,
               iconService: IconService,
-              zoomService: ZoomService
+              mapObjectService: MapObjectService
               ) {
     super(ngZone,
       socketService,
@@ -60,7 +61,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       areaService,
       translateService,
       iconService,
-      zoomService
+      mapObjectService
     );
   }
 

@@ -24,13 +24,12 @@ import {Tag} from 'app/device/tag.type';
 import {Point} from 'app/map-editor/map.type';
 import {TranslateService} from '@ngx-translate/core';
 import {Config} from '../../../config';
-import {ZoomService} from '../../shared/services/zoom/zoom.service';
 import {MapLoaderInformerService} from '../../shared/services/map-loader-informer/map-loader-informer.service';
 import {MapSvg} from '../../map/map.type';
 import {Area} from '../../map-editor/tool-bar/tools/area/area.type';
 import {Movable} from '../../shared/wrappers/movable/movable';
 import {Scale} from '../../map-editor/tool-bar/tools/scale/scale.type';
-import {Polyline} from '../../shared/utils/drawing/polyline.builder';
+import {MapObjectService} from '../../shared/utils/drawing/map.object.service';
 
 @Component({
   templateUrl: './socket-connector.component.html',
@@ -56,7 +55,8 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
               private areaService: AreaService,
               private translateService: TranslateService,
               private iconService: IconService,
-              private zoomService: ZoomService) {
+              private mapObjectService: MapObjectService
+  ) {
   }
 
   ngOnInit(): void {
@@ -111,7 +111,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   protected handleCoordinatesData(data: CoordinatesSocketData): void {
     const deviceId: number = data.coordinates.tagShortId;
     if (!this.isOnMap(deviceId)) {
-      const drawBuilder = new DrawBuilder(this.d3map.container, {id: `tag-${deviceId}`, clazz: 'tag'}, this.zoomService);
+      const drawBuilder = new DrawBuilder(this.d3map.container, {id: `tag-${deviceId}`, clazz: 'tag'});
       const tagOnMap: SvgGroupWrapper = drawBuilder
         .createGroup()
         .addIcon({x: 0, y: 0}, this.iconService.getIcon(NaviIcons.TAG))
@@ -190,7 +190,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   private drawAreas(floorId: number): void {
     this.areaService.getAllByFloor(floorId).first().subscribe((areas: Area[]): void => {
       areas.forEach((area: Area) => {
-        const drawBuilder: DrawBuilder = new DrawBuilder(this.d3map.container, {id: `area-${area.id}`, clazz: 'area'}, this.zoomService);
+        const drawBuilder: DrawBuilder = new DrawBuilder(this.d3map.container, {id: `area-${area.id}`, clazz: 'area'});
         const areaOnMap = drawBuilder
           .createGroup()
           .addPolygon(area.points);
@@ -242,14 +242,12 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
             this.originListeningOnEvent.setValue(data['args'], [event]);
           }
           break;
-        case 'createPolyline':
-          console.log(this.addPolyline(data['args']));
+        case 'createObject':
+          this.mapObjectService.create(this.d3map.container);
           break;
+        case 'drawObject':
+          this.mapObjectService.draw(JSON.parse(data['args']));
       }
     }
-  }
-
-  private addPolyline (id: string): Polyline {
-    return new Polyline(this.d3map.container, {id: `polylines-${id}`, clazz: 'polylines'}, this.zoomService);
   }
 }

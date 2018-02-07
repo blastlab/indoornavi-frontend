@@ -6,7 +6,7 @@ import {ZoomService} from '../../services/zoom/zoom.service';
 export class SvgGroupWrapper {
   private elements: Map<ElementType, d3.selection[]> = new Map();
 
-  constructor(private group: d3.selection, private zoomService: ZoomService) {
+  constructor(private group: d3.selection) {
   }
 
   place(coordinates: Point): SvgGroupWrapper {
@@ -72,6 +72,18 @@ export class SvgGroupWrapper {
       .attr('stroke-width', 1)
       .attr('stroke', 'black');
     this.addElement(ElementType.LINE, element);
+    return this;
+  }
+
+  addPolyline(points: Point[], radius: number): SvgGroupWrapper {
+    let lastPoint: Point;
+    points.forEach((point: Point): void => {
+      this.addCircle(point, radius);
+      if (!!lastPoint) {
+        this.addLine(lastPoint, point);
+      }
+      lastPoint = point;
+    });
     return this;
   }
 
@@ -150,8 +162,7 @@ export class SvgGroupWrapper {
 export class DrawBuilder {
 
   constructor(protected appendable: d3.selection,
-              protected configuration: DrawConfiguration,
-              protected zoomService: ZoomService) {
+              protected configuration: DrawConfiguration) {
   }
 
   createGroup(): SvgGroupWrapper {
@@ -165,7 +176,7 @@ export class DrawBuilder {
     if (this.configuration.cursor) {
       group.style('cursor', this.configuration.cursor);
     }
-    return new SvgGroupWrapper(group, this.zoomService);
+    return new SvgGroupWrapper(group);
   }
 }
 
