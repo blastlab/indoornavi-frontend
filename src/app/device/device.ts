@@ -3,9 +3,6 @@ import {Subscription} from 'rxjs/Rx';
 import {Config} from '../../config';
 import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute} from '@angular/router';
-import {Tag} from './tag.type';
-import {Anchor} from './anchor.type';
-import {Sink} from './sink.type';
 import {DeviceService} from './device.service';
 import {CrudComponent, CrudHelper} from '../shared/components/crud/crud.component';
 import {Device} from './device.type';
@@ -16,8 +13,7 @@ import {SocketService} from '../shared/services/socket/socket.service';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
 
 @Component({
-  templateUrl: './device.html',
-  styleUrls: ['./device.css']
+  templateUrl: './device.html'
 })
 export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   public verified: Device[] = [];
@@ -52,7 +48,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     this.translate.get('confirm.body').subscribe((value: string) => {
       this.confirmBody = value;
     });
-    this.translate.get(`${this.deviceType}.header`).subscribe((value: string) => {
+    this.translate.get(this.deviceType + '.header').subscribe((value: string) => {
       this.breadcrumbService.publishIsReady([
         {label: value, disabled: true}
       ]);
@@ -61,9 +57,9 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     this.ngZone.runOutsideAngular(() => {
       const stream = this.socketService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.deviceType}`);
 
-      this.socketSubscription = stream.subscribe((devices: Array<Anchor | Tag | Sink>) => {
+      this.socketSubscription = stream.subscribe((devices: Array<Device>) => {
         this.ngZone.run(() => {
-          devices.forEach((device: Anchor | Tag | Sink) => {
+          devices.forEach((device: Device) => {
             if (this.isAlreadyOnAnyList(device)) {
               return;
             }
@@ -155,7 +151,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     this.deletePermission = `${prefix}_DELETE`;
   }
 
-  private isAlreadyOnAnyList(device: Anchor | Tag | Sink) {
+  private isAlreadyOnAnyList(device: Device) {
     return this.verified.findIndex((d: Device) => {
         return d.id === device.id;
       }) >= 0 ||

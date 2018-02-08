@@ -3,7 +3,7 @@ import {ActivatedRoute, Params} from '@angular/router';
 import {SocketConnectorComponent} from '../socket-connector.component';
 import {TranslateService} from '@ngx-translate/core';
 import {SocketService} from '../../../shared/services/socket/socket.service';
-import {PublishedService} from '../../published.service';
+import {PublishedService} from '../../publication.service';
 import {AreaService} from '../../../shared/services/area/area.service';
 import {IconService} from '../../../shared/services/drawing/icon.service';
 import {ZoomService} from '../../../shared/services/zoom/zoom.service';
@@ -15,8 +15,7 @@ import {Floor} from '../../../floor/floor.type';
 
 
 @Component({
-  templateUrl: '../socket-connector.component.html',
-  styleUrls: ['./publication.css']
+  templateUrl: '../socket-connector.component.html'
 })
 export class PublishedComponent extends SocketConnectorComponent implements OnInit {
 
@@ -64,25 +63,5 @@ export class PublishedComponent extends SocketConnectorComponent implements OnIn
         });
       });
   }
-
-  // ngOnInit(): void {
-  //   window.addEventListener('message', (event: MessageEvent) => {
-  //     this.route.queryParams.subscribe((params: Params) => {
-  //       if (event.origin === window.location.origin) {
-  //         return;
-  //       }
-  //       this.publishedService.checkOrigin(params['api_key'], event.origin).subscribe((verified: boolean) => {
-  //         if (verified) {
-  //           if ('command' in event.data && event.data['command'] === 'toggleTagVisibility') {
-  //             const tagId = parseInt(event.data['args'], 10);
-  //             this.socketService.send({type: CommandType[CommandType.TOGGLE_TAG], args: tagId});
-  //             if (this.isOnMap(tagId)) {
-  //               // this.removeTagFromMap(tagId);
-  //             }
-  //           }
-  //         }
-  //       });
-  //     });
-  //   }, false);
 
 }

@@ -1,17 +1,16 @@
 import {AfterViewInit, Component, NgZone, OnInit} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
-import {AreaEventMode, CommandType, CoordinatesSocketData, EventSocketData, MeasureSocketData, MeasureSocketDataType} from '../published.type';
+import {AreaEventMode, CommandType, CoordinatesSocketData, EventSocketData, MeasureSocketData, MeasureSocketDataType} from '../publication.type';
 import {Subject} from 'rxjs/Subject';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
 import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.builder';
 import {SocketService} from '../../shared/services/socket/socket.service';
 import {ActivatedRoute, Params} from '@angular/router';
-import {PublishedService} from '../published.service';
+import {PublishedService} from '../publication.service';
 import {AreaService} from '../../shared/services/area/area.service';
 import {IconService, NaviIcons} from '../../shared/services/drawing/icon.service';
 import {Geometry} from 'app/shared/utils/helper/geometry';
 import {Observable} from 'rxjs/Observable';
-import {Tag} from 'app/device/tag.type';
 import {Point} from 'app/map-editor/map.type';
 import {TranslateService} from '@ngx-translate/core';
 import {Config} from '../../../config';
@@ -25,10 +24,10 @@ import {FloorService} from '../../floor/floor.service';
 import {Floor} from '../../floor/floor.type';
 import {TagVisibilityTogglerService} from '../../shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
 import {TagToggle} from '../../shared/components/tag-visibility-toggler/tag-toggle.type';
+import {Tag} from '../../device/device.type';
 
 @Component({
-  templateUrl: './socket-connector.component.html',
-  styleUrls: ['./socket-connector.component.css']
+  templateUrl: './socket-connector.component.html'
 })
 export class SocketConnectorComponent implements OnInit, AfterViewInit {
   protected socketSubscription: Subscription;
@@ -207,10 +206,8 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     const areaOnMap: SvgGroupWrapper = this.areasOnMap.getValue(data.event.areaId);
     if (!!areaOnMap) {
       if (data.event.mode.toString() === AreaEventMode[AreaEventMode.ON_ENTER]) {
-        console.log(areaOnMap.getGroup().select('polygon'));
         areaOnMap.getGroup().select('polygon').transition().style('fill', 'red').delay(Movable.TRANSITION_DURATION);
       } else {
-        console.log(areaOnMap.getGroup().select('polygon'));
         areaOnMap.getGroup().select('polygon').transition().style('fill', 'grey').delay(Movable.TRANSITION_DURATION);
       }
     }

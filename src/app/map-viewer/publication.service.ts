@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpService} from '../shared/services/http/http.service';
-import {Publication} from './published.type';
+import {Publication} from './publication.type';
 import {Observable} from 'rxjs/Observable';
 
 @Injectable()

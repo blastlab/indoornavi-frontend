@@ -63,3 +63,13 @@ export interface ObjectParams {
   markerClass: string;
   fill: string;
 }
+
+export interface AnchorDistance {
+  anchorId: number;
+  distance: number;
+}
+
+export interface AnchorSuggestedPositions {
+  anchorId: number;
+  points: Point[];
+}

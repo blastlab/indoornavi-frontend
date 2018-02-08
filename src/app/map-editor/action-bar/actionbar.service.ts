@@ -3,17 +3,16 @@ import {HttpService} from '../../shared/services/http/http.service';
 import {Configuration, ConfigurationData} from './actionbar.type';
 import {Observable} from 'rxjs/Rx';
 import {Scale} from '../tool-bar/tools/scale/scale.type';
-import {Sink} from 'app/device/sink.type';
 import {Floor} from '../../floor/floor.type';
 import * as Collections from 'typescript-collections';
 import {Subject} from 'rxjs/Subject';
 import {Md5} from 'ts-md5/dist/md5';
 import {Helper} from '../../shared/utils/helper/helper';
 import {Area} from '../tool-bar/tools/area/area.type';
+import {Sink} from '../../device/device.type';
 
 @Injectable()
 export class ActionBarService {
-  public static SAVE_DRAFT_ANIMATION_TIME = 500;
   private static URL: string = 'configurations/';
   private configuration: Configuration;
   private latestPublishedConfiguration: Configuration;

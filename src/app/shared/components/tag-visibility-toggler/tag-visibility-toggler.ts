@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Tag} from '../../../device/tag.type';
 import {TagVisibilityTogglerService} from './tag-visibility-toggler.service';
 import {Subscription} from 'rxjs/Subscription';
+import {Tag} from '../../../device/device.type';
 
 @Component({
   selector: 'app-tag-visibility-toggler',

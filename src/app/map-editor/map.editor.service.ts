@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Floor} from '../floor/floor.type';
-import {MapService} from './map.service';
+import {MapService} from './uploader/map.uploader.service';
 import * as d3 from 'd3';
 import {MapSvg} from '../map/map.type';
 import {Subject} from 'rxjs/Subject';
@@ -8,11 +8,10 @@ import {Observable} from 'rxjs/Observable';
 import {Transform} from './map.type';
 
 @Injectable()
-export class MapViewerService {
+export class MapEditorService {
 
   public static MAP_LAYER_SELECTOR_ID: string = 'map';
   public static MAP_UPPER_LAYER_SELECTOR_ID: string = 'map-upper-layer';
-  public static MAP_IMAGE_SELECTOR_ID: string = 'map-img';
   private static MAP_CONTAINER_SELECTOR_ID: string = 'map-container';
   private transformation: Transform = {x: 0, y: 0, k: 1};
   private transformationInformer = new Subject<Transform>();
@@ -43,26 +42,26 @@ export class MapViewerService {
       const image = new Image();
       image.onload = () => {
 
-        const mapContainer = document.getElementById(MapViewerService.MAP_CONTAINER_SELECTOR_ID);
+        const mapContainer = document.getElementById(MapEditorService.MAP_CONTAINER_SELECTOR_ID);
 
         const zoomed = () => {
           g.attr('transform', d3.event.transform);
-          this.transformation = d3.zoomTransform(document.getElementById(MapViewerService.MAP_UPPER_LAYER_SELECTOR_ID));
+          this.transformation = d3.zoomTransform(document.getElementById(MapEditorService.MAP_UPPER_LAYER_SELECTOR_ID));
           this.changeTransformation(this.transformation);
         };
 
         const zoom = d3.zoom()
           .scaleExtent([1, 2])
-          .translateExtent(MapViewerService.maxTranslate(mapContainer, image))
+          .translateExtent(MapEditorService.maxTranslate(mapContainer, image))
           .on('zoom', zoomed);
 
-        const map = d3.select(`#${MapViewerService.MAP_UPPER_LAYER_SELECTOR_ID}`)
+        const map = d3.select(`#${MapEditorService.MAP_UPPER_LAYER_SELECTOR_ID}`)
           .attr('width', mapContainer.offsetWidth)
           .attr('height', mapContainer.offsetHeight);
 
         const g = map.append('g');
 
-        g.attr('id', MapViewerService.MAP_LAYER_SELECTOR_ID)
+        g.attr('id', MapEditorService.MAP_LAYER_SELECTOR_ID)
           .append('svg:image')
           .attr('id', 'map-img')
           .attr('xlink:href', image.src)
@@ -70,16 +69,12 @@ export class MapViewerService {
           .attr('y', 0)
           .attr('width', image.width)
           .attr('height', image.height);
-        // .on('mousedown', () => {
-        //   d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`).style('cursor', 'move')
-        // });
-
 
         zoom.translateBy(map, (mapContainer.offsetWidth - image.width) / 2, (mapContainer.offsetHeight - image.height) / 2);
         map.call(zoom);
 
         window.addEventListener('resize', () => {
-          zoom.translateExtent(MapViewerService.maxTranslate(mapContainer, image));
+          zoom.translateExtent(MapEditorService.maxTranslate(mapContainer, image));
           map.call(zoom);
           map
             .attr('width', mapContainer.offsetWidth)

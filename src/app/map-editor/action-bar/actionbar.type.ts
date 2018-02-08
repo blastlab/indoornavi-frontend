@@ -1,6 +1,6 @@
 import {Scale} from '../tool-bar/tools/scale/scale.type';
-import {Sink} from '../../device/sink.type';
 import {Area} from '../tool-bar/tools/area/area.type';
+import {Sink} from '../../device/device.type';
 
 export interface Configuration {
   version: number;

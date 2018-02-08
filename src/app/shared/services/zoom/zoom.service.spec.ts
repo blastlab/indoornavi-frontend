@@ -1,8 +1,8 @@
 import {Point} from '../../../map-editor/map.type';
 import {ZoomService} from './zoom.service';
-import {MapViewerService} from '../../../map-editor/map.editor.service';
+import {MapEditorService} from '../../../map-editor/map.editor.service';
 import {inject, TestBed} from '@angular/core/testing';
-import {MapService} from '../../../map-editor/map.service';
+import {MapService} from '../../../map-editor/uploader/map.uploader.service';
 import {HttpService} from '../http/http.service';
 import {HttpModule} from '@angular/http';
 import {RouterTestingModule} from '@angular/router/testing';
@@ -26,12 +26,12 @@ describe('ZoomService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ZoomService, MapViewerService, MapService, HttpService, AuthGuard],
+      providers: [ZoomService, MapEditorService, MapService, HttpService, AuthGuard],
       imports: [HttpModule, RouterTestingModule]
     });
   });
 
-  it('should return the same localization when no transformation where given', inject([ZoomService, MapViewerService], (zoomService, mapViewerService) => {
+  it('should return the same localization when no transformation where given', inject([ZoomService, MapEditorService], (zoomService, mapViewerService) => {
     // given
     const transformation = {x: 0, y: 0, k: 1};
 
@@ -49,7 +49,7 @@ describe('ZoomService', () => {
 
   }));
 
-  it('should return transformation with proper values for x and y transformation only', inject([ZoomService, MapViewerService], (zoomService, mapViewerService) => {
+  it('should return transformation with proper values for x and y transformation only', inject([ZoomService, MapEditorService], (zoomService, mapViewerService) => {
     // given
     const transformation = {x: 10, y: 10, k: 1};
     // when
@@ -63,7 +63,7 @@ describe('ZoomService', () => {
     expect(calculatedPoint_2.y).toEqual(0);
 
   }));
-  it('should return transformation with proper values for zoom transformation only', inject([ZoomService, MapViewerService], (zoomService, mapViewerService) => {
+  it('should return transformation with proper values for zoom transformation only', inject([ZoomService, MapEditorService], (zoomService, mapViewerService) => {
     // given
     const transformation = {x: 0, y: 0, k: 1.6};
     // when
@@ -78,7 +78,7 @@ describe('ZoomService', () => {
 
   }));
 
-  it('should return transformation with proper values for x transformation only ', inject([ZoomService, MapViewerService], (zoomService, mapViewerService) => {
+  it('should return transformation with proper values for x transformation only ', inject([ZoomService, MapEditorService], (zoomService, mapViewerService) => {
     // given
     const transformation = {x: 55, y: 0, k: 1};
     // when
@@ -93,7 +93,7 @@ describe('ZoomService', () => {
 
   }));
 
-  it('should return transformation with proper values for y transformation only ', inject([ZoomService, MapViewerService], (zoomService, mapViewerService) => {
+  it('should return transformation with proper values for y transformation only ', inject([ZoomService, MapEditorService], (zoomService, mapViewerService) => {
     // given
     const transformation = {x: 0, y: 55, k: 1};
     // when
@@ -108,7 +108,7 @@ describe('ZoomService', () => {
 
   }));
 
-  it('should return transformation with proper values for all parameters (x, y and zoom) being transformed ', inject([ZoomService, MapViewerService], (zoomService, mapViewerService) => {
+  it('should return transformation with proper values for all parameters (x, y and zoom) being transformed ', inject([ZoomService, MapEditorService], (zoomService, mapViewerService) => {
     // given
     const transformation = {x: 100, y: 100, k: 2};
     // when

@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {MapViewerService} from '../map-editor/map.editor.service';
+import {MapEditorService} from '../map-editor/map.editor.service';
 import {MapLoaderInformerService} from '../shared/services/map-loader-informer/map-loader-informer.service';
 import {Floor} from '../floor/floor.type';
 import {MapSvg} from './map.type';
@@ -14,7 +14,7 @@ export class MapComponent implements OnInit {
   private imageLoaded: boolean = false;
 
   constructor(private mapLoaderInformer: MapLoaderInformerService,
-              private mapViewerService: MapViewerService) {
+              private mapViewerService: MapEditorService) {
   }
 
   ngOnInit(): void {

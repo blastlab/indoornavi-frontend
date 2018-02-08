@@ -1,18 +1,14 @@
-import {OnInit, Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {MdDialogRef} from '@angular/material';
 import {Device} from '../device.type';
 import {DeviceService} from '../device.service';
-import {Anchor} from '../anchor.type';
-import {Sink} from '../sink.type';
 import {ToastService} from '../../shared/utils/toast/toast.service';
 
 @Component({
-  selector: 'app-device-dialog',
-  templateUrl: './device.dialog.html',
-  styleUrls: ['../device.css']
+  templateUrl: './device.dialog.html'
 })
 export class DeviceDialogComponent implements OnInit {
-  device: Device|Anchor|Sink;
+  device: Device;
   url: string;
 
   constructor(private dialogRef: MdDialogRef<DeviceDialogComponent>,

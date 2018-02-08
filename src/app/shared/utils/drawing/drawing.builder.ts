@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import {Point} from '../../../map-editor/map.type';
-import {DrawConfiguration} from '../../../map-viewer/published.type';
+import {DrawConfiguration} from '../../../map-viewer/publication.type';
 import {ZoomService} from '../../services/zoom/zoom.service';
 
 export class SvgGroupWrapper {

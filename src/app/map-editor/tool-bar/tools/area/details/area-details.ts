@@ -2,7 +2,6 @@ import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {ToolDetailsComponent} from '../../../shared/details/tool-details';
 import {AreaDetailsService} from './area-details.service';
 import {Area, AreaBag, AreaConfiguration, Mode} from '../area.type';
-import {Tag} from '../../../../../device/tag.type';
 import {DeviceService} from '../../../../../device/device.service';
 import {Floor} from '../../../../../floor/floor.type';
 import * as d3 from 'd3';
@@ -11,6 +10,7 @@ import {Editable} from '../../../../../shared/wrappers/editable/editable';
 import {Point} from '../../../../map.type';
 import {AreaComponent} from '../area';
 import {MessageServiceWrapper} from '../../../../../shared/services/message/message.service';
+import {Tag} from '../../../../../device/device.type';
 
 @Component({
   selector: 'app-area-details',

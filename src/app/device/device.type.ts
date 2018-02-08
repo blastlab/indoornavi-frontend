@@ -19,3 +19,13 @@ export class Device {
     this.floorId = floorId;
   }
 }
+
+export interface Anchor extends Device {
+}
+
+export interface Tag extends Device {
+}
+
+export interface Sink extends Anchor {
+  anchors: Anchor[];
+}
