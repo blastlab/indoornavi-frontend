@@ -1,7 +1,6 @@
 import * as d3 from 'd3';
 import {Point} from '../../../map-editor/map.type';
 import {DrawConfiguration} from '../../../map-viewer/published.type';
-import {ZoomService} from '../../services/zoom/zoom.service';
 
 export class SvgGroupWrapper {
   private elements: Map<ElementType, d3.selection[]> = new Map();
@@ -76,7 +75,12 @@ export class SvgGroupWrapper {
   }
 
   addPolyline(points: Point[], radius: number): SvgGroupWrapper {
+    const lastCircleOfThisGroup: d3.selection = this.getLastElement(ElementType.CIRCLE);
     let lastPoint: Point;
+    if (!!lastCircleOfThisGroup) {
+      const lastCircleOfThisGroupCoordinates: Point = {x: lastCircleOfThisGroup.attr('cx'), y: lastCircleOfThisGroup.attr('cy')};
+      this.addLine(lastCircleOfThisGroupCoordinates, points[0]);
+    }
     points.forEach((point: Point): void => {
       this.addCircle(point, radius);
       if (!!lastPoint) {
@@ -129,7 +133,9 @@ export class SvgGroupWrapper {
 
   getLastElement(type: ElementType): d3.selection {
     const elements: d3.selection[] = this.elements.get(type);
-    return elements[elements.length - 1];
+    if (!!elements) {
+      return elements[elements.length - 1];
+    }
   }
 
   removeElements(type: ElementType): void {

@@ -23,7 +23,7 @@ export class MapObjectService {
 
   draw (objectMetadata: MapObjectMetadata): void {
     switch (objectMetadata.type) {
-      case MapObjectType.POLYLINE:
+      case 'POLYLINE':
         this.objects.get(objectMetadata.object.id).addPolyline((<Polyline>objectMetadata.object).points, this.pointRadius);
         break;
     }
@@ -39,10 +39,6 @@ interface Polyline extends MapObject {
 }
 
 interface MapObjectMetadata {
-  type: MapObjectType;
+  type: string;
   object: MapObject
-}
-
-export enum MapObjectType {
-  POLYLINE
 }

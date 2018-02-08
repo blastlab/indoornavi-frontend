@@ -29,7 +29,7 @@ import {MapSvg} from '../../map/map.type';
 import {Area} from '../../map-editor/tool-bar/tools/area/area.type';
 import {Movable} from '../../shared/wrappers/movable/movable';
 import {Scale} from '../../map-editor/tool-bar/tools/scale/scale.type';
-import {MapObjectService, MapObjectType} from '../../shared/utils/drawing/map.object.service';
+import {MapObjectService} from '../../shared/utils/drawing/map.object.service';
 
 @Component({
   templateUrl: './socket-connector.component.html',
@@ -88,8 +88,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           return;
         }
         this.publishedService.checkOrigin(params['api_key'], event.origin).subscribe((verified: boolean): void => {
-          console.log(verified);
-          console.log(event.origin);
           if (verified) {
             this.handleCommands(event);
           }
@@ -223,7 +221,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
 
   private handleCommands(event: MessageEvent): void {
     const data = event.data;
-    if ('command' in data) {
+    if ('command' in data && !!this.d3map) {
       switch (data['command']) {
         case 'toggleTagVisibility':
           const tagId = parseInt(data['args'], 10);
@@ -241,17 +239,14 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           }
           break;
         case 'createObject':
-          // check if map is loaded
-          if (!!this.d3map) {
-            const mapObjectId: number = this.mapObjectService.create(this.d3map.container);
-            event.source.postMessage({type: 'createObject', mapObjectId: mapObjectId}, event.origin)
-          }
+          const mapObjectId: number = this.mapObjectService.create(this.d3map.container);
+          event.source.postMessage({type: 'createObject', mapObjectId: mapObjectId}, event.origin);
           break;
         case 'drawObject':
-          this.mapObjectService.draw(JSON.parse(data['args']));
+          this.mapObjectService.draw(data['args']);
           break;
         case 'removeObject':
-          this.mapObjectService.remove(JSON.parse(data['args']));
+          this.mapObjectService.remove(data['args']);
           break;
       }
     }
