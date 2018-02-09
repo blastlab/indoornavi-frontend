@@ -243,7 +243,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           event.source.postMessage({type: 'createObject', mapObjectId: mapObjectId}, event.origin);
           break;
         case 'drawObject':
-          this.mapObjectService.draw(data['args']);
+          this.mapObjectService.draw(data['args'], this.scale);
           break;
         case 'removeObject':
           this.mapObjectService.remove(data['args']);

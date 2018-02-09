@@ -2,10 +2,12 @@ import {DrawBuilder, SvgGroupWrapper} from './drawing.builder';
 import {Injectable} from '@angular/core';
 import * as d3 from 'd3';
 import {Point} from '../../../map-editor/map.type';
+import {Geometry} from 'app/shared/utils/helper/geometry';
 
 @Injectable()
 export class MapObjectService {
   private objects: Map<number, SvgGroupWrapper> = new Map();
+  // TODO: standardize pointRadius for all points that will be drawn on the map
   private pointRadius: number = 5;
 
   constructor() {}
@@ -21,10 +23,16 @@ export class MapObjectService {
     this.objects.delete(objectMetadata.object.id);
   }
 
-  draw (objectMetadata: MapObjectMetadata): void {
+  draw (objectMetadata: MapObjectMetadata, scale): void {
+    const points: Point[] = [];
+    (<Polyline>objectMetadata.object).points.forEach((point: Point): void => {
+      points.push(Geometry.calculatePointPositionInPixels(Geometry.getDistanceBetweenTwoPoints(scale.start, scale.stop),
+        scale.getRealDistanceInCentimeters(),
+        point));
+    });
     switch (objectMetadata.type) {
       case 'POLYLINE':
-        this.objects.get(objectMetadata.object.id).addPolyline((<Polyline>objectMetadata.object).points, this.pointRadius);
+        this.objects.get(objectMetadata.object.id).addPolyline(points, this.pointRadius);
         break;
     }
   }
