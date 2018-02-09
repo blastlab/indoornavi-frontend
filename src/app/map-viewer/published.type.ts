@@ -63,4 +63,5 @@ export interface DrawConfiguration {
   cursor?: string;
   name?: string;
   color?: string;
+  display?: string;
 }

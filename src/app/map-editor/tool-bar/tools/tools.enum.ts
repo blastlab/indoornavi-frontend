@@ -2,6 +2,6 @@ export enum ToolName {
   NONE,
   SCALE,
   WIZARD,
-  ANCHOR,
+  DEVICES,
   AREA
 }

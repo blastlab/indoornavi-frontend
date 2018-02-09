@@ -256,6 +256,12 @@ export class SvgGroupWrapper {
       this.elements.set(type, [element]);
     }
   }
+
+  setVisibility(visible: boolean): void {
+    const displayValue: string = visible ? `inline` : `none`;
+    return this.group.attr(`display`, displayValue);
+  }
+
 }
 
 export class DrawBuilder {
@@ -275,6 +281,9 @@ export class DrawBuilder {
       .attr('y', 0);
     if (this.configuration.cursor) {
       group.style('cursor', this.configuration.cursor);
+    }
+    if (this.configuration.display) {
+      group.attr('display', this.configuration.display);
     }
     return (this.configuration.color)
       ? new SvgGroupWrapper(group, this.appendable, this.zoomService, this.configuration.color)

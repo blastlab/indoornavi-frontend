@@ -33,7 +33,6 @@ import {ActionBarService} from './map-editor/action-bar/actionbar.service';
 import {ScaleService} from './shared/services/scale/scale.service';
 import {PublishedListComponent} from './map-viewer/list/published-list';
 import {D3Service} from 'd3-ng2-service';
-import {DevicePlacerComponent} from './map-editor/tool-bar/tools/device-placer/device-placer';
 import {AllFieldsFilter} from './shared/utils/filters/allFieldsFilter';
 import {DevicePlacerController} from './map-editor/tool-bar/tools/device-placer/device-placer.controller';
 import {appRoutes} from './app.routes';
@@ -98,6 +97,8 @@ import {AreaDetailsService} from './map-editor/tool-bar/tools/area/details/area-
 import {ContextMenuService} from './shared/wrappers/editable/editable.service';
 import {PublishedComponent} from './map-viewer/views/publications/publication';
 import {AnalyticsComponent} from './map-viewer/views/analytics/analytics';
+import {DevicesComponent} from './map-editor/tool-bar/tools/devices/devices';
+import {DevicesListComponent} from './map-editor/tool-bar/tools/devices/list/devices-list';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -127,7 +128,6 @@ export function HttpLoaderFactory(http: Http) {
     PublishedComponent,
     PublishedListComponent,
     PublishedDialogComponent,
-    DeviceComponent,
     AppAutoFocusDirective,
     ToolDetailsComponent,
     ToolDetailsComponent,
@@ -137,7 +137,8 @@ export function HttpLoaderFactory(http: Http) {
     AreaComponent,
     AreaDetailsComponent,
     AppAutoFocusDirective,
-    DevicePlacerComponent,
+    DevicesComponent,
+    DevicesListComponent,
     AllFieldsFilter,
     AreaDetailsComponent,
     AnalyticsComponent
