@@ -7,6 +7,7 @@ class TestLoginPage(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        cls.test_failed = True
         cls.page_url = LoginPage.login_url
         cls.webdriver = webdriver
         TestDriver.setUp(cls, cls.page_url)
@@ -26,6 +27,7 @@ class TestLoginPage(unittest.TestCase):
 
         # [TS003].Clear form, fill with correct data and submit
         self.assertEqual(self.page.login_process(self.option), 'Complexes')
+        self.test_failed = False
 
     # TC002 (invalid password) & TC003 (invalid username)
     def test_login_invalid_credentials(self):
@@ -33,6 +35,11 @@ class TestLoginPage(unittest.TestCase):
         for option in range(2, 4):
             self.__init_test_method()
             self.assertTrue(self.page.login_process(option))
+
+        self.test_failed = False
+
+    def tearDown(self):
+        TestDriver.tearDown(self)
 
     @classmethod
     def tearDownClass(cls):

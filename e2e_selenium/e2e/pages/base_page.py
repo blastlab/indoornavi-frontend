@@ -82,12 +82,16 @@ class BasePage(object):
         element = ui.WebDriverWait(self.driver, 100).until(EC.presence_of_element_located(locator))
         return element
 
+    def wait_for_element_clickable(self, locator):
+        element = ui.WebDriverWait(self.driver, 100).until(EC.element_to_be_clickable(locator))
+        return element
+
     def wait_for_element_visibility(self, locator):
         element = ui.WebDriverWait(self.driver, 100).until(EC.visibility_of_element_located(locator))
         return element
 
     def wait_for_element_disappear(self, locator):
-        element = ui.WebDriverWait(self.driver, 100).until_not(EC.presence_of_element_located(locator))
+        element = ui.WebDriverWait(self.driver, 100).until_not(EC.visibility_of_element_located(locator))
         return element
 
     def open_page(self, page_url):
@@ -103,9 +107,15 @@ class BasePage(object):
         input_element.send_keys(length * Keys.BACKSPACE)
 
     def clear_and_fill_input(self, text, *input_locator):
+        print('PRINT text : %s' % text)
         input_element = self.identify_element(*input_locator)
         input_element.clear()
-        input_element.send_keys(text)
+        # print(length)
+        for i in text:
+            print(i)
+            input_element.send_keys(i)
+
+    # .execute_script("document.getElementsById('id')[0].value='"+text+"'")
 
     def click_button(self, *locator):
         button = self.driver.find_element(*locator)

@@ -9,7 +9,7 @@ from tests.test_login_page import TestLoginPage
 from tests.constructions.test_complexes_page import TestComplexesPage
 from tests.constructions.test_buildings_page import TestBuildingsPage
 from tests.constructions.test_floors_page import TestFloorsPage
-#from tests.devices.test_sinks_page import TestSinksPage
+from tests.devices.test_sinks_page import TestSinksPage
 
 if __name__ == '__main__':
     # unittest.main()

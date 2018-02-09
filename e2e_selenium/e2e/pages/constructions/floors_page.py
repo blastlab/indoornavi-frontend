@@ -5,7 +5,7 @@ class FloorsPage(BasePage):
 
     add_button_floor = (By.CSS_SELECTOR, 'button#add-floor')
     input_level_floor = (By.CSS_SELECTOR, 'input#level')
-    existing_level = 1
+    existing_level = '1'
     unique_level_warning = (By.XPATH, "//p[contains(text(),'Floor level must be unique in the building')]")
     table_floor_name = (By.XPATH, '//table/thead/tr/th[2]/span')
 

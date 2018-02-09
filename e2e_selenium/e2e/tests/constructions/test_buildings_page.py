@@ -12,6 +12,7 @@ class TestBuildingsPage(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        cls.test_failed = True
         cls.login_page_url = LoginPage.login_url
         cls.webdriver = webdriver
         TestDriver.setUp(cls, cls.login_page_url)
@@ -29,6 +30,7 @@ class TestBuildingsPage(unittest.TestCase):
         """Test that building page has been correctly loaded"""
         self.construction_page.redirect_button_click()
         self.assertTrue(TestBase.multi_assertion(self))
+        self.test_failed = False
 
     def test_add_new_building_correctly(self):
         """Test adding new building correctly"""
@@ -53,6 +55,7 @@ class TestBuildingsPage(unittest.TestCase):
         self.assertTrue(self.construction_page.is_construction_toast_disappear())
         # Check that new building has been saved in db
         self.assertEqual(self.construction_page.if_saved_in_db(), 'TestBuilding')
+        self.test_failed = False
 
     # TC[002]
     def test_add_new_building_negative_empty_input_and_cancel_click(self):
@@ -62,6 +65,7 @@ class TestBuildingsPage(unittest.TestCase):
         self.construction_page.save_add_new_construction()
         self.assertEqual(self.construction_page.error_message_name(), 'Name is required.')
         self.construction_page.cancel_add_new_construction()
+        self.test_failed = False
 
     # TODO do zrobienia walidacja na niedozwolone znaki
     # TC[003]
@@ -72,6 +76,7 @@ class TestBuildingsPage(unittest.TestCase):
         self.construction_page.save_add_new_construction()
         self.assertEqual(self.construction_page.error_message_construction_name(), 'Input field contains illegal characters.')
         self.construction_page.cancel_add_new_construction()
+        self.test_failed = False
 
     # TC[004]
     # TODO do zrobienia walidacja na limit znakow
@@ -101,6 +106,7 @@ class TestBuildingsPage(unittest.TestCase):
         # TODO sprawdzenie czy wpis w bazie danych został usunięty ()
         # Check that new building has been saved in db -> now last building name is Test Industry
         self.assertEqual(self.construction_page.if_saved_in_db(), 'Test Building B')
+        self.test_failed = False
 
     # TC[006]
     def test_delete_building_cancel(self):
@@ -115,6 +121,7 @@ class TestBuildingsPage(unittest.TestCase):
         self.construction_page.click_no_button()
         self.assertFalse(self.construction_page.is_confirm_remove_window_displayed())
         # Check that the confirm remove modal disappeared
+        self.test_failed = False
 
     # TC[007]
     # TODO Jesli uzytkownik kliknie poza modal, okno sie zamyka
@@ -139,6 +146,7 @@ class TestBuildingsPage(unittest.TestCase):
         self.assertTrue(self.construction_page.is_edited_construction_present())
         # Check that new building has been saved in db
         self.assertEqual(self.construction_page.if_saved_in_db(), 'TestEditBuilding')
+        self.test_failed = False
 
     # TC[009] TODO dokonczyc test
     def test_edit_building_negative_empty_input(self):
@@ -147,6 +155,7 @@ class TestBuildingsPage(unittest.TestCase):
         self.construction_page.clear_edit_input()
         self.construction_page.save_edit_click()
         self.assertEqual(self.construction_page.error_message_name(), 'Name is required.')
+        self.test_failed = False
 
     # TC[012]
     # TODO do zrobienia walidacja na limit znakow
@@ -164,6 +173,7 @@ class TestBuildingsPage(unittest.TestCase):
         self.assertTrue(self.construction_page.is_cancel_button_present())
         self.construction_page.cancel_button_click()
         self.assertFalse(self.construction_page.is_edit_modal_displayed())
+        self.test_failed = False
 
     # TC[014]
     # TODO najprawdopodobniej za stara wersja chromedriver -  test nie przechodzi
@@ -171,6 +181,10 @@ class TestBuildingsPage(unittest.TestCase):
         # Click last complex redirect click
         self.construction_page.redirect_button_click()
         self.assertTrue(self.construction_page.check_construction_column_title_after_redirect())
+        self.test_failed = False
+
+    def tearDown(self):
+        TestDriver.tearDown(self)
 
     @classmethod
     def tearDownClass(cls):

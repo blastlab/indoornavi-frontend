@@ -12,6 +12,7 @@ class TestFloorsPage(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        cls.test_failed = True
         cls.webdriver = webdriver
         cls.login_page_url = LoginPage.login_url
         TestDriver.setUp(cls, cls.login_page_url)
@@ -33,6 +34,7 @@ class TestFloorsPage(unittest.TestCase):
         self.construction_page.is_redirect_button_present()
         self.construction_page.redirect_button_click()
         self.assertTrue(TestBase.multi_assertion(self))
+        self.test_failed = False
 
     # TC[002]
     def test_02_add_new_floor_correctly(self):
@@ -54,6 +56,7 @@ class TestFloorsPage(unittest.TestCase):
         self.assertTrue(self.construction_page.is_construction_toast_disappear())
         # Check that new complex has been saved in db
         self.assertEqual(self.construction_page.if_saved_in_db(), 'TestFloor')
+        self.test_failed = False
 
     # TC[003]
     # TODO do zrobienia walidacja na limit znakow
@@ -79,6 +82,7 @@ class TestFloorsPage(unittest.TestCase):
         self.assertTrue(self.construction_page.is_remove_construction_toast_disappeared())
         # Check that new floor has been saved in db -> now last floor name is Test Floor B
         self.assertEqual(self.construction_page.if_saved_in_db(), 'Test Floor B')
+        self.test_failed = False
 
     # TC[005]
     def test_05_delete_floor_cancel(self):
@@ -93,6 +97,7 @@ class TestFloorsPage(unittest.TestCase):
         self.construction_page.click_no_button()
         self.assertFalse(self.construction_page.is_confirm_remove_window_displayed())
         # Check that the confirm remove modal disappeared
+        self.test_failed = False
 
     # TC[006]
     def test_06_edit_floor_correctly(self):
@@ -111,6 +116,7 @@ class TestFloorsPage(unittest.TestCase):
         self.assertTrue(self.construction_page.is_edited_construction_present())
         # Check that new floor has been saved in db
         self.assertEqual(self.construction_page.if_saved_in_db(), 'TestEditFloor')
+        self.test_failed = False
 
     # # # TODO Test sprawdzajacy edycje po wprowadzeniu istniejacego juz pietra
     # TC[007]
@@ -127,6 +133,10 @@ class TestFloorsPage(unittest.TestCase):
         self.construction_page.save_edit_click()
         # Check that warning toast is displayed
         self.assertTrue(self.floors_page.is_warning_toast_present())
+        self.test_failed = False
+
+    def tearDown(self):
+        TestDriver.tearDown(self)
 
     @classmethod
     def tearDownClass(cls):

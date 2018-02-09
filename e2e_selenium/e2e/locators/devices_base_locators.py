@@ -39,3 +39,13 @@ class DevicesBaseLocators(object):
         # self.last_row_not_verifed = (By.CSS_SELECTOR, 'li.ui-picklist-item:last-of-type')
 
         self.select_device = ("SELECT name FROM device ORDER BY id DESC LIMIT 1")
+        # Modals
+        self.modal_window = (By.CLASS_NAME, 'ui-dialog-title')
+        # Warnings
+        self.removed_toast = (By.XPATH, "//p[contains(text(),'Device has been removed')]")
+        self.added_toast = (By.XPATH, "//p[contains(text(),'Device has been created')]")
+        self.edited_toast = (By.XPATH, "//p[contains(text(),'Device has been saved')]")
+        self.name_warning = (By.CSS_SELECTOR, 'div.ui-messages-error')
+        # Toasts
+        self.unique_short_id_toast = (By.XPATH, "//p[contains(text(),'Short Id must be unique.')]")
+        self.unique_long_id_toast = (By.XPATH, "//p[contains(text(),'Long Id must be unique.')]")

@@ -27,6 +27,14 @@ class DevicesPage(BasePage):
     def dropdown_menu_device_click(self):
         return self.click_button(*self.base_locators.dropdown_menu_device_button)
 
+    # Clickable elements
+    def is_add_device_button_clickable(self):
+        return self.wait_for_element_clickable(self.base_locators.add_button_device)
+
+    def is_dropdown_menu_device_clickable(self):
+        return self.wait_for_element_clickable(self.base_locators.dropdown_menu_device_button)
+
+    # Visible & Present Elements
     def is_dropdown_menu_device_visible(self):
         return self.wait_for_element_visibility(self.base_locators.dropdown_menu_device_button)
 
@@ -42,6 +50,16 @@ class DevicesPage(BasePage):
     def is_devices_table_displayed(self):
         return True if self.is_element_displayed(*self.base_locators.devices_table) else False
 
+    # Warning & Toasts
+    def error_message_name(self):
+        return self.wait_for_element(self.base_locators.name_warning).text
+
+    def is_toast_present(self, toast):
+        return True if self.is_element_present(toast) else False
+
+    def is_toast_disappear(self, toast):
+        return True if self.is_element_disappear(toast) else False
+
     # Devices - Adding methods
     def add_button_click(self):
         return self.click_button(*self.base_locators.add_button_device)
@@ -51,6 +69,13 @@ class DevicesPage(BasePage):
 
     def is_cancel_button_present(self):
         return self.is_element_present(self.base_locators.cancel_button)
+
+    def enter_name(self, name):
+        input_element = self.identify_element(*self.base_locators.input)
+        input_element.send_keys(name)
+
+    def is_input_clickable(self):
+        return self.wait_for_element_clickable(self.base_locators.input)
 
     def enter_new_device_name(self, name):
         return self.clear_and_fill_input(name, *self.base_locators.input)
@@ -63,6 +88,9 @@ class DevicesPage(BasePage):
 
     def save_add_new_device_click(self):
         return self.click_button(*self.base_locators.save_button)
+
+    def cancel_add_new_device_click(self):
+        return self.click_button(*self.base_locators.cancel_button)
 
     def if_new_device_is_displayed(self):
         # Expected properties

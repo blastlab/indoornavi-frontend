@@ -11,6 +11,7 @@ class TestComplexesPage(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        cls.test_failed = True
         cls.webdriver = webdriver
         cls.login_page_url = LoginPage.login_url
         TestDriver.setUp(cls, cls.login_page_url)
@@ -31,6 +32,7 @@ class TestComplexesPage(unittest.TestCase):
     # TC[001]
     def test_add_new_complex_correctly(self):
         """Test adding new complex correctly"""
+
         self.assertTrue(TestBase.multi_assertion(self))
         self.complexes_page.add_button_click()
         # TODO Zmienic tytul modala -  Add complex / Add new complex
@@ -38,12 +40,8 @@ class TestComplexesPage(unittest.TestCase):
         self.assertTrue(self.construction_page.is_save_button_present())
         self.assertTrue(self.construction_page.is_cancel_button_present())
         self.construction_page.enter_construction_name()
-        # TODO sprawdzic ilosc wpisow przed dodaniem
-        # self.complexes_page.get_complexes_count()
         self.construction_page.save_add_new_construction()
-        # TODO sprawdzenie ilosci wpisow po dodaniu
-        # self.complexes_page.get_complexes_count()
-        # TODO sprawdzenie czy toast sie wyswietlil
+
         # Check that toast is displayed
         self.assertTrue(self.construction_page.is_new_construction_toast_present())
         # Check that new complex is displayed
@@ -52,15 +50,17 @@ class TestComplexesPage(unittest.TestCase):
         self.assertTrue(self.construction_page.is_construction_toast_disappear())
         # Check that new complex has been saved in db
         self.assertEqual(self.construction_page.if_saved_in_db(), 'TestComplex')
+        self.test_failed = False
 
     # TC[002]
     def test_add_new_complex_negative_empty_input_and_cancel_click(self):
         """Test adding new complex with empty input"""
-        # 1.Check adding with empty input
+
         self.complexes_page.add_button_click()
         self.construction_page.save_add_new_construction()
         self.assertEqual(self.construction_page.error_message_name(), 'Complex name is required.')
         self.construction_page.cancel_add_new_construction()
+        self.test_failed = False
 
     # TODO do zrobienia walidacja na niedozwolone znaki
     # TC[003]
@@ -78,6 +78,7 @@ class TestComplexesPage(unittest.TestCase):
     # TC[005]
     def test_delete_complex_correctly(self):
         """Test deleting complex correctly"""
+
         # Click last complex remove button
         self.construction_page.remove_button_click()
         # Check that the confirm window present
@@ -85,20 +86,16 @@ class TestComplexesPage(unittest.TestCase):
         # Check that yes / no button present
         self.assertTrue(self.construction_page.is_yes_button_present())
         self.assertTrue(self.construction_page.is_no_button_present())
-        # TODO sprawdzenie ilosci wpisow przed dodaniem
-        # self.complexes_page.get_complexes_count()
-        # Click yes - confirm remove complex
         self.construction_page.click_yes_button()
-        # self.complexes_page.save_add_new_complex()
-        # TODO sprawdzenie ilosci wgit pisow po usunieciu
-        # self.complexes_page.get_complexes_count()
+
         # Check that toast is displayed
         self.assertTrue(self.construction_page.is_remove_construction_toast_present())
         # Check that new complex is disappeared
         # self.assertTrue(self.complexes_page.is_removed_complex_disappeared())
-        # TODO sprawdzenie czy wpis w bazie danych został usunięty ()
+
         # Check that new complex has been saved in db -> now last complex name is Test Industry
         self.assertEqual(self.construction_page.if_saved_in_db(), 'Test Industry')
+        self.test_failed = False
 
     # TC[006]
     def test_delete_complex_cancel(self):
@@ -113,6 +110,7 @@ class TestComplexesPage(unittest.TestCase):
         self.construction_page.click_no_button()
         self.assertFalse(self.construction_page.is_confirm_remove_window_displayed())
         # Check that the confirm remove modal disappeared
+        self.test_failed = False
 
     # TC[007]
     # TODO Jesli uzytkownik kliknie poza modal, okno sie zamyka
@@ -137,14 +135,17 @@ class TestComplexesPage(unittest.TestCase):
         self.assertTrue(self.construction_page.is_edited_construction_present())
         # Check that new complex has been saved in db
         self.assertEqual(self.construction_page.if_saved_in_db(), 'TestEditComplex')
+        self.test_failed = False
 
     # TC[009] TODO dokonczyc test
     def test_edit_complex_negative_empty_input(self):
         """Test editing complex when input is empty"""
+
         self.construction_page.edit_button_click()
         self.construction_page.clear_edit_input()
         self.construction_page.save_edit_click()
         self.assertEqual(self.construction_page.error_message_name(), 'Complex name is required.')
+        self.test_failed = False
 
     # TC[012]
     # TODO do zrobienia walidacja na limit znakow
@@ -162,6 +163,7 @@ class TestComplexesPage(unittest.TestCase):
         self.assertTrue(self.construction_page.is_cancel_button_present())
         self.construction_page.cancel_button_click()
         self.assertFalse(self.construction_page.is_edit_modal_displayed())
+        self.test_failed = False
 
     # TC[014]
     # TODO najprawdopodobniej za stara wersja chromedriver -  test nie przechodzi
@@ -174,6 +176,9 @@ class TestComplexesPage(unittest.TestCase):
         self.complexes_page.redirect_button_click()
         # header = self.complexes_page.buildings_table_header
         # self.assertTrue(self.complexes_page.check_construction_column_title(header))
+
+    def tearDown(self):
+        TestDriver.tearDown(self)
 
     @classmethod
     def tearDownClass(cls):
