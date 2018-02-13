@@ -221,7 +221,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
 
   private handleCommands(event: MessageEvent): void {
     const data = event.data;
-    if ('command' in data && !!this.d3map) {
+    if ('command' in data) {
       switch (data['command']) {
         case 'toggleTagVisibility':
           const tagId = parseInt(data['args'], 10);

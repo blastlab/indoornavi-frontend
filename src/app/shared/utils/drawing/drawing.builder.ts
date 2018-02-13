@@ -75,12 +75,7 @@ export class SvgGroupWrapper {
   }
 
   addPolyline(points: Point[], radius: number): SvgGroupWrapper {
-    const lastCircleOfThisGroup: d3.selection = this.getLastElement(ElementType.CIRCLE);
     let lastPoint: Point;
-    if (!!lastCircleOfThisGroup) {
-      const lastCircleOfThisGroupCoordinates: Point = {x: lastCircleOfThisGroup.attr('cx'), y: lastCircleOfThisGroup.attr('cy')};
-      this.addLine(lastCircleOfThisGroupCoordinates, points[0]);
-    }
     points.forEach((point: Point): void => {
       this.addCircle(point, radius);
       if (!!lastPoint) {
@@ -136,6 +131,7 @@ export class SvgGroupWrapper {
     if (!!elements) {
       return elements[elements.length - 1];
     }
+    this.throwErrorTypeNull(type);
   }
 
   removeElements(type: ElementType): void {
@@ -146,6 +142,7 @@ export class SvgGroupWrapper {
       });
       elements.length = 0;
     }
+    this.throwErrorTypeNull(type);
   }
 
   removeLastElement(type: ElementType): void {
@@ -154,6 +151,7 @@ export class SvgGroupWrapper {
       elements[elements.length - 1].remove();
       elements.splice(-1, 1);
     }
+    this.throwErrorTypeNull(type);
   }
 
   private addElement(type: ElementType, element: d3.selection): void {
@@ -162,6 +160,10 @@ export class SvgGroupWrapper {
     } else {
       this.elements.set(type, [element]);
     }
+  }
+
+  private throwErrorTypeNull (elementType: ElementType): void {
+    throw new Error(`${elementType} is null or undefined`);
   }
 }
 
