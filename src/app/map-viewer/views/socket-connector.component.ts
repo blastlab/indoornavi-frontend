@@ -30,6 +30,7 @@ import {Area} from '../../map-editor/tool-bar/tools/area/area.type';
 import {Movable} from '../../shared/wrappers/movable/movable';
 import {Scale} from '../../map-editor/tool-bar/tools/scale/scale.type';
 import {MapObjectService} from '../../shared/utils/drawing/map.object.service';
+import {log} from 'util';
 
 @Component({
   templateUrl: './socket-connector.component.html',
