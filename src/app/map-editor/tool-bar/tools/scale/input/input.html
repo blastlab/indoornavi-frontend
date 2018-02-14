@@ -5,16 +5,17 @@
         <span class="ui-inputgroup-addon">
         <i class="fa fa-question" pTooltip="{{'scale.distance.hint'|translate}}"></i>
         </span>
-        <input name="distance" type="number" pInputText
-               placeholder="{{'scale.distance.placeholder'|translate}}"
-               [(ngModel)]="scale.realDistance"/>
+        <span class="ui-float-label">
+          <input name="distance" id="distance" type="number" pInputText min="0"
+                 [(ngModel)]="scale.realDistance"/>
+          <label for="distance">{{'scale.distance.placeholder'|translate}}</label>
+        </span>
       </div>
     </div>
     <div class="ui-g-5">
       <p-dropdown name="measure" [placeholder]="placeholder" [options]="measures"
                   [(ngModel)]="scale.measure"
                   [style]="{ width: '100%' }" autoWidth="false"></p-dropdown>
-
     </div>
     <div class="ui-g-3">
       <div class="ui-toolbar-group-right">
@@ -22,8 +23,8 @@
                 pButton class="ui-button-danger"
                 (click)="reject()"
                 icon="fa-close"
-                pTooltip="{{'cancel'|translate}}"
-        ></button>
+                pTooltip="{{'cancel'|translate}}">
+        </button>
         <button id="confirm-decision"
                 pButton class="ui-button-success"
                 (click)="confirm()"

@@ -14,8 +14,9 @@ import {Sink} from '../../device/device.type';
 @Injectable()
 export class ActionBarService {
   private static URL: string = 'configurations/';
-  private configuration: Configuration;
+  private configuration: Configuration = null;
   private latestPublishedConfiguration: Configuration;
+  private latestConfiguration: Configuration;
   private configurationLoadedEmitter: Subject<Configuration> = new Subject<Configuration>();
   private configurationChangedEmitter: Subject<Configuration> = new Subject<Configuration>();
   private configurationResetEmitter: Subject<Configuration> = new Subject<Configuration>();
@@ -26,7 +27,7 @@ export class ActionBarService {
 
   private static findLatestConfiguration(configurations: Configuration[]): Configuration {
     return configurations.sort((a, b): number => {
-      return b.publishedDate - a.publishedDate;
+      return b.savedDraftDate.getTime() - a.savedDraftDate.getTime();
     }).find((configuration: Configuration): boolean => {
       return !!configuration.publishedDate;
     });
@@ -55,6 +56,10 @@ export class ActionBarService {
     return this.latestPublishedConfiguration;
   }
 
+  public getLatestConfiguration(): Configuration {
+    return this.latestConfiguration;
+  }
+
   public publish(): Observable<ConfigurationData> {
     return this.httpService.doPost(ActionBarService.URL + this.configuration.floorId, {});
   }
@@ -62,23 +67,27 @@ export class ActionBarService {
   public loadConfiguration(floor: Floor): void {
     this.httpService.doGet(ActionBarService.URL + floor.id).subscribe((configurations: Configuration[]): void => {
       if (configurations.length === 0) {
-        this.configuration = <Configuration>{
+        this.configuration = (<Configuration>{
+          id: null,
           floorId: floor.id,
           version: 0,
-          publishedDate: new Date().getMilliseconds(),
+          savedDraftDate: null,
+          publishedDate: null,
           data: {
             sinks: [],
             scale: null
           }
-        };
-        this.latestPublishedConfiguration = this.configuration;
+        });
+        this.latestPublishedConfiguration = null;
+        this.latestConfiguration = this.configuration;
       } else {
         this.configuration = configurations[0];
         if (configurations.length > 1) {
           this.latestPublishedConfiguration = ActionBarService.findLatestConfiguration(configurations);
         } else {
-          this.latestPublishedConfiguration = this.configuration;
+          this.latestPublishedConfiguration = null;
         }
+        this.latestConfiguration = configurations[configurations.length - 1];
       }
       this.configurationHash = this.hashConfiguration();
       this.configurationLoadedEmitter.next(this.configuration);
