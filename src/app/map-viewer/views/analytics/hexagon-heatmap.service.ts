@@ -1,6 +1,7 @@
 import * as d3 from 'd3';
 import * as d3Hexbin from 'd3-hexbin';
 import {Point} from '../../../map-editor/map.type';
+import {HexHeatElement, Margin} from './analytics.type';
 
 
 export class HexagonHeatMap {
@@ -144,17 +145,4 @@ export class HexagonHeatMap {
     }
   }
 
-}
-
-export interface Margin {
-  top: number,
-  bottom: number,
-  left: number,
-  right: number
-}
-
-export interface HexHeatElement {
-  x: number,
-  y: number,
-  element: d3.selection
 }

@@ -153,3 +153,12 @@ app-auth > div {
 .active-tool {
   box-shadow: whitesmoke 2px 2px;
 }
+
+.ui-growl {
+  bottom: 20px;
+  top: auto;
+}
+
+.ui-fileupload-content {
+  min-height: 150px;
+}

@@ -11,8 +11,7 @@ import {MessageServiceWrapper} from '../shared/services/message/message.service'
 import {CrudComponent, CrudHelper} from '../shared/components/crud/crud.component';
 
 @Component({
-  templateUrl: 'building.html',
-  styleUrls: ['building.css']
+  templateUrl: 'building.html'
 })
 export class BuildingComponent implements OnInit, CrudComponent {
   complex: Complex = new Complex();

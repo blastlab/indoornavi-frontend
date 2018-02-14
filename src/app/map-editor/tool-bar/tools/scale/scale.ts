@@ -17,7 +17,7 @@ import {Helper} from '../../../../shared/utils/helper/helper';
 import {ToolbarService} from '../../toolbar.service';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
 import {MapSvg} from '../../../../map/map.type';
-import {MapViewerService} from '../../../map.editor.service';
+import {MapEditorService} from '../../../map.editor.service';
 import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
 
 @Component({
@@ -179,7 +179,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   private createSvgGroupWithScale(): void {
-    d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`)
+    d3.select(`#${MapEditorService.MAP_LAYER_SELECTOR_ID}`)
       .append('g')
       .attr('id', ScaleComponent.SCALE_GROUP_SELECTOR_ID)
       .style('display', 'none');
@@ -207,7 +207,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private startCreatingScale(): void {
     this.scaleGroup.style('display', 'flex');
 
-    const mapBackground = d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`);
+    const mapBackground = d3.select(`#${MapEditorService.MAP_LAYER_SELECTOR_ID}`);
     mapBackground.style('cursor', 'crosshair');
 
     if (this.linesArray.length !== 1) {
@@ -227,7 +227,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.redrawEndings();
       this.redrawPoints();
     } else if (d3.select(`#${ScaleComponent.SCALE_GROUP_SELECTOR_ID}`).empty()) {
-      d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`).append('g')
+      d3.select(`#${MapEditorService.MAP_LAYER_SELECTOR_ID}`).append('g')
         .attr('id', ScaleComponent.SCALE_GROUP_SELECTOR_ID)
         .style('display', 'flex');
     }
@@ -237,9 +237,9 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   private hideScale(): void {
     this.scaleService.changeVisibility(false);
-    d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`).style('cursor', 'default');
+    d3.select(`#${MapEditorService.MAP_LAYER_SELECTOR_ID}`).style('cursor', 'default');
     this.scaleGroup.style('display', 'none');
-    d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`).on('click', null);
+    d3.select(`#${MapEditorService.MAP_LAYER_SELECTOR_ID}`).on('click', null);
   }
 
   private addPoint(): void {
@@ -261,7 +261,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.redrawAllObjectsOnMap();
       this.setScaleVisible();
       this.scaleGroup.style('display', 'flex');
-      d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`).on('click', null);
+      d3.select(`#${MapEditorService.MAP_LAYER_SELECTOR_ID}`).on('click', null);
     }
   }
 
@@ -289,13 +289,13 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     if (this.linesArray.length === 0) {
       return 0;
     }
-    return Geometry.getSlope(this.linesArray[0].p1, this.linesArray[0].p2);
+    return Geometry.getSlope(this.linesArray[0].startPoint, this.linesArray[0].endPoint);
   }
 
   private createLine(): Line {
     return <Line>{
-      p1: this.pointsArray[0],
-      p2: this.pointsArray[1]
+      startPoint: this.pointsArray[0],
+      endPoint: this.pointsArray[1]
     };
   }
 
@@ -385,18 +385,18 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       .append('svg:line')
       .classed('connectLine', true)
       .style('cursor', 'crosshair')
-      .attr('x1', d => d.p1.x)
-      .attr('y1', d => d.p1.y)
-      .attr('x2', d => d.p2.x)
-      .attr('y2', d => d.p2.y)
+      .attr('x1', d => d.startPoint.x)
+      .attr('y1', d => d.startPoint.y)
+      .attr('x2', d => d.endPoint.x)
+      .attr('y2', d => d.endPoint.y)
       .attr('stroke-width', 1)
       .attr('stroke', 'black');
 
     lines
-      .attr('x1', d => d.p1.x)
-      .attr('y1', d => d.p1.y)
-      .attr('x2', d => d.p2.x)
-      .attr('y2', d => d.p2.y);
+      .attr('x1', d => d.startPoint.x)
+      .attr('y1', d => d.startPoint.y)
+      .attr('x2', d => d.endPoint.x)
+      .attr('y2', d => d.endPoint.y);
   }
 
   private redrawEndings(): void {

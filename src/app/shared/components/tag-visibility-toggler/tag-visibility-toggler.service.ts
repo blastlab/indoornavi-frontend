@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
-import {Tag} from '../../../device/tag.type';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {TagToggle} from './tag-toggle.type';
+import {Tag} from '../../../device/device.type';
 
 @Injectable()
 export class TagVisibilityTogglerService {

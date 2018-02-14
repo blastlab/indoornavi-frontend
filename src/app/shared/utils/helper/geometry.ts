@@ -1,6 +1,4 @@
 import {Line, Point} from '../../../map-editor/map.type';
-import {Scale} from '../../../map-editor/tool-bar/tools/scale/scale.type';
-import {log} from 'util';
 
 export class Geometry {
 
@@ -21,7 +19,7 @@ export class Geometry {
   }
 
   static getVerticalEndingOffset( line: Line, endSize: number): number {
-    const slope = this.getSlope(line.p1, line.p2);
+    const slope = this.getSlope(line.startPoint, line.endPoint);
     if (isNaN(slope)) {
       return 0;
     }
@@ -29,7 +27,7 @@ export class Geometry {
   }
 
   static getHorizontalEndingOffset( line: Line, endSize: number): number {
-    const slope = this.getSlope(line.p1, line.p2);
+    const slope = this.getSlope(line.startPoint, line.endPoint);
     if (isNaN(slope)) {
       return 0;
     }

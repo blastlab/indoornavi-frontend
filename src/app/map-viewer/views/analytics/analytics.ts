@@ -4,11 +4,11 @@ import {TranslateService} from '@ngx-translate/core';
 import {SocketConnectorComponent} from '../socket-connector.component';
 import {TimeStepBuffer} from './analytics.type';
 import {SocketService} from '../../../shared/services/socket/socket.service';
-import {PublishedService} from '../../published.service';
+import {PublishedService} from '../../publication.service';
 import {AreaService} from '../../../shared/services/area/area.service';
 import {IconService} from '../../../shared/services/drawing/icon.service';
 import {MapLoaderInformerService} from '../../../shared/services/map-loader-informer/map-loader-informer.service';
-import {CoordinatesSocketData} from '../../published.type';
+import {CoordinatesSocketData} from '../../publication.type';
 import {HexagonHeatMap} from './hexagon-heatmap.service';
 import * as d3 from 'd3';
 import {ZoomService} from '../../../shared/services/zoom/zoom.service';
@@ -18,8 +18,7 @@ import {FloorService} from '../../../floor/floor.service';
 import {TagVisibilityTogglerService} from '../../../shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
 
 @Component({
-  templateUrl: './analytics.html',
-  styleUrls: ['./analytics.css']
+  templateUrl: './analytics.html'
 })
 export class AnalyticsComponent extends SocketConnectorComponent implements OnInit {
   private pathSliderView: boolean = false;

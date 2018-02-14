@@ -1,17 +1,16 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {Publication, ValidationResult} from '../published.type';
+import {Publication, ValidationResult} from '../publication.type';
 import {Floor} from '../../floor/floor.type';
 import {Building} from '../../building/building.type';
 import {Complex} from '../../complex/complex.type';
-import {UserService} from '../../user/user.service';
-import {User} from '../../user/user.type';
+import {UserService} from '../../user/user/user.service';
+import {User} from '../../user/user/user.type';
 import {ComplexService} from '../../complex/complex.service';
 import {FloorService} from '../../floor/floor.service';
 import {BuildingService} from 'app/building/building.service';
 import {TranslateService} from '@ngx-translate/core';
-import {PublishedService} from '../published.service';
+import {PublishedService} from '../publication.service';
 import {DeviceService} from '../../device/device.service';
-import {Tag} from '../../device/tag.type';
 import {ActionBarService} from '../../map-editor/action-bar/actionbar.service';
 import {Configuration} from '../../map-editor/action-bar/actionbar.type';
 import {CrudComponentForm, CrudHelper} from '../../shared/components/crud/crud.component';
@@ -20,13 +19,13 @@ import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {MessageServiceWrapper} from '../../shared/services/message/message.service';
 import {SelectItem} from 'primeng/primeng';
+import {Tag} from '../../device/device.type';
 
 @Component({
-  selector: 'app-published-dialog',
-  templateUrl: './published.dialog.html',
-  styleUrls: ['./published.dialog.css']
+  selector: 'app-publication-dialog',
+  templateUrl: './publication.dialog.html'
 })
-export class PublishedDialogComponent implements OnInit, CrudComponentForm {
+export class PublicationDialogComponent implements OnInit, CrudComponentForm {
   displayDialog: boolean = false;
   complexes: Complex[] = [];
   selectedComplexes: Complex[] = [];

@@ -11,8 +11,7 @@ import {MessageServiceWrapper} from '../shared/services/message/message.service'
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
 
 @Component({
-  templateUrl: 'floor.html',
-  styleUrls: ['floor.css']
+  templateUrl: 'floor.html'
 })
 export class FloorComponent implements OnInit, CrudComponent {
   floor: Floor;

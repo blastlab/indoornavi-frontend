@@ -1,8 +1,7 @@
 import * as d3 from 'd3';
-import {AnchorDistance} from '../../../../../device/anchor.type';
 import {Point} from '../../../../map.type';
 import {SelectItem} from 'primeng/primeng';
-import {ObjectParams, ScaleCalculations, SecondStepMessage, Step, WizardData, WizardStep} from '../wizard.type';
+import {AnchorDistance, ObjectParams, ScaleCalculations, SecondStepMessage, Step, WizardData, WizardStep} from '../wizard.type';
 import {NaviIcons} from 'app/shared/services/drawing/icon.service';
 import {Geometry} from '../../../../../shared/utils/helper/geometry';
 

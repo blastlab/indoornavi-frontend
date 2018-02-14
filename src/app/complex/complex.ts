@@ -10,8 +10,7 @@ import {MessageServiceWrapper} from '../shared/services/message/message.service'
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
 
 @Component({
-  templateUrl: 'complex.html',
-  styleUrls: ['complex.css']
+  templateUrl: 'complex.html'
 })
 export class ComplexComponent implements OnInit, CrudComponent {
   complex: Complex;

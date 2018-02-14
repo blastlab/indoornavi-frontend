@@ -1,4 +1,4 @@
-import {Tag} from '../../../device/tag.type';
+import {Tag} from '../../../device/device.type';
 
 export interface TagToggle {
   tag: Tag;

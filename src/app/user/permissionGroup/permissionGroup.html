@@ -29,7 +29,7 @@
   </p-column>
 </p-dataTable>
 
-<p-dialog header="{{'permissionGroup.details'}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
+<p-dialog header="{{'permissionGroup.details'|translate}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
           [contentStyle]="{ overflow: 'visible' }"
           [width]="800"
           dismissableMask="true">
@@ -44,7 +44,7 @@
           </div>
         </div>
         <div class="ui-g-12 ui-md-2 ui-lg-2">
-          <label for="name">{{'permissionGroup.name'|translate}}</label>
+          <label for="name">{{'permissionGroup.name'|translate}}&nbsp;*</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
           <input required name="name" [appAutoFocus]="displayDialog" pInputText id="name" [(ngModel)]="permissionGroup.name" #nameInput="ngModel" />

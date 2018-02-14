@@ -2,10 +2,10 @@ import * as d3 from 'd3';
 import * as Collections from 'typescript-collections';
 import {Point} from '../../../../map.type';
 import {FirstStepMessage, ObjectParams, ScaleCalculations, Step, WizardData, WizardStep} from '../wizard.type';
-import {Sink} from '../../../../../device/sink.type';
 import {SelectItem} from 'primeng/primeng';
 import {NaviIcons} from '../../../../../shared/services/drawing/icon.service';
 import {Geometry} from '../../../../../shared/utils/helper/geometry';
+import {Sink} from '../../../../../device/device.type';
 
 export class FirstStep implements WizardStep {
   private selectedItemId: number;

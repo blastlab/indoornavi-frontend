@@ -37,9 +37,9 @@ describe('Geometry', () => {
   it('should return horizontal ending offset value', () => {
     // then
     // should be close to sqrt from 2
-    expect(precisionRound(Geometry.getHorizontalEndingOffset({p1, p2}, 2), 2)).toEqual(1.41);
+    expect(precisionRound(Geometry.getHorizontalEndingOffset({startPoint: p1, endPoint: p2}, 2), 2)).toEqual(1.41);
     // should be close to sqrt from 2
-    expect(precisionRound(Geometry.getHorizontalEndingOffset({p1, p2}, 8), 2)).toEqual(5.66);
+    expect(precisionRound(Geometry.getHorizontalEndingOffset({startPoint: p1, endPoint: p2}, 8), 2)).toEqual(5.66);
 
   });
 

@@ -1,25 +1,24 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {PublishedService} from '../published.service';
-import {Publication} from '../published.type';
+import {PublishedService} from '../publication.service';
+import {Publication} from '../publication.type';
 import {TranslateService} from '@ngx-translate/core';
 import {Router} from '@angular/router';
 import {BreadcrumbService} from '../../shared/services/breadcrumbs/breadcrumb.service';
 import {CrudComponentList, CrudHelper} from '../../shared/components/crud/crud.component';
 import {ConfirmationService} from 'primeng/primeng';
 import {MessageServiceWrapper} from '../../shared/services/message/message.service';
-import {PublishedDialogComponent} from '../dialog/published.dialog';
+import {PublicationDialogComponent} from '../dialog/publication.dialog';
 
 @Component({
-  templateUrl: './published-list.html',
-  styleUrls: ['./published-list.css']
+  templateUrl: './publication-list.html'
 })
 export class PublishedListComponent implements OnInit, CrudComponentList {
   publishedMaps: Publication[];
   loading: boolean = true;
   confirmBody: string;
 
-  @ViewChild(PublishedDialogComponent)
-  private formDialog: PublishedDialogComponent;
+  @ViewChild(PublicationDialogComponent)
+  private formDialog: PublicationDialogComponent;
 
   constructor(private publishedMapService: PublishedService,
               private translateService: TranslateService,

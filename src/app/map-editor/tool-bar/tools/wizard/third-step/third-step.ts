@@ -1,7 +1,6 @@
 import * as d3 from 'd3';
-import {AnchorSuggestedPositions} from '../../../../../device/anchor.type';
 import {Point} from '../../../../map.type';
-import {ObjectParams, ScaleCalculations, SocketMessage, Step, WizardData, WizardStep} from '../wizard.type';
+import {AnchorSuggestedPositions, ObjectParams, ScaleCalculations, SocketMessage, Step, WizardData, WizardStep} from '../wizard.type';
 import {SelectItem} from 'primeng/primeng';
 import {NaviIcons} from '../../../../../shared/services/drawing/icon.service';
 import {Geometry} from '../../../../../shared/utils/helper/geometry';

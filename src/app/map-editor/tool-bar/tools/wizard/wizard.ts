@@ -8,8 +8,6 @@ import {SocketService} from '../../../../shared/services/socket/socket.service';
 import {FirstStep} from './first-step/first-step';
 import {SecondStep} from './second-step/second-step';
 import {ActionBarService} from '../../../action-bar/actionbar.service';
-import {Sink} from '../../../../device/sink.type';
-import {Anchor} from '../../../../device/anchor.type';
 import {ObjectParams, ScaleCalculations, SocketMessage, WizardData, WizardStep} from './wizard.type';
 import {Floor} from '../../../../floor/floor.type';
 import {SelectItem} from 'primeng/primeng';
@@ -21,11 +19,12 @@ import {HintBarService} from '../../../hint-bar/hintbar.service';
 import {AcceptButtonsService} from '../../../../shared/components/accept-buttons/accept-buttons.service';
 import {DrawBuilder} from '../../../../shared/utils/drawing/drawing.builder';
 import {IconService, NaviIcons} from '../../../../shared/services/drawing/icon.service';
-import {MapViewerService} from '../../../map.editor.service';
+import {MapEditorService} from '../../../map.editor.service';
 import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
 import {ScaleService} from '../../../../shared/services/scale/scale.service';
 import {Scale, ScaleDto} from '../scale/scale.type';
 import {Geometry} from '../../../../shared/utils/helper/geometry';
+import {Anchor, Sink} from '../../../../device/device.type';
 
 
 @Component({
@@ -132,7 +131,7 @@ export class WizardComponent implements Tool, OnInit {
     this.displayError = false;
     this.activeStep.beforePlaceOnMap(this.selected);
     this.displayDialog = false;
-    const map: d3.selector = d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`);
+    const map: d3.selector = d3.select(`#${MapEditorService.MAP_LAYER_SELECTOR_ID}`);
     map.style('cursor', 'crosshair');
     map.on('click', () => {
       const coordinates: Point = this.zoomService.calculateTransition({x: d3.event.offsetX, y: d3.event.offsetY});
@@ -252,7 +251,7 @@ export class WizardComponent implements Tool, OnInit {
   }
 
   private removeGroupDrag(): void {
-    const map = d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`);
+    const map = d3.select(`#${MapEditorService.MAP_LAYER_SELECTOR_ID}`);
     const selections: d3.selection[] = [
       map.select('#anchor' + this.selected),
       map.select('#sink' + this.selected)
