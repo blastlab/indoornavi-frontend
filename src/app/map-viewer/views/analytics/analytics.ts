@@ -11,11 +11,11 @@ import {MapLoaderInformerService} from '../../../shared/services/map-loader-info
 import {CoordinatesSocketData} from '../../publication.type';
 import {HexagonHeatMap} from './hexagon-heatmap.service';
 import * as d3 from 'd3';
-import {ZoomService} from '../../../shared/services/zoom/zoom.service';
 import {Movable} from '../../../shared/wrappers/movable/movable';
 import {MapSvg} from '../../../map/map.type';
 import {FloorService} from '../../../floor/floor.service';
 import {TagVisibilityTogglerService} from '../../../shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
+import {MapObjectService} from '../../../shared/utils/drawing/map.object.service';
 
 @Component({
   templateUrl: './analytics.html'
@@ -51,7 +51,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
               areaService: AreaService,
               translateService: TranslateService,
               iconService: IconService,
-              zoomService: ZoomService,
+              mapObjectService: MapObjectService,
               floorService: FloorService,
               tagTogglerService: TagVisibilityTogglerService
               ) {
@@ -63,7 +63,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       areaService,
       translateService,
       iconService,
-      zoomService,
+      mapObjectService,
       floorService,
       tagTogglerService
     );
