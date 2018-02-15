@@ -1,0 +1,25 @@
+<div id="heat-map-controller" class="ui-corner-all">
+  <div class="header">
+    <i class="fa fa-area-chart"></i> {{'heat.map.tool'|translate}}
+  </div>
+  <div>
+    <button pButton pTooltip="{{'path.length'|translate}}"
+            icon="fa-arrows-h"
+            (click)="toggleSlider()">
+    </button>
+  </div>
+  <p-slider
+    class="ui-g-5 ui-md-3 ui-lg-3"
+    *ngIf="pathSliderView"
+    pTooltip="{{'path.length'|translate}}"
+    [ngModel]="heatMapSettings.path"
+    (ngModelChange) = "setPathLength($event)"
+    [min]="25000" [max]="2500000"
+  ></p-slider>
+  <button pButton pTooltip="{{'show.heat.map'|translate}}" icon="fa-play"
+          [disabled]="playingAnimation" (click)="toggleHeatAnimation()">
+  </button>
+  <button pButton pTooltip="{{'stop.heat.map'|translate}}" icon="fa-stop"
+          [disabled]="!playingAnimation" (click)="toggleHeatAnimation()">
+  </button>
+</div>

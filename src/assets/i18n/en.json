@@ -1,6 +1,7 @@
 {
 	"add": "Add",
 	"analytics": "Analise map events ",
+  "heat.map.tool": "Heat map Tools",
 	"anchors.header": "Anchors",
 	"area": "Area",
 	"area.form.invalid": "Please fill required fields",
@@ -72,6 +73,7 @@
 	"floor.name": "Floor name",
 	"floor.remove.success": "Floor has been removed.",
 	"floor.save.success": "Floor has been saved.",
+  "go.to.analytics": "Go to heat map view",
 	"go.to.buildings": "Go to buildings",
 	"go.to.floors": "Go to floors",
 	"go.to.map": "Go to public view",

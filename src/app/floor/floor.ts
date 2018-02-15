@@ -112,6 +112,10 @@ export class FloorComponent implements OnInit, CrudComponent {
     this.router.navigate(['/publications', floor.id]);
   }
 
+  goToHeatMap(floor: Floor): void {
+    this.router.navigate(['/analytics', floor.id]);
+  }
+
   private getCurrentMaxLevel(): number {
     return this.building.floors.length ? Math.max.apply(Math, this.building.floors.map((floor: Floor) => {
       return floor.level;

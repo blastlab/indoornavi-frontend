@@ -18,3 +18,8 @@ export interface HexHeatElement {
   y: number;
   element: d3.selection;
 }
+
+export interface HeatMapPath {
+  path: number;
+  heatingTime: number;
+}

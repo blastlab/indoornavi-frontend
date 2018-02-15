@@ -2,7 +2,7 @@ import {ActivatedRoute} from '@angular/router';
 import {Component, NgZone, OnInit} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {SocketConnectorComponent} from '../socket-connector.component';
-import {TimeStepBuffer} from './analytics.type';
+import {HeatMapPath, TimeStepBuffer} from './analytics.type';
 import {SocketService} from '../../../shared/services/socket/socket.service';
 import {PublishedService} from '../../publication.service';
 import {AreaService} from '../../../shared/services/area/area.service';
@@ -16,12 +16,12 @@ import {MapSvg} from '../../../map/map.type';
 import {FloorService} from '../../../floor/floor.service';
 import {TagVisibilityTogglerService} from '../../../shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
 import {MapObjectService} from '../../../shared/utils/drawing/map.object.service';
+import {BreadcrumbService} from '../../../shared/services/breadcrumbs/breadcrumb.service';
 
 @Component({
   templateUrl: './analytics.html'
 })
 export class AnalyticsComponent extends SocketConnectorComponent implements OnInit {
-  private pathSliderView: boolean = false;
   private timeStepBuffer: Map<number, TimeStepBuffer[]> = new Map();
   private mapId = 'map';
   private heatMap: HexagonHeatMap;
@@ -36,12 +36,8 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     '#ff000c'
   ];
 
-  public heatMapSettings = {
-    path: 2500,
-    heatingTime: 2000
-  };
-
-  public playingAnimation: boolean = false;
+  private heatMapSettings: HeatMapPath;
+  private playingAnimation: boolean = false;
 
   constructor(ngZone: NgZone,
               socketService: SocketService,
@@ -53,7 +49,8 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
               iconService: IconService,
               mapObjectService: MapObjectService,
               floorService: FloorService,
-              tagTogglerService: TagVisibilityTogglerService
+              tagTogglerService: TagVisibilityTogglerService,
+              breadcrumbService: BreadcrumbService
               ) {
     super(ngZone,
       socketService,
@@ -65,7 +62,8 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       iconService,
       mapObjectService,
       floorService,
-      tagTogglerService
+      tagTogglerService,
+      breadcrumbService
     );
   }
 
@@ -97,22 +95,6 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
         }
       }
     });
-  }
-
-  setPathLength (event): void {
-    this.heatMapSettings.path = event;
-    this.heatMap.coolingDown = this.heatMapSettings.path;
-  }
-
-  toggleSlider(): void {
-    this.pathSliderView = !this.pathSliderView;
-  }
-
-  toggleHeatAnimation(): void {
-    this.playingAnimation = !this.playingAnimation;
-    if (!this.playingAnimation) {
-      this.heatMap.eraseHeatMap();
-    }
   }
 
   private heatUpHexes(data: CoordinatesSocketData): void {

@@ -26,6 +26,7 @@ import {Floor} from '../../floor/floor.type';
 import {TagVisibilityTogglerService} from '../../shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
 import {TagToggle} from '../../shared/components/tag-visibility-toggler/tag-toggle.type';
 import {Tag} from '../../device/device.type';
+import {BreadcrumbService} from '../../shared/services/breadcrumbs/breadcrumb.service';
 
 @Component({
   templateUrl: './socket-connector.component.html'
@@ -52,7 +53,26 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
               private iconService: IconService,
               private mapObjectService: MapObjectService,
               private floorService: FloorService,
-              private tagTogglerService: TagVisibilityTogglerService) {
+              private tagTogglerService: TagVisibilityTogglerService,
+              private breadcrumbService: BreadcrumbService
+  ) {
+
+    this.route.params
+      .subscribe((params: Params) => {
+        const floorId = +params['id'];
+        floorService.getFloor(floorId).subscribe((floor: Floor) => {
+          breadcrumbService.publishIsReady([
+            {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
+            {label: floor.building.complex.name, routerLink: `/complexes/${floor.building.complex.id}/buildings`, routerLinkActiveOptions: {exact: true}},
+            {
+              label: floor.building.name,
+              routerLink: `/complexes/${floor.building.complex.id}/buildings/${floor.building.id}/floors`,
+              routerLinkActiveOptions: {exact: true}
+            },
+            {label: `${(floor.name.length ? floor.name : floor.level)}`, disabled: true}
+          ]);
+        });
+      });
   }
 
   ngOnInit(): void {
