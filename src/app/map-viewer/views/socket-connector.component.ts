@@ -50,7 +50,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
               private areaService: AreaService,
               private translateService: TranslateService,
               private iconService: IconService,
-              private mapObjectService: MapObjectService
+              private mapObjectService: MapObjectService,
               private floorService: FloorService,
               private tagTogglerService: TagVisibilityTogglerService) {
   }
