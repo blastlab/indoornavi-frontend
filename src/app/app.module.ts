@@ -95,6 +95,7 @@ import {AreaDetailsService} from './map-editor/tool-bar/tools/area/details/area-
 import {ContextMenuService} from './shared/wrappers/editable/editable.service';
 import {PublishedComponent} from './map-viewer/views/publications/publication';
 import {AnalyticsComponent} from './map-viewer/views/analytics/analytics';
+import {MapObjectService} from './shared/utils/drawing/map.object.service';
 import {MinSelectedValidator} from './shared/directive/minselected.directive';
 import {TagVisibilityTogglerComponent} from './shared/components/tag-visibility-toggler/tag-visibility-toggler';
 import {TagVisibilityTogglerService} from './shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
@@ -217,6 +218,8 @@ export function HttpLoaderFactory(http: Http) {
     HintBarService,
     ZoomService,
     AreaDetailsService,
+    ContextMenuService,
+    MapObjectService,
     ContextMenuService,
     TagVisibilityTogglerService
   ], bootstrap: [AppComponent]

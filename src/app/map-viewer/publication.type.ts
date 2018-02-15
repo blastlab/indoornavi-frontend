@@ -2,6 +2,7 @@ import {User} from '../user/user/user.type';
 import {Floor} from '../floor/floor.type';
 import {Point} from '../map-editor/map.type';
 import {Tag} from '../device/device.type';
+import { SvgGroupWrapper } from 'app/shared/utils/drawing/drawing.builder';
 
 export interface Publication {
   id?: number;

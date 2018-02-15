@@ -1,12 +1,11 @@
 import * as d3 from 'd3';
 import {Point} from '../../../map-editor/map.type';
 import {DrawConfiguration} from '../../../map-viewer/publication.type';
-import {ZoomService} from '../../services/zoom/zoom.service';
 
 export class SvgGroupWrapper {
   private elements: Map<ElementType, d3.selection[]> = new Map();
 
-  constructor(private group: d3.selection, private zoomService: ZoomService) {
+  constructor(private group: d3.selection) {
   }
 
   place(coordinates: Point): SvgGroupWrapper {
@@ -75,6 +74,18 @@ export class SvgGroupWrapper {
     return this;
   }
 
+  addPolyline(points: Point[], radius: number): SvgGroupWrapper {
+    let lastPoint: Point;
+    points.forEach((point: Point): void => {
+      this.addCircle(point, radius);
+      if (!!lastPoint) {
+        this.addLine(lastPoint, point);
+      }
+      lastPoint = point;
+    });
+    return this;
+  }
+
   setDraggable(customDragging?: () => void): SvgGroupWrapper {
     const dragStart = (): void => {
       d3.event.sourceEvent.stopPropagation();
@@ -117,7 +128,10 @@ export class SvgGroupWrapper {
 
   getLastElement(type: ElementType): d3.selection {
     const elements: d3.selection[] = this.elements.get(type);
-    return elements[elements.length - 1];
+    if (!!elements) {
+      return elements[elements.length - 1];
+    }
+    this.throwErrorTypeNull(type);
   }
 
   removeElements(type: ElementType): void {
@@ -128,6 +142,7 @@ export class SvgGroupWrapper {
       });
       elements.length = 0;
     }
+    this.throwErrorTypeNull(type);
   }
 
   removeLastElement(type: ElementType): void {
@@ -145,13 +160,16 @@ export class SvgGroupWrapper {
       this.elements.set(type, [element]);
     }
   }
+
+  private throwErrorTypeNull (elementType: ElementType): void {
+    throw new Error(`${elementType} is null or undefined`);
+  }
 }
 
 export class DrawBuilder {
 
-  constructor(private appendable: d3.selection,
-              private configuration: DrawConfiguration,
-              private zoomService: ZoomService) {
+  constructor(protected appendable: d3.selection,
+              protected configuration: DrawConfiguration) {
   }
 
   createGroup(): SvgGroupWrapper {
@@ -165,7 +183,7 @@ export class DrawBuilder {
     if (this.configuration.cursor) {
       group.style('cursor', this.configuration.cursor);
     }
-    return new SvgGroupWrapper(group, this.zoomService);
+    return new SvgGroupWrapper(group);
   }
 }
 

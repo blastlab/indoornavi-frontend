@@ -14,12 +14,13 @@ import {Observable} from 'rxjs/Observable';
 import {Point} from 'app/map-editor/map.type';
 import {TranslateService} from '@ngx-translate/core';
 import {Config} from '../../../config';
-import {ZoomService} from '../../shared/services/zoom/zoom.service';
 import {MapLoaderInformerService} from '../../shared/services/map-loader-informer/map-loader-informer.service';
 import {MapSvg} from '../../map/map.type';
 import {Area} from '../../map-editor/tool-bar/tools/area/area.type';
 import {Movable} from '../../shared/wrappers/movable/movable';
 import {Scale} from '../../map-editor/tool-bar/tools/scale/scale.type';
+import {MapObjectService} from '../../shared/utils/drawing/map.object.service';
+import {log} from 'util';
 import {FloorService} from '../../floor/floor.service';
 import {Floor} from '../../floor/floor.type';
 import {TagVisibilityTogglerService} from '../../shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
@@ -49,7 +50,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
               private areaService: AreaService,
               private translateService: TranslateService,
               private iconService: IconService,
-              private zoomService: ZoomService,
+              private mapObjectService: MapObjectService,
               private floorService: FloorService,
               private tagTogglerService: TagVisibilityTogglerService) {
   }
@@ -58,7 +59,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     this.translateService.setDefaultLang('en');
     this.route.params.subscribe((params: Params) => {
       const floorId = +params['id'];
-      this.floorService.getFloor(floorId).subscribe((floor: Floor) => {
+      this.floorService.getFloor(floorId).subscribe((floor: Floor): void => {
         this.floor = floor;
         if (floor.imageId != null) {
           this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg) => {
@@ -107,7 +108,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   protected handleCoordinatesData(data: CoordinatesSocketData): void {
     const deviceId: number = data.coordinates.tagShortId;
     if (!this.isOnMap(deviceId)) {
-      const drawBuilder = new DrawBuilder(this.d3map.container, {id: `tag-${deviceId}`, clazz: 'tag'}, this.zoomService);
+      const drawBuilder = new DrawBuilder(this.d3map.container, {id: `tag-${deviceId}`, clazz: 'tag'});
       const tagOnMap: SvgGroupWrapper = drawBuilder
         .createGroup()
         .addIcon({x: 0, y: 0}, this.iconService.getIcon(NaviIcons.TAG))
@@ -118,7 +119,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       this.moveTagOnMap(data.coordinates.point, deviceId);
     }
     if (this.originListeningOnEvent.containsKey('coordinates')) {
-      this.originListeningOnEvent.getValue('coordinates').forEach((event: MessageEvent) => {
+      this.originListeningOnEvent.getValue('coordinates').forEach((event: MessageEvent): void => {
         event.source.postMessage({type: 'coordinates', coordinates: data}, event.origin);
       })
     }
@@ -164,7 +165,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   }
 
   private initializeSocketConnection(): void {
-    this.ngZone.runOutsideAngular(() => {
+    this.ngZone.runOutsideAngular((): void => {
       const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?client`);
       this.setSocketConfiguration();
       this.tagTogglerService.onToggleTag().subscribe((tagToggle: TagToggle) => {
@@ -188,9 +189,9 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   };
 
   private drawAreas(floorId: number): void {
-    this.areaService.getAllByFloor(floorId).first().subscribe((areas: Area[]) => {
+    this.areaService.getAllByFloor(floorId).first().subscribe((areas: Area[]): void => {
       areas.forEach((area: Area) => {
-        const drawBuilder = new DrawBuilder(this.d3map.container, {id: `area-${area.id}`, clazz: 'area'}, this.zoomService);
+        const drawBuilder: DrawBuilder = new DrawBuilder(this.d3map.container, {id: `area-${area.id}`, clazz: 'area'});
         const areaOnMap = drawBuilder
           .createGroup()
           .addPolygon(area.points);
@@ -213,8 +214,8 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     }
 
     if (this.originListeningOnEvent.containsKey('area')) {
-      this.originListeningOnEvent.getValue('area').forEach((event: MessageEvent) => {
-        setTimeout(() => {
+      this.originListeningOnEvent.getValue('area').forEach((event: MessageEvent): void => {
+        setTimeout((): void => {
           event.source.postMessage({type: 'area', area: data.event}, event.origin);
         }, Movable.TRANSITION_DURATION);
       });
@@ -239,6 +240,16 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           } else {
             this.originListeningOnEvent.setValue(data['args'], [event]);
           }
+          break;
+        case 'createObject':
+          const mapObjectId: number = this.mapObjectService.create(this.d3map.container);
+          event.source.postMessage({type: 'createObject', mapObjectId: mapObjectId}, event.origin);
+          break;
+        case 'drawObject':
+          this.mapObjectService.draw(data['args'], this.scale);
+          break;
+        case 'removeObject':
+          this.mapObjectService.remove(data['args']);
           break;
       }
     }

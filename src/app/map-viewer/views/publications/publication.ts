@@ -6,8 +6,8 @@ import {SocketService} from '../../../shared/services/socket/socket.service';
 import {PublishedService} from '../../publication.service';
 import {AreaService} from '../../../shared/services/area/area.service';
 import {IconService} from '../../../shared/services/drawing/icon.service';
-import {ZoomService} from '../../../shared/services/zoom/zoom.service';
 import {MapLoaderInformerService} from '../../../shared/services/map-loader-informer/map-loader-informer.service';
+import {MapObjectService} from '../../../shared/utils/drawing/map.object.service';
 import {FloorService} from '../../../floor/floor.service';
 import {TagVisibilityTogglerService} from '../../../shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
 import {BreadcrumbService} from '../../../shared/services/breadcrumbs/breadcrumb.service';
@@ -19,7 +19,8 @@ import {Floor} from '../../../floor/floor.type';
 })
 export class PublishedComponent extends SocketConnectorComponent implements OnInit {
 
-  constructor(ngZone: NgZone,
+  constructor(
+    ngZone: NgZone,
               socketService: SocketService,
               route: ActivatedRoute,
               publishedService: PublishedService,
@@ -27,10 +28,11 @@ export class PublishedComponent extends SocketConnectorComponent implements OnIn
               areaService: AreaService,
               translateService: TranslateService,
               iconService: IconService,
-              zoomService: ZoomService,
+              mapObjectService: MapObjectService,
               floorService: FloorService,
               tagToggler: TagVisibilityTogglerService,
-              breadcrumbService: BreadcrumbService) {
+              breadcrumbService: BreadcrumbService
+  ) {
 
     super(
       ngZone,
@@ -41,9 +43,9 @@ export class PublishedComponent extends SocketConnectorComponent implements OnIn
       areaService,
       translateService,
       iconService,
-      zoomService,
+      mapObjectService,
       floorService,
-      tagToggler
+      tagToggler,
     );
 
     this.route.params

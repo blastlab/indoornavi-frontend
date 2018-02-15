@@ -335,7 +335,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     return new DrawBuilder(this.container, {
       id: `area-${isNumber(index) ? index : 'new'}`,
       clazz: `area`
-    }, this.zoomService);
+    });
   }
 
   private isFirstPoint(): boolean {
