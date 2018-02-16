@@ -20,7 +20,6 @@ import {Area} from '../../map-editor/tool-bar/tools/area/area.type';
 import {Movable} from '../../shared/wrappers/movable/movable';
 import {Scale} from '../../map-editor/tool-bar/tools/scale/scale.type';
 import {MapObjectService} from '../../shared/utils/drawing/map.object.service';
-import {log} from 'util';
 import {FloorService} from '../../floor/floor.service';
 import {Floor} from '../../floor/floor.type';
 import {TagVisibilityTogglerService} from '../../shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
@@ -189,10 +188,14 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?client`);
       this.setSocketConfiguration();
       this.tagTogglerService.onToggleTag().subscribe((tagToggle: TagToggle) => {
+        if (this.tagsOnMap.containsKey(tagToggle.tag.shortId)) {
+          this.tagsOnMap.getValue(tagToggle.tag.shortId).remove();
+          this.tagsOnMap.remove(tagToggle.tag.shortId);
+        }
         this.socketService.send({type: CommandType[CommandType.TOGGLE_TAG], args: tagToggle.tag.shortId});
       });
 
-      this.socketSubscription = stream.subscribe((data: MeasureSocketData) => {
+      this.socketSubscription = stream.subscribe((data: MeasureSocketData): void => {
         this.ngZone.run(() => {
           if (this.isCoordinatesData(data)) {
             const coordinateSocketData: CoordinatesSocketData = (<CoordinatesSocketData>data);

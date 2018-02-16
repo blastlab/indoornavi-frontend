@@ -26,8 +26,8 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
   private timeStepBuffer: Map<number, TimeStepBuffer[]> = new Map();
   private mapId = 'map';
   private heatMap: HexagonHeatMap;
-  // hexRadius set to tag icon size equal 20px x 20px square
-  private hexSize: number = 20;
+  // hexRadius set to tag icon size equal 10px x 10px square
+  private hexSize: number = 10;
   private gradient: string[] = [
     '#ebff81',
     '#fffb00',
@@ -43,7 +43,8 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
   };
   private playingAnimation: boolean = false;
 
-  constructor(ngZone: NgZone,
+  constructor(
+              ngZone: NgZone,
               socketService: SocketService,
               route: ActivatedRoute,
               publishedService: PublishedService,
@@ -57,7 +58,8 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
               breadcrumbService: BreadcrumbService,
               private heatMapControllerService: HeatMapControllerService
               ) {
-    super(ngZone,
+    super(
+      ngZone,
       socketService,
       route,
       publishedService,
