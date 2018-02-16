@@ -9,10 +9,10 @@ export class HexagonHeatMap {
   private maxOpacity: number  = 0.6;
   private heatingUpTime: number;
   private coolingDownTime: number;
-  private points: any[] = [];
-  private hexGridTable: any[] = [];
-  private svg: any;
-  private hexMap: any;
+  private points: Array<[number, number]> = [];
+  private hexGridTable: Array<HexHeatElement> = [];
+  private svg: d3.selection;
+  private hexMap: d3.selection;
   private margin: Margin;
 
   constructor(private width: number,
