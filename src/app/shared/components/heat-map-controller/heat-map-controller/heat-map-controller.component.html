@@ -7,15 +7,16 @@
             icon="fa-arrows-h"
             (click)="toggleSlider()">
     </button>
+    <span>{{heatMapWaterfallDisplayTimeInSeconds}} [s]</span>
+    <p-slider
+      class="ui-g-12"
+      *ngIf="pathSliderView"
+      pTooltip="{{'path.length'|translate}}"
+      [ngModel]="heatMapWaterfallDisplayTime"
+      (ngModelChange) = "setPathLength($event)"
+      [min]="25" [max]="2500"
+    ></p-slider>
   </div>
-  <p-slider
-    class="ui-g-5 ui-md-3 ui-lg-3"
-    *ngIf="pathSliderView"
-    pTooltip="{{'path.length'|translate}}"
-    [ngModel]="heatMapSettings.path"
-    (ngModelChange) = "setPathLength($event)"
-    [min]="25000" [max]="2500000"
-  ></p-slider>
   <button pButton pTooltip="{{'show.heat.map'|translate}}" icon="fa-play"
           [disabled]="playingAnimation" (click)="toggleHeatAnimation()">
   </button>

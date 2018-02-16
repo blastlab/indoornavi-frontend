@@ -17,6 +17,7 @@ import {FloorService} from '../../../floor/floor.service';
 import {TagVisibilityTogglerService} from '../../../shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
 import {MapObjectService} from '../../../shared/utils/drawing/map.object.service';
 import {BreadcrumbService} from '../../../shared/services/breadcrumbs/breadcrumb.service';
+import {HeatMapControllerService} from '../../../shared/components/heat-map-controller/heat-map-controller/heat-map-controller.service';
 
 @Component({
   templateUrl: './analytics.html'
@@ -36,7 +37,10 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     '#ff000c'
   ];
 
-  private heatMapSettings: HeatMapPath;
+  private heatMapSettings: HeatMapPath = {
+    heatMapWaterfallDisplayTime: 25000,
+    heatingTime: 500,
+  };
   private playingAnimation: boolean = false;
 
   constructor(ngZone: NgZone,
@@ -50,7 +54,8 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
               mapObjectService: MapObjectService,
               floorService: FloorService,
               tagTogglerService: TagVisibilityTogglerService,
-              breadcrumbService: BreadcrumbService
+              breadcrumbService: BreadcrumbService,
+              private heatMapControllerService: HeatMapControllerService
               ) {
     super(ngZone,
       socketService,
@@ -68,6 +73,16 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
   }
 
   protected init(): void {
+    this.heatMapControllerService.onAnimationToggled().subscribe((animationToggle: boolean): void => {
+      this.playingAnimation = animationToggle;
+      if (!this.playingAnimation) {
+        this.heatMap.eraseHeatMap();
+      }
+    });
+    this.heatMapControllerService.onHeatMapWaterfallDisplayTimesChange().subscribe((heatMapWaterfallDisplayTime: number): void => {
+      this.heatMapSettings.heatMapWaterfallDisplayTime = heatMapWaterfallDisplayTime;
+      this.heatMap.coolingDown = this.heatMapSettings.heatMapWaterfallDisplayTime;
+    });
     this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg): void => {
       this.createHexagonalHeatMapGrid(mapSvg.layer);
     });
@@ -107,6 +122,6 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     this.heatMap = new HexagonHeatMap(width, height, this.hexSize, this.gradient);
     this.heatMap.create(this.mapId);
     this.heatMap.heatingUp = this.heatMapSettings.heatingTime;
-    this.heatMap.coolingDown = this.heatMapSettings.path;
+    this.heatMap.coolingDown = this.heatMapSettings.heatMapWaterfallDisplayTime;
   }
 }

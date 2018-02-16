@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {HeatMapPath} from '../../../../map-viewer/views/analytics/analytics.type';
+import {HeatMapControllerService} from './heat-map-controller.service';
 
 @Component({
   selector: 'app-heat-map-controller',
@@ -9,20 +9,17 @@ import {HeatMapPath} from '../../../../map-viewer/views/analytics/analytics.type
 export class HeatMapControllerComponent implements OnInit {
   private pathSliderView: boolean = false;
   private playingAnimation: boolean = false;
-  private heatMapSettings: HeatMapPath = {
-    path: 2500,
-    heatingTime: 2000,
-  };
+  private heatMapWaterfallDisplayTime: number = 25; // in seconds for user friendly units
 
-  constructor() { }
+  constructor(private heatMapControllerService: HeatMapControllerService) { }
 
   ngOnInit() {
   }
 
-  setPathLength (event): void {
-    this.heatMapSettings.path = event;
-    // move to subscription
-    // this.heatMap.coolingDown = this.heatMapSettings.path;
+  setPathLength (event: number): void {
+    this.heatMapWaterfallDisplayTime = event;
+    // calculate time to [ms] before serving
+    this.heatMapControllerService.setHeatMapWaterfallDisplayTime(this.heatMapWaterfallDisplayTime * 1000);
   }
 
   toggleSlider(): void {
@@ -31,10 +28,7 @@ export class HeatMapControllerComponent implements OnInit {
 
   toggleHeatAnimation(): void {
     this.playingAnimation = !this.playingAnimation;
-    if (!this.playingAnimation) {
-      // move to subscription
-      // this.heatMap.eraseHeatMap();
-    }
+    this.heatMapControllerService.togglePlayingAnimation(this.playingAnimation);
   }
 
 }

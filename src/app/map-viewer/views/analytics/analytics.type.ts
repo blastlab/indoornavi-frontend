@@ -20,6 +20,6 @@ export interface HexHeatElement {
 }
 
 export interface HeatMapPath {
-  path: number;
+  heatMapWaterfallDisplayTime: number;
   heatingTime: number;
 }

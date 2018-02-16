@@ -1,7 +1,7 @@
 {
 	"add": "Add",
 	"analytics": "Analise map events ",
-  "heat.map.tool": "Heat map Tools",
+  "heat.map.tool": "Heat Map Controller",
 	"anchors.header": "Anchors",
 	"area": "Area",
 	"area.form.invalid": "Please fill required fields",
