@@ -132,7 +132,8 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         .createGroup()
         .addIcon({x: 0, y: 0}, this.iconService.getIcon(NaviIcons.TAG))
         .addText({x: 0, y: 36}, `${deviceId}`)
-        .place({x: data.coordinates.point.x, y: data.coordinates.point.y});
+        .place({x: data.coordinates.point.x, y: data.coordinates.point.y})
+        .flashColors();
       this.tagsOnMap.setValue(deviceId, new Movable(tagOnMap).setShortId(deviceId));
     } else {
       this.moveTagOnMap(data.coordinates.point, deviceId);
