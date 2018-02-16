@@ -128,6 +128,11 @@ export class HexagonHeatMap {
   }
 
   private findHexIndex (coordinates: Point): HexHeatElement {
+    // TODO: there find the point and apply one hex to it, set tag id to this hex so waterfall hex heat up can be done
+    const hexPoint: any = this.points.find((point: any) => {
+      return (point[0] > coordinates.x && point[1] > coordinates.y);
+    });
+    console.log(hexPoint);
     return this.hexGridTable.find(hex => hex.x > coordinates.x && hex.y > coordinates.y);
   };
 
