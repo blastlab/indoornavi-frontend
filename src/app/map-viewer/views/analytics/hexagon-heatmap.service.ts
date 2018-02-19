@@ -28,7 +28,6 @@ export class HexagonHeatMap {
   }
 
   create(id: string): void {
-    const hexbin = d3Hexbin.hexbin().radius(this.hexSize);
 
     this.svg = d3.select(`#${id}`).append('svg')
       .attr('width', this.width + this.margin.left + this.margin.right)
@@ -37,40 +36,14 @@ export class HexagonHeatMap {
       .append('g')
       .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
 
-    this.hexMap = this.svg.append('g')
-      .selectAll('.hexagon')
-      .data(hexbin(this.points))
-      .enter().append('path')
-      .attr('class', 'hexagon')
-      .attr('d', (d, index, nodes) => {
-        this.hexGridTable.push({x: d.x, y: d.y, element: nodes[index]});
-        return 'M' + d.x + ',' + d.y + hexbin.hexagon();
-      })
-      .attr('heat', 0)
-      .attr('stroke', this.heatColors[0])
-      .style('stroke-opacity', 0)
-      .attr('stroke-width', `${this.strokeWidth}px`)
-      .style('fill', this.heatColors[0])
-      .style('fill-opacity', 0);
   }
 
   eraseHeatMap (): void {
-    this.hexGridTable.forEach((hex: HexHeatElement) => {
-      const element = d3.select(hex.element);
-      if (element.attr('heat') > 0) {
-        element
-          .transition()
-          .style('fill', this.heatColors[0])
-          .attr('stroke', this.heatColors[0])
-          .style('stroke-opacity', 0)
-          .style('fill-opacity', 0)
-          .attr('heat', 0);
-      }
-    })
+    this.svg.selectAll('g').remove();
   }
 
   feedWithCoordinates(data: Point): void {
-    this.fireHeatAtLocation(this.findHexIndex(data));
+    this.fireHeatAtLocation(this.findHexIndex(data), data);
   }
 
   set heatingUp(value) {
@@ -81,7 +54,7 @@ export class HexagonHeatMap {
     this.coolingDownTime = value;
   }
 
-  private fireHeatAtLocation (hex: HexHeatElement): void {
+  private fireHeatAtLocation (hex: HexHeatElement, coordinates: Point): void {
     if (!!hex) {
       const hexagon = d3.select(hex.element);
 
@@ -124,16 +97,35 @@ export class HexagonHeatMap {
           };
           coolDown();
         });
+    } else {
+      const hexbin = d3Hexbin.hexbin().radius(this.hexSize);
+
+      const hexPoint =  this.points.find((point: [number, number]): boolean => point[0] > coordinates.x && point[1] > coordinates.y);
+
+      this.hexMap = this.svg.append('g')
+        .selectAll('.hexagon')
+        .data(hexbin([hexPoint]))
+        .enter().append('path')
+        .attr('class', 'hexagon')
+        .attr('d', (d, index, nodes) => {
+          this.hexGridTable.push({x: d.x, y: d.y, element: nodes[index]});
+          return 'M' + d.x + ',' + d.y + hexbin.hexagon();
+        })
+        .attr('heat', 1)
+        .attr('stroke', this.heatColors[0])
+        .style('stroke-opacity', this.maxOpacity)
+        .attr('stroke-width', `${this.strokeWidth}px`)
+        .style('fill', this.heatColors[0])
+        .style('fill-opacity', this.maxOpacity);
     }
   }
 
   private findHexIndex (coordinates: Point): HexHeatElement {
-    // TODO: there find the point and apply one hex to it, set tag id to this hex so waterfall hex heat up can be done
-    const hexPoint: any = this.points.find((point: any) => {
-      return (point[0] > coordinates.x && point[1] > coordinates.y);
-    });
-    console.log(hexPoint);
-    return this.hexGridTable.find(hex => hex.x > coordinates.x && hex.y > coordinates.y);
+    return this.hexGridTable.find((hex: HexHeatElement): boolean =>
+      hex.x > coordinates.x &&
+      hex.y > coordinates.y &&
+      hex.x < coordinates.x + 1.5 * this.hexSize &&
+      hex.y < coordinates.y + 1.5 * this.hexSize);
   };
 
   private calculateMap(): number[] {
