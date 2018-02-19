@@ -54,7 +54,21 @@ export class HexagonHeatMap {
     this.coolingDownTime = value;
   }
 
+  private coolDownActiveHexes(): void {
+    const hexagons = this.svg.selectAll('.hexagon').nodes();
+    hexagons.forEach((hexagon: d3.selection): void => {
+      // hexagon.remove();
+      console.log(hexagon);
+      // act on hexagons with cool down method checking time heated
+    })
+    // this.hexMap.forEach((hexagon: d3.selection): void => {
+    //   console.log(hexagon.attr('heatedAtTime'));
+    // });
+  }
+
   private fireHeatAtLocation (hex: HexHeatElement, coordinates: Point): void {
+    this.coolDownActiveHexes();
+
     if (!!hex) {
       const hexagon = d3.select(hex.element);
 
@@ -68,35 +82,12 @@ export class HexagonHeatMap {
         .transition()
         .duration(this.heatingUpTime)
         .attr('heat', heat)
+        .attr('heated', Date.now().toString())
         .style('fill-opacity', this.maxOpacity)
         .style('stroke-opacity', this.maxOpacity)
         .style('fill', () => color)
-        .attr('stroke', () => color)
-        .on('end', () => {
-          const coolDown = (): void => {
-            if (heat > 1) {
-              hexagon
-                .transition()
-                .on('end', (): any => { // can return alpha function or string
-                  heat--;
-                  return coolDown;
-                })
-                .duration(this.coolingDownTime)
-                .attr('heat', heat)
-                .style('fill', () => {
-                  return this.heatColors[heat - 1]
-                })
-                .attr('stroke', (): string => this.heatColors[heat - 1]);
-            } else {
-              hexagon
-                .transition()
-                .duration(this.coolingDownTime)
-                .style('fill-opacity', 0)
-                .style('stroke-opacity', 0);
-            }
-          };
-          coolDown();
-        });
+        .attr('stroke', () => color);
+
     } else {
       const hexbin = d3Hexbin.hexbin().radius(this.hexSize);
 

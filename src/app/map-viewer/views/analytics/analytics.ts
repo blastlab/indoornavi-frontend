@@ -38,7 +38,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
   ];
 
   private heatMapSettings: HeatMapPath = {
-    heatMapWaterfallDisplayTime: 25000,
+    heatMapWaterfallDisplayTime: 250,
     heatingTime: 500,
   };
   private playingAnimation: boolean = false;
