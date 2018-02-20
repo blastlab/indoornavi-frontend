@@ -38,8 +38,8 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
   ];
 
   private heatMapSettings: HeatMapPath = {
-    heatMapWaterfallDisplayTime: 250,
-    heatingTime: 500,
+    temperatureLifeTime: 250,
+    heatingTime: 1000,
   };
   private playingAnimation: boolean = false;
 
@@ -82,8 +82,8 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       }
     });
     this.heatMapControllerService.onHeatMapWaterfallDisplayTimesChange().subscribe((heatMapWaterfallDisplayTime: number): void => {
-      this.heatMapSettings.heatMapWaterfallDisplayTime = heatMapWaterfallDisplayTime;
-      this.heatMap.coolingDown = this.heatMapSettings.heatMapWaterfallDisplayTime;
+      this.heatMapSettings.temperatureLifeTime = heatMapWaterfallDisplayTime;
+      this.heatMap.temperatureTimeInterval = this.heatMapSettings.temperatureLifeTime;
     });
     this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg): void => {
       this.createHexagonalHeatMapGrid(mapSvg.layer);
@@ -125,6 +125,6 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     this.heatMap = new HexagonHeatMap(width, height, this.hexSize, this.gradient);
     this.heatMap.create(this.mapId);
     this.heatMap.heatingUp = this.heatMapSettings.heatingTime;
-    this.heatMap.coolingDown = this.heatMapSettings.heatMapWaterfallDisplayTime;
+    this.heatMap.temperatureTimeInterval = this.heatMapSettings.temperatureLifeTime;
   }
 }
