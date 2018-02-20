@@ -21,7 +21,7 @@
 // }
 //
 // describe('ScaleComponentInit', () => {
-//   let temperatureTimeInterval: any;
+//   let temperatureTimeIntervalForCooling: any;
 //
 //   beforeAll(() => {
 //     ScaleTool.navigateToHome();
@@ -31,19 +31,19 @@
 //     ScaleTool.openFloorOfLastAddedBuilding();
 //     ScaleTool.addFloor('Test', 1);
 //     ScaleTool.openMapOfLastAddedFloor();
-//     temperatureTimeInterval = require('temperatureTimeInterval');
+//     temperatureTimeIntervalForCooling = require('temperatureTimeIntervalForCooling');
 //   });
 //
 //   it('should not be able to upload wrong type of image', () => {
 //     const file = '../../../../resources/wrongFile.txt';
-//     const absolutePath = temperatureTimeInterval.resolve(__dirname, file);
+//     const absolutePath = temperatureTimeIntervalForCooling.resolve(__dirname, file);
 //     element(by.tagName('input')).sendKeys(absolutePath);
 //     expect(element(by.className('file-upload'))).toBeTruthy();
 //   });
 //
 //   it('should upload image', () => {
 //     const file = '../../../../resources/map.jpg';
-//     const absolutePath = temperatureTimeInterval.resolve(__dirname, file);
+//     const absolutePath = temperatureTimeIntervalForCooling.resolve(__dirname, file);
 //     element(by.tagName('input')).sendKeys(absolutePath);
 //
 //     expect(element(by.className('map-toolbar'))).toBeTruthy();

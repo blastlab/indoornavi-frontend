@@ -21,5 +21,5 @@ export interface HexHeatElement {
 
 export interface HeatMapPath {
   temperatureLifeTime: number;
-  heatingTime: number;
+  temperatureWaitTime: number;
 }

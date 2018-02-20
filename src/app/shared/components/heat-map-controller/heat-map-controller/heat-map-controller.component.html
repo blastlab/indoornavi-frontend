@@ -3,24 +3,31 @@
     <i class="fa fa-area-chart"></i> {{'heat.map.tool'|translate}}
   </div>
   <div>
-    <button pButton pTooltip="{{'path.length'|translate}}"
-            icon="fa-arrows-h"
-            (click)="toggleSlider()">
-    </button>
-    <span>{{heatMapWaterfallDisplayTime}} [s]</span>
+    <span>{{'heat.gap'|translate}}: {{heatTimeWait}} [s]</span>
     <p-slider
       class="ui-g-12"
-      *ngIf="pathSliderView"
+      pTooltip="{{'heat.gap'|translate}}"
+      [ngModel]="heatMapWaterfallDisplayTime"
+      (ngModelChange) = "setHeatTimeWait($event)"
+      [min]="10" [max]="2000"
+    ></p-slider>
+  </div>
+  <div>
+    <span>{{'path.length'|translate}}: {{pathLength}} [s]</span>
+    <p-slider
+      class="ui-g-12"
       pTooltip="{{'path.length'|translate}}"
       [ngModel]="heatMapWaterfallDisplayTime"
       (ngModelChange) = "setPathLength($event)"
       [min]="25" [max]="2500"
     ></p-slider>
   </div>
-  <button pButton pTooltip="{{'show.heat.map'|translate}}" icon="fa-play"
-          [disabled]="playingAnimation" (click)="toggleHeatAnimation()">
-  </button>
-  <button pButton pTooltip="{{'stop.heat.map'|translate}}" icon="fa-stop"
-          [disabled]="!playingAnimation" (click)="toggleHeatAnimation()">
-  </button>
+  <div>
+    <button pButton pTooltip="{{'show.heat.map'|translate}}" icon="fa-play"
+            [disabled]="playingAnimation" (click)="toggleHeatAnimation()">
+    </button>
+    <button pButton pTooltip="{{'stop.heat.map'|translate}}" icon="fa-stop"
+            [disabled]="!playingAnimation" (click)="toggleHeatAnimation()">
+    </button>
+  </div>
 </div>

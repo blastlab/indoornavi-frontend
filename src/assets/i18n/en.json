@@ -80,6 +80,7 @@
 	"go.to.mapEditor": "Go to editor",
 	"growl.failed.summary": "Failed",
 	"growl.success.summary": "Success",
+  "heat.gap": "Event Separation Time",
 	"heat.persistence": "Heat Persistence",
 	"hint.chooseTool": "Choose a tool.",
 	"login": "Login",

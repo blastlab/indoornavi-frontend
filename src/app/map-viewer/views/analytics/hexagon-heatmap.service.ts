@@ -7,8 +7,8 @@ import {HexHeatElement, Margin} from './analytics.type';
 export class HexagonHeatMap {
   private strokeWidth: number = 1;
   private maxOpacity: number  = 0.6;
-  private heatingUpTime: number;
-  private temperatureTimeStep: number;
+  private temperatureTimeStepForHeating: number;
+  private temperatureTimeStepForCooling: number;
   private transitionTime: number = 1000;
   private points: Array<[number, number]> = [];
   private hexGridTable: Array<HexHeatElement> = [];
@@ -41,18 +41,19 @@ export class HexagonHeatMap {
 
   eraseHeatMap (): void {
     this.svg.selectAll('g').remove();
+    this.hexGridTable = [];
   }
 
   feedWithCoordinates(data: Point): void {
     this.fireHeatAtLocation(this.findHex(data), data);
   }
 
-  set heatingUp(value) {
-    this.heatingUpTime = value;
+  set temperatureTimeIntervalForHeating(value) {
+    this.temperatureTimeStepForHeating = value;
   }
 
-  set temperatureTimeInterval(value) {
-    this.temperatureTimeStep = value;
+  set temperatureTimeIntervalForCooling(value) {
+    this.temperatureTimeStepForCooling = value;
   }
 
   private coolDownActiveHexes(timeNow: number): void {
@@ -60,7 +61,7 @@ export class HexagonHeatMap {
     hexagons.forEach((hex: d3.selection): void => {
       const hexagon = d3.select(hex);
       const lastTimeHexagonGetHeated = Number.parseInt(hexagon.attr('heated'));
-      if (timeNow - lastTimeHexagonGetHeated > this.temperatureTimeStep) {
+      if (timeNow - lastTimeHexagonGetHeated > this.temperatureTimeStepForCooling) {
         let heat = Number.parseInt(hexagon.attr('heat'));
         if (heat > 0) {
           --heat;
@@ -74,6 +75,10 @@ export class HexagonHeatMap {
         } else {
           const parent = d3.select(hex.parentNode);
           parent.remove();
+          const index = this.hexGridTable.findIndex((hexHeat: HexHeatElement): boolean => {
+            return hexHeat.element === hex;
+          });
+          this.hexGridTable.splice(index, 1);
         }
       }
     });
@@ -86,7 +91,7 @@ export class HexagonHeatMap {
       const hexagon = d3.select(hex.element);
       let heat = Number.parseInt(hexagon.attr('heat'));
       const lastTimeHexagonGetHeated = Number.parseInt(hexagon.attr('heated'));
-      if ((heat < 5) && (timeNow - lastTimeHexagonGetHeated > this.heatingUpTime)) {
+      if ((heat < 5) && (timeNow - lastTimeHexagonGetHeated > this.temperatureTimeStepForHeating)) {
         heat++;
       }
       const color = this.heatColors[heat];
@@ -124,11 +129,14 @@ export class HexagonHeatMap {
   }
 
   private findHex (coordinates: Point): HexHeatElement {
+    // hexagon shape builds grid that has different distance between hexes in x and y direction
+    // which gives for x direction a radius of circle overwritten on hexagon,
+    // and in y direction sqrt from 3 times a radius of circle overwritten on hexagon
     return this.hexGridTable.find((hex: HexHeatElement): boolean =>
       hex.x > coordinates.x &&
       hex.y > coordinates.y &&
-      hex.x < coordinates.x + 1.5 * this.hexSize &&
-      hex.y < coordinates.y + 1.5 * this.hexSize);
+      hex.x < coordinates.x + this.hexSize &&
+      hex.y < coordinates.y + Math.sqrt(3) * this.hexSize);
   };
 
   private calculateMap(): number[] {

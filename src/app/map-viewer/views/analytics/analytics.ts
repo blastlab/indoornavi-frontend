@@ -38,8 +38,8 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
   ];
 
   private heatMapSettings: HeatMapPath = {
-    temperatureLifeTime: 250,
-    heatingTime: 1000,
+    temperatureLifeTime: 25000,
+    temperatureWaitTime: 10000,
   };
   private playingAnimation: boolean = false;
 
@@ -83,7 +83,11 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     });
     this.heatMapControllerService.onHeatMapWaterfallDisplayTimesChange().subscribe((heatMapWaterfallDisplayTime: number): void => {
       this.heatMapSettings.temperatureLifeTime = heatMapWaterfallDisplayTime;
-      this.heatMap.temperatureTimeInterval = this.heatMapSettings.temperatureLifeTime;
+      this.heatMap.temperatureTimeIntervalForCooling = this.heatMapSettings.temperatureLifeTime;
+    });
+    this.heatMapControllerService.onHeatMapTimeGapChange().subscribe((heatTimeGap: number): void => {
+      this.heatMapSettings.temperatureWaitTime = heatTimeGap;
+      this.heatMap.temperatureTimeIntervalForHeating = this.heatMapSettings.temperatureWaitTime;
     });
     this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg): void => {
       this.createHexagonalHeatMapGrid(mapSvg.layer);
@@ -124,7 +128,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     const width = Number.parseInt(mapNode.node().getBBox().width);
     this.heatMap = new HexagonHeatMap(width, height, this.hexSize, this.gradient);
     this.heatMap.create(this.mapId);
-    this.heatMap.heatingUp = this.heatMapSettings.heatingTime;
-    this.heatMap.temperatureTimeInterval = this.heatMapSettings.temperatureLifeTime;
+    this.heatMap.temperatureTimeIntervalForHeating = this.heatMapSettings.temperatureWaitTime;
+    this.heatMap.temperatureTimeIntervalForCooling = this.heatMapSettings.temperatureLifeTime;
   }
 }

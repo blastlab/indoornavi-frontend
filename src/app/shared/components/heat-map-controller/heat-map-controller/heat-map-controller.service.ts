@@ -6,6 +6,7 @@ import {Subject} from 'rxjs/Subject';
 export class HeatMapControllerService {
   private playingAnimation: Subject<boolean> = new Subject<boolean>();
   private heatMapWaterfallDisplayTime: Subject<number> = new Subject<number>();
+  private heatTimeGap: Subject<number> = new Subject<number>();
 
   constructor() { }
 
@@ -21,8 +22,16 @@ export class HeatMapControllerService {
     this.playingAnimation.next(animationToggle);
   }
 
-  setHeatMapWaterfallDisplayTime (settings: number): void {
-    this.heatMapWaterfallDisplayTime.next(settings);
+  setHeatMapWaterfallDisplayTime (timeSpan: number): void {
+    this.heatMapWaterfallDisplayTime.next(timeSpan);
+  }
+
+  setHeatTimeGapChange (timeSpan: number): void {
+    this.heatTimeGap.next(timeSpan);
+  }
+
+  onHeatMapTimeGapChange (): Observable<number> {
+    return this.heatTimeGap.asObservable();
   }
 
 }
