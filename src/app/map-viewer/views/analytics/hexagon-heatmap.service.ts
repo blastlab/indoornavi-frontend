@@ -45,11 +45,11 @@ export class HexagonHeatMap {
       const hexagons = this.svg.selectAll('.hexagon').nodes();
       hexagons.forEach((hex: d3.selection): void => {
         const hexagon = d3.select(hex);
-        if (hexagon.attr('tagShortId') === tagShortId) {
+        if (Number.parseInt(hexagon.attr('tagShortId'), 10) === tagShortId) {
           const parent = d3.select(hex.parentNode);
           parent.remove();
           const index = this.hexGridTable.findIndex((hexHeatElement: HexHeatElement): boolean => {
-            return hexHeatElement.tagShortId === tagShortId;
+            return hexHeatElement.element === hex;
           });
           this.hexGridTable.splice(index, 1);
         }

@@ -8,7 +8,7 @@ import {PublishedService} from '../../publication.service';
 import {AreaService} from '../../../shared/services/area/area.service';
 import {IconService} from '../../../shared/services/drawing/icon.service';
 import {MapLoaderInformerService} from '../../../shared/services/map-loader-informer/map-loader-informer.service';
-import {CoordinatesSocketData} from '../../publication.type';
+import {CommandType, CoordinatesSocketData} from '../../publication.type';
 import {HexagonHeatMap} from './hexagon-heatmap.service';
 import * as d3 from 'd3';
 import {Movable} from '../../../shared/wrappers/movable/movable';
@@ -18,6 +18,7 @@ import {TagVisibilityTogglerService} from '../../../shared/components/tag-visibi
 import {MapObjectService} from '../../../shared/utils/drawing/map.object.service';
 import {BreadcrumbService} from '../../../shared/services/breadcrumbs/breadcrumb.service';
 import {HeatMapControllerService} from '../../../shared/components/heat-map-controller/heat-map-controller/heat-map-controller.service';
+import {TagToggle} from '../../../shared/components/tag-visibility-toggler/tag-toggle.type';
 
 @Component({
   templateUrl: './analytics.html'
@@ -101,6 +102,11 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
         this.timeStepBuffer.set(data.coordinates.tagShortId, [{data: data, timeOfDataStep: timeOfDataStep}])
       }
       this.handleCoordinatesData(data);
+    });
+    this.tagTogglerService.onToggleTag().subscribe((tagToggle: TagToggle) => {
+      if (this.tagsOnMap.containsKey(tagToggle.tag.shortId)) {
+        this.heatMap.eraseHeatMap(tagToggle.tag.shortId);
+      }
     });
     this.whenTransitionEnded().subscribe((tagShortId: number): void => {
       const timeStepBuffer = this.timeStepBuffer.get(tagShortId);

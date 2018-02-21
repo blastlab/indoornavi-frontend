@@ -34,9 +34,9 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   protected socketSubscription: Subscription;
   protected d3map: MapSvg = null;
   protected scale: Scale;
+  protected tagsOnMap: Dictionary<number, Movable> = new Dictionary<number, Movable>();
   private dataReceived = new Subject<CoordinatesSocketData>();
   private transitionEnded = new Subject<number>();
-  private tagsOnMap: Dictionary<number, Movable> = new Dictionary<number, Movable>();
   private areasOnMap: Dictionary<number, SvgGroupWrapper> = new Dictionary<number, SvgGroupWrapper>();
   private originListeningOnEvent: Dictionary<string, MessageEvent[]> = new Dictionary<string, MessageEvent[]>();
   private floor: Floor;
@@ -52,7 +52,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
               private iconService: IconService,
               private mapObjectService: MapObjectService,
               private floorService: FloorService,
-              private tagTogglerService: TagVisibilityTogglerService,
+              protected tagTogglerService: TagVisibilityTogglerService,
               private breadcrumbService: BreadcrumbService
   ) {
 
