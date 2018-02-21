@@ -105,6 +105,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     });
     this.tagTogglerService.onToggleTag().subscribe((tagToggle: TagToggle) => {
       if (this.tagsOnMap.containsKey(tagToggle.tag.shortId)) {
+        this.timeStepBuffer.delete(tagToggle.tag.shortId);
         this.heatMap.eraseHeatMap(tagToggle.tag.shortId);
       }
     });
