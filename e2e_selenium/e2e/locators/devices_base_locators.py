@@ -32,11 +32,19 @@ class DevicesBaseLocators(object):
         self.cancel_button = (By.XPATH, '//button[@ng-reflect-label="Cancel"]')
 
         self.not_verifed_device_table = (By.XPATH, '//p-picklist[@ng-reflect-source-header="Not verified"] ')
+        self.not_verified_device_table_item = (By.CSS_SELECTOR, 'li.ui-picklist-item')
+        self.not_verified_device_table_item_text = (By.CSS_SELECTOR, 'p-picklist[ng-reflect-source-header="Not verified"] li.ui-picklist-item div.device-details *:nth-child(1)')
+
+        self.picklist_wrapper_not_verified = (By.CSS_SELECTOR, 'div.ui-picklist-listwrapper *:nth-child(1)')
+        self.picklist_wrapper_verified = (By.CSS_SELECTOR, 'div.ui-picklist-listwrapper *:nth-child(2)')
 
         self.last_row_short_id = (By.CSS_SELECTOR, 'p-picklist[ng-reflect-source-header="Not verified"] li.ui-picklist-item *:last-child div.device-details *:nth-child(1)')
         self.last_row_long_id = (By.CSS_SELECTOR, 'p-picklist[ng-reflect-source-header="Not verified"] li.ui-picklist-item *:last-child div.device-details *:nth-child(2)')
         self.last_row_device_name = (By.CSS_SELECTOR, 'p-picklist[ng-reflect-source-header="Not verified"] li.ui-picklist-item *:last-child div.device-details *:nth-child(3)')
         # self.last_row_not_verifed = (By.CSS_SELECTOR, 'li.ui-picklist-item:last-of-type')
+
+        # Edit method - Locators
+        self.edit_button_device = (By.XPATH, '//button[@ng-reflect-text="Edit"]')
 
         self.select_device = ("SELECT name FROM device ORDER BY id DESC LIMIT 1")
         # Modals
@@ -49,3 +57,18 @@ class DevicesBaseLocators(object):
         # Toasts
         self.unique_short_id_toast = (By.XPATH, "//p[contains(text(),'Short Id must be unique.')]")
         self.unique_long_id_toast = (By.XPATH, "//p[contains(text(),'Long Id must be unique.')]")
+
+        # Delete method - Locators
+        self.remove_ask = (By.XPATH, "//span[contains(text(),'Are you sure you want to perform this action?')]")
+        self.delete_button_device = (By.XPATH, '//button[@ng-reflect-text="Remove"]')
+        self.yes_delete_button_device = (By.XPATH, '//button[@ng-reflect-label="Yes"]')
+        self.no_delete_button_device = (By.XPATH, '//button[@ng-reflect-label="No"]')
+
+        # Search method - Locators
+        self.search_not_verified_input = (By.CSS_SELECTOR, 'p-picklist[ng-reflect-source-header="Not verified"] div.ui-picklist div.ui-picklist-listwrapper div.ui-picklist-filter-container input[placeholder="Search by short id"]')
+        # self.search_verified_input = (By.CSS_SELECTOR, 'p-picklist[ng-reflect-source-header="Verified"] div.ui-picklist div.ui-picklist-listwrapper div.ui-picklist-filter-container input[placeholder="Search by short id"]')
+
+        # Change Verify method - Locators
+        self.move_to_verify_button = (By.CSS_SELECTOR, 'button[ng-reflect-icon="fa-angle-right"]')
+        self.move_to_not_verify_button = (By.CSS_SELECTOR, 'button[ng-reflect-icon="fa-angle-left"]')
+        self.move_all_to_verify_button = (By.CSS_SELECTOR, 'button[ng-reflect-icon="fa-angle-double-right"]')

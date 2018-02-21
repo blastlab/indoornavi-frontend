@@ -79,19 +79,19 @@ class BasePage(object):
         return True
 
     def wait_for_element(self, locator):
-        element = ui.WebDriverWait(self.driver, 100).until(EC.presence_of_element_located(locator))
+        element = ui.WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(locator))
         return element
 
     def wait_for_element_clickable(self, locator):
-        element = ui.WebDriverWait(self.driver, 100).until(EC.element_to_be_clickable(locator))
+        element = ui.WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(locator))
         return element
 
     def wait_for_element_visibility(self, locator):
-        element = ui.WebDriverWait(self.driver, 100).until(EC.visibility_of_element_located(locator))
+        element = ui.WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(locator))
         return element
 
     def wait_for_element_disappear(self, locator):
-        element = ui.WebDriverWait(self.driver, 100).until_not(EC.visibility_of_element_located(locator))
+        element = ui.WebDriverWait(self.driver, 10).until_not(EC.visibility_of_element_located(locator))
         return element
 
     def open_page(self, page_url):
@@ -107,12 +107,9 @@ class BasePage(object):
         input_element.send_keys(length * Keys.BACKSPACE)
 
     def clear_and_fill_input(self, text, *input_locator):
-        print('PRINT text : %s' % text)
         input_element = self.identify_element(*input_locator)
         input_element.clear()
-        # print(length)
         for i in text:
-            print(i)
             input_element.send_keys(i)
 
     # .execute_script("document.getElementsById('id')[0].value='"+text+"'")
@@ -137,6 +134,14 @@ class BasePage(object):
 
     def count_of_elements(self, *locator):
         return len(self.driver.find_elements(*locator))
+
+    def count_of_visible_elements(self, *locator):
+        counter = 0
+        elements = self.driver.find_elements(*locator)
+        for element in elements:
+            if element.is_displayed():
+                counter += 1
+        return counter
 
     def if_row_appear_on_list(self):
         table = self.identify_element(*self.table_class)

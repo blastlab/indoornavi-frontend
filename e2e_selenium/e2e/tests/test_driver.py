@@ -11,11 +11,9 @@ class TestDriver():
         chrome_options = Options()
 
         # if Config.DOCKER:
-        chrome_options.add_argument('--disable-gpu')
         chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--enable - logging")
-        # chrome_options.add_argument("--no-sandbox")
-        # chrome_options.add_argument("--window-size=1920x1080")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--window-size=1920x1080")
 
         self.webdriver = webdriver.Chrome(options=chrome_options)
         self.webdriver.get(self.url)

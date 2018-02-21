@@ -176,7 +176,7 @@ class TestBuildingsPage(unittest.TestCase):
         self.test_failed = False
 
     # TC[014]
-    # TODO najprawdopodobniej za stara wersja chromedriver -  test nie przechodzi
+    # TODO najprawdopodobniej za stara wersja chromedriver - test nie przechodzi
     def _test_redirect_building_to_floors_page(self):
         # Click last complex redirect click
         self.construction_page.redirect_button_click()
