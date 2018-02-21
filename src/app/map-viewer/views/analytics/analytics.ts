@@ -103,9 +103,6 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       this.handleCoordinatesData(data);
     });
     this.whenTransitionEnded().subscribe((tagShortId: number): void => {
-      // release to setHeatMap only those data that are in proper time step up to transition of the tag
-      // from timeStepBuffer
-      // TODO: display heat map for each tag separate, has to be done after hexagon heat map is optimized
       const timeStepBuffer = this.timeStepBuffer.get(tagShortId);
       const timeWhenTransitionIsFinished: number = Date.now() - Movable.TRANSITION_DURATION;
       for (let index = 0; index < timeStepBuffer.length; index ++) {
