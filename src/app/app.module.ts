@@ -34,7 +34,7 @@ import {ScaleService} from './shared/services/scale/scale.service';
 import {PublishedListComponent} from './map-viewer/list/published-list';
 import {D3Service} from 'd3-ng2-service';
 import {AllFieldsFilter} from './shared/utils/filters/allFieldsFilter';
-import {DevicePlacerController} from './map-editor/tool-bar/tools/device-placer/device-placer.controller';
+import {DevicePlacerController} from './map-editor/tool-bar/tools/devices/device-placer.controller';
 import {appRoutes} from './app.routes';
 import {PublishedService} from './map-viewer/published.service';
 import {PublishedDialogComponent} from './map-viewer/dialog/published.dialog';

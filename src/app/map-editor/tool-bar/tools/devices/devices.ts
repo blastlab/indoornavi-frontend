@@ -9,7 +9,7 @@ import {MapLoaderInformerService} from '../../../../shared/services/map-loader-i
 import {ActionBarService} from '../../../action-bar/actionbar.service';
 import {DeviceService} from '../../../../device/device.service';
 import {AcceptButtonsService} from '../../../../shared/components/accept-buttons/accept-buttons.service';
-import {DevicePlacerController} from '../device-placer/device-placer.controller';
+import {DevicePlacerController} from './device-placer.controller';
 import {TranslateService} from '@ngx-translate/core';
 import {Configuration} from '../../../action-bar/actionbar.type';
 import * as d3 from 'd3';
@@ -30,7 +30,7 @@ import {DrawBuilder} from '../../../../shared/utils/drawing/drawing.builder';
   templateUrl: './devices.html',
   styleUrls: ['../tool.css', './devices.css']
 })
-export class DevicesComponent implements Tool, OnInit, OnDestroy {
+export class DevicesComponent implements Tool, OnInit {
   active: boolean = false;
   disabled: boolean = true;
   private draggedDevice: Anchor | Sink;
@@ -77,7 +77,8 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
       clazz: `anchor`,
       name: `${anchor.name}`,
       cursor: `pointer`,
-      color: `green`
+      color: `green`,
+      display: `none`
     };
   }
 
@@ -87,7 +88,8 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
       clazz: `sink anchor`,
       name: `${sink.name}`,
       cursor: `pointer`,
-      color: `orange`
+      color: `orange`,
+      display: `none`
     };
   }
 
@@ -186,6 +188,7 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
     this.removeFromMapDevices(mapDevice);
   }
 
+  // TODO fix connections
   private modifyConnections(): void {
     this.translate.get('connections.manipulationTurnedOn').subscribe((value: string) => {
       this.hintBarService.sendHintMessage(value);
@@ -212,10 +215,6 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
     this.getMapSelection();
     this.getConfiguredDevices();
     this.subscribeForDroppedDevice();
-  }
-
-  ngOnDestroy(): void {
-    // unsubscribe
   }
 
   setActive(): void {
@@ -262,6 +261,9 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
     }));
     this.listEvents.push(this.devicePlacerController.connectingMode.subscribe((on: boolean) => {
       on ? this.startModifyingConnections() : this.endModifyingConnections();
+    }));
+    this.listEvents.push(this.devicePlacerController.deleteClicked.subscribe(() => {
+      this.removeSelectedDevice();
     }));
   }
 
@@ -452,8 +454,7 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
         this.clearSelections();
         const handledDevice = this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(selectedDevice.groupCreated.group));
         this.setSelectedDevice(handledDevice);
-console.log(handledDevice);
-        if (DevicesComponent.isSinkType(handledDevice)) {
+        if (!!handledDevice && DevicesComponent.isSinkType(handledDevice)) {
           this.chosenSink = <Sink>handledDevice;
         } else if (!!selectedDevice.connectable.anchorConnection) {
           const sinkAsConnectable = selectedDevice.connectable.anchorConnection.connectedSink();
@@ -681,12 +682,15 @@ console.log(handledDevice);
   }
 
   private deselectDevice(device: Expandable): void {
-    if (!this.modifyingConnectionsFlag && !!device.connectable.anchorConnection) {
+    if (!this.modifyingConnectionsFlag && !!device.connectable && !!device.connectable.anchorConnection) {
       device.connectable.unlockConnections();
+      console.log(this.chosenSink);
+      console.log(this.selectedDevice);
       device.connectable.anchorConnection.hide();
     }
     const selectableDevice = <SelectableDevice>device.selectable;
     selectableDevice.removeBorderBox();
+    this.devicePlacerController.deselectedDevice(device);
   }
 
   private clearSelections(): void {
@@ -825,6 +829,7 @@ console.log(handledDevice);
     const drawOptions = (DevicesComponent.isSinkType(device))
       ? DevicesComponent.buildSinkDrawConfiguration(<Sink>device)
       : DevicesComponent.buildAnchorDrawConfiguration(<Anchor>device);
+    drawOptions.display = `block`;
     const expandableMapObject = this.drawDevice(drawOptions, coordinates);
     let connectingLine: ConnectingLine;
     if (!!this.chosenSink && !DevicesComponent.isSinkType(device)) {

@@ -1,0 +1,17 @@
+#remaining-devices-list {
+  z-index: 11;
+  overflow: hidden;
+  min-width: 25%;
+  top: 20%;
+  max-height: 70%;
+  -webkit-transition: all .5s ease-in-out;
+  -moz-transition: all .5s ease-in-out;
+  -o-transition: all .5s ease-in-out;
+  transition: all .5s ease-in-out;
+}
+
+#deviceNameFilter {
+  border-bottom: 1px black solid;
+  padding: 5px 10px;
+  width: 80%;
+}

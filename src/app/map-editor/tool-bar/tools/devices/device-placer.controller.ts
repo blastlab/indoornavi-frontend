@@ -12,6 +12,8 @@ export class DevicePlacerController {
   private dragEnd: Subject<any> = new Subject();
   private coordinates: Subject<Point> = new Subject<Point>();
   private selectedDevice: Subject<Expandable> = new Subject<Expandable>();
+  private deselect: Subject<any> = new Subject();
+  private delete: Subject<any> = new Subject();
   private addListDevice: Subject<Anchor | Sink> = new Subject<Anchor | Sink>();
   private draggedDevice: Subject<Anchor | Sink> = new Subject<Anchor | Sink>();
   private removeListDevice: Subject<Anchor | Sink> = new Subject<Anchor | Sink>();
@@ -21,6 +23,8 @@ export class DevicePlacerController {
   droppedDevice = this.droppedOnMap.asObservable();
   newCoordinates = this.coordinates.asObservable();
   addedDevice = this.addListDevice.asObservable();
+  deselected = this.deselect.asObservable();
+  deleteClicked = this.delete.asObservable();
   draggingDevice = this.draggedDevice.asObservable();
   dragEnded = this.dragEnd.asObservable();
   connectingMode = this.connectingModeSet.asObservable();
@@ -28,7 +32,6 @@ export class DevicePlacerController {
   listVisibility = this.showDevicesList.asObservable();
 
   deviceDropped(): void {
-    console.log('a drop');
     this.droppedOnMap.next();
   }
 
@@ -42,6 +45,10 @@ export class DevicePlacerController {
 
   setSelectedDevice(device: Expandable): void {
     this.selectedDevice.next(device);
+  }
+
+  deselectedDevice(device: Expandable): void {
+    this.deselect.next(device);
   }
 
   getSelectedDevice(): Observable<Expandable> {
@@ -58,6 +65,10 @@ export class DevicePlacerController {
 
   emitDeviceDragEnded(): void {
     this.dragEnd.next();
+  }
+
+  emitDeleteButtonClicked(): void {
+    this.delete.next();
   }
 
   addToRemainingDevicesList(device: Anchor | Sink): void {

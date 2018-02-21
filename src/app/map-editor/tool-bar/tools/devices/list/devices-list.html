@@ -9,7 +9,7 @@
           <h2 class="remaining-devices-heading">{{'device-list.connectingMode'|translate}}</h2>
         </th>
         <th>
-          <button class="device-list-delete" (click)="removeSelectedDevice()" [disabled]="!selectedDevice">
+          <button class="device-list-delete" (click)="deleteDevice()" [disabled]="!selectedDevice">
             <i class="material-icons">delete</i>
           </button>
           <button [ngClass]="{'active': connectingFlag}" class="device-list-deselect" (click)="modifyConnections()">

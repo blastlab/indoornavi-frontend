@@ -3,7 +3,7 @@ import {MapViewerService} from '../map-editor/map.editor.service';
 import {MapLoaderInformerService} from '../shared/services/map-loader-informer/map-loader-informer.service';
 import {Floor} from '../floor/floor.type';
 import {MapSvg} from './map.type';
-import {DevicePlacerController} from '../map-editor/tool-bar/tools/device-placer/device-placer.controller';
+import {DevicePlacerController} from '../map-editor/tool-bar/tools/devices/device-placer.controller';
 
 @Component({
   selector: 'app-map',

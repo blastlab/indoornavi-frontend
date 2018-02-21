@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {Anchor} from '../../../../../device/anchor.type';
 import {Sink} from '../../../../../device/sink.type';
-import {DevicePlacerController} from '../../device-placer/device-placer.controller';
+import {DevicePlacerController} from '../device-placer.controller';
 import {Subscription} from 'rxjs/Subscription';
 import {ToolDetailsComponent} from '../../../shared/details/tool-details';
 import {Expandable} from '../../../../../shared/utils/drawing/drawables/expandable';
@@ -22,6 +22,7 @@ export class DevicesListComponent implements OnInit, OnDestroy {
   private removeSubscription: Subscription;
   private listVisibility: Subscription;
   private selectedElement: Subscription;
+  private deselection: Subscription;
   private connectingFlag: boolean;
 
   constructor(public translate: TranslateService,
@@ -40,6 +41,9 @@ export class DevicesListComponent implements OnInit, OnDestroy {
     this.listVisibility = this.devicePlacerController.listVisibility.subscribe((shown) => {
       shown ? this.devicesList.show() : this.devicesList.hide();
     });
+    this.deselection = this.devicePlacerController.deselected.subscribe((device) => {
+      if (this.selectedDevice === device) {this.selectedDevice = null}
+    });
     this.selectedElement = this.devicePlacerController.getSelectedDevice().subscribe((selected) => {
       this.selectedDevice = selected;
     });
@@ -48,6 +52,9 @@ export class DevicesListComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.addSubscription.unsubscribe();
     this.removeSubscription.unsubscribe();
+    this.listVisibility.unsubscribe();
+    this.deselection.unsubscribe();
+    this.selectedElement.unsubscribe();
   }
 
   public dragDeviceStarted(device: Anchor | Sink): void {
@@ -63,9 +70,9 @@ export class DevicesListComponent implements OnInit, OnDestroy {
     this.devicePlacerController.setConnectingMode(this.connectingFlag);
   }
 
-  /*public isDeviceInRemainingList(device: Anchor | Sink): boolean {
-    return this.devices.has(device);
-  }*/
+  public deleteDevice(): void {
+    this.devicePlacerController.emitDeleteButtonClicked();
+  }
 
   public getDevices(): Array<Anchor | Sink> {
     return Array.from(this.devices);
