@@ -2,6 +2,7 @@ import * as d3 from 'd3';
 import * as d3Hexbin from 'd3-hexbin';
 import {Point} from '../../../map-editor/map.type';
 import {HexHeatElement, Margin} from './analytics.type';
+import {CoordinatesSocketData} from '../../publication.type';
 
 
 export class HexagonHeatMap {
@@ -18,13 +19,13 @@ export class HexagonHeatMap {
 
   constructor(private width: number,
               private height: number,
-              private hexSize: number,
+              private hexRadius: number,
               private heatColors: string[]) {
     this.width = width;
     this.height = height;
-    this.hexSize = hexSize;
+    this.hexRadius = hexRadius;
     this.heatColors = heatColors;
-    this.margin = {left: hexSize, top: hexSize, right: hexSize, bottom: hexSize};
+    this.margin = {left: hexRadius, top: hexRadius, right: hexRadius, bottom: hexRadius};
     this.calculatePoints();
   }
 
@@ -39,12 +40,27 @@ export class HexagonHeatMap {
 
   }
 
-  eraseHeatMap (): void {
-    this.svg.selectAll('g').remove();
-    this.hexGridTable = [];
+  eraseHeatMap (tagShortId?: number): void {
+    if (!!tagShortId) {
+      const hexagons = this.svg.selectAll('.hexagon').nodes();
+      hexagons.forEach((hex: d3.selection): void => {
+        const hexagon = d3.select(hex);
+        if (hexagon.attr('tagShortId') === tagShortId) {
+          const parent = d3.select(hex.parentNode);
+          parent.remove();
+          const index = this.hexGridTable.findIndex((hexHeatElement: HexHeatElement): boolean => {
+            return hexHeatElement.tagShortId === tagShortId;
+          });
+          this.hexGridTable.splice(index, 1);
+        }
+      });
+    } else {
+      this.svg.selectAll('g').remove();
+      this.hexGridTable = [];
+    }
   }
 
-  feedWithCoordinates(data: Point): void {
+  feedWithCoordinates(data: CoordinatesSocketData): void {
     this.fireHeatAtLocation(this.findHex(data), data);
   }
 
@@ -75,8 +91,8 @@ export class HexagonHeatMap {
         } else {
           const parent = d3.select(hex.parentNode);
           parent.remove();
-          const index = this.hexGridTable.findIndex((hexHeat: HexHeatElement): boolean => {
-            return hexHeat.element === hex;
+          const index = this.hexGridTable.findIndex((hexHeatElement: HexHeatElement): boolean => {
+            return hexHeatElement.element === hex;
           });
           this.hexGridTable.splice(index, 1);
         }
@@ -84,11 +100,11 @@ export class HexagonHeatMap {
     });
   }
 
-  private fireHeatAtLocation (hex: HexHeatElement, coordinates: Point): void {
+  private fireHeatAtLocation (hex: HexHeatElement, data: CoordinatesSocketData): void {
     const timeNow = Date.now();
     this.coolDownActiveHexes(timeNow);
     if (!!hex) {
-      const hexagon = d3.select(hex.element);
+    const hexagon = d3.select(hex.element);
       let heat = Number.parseInt(hexagon.attr('heat'));
       const lastTimeHexagonGetHeated = Number.parseInt(hexagon.attr('heated'));
       if ((heat < 5) && (timeNow - lastTimeHexagonGetHeated > this.temperatureTimeStepForHeating)) {
@@ -103,52 +119,59 @@ export class HexagonHeatMap {
         .attr('heated', timeNow.toString())
         .style('fill', () => color)
         .attr('stroke', () => color);
-
     } else {
-      const hexbin = d3Hexbin.hexbin().radius(this.hexSize);
-
-      const hexPoint =  this.points.find((point: [number, number]): boolean => point[0] > coordinates.x && point[1] > coordinates.y);
-
-      this.hexMap = this.svg.append('g')
-        .selectAll('.hexagon')
-        .data(hexbin([hexPoint]))
-        .enter().append('path')
-        .attr('class', 'hexagon')
-        .attr('d', (d, index, nodes) => {
-          this.hexGridTable.push({x: d.x, y: d.y, element: nodes[index]});
-          return 'M' + d.x + ',' + d.y + hexbin.hexagon();
-        })
-        .attr('heat', 0)
-        .attr('heated', timeNow.toString())
-        .attr('stroke', this.heatColors[0])
-        .style('stroke-opacity', this.maxOpacity)
-        .attr('stroke-width', `${this.strokeWidth}px`)
-        .style('fill', this.heatColors[0])
-        .style('fill-opacity', this.maxOpacity);
+      this.createNewHexagon(data, timeNow);
     }
   }
 
-  private findHex (coordinates: Point): HexHeatElement {
+  private  createNewHexagon (data: CoordinatesSocketData, timeNow: number): void {
+    const hexbin = d3Hexbin.hexbin().radius(this.hexRadius);
+    const coordinates: Point = data.coordinates.point;
+    const hexPoint =  this.points.find((point: [number, number]): boolean => point[0] > coordinates.x && point[1] > coordinates.y);
+
+    this.hexMap = this.svg.append('g')
+      .selectAll('.hexagon')
+      .data(hexbin([hexPoint]))
+      .enter().append('path')
+      .attr('class', 'hexagon')
+      .attr('d', (d, index, nodes) => {
+        this.hexGridTable.push({x: d.x, y: d.y, element: nodes[index], tagShortId: data.coordinates.tagShortId});
+        return 'M' + d.x + ',' + d.y + hexbin.hexagon();
+      })
+      .attr('tagShortId', data.coordinates.tagShortId.toString())
+      .attr('heat', 0)
+      .attr('heated', timeNow.toString())
+      .attr('stroke', this.heatColors[0])
+      .style('stroke-opacity', this.maxOpacity)
+      .attr('stroke-width', `${this.strokeWidth}px`)
+      .style('fill', this.heatColors[0])
+      .style('fill-opacity', this.maxOpacity);
+  }
+
+  private findHex (data: CoordinatesSocketData): HexHeatElement {
     // hexagon shape builds grid that has different distance between hexes in x and y direction
-    // which gives for x direction a radius of circle overwritten on hexagon,
-    // and in y direction sqrt from 3 times a radius of circle overwritten on hexagon
-    return this.hexGridTable.find((hex: HexHeatElement): boolean =>
-      hex.x > coordinates.x &&
-      hex.y > coordinates.y &&
-      hex.x < coordinates.x + this.hexSize &&
-      hex.y < coordinates.y + Math.sqrt(3) * this.hexSize);
+    // which gives for x direction deference equal to radius of circle overwritten on hexagon,
+    // and in y direction deference equal to sqrt from 3 times radius of circle overwritten on hexagon.
+    const coordinates: Point = data.coordinates.point;
+    return this.hexGridTable.find((hexHeatElement: HexHeatElement): boolean =>
+      hexHeatElement.x > coordinates.x &&
+      hexHeatElement.y > coordinates.y &&
+      hexHeatElement.x < coordinates.x + this.hexRadius &&
+      hexHeatElement.y < coordinates.y + Math.sqrt(3) * this.hexRadius &&
+      hexHeatElement.tagShortId === data.coordinates.tagShortId
+    );
   };
 
   private calculateMap(): number[] {
-    const mapColumns = Math.ceil(this.width / (this.hexSize * 1.5));
-    const mapRows = Math.ceil(this.height / (this.hexSize * 1.5));
+    const mapColumns = Math.ceil(this.width / (this.hexRadius * 1.5));
+    const mapRows = Math.ceil(this.height / (this.hexRadius * 1.5));
     return [mapColumns, mapRows];
   }
 
   private calculatePoints(): void {
     for (let i = 0; i < this.calculateMap()[1]; i++) {
       for (let j = 0; j < this.calculateMap()[0]; j++) {
-        this.points.push([this.hexSize * j * 1.5, this.hexSize * i * 1.5]);
+        this.points.push([this.hexRadius * j * 1.5, this.hexRadius * i * 1.5]);
       }
     }
   }

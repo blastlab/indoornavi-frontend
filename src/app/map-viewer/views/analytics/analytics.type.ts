@@ -17,6 +17,7 @@ export interface HexHeatElement {
   x: number;
   y: number;
   element: d3.selection;
+  tagShortId: number;
 }
 
 export interface HeatMapPath {

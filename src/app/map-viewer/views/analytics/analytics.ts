@@ -120,7 +120,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
   }
 
   private heatUpHexes(data: CoordinatesSocketData): void {
-    this.heatMap.feedWithCoordinates(data.coordinates.point);
+    this.heatMap.feedWithCoordinates(data);
   }
 
   private createHexagonalHeatMapGrid (mapNode: d3.selection): void {
