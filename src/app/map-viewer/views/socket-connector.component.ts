@@ -41,6 +41,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   private originListeningOnEvent: Dictionary<string, MessageEvent[]> = new Dictionary<string, MessageEvent[]>();
   private floor: Floor;
   private tags: Tag[] = [];
+  private visibleTags: Map<number, boolean> = new Map();
 
   constructor(protected ngZone: NgZone,
               protected socketService: SocketService,
@@ -85,6 +86,9 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
             this.d3map = mapSvg;
             this.publishedService.getTagsAvailableForUser(floor.id).subscribe((tags: Tag[]) => {
               this.tags = tags;
+              this.tags.forEach((tag: Tag) => {
+                this.visibleTags.set(tag.shortId, true);
+              });
               this.tagTogglerService.setTags(tags);
               if (!!floor.scale) {
                 this.scale = new Scale(this.floor.scale);
@@ -126,7 +130,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
 
   protected handleCoordinatesData(data: CoordinatesSocketData): void {
     const deviceId: number = data.coordinates.tagShortId;
-    if (!this.isOnMap(deviceId)) {
+    if (!this.isOnMap(deviceId) && this.visibleTags.get(deviceId)) {
       const drawBuilder = new DrawBuilder(this.d3map.container, {id: `tag-${deviceId}`, clazz: 'tag'});
       const tagOnMap: SvgGroupWrapper = drawBuilder
         .createGroup()
@@ -135,7 +139,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         .place({x: data.coordinates.point.x, y: data.coordinates.point.y})
         .flashColors();
       this.tagsOnMap.setValue(deviceId, new Movable(tagOnMap).setShortId(deviceId));
-    } else {
+    } else if (this.visibleTags.get(deviceId)) {
       this.moveTagOnMap(data.coordinates.point, deviceId);
     }
     if (this.originListeningOnEvent.containsKey('coordinates')) {
@@ -143,6 +147,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         event.source.postMessage({type: 'coordinates', coordinates: data}, event.origin);
       })
     }
+    this.removeDisabledTags();
   }
 
   protected whenTransitionEnded(): Observable<number> {
@@ -189,13 +194,15 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?client`);
       this.setSocketConfiguration();
       this.tagTogglerService.onToggleTag().subscribe((tagToggle: TagToggle) => {
-        if (this.tagsOnMap.containsKey(tagToggle.tag.shortId)) {
-          this.tagsOnMap.getValue(tagToggle.tag.shortId).remove();
-          this.tagsOnMap.remove(tagToggle.tag.shortId);
-        }
         this.socketService.send({type: CommandType[CommandType.TOGGLE_TAG], args: tagToggle.tag.shortId});
+        this.visibleTags.set(tagToggle.tag.shortId, tagToggle.selected);
+        // check if this last tag disabled tag exists on map,
+        // because no packages will be sent from server,
+        // after sending information to the server if it is the last one
+        if (!tagToggle.selected && this.tagsOnMap.size() === 1) {
+           this.removeDisabledTags();
+        }
       });
-
       this.socketSubscription = stream.subscribe((data: MeasureSocketData): void => {
         this.ngZone.run(() => {
           if (this.isCoordinatesData(data)) {
@@ -211,6 +218,15 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       });
     });
   };
+
+  private removeDisabledTags (): void {
+    this.visibleTags.forEach((value: boolean, key: number, map: Map<number, boolean>): void => {
+      if (!value && this.isOnMap(key)) {
+        this.tagsOnMap.getValue(key).remove();
+        this.tagsOnMap.remove(key);
+      }
+    });
+  }
 
   private drawAreas(floorId: number): void {
     this.areaService.getAllByFloor(floorId).first().subscribe((areas: Area[]): void => {

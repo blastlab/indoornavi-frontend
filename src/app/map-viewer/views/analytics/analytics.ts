@@ -104,14 +104,14 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       this.handleCoordinatesData(data);
     });
     this.tagTogglerService.onToggleTag().subscribe((tagToggle: TagToggle) => {
-      if (this.tagsOnMap.containsKey(tagToggle.tag.shortId)) {
+      if (this.tagsOnMap.containsKey(tagToggle.tag.shortId) && !tagToggle.selected) {
         this.timeStepBuffer.delete(tagToggle.tag.shortId);
         this.heatMap.eraseHeatMap(tagToggle.tag.shortId);
       }
     });
     this.whenTransitionEnded().subscribe((tagShortId: number): void => {
       const timeStepBuffer = this.timeStepBuffer.get(tagShortId);
-      if (!!timeStepBuffer && timeStepBuffer.length > 0) {
+      if (!!timeStepBuffer && timeStepBuffer.length > 0 && !document.hidden) {
         const timeWhenTransitionIsFinished: number = Date.now() - Movable.TRANSITION_DURATION;
         for (let index = 0; index < timeStepBuffer.length; index ++) {
           if (timeStepBuffer[index].timeOfDataStep < timeWhenTransitionIsFinished) {
@@ -124,6 +124,8 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       }
     });
   }
+
+
 
   private heatUpHexes(data: CoordinatesSocketData): void {
     this.heatMap.feedWithCoordinates(data);
