@@ -8,7 +8,7 @@ import {PublishedService} from '../../publication.service';
 import {AreaService} from '../../../shared/services/area/area.service';
 import {IconService} from '../../../shared/services/drawing/icon.service';
 import {MapLoaderInformerService} from '../../../shared/services/map-loader-informer/map-loader-informer.service';
-import {CommandType, CoordinatesSocketData} from '../../publication.type';
+import {CoordinatesSocketData} from '../../publication.type';
 import {HexagonHeatMap} from './hexagon-heatmap.service';
 import * as d3 from 'd3';
 import {Movable} from '../../../shared/wrappers/movable/movable';
@@ -111,13 +111,15 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     });
     this.whenTransitionEnded().subscribe((tagShortId: number): void => {
       const timeStepBuffer = this.timeStepBuffer.get(tagShortId);
-      const timeWhenTransitionIsFinished: number = Date.now() - Movable.TRANSITION_DURATION;
-      for (let index = 0; index < timeStepBuffer.length; index ++) {
-        if (timeStepBuffer[index].timeOfDataStep < timeWhenTransitionIsFinished) {
-          if (this.playingAnimation) {
-            this.heatUpHexes(timeStepBuffer[index].data);
+      if (!!timeStepBuffer && timeStepBuffer.length > 0) {
+        const timeWhenTransitionIsFinished: number = Date.now() - Movable.TRANSITION_DURATION;
+        for (let index = 0; index < timeStepBuffer.length; index ++) {
+          if (timeStepBuffer[index].timeOfDataStep < timeWhenTransitionIsFinished) {
+            if (this.playingAnimation) {
+              this.heatUpHexes(timeStepBuffer[index].data);
+            }
+            timeStepBuffer.splice(0, index);
           }
-          timeStepBuffer.splice(0, index);
         }
       }
     });
