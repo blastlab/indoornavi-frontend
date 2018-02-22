@@ -49,7 +49,6 @@ export class DevicesComponent implements Tool, OnInit {
   private chosenSink: Sink;
   private selectedDevice: Anchor | Sink;
   private modifyingConnectionsFlag: boolean;
-
   private creatingConnection: d3.selection;
   private selectedLine: ConnectingLine;
   private connectingLines: ConnectingLine[] = [];
@@ -451,8 +450,14 @@ export class DevicesComponent implements Tool, OnInit {
     this.handledSelection = this.devicePlacerController.getSelectedDevice()
       .subscribe((selectedDevice) => {
         const lastSelected = this.selectedDevice;
-        this.clearSelections();
         const handledDevice = this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(selectedDevice.groupCreated.group));
+        let preserveLine: boolean;
+        if (!!handledDevice && DevicesComponent.isSinkType(handledDevice)) {
+          if (!!lastSelected && this.getIndexOfAnchorInSinkArray(lastSelected, <Sink>handledDevice) > -1) {
+            preserveLine = true;
+          }
+        }
+        this.clearSelections(preserveLine);
         this.setSelectedDevice(handledDevice);
         if (!!handledDevice && DevicesComponent.isSinkType(handledDevice)) {
           this.chosenSink = <Sink>handledDevice;
@@ -479,7 +484,7 @@ export class DevicesComponent implements Tool, OnInit {
               }
               const identifier = '' + sink.shortId + anchor.shortId;
               const connectingLine = this.createConnection(this.findMapDevice(sink.shortId), this.findMapDevice(anchor.shortId),
-                DevicesComponent.buildConnectingLineConfiguration(identifier));
+              DevicesComponent.buildConnectingLineConfiguration(identifier));
               this.connectingLines.push(connectingLine);
               this.handleSelectableConnections();
               DevicesComponent.showSingleConnection(connectingLine);
@@ -681,21 +686,19 @@ export class DevicesComponent implements Tool, OnInit {
     });
   }
 
-  private deselectDevice(device: Expandable): void {
+  private deselectDevice(device: Expandable, preserveLine: boolean): void {
     if (!this.modifyingConnectionsFlag && !!device.connectable && !!device.connectable.anchorConnection) {
       device.connectable.unlockConnections();
-      console.log(this.chosenSink);
-      console.log(this.selectedDevice);
-      device.connectable.anchorConnection.hide();
+      if (!preserveLine) {device.connectable.anchorConnection.hide()}
     }
     const selectableDevice = <SelectableDevice>device.selectable;
     selectableDevice.removeBorderBox();
     this.devicePlacerController.deselectedDevice(device);
   }
 
-  private clearSelections(): void {
+  private clearSelections(preserveLine?: boolean): void {
     if (!!this.selectedDevice) {
-      this.deselectDevice(this.findMapDevice(this.selectedDevice.shortId));
+      this.deselectDevice(this.findMapDevice(this.selectedDevice.shortId), preserveLine);
     }
     if (!!this.chosenSink) {
       this.chosenSink = null;
