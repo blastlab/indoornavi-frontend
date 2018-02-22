@@ -921,6 +921,7 @@ export class DevicesComponent implements Tool, OnInit {
       if (!!mapDevice.connectable.anchorConnection) {
         this.removeConnectingLine(mapDevice.connectable.anchorConnection);
         this.removeAnchorFromConfiguredSink(device, this.chosenSink);
+        this.devicePlacerController.addToRemainingDevicesList(device);
       } else {
         this.removeAnchorFromConfiguration(device);
       }
@@ -952,11 +953,11 @@ export class DevicesComponent implements Tool, OnInit {
   }
 
   private removeAnchorFromConfiguredSink(anchor: Anchor, sink: Sink): Sink {
+    // only removes anchor, adding to list -> this.devicePlacerController.addToRemainingDevicesList(anchor);
     const index = sink.anchors.findIndex(a => a.shortId === anchor.shortId);
     if (index >= 0) {
       sink.anchors.splice(index, 1);
       this.configurationService.setSink(sink);
-      this.devicePlacerController.addToRemainingDevicesList(anchor);
     } else {
       throw new Error(`Anchor with id: ${anchor.shortId} has been not found in Sink connected anchors.`);
     }
