@@ -471,7 +471,7 @@ export class DevicesComponent implements Tool, OnInit {
           if (!this.creatingConnection) {
             this.startCreatingConnection(selectedDevice, DevicesComponent.getMouseCoordinates());
           } else {
-            if (lastSelected.shortId !== this.selectedDevice.shortId) {
+            if (!DevicesComponent.hasSameShortId(lastSelected, this.selectedDevice.shortId)) {
               let sink: Sink;
               let anchor: Anchor;
               if (DevicesComponent.isSinkType(lastSelected)) {
@@ -682,7 +682,6 @@ export class DevicesComponent implements Tool, OnInit {
         this.resetConnecting()
       }
       this.clearSelections();
-      this.handleSelectableConnections();
     });
   }
 
