@@ -196,10 +196,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       this.tagTogglerService.onToggleTag().subscribe((tagToggle: TagToggle) => {
         this.socketService.send({type: CommandType[CommandType.TOGGLE_TAG], args: tagToggle.tag.shortId});
         this.visibleTags.set(tagToggle.tag.shortId, tagToggle.selected);
-        // check if this last tag disabled tag exists on map,
-        // because no packages will be sent from server,
-        // after sending information to the server if it is the last one
-        if (!tagToggle.selected && this.tagsOnMap.size() === 1) {
+        if (!tagToggle.selected) {
            this.removeDisabledTags();
         }
       });
