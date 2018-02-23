@@ -1,4 +1,4 @@
-import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
+import {Component, HostListener, OnInit} from '@angular/core';
 import {Tool} from '../tool';
 import {ToolName} from '../tools.enum';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
@@ -187,7 +187,6 @@ export class DevicesComponent implements Tool, OnInit {
     this.removeFromMapDevices(mapDevice);
   }
 
-  // TODO fix connections
   private modifyConnections(): void {
     this.translate.get('connections.manipulationTurnedOn').subscribe((value: string) => {
       this.hintBarService.sendHintMessage(value);
@@ -259,7 +258,7 @@ export class DevicesComponent implements Tool, OnInit {
       this.draggedDevice = null;
     }));
     this.listEvents.push(this.devicePlacerController.connectingMode.subscribe((on: boolean) => {
-      on ? this.startModifyingConnections() : this.endModifyingConnections();
+      on ? this.modifyConnections() : this.endModifyingConnections();
     }));
     this.listEvents.push(this.devicePlacerController.deleteClicked.subscribe(() => {
       this.removeSelectedDevice();
@@ -562,6 +561,7 @@ export class DevicesComponent implements Tool, OnInit {
   }
 
   private endModifyingConnections(): void {
+    if (!!this.creatingConnection) {this.removeDashedLine()}
     this.modifyingConnectionsFlag = false;
     this.turnOffSelectInConnectingLines();
     this.turnOnSelectInAllBlockedDevices();
