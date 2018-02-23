@@ -13,7 +13,7 @@ export interface Margin {
   right: number;
 }
 
-export interface HexHeatElement {
+export interface HeatPoint {
   x: number;
   y: number;
   element: d3.selection;

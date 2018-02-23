@@ -9,7 +9,7 @@ import {AreaService} from '../../../shared/services/area/area.service';
 import {IconService} from '../../../shared/services/drawing/icon.service';
 import {MapLoaderInformerService} from '../../../shared/services/map-loader-informer/map-loader-informer.service';
 import {CoordinatesSocketData} from '../../publication.type';
-import {HeatMap} from './heatmap.service';
+import {HexagonalHeatMap} from './hexagonal.heatmap.service';
 import * as d3 from 'd3';
 import {Movable} from '../../../shared/wrappers/movable/movable';
 import {MapSvg} from '../../../map/map.type';
@@ -19,6 +19,7 @@ import {MapObjectService} from '../../../shared/utils/drawing/map.object.service
 import {BreadcrumbService} from '../../../shared/services/breadcrumbs/breadcrumb.service';
 import {HeatMapControllerService} from '../../../shared/components/heat-map-controller/heat-map-controller/heat-map-controller.service';
 import {TagToggle} from '../../../shared/components/tag-visibility-toggler/tag-toggle.type';
+import {PlasmaHeatMap} from './plasma.heatmap.service';
 
 @Component({
   templateUrl: './analytics.html'
@@ -26,8 +27,9 @@ import {TagToggle} from '../../../shared/components/tag-visibility-toggler/tag-t
 export class AnalyticsComponent extends SocketConnectorComponent implements OnInit {
   private timeStepBuffer: Map<number, TimeStepBuffer[]> = new Map();
   private mapId = 'map';
-  private heatMap: HeatMap;
-  // hexRadius set to tag icon size equal 10px x 10px square
+  private hexagonalHeatMap: HexagonalHeatMap;
+  private plasmaHeatMap: PlasmaHeatMap;
+  // heatPointSize set to tag icon size equal 10px x 10px square
   private hexHeatPointSize: number = 10;
   private plasmaHeatPointSize: number = 5;
   private gradient: string[] = [
@@ -84,19 +86,20 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     this.heatMapControllerService.onAnimationToggled().subscribe((animationToggle: boolean): void => {
       this.playingAnimation = animationToggle;
       if (!this.playingAnimation) {
-        this.heatMap.eraseHeatMap();
+        this.displayHexagonal ? this.hexagonalHeatMap.eraseHeatMap() : this.plasmaHeatMap.eraseHeatMap();
       }
     });
     this.heatMapControllerService.onHeatMapWaterfallDisplayTimesChange().subscribe((heatMapWaterfallDisplayTime: number): void => {
       this.heatMapSettings.temperatureLifeTime = heatMapWaterfallDisplayTime;
-      this.heatMap.temperatureTimeIntervalForCooling = this.heatMapSettings.temperatureLifeTime;
+      this.hexagonalHeatMap.temperatureTimeIntervalForCooling = this.heatMapSettings.temperatureLifeTime;
     });
     this.heatMapControllerService.onHeatMapTimeGapChange().subscribe((heatTimeGap: number): void => {
       this.heatMapSettings.temperatureWaitTime = heatTimeGap;
-      this.heatMap.temperatureTimeIntervalForHeating = this.heatMapSettings.temperatureWaitTime;
+      this.hexagonalHeatMap.temperatureTimeIntervalForHeating = this.heatMapSettings.temperatureWaitTime;
     });
     this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg): void => {
-      this.createHexagonalHeatMapGrid(mapSvg.layer);
+      // both hexagonalHeatMap and plasmaHeatMap needs to be created upfront, to be displayed in svg layer below tags svg layer
+      this.createHeatMapGrid(mapSvg.layer);
     });
     this.whenDataArrived().subscribe((data: CoordinatesSocketData): void => {
       // update
@@ -111,7 +114,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     this.tagTogglerService.onToggleTag().subscribe((tagToggle: TagToggle) => {
       if (this.tagsOnMap.containsKey(tagToggle.tag.shortId) && !tagToggle.selected) {
         this.timeStepBuffer.delete(tagToggle.tag.shortId);
-        this.heatMap.eraseHeatMap(tagToggle.tag.shortId);
+        this.displayHexagonal ? this.hexagonalHeatMap.eraseHeatMap(tagToggle.tag.shortId) : this.plasmaHeatMap.eraseHeatMap(tagToggle.tag.shortId);
       }
     });
     this.whenTransitionEnded().subscribe((tagShortId: number): void => {
@@ -130,18 +133,21 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     });
   }
 
-
-
   private heatUpHexes(data: CoordinatesSocketData): void {
-    this.heatMap.feedWithCoordinates(data);
+    this.displayHexagonal ? this.hexagonalHeatMap.feedWithCoordinates(data) : this.plasmaHeatMap.feedWithCoordinates(data);
   }
 
-  private createHexagonalHeatMapGrid (mapNode: d3.selection): void {
+  private createHeatMapGrid (mapNode: d3.selection): void {
     const height = Number.parseInt(mapNode.node().getBBox().height);
     const width = Number.parseInt(mapNode.node().getBBox().width);
-    this.heatMap = new HeatMap(width, height, this.hexHeatPointSize, this.plasmaHeatPointSize, this.gradient);
-    this.heatMap.create(this.mapId);
-    this.heatMap.temperatureTimeIntervalForHeating = this.heatMapSettings.temperatureWaitTime;
-    this.heatMap.temperatureTimeIntervalForCooling = this.heatMapSettings.temperatureLifeTime;
+    this.hexagonalHeatMap = new HexagonalHeatMap(width, height, this.hexHeatPointSize, this.gradient);
+    this.hexagonalHeatMap.create(this.mapId);
+    this.hexagonalHeatMap.temperatureTimeIntervalForHeating = this.heatMapSettings.temperatureWaitTime;
+    this.hexagonalHeatMap.temperatureTimeIntervalForCooling = this.heatMapSettings.temperatureLifeTime;
+    this.plasmaHeatMap = new PlasmaHeatMap(width, height, this.plasmaHeatPointSize, this.gradient);
+    this.plasmaHeatMap.create(this.mapId);
+    this.plasmaHeatMap.temperatureTimeIntervalForHeating = this.heatMapSettings.temperatureWaitTime;
+    this.plasmaHeatMap.temperatureTimeIntervalForCooling = this.heatMapSettings.temperatureLifeTime;
   }
+
 }
