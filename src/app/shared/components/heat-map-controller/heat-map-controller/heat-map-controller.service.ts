@@ -2,11 +2,13 @@ import { Injectable } from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 
+
 @Injectable()
 export class HeatMapControllerService {
   private playingAnimation: Subject<boolean> = new Subject<boolean>();
   private heatMapWaterfallDisplayTime: Subject<number> = new Subject<number>();
   private heatTimeGap: Subject<number> = new Subject<number>();
+  private hexagonalMapType: Subject<boolean> = new Subject<boolean>();
 
   constructor() { }
 
@@ -32,6 +34,14 @@ export class HeatMapControllerService {
 
   onHeatMapTimeGapChange (): Observable<number> {
     return this.heatTimeGap.asObservable();
+  }
+
+  setHeatMapType(hexagonalType: boolean): void {
+    this.hexagonalMapType.next(hexagonalType)
+  }
+
+  onHeaMapTypeChange(): Observable<boolean> {
+    return this.hexagonalMapType.asObservable();
   }
 
 }

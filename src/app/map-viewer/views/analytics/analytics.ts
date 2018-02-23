@@ -9,7 +9,7 @@ import {AreaService} from '../../../shared/services/area/area.service';
 import {IconService} from '../../../shared/services/drawing/icon.service';
 import {MapLoaderInformerService} from '../../../shared/services/map-loader-informer/map-loader-informer.service';
 import {CoordinatesSocketData} from '../../publication.type';
-import {HexagonHeatMap} from './hexagon-heatmap.service';
+import {HeatMap} from './heatmap.service';
 import * as d3 from 'd3';
 import {Movable} from '../../../shared/wrappers/movable/movable';
 import {MapSvg} from '../../../map/map.type';
@@ -26,9 +26,10 @@ import {TagToggle} from '../../../shared/components/tag-visibility-toggler/tag-t
 export class AnalyticsComponent extends SocketConnectorComponent implements OnInit {
   private timeStepBuffer: Map<number, TimeStepBuffer[]> = new Map();
   private mapId = 'map';
-  private heatMap: HexagonHeatMap;
+  private heatMap: HeatMap;
   // hexRadius set to tag icon size equal 10px x 10px square
-  private hexSize: number = 10;
+  private hexHeatPointSize: number = 10;
+  private plasmaHeatPointSize: number = 5;
   private gradient: string[] = [
     '#ebff81',
     '#fffb00',
@@ -43,6 +44,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     temperatureWaitTime: 10000,
   };
   private playingAnimation: boolean = false;
+  private displayHexagonal: boolean = true;
 
   constructor(
               ngZone: NgZone,
@@ -76,6 +78,9 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
   }
 
   protected init(): void {
+    this.heatMapControllerService.onHeaMapTypeChange().subscribe((hexagonalType: boolean): void => {
+      this.displayHexagonal = hexagonalType;
+    });
     this.heatMapControllerService.onAnimationToggled().subscribe((animationToggle: boolean): void => {
       this.playingAnimation = animationToggle;
       if (!this.playingAnimation) {
@@ -134,7 +139,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
   private createHexagonalHeatMapGrid (mapNode: d3.selection): void {
     const height = Number.parseInt(mapNode.node().getBBox().height);
     const width = Number.parseInt(mapNode.node().getBBox().width);
-    this.heatMap = new HexagonHeatMap(width, height, this.hexSize, this.gradient);
+    this.heatMap = new HeatMap(width, height, this.hexHeatPointSize, this.plasmaHeatPointSize, this.gradient);
     this.heatMap.create(this.mapId);
     this.heatMap.temperatureTimeIntervalForHeating = this.heatMapSettings.temperatureWaitTime;
     this.heatMap.temperatureTimeIntervalForCooling = this.heatMapSettings.temperatureLifeTime;

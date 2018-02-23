@@ -5,7 +5,7 @@ import {HexHeatElement, Margin} from './analytics.type';
 import {CoordinatesSocketData} from '../../publication.type';
 
 
-export class HexagonHeatMap {
+export class HeatMap {
   private strokeWidth: number = 1;
   private maxOpacity: number  = 0.6;
   private temperatureTimeStepForHeating: number;
@@ -20,13 +20,11 @@ export class HexagonHeatMap {
   constructor(private width: number,
               private height: number,
               private hexRadius: number,
+              private plasmaSize: number,
               private heatColors: string[]) {
-    this.width = width;
-    this.height = height;
-    this.hexRadius = hexRadius;
-    this.heatColors = heatColors;
     this.margin = {left: hexRadius, top: hexRadius, right: hexRadius, bottom: hexRadius};
-    this.calculatePoints();
+    this.calculateHexPoints();
+    this.calculatePlasmaPoints();
   }
 
   create(id: string): void {
@@ -168,12 +166,16 @@ export class HexagonHeatMap {
     return [mapColumns, mapRows];
   }
 
-  private calculatePoints(): void {
+  private calculateHexPoints(): void {
     for (let i = 0; i < this.calculateMap()[1]; i++) {
       for (let j = 0; j < this.calculateMap()[0]; j++) {
         this.points.push([this.hexRadius * j * 1.5, this.hexRadius * i * 1.5]);
       }
     }
+  }
+
+  private calculatePlasmaPoints(): void {
+
   }
 
 }

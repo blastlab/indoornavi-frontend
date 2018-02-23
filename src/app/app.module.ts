@@ -52,7 +52,8 @@ import {
   SidebarModule,
   SliderModule,
   ToolbarModule,
-  TooltipModule
+  TooltipModule,
+  InputSwitchModule
 } from 'primeng/primeng';
 import {HintBarService} from './map-editor/hint-bar/hintbar.service';
 import {ToolbarService} from './map-editor/tool-bar/toolbar.service';
@@ -99,7 +100,7 @@ import {MapObjectService} from './shared/utils/drawing/map.object.service';
 import {MinSelectedValidator} from './shared/directive/minselected.directive';
 import {TagVisibilityTogglerComponent} from './shared/components/tag-visibility-toggler/tag-visibility-toggler';
 import {TagVisibilityTogglerService} from './shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
-import { HeatMapControllerComponent } from './shared/components/heat-map-controller/heat-map-controller/heat-map-controller.component';
+import {HeatMapControllerComponent} from './shared/components/heat-map-controller/heat-map-controller/heat-map-controller.component';
 import {HeatMapControllerService} from './shared/components/heat-map-controller/heat-map-controller/heat-map-controller.service';
 
 export function HttpLoaderFactory(http: Http) {
@@ -183,7 +184,8 @@ export function HttpLoaderFactory(http: Http) {
     ProgressSpinnerModule,
     OverlayPanelModule,
     ContextMenuModule,
-    FileUploadModule
+    FileUploadModule,
+    InputSwitchModule
   ],
   providers: [
     BuildingService,

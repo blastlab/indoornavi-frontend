@@ -2,27 +2,36 @@
   <div class="header">
     <i class="fa fa-area-chart"></i> {{'heat.map.tool'|translate}}
   </div>
-  <div>
+  <div class="ui-lg-12">
+    <p>{{'set.heat.map.type'|translate}}</p>
+    <p-inputSwitch onLabel="{{'hexagonal.heat.map'|translate}}"
+                   offLabel="{{'plasma.heat.map'|translate}}"
+                   (onChange)="switchBetweenHeatMapType($event)"
+                   [(ngModel)]="heatMapHexagonal"
+                   [disabled]="playingAnimation"
+    ></p-inputSwitch>
+  </div>
+  <div class="ui-lg-12">
     <span>{{'heat.gap'|translate}}: {{heatTimeWait}} [s]</span>
     <p-slider
-      class="ui-g-12"
+      class=""
       pTooltip="{{'heat.gap'|translate}}"
       [ngModel]="heatMapWaterfallDisplayTime"
       (ngModelChange) = "setHeatTimeWait($event)"
       [min]="10" [max]="2000"
     ></p-slider>
   </div>
-  <div>
+  <div class="ui-lg-12">
     <span>{{'path.length'|translate}}: {{pathLength}} [s]</span>
     <p-slider
-      class="ui-g-12"
+      class=""
       pTooltip="{{'path.length'|translate}}"
       [ngModel]="heatMapWaterfallDisplayTime"
       (ngModelChange) = "setPathLength($event)"
       [min]="25" [max]="2500"
     ></p-slider>
   </div>
-  <div>
+  <div class="ui-lg-12">
     <button pButton pTooltip="{{'show.heat.map'|translate}}" icon="fa-play"
             [disabled]="playingAnimation" (click)="toggleHeatAnimation()">
     </button>
