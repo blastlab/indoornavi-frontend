@@ -19,6 +19,8 @@ class DevicesBaseLocators(object):
         self.page_device_title = (By.XPATH, "//span.ui-menuitem-text[contains(text(),'" + self.module + "')]")
         self.dropdown_button = (By.CSS_SELECTOR, 'button#menu')
         self.add_button_device = (By.XPATH, '//button[@ng-reflect-label="Add"]')
+        # Temporary
+        # picklist
         self.devices_table = (By.CSS_SELECTOR, 'div.ui-picklist')
 
         self.dropdown_menu_device_button = (By.XPATH, '//button[@ng-reflect-router-link="./'+self.module_query+'s"]')
@@ -31,12 +33,14 @@ class DevicesBaseLocators(object):
         self.save_button = (By.XPATH, '//button[@ng-reflect-label="Save"]')
         self.cancel_button = (By.XPATH, '//button[@ng-reflect-label="Cancel"]')
 
-        self.not_verifed_device_table = (By.XPATH, '//p-picklist[@ng-reflect-source-header="Not verified"] ')
-        self.not_verified_device_table_item = (By.CSS_SELECTOR, 'li.ui-picklist-item')
-        self.not_verified_device_table_item_text = (By.CSS_SELECTOR, 'p-picklist[ng-reflect-source-header="Not verified"] li.ui-picklist-item div.device-details *:nth-child(1)')
+        # self.devices_table = (By.XPATH, '//p-picklist')
 
-        self.picklist_wrapper_not_verified = (By.CSS_SELECTOR, 'div.ui-picklist-listwrapper *:nth-child(1)')
-        self.picklist_wrapper_verified = (By.CSS_SELECTOR, 'div.ui-picklist-listwrapper *:nth-child(2)')
+        self.picklist_wrapper = (By.CSS_SELECTOR, 'div.ui-picklist-listwrapper')
+        # self.picklist_wrapper_not_verified = (By.CSS_SELECTOR, 'div.ui-picklist-listwrapper:first-child')
+        # self.picklist_wrapper_verified = (By.CSS_SELECTOR, '')
+
+        self.devices_table_item = (By.CSS_SELECTOR, 'li.ui-picklist-item')
+        self.devices_table_item_text = (By.CSS_SELECTOR, 'div.device-details *:nth-child(1)')
 
         self.last_row_short_id = (By.CSS_SELECTOR, 'p-picklist[ng-reflect-source-header="Not verified"] li.ui-picklist-item *:last-child div.device-details *:nth-child(1)')
         self.last_row_long_id = (By.CSS_SELECTOR, 'p-picklist[ng-reflect-source-header="Not verified"] li.ui-picklist-item *:last-child div.device-details *:nth-child(2)')
@@ -66,9 +70,10 @@ class DevicesBaseLocators(object):
 
         # Search method - Locators
         self.search_not_verified_input = (By.CSS_SELECTOR, 'p-picklist[ng-reflect-source-header="Not verified"] div.ui-picklist div.ui-picklist-listwrapper div.ui-picklist-filter-container input[placeholder="Search by short id"]')
-        # self.search_verified_input = (By.CSS_SELECTOR, 'p-picklist[ng-reflect-source-header="Verified"] div.ui-picklist div.ui-picklist-listwrapper div.ui-picklist-filter-container input[placeholder="Search by short id"]')
+        self.search_verified_input = (By.CSS_SELECTOR, 'div.ui-picklist-target-wrapper div.ui-picklist-filter-container input[placeholder="Search by short id"]')
 
         # Change Verify method - Locators
         self.move_to_verify_button = (By.CSS_SELECTOR, 'button[ng-reflect-icon="fa-angle-right"]')
         self.move_to_not_verify_button = (By.CSS_SELECTOR, 'button[ng-reflect-icon="fa-angle-left"]')
         self.move_all_to_verify_button = (By.CSS_SELECTOR, 'button[ng-reflect-icon="fa-angle-double-right"]')
+        self.move_all_to_not_verify_button = (By.CSS_SELECTOR, 'button[ng-reflect-icon="fa-angle-double-left"]')

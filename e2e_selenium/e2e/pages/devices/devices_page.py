@@ -51,6 +51,12 @@ class DevicesPage(BasePage):
     def is_search_verified_input_clickable(self):
         return self.wait_for_element_clickable(self.base_locators.search_verified_input)
 
+    def is_move_all_button_clickable(self, side):
+        if side == 'right':
+            return self.wait_for_element_clickable(self.base_locators.move_all_to_verify_button)
+        else:
+            return self.wait_for_element_clickable(self.base_locators.move_all_to_not_verify_button)
+
     # Visible & Present Elements
     def is_dropdown_menu_device_visible(self):
         return self.wait_for_element_visibility(self.base_locators.dropdown_menu_device_button)
@@ -165,36 +171,35 @@ class DevicesPage(BasePage):
         return True if self.is_element_disappear(self.base_locators.removed_toast) else False
 
     # Devices Searching -  Test methods
-    # 1. for each row find short id
-    # 2. In the same loop with founded short id send keys to input &
-    #    check is there only this row &
-    #    second one should be invisible
-    #find elements
-    #write text into input
-    #
 
-    def find_not_verified_devices(self):
+    def find_devices(self, side):
         """
         :return:
           array of visible web elements
         """
         visible_devices_array = []
-        table = self.identify_element(*self.base_locators.picklist_wrapper_not_verified)
-        tablet = self.identify_element(*self.base_locators.picklist_wrapper_verified)
-        rows = table.find_elements(*self.base_locators.not_verified_device_table_item)
+        picklist = self.identify_element(*self.base_locators.devices_table)
+        picklist_wrappers = picklist.find_elements(*self.base_locators.picklist_wrapper)
 
-        print(table)
-        print(tablet)
+        not_verified = picklist_wrappers[0]
+        verified = picklist_wrappers[1]
+        # Choose
+        if side == 'not_verified':
+            choosen_side = not_verified
+        else:
+            choosen_side = verified
 
-        for row in rows:
-            row_short_id = row.find_element(*self.base_locators.not_verified_device_table_item_text)
-            visible_devices_array.append(row_short_id)
+        devices = choosen_side.find_elements(*self.base_locators.devices_table_item)
+
+        for device in devices:
+            device_short_id = device.find_element(*self.base_locators.devices_table_item_text)
+            visible_devices_array.append(device_short_id)
 
         return visible_devices_array
 
     def search_element_by_short_id(self, elements_array):
         """
-        For each web element (device row) get & return short_id
+        For each web element (device row) get & add to array short_id
         :param
           element_array - array of visible web elements
         :return:
@@ -206,25 +211,32 @@ class DevicesPage(BasePage):
             element_short_ids.append(element_short_id_text)
         return element_short_ids
 
-    def insert_into_search_device_input(self, short_id):
+    def insert_into_search_device_input(self, short_id, side):
         """
-        Passed param insert into search device input
+        Insert passed param into search device input
         :param
           short_id - string which will be inserted to input
+          side - string - {'not_verified', 'verified'} to choosing left || right side
+          filtered_num - get only digitals from string
         :return:
           function which insert passed argument to search input
         """
+
+        if side == 'not_verified':
+            search_input = self.base_locators.search_not_verified_input
+        else:
+            search_input = self.base_locators.search_verified_input
+
         filtered_num = re.findall('\d+', short_id)[0]
-        self.clear_and_fill_input(filtered_num, *self.base_locators.search_not_verified_input)
+        self.clear_and_fill_input(filtered_num, *search_input)
 
     def is_there_only_founded_device_row(self):
-        return self.count_of_visible_elements(*self.base_locators.not_verified_device_table_item)
+        return self.count_of_visible_elements(*self.base_locators.devices_table_item)
+
     # Change Verify - Test methods
 
-    def is_element_displayed_on_verified_list(self):
-        self.wait_for_element_clickable(self.base_locators.move_all_to_verify_button)
-        self.click_button(*self.base_locators.move_all_to_verify_button)
-        print('is_element_displayed_on_verified_list')
-
-    def is_element_displayed_on_not_verified_list(self):
-        print('is_element_displayed_on_not_verified_list')
+    def click_move_all_button(self, side):
+        if side == 'right':
+            return self.click_button(*self.base_locators.move_all_to_verify_button)
+        else:
+            return self.click_button(*self.base_locators.move_all_to_not_verify_button)

@@ -55,6 +55,8 @@ class BasePage(object):
         )
         pyquibase.update()
 
+    def refresh_page(self):
+        return self.driver.refresh()
     # Front
     def identify_element(self, *locator):
         return self.driver.find_element(*locator)
