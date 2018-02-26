@@ -768,7 +768,7 @@ export class DevicesComponent implements Tool, OnInit {
 
   private allowToDragAllAnchorsOnMap(): void {
     this.mapDevices.forEach((expandable) => {
-      expandable.connectable.dragOn(/*false*/);
+      expandable.connectable.dragOn();
     });
   }
 
