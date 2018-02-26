@@ -774,7 +774,7 @@ export class DevicesComponent implements Tool, OnInit {
   }
 
   private removeChosenAnchor(mapAnchor: Expandable): void {
-    mapAnchor.connectable.group.remove();
+    mapAnchor.groupCreated.remove();
     this.selectedDevice = null;
   }
 
@@ -843,6 +843,7 @@ export class DevicesComponent implements Tool, OnInit {
     }
     this.accButtons.publishVisibility(true);
     expandableMapObject.connectable.dragOn();
+    this.removeFromRemainingDevices(device);
     this.accButtons.decisionMade.first().subscribe((decision) => {
       if (decision) {
         device.x = coordinates.x;
@@ -857,12 +858,13 @@ export class DevicesComponent implements Tool, OnInit {
         }
         this.manageSingleSelectable(expandableMapObject);
         expandableMapObject.selectable.select();
-        this.removeFromRemainingDevices(device);
       } else {
         if (!!connectingLine) {
           this.removeConnectingLine(connectingLine)
         }
+        this.removeFromMapDevices(expandableMapObject);
         this.removeChosenAnchor(expandableMapObject);
+        this.addToRemainingDevices(device);
       }
       this.devicePlacerController.resetCoordinates();
       this.placementDone = true;
@@ -870,11 +872,15 @@ export class DevicesComponent implements Tool, OnInit {
     });
   }
 
-  private removeFromRemainingDevices(device: Sink | Anchor) {
+  private addToRemainingDevices(device: Sink | Anchor): void {
+    this.devicePlacerController.addToRemainingDevicesList(device);
+  }
+
+  private removeFromRemainingDevices(device: Sink | Anchor): void {
     this.devicePlacerController.removeFromRemainingDevicesList(device);
   }
 
-  private removeFromMapDevices(device: Expandable) {
+  private removeFromMapDevices(device: Expandable): void {
     const index = this.mapDevices.findIndex(d => d.groupCreated.group === device.groupCreated.group);
     if (index >= 0) {
       this.mapDevices.splice(index, 1);
@@ -952,7 +958,6 @@ export class DevicesComponent implements Tool, OnInit {
   }
 
   private removeAnchorFromConfiguredSink(anchor: Anchor, sink: Sink): Sink {
-    // only removes anchor, adding to list -> this.devicePlacerController.addToRemainingDevicesList(anchor);
     const index = sink.anchors.findIndex(a => a.shortId === anchor.shortId);
     if (index >= 0) {
       sink.anchors.splice(index, 1);
