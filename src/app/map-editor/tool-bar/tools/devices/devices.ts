@@ -176,6 +176,7 @@ export class DevicesComponent implements Tool, OnInit {
       this.toolbarService.emitToolChanged(this);
     }
   }
+
   private removeSelectedDevice(): void {
     if (!!this.creatingConnection) {
       this.resetConnecting()
@@ -382,7 +383,7 @@ export class DevicesComponent implements Tool, OnInit {
 
   private updateDeviceCoordinatesFromMap(device: Anchor | Sink): Anchor | Sink {
     const updated = device;
-    this.mapDevices.forEach( mapDevice => {
+    this.mapDevices.forEach(mapDevice => {
       const identificator = DevicesComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.group);
       if (DevicesComponent.hasSameShortId(device, identificator)) {
         updated.x = mapDevice.groupCreated.group.attr('x');
@@ -483,7 +484,7 @@ export class DevicesComponent implements Tool, OnInit {
               }
               const identifier = '' + sink.shortId + anchor.shortId;
               const connectingLine = this.createConnection(this.findMapDevice(sink.shortId), this.findMapDevice(anchor.shortId),
-              DevicesComponent.buildConnectingLineConfiguration(identifier));
+                DevicesComponent.buildConnectingLineConfiguration(identifier));
               this.connectingLines.push(connectingLine);
               this.handleSelectableConnections();
               DevicesComponent.showSingleConnection(connectingLine);
@@ -561,7 +562,9 @@ export class DevicesComponent implements Tool, OnInit {
   }
 
   private endModifyingConnections(): void {
-    if (!!this.creatingConnection) {this.removeDashedLine()}
+    if (!!this.creatingConnection) {
+      this.removeDashedLine()
+    }
     this.modifyingConnectionsFlag = false;
     this.turnOffSelectInConnectingLines();
     this.turnOnSelectInAllBlockedDevices();
@@ -688,7 +691,9 @@ export class DevicesComponent implements Tool, OnInit {
   private deselectDevice(device: Expandable, preserveLine: boolean): void {
     if (!this.modifyingConnectionsFlag && !!device.connectable && !!device.connectable.anchorConnection) {
       device.connectable.unlockConnections();
-      if (!preserveLine) {device.connectable.anchorConnection.hide()}
+      if (!preserveLine) {
+        device.connectable.anchorConnection.hide()
+      }
     }
     const selectableDevice = <SelectableDevice>device.selectable;
     selectableDevice.removeBorderBox();
@@ -811,7 +816,7 @@ export class DevicesComponent implements Tool, OnInit {
   }
 
   private subscribeForDraggedOnMapEvent(expandable: Expandable): void {
-    expandable.connectable.afterDragEvent().subscribe( (draggedDevice: d3.selection) => {
+    expandable.connectable.afterDragEvent().subscribe((draggedDevice: d3.selection) => {
       let device = this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(draggedDevice));
       device = this.updateDeviceCoordinatesFromMap(device);
       if (DevicesComponent.isSinkType(device)) {
@@ -819,7 +824,9 @@ export class DevicesComponent implements Tool, OnInit {
       } else if (!!expandable.connectable.anchorConnection) {
         const sinkAsConnectable = expandable.connectable.anchorConnection.connectedSink();
         const sink = <Sink>this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(sinkAsConnectable.group));
-        sink.anchors.forEach( anchor => {this.updateDeviceCoordinatesFromMap(anchor)});
+        sink.anchors.forEach(anchor => {
+          this.updateDeviceCoordinatesFromMap(anchor)
+        });
         this.setSinkInConfiguration(sink);
       } else {
         this.setNotConnectedAnchorInConfiguration(device);
