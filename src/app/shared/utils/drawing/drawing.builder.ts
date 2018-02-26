@@ -8,6 +8,10 @@ export class SvgGroupWrapper {
   container: d3.selection;
   private color: string;
 
+  static throwErrorTypeNull (elementType: ElementType): void {
+    throw new Error(`${elementType} is null or undefined`);
+  }
+
   constructor(public group: d3.selection,
               container: d3.selection,
               colored?: string) {
@@ -231,7 +235,7 @@ export class SvgGroupWrapper {
     if (!!elements) {
       return elements[elements.length - 1];
     }
-    this.throwErrorTypeNull(type);
+    SvgGroupWrapper.throwErrorTypeNull(type);
   }
 
   removeElements(type: ElementType): void {
@@ -242,7 +246,7 @@ export class SvgGroupWrapper {
       });
       elements.length = 0;
     }
-    this.throwErrorTypeNull(type);
+    SvgGroupWrapper.throwErrorTypeNull(type);
   }
 
   removeLastElement(type: ElementType): void {
@@ -259,10 +263,6 @@ export class SvgGroupWrapper {
     } else {
       this.elements.set(type, [element]);
     }
-  }
-
-  private throwErrorTypeNull (elementType: ElementType): void {
-    throw new Error(`${elementType} is null or undefined`);
   }
 
   setVisibility(visible: boolean): void {

@@ -3,8 +3,7 @@ import {Subject} from 'rxjs/Subject';
 import {Point} from '../../../map.type';
 import {Expandable} from '../../../../shared/utils/drawing/drawables/expandable';
 import {Observable} from 'rxjs/Observable';
-import {Anchor} from '../../../../device/anchor.type';
-import {Sink} from '../../../../device/sink.type';
+import {Anchor, Sink} from '../../../../device/device.type';
 
 @Injectable()
 export class DevicePlacerController {

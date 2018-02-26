@@ -14,16 +14,15 @@ import {TranslateService} from '@ngx-translate/core';
 import {Configuration} from '../../../action-bar/actionbar.type';
 import * as d3 from 'd3';
 import {Subscription} from 'rxjs/Subscription';
-import {Anchor} from '../../../../device/anchor.type';
-import {Sink} from '../../../../device/sink.type';
 import {Point} from '../../../map.type';
-import {DrawConfiguration} from '../../../../map-viewer/published.type';
 import {Expandable} from '../../../../shared/utils/drawing/drawables/expandable';
 import {ConnectingLine} from '../../../../shared/utils/drawing/drawables/draggables/connectables/connection';
 import {SelectableDevice} from '../../../../shared/utils/drawing/drawables/selectables/selectableDevice';
 import {ConnectableDevice} from '../../../../shared/utils/drawing/drawables/draggables/connectables/connectableDevice';
 import {Selectable} from '../../../../shared/utils/drawing/drawables/selectables/selectable';
 import {DrawBuilder} from '../../../../shared/utils/drawing/drawing.builder';
+import {Anchor, Sink} from '../../../../device/device.type';
+import {DrawConfiguration} from '../../../../map-viewer/publication.type';
 
 @Component({
   selector: 'app-devices',
@@ -658,7 +657,7 @@ export class DevicesComponent implements Tool, OnInit {
   }
 
   private createConnection(sink: Expandable, anchor: Expandable, lineConfig: DrawConfiguration): ConnectingLine {
-    const drawBuilder = new DrawBuilder(this.map, lineConfig, this.zoomService);
+    const drawBuilder = new DrawBuilder(this.map, lineConfig);
     const connectingLine = new ConnectingLine(drawBuilder.createGroup(), sink.connectable, anchor.connectable, lineConfig.id);
     sink.connectable.sinkConnections.push(connectingLine);
     anchor.connectable.anchorConnection = connectingLine;
@@ -792,7 +791,7 @@ export class DevicesComponent implements Tool, OnInit {
 
   private drawDevice(deviceConfig: DrawConfiguration,
                      coordinates: Point): Expandable {
-    const drawBuilder = new DrawBuilder(this.map, deviceConfig, this.zoomService);
+    const drawBuilder = new DrawBuilder(this.map, deviceConfig);
     const text = (deviceConfig.name !== null)
       ? `${deviceConfig.name}-${deviceConfig.id}`
       : `${deviceConfig.clazz}-${deviceConfig.id}`;

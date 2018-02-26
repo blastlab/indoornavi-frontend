@@ -9,7 +9,7 @@ import {Subject} from 'rxjs/Subject';
 import {Md5} from 'ts-md5/dist/md5';
 import {Helper} from '../../shared/utils/helper/helper';
 import {Area} from '../tool-bar/tools/area/area.type';
-import {Sink} from '../../device/device.type';
+import {Anchor, Sink} from '../../device/device.type';
 
 @Injectable()
 export class ActionBarService {
@@ -75,7 +75,8 @@ export class ActionBarService {
           publishedDate: null,
           data: {
             sinks: [],
-            scale: null
+            scale: null,
+            anchors: []
           }
         });
         this.latestPublishedConfiguration = null;
@@ -136,6 +137,46 @@ export class ActionBarService {
     this.configuration.data.areas = areas;
     this.sendConfigurationChangedEvent();
   }
+
+  public removeSink(sink: Sink): void {
+    const sinks: Collections.Set<Sink> = this.getConfigurationSinks();
+    const sinkCopy = {...sink};
+    if (sinks.contains(sinkCopy)) {
+      sinks.remove(sinkCopy);
+    }
+    this.configuration.data.sinks = sinks.toArray();
+    this.sendConfigurationChangedEvent();
+  }
+
+  public setAnchor(anchor: Anchor): void {
+    const anchors: Collections.Set<Anchor> = this.getConfigurationAnchors();
+    const anchorCopy = {...anchor};
+    if (anchors.contains(anchorCopy)) {
+      anchors.remove(anchorCopy);
+    }
+    anchors.add(anchorCopy);
+    this.configuration.data.anchors = anchors.toArray();
+    this.sendConfigurationChangedEvent();
+  }
+
+  public removeAnchor(anchor: Anchor): void {
+    const anchors: Collections.Set<Anchor> = this.getConfigurationAnchors();
+    const anchorCopy = {...anchor};
+    if (anchors.contains(anchorCopy)) {
+      anchors.remove(anchorCopy);
+    }
+    this.configuration.data.anchors = anchors.toArray();
+    this.sendConfigurationChangedEvent();
+  }
+
+  private getConfigurationAnchors(): Collections.Set<Anchor> {
+    const anchors = new Collections.Set<Anchor>(ActionBarService.compareFn);
+    this.configuration.data.anchors.forEach((configurationAnchor: Anchor) => {
+      anchors.add(configurationAnchor);
+    });
+    return anchors;
+  }
+
 
   private getConfigurationSinks(): Collections.Set<Sink> {
     const sinks = new Collections.Set<Sink>(ActionBarService.compareFn);

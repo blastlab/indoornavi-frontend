@@ -1,7 +1,6 @@
 import {Scale} from '../tool-bar/tools/scale/scale.type';
-import {Anchor} from '../../device/anchor.type';
 import {Area} from '../tool-bar/tools/area/area.type';
-import {Sink} from '../../device/device.type';
+import {Anchor, Sink} from '../../device/device.type';
 
 export class Configuration {
   id: number;

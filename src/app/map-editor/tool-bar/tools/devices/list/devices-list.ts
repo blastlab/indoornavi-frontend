@@ -1,11 +1,10 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
-import {Anchor} from '../../../../../device/anchor.type';
-import {Sink} from '../../../../../device/sink.type';
 import {DevicePlacerController} from '../device-placer.controller';
 import {Subscription} from 'rxjs/Subscription';
 import {ToolDetailsComponent} from '../../../shared/details/tool-details';
 import {Expandable} from '../../../../../shared/utils/drawing/drawables/expandable';
+import {Anchor, Sink} from '../../../../../device/device.type';
 
 @Component({
   selector: 'app-devices-list',
