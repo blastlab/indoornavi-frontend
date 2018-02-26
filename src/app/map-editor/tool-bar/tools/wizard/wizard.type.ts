@@ -19,6 +19,7 @@ export interface SecondStepMessage extends SocketMessage {
 export class WizardData {
   sinkShortId: number;
   sinkPosition: Point;
+  sinkPositionInPixels: Point;
   degree: number;
   firstAnchorShortId: number;
   firstAnchorPosition: Point;
@@ -35,29 +36,23 @@ export enum Step {
   THIRD
 }
 
+export interface ScaleCalculations {
+  scaleLengthInPixels: number;
+  scaleInCentimeters: number;
+}
+
 export interface WizardStep {
-  load(items: SelectItem[], message: string): SelectItem[];
-
+  load(items: SelectItem[], message: string, scaleCalculations?: ScaleCalculations): SelectItem[];
   getDrawingObjectParams(selectedItem: number): ObjectParams;
-
   beforePlaceOnMap(selectedItem?: number): void;
-
   afterPlaceOnMap(): void;
-
   getBeforePlaceOnMapHint(): string;
-
   getAfterPlaceOnMapHint(): string;
-
   getPlaceholder(): string;
-
   getTitle(): string;
-
   setSelectedItemId(id: number);
-
   prepareToSend(wizardData: WizardData): SocketMessage;
-
-  updateWizardData(wizardData: WizardData, id: number, coordinates: Point): void;
-
+  updateWizardData(wizardData: WizardData, id: number, scaleCalculations: ScaleCalculations): void;
   clean(): void;
 }
 
@@ -69,8 +64,12 @@ export interface ObjectParams {
   fill: string;
 }
 
-export interface MapObjectParams {
-  size?: number;
-  stroke?: string;
-  opacity?: string;
+export interface AnchorDistance {
+  anchorId: number;
+  distance: number;
+}
+
+export interface AnchorSuggestedPositions {
+  anchorId: number;
+  points: Point[];
 }

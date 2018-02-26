@@ -1,8 +1,9 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-import {Floor} from '../floor/floor.type';
-import {HttpService} from '../shared/services/http/http.service';
+import {Floor} from '../../floor/floor.type';
+import {HttpService} from '../../shared/services/http/http.service';
 import {ImageConfiguration} from './map.configuration.type';
+
 @Injectable()
 export class MapService {
 

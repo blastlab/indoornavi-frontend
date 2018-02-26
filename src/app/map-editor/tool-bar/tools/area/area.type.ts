@@ -1,6 +1,6 @@
-import {Tag} from '../../../../device/tag.type';
 import {Point} from '../../../map.type';
 import {Editable} from '../../../../shared/wrappers/editable/editable';
+import {Tag} from '../../../../device/device.type';
 
 export class Area {
   id: number;

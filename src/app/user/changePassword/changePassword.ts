@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {UserService} from 'app/user/user.service';
+import {UserService} from 'app/user/user/user.service';
 import {TranslateService} from '@ngx-translate/core';
 import {NgForm} from '@angular/forms';
 import {MessageServiceWrapper} from '../../shared/services/message/message.service';

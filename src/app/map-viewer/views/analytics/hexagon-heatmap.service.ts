@@ -1,6 +1,7 @@
 import * as d3 from 'd3';
 import * as d3Hexbin from 'd3-hexbin';
 import {Point} from '../../../map-editor/map.type';
+import {HexHeatElement, Margin} from './analytics.type';
 
 
 export class HexagonHeatMap {
@@ -99,11 +100,11 @@ export class HexagonHeatMap {
         .style('fill', () => color)
         .attr('stroke', () => color)
         .on('end', () => {
-          const coolDown = () => {
-            if (heat > 0) {
+          const coolDown = (): void => {
+            if (heat > 1) {
               hexagon
                 .transition()
-                .on('end', () => {
+                .on('end', (): any => { // can return alpha function or string
                   heat--;
                   return coolDown;
                 })
@@ -112,7 +113,7 @@ export class HexagonHeatMap {
                 .style('fill', () => {
                   return this.heatColors[heat - 1]
                 })
-                .attr('stroke', () => this.heatColors[heat - 1]);
+                .attr('stroke', (): string => this.heatColors[heat - 1]);
             } else {
               hexagon
                 .transition()
@@ -144,17 +145,4 @@ export class HexagonHeatMap {
     }
   }
 
-}
-
-export interface Margin {
-  top: number,
-  bottom: number,
-  left: number,
-  right: number
-}
-
-export interface HexHeatElement {
-  x: number,
-  y: number,
-  element: d3.selection
 }

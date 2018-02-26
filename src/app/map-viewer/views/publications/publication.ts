@@ -1,22 +1,26 @@
-import {OnInit, Component, NgZone} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {Component, NgZone, OnInit} from '@angular/core';
+import {ActivatedRoute, Params} from '@angular/router';
 import {SocketConnectorComponent} from '../socket-connector.component';
 import {TranslateService} from '@ngx-translate/core';
 import {SocketService} from '../../../shared/services/socket/socket.service';
-import {PublishedService} from '../../published.service';
+import {PublishedService} from '../../publication.service';
 import {AreaService} from '../../../shared/services/area/area.service';
 import {IconService} from '../../../shared/services/drawing/icon.service';
-import {ZoomService} from '../../../shared/services/zoom/zoom.service';
 import {MapLoaderInformerService} from '../../../shared/services/map-loader-informer/map-loader-informer.service';
+import {MapObjectService} from '../../../shared/utils/drawing/map.object.service';
+import {FloorService} from '../../../floor/floor.service';
+import {TagVisibilityTogglerService} from '../../../shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
+import {BreadcrumbService} from '../../../shared/services/breadcrumbs/breadcrumb.service';
+import {Floor} from '../../../floor/floor.type';
 
 
 @Component({
-  templateUrl: '../socket-connector.component.html',
-  styleUrls: ['./publication.css']
+  templateUrl: '../socket-connector.component.html'
 })
 export class PublishedComponent extends SocketConnectorComponent implements OnInit {
 
-  constructor(ngZone: NgZone,
+  constructor(
+    ngZone: NgZone,
               socketService: SocketService,
               route: ActivatedRoute,
               publishedService: PublishedService,
@@ -24,8 +28,11 @@ export class PublishedComponent extends SocketConnectorComponent implements OnIn
               areaService: AreaService,
               translateService: TranslateService,
               iconService: IconService,
-              zoomService: ZoomService
-              ) {
+              mapObjectService: MapObjectService,
+              floorService: FloorService,
+              tagToggler: TagVisibilityTogglerService,
+              breadcrumbService: BreadcrumbService
+  ) {
 
     super(
       ngZone,
@@ -36,28 +43,27 @@ export class PublishedComponent extends SocketConnectorComponent implements OnIn
       areaService,
       translateService,
       iconService,
-      zoomService
+      mapObjectService,
+      floorService,
+      tagToggler,
     );
-  }
 
-  // ngOnInit(): void {
-  //   window.addEventListener('message', (event: MessageEvent) => {
-  //     this.route.queryParams.subscribe((params: Params) => {
-  //       if (event.origin === window.location.origin) {
-  //         return;
-  //       }
-  //       this.publishedService.checkOrigin(params['api_key'], event.origin).subscribe((verified: boolean) => {
-  //         if (verified) {
-  //           if ('command' in event.data && event.data['command'] === 'toggleTagVisibility') {
-  //             const tagId = parseInt(event.data['args'], 10);
-  //             this.socketService.send({type: CommandType[CommandType.TOGGLE_TAG], args: tagId});
-  //             if (this.isOnMap(tagId)) {
-  //               // this.removeTagFromMap(tagId);
-  //             }
-  //           }
-  //         }
-  //       });
-  //     });
-  //   }, false);
+    this.route.params
+      .subscribe((params: Params) => {
+        const floorId = +params['id'];
+        floorService.getFloor(floorId).subscribe((floor: Floor) => {
+          breadcrumbService.publishIsReady([
+            {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
+            {label: floor.building.complex.name, routerLink: `/complexes/${floor.building.complex.id}/buildings`, routerLinkActiveOptions: {exact: true}},
+            {
+              label: floor.building.name,
+              routerLink: `/complexes/${floor.building.complex.id}/buildings/${floor.building.id}/floors`,
+              routerLinkActiveOptions: {exact: true}
+            },
+            {label: `${(floor.name.length ? floor.name : floor.level)}`, disabled: true}
+          ]);
+        });
+      });
+  }
 
 }

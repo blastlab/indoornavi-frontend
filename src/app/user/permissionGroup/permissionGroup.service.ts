@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Rx';
-import {Permission, PermissionGroup} from '../user.type';
+import {Permission, PermissionGroup} from '../user/user.type';
 import {HttpService} from '../../shared/services/http/http.service';
 
 @Injectable()

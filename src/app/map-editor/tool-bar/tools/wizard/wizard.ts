@@ -8,9 +8,7 @@ import {SocketService} from '../../../../shared/services/socket/socket.service';
 import {FirstStep} from './first-step/first-step';
 import {SecondStep} from './second-step/second-step';
 import {ActionBarService} from '../../../action-bar/actionbar.service';
-import {Sink} from '../../../../device/sink.type';
-import {Anchor} from '../../../../device/anchor.type';
-import {ObjectParams, SocketMessage, WizardData, WizardStep} from './wizard.type';
+import {ObjectParams, ScaleCalculations, SocketMessage, WizardData, WizardStep} from './wizard.type';
 import {Floor} from '../../../../floor/floor.type';
 import {SelectItem} from 'primeng/primeng';
 import {ThirdStep} from './third-step/third-step';
@@ -21,12 +19,12 @@ import {HintBarService} from '../../../hint-bar/hintbar.service';
 import {AcceptButtonsService} from '../../../../shared/components/accept-buttons/accept-buttons.service';
 import {DrawBuilder} from '../../../../shared/utils/drawing/drawing.builder';
 import {IconService, NaviIcons} from '../../../../shared/services/drawing/icon.service';
-import {MapViewerService} from '../../../map.editor.service';
+import {MapEditorService} from '../../../map.editor.service';
 import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
-import {Device} from '../../../../device/device.type';
 import {ScaleService} from '../../../../shared/services/scale/scale.service';
-import {Scale} from '../scale/scale.type';
+import {Scale, ScaleDto} from '../scale/scale.type';
 import {Geometry} from '../../../../shared/utils/helper/geometry';
+import {Anchor, Sink} from '../../../../device/device.type';
 
 
 @Component({
@@ -48,10 +46,10 @@ export class WizardComponent implements Tool, OnInit {
   private steps: WizardStep[];
   private activeStep: WizardStep;
   private currentIndex: number = 0;
-  private coordinates: Point;
   private socketSubscription: Subscription;
   private wizardData: WizardData = new WizardData();
   private hintMessage: string;
+  private scaleCalculations: ScaleCalculations;
 
   constructor(public translate: TranslateService,
               private ngZone: NgZone,
@@ -70,8 +68,14 @@ export class WizardComponent implements Tool, OnInit {
     this.setTranslations();
     this.steps = [new FirstStep(this.floor.id), new SecondStep(), new ThirdStep()];
     this.checkIsLoading();
-    this.scaleService.scaleChanged.subscribe((scale: Scale) => {
+    this.scaleService.scaleChanged.subscribe((scale: ScaleDto): void => {
       this.scale = new Scale(scale);
+      if (!!this.scale.start && !!this.scale.stop) {
+        this.scaleCalculations = {
+          scaleLengthInPixels: Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
+          scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
+        };
+      }
     });
   }
 
@@ -82,7 +86,7 @@ export class WizardComponent implements Tool, OnInit {
       this.openSocket();
     } else {
       this.activeStep.afterPlaceOnMap();
-      this.activeStep.updateWizardData(this.wizardData, this.selected, this.coordinates);
+      this.activeStep.updateWizardData(this.wizardData, this.selected, this.scaleCalculations);
       const message: SocketMessage = this.activeStep.prepareToSend(this.wizardData);
       this.socketService.send(message);
       this.currentIndex += 1;
@@ -111,7 +115,7 @@ export class WizardComponent implements Tool, OnInit {
     this.currentIndex -= 1;
     this.activeStep = this.steps[this.currentIndex];
     this.activeStep.clean();
-    this.activeStep.updateWizardData(this.wizardData, this.selected, this.coordinates);
+    this.activeStep.updateWizardData(this.wizardData, this.selected, this.scaleCalculations);
     const message: SocketMessage = this.activeStep.prepareToSend(this.wizardData);
     this.socketService.send(message);
     this.stepChanged();
@@ -126,18 +130,18 @@ export class WizardComponent implements Tool, OnInit {
     this.displayError = false;
     this.activeStep.beforePlaceOnMap(this.selected);
     this.displayDialog = false;
-    const map: d3.selector = d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`);
+    const map: d3.selector = d3.select(`#${MapEditorService.MAP_LAYER_SELECTOR_ID}`);
     map.style('cursor', 'crosshair');
     map.on('click', () => {
-      this.coordinates = this.zoomService.calculateTransition({x: d3.event.offsetX, y: d3.event.offsetY});
+      const coordinates: Point = this.zoomService.calculateTransition({x: d3.event.offsetX, y: d3.event.offsetY});
       const device: ObjectParams = this.activeStep.getDrawingObjectParams(this.selected);
-      const drawBuilder = new DrawBuilder(map, {id: device.id, clazz: device.groupClass}, this.zoomService);
+      const drawBuilder = new DrawBuilder(map, {id: device.id, clazz: device.groupClass});
       drawBuilder
         .createGroup()
         .addIcon({x: -12, y: -12}, this.iconService.getIcon(NaviIcons.POINTER))
         .addIcon({x: 0, y: 0}, this.iconService.getIcon(device.iconName))
         .addText({x: 0, y: 36}, device.id)
-        .place({x: this.coordinates.x, y: this.coordinates.y})
+        .place({x: coordinates.x, y: coordinates.y})
         .setDraggable();
       map.on('click', null);
       map.style('cursor', 'default');
@@ -171,23 +175,20 @@ export class WizardComponent implements Tool, OnInit {
 
   saveConfiguration(): void {
     const anchors: Anchor[] = [];
-    const scaleLengthInPixels = Geometry.getDistanceBetweenTwoPoints(this.scale.startPoint, this.scale.stopPoint);
-    const scaleInCentimeters = this.scale.getRealDistanceInCentimeters();
-    const calculatePoint = (distance: number): number => Geometry.calculateDistanceInCentimeters(scaleLengthInPixels, scaleInCentimeters, distance);
     anchors.push(<Anchor>{
       shortId: this.wizardData.firstAnchorShortId,
-      x: calculatePoint(this.wizardData.firstAnchorPosition.x),
-      y: calculatePoint(this.wizardData.firstAnchorPosition.y)
+      x: this.wizardData.firstAnchorPosition.x,
+      y: this.wizardData.firstAnchorPosition.y
     });
     anchors.push(<Anchor>{
       shortId: this.wizardData.secondAnchorShortId,
-      x: calculatePoint(this.wizardData.secondAnchorPosition.x),
-      y: calculatePoint(this.wizardData.secondAnchorPosition.y)
+      x: this.wizardData.secondAnchorPosition.x,
+      y: this.wizardData.secondAnchorPosition.y
     });
     this.actionBarService.setSink(<Sink>{
       shortId: this.wizardData.sinkShortId,
-      x: calculatePoint(this.wizardData.sinkPosition.x),
-      y: calculatePoint(this.wizardData.sinkPosition.y),
+      x: this.wizardData.sinkPosition.x,
+      y: this.wizardData.sinkPosition.y,
       anchors: anchors
     });
   }
@@ -235,24 +236,8 @@ export class WizardComponent implements Tool, OnInit {
     this.ngZone.runOutsideAngular(() => {
       const stream = this.socketService.connect(Config.WEB_SOCKET_URL + 'wizard');
       this.socketSubscription = stream.subscribe((message: any) => {
-        const scaleLengthInPixels = Geometry.getDistanceBetweenTwoPoints(this.scale.startPoint, this.scale.stopPoint);
-        const scaleInCentimeters = this.scale.getRealDistanceInCentimeters();
         this.ngZone.run(() => {
-          if (Object.keys(message).indexOf('distance') > 0) {
-            message.distance = Geometry.calculateDistanceInPixels(scaleLengthInPixels, scaleInCentimeters, message.distance);
-          } else if (Array.isArray(message)) {
-            message.forEach((item) => {
-              if (Object.keys(item).indexOf('anchors') > 0) {
-                item.anchors.forEach((anchor: Device) => {
-                  let point: Point = {x: anchor.x, y: anchor.y};
-                  point = Geometry.calculatePointPositionInPixels(scaleLengthInPixels, scaleInCentimeters, point);
-                  anchor.x = point.x;
-                  anchor.y = point.y;
-                });
-              }
-            });
-          }
-          this.options = this.activeStep.load(this.options, message);
+          this.options = this.activeStep.load(this.options, message, this.scaleCalculations);
         });
       });
     });
@@ -265,12 +250,12 @@ export class WizardComponent implements Tool, OnInit {
   }
 
   private removeGroupDrag(): void {
-    const map = d3.select(`#${MapViewerService.MAP_LAYER_SELECTOR_ID}`);
+    const map = d3.select(`#${MapEditorService.MAP_LAYER_SELECTOR_ID}`);
     const selections: d3.selection[] = [
       map.select('#anchor' + this.selected),
       map.select('#sink' + this.selected)
     ];
-    selections.forEach((selection: d3.selection) => {
+    selections.forEach((selection: d3.selection): void => {
       if (!selection.empty()) {
         selection.on('.drag', null);
         selection.style('cursor', 'default');
@@ -280,8 +265,8 @@ export class WizardComponent implements Tool, OnInit {
     map.style('cursor', 'default');
   }
 
-  private checkIsLoading() {
-    setInterval(() => {
+  private checkIsLoading(): void {
+    setInterval((): void => {
       if (this.options.length) {
         this.isLoading = false;
       }
@@ -290,7 +275,7 @@ export class WizardComponent implements Tool, OnInit {
 
   private setTranslations(): void {
     this.translate.setDefaultLang('en');
-    this.translate.get('wizard.first.message').subscribe((text: string) => {
+    this.translate.get('wizard.first.message').subscribe((text: string): void => {
       this.hintMessage = text;
     });
   }

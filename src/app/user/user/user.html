@@ -35,8 +35,7 @@
   </p-column>
 </p-dataTable>
 
-<p-dialog header="{{'user.details'}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true"
-          showEffect="fade" [modal]="true"
+<p-dialog header="{{'user.details'|translate}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
           [contentStyle]="{ overflow: 'visible' }"
           [width]="800"
           dismissableMask="true">
@@ -51,11 +50,10 @@
           </div>
         </div>
         <div class="ui-g-12 ui-md-2 ui-lg-2">
-          <label for="username">{{'user.username'|translate}}</label>
+          <label for="username">{{'user.username'|translate}}&nbsp;*</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input name="username" required [appAutoFocus]="displayDialog" pInputText id="username"
-                 [(ngModel)]="user.username"
+          <input name="username" required [appAutoFocus]="displayDialog" pInputText id="username" [(ngModel)]="user.username"
                  #usernameInput="ngModel"/>
         </div>
       </div>
@@ -68,11 +66,10 @@
           </div>
         </div>
         <div class="ui-g-12 ui-md-2 ui-lg-2">
-          <label for="password">{{'user.password'|translate}}</label>
+          <label for="password">{{'user.password'|translate}}&nbsp;*</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input (keyup)="validatePasswords()" type="password" name="password" required pInputText id="password"
-                 [(ngModel)]="user.password"
+          <input (keyup)="validatePasswords()" type="password" name="password" required pInputText id="password" [(ngModel)]="user.password"
                  #passwordInput="ngModel"/>
         </div>
       </div>
@@ -85,11 +82,10 @@
           </div>
         </div>
         <div class="ui-g-12 ui-md-2 ui-lg-2">
-          <label for="repeatPassword">{{'user.repeatPassword'|translate}}</label>
+          <label for="repeatPassword">{{'user.repeatPassword'|translate}}&nbsp;*</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input (keyup)="validatePasswords()" type="password" name="repeatPassword" required pInputText
-                 id="repeatPassword"
+          <input (keyup)="validatePasswords()" type="password" name="repeatPassword" required pInputText id="repeatPassword"
                  [(ngModel)]="repeatPassword" #repeatPasswordInput="ngModel"/>
         </div>
       </div>
@@ -98,8 +94,7 @@
           <label for="permissionGroups">{{'user.permissionGroups'|translate}}</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <p-multiSelect name="permissionGroups" id="permissionGroups" [options]="permissionGroups"
-                         [(ngModel)]="user.permissionGroups"
+          <p-multiSelect name="permissionGroups" id="permissionGroups" [options]="permissionGroups" [(ngModel)]="user.permissionGroups"
                          optionLabel="name"
                          [style]="{ width: '100%' }" dataKey="id">
           </p-multiSelect>
@@ -117,8 +112,7 @@
       <p-footer>
         <div class="ui-dialog-buttonpane ui-helper-clearfix">
           <button type="button" pButton icon="fa-close" (click)="cancel()" label="{{'cancel'|translate}}"></button>
-          <button type="submit" pButton icon="fa-check" (click)="save(userForm.valid)"
-                  label="{{'save'|translate}}"></button>
+          <button type="submit" pButton icon="fa-check" (click)="save(userForm.valid)" label="{{'save'|translate}}"></button>
         </div>
       </p-footer>
     </form>

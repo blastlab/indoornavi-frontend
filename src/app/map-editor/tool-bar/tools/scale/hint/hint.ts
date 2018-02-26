@@ -36,7 +36,7 @@ export class ScaleHintComponent implements OnDestroy, OnInit {
   }
 
   public showScaleValue() {
-    if (!!this.scale && !!this.scale.measure) {
+    if (!!this.scale && !!this.scale.start && !!this.scale.stop && !!this.scale.measure) {
       const unit = (this.scale.measure.toString() === Measure[Measure.CENTIMETERS]) ? 'cm' : 'm',
         pixels = Math.round(Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop));
       this.translate.get('scale').subscribe((value: string) => {

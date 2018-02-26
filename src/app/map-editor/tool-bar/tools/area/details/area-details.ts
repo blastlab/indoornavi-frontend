@@ -2,7 +2,6 @@ import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {ToolDetailsComponent} from '../../../shared/details/tool-details';
 import {AreaDetailsService} from './area-details.service';
 import {Area, AreaBag, AreaConfiguration, Mode} from '../area.type';
-import {Tag} from '../../../../../device/tag.type';
 import {DeviceService} from '../../../../../device/device.service';
 import {Floor} from '../../../../../floor/floor.type';
 import * as d3 from 'd3';
@@ -11,6 +10,7 @@ import {Editable} from '../../../../../shared/wrappers/editable/editable';
 import {Point} from '../../../../map.type';
 import {AreaComponent} from '../area';
 import {MessageServiceWrapper} from '../../../../../shared/services/message/message.service';
+import {Tag} from '../../../../../device/device.type';
 
 @Component({
   selector: 'app-area-details',
@@ -37,22 +37,24 @@ export class AreaDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.tagService.setUrl('tags/');
     this.area = new Area(this.floor.id);
-    this.tagService.getAll().subscribe((tags: Tag[]) => {
+    this.tagService.getAll().subscribe((tags: Tag[]): void => {
       this.tags = tags;
     });
-    this.areaDetailsService.onVisibilityChange().subscribe((value: boolean) => {
+    this.areaDetailsService.onVisibilityChange().subscribe((value: boolean): void => {
       if (value) {
         this.toolDetails.show();
       }
     });
-    this.areaDetailsService.onSet().subscribe((area: AreaBag) => {
+    this.areaDetailsService.onSet().subscribe((area: AreaBag): void => {
       this.area = Helper.deepCopy(area.dto);
       this.editable = area.editable;
       this.area.configurations.forEach((areaConfiguration: AreaConfiguration) => {
         if (areaConfiguration.mode.toString() === Mode[Mode.ON_LEAVE] || areaConfiguration.mode === Mode.ON_LEAVE) {
           this.areaConfigurationOnLeave = areaConfiguration;
+          this.areaConfigurationOnLeave.offset /= 100;
         } else {
           this.areaConfigurationOnEnter = areaConfiguration;
+          this.areaConfigurationOnEnter.offset /= 100;
         }
       });
     });
@@ -61,15 +63,14 @@ export class AreaDetailsComponent implements OnInit {
   confirm(isValid: boolean): void {
     if (isValid) {
       this.area.points.length = 0;
-
       const selector = `${!!this.editable ? '#' + this.editable.groupWrapper.getGroup().attr('id') : '#' + AreaComponent.NEW_AREA_ID}`;
       const svgGroup = d3.select(selector);
       const pointsSelection: d3.selection = svgGroup.selectAll('circle');
 
       // we need to add shift since coordinates of points are within svg group and when user moves svg group we need to shift coordinates
       this.shift = (<Point>{x: +svgGroup.attr('x'), y: +svgGroup.attr('y')});
-
-      let firstPoint: d3.selection;
+      let firstPoint: d3.selection; // todo: resolve bug found below
+      // bug started
       pointsSelection.each((_, i, nodes) => {
         const point: d3.selection = d3.select(nodes[i]);
         if (i === 0) {
@@ -79,7 +80,7 @@ export class AreaDetailsComponent implements OnInit {
       });
       if (firstPoint) {
         this.addPoint(firstPoint); // we need to add first point as last because of Spatial Geometry (mysql)
-      }
+      } // bug ended
 
       // change to centimeters
       this.areaConfigurationOnEnter.offset *= 100;
@@ -93,7 +94,6 @@ export class AreaDetailsComponent implements OnInit {
           this.areaConfigurationOnLeave
         );
       }
-
       this.areaDetailsService.accept(<AreaBag>{dto: this.area, editable: this.editable});
       this.toolDetails.hide();
       this.cleanUp();
@@ -108,7 +108,7 @@ export class AreaDetailsComponent implements OnInit {
     this.areaDetailsService.reject();
   }
 
-  private addPoint(point: d3.selection) {
+  private addPoint(point: d3.selection): void {
     this.area.points.push(
       {
         x: parseInt(point.attr('cx'), 10) + this.shift.x,
@@ -117,7 +117,7 @@ export class AreaDetailsComponent implements OnInit {
     );
   }
 
-  private cleanUp() {
+  private cleanUp(): void {
     this.areaConfigurationOnEnter = new AreaConfiguration(Mode.ON_ENTER);
     this.areaConfigurationOnLeave = new AreaConfiguration(Mode.ON_LEAVE);
     this.area = new Area(this.floor.id);

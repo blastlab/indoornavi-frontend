@@ -12,8 +12,7 @@
 <p-pickList class="device-list" [source]="notVerified" [target]="verified" dragdrop="true" [responsive]="true"
             sourceHeader="{{'device.notVerified'|translate}}" targetHeader="{{'device.verified'|translate}}"
             [showSourceControls]="false" [showTargetControls]="false" filterBy="shortId"
-            sourceFilterPlaceholder="{{'device.searchByShortId'|translate}}"
-            targetFilterPlaceholder="{{'device.searchByShortId'|translate}}"
+            sourceFilterPlaceholder="{{'device.searchByShortId'|translate}}" targetFilterPlaceholder="{{'device.searchByShortId'|translate}}"
             (onMoveToTarget)="onItemMoved($event.items)" (onMoveToSource)="onItemMoved($event.items)">
   <ng-template let-device pTemplate="item">
     <div class="ui-helper-clearfix">
@@ -38,14 +37,13 @@
   </ng-template>
 </p-pickList>
 
-<p-dialog header="{{'device.details'}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true"
-          showEffect="fade" [modal]="true"
+<p-dialog header="{{'device.details'|translate}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
           [contentStyle]="{ overflow: 'visible' }"
           [width]="800"
           dismissableMask="true">
   <form #deviceForm="ngForm" novalidate>
     <div *ngIf="device">
-      <div class="ui-g">
+      <div class="ui-g" >
         <div class="ui-g-12 ui-md-4 ui-lg-4">
           <div class="ui-message ui-messages-error ui-corner-all"
                *ngIf="shortIdInput.errors?.required && shortIdInput.touched && shortIdInput.dirty">
@@ -54,14 +52,13 @@
           </div>
         </div>
         <div class="ui-g-12 ui-md-2 ui-lg-2">
-          <label for="shortId">{{'device.shortId'|translate}}</label>
+          <label for="shortId">{{'device.shortId'|translate}} *</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input name="shortId" required [appAutoFocus]="displayDialog" pInputText id="shortId"
-                 [(ngModel)]="device.shortId" #shortIdInput="ngModel"/>
+          <input name="shortId" required [appAutoFocus]="displayDialog" pInputText id="shortId" [(ngModel)]="device.shortId" #shortIdInput="ngModel" />
         </div>
       </div>
-      <div class="ui-g">
+      <div class="ui-g" >
         <div class="ui-g-12 ui-md-4 ui-lg-4">
           <div class="ui-message ui-messages-error ui-corner-all"
                *ngIf="longIdInput.errors?.required && longIdInput.touched && longIdInput.dirty">
@@ -70,26 +67,25 @@
           </div>
         </div>
         <div class="ui-g-12 ui-md-2 ui-lg-2">
-          <label for="longId">{{'device.longId'|translate}}</label>
+          <label for="longId">{{'device.longId'|translate}} *</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input name="longId" required pInputText id="longId" [(ngModel)]="device.longId" #longIdInput="ngModel"/>
+          <input name="longId" required pInputText id="longId" [(ngModel)]="device.longId" #longIdInput="ngModel" />
         </div>
       </div>
-      <div class="ui-g">
+      <div class="ui-g" >
         <div class="ui-g-12 ui-md-2 ui-lg-2 ui-g-offset-12 ui-md-offset-4 ui-lg-offset-4">
           <label for="name">{{'device.name'|translate}}</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input name="name" pInputText id="name" [(ngModel)]="device.name" #nameInput="ngModel"/>
+          <input name="name" pInputText id="name" [(ngModel)]="device.name" #nameInput="ngModel" />
         </div>
       </div>
       <p-footer>
         <div class="ui-dialog-buttonpane ui-helper-clearfix">
           <button type="button" pButton icon="fa-close" (click)="cancel()"
                   label="{{'cancel'|translate}}"></button>
-          <button type="submit" pButton icon="fa-check" (click)="save(deviceForm.valid)"
-                  label="{{'save'|translate}}"></button>
+          <button type="submit" pButton icon="fa-check" (click)="save(deviceForm.valid)" label="{{'save'|translate}}"></button>
         </div>
       </p-footer>
     </div>

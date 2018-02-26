@@ -6,7 +6,7 @@ export class Geometry {
     return (p1.y - p2.y) / (p1.x - p2.x);
   }
 
-  static getDeltaY(p1: Point, p2: Point) {
+  static getDeltaY(p1: Point, p2: Point): number {
     // arcRelocationValue value can be in the future set to other value to increase or decrease angular pitch precision
     const arcPitchRelocationValue = 22.5;
     const differenceBetweenPointsInX: number = p2.x - p1.x;
@@ -19,7 +19,7 @@ export class Geometry {
   }
 
   static getVerticalEndingOffset( line: Line, endSize: number): number {
-    const slope = this.getSlope(line.p1, line.p2);
+    const slope = this.getSlope(line.startPoint, line.endPoint);
     if (isNaN(slope)) {
       return 0;
     }
@@ -27,7 +27,7 @@ export class Geometry {
   }
 
   static getHorizontalEndingOffset( line: Line, endSize: number): number {
-    const slope = this.getSlope(line.p1, line.p2);
+    const slope = this.getSlope(line.startPoint, line.endPoint);
     if (isNaN(slope)) {
       return 0;
     }
@@ -56,6 +56,13 @@ export class Geometry {
     return {
       x: Geometry.calculateDistanceInPixels(lengthInPixels, lengthInCentimeters, point.x),
       y: Geometry.calculateDistanceInPixels(lengthInPixels, lengthInCentimeters, point.y)
+    };
+  }
+
+  static calculatePointPositionInCentimeters(lengthInPixels: number, lengthInCentimeters: number, point: Point): Point {
+    return {
+      x: Geometry.calculateDistanceInCentimeters(lengthInPixels, lengthInCentimeters, point.x),
+      y: Geometry.calculateDistanceInCentimeters(lengthInPixels, lengthInCentimeters, point.y)
     };
   }
 

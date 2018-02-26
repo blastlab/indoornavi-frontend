@@ -1,14 +1,14 @@
 import * as d3 from 'd3';
-import {AnchorDistance} from '../../../../../device/anchor.type';
 import {Point} from '../../../../map.type';
 import {SelectItem} from 'primeng/primeng';
-import {WizardData, WizardStep, SecondStepMessage, Step, ObjectParams} from '../wizard.type';
+import {AnchorDistance, ObjectParams, ScaleCalculations, SecondStepMessage, Step, WizardData, WizardStep} from '../wizard.type';
 import {NaviIcons} from 'app/shared/services/drawing/icon.service';
 import {Geometry} from '../../../../../shared/utils/helper/geometry';
 
 export class SecondStep implements WizardStep {
   private selectedItemId: number;
   private distances: AnchorDistance[] = [];
+  private coordinates: Point;
 
   private static isDistanceType(message: any): boolean {
     return (<AnchorDistance>message.distance) !== undefined;
@@ -17,16 +17,17 @@ export class SecondStep implements WizardStep {
   constructor() {
   }
 
-  load(items: SelectItem[], message: any): SelectItem[] {
+  load (items: SelectItem[], message: any, scaleCalculations: ScaleCalculations): SelectItem[] {
     if (SecondStep.isDistanceType(message)) {
       const anchorDistance: AnchorDistance = (<AnchorDistance>message);
       const item: SelectItem = {
         label: 'id: ' + anchorDistance.anchorId,
         value: anchorDistance.anchorId
       };
-      if (!items.find((i: SelectItem) => {
+      if (!items.find((i: SelectItem): boolean => {
           return i.value === item.value;
         })) {
+        anchorDistance.distance = Geometry.calculateDistanceInPixels(scaleCalculations.scaleLengthInPixels, scaleCalculations.scaleInCentimeters, anchorDistance.distance);
         this.distances.push(anchorDistance);
         items.push(item);
       }
@@ -43,7 +44,7 @@ export class SecondStep implements WizardStep {
     };
   }
 
-  beforePlaceOnMap(selectedItem: number): void {
+  beforePlaceOnMap (selectedItem: number): void {
     const map = d3.select('#map');
     const boxMargin = 20 ;
     const sinkX = map.select('.wizardSink').attr('x');
@@ -52,7 +53,7 @@ export class SecondStep implements WizardStep {
       .attr('id', 'sinkDistance')
       .attr('cx', parseInt(sinkX, 10) + boxMargin)
       .attr('cy', parseInt(sinkY, 10) + boxMargin)
-      .attr('r', this.distances.find((distance: AnchorDistance) => {
+      .attr('r', this.distances.find((distance: AnchorDistance): boolean => {
         return distance.anchorId === selectedItem;
       }).distance)
       .style('stroke', 'green')
@@ -61,19 +62,21 @@ export class SecondStep implements WizardStep {
       .style('fill', 'none');
   }
 
-  afterPlaceOnMap(): void {
+  afterPlaceOnMap (): void {
+    const objectOnMap: d3.selection = d3.select('#map').select('#anchor' + this.selectedItemId);
+    this.coordinates = {x: +objectOnMap.attr('x'), y: +objectOnMap.attr('y')};
     d3.select('#map').select('#sinkDistance').remove();
   }
 
-  getBeforePlaceOnMapHint(): string {
+  getBeforePlaceOnMapHint (): string {
     return 'wizard.click.place.anchor';
   }
 
-  getAfterPlaceOnMapHint(): string {
+  getAfterPlaceOnMapHint (): string {
     return 'wizard.confirm.anchor';
   }
 
-  getPlaceholder(): string {
+  getPlaceholder (): string {
     return 'wizard.placeholder.selectAnchor';
   }
 
@@ -96,10 +99,10 @@ export class SecondStep implements WizardStep {
     };
   }
 
-  updateWizardData(data: WizardData, id: number, coordinates: Point): void {
+  updateWizardData(data: WizardData, id: number, scaleCalculations: ScaleCalculations): void {
     data.firstAnchorShortId = id;
-    data.firstAnchorPosition = coordinates;
-    data.degree = Geometry.calculateDegree(data.sinkPosition, coordinates);
+    data.firstAnchorPosition = Geometry.calculatePointPositionInCentimeters(scaleCalculations.scaleLengthInPixels, scaleCalculations.scaleInCentimeters, this.coordinates);
+    data.degree = Geometry.calculateDegree(data.sinkPositionInPixels, this.coordinates);
   }
 
   clean(): void {

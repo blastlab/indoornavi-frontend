@@ -1,25 +1,24 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {PublishedService} from '../published.service';
-import {PublishedMap} from '../published.type';
+import {PublishedService} from '../publication.service';
+import {Publication} from '../publication.type';
 import {TranslateService} from '@ngx-translate/core';
 import {Router} from '@angular/router';
 import {BreadcrumbService} from '../../shared/services/breadcrumbs/breadcrumb.service';
 import {CrudComponentList, CrudHelper} from '../../shared/components/crud/crud.component';
 import {ConfirmationService} from 'primeng/primeng';
 import {MessageServiceWrapper} from '../../shared/services/message/message.service';
-import {PublishedDialogComponent} from '../dialog/published.dialog';
+import {PublicationDialogComponent} from '../dialog/publication.dialog';
 
 @Component({
-  templateUrl: './published-list.html',
-  styleUrls: ['./published-list.css']
+  templateUrl: './publication-list.html'
 })
 export class PublishedListComponent implements OnInit, CrudComponentList {
-  publishedMaps: PublishedMap[];
+  publishedMaps: Publication[];
   loading: boolean = true;
   confirmBody: string;
 
-  @ViewChild(PublishedDialogComponent)
-  private formDialog: PublishedDialogComponent;
+  @ViewChild(PublicationDialogComponent)
+  private formDialog: PublicationDialogComponent;
 
   constructor(private publishedMapService: PublishedService,
               private translateService: TranslateService,
@@ -30,7 +29,7 @@ export class PublishedListComponent implements OnInit, CrudComponentList {
   }
 
   ngOnInit() {
-    this.publishedMapService.getAll().subscribe((maps: PublishedMap[]) => {
+    this.publishedMapService.getAll().subscribe((maps: Publication[]) => {
       this.publishedMaps = maps;
       this.loading = false;
     });
@@ -45,10 +44,12 @@ export class PublishedListComponent implements OnInit, CrudComponentList {
     });
   }
 
-  openDialog(map?: PublishedMap) {
+  openDialog(map?: Publication) {
     const isNew = !(!!map);
-    const subscription = this.formDialog.open(map).subscribe((publishedMap: PublishedMap) => {
-      this.publishedMaps = <PublishedMap[]>CrudHelper.add(publishedMap, this.publishedMaps, isNew);
+    const subscription = this.formDialog.open(map).subscribe((publishedMap: Publication) => {
+      if (!!publishedMap) {
+        this.publishedMaps = <Publication[]>CrudHelper.add(publishedMap, this.publishedMaps, isNew);
+      }
       subscription.unsubscribe();
     });
   }
@@ -59,7 +60,7 @@ export class PublishedListComponent implements OnInit, CrudComponentList {
       accept: () => {
         const map = this.publishedMaps[index];
         this.publishedMapService.remove(map.id).subscribe(() => {
-          this.publishedMaps = <PublishedMap[]>CrudHelper.remove(index, this.publishedMaps);
+          this.publishedMaps = <Publication[]>CrudHelper.remove(index, this.publishedMaps);
           this.messageService.success('publishedList.remove.success');
         }, (err) => {
           this.messageService.failed(err);
@@ -68,22 +69,7 @@ export class PublishedListComponent implements OnInit, CrudComponentList {
     });
   }
 
-  goTo(map: PublishedMap): void {
-    this.router.navigate(['maps', map.id]);
-  }
-
-  goToAnalytics(map: PublishedMap): void {
-    this.router.navigate(['maps', map.id, 'analytics']);
-  }
-
-  goToEditor(map: PublishedMap): void {
-    const complexId = map.floor.building.complex.id;
-    const buildingId = map.floor.building.id;
-    const floorId = map.floor.id;
-    this.router.navigate(['complexes', complexId, 'buildings', buildingId, 'floors', floorId, 'map']);
-  }
-
-  edit(map: PublishedMap) {
+  edit(map: Publication) {
     this.openDialog(map);
   }
 
