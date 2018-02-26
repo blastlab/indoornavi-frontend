@@ -53,7 +53,7 @@ import {
   SliderModule,
   ToolbarModule,
   TooltipModule,
-  InputSwitchModule
+  InputSwitchModule, RadioButtonModule
 } from 'primeng/primeng';
 import {HintBarService} from './map-editor/hint-bar/hintbar.service';
 import {ToolbarService} from './map-editor/tool-bar/toolbar.service';
@@ -185,7 +185,7 @@ export function HttpLoaderFactory(http: Http) {
     OverlayPanelModule,
     ContextMenuModule,
     FileUploadModule,
-    InputSwitchModule
+    RadioButtonModule
   ],
   providers: [
     BuildingService,

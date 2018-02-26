@@ -2,14 +2,22 @@
   <div class="header">
     <i class="fa fa-area-chart"></i> {{'heat.map.tool'|translate}}
   </div>
-  <div class="ui-lg-12">
+  <div class="ui-lg-12" >
     <p>{{'set.heat.map.type'|translate}}</p>
-    <p-inputSwitch onLabel="{{'hexagonal.heat.map'|translate}}"
-                   offLabel="{{'plasma.heat.map'|translate}}"
-                   (onChange)="switchBetweenHeatMapType($event)"
-                   [(ngModel)]="heatMapHexagonal"
-                   [disabled]="playingAnimation"
-    ></p-inputSwitch>
+      <div class="ui-g-12"><p-radioButton name="heatMap"
+                                          value="{{'hexagonal.heat.map'|translate}}"
+                                          label="{{'hexagonal.heat.map'|translate}}"
+                                          [(ngModel)]="heatMapType"
+                                          [disabled]="playingAnimation"
+                                          inputId="opt1"
+      ></p-radioButton></div>
+      <div class="ui-g-12"><p-radioButton name="heatMap"
+                                          value="{{'plasma.heat.map'|translate}}"
+                                          label="{{'plasma.heat.map'|translate}}"
+                                          [(ngModel)]="heatMapType"
+                                          [disabled]="playingAnimation"
+                                          inputId="opt2"
+      ></p-radioButton></div>
   </div>
   <div class="ui-lg-12">
     <span>{{'heat.gap'|translate}}: {{heatTimeWait}} [s]</span>

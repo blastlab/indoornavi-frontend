@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import {HeatMapControllerService} from './heat-map-controller.service';
+import {Component, OnInit} from '@angular/core';
+import {HeatMapControllerService} from './heat-map-controller.service';;
 
 
 @Component({
@@ -11,7 +11,7 @@ export class HeatMapControllerComponent implements OnInit {
   private playingAnimation: boolean = false;
   private pathLength: number = 25; // in seconds for user friendly units
   private heatTimeWait: number = 10; // in seconds for user friendly units
-  private heatMapHexagonal: boolean = true;
+  private heatMapType: string = 'Hexagonal';
 
   constructor(private heatMapControllerService: HeatMapControllerService) { }
 
@@ -32,17 +32,9 @@ export class HeatMapControllerComponent implements OnInit {
 
   toggleHeatAnimation(): void {
     this.playingAnimation = !this.playingAnimation;
+    this.heatMapControllerService.setHeatMapType(this.heatMapType);
     this.heatMapControllerService.togglePlayingAnimation(this.playingAnimation);
   }
 
-  switchBetweenHeatMapType(event: SwitchButtonEvent): void {
-    this.heatMapHexagonal = event.checked;
-    this.heatMapControllerService.setHeatMapType(this.heatMapHexagonal);
-  }
-
 }
 
-export interface SwitchButtonEvent {
-  originalEvent: Event;
-  checked: boolean;
-}

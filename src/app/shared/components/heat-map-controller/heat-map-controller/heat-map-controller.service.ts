@@ -8,7 +8,7 @@ export class HeatMapControllerService {
   private playingAnimation: Subject<boolean> = new Subject<boolean>();
   private heatMapWaterfallDisplayTime: Subject<number> = new Subject<number>();
   private heatTimeGap: Subject<number> = new Subject<number>();
-  private hexagonalMapType: Subject<boolean> = new Subject<boolean>();
+  private hexagonalMapType: Subject<string> = new Subject<string>();
 
   constructor() { }
 
@@ -36,11 +36,11 @@ export class HeatMapControllerService {
     return this.heatTimeGap.asObservable();
   }
 
-  setHeatMapType(hexagonalType: boolean): void {
+  setHeatMapType(hexagonalType: string): void {
     this.hexagonalMapType.next(hexagonalType)
   }
 
-  onHeaMapTypeChange(): Observable<boolean> {
+  onHeaMapTypeChange(): Observable<string> {
     return this.hexagonalMapType.asObservable();
   }
 
