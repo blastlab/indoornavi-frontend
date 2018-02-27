@@ -73,10 +73,11 @@ export class ActionBarService {
           version: 0,
           savedDraftDate: null,
           publishedDate: null,
-          data: {
+          data: <ConfigurationData>{
             sinks: [],
+            anchors: [],
             scale: null,
-            anchors: []
+            areas: []
           }
         });
         this.latestPublishedConfiguration = null;
