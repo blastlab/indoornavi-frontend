@@ -77,8 +77,13 @@ table th.col-button, table td.col-button, table th.col-checkbox, table td.col-ch
   float: right;
 }
 
-.device-list .device-details {
+.device-list .device-details,
+.device-list .device-published-details {
   font-size: 0.8em;
+}
+
+.device-list .device-published-details {
+  margin: auto;
 }
 
 .ui-message {
@@ -126,13 +131,11 @@ table th.col-button, table td.col-button, table th.col-checkbox, table td.col-ch
 app-auth > div {
   width: 400px;
   height: 250px;
-
   position: absolute;
   top: 0;
   bottom: 0;
   left: 25px;
   right: 0;
-
   margin: auto;
 }
 

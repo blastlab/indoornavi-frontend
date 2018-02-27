@@ -58,6 +58,7 @@
 	"device.name": "Device Name",
 	"device.notVerified": "Not verified",
 	"device.placement.hint": "To save chosen device location confirm with Yes button, otherwise reject with No button",
+  "device.publishedOnFloorWithId": "Published on floor with id",
 	"device.remove.success": "Device has been removed",
 	"device.save.success": "Device has been saved",
 	"device.searchByShortId": "Search by short id",

@@ -17,11 +17,13 @@
   <ng-template let-device pTemplate="item">
     <div class="ui-helper-clearfix">
       <div class="ui-g">
-        <div class="ui-g-9 ui-md-9 ui-lg-9 device-details">
+        <div [ngClass]="{'ui-g-9 ui-md-9 ui-lg-9': !device.floorId, 'ui-g-5 ui-md-5 ui-lg-5': device.floorId}" class="device-details">
           <div><b>{{'device.shortId'|translate}}:</b> {{device['shortId']}}</div>
           <div><b>{{'device.longId'|translate}}:</b> {{device['longId']}}</div>
           <div><b>{{'device.name'|translate}}:</b> {{device['name']}}</div>
-          <div *ngIf="device.floorId"><b>{{'device.publishedOnFloorWithId'|translate}}:</b> {{device.floorId}}</div>
+        </div>
+        <div *ngIf="device.floorId" class="ui-g-4 ui-md-4 ui-lg-4 device-published-details">
+          <div><b>{{'device.publishedOnFloorWithId'|translate}}:</b> {{device.floorId}}</div>
         </div>
         <div class="ui-g-3 ui-md-3 ui-lg-3">
           <button
