@@ -46,7 +46,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     temperatureWaitTime: 10000,
   };
   private playingAnimation: boolean = false;
-  private displayHexagonal: string = 'Hexagonal';
+  private heatMapType: string = 'Hexagonal';
 
   constructor(
               ngZone: NgZone,
@@ -80,13 +80,13 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
   }
 
   protected init(): void {
-    this.heatMapControllerService.onHeaMapTypeChange().subscribe((hexagonalType: string): void => {
-      this.displayHexagonal = hexagonalType;
+    this.heatMapControllerService.onHeaMapTypeChange().subscribe((type: string): void => {
+      this.heatMapType = type;
     });
     this.heatMapControllerService.onAnimationToggled().subscribe((animationToggle: boolean): void => {
       this.playingAnimation = animationToggle;
       if (!this.playingAnimation) {
-        this.displayHexagonal === 'Hexagonal' ? this.hexagonalHeatMap.eraseHeatMap() : this.plasmaHeatMap.eraseHeatMap();
+        this.heatMapType === 'Hexagonal' ? this.hexagonalHeatMap.eraseHeatMap() : this.plasmaHeatMap.eraseHeatMap();
       }
     });
     this.heatMapControllerService.onHeatMapWaterfallDisplayTimesChange().subscribe((heatMapWaterfallDisplayTime: number): void => {
@@ -114,7 +114,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     this.tagTogglerService.onToggleTag().subscribe((tagToggle: TagToggle) => {
       if (this.tagsOnMap.containsKey(tagToggle.tag.shortId) && !tagToggle.selected) {
         this.timeStepBuffer.delete(tagToggle.tag.shortId);
-        this.displayHexagonal === 'Hexagonal' ? this.hexagonalHeatMap.eraseHeatMap(tagToggle.tag.shortId) : this.plasmaHeatMap.eraseHeatMap(tagToggle.tag.shortId);
+        this.heatMapType === 'Hexagonal' ? this.hexagonalHeatMap.eraseHeatMap(tagToggle.tag.shortId) : this.plasmaHeatMap.eraseHeatMap(tagToggle.tag.shortId);
       }
     });
     this.whenTransitionEnded().subscribe((tagShortId: number): void => {
@@ -134,7 +134,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
   }
 
   private heatUpHexes(data: CoordinatesSocketData): void {
-    this.displayHexagonal === 'Hexagonal' ? this.hexagonalHeatMap.feedWithCoordinates(data) : this.plasmaHeatMap.feedWithCoordinates(data);
+    this.heatMapType === 'Hexagonal' ? this.hexagonalHeatMap.feedWithCoordinates(data) : this.plasmaHeatMap.feedWithCoordinates(data);
   }
 
   private createHeatMapGrid (mapNode: d3.selection): void {

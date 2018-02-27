@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {HeatMapControllerService} from './heat-map-controller.service';;
+import {HeatMapControllerService} from './heat-map-controller.service';
 
 
 @Component({
@@ -20,13 +20,13 @@ export class HeatMapControllerComponent implements OnInit {
 
   setPathLength (event: number): void {
     this.pathLength = event;
-    // calculate time to [ms] before serving
+    // calculate time to [ms] before passing to observable
     this.heatMapControllerService.setHeatMapWaterfallDisplayTime(this.pathLength * 1000);
   }
 
   setHeatTimeWait (event: number): void {
     this.heatTimeWait = event;
-    // calculate time to [ms] before serving
+    // calculate time to [ms] before to observable
     this.heatMapControllerService.setHeatTimeGapChange(this.heatTimeWait * 1000);
   }
 

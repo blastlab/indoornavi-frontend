@@ -5,6 +5,7 @@
   opacity: 0.5;
   background: #eaeaea;
   padding: 5px;
+  width: 200px;
 }
 
 #heat-map-controller:hover {

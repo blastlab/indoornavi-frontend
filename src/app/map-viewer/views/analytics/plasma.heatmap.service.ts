@@ -8,6 +8,7 @@ import {CoordinatesSocketData} from '../../publication.type';
 export class PlasmaHeatMap extends HexagonalHeatMap {
   protected svgId: string = 'plasma-heatmap';
   protected heatElementClazz = 'pixel';
+  private plasmaRadius: number = 3; // number of pixels it will reach in each direction from the hit point
 
   constructor(width, height, heatPointSize, heatColors) {
     super(width, height, heatPointSize, heatColors);
@@ -23,12 +24,12 @@ export class PlasmaHeatMap extends HexagonalHeatMap {
   private calculatePlasmaPoints(): void {
     for (let i = 0; i < this.calculateMap()[1]; i++) {
       for (let j = 0; j < this.calculateMap()[0]; j++) {
-        this.points.push([this.heatPointSize * j, this.heatPointSize * i]);
+        this.points.push({x: this.heatPointSize * j, y: this.heatPointSize * i});
       }
     }
   }
 
-  protected findHex (data: CoordinatesSocketData): HeatPoint {
+  protected findHeatPint (data: CoordinatesSocketData): HeatPoint {
     const coordinates: Point = data.coordinates.point;
     return this.gridTable.find((hexHeatElement: HeatPoint): boolean =>
       hexHeatElement.x > coordinates.x &&
@@ -40,12 +41,12 @@ export class PlasmaHeatMap extends HexagonalHeatMap {
   }
 
   protected createNewHeatPoint (data: CoordinatesSocketData, timeNow: number): void {
-    const coordinates: Point = data.coordinates.point;
-    const plasmaPoint: [number, number] =  this.points.find((point: [number, number]): boolean => point[0] > coordinates.x && point[1] > coordinates.y);
+    this.coordinates = data.coordinates.point;
+    this.shapeStartVector = this.points.find((point: Point): boolean => point.x > this.coordinates.x && point.y > this.coordinates.y);
 
     this.heatMap = this.svg.append('g')
       .selectAll(`.${this.heatElementClazz}`)
-      .data([plasmaPoint])
+      .data([[this.shapeStartVector.x, this.shapeStartVector.y]])
       .enter().append('rect')
       .attr('x', d => d[0])
       .attr('y', d => d[1])
@@ -64,5 +65,32 @@ export class PlasmaHeatMap extends HexagonalHeatMap {
       .style('fill', this.heatColors[0])
       .style('fill-opacity', this.maxOpacity);
   }
+
+  protected addRelationWithSurrounding(data: CoordinatesSocketData, time: number): void {
+    this.distributePlasmaOnHeatMapGrid(data, time);
+  }
+
+  private distributePlasmaOnHeatMapGrid(data: CoordinatesSocketData, time: number): void {
+    if (this.plasmaRadius < 1) {this.plasmaRadius = 1}
+    this.coordinates = data.coordinates.point;
+    this.shapeStartVector = this.points.find((point: Point): boolean => point.x > this.coordinates.x && point.y > this.coordinates.y);
+    const squareGridSize: number = this.plasmaRadius * 2 + 1;
+    const transformDistance = ((squareGridSize - 1) / 2 * this.heatPointSize + this.heatPointSize);
+    const firstPixelCoordinates: Point = {
+      x: this.shapeStartVector.x -  transformDistance,
+      y: this.shapeStartVector.y - transformDistance
+    };
+    // data.coordinates.point = firstPixelCoordinates;
+    // i and j are corresponding to unit vectors in plasma grid.
+    // Below loops will iterate through every pixel in the plasma activation grid to display each heat point that this.plasmaRadius allows to reach.
+    for (let i = 0; i < squareGridSize; i++) {
+      data.coordinates.point.x = firstPixelCoordinates.x + (this.heatPointSize * i);
+      for (let j = 0; j < squareGridSize; j++) {
+        data.coordinates.point.y = firstPixelCoordinates.y + (this.heatPointSize * j);
+        this.fireHeatAtLocation(this.findHeatPint(data), data, time);
+      }
+    }
+  }
+
 
 }
