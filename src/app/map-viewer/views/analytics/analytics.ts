@@ -43,10 +43,10 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
 
   private heatMapSettings: HeatMapPath = {
     temperatureLifeTime: 25000,
-    temperatureWaitTime: 10000,
+    temperatureWaitTime: 5000,
   };
   private playingAnimation: boolean = false;
-  private heatMapType: string = 'Hexagonal';
+  private heatMapType: string = 'Plasma';
 
   constructor(
               ngZone: NgZone,
@@ -80,9 +80,9 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
   }
 
   protected init(): void {
-    this.heatMapControllerService.onHeaMapTypeChange().subscribe((type: string): void => {
-      this.heatMapType = type;
-    });
+    // this.heatMapControllerService.onHeaMapTypeChange().subscribe((type: string): void => {
+    //   this.heatMapType = type;
+    // });
     this.heatMapControllerService.onAnimationToggled().subscribe((animationToggle: boolean): void => {
       this.playingAnimation = animationToggle;
       if (!this.playingAnimation) {

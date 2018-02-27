@@ -35,24 +35,12 @@ export class PlasmaHeatMap extends HexagonalHeatMap {
     }
   }
 
-  protected findHeatPint (data: CoordinatesSocketData): HeatPoint {
-    const coordinates: Point = data.coordinates.point;
-    return this.gridTable.find((hexHeatElement: HeatPoint): boolean =>
-      hexHeatElement.x >= coordinates.x &&
-      hexHeatElement.y >= coordinates.y &&
-      hexHeatElement.x <= coordinates.x + this.heatPointSize &&
-      hexHeatElement.y <= coordinates.y + this.heatPointSize &&
-      hexHeatElement.tagShortId === data.coordinates.tagShortId
-    );
-  }
-
   protected createNewHeatPoint (data: CoordinatesSocketData, timeNow: number): void {
-    this.coordinates = data.coordinates.point;
-    this.shapeStartVector = this.points.find((point: Point): boolean => point.x > this.coordinates.x && point.y > this.coordinates.y);
+    this.shapeStartPoint = this.findShapeStartPoint(data.coordinates.point);
 
     this.heatMap = this.svg.append('g')
       .selectAll(`.${this.heatElementClazz}`)
-      .data([[this.shapeStartVector.x, this.shapeStartVector.y]])
+      .data([[this.shapeStartPoint.x, this.shapeStartPoint.y]])
       .enter().append('rect')
       .attr('x', d => d[0])
       .attr('y', d => d[1])
@@ -60,7 +48,10 @@ export class PlasmaHeatMap extends HexagonalHeatMap {
       .attr('height', this.heatPointSize)
       .attr('class', this.heatElementClazz)
       .attr('d', (d, index, nodes) => {
-        this.gridTable.push({x: d[0], y: d[1], element: nodes[index], tagShortId: data.coordinates.tagShortId});
+        this.gridTable.push({
+          x: this.shapeStartPoint.x,
+          y: this.shapeStartPoint.y,
+          element: nodes[index], tagShortId: data.coordinates.tagShortId});
       })
       .attr('tagShortId', data.coordinates.tagShortId.toString())
       .attr('heat', 0)
@@ -77,11 +68,10 @@ export class PlasmaHeatMap extends HexagonalHeatMap {
   }
 
   private distributePlasmaOnHeatMapGrid(data: CoordinatesSocketData, time: number): void {
-    this.coordinates = data.coordinates.point;
-    this.shapeStartVector = this.points.find((point: Point): boolean => point.x > this.coordinates.x && point.y > this.coordinates.y);
+    this.shapeStartPoint = this.findShapeStartPoint(data.coordinates.point);
     const firstPixelCoordinates: Point = {
-      x: this.shapeStartVector.x -  this.transformDistance,
-      y: this.shapeStartVector.y - this.transformDistance
+      x: this.shapeStartPoint.x -  this.transformDistance,
+      y: this.shapeStartPoint.y - this.transformDistance
     };
     // i and j are corresponding to unit vectors in plasma grid.
     // Below loops will iterate through every pixel in the plasma activation grid to display each heat point that this.plasmaRadius allows to reach.

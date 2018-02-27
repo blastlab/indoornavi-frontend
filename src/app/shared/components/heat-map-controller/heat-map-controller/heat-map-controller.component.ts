@@ -10,7 +10,7 @@ import {HeatMapControllerService} from './heat-map-controller.service';
 export class HeatMapControllerComponent implements OnInit {
   private playingAnimation: boolean = false;
   private pathLength: number = 25; // in seconds for user friendly units
-  private heatTimeWait: number = 10; // in seconds for user friendly units
+  private heatTimeWait: number = 5; // in seconds for user friendly units
   private heatMapType: string = 'Hexagonal';
 
   constructor(private heatMapControllerService: HeatMapControllerService) { }

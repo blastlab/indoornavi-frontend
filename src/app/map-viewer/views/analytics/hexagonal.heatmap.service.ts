@@ -14,8 +14,7 @@ export class HexagonalHeatMap {
   protected svg: d3.selection;
   protected strokeWidth: number = 1;
   protected maxOpacity: number  = 0.6;
-  protected coordinates: Point;
-  protected shapeStartVector: Point;
+  protected shapeStartPoint: Point;
   private temperatureTimeStepForHeating: number;
   private temperatureTimeStepForCooling: number;
   private transitionTime: number = 1000;
@@ -90,10 +89,10 @@ export class HexagonalHeatMap {
             .style('fill', () => color)
             .attr('stroke', () => color);
         } else {
-          const parent = d3.select(heatPointNode.parentNode);
+          const parent = d3.select(node.parentNode);
           parent.remove();
           const index = this.gridTable.findIndex((heatPoint: HeatPoint): boolean => {
-            return heatPoint.element === heatPoint;
+            return heatPoint.element === node;
           });
           this.gridTable.splice(index, 1);
         }
@@ -102,7 +101,6 @@ export class HexagonalHeatMap {
   }
 
   protected fireHeatAtLocation (heatPoint: HeatPoint, data: CoordinatesSocketData, timeNow: number): void {
-    console.log(heatPoint);
     if (!!heatPoint) {
       const element = d3.select(heatPoint.element);
       let heat = Number.parseInt(element.attr('heat'));
@@ -118,26 +116,26 @@ export class HexagonalHeatMap {
           .style('fill', () => color)
           .attr('stroke', () => color);
       }
-      console.log(timeNow - lastTimeHexagonGetHeated);
     } else {
       this.createNewHeatPoint(data, timeNow);
     }
-    // this.coolDownActiveHeatPoints(timeNow);
+    this.coolDownActiveHeatPoints(timeNow);
   }
 
   protected createNewHeatPoint (data: CoordinatesSocketData, timeNow: number): void {
-    console.log(data);
     const hexbin = d3Hexbin.hexbin().radius(this.heatPointSize);
-    this.coordinates = data.coordinates.point;
-    this.shapeStartVector =  this.points.find((point: Point): boolean => point.x > this.coordinates.x && point.y > this.coordinates.y);
+    this.shapeStartPoint = this.findShapeStartPoint(data.coordinates.point);
 
     this.heatMap = this.svg.append('g')
       .selectAll(`.${this.heatElementClazz}`)
-      .data(hexbin([[this.shapeStartVector.x, this.shapeStartVector.y]]))
+      .data(hexbin([[this.shapeStartPoint.x, this.shapeStartPoint.y]]))
       .enter().append('path')
       .attr('class', this.heatElementClazz)
       .attr('d', (d, index, nodes) => {
-        this.gridTable.push({x: this.shapeStartVector.x, y: this.shapeStartVector.y, element: nodes[index], tagShortId: data.coordinates.tagShortId});
+        this.gridTable.push({
+          x: this.shapeStartPoint.x,
+          y: this.shapeStartPoint.y,
+          element: nodes[index], tagShortId: data.coordinates.tagShortId});
         return 'M' + d.x + ',' + d.y + hexbin.hexagon();
       })
       .attr('tagShortId', data.coordinates.tagShortId.toString())
@@ -148,20 +146,16 @@ export class HexagonalHeatMap {
       .attr('stroke-width', `${this.strokeWidth}px`)
       .style('fill', this.heatColors[0])
       .style('fill-opacity', this.maxOpacity);
-    console.log(this.gridTable);
   }
 
   protected findHeatPint (data: CoordinatesSocketData): HeatPoint {
     // hexagon shape builds grid that has different distance between hexes in x and y direction
     // which gives for x direction deference equal to radius of circle overwritten on hexagon,
     // and in y direction deference equal to sqrt from 3 times radius of circle overwritten on hexagon.
-    const coordinates: Point = data.coordinates.point;
+    const coordinates: Point = this.findShapeStartPoint(data.coordinates.point);
     return this.gridTable.find((hexHeatElement: HeatPoint): boolean =>
-      hexHeatElement.x >= coordinates.x &&
-      hexHeatElement.y >= coordinates.y &&
-      hexHeatElement.x <= coordinates.x + this.heatPointSize &&
-      hexHeatElement.y <= coordinates.y + Math.sqrt(3) * this.heatPointSize &&
-      hexHeatElement.tagShortId === data.coordinates.tagShortId
+      coordinates.x === hexHeatElement.x &&
+      coordinates.y === hexHeatElement.y
     );
   };
 
@@ -169,6 +163,10 @@ export class HexagonalHeatMap {
     const mapColumns = Math.ceil(this.width / (this.heatPointSize * 1.5));
     const mapRows = Math.ceil(this.height / (this.heatPointSize * 1.5));
     return [mapColumns, mapRows];
+  }
+
+  protected findShapeStartPoint(coordinates: Point): Point {
+    return this.points.find((point: Point): boolean => point.x > coordinates.x && point.y > coordinates.y);
   }
 
   protected addRelationWithSurrounding(data: CoordinatesSocketData, time: number): void {
@@ -181,5 +179,6 @@ export class HexagonalHeatMap {
       }
     }
   }
+
 
 }
