@@ -456,7 +456,9 @@ export class DevicesComponent implements Tool, OnInit {
             preserveLine = true;
           }
         }
-        this.clearSelections(preserveLine);
+        if (!!lastSelected && !DevicesComponent.hasSameShortId(lastSelected, handledDevice.shortId)) {
+          this.clearSelections(preserveLine);
+        }
         this.setSelectedDevice(handledDevice);
         if (!!handledDevice && DevicesComponent.isSinkType(handledDevice)) {
           this.chosenSink = <Sink>handledDevice;

@@ -15,12 +15,12 @@ export class MapComponent implements OnInit {
   private imageLoaded: boolean = false;
 
   constructor(private mapLoaderInformer: MapLoaderInformerService,
-              private mapViewerService: MapEditorService,
+              private mapEditorService: MapEditorService,
               private devicePlacerController: DevicePlacerController) {
   }
 
   ngOnInit(): void {
-    this.mapViewerService.drawMap(this.floor).then((mapSvg: MapSvg) => {
+    this.mapEditorService.drawMap(this.floor).then((mapSvg: MapSvg) => {
       this.imageLoaded = true;
       this.mapLoaderInformer.publishIsLoaded(mapSvg);
     });
