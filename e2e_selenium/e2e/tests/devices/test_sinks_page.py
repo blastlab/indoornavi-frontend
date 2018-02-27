@@ -62,6 +62,83 @@ class TestSinksPage(unittest.TestCase):
 
         self.devices_page.save_add_device_click()
 
+    def method_test_move_all_setUp(self, source):
+
+        move_all_target_btn = 'all_verified' if source == 'not_verified' else 'all_not_verified'
+        founded_source_devices = 'not_verified' if source == 'not_verified' else 'verified'
+        founded_target_devices = 'verified' if source == 'not_verified' else 'not_verified'
+
+        # Check that the move all button is clickable
+        self.assertTrue(self.devices_page.action_sink_button('wait_for_clickable', move_all_target_btn))
+
+        # Find all devices from source list & append short_id text to array
+        source_list = self.devices_page.find_devices(founded_source_devices)
+        expected_array = [x.text for x in source_list]
+
+        # Move all devices to target list & next find & append short_id text to array
+        self.devices_page.action_sink_button('click', move_all_target_btn)
+        target_list = self.devices_page.find_devices(founded_target_devices)
+        result_array = [y.text for y in target_list]
+
+        # Comparison of the table before and after the transfer
+        self.assertTrue(expected_array == result_array)
+
+        # Check the toasts are displayed & disappeared
+        self.assertTrue(self.devices_page.is_toast_present(self.locator.edited_toast))
+        self.assertTrue(self.devices_page.is_toast_disappear(self.locator.edited_toast))
+        self.test_failed = False
+
+    def method_test_move_single_setUp(self, side):
+
+        move_single_target_btn = 'single_verified' if side == 'verified' else 'single_not_verified'
+        founded_source_device = 'not_verified' if side == 'verified' else 'verified'
+        founded_target_devices = 'verified' if side == 'verified' else 'not_verified'
+
+        # Wait for clickable button
+        self.assertTrue(self.devices_page.action_sink_button('wait_for_clickable', move_single_target_btn))
+
+        first_sink = self.devices_page.get_first_sink_row(founded_source_device)
+        expected_web_elements = self.devices_page.find_devices(founded_source_device)
+        expected_short_ids = [element.text for element in expected_web_elements]
+
+        # Click first sink row
+        first_sink.click()
+
+        # Get color of element
+        rgba_color_substr = first_sink.value_of_css_property("background-color")
+
+        # Get array of numbers rgb[]
+        substr = self.base_page.get_numbers_from_string(rgba_color_substr)
+
+        # Parse rgb to hex
+        color_hex = "#{:02x}{:02x}{:02x}".format(int(substr[0]), int(substr[1]), int(substr[2]))
+
+        # Check the sink is highlighted
+        self.assertTrue(color_hex, "#eecc00")
+
+        # Move single sink to unverified list
+        self.devices_page.action_sink_button('click', move_single_target_btn)
+        result_web_elements = self.devices_page.find_devices(founded_target_devices)
+        result_short_ids = [element.text for element in result_web_elements if element.text in expected_short_ids]
+        self.assertTrue(len(result_short_ids) == 1)
+        self.test_failed = False
+
+    def method_test_search_setUp(self, side):
+        search_input = self.locator.search_not_verified_input if side == 'not_verified' else self.locator.search_verified_input
+        # Check the search input is clickable
+        self.assertTrue(self.devices_page.is_search_not_verified_input_clickable())
+
+        # Check the search input is clickable
+        web_elements = self.devices_page.find_devices(side)
+        short_ids = self.devices_page.search_element_by_short_id(web_elements)
+        # Check that if user search device by short_id there will be displayed one row
+        for short_id in short_ids:
+            self.devices_page.insert_into_search_device_input(short_id, side)
+            self.assertTrue(self.devices_page.is_there_only_founded_device_row() == 1)
+
+        self.devices_page.clear_text_input(*search_input)
+        self.test_failed = False
+
     def test_01_sinks_page_is_loaded_correctly(self):
 
         """Test that sinks page has been correctly loaded"""
@@ -227,10 +304,8 @@ class TestSinksPage(unittest.TestCase):
 
     def test_12_search_devices_not_verified(self):
 
-        """Test searching sink by short id"""
+        """Test searching sink by short id in unverified list"""
 
-        # Check the search input is clickable
-        self.assertTrue(self.devices_page.is_search_not_verified_input_clickable())
         # Add 2 additional sinks
         self.method_test_setUp('add',
                                'TestSinkToSearch 123321',
@@ -242,66 +317,45 @@ class TestSinksPage(unittest.TestCase):
                                self.locator.new_device_short_id+'999',
                                self.locator.new_device_long_id+'999')
 
-        # Check the search input is clickable
-        web_elements = self.devices_page.find_devices('not_verified')
-        short_ids = self.devices_page.search_element_by_short_id(web_elements)
-        # Check that if user search device by short_id there will be displayed one row
-        for short_id in short_ids:
-            self.devices_page.insert_into_search_device_input(short_id, 'not_verified')
-            self.assertTrue(self.devices_page.is_there_only_founded_device_row() == 1)
-
-        self.devices_page.clear_text_input(*self.locator.search_not_verified_input)
-        self.test_failed = False
-
-    # TODO def test_13_search_devices_verified(self):
+        self.method_test_search_setUp('not_verified')
 
     def test_13_move_all_to_verified_list(self):
 
         """Test moving all sinks to verified list"""
 
-        # Check that the move all to right button is clickable
-        self.assertTrue(self.devices_page.is_move_all_button_clickable('right'))
-
-        # Find all devices from 'not verified' list & append short_id text to array
-        not_verified = self.devices_page.find_devices('not_verified')
-        expected_array = [x.text for x in not_verified]
-
-        # Move all devices to 'verified' list & next find & append short_id text to array
-        self.devices_page.click_move_all_button('right')
-        verified = self.devices_page.find_devices('verified')
-        result_array = [y.text for y in verified]
-
-        # Comparison of the table before and after the transfer
-        self.assertTrue(expected_array == result_array)
-
-        # Check the toasts are displayed & disappeared
-        self.assertTrue(self.devices_page.is_toast_present(self.locator.edited_toast))
-        self.assertTrue(self.devices_page.is_toast_disappear(self.locator.edited_toast))
-        self.test_failed = False
+        # pass variable from which list test starts
+        self.method_test_move_all_setUp('not_verified')
 
     def test_14_search_devices_verified(self):
 
-        """Test searching sink by short id"""
+        """Test searching sink by short id in verified list"""
 
-        # Check the search input is clickable
-        self.assertTrue(self.devices_page.is_search_verified_input_clickable())
+        self.method_test_search_setUp('verified')
 
-        # Check the search input is clickable
-        web_elements = self.devices_page.find_devices('verified')
-        short_ids = self.devices_page.search_element_by_short_id(web_elements)
-        # Check that if user search device by short_id there will be displayed one row
-        for short_id in short_ids:
-            self.devices_page.insert_into_search_device_input(short_id, 'verified')
-            self.assertTrue(self.devices_page.is_there_only_founded_device_row() == 1)
+    def test_15_move_all_to_unverified_list(self):
 
-        self.devices_page.clear_text_input(*self.locator.search_verified_input)
-        self.test_failed = False
+        """Test moving all sinks to unverified list"""
+
+        # pass variable from which list test starts
+        self.method_test_move_all_setUp('verified')
+
+    def test_16_move_single_to_verified_list(self):
+
+        """Test moving single sink to verified list"""
+
+        self.method_test_move_single_setUp('verified')
+
+    def test_17_move_single_to_unverified_list(self):
+
+        """Test moving single sink to verified list"""
+        self.test_16_move_single_to_verified_list()
+        self.method_test_move_single_setUp('not_verified')
 
     # TODO
-    # TODO 1. Wyszukiwanie sinkow +
+    # TODO 1. Wyszukiwanie sinkow - verified, unverified +
     # TODO 2. Drag & Drop
     # TODO 3. Przenoszenie pojedynczo
-    # TODO 4. Przenoszenie zbiorowe +
+    # TODO 4. Przenoszenie zbiorowe - verified, unverified +
 
     def tearDown(self):
         TestDriver.tearDown(self)

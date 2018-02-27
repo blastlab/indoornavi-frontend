@@ -51,11 +51,15 @@ class DevicesPage(BasePage):
     def is_search_verified_input_clickable(self):
         return self.wait_for_element_clickable(self.base_locators.search_verified_input)
 
-    def is_move_all_button_clickable(self, side):
-        if side == 'right':
-            return self.wait_for_element_clickable(self.base_locators.move_all_to_verify_button)
-        else:
-            return self.wait_for_element_clickable(self.base_locators.move_all_to_not_verify_button)
+    def is_move_button_clickable(self, locator):
+
+        choices = {
+          'all_verified': self.base_locators.move_all_to_verify_button,
+          'all_not_verified': self.base_locators.move_all_to_not_verify_button,
+          'single_verified': self.base_locators.move_to_verify_button,
+          'single_not_verified': self.base_locators.move_to_not_verify_button
+        }
+        return self.wait_for_element_clickable(choices.get(locator, 'all_verified'))
 
     # Visible & Present Elements
     def is_dropdown_menu_device_visible(self):
@@ -227,7 +231,7 @@ class DevicesPage(BasePage):
         else:
             search_input = self.base_locators.search_verified_input
 
-        filtered_num = re.findall('\d+', short_id)[0]
+        filtered_num = self.get_numbers_from_string(short_id)[0]
         self.clear_and_fill_input(filtered_num, *search_input)
 
     def is_there_only_founded_device_row(self):
@@ -235,8 +239,45 @@ class DevicesPage(BasePage):
 
     # Change Verify - Test methods
 
-    def click_move_all_button(self, side):
-        if side == 'right':
-            return self.click_button(*self.base_locators.move_all_to_verify_button)
+    def action_sink_button(self, method, locator):
+
+        locators = {
+          'all_verified': self.base_locators.move_all_to_verify_button,
+          'all_not_verified': self.base_locators.move_all_to_not_verify_button,
+          'single_verified': self.base_locators.move_to_verify_button,
+          'single_not_verified': self.base_locators.move_to_not_verify_button
+        }
+
+        methods = {
+          'click': self.click_button,
+          'wait_for_clickable': self.wait_for_element_clickable
+        }
+
+        if method == 'click':
+            return self.click_button(*locators.get(locator))
         else:
-            return self.click_button(*self.base_locators.move_all_to_not_verify_button)
+            return self.wait_for_element_clickable(locators.get(locator))
+
+    def get_first_sink_row(self, side):
+
+        picklist = self.identify_element(*self.base_locators.devices_table)
+        choise_list = picklist.find_elements(*self.base_locators.picklist_wrapper)
+
+        not_verified = choise_list[0]
+        verified = choise_list[1]
+        # Choose
+        if side == 'not_verified':
+            choosen_side = not_verified
+        else:
+            choosen_side = verified
+        # Get all verified sinks
+        devices = choosen_side.find_elements(*self.base_locators.devices_table_item)
+        verified_sink_to_move = devices[0]
+        # Get first sink
+        return verified_sink_to_move
+
+    # def click_sink_table_item(self, side):
+    #     if side == 'not_verified':
+    #         return self.click_button(*self.base_locators.move_all_to_verify_button)
+    #     else:
+    #         return self.click_button(*self.base_locators.move_all_to_not_verify_button)

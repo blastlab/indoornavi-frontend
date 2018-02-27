@@ -2,6 +2,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import selenium.webdriver.support.ui as ui
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
+import re
 import csv
 import mysql.connector
 from pyquibase.pyquibase import Pyquibase
@@ -154,4 +155,8 @@ class BasePage(object):
         last_element = rows[0]
         return last_element
 
+    # Additional methods
 
+    def get_numbers_from_string(self, str):
+        get_array = re.findall('\d+', str)[0:3]
+        return get_array
