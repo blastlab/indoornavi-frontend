@@ -21,6 +21,7 @@
           <div><b>{{'device.shortId'|translate}}:</b> {{device['shortId']}}</div>
           <div><b>{{'device.longId'|translate}}:</b> {{device['longId']}}</div>
           <div><b>{{'device.name'|translate}}:</b> {{device['name']}}</div>
+          <div *ngIf="device.floorId"><b>{{'device.publishedOnFloorWithId'|translate}}:</b> {{device.floorId}}</div>
         </div>
         <div class="ui-g-3 ui-md-3 ui-lg-3">
           <button
