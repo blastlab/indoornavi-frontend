@@ -22,6 +22,7 @@ export class DevicesListComponent implements OnInit, OnDestroy {
   private listVisibility: Subscription;
   private selectedElement: Subscription;
   private deselection: Subscription;
+  private connectingState: Subscription;
   private connectingFlag: boolean;
 
   constructor(public translate: TranslateService,
@@ -46,6 +47,9 @@ export class DevicesListComponent implements OnInit, OnDestroy {
     this.selectedElement = this.devicePlacerController.getSelectedDevice().subscribe((selected) => {
       this.selectedDevice = selected;
     });
+    this.connectingState = this.devicePlacerController.connectingMode.subscribe((state: boolean) => {
+      this.connectingFlag = state;
+    })
   }
 
   ngOnDestroy(): void {
@@ -54,6 +58,7 @@ export class DevicesListComponent implements OnInit, OnDestroy {
     this.listVisibility.unsubscribe();
     this.deselection.unsubscribe();
     this.selectedElement.unsubscribe();
+    this.connectingState.unsubscribe();
   }
 
   public dragDeviceStarted(device: Anchor | Sink): void {
@@ -65,8 +70,7 @@ export class DevicesListComponent implements OnInit, OnDestroy {
   }
 
   public modifyConnections(): void {
-    this.connectingFlag = !this.connectingFlag;
-    this.devicePlacerController.setConnectingMode(this.connectingFlag);
+    this.devicePlacerController.setConnectingMode(!this.connectingFlag);
   }
 
   public deleteDevice(): void {

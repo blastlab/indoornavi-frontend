@@ -141,6 +141,7 @@ export class DevicesComponent implements Tool, OnInit {
         this.hintBarService.sendHintMessage(value);
       });
       this.endModifyingConnections();
+      this.devicePlacerController.setConnectingMode(false);
     }
     if (this.selectedDevice) {
       if (!!this.creatingConnection) {
@@ -171,6 +172,7 @@ export class DevicesComponent implements Tool, OnInit {
         this.removeDashedLine()
       }
       this.endModifyingConnections();
+      this.devicePlacerController.setConnectingMode(false);
     } else {
       this.toolbarService.emitToolChanged(this);
     }
@@ -306,6 +308,7 @@ export class DevicesComponent implements Tool, OnInit {
 
   private subscribeForDroppedDevice(): void {
     this.devicePlacerController.droppedDevice.subscribe(() => {
+      console.log(this.draggedDevice);
       if (!!this.draggedDevice) {
         this.placementDone = false;
         this.devicePlacerController.newCoordinates.first().subscribe((coords) => {
@@ -449,7 +452,9 @@ export class DevicesComponent implements Tool, OnInit {
     this.handledSelection = this.devicePlacerController.getSelectedDevice()
       .subscribe((selectedDevice) => {
         const lastSelected = this.selectedDevice;
+        console.log(lastSelected);
         const handledDevice = this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(selectedDevice.groupCreated.group));
+        console.log(handledDevice);
         let preserveLine: boolean;
         if (!!handledDevice && DevicesComponent.isSinkType(handledDevice)) {
           if (!!lastSelected && this.getIndexOfAnchorInSinkArray(lastSelected, <Sink>handledDevice) > -1) {
