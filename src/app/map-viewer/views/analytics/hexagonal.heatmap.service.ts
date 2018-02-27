@@ -59,12 +59,6 @@ export class HexagonalHeatMap {
   }
 
   feedWithCoordinates(data: CoordinatesSocketData, ): void {
-
-    data.coordinates.point = {
-      x: 500,
-      y: 500
-    };
-
     const timeNow = Date.now();
     this.fireHeatAtLocation(this.findHeatPint(data), data, timeNow);
     this.addRelationWithSurrounding(data, timeNow);
@@ -86,11 +80,12 @@ export class HexagonalHeatMap {
       if (timeNow - lastTimeHexagonGetHeated > this.temperatureTimeStepForCooling) {
         let heat = Number.parseInt(heatPointNode.attr('heat'));
         if (heat > 0) {
-          --heat;
+          heat--;
           const color = this.heatColors[heat];
-          heatPointNode.attr('heat', heat)
+          heatPointNode
             .transition()
             .duration(this.transitionTime)
+            .attr('heat', heat)
             .attr('heated', timeNow.toString())
             .style('fill', () => color)
             .attr('stroke', () => color);
@@ -107,29 +102,31 @@ export class HexagonalHeatMap {
   }
 
   protected fireHeatAtLocation (heatPoint: HeatPoint, data: CoordinatesSocketData, timeNow: number): void {
-    this.coolDownActiveHeatPoints(timeNow);
+    console.log(heatPoint);
     if (!!heatPoint) {
-    const element = d3.select(heatPoint.element);
+      const element = d3.select(heatPoint.element);
       let heat = Number.parseInt(element.attr('heat'));
-      const lastTimeHexagonGetHeated = Number.parseInt(element.attr('heated'));
+      const lastTimeHexagonGetHeated: number = Number.parseInt(element.attr('heated'));
       if ((heat < this.heatColors.length - 1) && (timeNow - lastTimeHexagonGetHeated > this.temperatureTimeStepForHeating)) {
         heat++;
+        const color = this.heatColors[heat];
+        element
+          .transition()
+          .duration(this.transitionTime)
+          .attr('heat', heat)
+          .attr('heated', timeNow.toString())
+          .style('fill', () => color)
+          .attr('stroke', () => color);
       }
-      const color = this.heatColors[heat];
-
-      element
-        .transition()
-        .duration(this.transitionTime)
-        .attr('heat', heat)
-        .attr('heated', timeNow.toString())
-        .style('fill', () => color)
-        .attr('stroke', () => color);
+      console.log(timeNow - lastTimeHexagonGetHeated);
     } else {
       this.createNewHeatPoint(data, timeNow);
     }
+    // this.coolDownActiveHeatPoints(timeNow);
   }
 
   protected createNewHeatPoint (data: CoordinatesSocketData, timeNow: number): void {
+    console.log(data);
     const hexbin = d3Hexbin.hexbin().radius(this.heatPointSize);
     this.coordinates = data.coordinates.point;
     this.shapeStartVector =  this.points.find((point: Point): boolean => point.x > this.coordinates.x && point.y > this.coordinates.y);
@@ -140,7 +137,7 @@ export class HexagonalHeatMap {
       .enter().append('path')
       .attr('class', this.heatElementClazz)
       .attr('d', (d, index, nodes) => {
-        this.gridTable.push({x: d.x, y: d.y, element: nodes[index], tagShortId: data.coordinates.tagShortId});
+        this.gridTable.push({x: this.shapeStartVector.x, y: this.shapeStartVector.y, element: nodes[index], tagShortId: data.coordinates.tagShortId});
         return 'M' + d.x + ',' + d.y + hexbin.hexagon();
       })
       .attr('tagShortId', data.coordinates.tagShortId.toString())
@@ -151,6 +148,7 @@ export class HexagonalHeatMap {
       .attr('stroke-width', `${this.strokeWidth}px`)
       .style('fill', this.heatColors[0])
       .style('fill-opacity', this.maxOpacity);
+    console.log(this.gridTable);
   }
 
   protected findHeatPint (data: CoordinatesSocketData): HeatPoint {
@@ -159,10 +157,10 @@ export class HexagonalHeatMap {
     // and in y direction deference equal to sqrt from 3 times radius of circle overwritten on hexagon.
     const coordinates: Point = data.coordinates.point;
     return this.gridTable.find((hexHeatElement: HeatPoint): boolean =>
-      hexHeatElement.x > coordinates.x &&
-      hexHeatElement.y > coordinates.y &&
-      hexHeatElement.x < coordinates.x + this.heatPointSize &&
-      hexHeatElement.y < coordinates.y + Math.sqrt(3) * this.heatPointSize &&
+      hexHeatElement.x >= coordinates.x &&
+      hexHeatElement.y >= coordinates.y &&
+      hexHeatElement.x <= coordinates.x + this.heatPointSize &&
+      hexHeatElement.y <= coordinates.y + Math.sqrt(3) * this.heatPointSize &&
       hexHeatElement.tagShortId === data.coordinates.tagShortId
     );
   };

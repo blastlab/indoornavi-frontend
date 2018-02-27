@@ -1,29 +1,27 @@
 <div id="heat-map-controller" class="ui-corner-all">
-  <div class="header">
-    <i class="fa fa-area-chart"></i> {{'heat.map.tool'|translate}}
-  </div>
-  <div class="ui-lg-11" >
-    <p>{{'set.heat.map.type'|translate}}</p>
-      <div><p-radioButton name="heatMap"
-              value="{{'hexagonal.heat.map'|translate}}"
-              label="{{'hexagonal.heat.map'|translate}}"
-              [(ngModel)]="heatMapType"
-              [disabled]="playingAnimation"
-              inputId="option1"
-      ></p-radioButton></div>
-      <div><p-radioButton name="heatMap"
-              value="{{'plasma.heat.map'|translate}}"
-              label="{{'plasma.heat.map'|translate}}"
-              [(ngModel)]="heatMapType"
-              [disabled]="playingAnimation"
-              inputId="option2"
-      ></p-radioButton></div>
-  </div>
+  <!--<div class="header">-->
+    <!--<i class="fa fa-area-chart"></i> {{'heat.map.tool'|translate}}-->
+  <!--</div>-->
+  <!--<div class="ui-lg-11" >-->
+    <!--<p>{{'set.heat.map.type'|translate}}</p>-->
+      <!--<div><p-radioButton name="heatMap"-->
+              <!--value="{{'hexagonal.heat.map'|translate}}"-->
+              <!--label="{{'hexagonal.heat.map'|translate}}"-->
+              <!--[(ngModel)]="heatMapType"-->
+              <!--[disabled]="playingAnimation"-->
+              <!--inputId="option1"-->
+      <!--&gt;</p-radioButton></div>-->
+      <!--<div><p-radioButton name="heatMap"-->
+              <!--value="{{'plasma.heat.map'|translate}}"-->
+              <!--label="{{'plasma.heat.map'|translate}}"-->
+              <!--[(ngModel)]="heatMapType"-->
+              <!--[disabled]="playingAnimation"-->
+              <!--inputId="option2"-->
+      <!--&gt;</p-radioButton></div>-->
+  <!--</div>-->
   <div class="ui-lg-11">
     <span>{{'heat.gap'|translate}}: {{heatTimeWait}} [s]</span>
     <p-slider
-      class=""
-      pTooltip="{{'heat.gap'|translate}}"
       [ngModel]="heatMapWaterfallDisplayTime"
       (ngModelChange) = "setHeatTimeWait($event)"
       [min]="10" [max]="2000"
@@ -32,8 +30,6 @@
   <div class="ui-lg-11">
     <span>{{'path.length'|translate}}: {{pathLength}} [s]</span>
     <p-slider
-      class=""
-      pTooltip="{{'path.length'|translate}}"
       [ngModel]="heatMapWaterfallDisplayTime"
       (ngModelChange) = "setPathLength($event)"
       [min]="25" [max]="2500"
