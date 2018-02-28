@@ -1,3 +1,8 @@
+@import '~@angular/material/core/theming/prebuilt/deeppurple-amber.css';
+@import '~primeng/resources/primeng.css';
+@import '~primeng/resources/themes/ludvig/theme.css';
+@import '~font-awesome/css/font-awesome.css';
+
 body {
   font-family: 'Roboto', sans-serif;
 }
@@ -41,10 +46,6 @@ body {
   visibility: hidden;
 }
 
-@import '~@angular/material/core/theming/prebuilt/deeppurple-amber.css';
-@import '~primeng/resources/primeng.css';
-@import '~primeng/resources/themes/ludvig/theme.css';
-@import '~font-awesome/css/font-awesome.css';
 
 table th.col-button, table td.col-button, table th.col-checkbox, table td.col-checkbox {
   width: 1%;

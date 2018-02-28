@@ -32,7 +32,6 @@ import {WizardComponent} from './map-editor/tool-bar/tools/wizard/wizard';
 import {ActionBarService} from './map-editor/action-bar/actionbar.service';
 import {ScaleService} from './shared/services/scale/scale.service';
 import {PublishedListComponent} from './map-viewer/list/publication-list';
-import {D3Service} from 'd3-ng2-service';
 import {AllFieldsFilter} from './shared/utils/filters/allFieldsFilter';
 import {DevicePlacerController} from './map-editor/tool-bar/tools/devices/device-placer.controller';
 import {appRoutes} from './app.routes';
@@ -213,7 +212,6 @@ export function HttpLoaderFactory(http: Http) {
     AuthGuard,
     ActionBarService,
     PermissionGroupService,
-    D3Service,
     DevicePlacerController,
     ScaleService,
     PublishedService,

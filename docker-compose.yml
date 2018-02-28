@@ -10,7 +10,7 @@ services:
     container_name:
       frontend
     working_dir: /app
-    command: bash -c "npm install; ng serve"
+    command: bash -c "npm install; ng serve --host=0.0.0.0 --disable-host-check"
 
   core:
     build: backend
