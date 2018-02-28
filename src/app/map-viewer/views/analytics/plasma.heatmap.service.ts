@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HexagonalHeatMap} from './hexagonal.heatmap.service';
 import {Point} from '../../../map-editor/map.type';
-import {HeatPoint} from './analytics.type';
 import {CoordinatesSocketData} from '../../publication.type';
 
 @Injectable()
@@ -38,10 +37,9 @@ export class PlasmaHeatMap extends HexagonalHeatMap {
   protected createNewHeatPoint (data: CoordinatesSocketData, timeNow: number): void {
     this.shapeStartPoint = this.findShapeStartPoint(data.coordinates.point);
 
-    this.heatMap = this.svg.append('g')
-      .selectAll(`.${this.heatElementClazz}`)
-      .data([[this.shapeStartPoint.x, this.shapeStartPoint.y]])
-      .enter().append('rect')
+    this.heatMap = this.svg
+      .append('rect')
+      .datum([[this.shapeStartPoint.x, this.shapeStartPoint.y]][0])
       .attr('x', d => d[0])
       .attr('y', d => d[1])
       .attr('width', this.heatPointSize)
@@ -79,7 +77,7 @@ export class PlasmaHeatMap extends HexagonalHeatMap {
       data.coordinates.point.x = firstPixelCoordinates.x + (this.heatPointSize * i);
       for (let j = 0; j < this.squareGridSize; j++) {
         data.coordinates.point.y = firstPixelCoordinates.y + (this.heatPointSize * j);
-        this.fireHeatAtLocation(this.findHeatPint(data), data, time);
+        this.fireHeatAtLocation(this.findHeatPoint(data), data, time);
       }
     }
   }

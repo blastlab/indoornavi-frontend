@@ -39,27 +39,24 @@ export class HexagonalHeatMap {
 
   eraseHeatMap (tagShortId?: number): void {
     if (!!tagShortId) {
-      const nodes = this.svg.selectAll(`.${this.heatElementClazz}`).nodes();
-      nodes.forEach((node: d3.selection): void => {
-        const heatElement = d3.select(node);
-        if (Number.parseInt(heatElement.attr('tagShortId'), 10) === tagShortId) {
-          const parent = d3.select(node.parentNode);
-          parent.remove();
-          const index = this.gridTable.findIndex((heatPoint: HeatPoint): boolean => {
-            return heatPoint.element === node;
-          });
-          this.gridTable.splice(index, 1);
+      const indexesToDelete: number[] = [];
+      this.gridTable.forEach((heatPoint: HeatPoint): void => {
+        if (heatPoint.tagShortId === tagShortId) {
+          indexesToDelete.push(this.gridTable.indexOf(heatPoint));
+          d3.select(heatPoint.element).remove();
         }
       });
+      indexesToDelete.sort((a: number, b: number): number => b - a);
+      indexesToDelete.forEach(index => this.gridTable.splice(index, 1));
     } else {
-      this.svg.selectAll('g').remove();
+      this.svg.selectAll(`.${this.heatElementClazz}`).remove();
       this.gridTable = [];
     }
   }
 
   feedWithCoordinates(data: CoordinatesSocketData, ): void {
     const timeNow = Date.now();
-    this.fireHeatAtLocation(this.findHeatPint(data), data, timeNow);
+    this.fireHeatAtLocation(this.findHeatPoint(data), data, timeNow);
     this.addRelationWithSurrounding(data, timeNow);
   }
 
@@ -72,9 +69,8 @@ export class HexagonalHeatMap {
   }
 
   private coolDownActiveHeatPoints(timeNow: number): void {
-    const nodes = this.svg.selectAll(`.${this.heatElementClazz}`).nodes();
-    nodes.forEach((node: d3.selection): void => {
-      const heatPointNode = d3.select(node);
+    this.gridTable.forEach((heatPoint: HeatPoint): void => {
+      const heatPointNode = d3.select(heatPoint.element);
       const lastTimeHexagonGetHeated = Number.parseInt(heatPointNode.attr('heated'));
       if (timeNow - lastTimeHexagonGetHeated > this.temperatureTimeStepForCooling) {
         let heat = Number.parseInt(heatPointNode.attr('heat'));
@@ -89,12 +85,8 @@ export class HexagonalHeatMap {
             .style('fill', () => color)
             .attr('stroke', () => color);
         } else {
-          const parent = d3.select(node.parentNode);
-          parent.remove();
-          const index = this.gridTable.findIndex((heatPoint: HeatPoint): boolean => {
-            return heatPoint.element === node;
-          });
-          this.gridTable.splice(index, 1);
+          heatPointNode.remove();
+          this.gridTable.splice(this.gridTable.indexOf(heatPoint), 1);
         }
       }
     });
@@ -125,11 +117,9 @@ export class HexagonalHeatMap {
   protected createNewHeatPoint (data: CoordinatesSocketData, timeNow: number): void {
     const hexbin = d3Hexbin.hexbin().radius(this.heatPointSize);
     this.shapeStartPoint = this.findShapeStartPoint(data.coordinates.point);
-
-    this.heatMap = this.svg.append('g')
-      .selectAll(`.${this.heatElementClazz}`)
-      .data(hexbin([[this.shapeStartPoint.x, this.shapeStartPoint.y]]))
-      .enter().append('path')
+    this.heatMap = this.svg
+      .append('path')
+      .datum(hexbin([[this.shapeStartPoint.x, this.shapeStartPoint.y]])[0])
       .attr('class', this.heatElementClazz)
       .attr('d', (d, index, nodes) => {
         this.gridTable.push({
@@ -148,7 +138,7 @@ export class HexagonalHeatMap {
       .style('fill-opacity', this.maxOpacity);
   }
 
-  protected findHeatPint (data: CoordinatesSocketData): HeatPoint {
+  protected findHeatPoint (data: CoordinatesSocketData): HeatPoint {
     // hexagon shape builds grid that has different distance between hexes in x and y direction
     // which gives for x direction deference equal to radius of circle overwritten on hexagon,
     // and in y direction deference equal to sqrt from 3 times radius of circle overwritten on hexagon.
@@ -179,6 +169,4 @@ export class HexagonalHeatMap {
       }
     }
   }
-
-
 }
