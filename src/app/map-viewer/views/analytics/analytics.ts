@@ -46,7 +46,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     temperatureWaitTime: 5000,
   };
   private playingAnimation: boolean = false;
-  private heatMapType: string = 'Plasma';
+  private heatMapType: string = 'Hexagonal';
 
   constructor(
               ngZone: NgZone,

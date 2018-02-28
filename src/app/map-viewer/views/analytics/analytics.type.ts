@@ -18,6 +18,8 @@ export interface HeatPoint {
   y: number;
   element: d3.selection;
   tagShortId: number;
+  heat: number;
+  heated: number;
 }
 
 export interface HeatMapPath {

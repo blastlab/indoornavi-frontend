@@ -70,21 +70,19 @@ export class HexagonalHeatMap {
 
   private coolDownActiveHeatPoints(timeNow: number): void {
     this.gridTable.forEach((heatPoint: HeatPoint): void => {
-      const heatPointNode = d3.select(heatPoint.element);
-      const lastTimeHexagonGetHeated = Number.parseInt(heatPointNode.attr('heated'));
-      if (timeNow - lastTimeHexagonGetHeated > this.temperatureTimeStepForCooling) {
-        let heat = Number.parseInt(heatPointNode.attr('heat'));
-        if (heat > 0) {
-          heat--;
-          const color = this.heatColors[heat];
+      if (timeNow - heatPoint.heated > this.temperatureTimeStepForCooling) {
+        if (heatPoint.heat > 0) {
+          heatPoint.heat--;
+          heatPoint.heated = timeNow;
+          const color = this.heatColors[heatPoint.heat];
+          const heatPointNode = d3.select(heatPoint.element);
           heatPointNode
             .transition()
             .duration(this.transitionTime)
-            .attr('heat', heat)
-            .attr('heated', timeNow.toString())
             .style('fill', () => color)
             .attr('stroke', () => color);
         } else {
+          const heatPointNode = d3.select(heatPoint.element);
           heatPointNode.remove();
           this.gridTable.splice(this.gridTable.indexOf(heatPoint), 1);
         }
@@ -94,17 +92,14 @@ export class HexagonalHeatMap {
 
   protected fireHeatAtLocation (heatPoint: HeatPoint, data: CoordinatesSocketData, timeNow: number): void {
     if (!!heatPoint) {
-      const element = d3.select(heatPoint.element);
-      let heat = Number.parseInt(element.attr('heat'));
-      const lastTimeHexagonGetHeated: number = Number.parseInt(element.attr('heated'));
-      if ((heat < this.heatColors.length - 1) && (timeNow - lastTimeHexagonGetHeated > this.temperatureTimeStepForHeating)) {
-        heat++;
-        const color = this.heatColors[heat];
+      if ((heatPoint.heat < this.heatColors.length - 1) && (timeNow - heatPoint.heated > this.temperatureTimeStepForHeating)) {
+        heatPoint.heat++;
+        heatPoint.heated = timeNow;
+        const color = this.heatColors[heatPoint.heat];
+        const element = d3.select(heatPoint.element);
         element
           .transition()
           .duration(this.transitionTime)
-          .attr('heat', heat)
-          .attr('heated', timeNow.toString())
           .style('fill', () => color)
           .attr('stroke', () => color);
       }
@@ -125,7 +120,10 @@ export class HexagonalHeatMap {
         this.gridTable.push({
           x: this.shapeStartPoint.x,
           y: this.shapeStartPoint.y,
-          element: nodes[index], tagShortId: data.coordinates.tagShortId});
+          element: nodes[index], tagShortId: data.coordinates.tagShortId,
+          heat: 0,
+          heated: timeNow
+        });
         return 'M' + d.x + ',' + d.y + hexbin.hexagon();
       })
       .attr('tagShortId', data.coordinates.tagShortId.toString())

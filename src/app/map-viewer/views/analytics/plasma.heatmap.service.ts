@@ -49,11 +49,12 @@ export class PlasmaHeatMap extends HexagonalHeatMap {
         this.gridTable.push({
           x: this.shapeStartPoint.x,
           y: this.shapeStartPoint.y,
-          element: nodes[index], tagShortId: data.coordinates.tagShortId});
+          element: nodes[index], tagShortId: data.coordinates.tagShortId,
+          heat: 0,
+          heated: timeNow
+        });
       })
       .attr('tagShortId', data.coordinates.tagShortId.toString())
-      .attr('heat', 0)
-      .attr('heated', timeNow.toString())
       .attr('stroke', this.heatColors[0])
       .style('stroke-opacity', this.maxOpacity)
       .attr('stroke-width', `${this.strokeWidth}px`)
