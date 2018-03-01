@@ -1,4 +1,4 @@
-<app-tool-details #toolDetails>
+<app-tool-details #toolDetails [ngClass]="{'float-right': !listFloatLeft}">
   <div id="remaining-devices-list">
     <table cellpadding="10" cellspacing="0">
       <tr>
@@ -14,6 +14,9 @@
           </button>
           <button [ngClass]="{'active': connectingFlag}" class="device-list-deselect" (click)="modifyConnections()">
             <i class="material-icons">timeline</i>
+          </button>
+          <button class="device-list-float" (click)="swapFloat()">
+            <i class="material-icons">keyboard_tab</i>
           </button>
         </th>
       </tr>
