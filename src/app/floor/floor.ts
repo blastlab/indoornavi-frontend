@@ -11,8 +11,7 @@ import {MessageServiceWrapper} from '../shared/services/message/message.service'
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
 
 @Component({
-  templateUrl: 'floor.html',
-  styleUrls: ['floor.css']
+  templateUrl: 'floor.html'
 })
 export class FloorComponent implements OnInit, CrudComponent {
   floor: Floor;
@@ -105,8 +104,12 @@ export class FloorComponent implements OnInit, CrudComponent {
     });
   }
 
-  goTo(floor: Floor): void {
+  goToEditor(floor: Floor): void {
     this.router.navigate(['/complexes', this.building.complex.id, 'buildings', this.building.id, 'floors', floor.id, 'map']);
+  }
+
+  goToMap(floor: Floor): void {
+    this.router.navigate(['/publications', floor.id]);
   }
 
   private getCurrentMaxLevel(): number {

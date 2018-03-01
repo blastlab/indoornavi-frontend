@@ -14,8 +14,8 @@ import {WebSocketService} from 'angular2-websocket-service';
 import {DeviceService} from './device/device.service';
 import {ImageUploadModule} from 'angular2-image-upload';
 import {MapControllerComponent} from './map-editor/map.controller';
-import {MapUploaderComponent} from './map-editor/map.uploader';
-import {MapService} from './map-editor/map.service';
+import {MapUploaderComponent} from './map-editor/uploader/map.uploader';
+import {MapService} from './map-editor/uploader/map.uploader.service';
 import {HintBarComponent} from './map-editor/hint-bar/hint-bar';
 import {ToolbarComponent} from './map-editor/tool-bar/toolbar';
 import {ScaleComponent} from './map-editor/tool-bar/tools/scale/scale';
@@ -23,18 +23,18 @@ import {ScaleInputComponent} from './map-editor/tool-bar/tools/scale/input/input
 import {ScaleInputService} from './map-editor/tool-bar/tools/scale/input/input.service';
 import {ScaleHintComponent} from './map-editor/tool-bar/tools/scale/hint/hint';
 import {ScaleHintService} from './map-editor/tool-bar/tools/scale/hint/hint.service';
-import {UserComponent} from './user/user';
-import {UserService} from './user/user.service';
+import {UserComponent} from './user/user/user';
+import {UserService} from './user/user/user.service';
 import {AuthComponent} from './auth/auth';
 import {AuthGuard, CanRead} from './auth/auth.guard';
 import {AuthService} from './auth/auth.service';
 import {WizardComponent} from './map-editor/tool-bar/tools/wizard/wizard';
 import {ActionBarService} from './map-editor/action-bar/actionbar.service';
 import {ScaleService} from './shared/services/scale/scale.service';
-import {PublishedListComponent} from './map-viewer/list/published-list';
+import {PublishedListComponent} from './map-viewer/list/publication-list';
 import {appRoutes} from './app.routes';
-import {PublishedService} from './map-viewer/published.service';
-import {PublishedDialogComponent} from './map-viewer/dialog/published.dialog';
+import {PublishedService} from './map-viewer/publication.service';
+import {PublicationDialogComponent} from './map-viewer/dialog/publication.dialog';
 import {ActionBarComponent} from 'app/map-editor/action-bar/actionbar';
 import {Md5} from 'ts-md5/dist/md5';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -45,6 +45,7 @@ import {
   ConfirmationService,
   ConfirmDialogModule,
   ContextMenuModule,
+  FileUploadModule,
   GrowlModule,
   MultiSelectModule,
   PanelMenuModule,
@@ -60,7 +61,7 @@ import {MessageServiceWrapper} from './shared/services/message/message.service';
 import {MessageService} from 'primeng/components/common/messageservice';
 import {BreadcrumbService} from './shared/services/breadcrumbs/breadcrumb.service';
 import {AreaService} from './shared/services/area/area.service';
-import {MapViewerService} from './map-editor/map.editor.service';
+import {MapEditorService} from './map-editor/map.editor.service';
 import {PermissionGroupService} from './user/permissionGroup/permissionGroup.service';
 import {MapLoaderInformerService} from './shared/services/map-loader-informer/map-loader-informer.service';
 import {IconService} from 'app/shared/services/drawing/icon.service';
@@ -94,6 +95,10 @@ import {AreaDetailsService} from './map-editor/tool-bar/tools/area/details/area-
 import {ContextMenuService} from './shared/wrappers/editable/editable.service';
 import {PublishedComponent} from './map-viewer/views/publications/publication';
 import {AnalyticsComponent} from './map-viewer/views/analytics/analytics';
+import {MapObjectService} from './shared/utils/drawing/map.object.service';
+import {MinSelectedValidator} from './shared/directive/minselected.directive';
+import {TagVisibilityTogglerComponent} from './shared/components/tag-visibility-toggler/tag-visibility-toggler';
+import {TagVisibilityTogglerService} from './shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -122,7 +127,7 @@ export function HttpLoaderFactory(http: Http) {
     AcceptButtonsComponent,
     PublishedComponent,
     PublishedListComponent,
-    PublishedDialogComponent,
+    PublicationDialogComponent,
     DeviceComponent,
     AppAutoFocusDirective,
     ToolDetailsComponent,
@@ -132,10 +137,12 @@ export function HttpLoaderFactory(http: Http) {
     MapComponent,
     AreaComponent,
     AreaDetailsComponent,
-    AnalyticsComponent
+    AnalyticsComponent,
+    MinSelectedValidator,
+    TagVisibilityTogglerComponent
   ],
   entryComponents: [
-    PublishedDialogComponent,
+    PublicationDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -172,7 +179,8 @@ export function HttpLoaderFactory(http: Http) {
     GrowlModule,
     ProgressSpinnerModule,
     OverlayPanelModule,
-    ContextMenuModule
+    ContextMenuModule,
+    FileUploadModule
   ],
   providers: [
     BuildingService,
@@ -197,7 +205,7 @@ export function HttpLoaderFactory(http: Http) {
     PermissionGroupService,
     ScaleService,
     PublishedService,
-    MapViewerService,
+    MapEditorService,
     AreaService,
     Md5,
     ConfirmationService,
@@ -210,7 +218,10 @@ export function HttpLoaderFactory(http: Http) {
     HintBarService,
     ZoomService,
     AreaDetailsService,
-    ContextMenuService
+    ContextMenuService,
+    MapObjectService,
+    ContextMenuService,
+    TagVisibilityTogglerService
   ], bootstrap: [AppComponent]
 })
 

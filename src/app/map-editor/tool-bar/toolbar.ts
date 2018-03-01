@@ -8,8 +8,7 @@ import {ActionBarService} from '../action-bar/actionbar.service';
 
 @Component({
   selector: 'app-toolbar',
-  templateUrl: './toolbar.html',
-  styleUrls: ['./toolbar.css']
+  templateUrl: './toolbar.html'
 })
 export class ToolbarComponent implements OnInit, OnDestroy {
   @Input() floor: Floor;

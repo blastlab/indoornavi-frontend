@@ -1,8 +1,9 @@
-<p-toolbar>
+<p-toolbar [appHasPermission]="'BUILDING_CREATE'">
   <div class="ui-toolbar-group-left">
-    <button pButton class="ui-button-secondary" id="new-building-button" [appHasPermission]="'BUILDING_CREATE'" (click)="openDialog()"
+    <button pButton class="ui-button-secondary" id="new-building-button" (click)="openDialog()"
             label="{{'add'|translate}}"
-            icon="fa-plus" iconPos="left"></button>
+            icon="fa-plus">
+    </button>
   </div>
 </p-toolbar>
 
@@ -25,7 +26,7 @@
   </p-column>
 </p-dataTable>
 
-<p-dialog header="{{'building.details'}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
+<p-dialog header="{{'building.details'|translate}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
           [contentStyle]="{ overflow: 'visible' }"
           [width]="800"
           dismissableMask="true">
@@ -38,10 +39,10 @@
           {{'building.name.required'|translate}}
         </div>
       </div>
-      <div class="ui-g-12 ui-md-2 ui-lg-2">
-        <label for="name">{{'building.name'|translate}}</label>
+      <div class="ui-g-12 ui-md-3 ui-lg-3">
+        <label for="name">{{'building.name'|translate}}&nbsp;*</label>
       </div>
-      <div class="ui-g-12 ui-md-6 ui-lg-6">
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
         <input required name="name" [appAutoFocus]="displayDialog" pInputText id="name" [(ngModel)]="building.name" #nameInput="ngModel"/>
       </div>
     </div>

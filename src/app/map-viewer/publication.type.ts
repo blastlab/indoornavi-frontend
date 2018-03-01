@@ -1,11 +1,12 @@
-import {User} from '../user/user.type';
+import {User} from '../user/user/user.type';
 import {Floor} from '../floor/floor.type';
 import {Point} from '../map-editor/map.type';
-import {Tag} from '../device/tag.type';
+import {Tag} from '../device/device.type';
+import { SvgGroupWrapper } from 'app/shared/utils/drawing/drawing.builder';
 
-export interface PublishedMap {
+export interface Publication {
   id?: number;
-  floor: Floor;
+  floors: Floor[];
   users: User[];
   tags: Tag[];
 }
@@ -46,11 +47,6 @@ export interface Coordinates {
   tagShortId: number;
 }
 
-export interface SocketCommand {
-  type: CommandType;
-  args: string;
-}
-
 export enum CommandType {
   SET_FLOOR,
   SET_TAGS,
@@ -61,4 +57,9 @@ export interface DrawConfiguration {
   id: string;
   clazz: string;
   cursor?: string;
+}
+
+export interface ValidationResult {
+  scaleSet?: boolean;
+  imageSet?: boolean
 }

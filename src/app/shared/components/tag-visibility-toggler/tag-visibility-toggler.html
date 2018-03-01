@@ -1,0 +1,8 @@
+<div id="tag-visibility-toggler" class="ui-corner-all">
+  <div class="header">
+    <i class="fa fa-eye"></i> {{'tag.visibility.toggler'|translate}}
+  </div>
+  <div *ngFor="let tag of tags">
+    <p-checkbox name="tags" [(ngModel)]="selectedTags" [label]="tag.shortId" [value]="tag" (onChange)="onChange($event, tag)"></p-checkbox>
+  </div>
+</div>

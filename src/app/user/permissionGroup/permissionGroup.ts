@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {Permission, PermissionGroup} from '../user.type';
+import {Permission, PermissionGroup} from '../user/user.type';
 import {PermissionGroupService} from 'app/user/permissionGroup/permissionGroup.service';
 import {TranslateService} from '@ngx-translate/core';
 import {NgForm} from '@angular/forms';

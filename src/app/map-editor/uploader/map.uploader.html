@@ -1,0 +1,15 @@
+<h4>{{'map.upload.header'|translate}}</h4>
+
+<p-fileUpload #imageUpload
+              name="image"
+              customUpload="true"
+              (uploadHandler)="imageLoaded($event)"
+              accept="image/*"
+              [maxFileSize]="maxFileSize"
+              previewWidth="200"
+              [invalidFileSizeMessageSummary]="invalidFileSizeMessageSummary"
+              [invalidFileSizeMessageDetail]="invalidFileSizeMessageDetail">
+  <ng-template pTemplate="content">
+    <div *ngIf="file">{{file.name}} - {{file.size}} bytes</div>
+  </ng-template>
+</p-fileUpload>

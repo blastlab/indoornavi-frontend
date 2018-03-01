@@ -48,12 +48,7 @@ body {
 @import '~primeng/resources/themes/ludvig/theme.css';
 @import '~font-awesome/css/font-awesome.css';
 
-table th.col-button, table td.col-button {
-  width: 1%;
-  white-space: nowrap;
-}
-
-table th.col-checkbox, table td.col-checkbox {
+table th.col-button, table td.col-button, table th.col-checkbox, table td.col-checkbox {
   width: 1%;
   white-space: nowrap;
   text-align: center;
@@ -153,4 +148,17 @@ app-auth > div {
 
 #map {
   cursor: move;
+}
+
+.active-tool {
+  box-shadow: whitesmoke 2px 2px;
+}
+
+.ui-growl {
+  bottom: 20px;
+  top: auto;
+}
+
+.ui-fileupload-content {
+  min-height: 150px;
 }

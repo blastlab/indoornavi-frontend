@@ -1,12 +1,11 @@
 import * as d3 from 'd3';
 import {Point} from '../../../map-editor/map.type';
-import {DrawConfiguration} from '../../../map-viewer/published.type';
-import {ZoomService} from '../../services/zoom/zoom.service';
+import {DrawConfiguration} from '../../../map-viewer/publication.type';
 
 export class SvgGroupWrapper {
   private elements: Map<ElementType, d3.selection[]> = new Map();
 
-  constructor(private group: d3.selection, private zoomService: ZoomService) {
+  constructor(private group: d3.selection) {
   }
 
   place(coordinates: Point): SvgGroupWrapper {
@@ -75,6 +74,18 @@ export class SvgGroupWrapper {
     return this;
   }
 
+  addPolyline(points: Point[], radius: number): SvgGroupWrapper {
+    let lastPoint: Point;
+    points.forEach((point: Point): void => {
+      this.addCircle(point, radius);
+      if (!!lastPoint) {
+        this.addLine(lastPoint, point);
+      }
+      lastPoint = point;
+    });
+    return this;
+  }
+
   setDraggable(customDragging?: () => void): SvgGroupWrapper {
     const dragStart = (): void => {
       d3.event.sourceEvent.stopPropagation();
@@ -82,15 +93,6 @@ export class SvgGroupWrapper {
     };
 
     const dragging = !!customDragging ? customDragging : (): void => {
-      const mousePosition = <Point>{
-        x: d3.event.x,
-        y: d3.event.y
-      };
-      // offsetFromBorder[0] gives left and upper border offset,
-      // and offsetFromBorder[1] gives right and bottom border offset,
-      // sign is giving a direction of the offset
-      const offsetFromBorder = [{x: 0, y: 0}, {x: -25, y: -25}];
-      const eventPosition: Point = this.zoomService.calculateInMapEditorRangeEvent({x: mousePosition.x, y: mousePosition.y}, offsetFromBorder);
       this.group.attr('x', d3.event.dx + parseInt(this.group.attr('x'), 10)).attr('y', d3.event.dy + parseInt(this.group.attr('y'), 10));
     };
 
@@ -98,7 +100,7 @@ export class SvgGroupWrapper {
       this.group.classed('dragging', false);
     };
 
-    const subject = () => {
+    const subject = (): Point => {
       return {x: d3.event.x, y: d3.event.y}
     };
     const dragGroup = d3.drag()
@@ -126,10 +128,13 @@ export class SvgGroupWrapper {
 
   getLastElement(type: ElementType): d3.selection {
     const elements: d3.selection[] = this.elements.get(type);
-    return elements[elements.length - 1];
+    if (!!elements) {
+      return elements[elements.length - 1];
+    }
+    this.throwErrorTypeNull(type);
   }
 
-  removeElements(type: ElementType) {
+  removeElements(type: ElementType): void {
     const elements = this.elements.get(type);
     if (!!elements) {
       elements.forEach((element: d3.selection) => {
@@ -137,9 +142,10 @@ export class SvgGroupWrapper {
       });
       elements.length = 0;
     }
+    this.throwErrorTypeNull(type);
   }
 
-  removeLastElement(type: ElementType) {
+  removeLastElement(type: ElementType): void {
     const elements = this.elements.get(type);
     if (!!elements) {
       elements[elements.length - 1].remove();
@@ -147,20 +153,23 @@ export class SvgGroupWrapper {
     }
   }
 
-  private addElement(type: ElementType, element: d3.selection) {
+  private addElement(type: ElementType, element: d3.selection): void {
     if (this.elements.has(type)) {
       this.elements.get(type).push(element);
     } else {
       this.elements.set(type, [element]);
     }
   }
+
+  private throwErrorTypeNull (elementType: ElementType): void {
+    throw new Error(`${elementType} is null or undefined`);
+  }
 }
 
 export class DrawBuilder {
 
-  constructor(private appendable: d3.selection,
-              private configuration: DrawConfiguration,
-              private zoomService: ZoomService) {
+  constructor(protected appendable: d3.selection,
+              protected configuration: DrawConfiguration) {
   }
 
   createGroup(): SvgGroupWrapper {
@@ -170,18 +179,11 @@ export class DrawBuilder {
       .attr('class', this.configuration.clazz)
       .attr('overflow', 'visible')
       .attr('x', 0)
-      .attr('y', 0)
-      .classed('pointer', true)
-      .on('mousedown', () => {
-        d3.select(`#${this.configuration.id}`).style('cursor', 'pointer')
-      })
-      .on('mouseup', () => {
-        d3.select(`#${this.configuration.id}`).style('cursor', 'move')
-      });
+      .attr('y', 0);
     if (this.configuration.cursor) {
       group.style('cursor', this.configuration.cursor);
     }
-    return new SvgGroupWrapper(group, this.zoomService);
+    return new SvgGroupWrapper(group);
   }
 }
 

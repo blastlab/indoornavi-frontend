@@ -1,13 +1,15 @@
 import * as d3 from 'd3';
 import * as Collections from 'typescript-collections';
 import {Point} from '../../../../map.type';
-import {FirstStepMessage, ObjectParams, Step, WizardData, WizardStep} from '../wizard.type';
-import {Sink} from '../../../../../device/sink.type';
+import {FirstStepMessage, ObjectParams, ScaleCalculations, Step, WizardData, WizardStep} from '../wizard.type';
 import {SelectItem} from 'primeng/primeng';
 import {NaviIcons} from '../../../../../shared/services/drawing/icon.service';
+import {Geometry} from '../../../../../shared/utils/helper/geometry';
+import {Sink} from '../../../../../device/device.type';
 
 export class FirstStep implements WizardStep {
   private selectedItemId: number;
+  private coordinates: Point;
 
   constructor(private floorId: number) {
   }
@@ -38,6 +40,8 @@ export class FirstStep implements WizardStep {
   }
 
   afterPlaceOnMap(): void {
+    const objectOnMap: d3.selection = d3.select('#map').select('#sink' + this.selectedItemId);
+    this.coordinates = {x: +objectOnMap.attr('x'), y: +objectOnMap.attr('y')};
   }
 
   getBeforePlaceOnMapHint(): string {
@@ -67,9 +71,10 @@ export class FirstStep implements WizardStep {
     };
   }
 
-  updateWizardData(wizardData: WizardData, id: number, coordinates: Point): void {
+  updateWizardData(wizardData: WizardData, id: number, scaleCalculations: ScaleCalculations): void {
     wizardData.sinkShortId = id;
-    wizardData.sinkPosition = coordinates;
+    wizardData.sinkPositionInPixels = this.coordinates;
+    wizardData.sinkPosition = Geometry.calculatePointPositionInCentimeters(scaleCalculations.scaleLengthInPixels, scaleCalculations.scaleInCentimeters, this.coordinates);
   }
 
   clean(): void {

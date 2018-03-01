@@ -4,8 +4,8 @@ export interface Point {
 }
 
 export interface Line {
-  p1: Point;
-  p2: Point;
+  startPoint: Point;
+  endPoint: Point;
 }
 
 export interface Transform {

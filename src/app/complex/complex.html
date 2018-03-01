@@ -1,12 +1,11 @@
-<p-toolbar>
+<p-toolbar [appHasPermission]="'COMPLEX_CREATE'">
   <div class="ui-toolbar-group-left">
     <button pButton class="ui-button-primary"
-            id="add-complex" [appHasPermission]="'COMPLEX_CREATE'"
+            id="add-complex"
             (click)="openDialog()"
             label="{{'add'|translate}}"
-            icon="fa fa-plus"
-            iconPos="left"
-    ></button>
+            icon="fa-plus">
+    </button>
   </div>
 </p-toolbar>
 
@@ -29,7 +28,7 @@
   </p-column>
 </p-dataTable>
 
-<p-dialog header="{{'complex.details'}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
+<p-dialog header="{{'complex.details'|translate}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
           [contentStyle]="{ overflow: 'visible' }"
           [width]="800"
           dismissableMask="true">
@@ -42,10 +41,10 @@
           {{'complex.name.required'|translate}}
         </div>
       </div>
-      <div class="ui-g-12 ui-md-2 ui-lg-2">
-        <label for="name">{{'complex.name'|translate}}</label>
+      <div class="ui-g-12 ui-md-3 ui-lg-3">
+        <label for="name">{{'complex.name'|translate}}&nbsp;*</label>
       </div>
-      <div class="ui-g-12 ui-md-6 ui-lg-6">
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
         <input name="name" required [appAutoFocus]="displayDialog" pInputText id="name" [(ngModel)]="complex.name" #nameInput="ngModel" />
       </div>
     </div>

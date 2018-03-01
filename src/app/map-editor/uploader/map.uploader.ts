@@ -1,11 +1,11 @@
 import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {Floor} from '../floor/floor.type';
+import {Floor} from '../../floor/floor.type';
 import {TranslateService} from '@ngx-translate/core';
-import {ImageUploadComponent} from 'angular2-image-upload/lib/image-upload/image-upload.component';
-import {Config} from '../../config';
-import {MapService} from './map.service';
+import {Config} from '../../../config';
+import {MapService} from './map.uploader.service';
 import {ImageConfiguration} from './map.configuration.type';
-import {MessageServiceWrapper} from '../shared/services/message/message.service';
+import {MessageServiceWrapper} from '../../shared/services/message/message.service';
+import {FileUpload} from 'primeng/primeng';
 
 @Component({
   selector: 'app-map-uploader',
@@ -13,15 +13,14 @@ import {MessageServiceWrapper} from '../shared/services/message/message.service'
 })
 export class MapUploaderComponent implements OnInit {
   uploadUrl: string;
-  buttonCaption: string;
-  dropBoxMessage: string;
   maxFileSize: number;
-  fileTooLargeMessage: string;
+  invalidFileSizeMessageSummary: string;
+  invalidFileSizeMessageDetail: string;
   allowedTypes: string[];
 
   @Input() floor: Floor;
   @Output() imageUploaded: EventEmitter<Floor> = new EventEmitter<Floor>();
-  @ViewChild('imageUpload') imageUpload: ImageUploadComponent;
+  @ViewChild('imageUpload') imageUpload: FileUpload;
 
   constructor(private translateService: TranslateService,
               private mapService: MapService,
@@ -35,18 +34,19 @@ export class MapUploaderComponent implements OnInit {
     });
 
     this.setTranslations();
-    this.uploadUrl = Config.API_URL + 'images/{{floorId}}'.replace(/{{floorId}}/, '' + this.floor.id);
+    this.uploadUrl = `${Config.API_URL}images/${this.floor.id}`;
   }
 
-  imageLoaded(evtData): void {
-    if (this.allowedTypes.indexOf(evtData.file.type) >= 0) {
+  imageLoaded(eventData: any): void {
+    const file = eventData.files[0];
+    if (this.allowedTypes.indexOf(file.type) >= 0) {
       const formData: FormData = new FormData();
-      formData.append('image', evtData.file);
+      formData.append('image', file);
       this.mapService.uploadImage(this.floor.id, formData).subscribe((floor: Floor) => {
         this.imageUploaded.emit(floor);
       });
     } else {
-      this.imageUpload.deleteFile(evtData.file);
+      this.imageUpload.clear();
       this.messageService.failed('map.upload.notAllowedType', {'file_types': this.allowedTypes.join(', ')});
     }
   }
@@ -54,14 +54,12 @@ export class MapUploaderComponent implements OnInit {
   private setTranslations(): void {
     this.translateService.setDefaultLang('en');
 
-    this.translateService.get('map.upload.buttonCaption').subscribe((value: string) => {
-      this.buttonCaption = value;
+    this.translateService.get('map.upload.invalidFileSizeMessageSummary').subscribe((value: string) => {
+      this.invalidFileSizeMessageSummary = value;
     });
-    this.translateService.get('map.upload.dropBoxMessage').subscribe((value: string) => {
-      this.dropBoxMessage = value;
-    });
-    this.translateService.get('map.upload.fileTooLargeMessage', {max_size: this.maxFileSize / 1024}).subscribe((value: string) => {
-      this.fileTooLargeMessage = value;
+
+    this.translateService.get('map.upload.invalidFileSizeMessageDetail').subscribe((value: string) => {
+      this.invalidFileSizeMessageDetail = value;
     });
   }
 }

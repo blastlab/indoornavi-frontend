@@ -1,6 +1,7 @@
 <button pButton class="ui-button-secondary"
         (click)="toggleActivity()"
         pTooltip="{{'area'|translate}}"
+        [ngClass]="{'active-tool' : active}"
         icon="fa-clone"
         [disabled]="disabled">
 </button>
