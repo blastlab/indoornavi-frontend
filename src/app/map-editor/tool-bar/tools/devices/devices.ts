@@ -1,4 +1,4 @@
-import {Component, HostListener, OnInit} from '@angular/core';
+import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {Tool} from '../tool';
 import {ToolName} from '../tools.enum';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
@@ -29,10 +29,11 @@ import {DrawConfiguration} from '../../../../map-viewer/publication.type';
   templateUrl: './devices.html',
   styleUrls: ['../tool.css', './devices.css']
 })
-export class DevicesComponent implements Tool, OnInit {
+export class DevicesComponent implements Tool, OnInit, OnDestroy {
   active: boolean = false;
   disabled: boolean = true;
   private draggedDevice: Anchor | Sink;
+  private deviceDrop: Subscription;
   private listEvents: Subscription[];
   private hintMessage: string;
   private configuration: Configuration;
@@ -217,6 +218,10 @@ export class DevicesComponent implements Tool, OnInit {
     this.subscribeForDroppedDevice();
   }
 
+  ngOnDestroy(): void {
+    this.deviceDrop.unsubscribe();
+  }
+
   setActive(): void {
     this.active = true;
     this.subscribeForListEvents();
@@ -307,7 +312,7 @@ export class DevicesComponent implements Tool, OnInit {
   }
 
   private subscribeForDroppedDevice(): void {
-    this.devicePlacerController.droppedDevice.subscribe(() => {
+    this.deviceDrop = this.devicePlacerController.droppedDevice.subscribe(() => {
       if (!!this.draggedDevice) {
         this.placementDone = false;
         this.devicePlacerController.newCoordinates.first().subscribe((coords) => {
