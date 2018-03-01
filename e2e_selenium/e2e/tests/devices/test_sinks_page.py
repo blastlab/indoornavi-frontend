@@ -139,6 +139,41 @@ class TestSinksPage(unittest.TestCase):
         self.devices_page.clear_text_input(*search_input)
         self.test_failed = False
 
+    def method_test_drag_and_drop(self, side):
+
+        """Setup method before test drag&drop sinks"""
+
+        # selectors
+        ver_table = ".ui-picklist-target"
+        ver_table_item = ".ui-picklist-target .ui-picklist-item"
+        not_ver_table = ".ui-picklist-source"
+        not_ver_table_item = ".ui-picklist-source .ui-picklist-item"
+
+        # prepare variables
+        founded_source_device = 'not_verified' if side == 'verified' else 'verified'
+        founded_target_devices = 'verified' if side == 'verified' else 'not_verified'
+
+        # choose string passing to the simulation
+        source_string = not_ver_table_item if side == 'verified' else ver_table_item
+        target_string = ver_table if side == 'verified' else not_ver_table
+
+        first_sink = self.devices_page.get_first_sink_row(founded_source_device)
+        expected_web_elements = self.devices_page.find_devices(founded_source_device)
+        expected_short_ids = [element.text for element in expected_web_elements]
+
+        # Simulate drag & drop
+        self.devices_page.simulate_drag_and_drop_jquery(source_string, target_string)
+
+        # Check the add toast is displayed
+        self.assertTrue(self.devices_page.is_toast_present(self.locator.edited_toast))
+        # Check the add toast is disappeared
+        self.assertTrue(self.devices_page.is_toast_disappear(self.locator.edited_toast))
+
+        result_web_elements = self.devices_page.find_devices(founded_target_devices)
+        result_short_ids = [element.text for element in result_web_elements if element.text in expected_short_ids]
+
+        self.assertTrue(len(result_short_ids) == 1)
+
     def test_01_sinks_page_is_loaded_correctly(self):
 
         """Test that sinks page has been correctly loaded"""
@@ -347,15 +382,21 @@ class TestSinksPage(unittest.TestCase):
 
     def test_17_move_single_to_unverified_list(self):
 
-        """Test moving single sink to verified list"""
-        self.test_16_move_single_to_verified_list()
+        """Test moving single sink to unverified list"""
+
         self.method_test_move_single_setUp('not_verified')
 
-    # TODO
-    # TODO 1. Wyszukiwanie sinkow - verified, unverified +
-    # TODO 2. Drag & Drop
-    # TODO 3. Przenoszenie pojedynczo
-    # TODO 4. Przenoszenie zbiorowe - verified, unverified +
+    def test_18_drag_and_drop_to_verified_list(self):
+
+        """Test that moving sinks to verified list by drag&drop """
+
+        self.method_test_drag_and_drop('verified')
+
+    def test_19_drag_and_drop_to_unverified_list(self):
+
+        """Test that moving sinks to unverified list by drag&drop """
+
+        self.method_test_drag_and_drop('not_verified')
 
     def tearDown(self):
         TestDriver.tearDown(self)

@@ -248,11 +248,6 @@ class DevicesPage(BasePage):
           'single_not_verified': self.base_locators.move_to_not_verify_button
         }
 
-        methods = {
-          'click': self.click_button,
-          'wait_for_clickable': self.wait_for_element_clickable
-        }
-
         if method == 'click':
             return self.click_button(*locators.get(locator))
         else:
@@ -281,3 +276,24 @@ class DevicesPage(BasePage):
     #         return self.click_button(*self.base_locators.move_all_to_verify_button)
     #     else:
     #         return self.click_button(*self.base_locators.move_all_to_not_verify_button)
+
+    def simulate_drag_and_drop_jquery(self, source, target):
+        driver = self.driver
+        # init jQuery url variable;
+        jquery_url = "http://code.jquery.com/jquery-1.11.2.min.js"
+
+        # load jQuery helper
+        with open("src/jquery_load_helper.js") as f:
+            load_jquery_js = f.read()
+
+        # load drag and drop helper
+        with open("src/drag_and_drop_helper.js") as f:
+            drag_and_drop_js = f.read()
+
+        # load jQuery
+        driver.execute_async_script(load_jquery_js, jquery_url)
+
+        # perform drag&drop
+        driver.execute_script(drag_and_drop_js + """var source = arguments[0];
+                                                    var target = arguments[1]
+                                                    $(source).first().simulateDragDrop({ dropTarget: target});""", source, target)

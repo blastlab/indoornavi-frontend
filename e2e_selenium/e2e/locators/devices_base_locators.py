@@ -42,6 +42,9 @@ class DevicesBaseLocators(object):
         self.devices_table_item = (By.CSS_SELECTOR, 'li.ui-picklist-item')
         self.devices_table_item_text = (By.CSS_SELECTOR, 'div.device-details *:nth-child(1)')
 
+        self.not_verified_table = (By.CSS_SELECTOR, 'ul.ui-picklist-source')
+        self.verified_table = (By.CSS_SELECTOR, 'ul.ui-picklist-target')
+
         self.last_row_short_id = (By.CSS_SELECTOR, 'p-picklist[ng-reflect-source-header="Not verified"] li.ui-picklist-item *:last-child div.device-details *:nth-child(1)')
         self.last_row_long_id = (By.CSS_SELECTOR, 'p-picklist[ng-reflect-source-header="Not verified"] li.ui-picklist-item *:last-child div.device-details *:nth-child(2)')
         self.last_row_device_name = (By.CSS_SELECTOR, 'p-picklist[ng-reflect-source-header="Not verified"] li.ui-picklist-item *:last-child div.device-details *:nth-child(3)')

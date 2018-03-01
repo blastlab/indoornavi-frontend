@@ -7,12 +7,14 @@ import csv
 import mysql.connector
 from pyquibase.pyquibase import Pyquibase
 from config import Config
+from selenium.webdriver import ActionChains
 
 class BasePage(object):
 
     def __init__(self, driver,  base_url=Config.front_hostname):
         self.base_url = base_url
         self.driver = driver
+        self.actions = ActionChains(driver)
 
     # Select from db
     def if_exist_in_db(self, query):
@@ -160,3 +162,7 @@ class BasePage(object):
     def get_numbers_from_string(self, str):
         get_array = re.findall('\d+', str)[0:3]
         return get_array
+
+    def drag_and_drop(self, source_element, dest_element):
+
+        return self.actions.click_and_hold(source_element).move_by_offset(1000, 0).release(dest_element).perform()
