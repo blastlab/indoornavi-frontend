@@ -14,7 +14,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {Configuration} from '../../../action-bar/actionbar.type';
 import * as d3 from 'd3';
 import {Subscription} from 'rxjs/Subscription';
-import {Point} from '../../../map.type';
+import {Point, Transform} from '../../../map.type';
 import {Expandable} from '../../../../shared/utils/drawing/drawables/expandable';
 import {ConnectingLine} from '../../../../shared/utils/drawing/drawables/draggables/connectables/connection';
 import {SelectableDevice} from '../../../../shared/utils/drawing/drawables/selectables/selectableDevice';
@@ -23,6 +23,7 @@ import {Selectable} from '../../../../shared/utils/drawing/drawables/selectables
 import {DrawBuilder} from '../../../../shared/utils/drawing/drawing.builder';
 import {Anchor, Sink} from '../../../../device/device.type';
 import {DrawConfiguration} from '../../../../map-viewer/publication.type';
+import {MapEditorService} from '../../../map.editor.service';
 
 @Component({
   selector: 'app-devices',
@@ -53,6 +54,8 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
   private selectedLine: ConnectingLine;
   private connectingLines: ConnectingLine[] = [];
   private managedSelectableLines: Subscription[];
+  private scaleFactor: number;
+  private scaleChanged: Subscription;
 
   static getShortIdFromGroupSelection(selection: d3.selection): number {
     return parseInt(selection.attr('id'), 10);
@@ -130,6 +133,7 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
               private mapLoaderInformer: MapLoaderInformerService,
               private toolbarService: ToolbarService,
               private zoomService: ZoomService,
+              private mapEditorService: MapEditorService,
               private icons: IconService,
               private hintBarService: HintBarService) {
     this.setTranslations();
@@ -214,11 +218,14 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.getMapSelection();
+    this.getScaleFactor();
     this.getConfiguredDevices();
     this.subscribeForDroppedDevice();
   }
 
   ngOnDestroy(): void {
+    this.mapLoadedSubscription.unsubscribe();
+    this.scaleChanged.unsubscribe();
     this.deviceDrop.unsubscribe();
   }
 
@@ -294,6 +301,12 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
   private getMapSelection(): void {
     this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapLoaded) => {
       this.map = mapLoaded.container;
+    });
+  }
+
+  private getScaleFactor(): void {
+    this.scaleChanged = this.mapEditorService.mapIsTransformed().subscribe((mapTransform: Transform) => {
+      this.scaleFactor = mapTransform.k;
     });
   }
 
@@ -475,7 +488,7 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
           DevicesComponent.markSinkSubselection(selectedDevice.connectable.anchorConnection);
         }
         const selectableDevice = <SelectableDevice>selectedDevice.selectable;
-        selectableDevice.setBorderBox('red');
+        selectableDevice.setBorderBox(this.scaleFactor, 'red');
         if (this.modifyingConnectionsFlag) {
           if (!this.creatingConnection) {
             this.startCreatingConnection(selectedDevice, DevicesComponent.getMouseCoordinates());

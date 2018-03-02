@@ -9,9 +9,9 @@ export class SelectableDevice extends Selectable {
     super(group);
   }
 
-  public setBorderBox(defineColor?: string) {
+  public setBorderBox(scale: number, defineColor?: string) {
     this.removeBorderBox();
-    this.group.addBorderBox(defineColor);
+    this.group.addBorderBox(scale, defineColor);
     this.hasBorder = true;
   }
 

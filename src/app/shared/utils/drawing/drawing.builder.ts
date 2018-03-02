@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import {Point} from '../../../map-editor/map.type';
+import {Point, Transform} from '../../../map-editor/map.type';
 import {DrawConfiguration} from '../../../map-viewer/publication.type';
 import {Helper} from '../helper/helper';
 
@@ -7,6 +7,7 @@ export class SvgGroupWrapper {
   private elements: Map<ElementType, d3.selection[]> = new Map();
   container: d3.selection;
   private color: string;
+  // private containerTransform: Transform;
 
   static throwErrorTypeNull (elementType: ElementType): void {
     throw new Error(`${elementType} is null or undefined`);
@@ -161,7 +162,7 @@ export class SvgGroupWrapper {
     this.group.remove();
   }
 
-  addBorderBox(defineColor?: string) {
+  addBorderBox(scale: number, defineColor?: string) {
     const boxColor = (defineColor) ? defineColor : this.color;
     const parentElement: SVGElement = this.group.node();
     const domRect: DOMRectInit = parentElement.getBoundingClientRect();
@@ -174,8 +175,8 @@ export class SvgGroupWrapper {
       .classed('group-border-box', true)
       .attr('x', paddingX)
       .attr('y', paddingY)
-      .attr('width', (domRect.width * 1 + boxWidth * 2))
-      .attr('height', (domRect.height * 1 + boxWidth * 2))
+      .attr('width', (domRect.width * (1 / scale) + boxWidth * 2))
+      .attr('height', (domRect.height * (1 / scale) + boxWidth * 2))
       .attr('stroke', boxColor)
       .attr('stroke-width', boxWidth)
       .attr('opacity', '0.5')
