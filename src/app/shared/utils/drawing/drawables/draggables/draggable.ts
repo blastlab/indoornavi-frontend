@@ -10,6 +10,7 @@ export class Draggable {
   public group: d3.selection;
   private isDraggedNow: boolean;
   private draggedEmitter: Subject<d3.selection> = new Subject<d3.selection>();
+  private lockDragEmit = false;
   protected dragBehavior: d3.drag;
   protected mapAttributes: { width: number, height: number };
 
@@ -51,8 +52,15 @@ export class Draggable {
     return this.draggedEmitter.asObservable();
   }
 
+  public toggleDragEmitLock(): boolean {
+    this.lockDragEmit = !this.lockDragEmit;
+    return this.lockDragEmit;
+  }
+
   private updateConfiguration(): void {
-    this.draggedEmitter.next(this.group);
+    if (!this.lockDragEmit) {
+      this.draggedEmitter.next(this.group);
+    }
   }
 
   private dragGroupBehavior(): void {

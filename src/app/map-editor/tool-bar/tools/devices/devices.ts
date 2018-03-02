@@ -858,6 +858,7 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
     }
     this.accButtons.publishVisibility(true);
     expandableMapObject.connectable.dragOn();
+    expandableMapObject.connectable.toggleDragEmitLock();
     this.removeFromRemainingDevices(device);
     this.accButtons.decisionMade.first().subscribe((decision) => {
       if (decision) {
@@ -873,6 +874,7 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
         }
         this.manageSingleSelectable(expandableMapObject);
         expandableMapObject.selectable.select();
+        expandableMapObject.connectable.toggleDragEmitLock();
       } else {
         if (!!connectingLine) {
           this.removeConnectingLine(connectingLine)
