@@ -26,15 +26,15 @@ class TestBuildingsPage(unittest.TestCase):
         cls.construction_page.create_construction_db_env()
         cls.page.login_process(cls.option)
 
-    def _test_building_page_is_loaded_correctly(self):
+    def test_01_building_page_is_loaded_correctly(self):
         """Test that building page has been correctly loaded"""
         self.construction_page.redirect_button_click()
         self.assertTrue(TestBase.multi_assertion(self))
         self.test_failed = False
 
-    def test_add_new_building_correctly(self):
+    def test_02_add_new_building_correctly(self):
         """Test adding new building correctly"""
-        self.construction_page.redirect_button_click()
+
         self.construction_page.add_button_click()
         # TODO Zmienic tytul modala -  Add building / Add new building
         # self.assertTrue(self.construction_page.check_add_modal_title())
@@ -57,19 +57,18 @@ class TestBuildingsPage(unittest.TestCase):
         self.assertEqual(self.construction_page.if_saved_in_db(), 'TestBuilding')
         self.test_failed = False
 
-    # TC[002]
-    def test_add_new_building_negative_empty_input_and_cancel_click(self):
+    def test_03_add_new_building_negative_empty_input_and_cancel_click(self):
+
         """Test that building will be added with empty input"""
+
         # 1.Check adding with empty input
         self.construction_page.add_button_click()
         self.construction_page.save_add_new_construction()
-        self.assertEqual(self.construction_page.error_message_name(), 'Name is required.')
+        self.assertEqual(self.construction_page.error_message_name(), 'Building name is required.')
         self.construction_page.cancel_add_new_construction()
         self.test_failed = False
 
-    # TODO do zrobienia walidacja na niedozwolone znaki
-    # TC[003]
-    def _test_add_new_building_negative_illegal_characters(self):
+    def _test_04_add_new_building_negative_illegal_characters(self):
         """Test that building will be added with illegal characters"""
         self.construction_page.add_button_click()
         self.construction_page.enter_illegal_chars()
@@ -78,12 +77,7 @@ class TestBuildingsPage(unittest.TestCase):
         self.construction_page.cancel_add_new_construction()
         self.test_failed = False
 
-    # TC[004]
-    # TODO do zrobienia walidacja na limit znakow
-    # def test_add_complex_with_negative_minmax_charaters(self):
-
-    # TC[005]
-    def test_delete_building_correctly(self):
+    def test_05_delete_building_correctly(self):
         """Test that building will be deleted correctly"""
         # Click last building remove button
         self.construction_page.remove_button_click()
@@ -108,8 +102,7 @@ class TestBuildingsPage(unittest.TestCase):
         self.assertEqual(self.construction_page.if_saved_in_db(), 'Test Building B')
         self.test_failed = False
 
-    # TC[006]
-    def test_delete_building_cancel(self):
+    def test_06_delete_building_cancel(self):
         """Test cancel of deleting building """
         # Click last building remove button
         self.construction_page.remove_button_click()
@@ -123,13 +116,7 @@ class TestBuildingsPage(unittest.TestCase):
         # Check that the confirm remove modal disappeared
         self.test_failed = False
 
-    # TC[007]
-    # TODO Jesli uzytkownik kliknie poza modal, okno sie zamyka
-    def _test_delete_complex_click_outside_modal(self):
-      print('TEST - DELETE - Resignation - outside modal click')
-
-    # TC[008]
-    def test_edit_building_correctly(self):
+    def test_07_edit_building_correctly(self):
         """Test editing building correctly"""
         self.construction_page.edit_button_click()
         # TODO Zmienic tytul modala -  Edit building
@@ -148,21 +135,16 @@ class TestBuildingsPage(unittest.TestCase):
         self.assertEqual(self.construction_page.if_saved_in_db(), 'TestEditBuilding')
         self.test_failed = False
 
-    # TC[009] TODO dokonczyc test
-    def test_edit_building_negative_empty_input(self):
+    def test_08_edit_building_negative_empty_input(self):
         """Test editing building with empty input"""
         self.construction_page.edit_button_click()
         self.construction_page.clear_edit_input()
         self.construction_page.save_edit_click()
-        self.assertEqual(self.construction_page.error_message_name(), 'Name is required.')
+        self.assertEqual(self.construction_page.error_message_name(), 'Building name is required.')
+        self.construction_page.cancel_button_click()
         self.test_failed = False
 
-    # TC[012]
-    # TODO do zrobienia walidacja na limit znakow
-    # def test_edit_complex_with_negative_minmax_charaters(self):
-
-    # TC[013]
-    def test_edit_building_cancel(self):
+    def test_09_edit_building_cancel(self):
         """Test cancel editing building"""
         # Click last building edit button
         self.construction_page.edit_button_click()
@@ -175,8 +157,6 @@ class TestBuildingsPage(unittest.TestCase):
         self.assertFalse(self.construction_page.is_edit_modal_displayed())
         self.test_failed = False
 
-    # TC[014]
-    # TODO najprawdopodobniej za stara wersja chromedriver - test nie przechodzi
     def _test_redirect_building_to_floors_page(self):
         # Click last complex redirect click
         self.construction_page.redirect_button_click()
