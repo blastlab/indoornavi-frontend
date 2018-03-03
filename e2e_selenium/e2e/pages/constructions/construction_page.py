@@ -3,7 +3,7 @@ import selenium.webdriver.support.ui as ui
 from selenium.common.exceptions import NoSuchElementException
 from pages.base_page import BasePage
 from locators.construction_base_locators import ConstructionBaseLocators
-from config import Config
+
 
 class ConstructionPage(BasePage):
 
@@ -58,10 +58,10 @@ class ConstructionPage(BasePage):
         return self.check_title_is_correct(string, *self.base_locators.modal_window)
 
     def is_save_button_present(self):
-        return self.is_element_present(self.base_locators.save_button)
+        return self.wait_for_element_clickable(self.base_locators.save_button)
 
     def is_cancel_button_present(self):
-        return self.is_element_present(self.base_locators.cancel_button)
+        return self.wait_for_element_clickable(self.base_locators.cancel_button)
 
     def enter_construction_name(self):
         return self.clear_and_fill_input(self.base_locators.new_construction_name, *self.base_locators.input)
@@ -121,13 +121,17 @@ class ConstructionPage(BasePage):
     def is_remove_construction_toast_present(self):
         return True if self.is_element_present(self.base_locators.removed_toast) else False
 
-    def is_remove_construction_toast_disappeared(self):
+    def is_remove_construction_toast_disappear(self):
         return True if self.is_element_disappear(self.base_locators.removed_toast) else False
 
     def is_removed_construction_disappeared(self):
         return True if self.is_element_disappear(self.base_locators.remove_last_construction_btn) else False
 
     # Edit last construction
+
+    def is_edit_button_present(self):
+        return self.wait_for_element_clickable(self.base_locators.edit_last_construction_btn)
+
     def edit_button_click(self):
         return self.click_button(*self.base_locators.edit_last_construction_btn)
 
@@ -139,6 +143,9 @@ class ConstructionPage(BasePage):
 
     def is_edit_construction_toast_present(self):
         return True if self.is_element_present(self.base_locators.edited_toast) else False
+
+    def is_edit_construction_toast_disappear(self):
+        return True if self.is_element_disappear(self.base_locators.edited_toast) else False
 
     def is_edited_construction_present(self):
         return True if self.is_element_present(self.base_locators.edited_construction_row) else False

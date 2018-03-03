@@ -11,9 +11,9 @@ from selenium.webdriver import ActionChains
 class BasePage(object):
 
     base_url = 'http://localhost:4200/'
+    db_hostname = 'localhost'
 
     def __init__(self, driver):
-        self.db_hostname = 'localhost'
         self.driver = driver
         self.actions = ActionChains(driver)
 
