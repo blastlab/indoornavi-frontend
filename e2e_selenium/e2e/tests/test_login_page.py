@@ -38,8 +38,8 @@ class TestLoginPage(unittest.TestCase):
 
         self.test_failed = False
 
-    def tearDown(self):
-        TestDriver.tearDown(self)
+    # def tearDown(self):
+    #     TestDriver.tearDown(self)
 
     @classmethod
     def tearDownClass(cls):

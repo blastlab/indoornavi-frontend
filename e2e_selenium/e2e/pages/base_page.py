@@ -6,20 +6,21 @@ import re
 import csv
 import mysql.connector
 from pyquibase.pyquibase import Pyquibase
-from config import Config
 from selenium.webdriver import ActionChains
 
 class BasePage(object):
 
-    def __init__(self, driver,  base_url=Config.front_hostname):
-        self.base_url = base_url
+    base_url = 'http://localhost:4200/'
+
+    def __init__(self, driver):
+        self.db_hostname = 'localhost'
         self.driver = driver
         self.actions = ActionChains(driver)
 
     # Select from db
     def if_exist_in_db(self, query):
 
-        db = mysql.connector.connect(user='root', password='', host=Config.db_hostname, database='Navi')
+        db = mysql.connector.connect(user='root', password='', host=self.db_hostname, database='Navi')
         cursor = db.cursor()
         cursor.execute(query)
         last_construction_name = '';
@@ -32,7 +33,7 @@ class BasePage(object):
     # Truncate db
     def truncate_db(self):
 
-        db = mysql.connector.connect(user='root', password='', host=Config.db_hostname, database='Navi')
+        db = mysql.connector.connect(user='root', password='', host=self.db_hostname, database='Navi')
         cursor = db.cursor()
         cursor.execute('SET FOREIGN_KEY_CHECKS=0;')
         cursor.execute("TRUNCATE TABLE complex")
@@ -49,7 +50,7 @@ class BasePage(object):
     def create_db_env(self, file_path):
 
         pyquibase = Pyquibase.mysql(
-          host=Config.db_hostname,
+          host=self.db_hostname,
           port=3306,
           db_name='Navi',
           username='root',
@@ -60,6 +61,7 @@ class BasePage(object):
 
     def refresh_page(self):
         return self.driver.refresh()
+
     # Front
     def identify_element(self, *locator):
         return self.driver.find_element(*locator)
