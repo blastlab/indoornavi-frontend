@@ -139,7 +139,6 @@ export class ActionBarService {
       ActionBarService.parseCoordinatesToIntegers(anchor);
     });
     sinks.add(sinkCopy);
-    console.log(sinkCopy)
     this.configuration.data.sinks = sinks.toArray();
     this.sendConfigurationChangedEvent();
   }
