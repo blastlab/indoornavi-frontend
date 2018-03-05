@@ -20,6 +20,7 @@ import {BreadcrumbService} from '../../../shared/services/breadcrumbs/breadcrumb
 import {HeatMapControllerService} from '../../../shared/components/heat-map-controller/heat-map-controller/heat-map-controller.service';
 import {TagToggle} from '../../../shared/components/tag-visibility-toggler/tag-toggle.type';
 import {PixelHeatMap} from './pixel.heatmap.service';
+import {HeatMapType} from '../../../shared/components/heat-map-controller/heat-map-controller/heat-map-controller.component';
 
 @Component({
   templateUrl: './analytics.html'
@@ -29,7 +30,6 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
   private mapId = 'map';
   private hexagonalHeatMap: HexagonalHeatMap;
   private plasmaHeatMap: PixelHeatMap;
-  // heatPointSize set to tag icon size equal 10px x 10px square
   private hexHeatPointSize: number = 10;
   private plasmaHeatPointSize: number = 5;
   private gradient: string[] = [
@@ -46,7 +46,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     temperatureWaitTime: 5000,
   };
   private playingAnimation: boolean = false;
-  private heatMapType: string = 'Hexagonal';
+  private heatMapType: number = HeatMapType.HEXAGONAL;
 
   constructor(
               ngZone: NgZone,
@@ -80,13 +80,20 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
   }
 
   protected init(): void {
-    this.heatMapControllerService.onHeaMapTypeChange().subscribe((type: string): void => {
+    this.heatMapControllerService.onHeaMapTypeChange().subscribe((type: HeatMapType): void => {
       this.heatMapType = type;
     });
     this.heatMapControllerService.onAnimationToggled().subscribe((animationToggle: boolean): void => {
       this.playingAnimation = animationToggle;
       if (!this.playingAnimation) {
-        this.heatMapType === 'Hexagonal' ? this.hexagonalHeatMap.eraseHeatMap() : this.plasmaHeatMap.eraseHeatMap();
+        switch (this.heatMapType) {
+          case HeatMapType.HEXAGONAL:
+            this.hexagonalHeatMap.eraseHeatMap();
+            break;
+          case HeatMapType.SQUARE:
+            this.plasmaHeatMap.eraseHeatMap();
+            break;
+        }
       }
     });
     this.heatMapControllerService.onHeatMapWaterfallDisplayTimesChange().subscribe((heatMapWaterfallDisplayTime: number): void => {
@@ -114,7 +121,14 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     this.tagTogglerService.onToggleTag().subscribe((tagToggle: TagToggle) => {
       if (this.tagsOnMap.containsKey(tagToggle.tag.shortId) && !tagToggle.selected) {
         this.timeStepBuffer.delete(tagToggle.tag.shortId);
-        this.heatMapType === 'Hexagonal' ? this.hexagonalHeatMap.eraseHeatMap(tagToggle.tag.shortId) : this.plasmaHeatMap.eraseHeatMap(tagToggle.tag.shortId);
+        switch (this.heatMapType) {
+          case HeatMapType.HEXAGONAL:
+            this.hexagonalHeatMap.eraseHeatMap(tagToggle.tag.shortId);
+            break;
+          case HeatMapType.SQUARE:
+            this.plasmaHeatMap.eraseHeatMap(tagToggle.tag.shortId);
+            break;
+        }
       }
     });
     this.whenTransitionEnded().subscribe((tagShortId: number): void => {
@@ -134,9 +148,18 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
   }
 
   private heatUpHexes(data: CoordinatesSocketData): void {
-    this.heatMapType === 'Hexagonal' ? this.hexagonalHeatMap.feedWithCoordinates(data) : this.plasmaHeatMap.feedWithCoordinates(data);
+    switch (this.heatMapType) {
+      case HeatMapType.HEXAGONAL:
+        this.hexagonalHeatMap.feedWithCoordinates(data);
+        break;
+      case HeatMapType.SQUARE:
+        this.plasmaHeatMap.feedWithCoordinates(data);
+        break;
+    }
   }
 
+  // grid needs to be calculated upfront before starting heat map,
+  // it is needed for having correct grid dimension corresponding with map img size and current pan & zoom
   private createHeatMapGrid (mapNode: d3.selection): void {
     const height = Number.parseInt(mapNode.node().getBBox().height);
     const width = Number.parseInt(mapNode.node().getBBox().width);

@@ -5,14 +5,14 @@
   <div class="ui-lg-11" >
     <p>{{'set.heat.map.type'|translate}}</p>
       <div><p-radioButton name="heatMap"
-              value="{{'hexagonal.heat.map'|translate}}"
+              value="{{Hexagonal}}"
               label="{{'hexagonal.heat.map'|translate}}"
               [(ngModel)]="heatMapType"
               [disabled]="playingAnimation"
               inputId="option1"
       ></p-radioButton></div>
       <div><p-radioButton name="heatMap"
-              value="{{'square.heat.map'|translate}}"
+              value="{{Square}}"
               label="{{'square.heat.map'|translate}}"
               [(ngModel)]="heatMapType"
               [disabled]="playingAnimation"

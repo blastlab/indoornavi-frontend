@@ -20,10 +20,12 @@ export class HexagonalHeatMap {
   private transitionTime: number = 1000;
   private margin: Margin;
 
-  constructor(protected width: number,
-              protected height: number,
-              protected heatPointSize: number,
-              protected heatColors: string[]) {
+  constructor(
+    protected width: number,
+    protected height: number,
+    protected heatPointSize: number,
+    protected heatColors: string[]
+  ) {
     this.margin = {left: heatPointSize, top: heatPointSize, right: heatPointSize, bottom: heatPointSize};
     this.calculateHexPoints();
   }
@@ -137,9 +139,6 @@ export class HexagonalHeatMap {
   }
 
   protected findHeatPoint (data: CoordinatesSocketData): HeatPoint {
-    // hexagon shape builds grid that has different distance between hexes in x and y direction
-    // which gives for x direction deference equal to radius of circle overwritten on hexagon,
-    // and in y direction deference equal to sqrt from 3 times radius of circle overwritten on hexagon.
     const coordinates: Point = this.findShapeStartPoint(data.coordinates.point);
     return this.gridTable.find((hexHeatElement: HeatPoint): boolean =>
       coordinates.x === hexHeatElement.x &&
