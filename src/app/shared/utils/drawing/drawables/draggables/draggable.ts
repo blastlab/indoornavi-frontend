@@ -32,6 +32,8 @@ export class Draggable {
       })
       .on('end.draggable', () => {
         if (this.isDraggedNow) {
+          console.log(`x: ${this.group.attr('x')}`);
+          console.log(`y: ${this.group.attr('y')}`);
           this.updateConfiguration();
           this.isDraggedNow = !this.isDraggedNow;
         }

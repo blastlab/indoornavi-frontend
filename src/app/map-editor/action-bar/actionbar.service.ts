@@ -33,6 +33,11 @@ export class ActionBarService {
     });
   }
 
+  private static parseCoordinatesToIntegers(device: Anchor | Sink): void {
+    device.x = Math.round(device.x);
+    device.y = Math.round(device.y);
+  }
+
   private static compareFn(sink: Sink): string {
     return '' + sink.shortId;
   }
@@ -129,7 +134,12 @@ export class ActionBarService {
     if (sinks.contains(sinkCopy)) {
       sinks.remove(sinkCopy);
     }
+    ActionBarService.parseCoordinatesToIntegers(sinkCopy);
+    sinkCopy.anchors.forEach((anchor) => {
+      ActionBarService.parseCoordinatesToIntegers(anchor);
+    });
     sinks.add(sinkCopy);
+    console.log(sinkCopy)
     this.configuration.data.sinks = sinks.toArray();
     this.sendConfigurationChangedEvent();
   }
@@ -155,6 +165,7 @@ export class ActionBarService {
     if (anchors.contains(anchorCopy)) {
       anchors.remove(anchorCopy);
     }
+    ActionBarService.parseCoordinatesToIntegers(anchorCopy);
     anchors.add(anchorCopy);
     this.configuration.data.anchors = anchors.toArray();
     this.sendConfigurationChangedEvent();
