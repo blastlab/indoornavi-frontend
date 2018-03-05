@@ -35,11 +35,10 @@ class TestLoginPage(unittest.TestCase):
         for option in range(2, 4):
             self.__init_test_method()
             self.assertTrue(self.page.login_process(option))
-
         self.test_failed = False
 
-    # def tearDown(self):
-    #     TestDriver.tearDown(self)
+    def tearDown(self):
+        TestDriver.tearDown(self)
 
     @classmethod
     def tearDownClass(cls):
