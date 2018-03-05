@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import {Point, Transform} from '../../../map-editor/map.type';
+import {Point} from '../../../map-editor/map.type';
 import {DrawConfiguration} from '../../../map-viewer/publication.type';
 import {Helper} from '../helper/helper';
 
@@ -7,7 +7,6 @@ export class SvgGroupWrapper {
   private elements: Map<ElementType, d3.selection[]> = new Map();
   container: d3.selection;
   private color: string;
-  // private containerTransform: Transform;
 
   static throwErrorTypeNull (elementType: ElementType): void {
     throw new Error(`${elementType} is null or undefined`);
