@@ -1,11 +1,5 @@
-from selenium.webdriver.support import expected_conditions as EC
-import selenium.webdriver.support.ui as ui
-import re
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.keys import Keys
 from pages.base_page import BasePage
 from locators.devices_base_locators import DevicesBaseLocators
-from config import Config
 
 class DevicesPage(BasePage):
 
