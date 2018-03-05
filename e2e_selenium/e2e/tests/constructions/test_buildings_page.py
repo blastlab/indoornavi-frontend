@@ -27,13 +27,20 @@ class TestBuildingsPage(unittest.TestCase):
         cls.page.login_process(cls.option)
 
     def test_01_building_page_is_loaded_correctly(self):
+
         """Test that building page has been correctly loaded"""
+
+        self.assertTrue(self.construction_page.is_redirect_button_clickable())
+
         self.construction_page.redirect_button_click()
         self.assertTrue(TestBase.multi_assertion(self))
         self.test_failed = False
 
     def test_02_add_new_building_correctly(self):
+
         """Test adding new building correctly"""
+
+        self.assertTrue(self.construction_page.is_add_button_clickable())
 
         self.construction_page.add_button_click()
         # TODO Zmienic tytul modala -  Add building / Add new building
@@ -62,6 +69,8 @@ class TestBuildingsPage(unittest.TestCase):
         """Test that building will be added with empty input"""
 
         # 1.Check adding with empty input
+        self.assertTrue(self.construction_page.is_add_button_clickable())
+
         self.construction_page.add_button_click()
         self.construction_page.save_add_new_construction()
         self.assertEqual(self.construction_page.error_message_name(), 'Building name is required.')
@@ -69,7 +78,11 @@ class TestBuildingsPage(unittest.TestCase):
         self.test_failed = False
 
     def _test_04_add_new_building_negative_illegal_characters(self):
+
         """Test that building will be added with illegal characters"""
+
+        self.assertTrue(self.construction_page.is_add_button_clickable())
+
         self.construction_page.add_button_click()
         self.construction_page.enter_illegal_chars()
         self.construction_page.save_add_new_construction()
@@ -116,7 +129,7 @@ class TestBuildingsPage(unittest.TestCase):
         # Check that the confirm remove modal disappeared
         self.test_failed = False
 
-    def test_07_edit_building_correctly(self):
+    def _test_07_edit_building_correctly(self):
         """Test editing building correctly"""
         self.construction_page.edit_button_click()
         # TODO Zmienic tytul modala -  Edit building

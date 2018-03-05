@@ -43,13 +43,16 @@ class ConstructionPage(BasePage):
         else:
           return True
 
-    def is_redirect_button_present(self):
-        return True if self.is_element_present(self.base_locators.remove_last_construction_btn) else False
+    def is_redirect_button_clickable(self):
+        return True if self.wait_for_element_clickable(self.base_locators.remove_last_construction_btn) else False
 
     def redirect_button_click(self):
         return self.click_button(*self.base_locators.redirect_last_btn)
 
     # Add construction
+    def is_add_button_clickable(self):
+        return True if self.wait_for_element_clickable(self.base_locators.add_button_construction) else False
+
     def add_button_click(self):
         return self.click_button(*self.base_locators.add_button_construction)
 
