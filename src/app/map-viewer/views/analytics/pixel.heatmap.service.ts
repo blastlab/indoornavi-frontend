@@ -4,15 +4,16 @@ import {Point} from '../../../map-editor/map.type';
 import {CoordinatesSocketData} from '../../publication.type';
 
 @Injectable()
-export class PlasmaHeatMap extends HexagonalHeatMap {
+export class PixelHeatMap extends HexagonalHeatMap {
   protected svgId: string = 'plasma-heatmap';
   protected heatElementClazz = 'pixel';
   private squareGridSize: number = 3;
   private transformDistance: number;
+  private pixelPoints: Point[] = [];
 
   constructor(width, height, heatPointSize, heatColors) {
     super(width, height, heatPointSize, heatColors);
-    this.calculatePlasmaPoints();
+    this.calculatePixelPoints();
     this.calculatePlasmaParameters();
   }
 
@@ -22,17 +23,13 @@ export class PlasmaHeatMap extends HexagonalHeatMap {
     return [mapColumns, mapRows];
   }
 
+  protected findShapeStartPoint(coordinates: Point): Point {
+    return this.pixelPoints.find((point: Point): boolean => point.x > coordinates.x && point.y > coordinates.y);
+  }
+
   private calculatePlasmaParameters(): void {
     this.transformDistance = ((this.squareGridSize - 1) / 2 * this.heatPointSize + this.heatPointSize);
 }
-
-  private calculatePlasmaPoints(): void {
-    for (let i = 0; i < this.calculateMap()[1]; i++) {
-      for (let j = 0; j < this.calculateMap()[0]; j++) {
-        this.points.push({x: this.heatPointSize * j, y: this.heatPointSize * i});
-      }
-    }
-  }
 
   protected createNewHeatPoint (data: CoordinatesSocketData, timeNow: number): void {
     this.shapeStartPoint = this.findShapeStartPoint(data.coordinates.point);
@@ -64,6 +61,14 @@ export class PlasmaHeatMap extends HexagonalHeatMap {
 
   protected addRelationWithSurrounding(data: CoordinatesSocketData, time: number): void {
     this.distributePlasmaOnHeatMapGrid(data, time);
+  }
+
+  private calculatePixelPoints(): void {
+    for (let i = 0; i < this.calculateMap()[1]; i++) {
+      for (let j = 0; j < this.calculateMap()[0]; j++) {
+        this.pixelPoints.push({x: this.heatPointSize * j, y: this.heatPointSize * i});
+      }
+    }
   }
 
   private distributePlasmaOnHeatMapGrid(data: CoordinatesSocketData, time: number): void {

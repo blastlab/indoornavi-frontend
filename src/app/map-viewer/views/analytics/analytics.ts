@@ -19,7 +19,7 @@ import {MapObjectService} from '../../../shared/utils/drawing/map.object.service
 import {BreadcrumbService} from '../../../shared/services/breadcrumbs/breadcrumb.service';
 import {HeatMapControllerService} from '../../../shared/components/heat-map-controller/heat-map-controller/heat-map-controller.service';
 import {TagToggle} from '../../../shared/components/tag-visibility-toggler/tag-toggle.type';
-import {PlasmaHeatMap} from './plasma.heatmap.service';
+import {PixelHeatMap} from './pixel.heatmap.service';
 
 @Component({
   templateUrl: './analytics.html'
@@ -28,7 +28,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
   private timeStepBuffer: Map<number, TimeStepBuffer[]> = new Map();
   private mapId = 'map';
   private hexagonalHeatMap: HexagonalHeatMap;
-  private plasmaHeatMap: PlasmaHeatMap;
+  private plasmaHeatMap: PixelHeatMap;
   // heatPointSize set to tag icon size equal 10px x 10px square
   private hexHeatPointSize: number = 10;
   private plasmaHeatPointSize: number = 5;
@@ -80,9 +80,9 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
   }
 
   protected init(): void {
-    // this.heatMapControllerService.onHeaMapTypeChange().subscribe((type: string): void => {
-    //   this.heatMapType = type;
-    // });
+    this.heatMapControllerService.onHeaMapTypeChange().subscribe((type: string): void => {
+      this.heatMapType = type;
+    });
     this.heatMapControllerService.onAnimationToggled().subscribe((animationToggle: boolean): void => {
       this.playingAnimation = animationToggle;
       if (!this.playingAnimation) {
@@ -144,7 +144,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     this.hexagonalHeatMap.create(this.mapId);
     this.hexagonalHeatMap.temperatureTimeIntervalForHeating = this.heatMapSettings.temperatureWaitTime;
     this.hexagonalHeatMap.temperatureTimeIntervalForCooling = this.heatMapSettings.temperatureLifeTime;
-    this.plasmaHeatMap = new PlasmaHeatMap(width, height, this.plasmaHeatPointSize, this.gradient);
+    this.plasmaHeatMap = new PixelHeatMap(width, height, this.plasmaHeatPointSize, this.gradient);
     this.plasmaHeatMap.create(this.mapId);
     this.plasmaHeatMap.temperatureTimeIntervalForHeating = this.heatMapSettings.temperatureWaitTime;
     this.plasmaHeatMap.temperatureTimeIntervalForCooling = this.heatMapSettings.temperatureLifeTime;
