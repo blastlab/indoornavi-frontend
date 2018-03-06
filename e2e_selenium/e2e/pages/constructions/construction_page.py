@@ -44,7 +44,7 @@ class ConstructionPage(BasePage):
           return True
 
     def is_redirect_button_clickable(self):
-        return True if self.wait_for_element_clickable(self.base_locators.remove_last_construction_btn) else False
+        return True if self.wait_for_element_clickable(self.base_locators.redirect_last_btn) else False
 
     def redirect_button_click(self):
         return self.click_button(*self.base_locators.redirect_last_btn)
@@ -106,8 +106,8 @@ class ConstructionPage(BasePage):
     def is_confirm_remove_window_present(self):
         return self.is_element_present(self.base_locators.remove_ask)
 
-    def is_confirm_remove_window_displayed(self):
-        return self.is_element_displayed(*self.base_locators.remove_ask)
+    def is_confirm_remove_window_disappear(self):
+        return self.is_element_disappear(self.base_locators.remove_ask)
 
     def is_yes_button_present(self):
         return self.is_element_present(self.base_locators.yes_button)

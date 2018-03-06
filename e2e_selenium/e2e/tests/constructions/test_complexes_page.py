@@ -101,7 +101,7 @@ class TestComplexesPage(unittest.TestCase):
         self.assertTrue(self.construction_page.is_yes_button_present())
         self.assertTrue(self.construction_page.is_no_button_present())
         self.construction_page.click_no_button()
-        self.assertFalse(self.construction_page.is_confirm_remove_window_displayed())
+        self.assertTrue(self.construction_page.is_confirm_remove_window_disappear())
         # Check that the confirm remove modal disappeared
         self.test_failed = False
 

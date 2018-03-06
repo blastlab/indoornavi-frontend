@@ -9,8 +9,8 @@ class FloorsPage(BasePage):
     unique_level_warning = (By.XPATH, "//p[contains(text(),'Floor level must be unique in the building')]")
     table_floor_name = (By.XPATH, '//table/thead/tr/th[2]/span')
 
-    def is_add_button_present(self):
-        return True if self.is_element_present(self.add_button_floor) else False
+    def is_add_button_clickable(self):
+        return True if self.wait_for_element_clickable(self.add_button_floor) else False
 
     def is_floor_table_header_present(self):
         return self.check_title_is_correct('Floor name', *self.table_floor_name)

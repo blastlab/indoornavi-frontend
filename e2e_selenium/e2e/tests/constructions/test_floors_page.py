@@ -31,14 +31,16 @@ class TestFloorsPage(unittest.TestCase):
         """Test that floors page is loaded correctly"""
         self.construction_page.redirect_button_click()
         # time.sleep(5)
-        self.construction_page.is_redirect_button_present()
+        self.construction_page.is_redirect_button_clickable()
         self.construction_page.redirect_button_click()
         self.assertTrue(TestBase.multi_assertion(self))
         self.test_failed = False
 
     # TC[002]
     def test_02_add_new_floor_correctly(self):
+
         """Test adding new floor correctly"""
+        self.floors_page.is_add_button_clickable()
         self.floors_page.add_button_click()
         # TODO Zmienic tytul modala -  Add floor / Add new floor
         # self.assertTrue(self.complexes_page.check_add_modal_title())
@@ -79,7 +81,7 @@ class TestFloorsPage(unittest.TestCase):
         # Check that toast is displayed
         self.assertTrue(self.construction_page.is_remove_construction_toast_present())
         # Check that toast is disappeared
-        self.assertTrue(self.construction_page.is_remove_construction_toast_disappeared())
+        self.assertTrue(self.construction_page.is_remove_construction_toast_disappear())
         # Check that new floor has been saved in db -> now last floor name is Test Floor B
         self.assertEqual(self.construction_page.if_saved_in_db(), 'Test Floor B')
         self.test_failed = False
@@ -95,7 +97,7 @@ class TestFloorsPage(unittest.TestCase):
         self.assertTrue(self.construction_page.is_yes_button_present())
         self.assertTrue(self.construction_page.is_no_button_present())
         self.construction_page.click_no_button()
-        self.assertFalse(self.construction_page.is_confirm_remove_window_displayed())
+        self.assertTrue(self.construction_page.is_confirm_remove_window_disappear())
         # Check that the confirm remove modal disappeared
         self.test_failed = False
 
@@ -112,6 +114,8 @@ class TestFloorsPage(unittest.TestCase):
         self.construction_page.save_edit_click()
         # Check that toast is displayed
         self.assertTrue(self.construction_page.is_edit_construction_toast_present())
+        # Check that toast is disappear
+        self.assertTrue(self.construction_page.is_edit_construction_toast_disappear())
         # Check that new floor is displayed
         self.assertTrue(self.construction_page.is_edited_construction_present())
         # Check that new floor has been saved in db
@@ -121,7 +125,9 @@ class TestFloorsPage(unittest.TestCase):
     # # # TODO Test sprawdzajacy edycje po wprowadzeniu istniejacego juz pietra
     # TC[007]
     def test_07_edit_floor_negative_existing_level(self):
+
         """Test editing floor action with existing level"""
+
         self.construction_page.edit_button_click()
         # TODO Zmienic tytul modala -  Edit floor
         # self.assertTrue(self.construction_page.check_add_modal_title())
