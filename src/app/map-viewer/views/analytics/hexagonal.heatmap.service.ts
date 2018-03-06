@@ -1,11 +1,11 @@
 import * as d3 from 'd3';
 import * as d3Hexbin from 'd3-hexbin';
 import {Point} from '../../../map-editor/map.type';
-import {HeatPoint, Margin} from './analytics.type';
+import {HeatMap, HeatPoint, Margin} from './analytics.type';
 import {CoordinatesSocketData} from '../../publication.type';
 
 
-export class HexagonalHeatMap {
+export class HexagonalHeatMap implements HeatMap {
   protected svgId: string = 'hexagon-heatmap';
   protected heatElementClazz = 'hexagon';
   protected points: Point[] = [];
@@ -39,7 +39,7 @@ export class HexagonalHeatMap {
       .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
   }
 
-  eraseHeatMap (tagShortId?: number): void {
+  erase (tagShortId?: number): void {
     if (!!tagShortId) {
       const indexesToDelete: number[] = [];
       this.gridTable.forEach((heatPoint: HeatPoint): void => {
@@ -56,7 +56,7 @@ export class HexagonalHeatMap {
     }
   }
 
-  feedWithCoordinates(data: CoordinatesSocketData, ): void {
+  feedWithCoordinates(data: CoordinatesSocketData): void {
     const timeNow = Date.now();
     this.fireHeatAtLocation(this.findHeatPoint(data), data, timeNow);
     this.addRelationWithSurrounding(data, timeNow);
@@ -70,12 +70,12 @@ export class HexagonalHeatMap {
     this.temperatureTimeStepForCooling = value;
   }
 
-  private coolDownActiveHeatPoints(timeNow: number): void {
+  private coolDownActiveHeatPoints(coorninatesArrivalTime: number): void {
     this.gridTable.forEach((heatPoint: HeatPoint): void => {
-      if (timeNow - heatPoint.heated > this.temperatureTimeStepForCooling) {
+      if (coorninatesArrivalTime - heatPoint.timeHeated > this.temperatureTimeStepForCooling) {
         if (heatPoint.heat > 0) {
           heatPoint.heat--;
-          heatPoint.heated = timeNow;
+          heatPoint.timeHeated = coorninatesArrivalTime;
           const color = this.heatColors[heatPoint.heat];
           const heatPointNode = d3.select(heatPoint.element);
           heatPointNode
@@ -92,11 +92,11 @@ export class HexagonalHeatMap {
     });
   }
 
-  protected fireHeatAtLocation (heatPoint: HeatPoint, data: CoordinatesSocketData, timeNow: number): void {
+  protected fireHeatAtLocation (heatPoint: HeatPoint, data: CoordinatesSocketData, coordinatesArrivalTime: number): void {
     if (!!heatPoint) {
-      if ((heatPoint.heat < this.heatColors.length - 1) && (timeNow - heatPoint.heated > this.temperatureTimeStepForHeating)) {
+      if ((heatPoint.heat < this.heatColors.length - 1) && (coordinatesArrivalTime - heatPoint.timeHeated > this.temperatureTimeStepForHeating)) {
         heatPoint.heat++;
-        heatPoint.heated = timeNow;
+        heatPoint.timeHeated = coordinatesArrivalTime;
         const color = this.heatColors[heatPoint.heat];
         const element = d3.select(heatPoint.element);
         element
@@ -106,12 +106,12 @@ export class HexagonalHeatMap {
           .attr('stroke', () => color);
       }
     } else {
-      this.createNewHeatPoint(data, timeNow);
+      this.createNewHeatPoint(data, coordinatesArrivalTime);
     }
-    this.coolDownActiveHeatPoints(timeNow);
+    this.coolDownActiveHeatPoints(coordinatesArrivalTime);
   }
 
-  protected createNewHeatPoint (data: CoordinatesSocketData, timeNow: number): void {
+  protected createNewHeatPoint (data: CoordinatesSocketData, coordinatesArrivalTime: number): void {
     const hexbin = d3Hexbin.hexbin().radius(this.heatPointSize);
     this.shapeStartPoint = this.findShapeStartPoint(data.coordinates.point);
     this.heatMap = this.svg
@@ -124,13 +124,13 @@ export class HexagonalHeatMap {
           y: this.shapeStartPoint.y,
           element: nodes[index], tagShortId: data.coordinates.tagShortId,
           heat: 0,
-          heated: timeNow
+          timeHeated: coordinatesArrivalTime
         });
         return 'M' + d.x + ',' + d.y + hexbin.hexagon();
       })
       .attr('tagShortId', data.coordinates.tagShortId.toString())
       .attr('heat', 0)
-      .attr('heated', timeNow.toString())
+      .attr('timeHeated', coordinatesArrivalTime.toString())
       .attr('stroke', this.heatColors[0])
       .style('stroke-opacity', this.maxOpacity)
       .attr('stroke-width', `${this.strokeWidth}px`)

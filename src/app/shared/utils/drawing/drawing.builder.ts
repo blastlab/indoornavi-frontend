@@ -153,25 +153,6 @@ export class SvgGroupWrapper {
     }
   }
 
-  flashColors(): SvgGroupWrapper {
-    this.elements.forEach((element: d3.selection): void => {
-      const selection: d3.selection = element[0];
-      const fill: string = selection.style('fill');
-      const stroke: string = selection.style('stroke');
-      let counter = 0;
-      const flasher = () => setTimeout((): void => {
-        selection.style('fill') === fill ? selection.style('fill', 'red') : selection.style('fill', fill);
-        selection.style('stroke') === stroke ? selection.style('stroke', 'red') : selection.style('stroke', stroke);
-        counter ++;
-        if (counter < 10) {
-          flasher();
-        }
-      }, 100);
-      flasher();
-    });
-    return this;
-  }
-
   private addElement(type: ElementType, element: d3.selection): void {
     if (this.elements.has(type)) {
       this.elements.get(type).push(element);

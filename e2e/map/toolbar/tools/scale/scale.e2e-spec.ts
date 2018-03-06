@@ -36,7 +36,7 @@
 //
 //   it('should not be able to upload wrong type of image', () => {
 //     const file = '../../../../resources/wrongFile.txt';
-//     const absolutePath = temperatureTimeIntervalForCooling.resolve(__dirname, file);
+//     const absolutePath = pathTimeIntervalForCooling.resolve(__dirname, file);
 //     element(by.tagName('input')).sendKeys(absolutePath);
 //     expect(element(by.className('file-upload'))).toBeTruthy();
 //   });

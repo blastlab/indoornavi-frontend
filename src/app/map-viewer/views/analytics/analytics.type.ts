@@ -1,5 +1,6 @@
 import {CoordinatesSocketData} from '../../publication.type';
 import * as d3 from 'd3';
+import {Point} from '../../../map-editor/map.type';
 
 export interface TimeStepBuffer {
   data: CoordinatesSocketData;
@@ -19,10 +20,18 @@ export interface HeatPoint {
   element: d3.selection;
   tagShortId: number;
   heat: number;
-  heated: number;
+  timeHeated: number;
 }
 
 export interface HeatMapPath {
   temperatureLifeTime: number;
   temperatureWaitTime: number;
+}
+
+export interface HeatMap {
+  temperatureTimeIntervalForHeating: number;
+  temperatureTimeIntervalForCooling: number;
+  create(id: string): void;
+  erase (tagShortId?: number): void;
+  feedWithCoordinates(data: CoordinatesSocketData): void;
 }

@@ -53,7 +53,7 @@ import {
   SliderModule,
   ToolbarModule,
   TooltipModule,
-  InputSwitchModule, RadioButtonModule
+  RadioButtonModule
 } from 'primeng/primeng';
 import {HintBarService} from './map-editor/hint-bar/hintbar.service';
 import {ToolbarService} from './map-editor/tool-bar/toolbar.service';

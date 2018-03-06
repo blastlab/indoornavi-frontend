@@ -19,13 +19,13 @@ export class HeatMapControllerComponent {
 
   setPathLength (event: number): void {
     this.pathLength = event;
-    // calculate time to [ms] before passing to observable
+    // calculate time to [ms] before passing as observable
     this.heatMapControllerService.setHeatMapWaterfallDisplayTime(this.pathLength * 1000);
   }
 
   setHeatTimeWait (event: number): void {
     this.heatTimeWait = event;
-    // calculate time to [ms] before to observable
+    // calculate time to [ms] before passing as observable
     this.heatMapControllerService.setHeatTimeGapChange(this.heatTimeWait * 1000);
   }
 

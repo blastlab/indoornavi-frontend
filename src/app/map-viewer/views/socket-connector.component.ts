@@ -26,6 +26,7 @@ import {TagVisibilityTogglerService} from '../../shared/components/tag-visibilit
 import {TagToggle} from '../../shared/components/tag-visibility-toggler/tag-toggle.type';
 import {Tag} from '../../device/device.type';
 import {BreadcrumbService} from '../../shared/services/breadcrumbs/breadcrumb.service';
+import {SvgAnimator} from '../../shared/utils/drawing/animator';
 
 @Component({
   templateUrl: './socket-connector.component.html'
@@ -136,8 +137,8 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         .createGroup()
         .addIcon({x: 0, y: 0}, this.iconService.getIcon(NaviIcons.TAG))
         .addText({x: 0, y: 36}, `${deviceId}`)
-        .place({x: data.coordinates.point.x, y: data.coordinates.point.y})
-        .flashColors();
+        .place({x: data.coordinates.point.x, y: data.coordinates.point.y});
+      SvgAnimator.startBlinking(tagOnMap);
       this.tagsOnMap.setValue(deviceId, new Movable(tagOnMap).setShortId(deviceId));
     } else if (this.visibleTags.get(deviceId)) {
       this.moveTagOnMap(data.coordinates.point, deviceId);
@@ -147,7 +148,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         event.source.postMessage({type: 'coordinates', coordinates: data}, event.origin);
       })
     }
-    this.removeDisabledTags();
+    this.removeNotVisableTags();
   }
 
   protected whenTransitionEnded(): Observable<number> {
@@ -197,7 +198,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         this.socketService.send({type: CommandType[CommandType.TOGGLE_TAG], args: tagToggle.tag.shortId});
         this.visibleTags.set(tagToggle.tag.shortId, tagToggle.selected);
         if (!tagToggle.selected) {
-           this.removeDisabledTags();
+           this.removeNotVisableTags();
         }
       });
       this.socketSubscription = stream.subscribe((data: MeasureSocketData): void => {
@@ -216,7 +217,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     });
   };
 
-  private removeDisabledTags (): void {
+  private removeNotVisableTags (): void {
     this.visibleTags.forEach((value: boolean, key: number, map: Map<number, boolean>): void => {
       if (!value && this.isOnMap(key)) {
         this.tagsOnMap.getValue(key).remove();

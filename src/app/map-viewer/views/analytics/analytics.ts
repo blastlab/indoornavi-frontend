@@ -2,7 +2,7 @@ import {ActivatedRoute} from '@angular/router';
 import {Component, NgZone, OnInit} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {SocketConnectorComponent} from '../socket-connector.component';
-import {HeatMapPath, TimeStepBuffer} from './analytics.type';
+import {HeatMap, HeatMapPath, TimeStepBuffer} from './analytics.type';
 import {SocketService} from '../../../shared/services/socket/socket.service';
 import {PublishedService} from '../../publication.service';
 import {AreaService} from '../../../shared/services/area/area.service';
@@ -28,8 +28,7 @@ import {HeatMapType} from '../../../shared/components/heat-map-controller/heat-m
 export class AnalyticsComponent extends SocketConnectorComponent implements OnInit {
   private timeStepBuffer: Map<number, TimeStepBuffer[]> = new Map();
   private mapId = 'map';
-  private hexagonalHeatMap: HexagonalHeatMap;
-  private plasmaHeatMap: PixelHeatMap;
+  private activeHeatMap: HeatMap[] = [];
   private hexHeatPointSize: number = 10;
   private plasmaHeatPointSize: number = 5;
   private gradient: string[] = [
@@ -86,26 +85,20 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     this.heatMapControllerService.onAnimationToggled().subscribe((animationToggle: boolean): void => {
       this.playingAnimation = animationToggle;
       if (!this.playingAnimation) {
-        switch (this.heatMapType) {
-          case HeatMapType.HEXAGONAL:
-            this.hexagonalHeatMap.eraseHeatMap();
-            break;
-          case HeatMapType.SQUARE:
-            this.plasmaHeatMap.eraseHeatMap();
-            break;
-        }
+        this.getActiveHeatMap().erase();
       }
+
     });
     this.heatMapControllerService.onHeatMapWaterfallDisplayTimesChange().subscribe((heatMapWaterfallDisplayTime: number): void => {
       this.heatMapSettings.temperatureLifeTime = heatMapWaterfallDisplayTime;
-      this.hexagonalHeatMap.temperatureTimeIntervalForCooling = this.heatMapSettings.temperatureLifeTime;
+      this.getActiveHeatMap().temperatureTimeIntervalForCooling = this.heatMapSettings.temperatureLifeTime;
     });
     this.heatMapControllerService.onHeatMapTimeGapChange().subscribe((heatTimeGap: number): void => {
       this.heatMapSettings.temperatureWaitTime = heatTimeGap;
-      this.hexagonalHeatMap.temperatureTimeIntervalForHeating = this.heatMapSettings.temperatureWaitTime;
+      this.getActiveHeatMap().temperatureTimeIntervalForHeating = this.heatMapSettings.temperatureWaitTime;
     });
     this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg): void => {
-      // both hexagonalHeatMap and plasmaHeatMap needs to be created upfront, to be displayed in svg layer below tags svg layer
+      // both hexagonalHeatMap and pixelHeatMap needs to be created upfront, to be displayed in svg layer below tags svg layer
       this.createHeatMapGrid(mapSvg.layer);
     });
     this.whenDataArrived().subscribe((data: CoordinatesSocketData): void => {
@@ -121,14 +114,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     this.tagTogglerService.onToggleTag().subscribe((tagToggle: TagToggle) => {
       if (this.tagsOnMap.containsKey(tagToggle.tag.shortId) && !tagToggle.selected) {
         this.timeStepBuffer.delete(tagToggle.tag.shortId);
-        switch (this.heatMapType) {
-          case HeatMapType.HEXAGONAL:
-            this.hexagonalHeatMap.eraseHeatMap(tagToggle.tag.shortId);
-            break;
-          case HeatMapType.SQUARE:
-            this.plasmaHeatMap.eraseHeatMap(tagToggle.tag.shortId);
-            break;
-        }
+        this.getActiveHeatMap().erase(tagToggle.tag.shortId);
       }
     });
     this.whenTransitionEnded().subscribe((tagShortId: number): void => {
@@ -138,7 +124,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
         for (let index = 0; index < timeStepBuffer.length; index ++) {
           if (timeStepBuffer[index].timeOfDataStep < timeWhenTransitionIsFinished) {
             if (this.playingAnimation) {
-              this.heatUpHexes(timeStepBuffer[index].data);
+              this.getActiveHeatMap().feedWithCoordinates(timeStepBuffer[index].data);
             }
             timeStepBuffer.splice(0, index);
           }
@@ -147,15 +133,8 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     });
   }
 
-  private heatUpHexes(data: CoordinatesSocketData): void {
-    switch (this.heatMapType) {
-      case HeatMapType.HEXAGONAL:
-        this.hexagonalHeatMap.feedWithCoordinates(data);
-        break;
-      case HeatMapType.SQUARE:
-        this.plasmaHeatMap.feedWithCoordinates(data);
-        break;
-    }
+  private getActiveHeatMap() {
+    return this.activeHeatMap[this.heatMapType];
   }
 
   // grid needs to be calculated upfront before starting heat map,
@@ -163,14 +142,15 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
   private createHeatMapGrid (mapNode: d3.selection): void {
     const height = Number.parseInt(mapNode.node().getBBox().height);
     const width = Number.parseInt(mapNode.node().getBBox().width);
-    this.hexagonalHeatMap = new HexagonalHeatMap(width, height, this.hexHeatPointSize, this.gradient);
-    this.hexagonalHeatMap.create(this.mapId);
-    this.hexagonalHeatMap.temperatureTimeIntervalForHeating = this.heatMapSettings.temperatureWaitTime;
-    this.hexagonalHeatMap.temperatureTimeIntervalForCooling = this.heatMapSettings.temperatureLifeTime;
-    this.plasmaHeatMap = new PixelHeatMap(width, height, this.plasmaHeatPointSize, this.gradient);
-    this.plasmaHeatMap.create(this.mapId);
-    this.plasmaHeatMap.temperatureTimeIntervalForHeating = this.heatMapSettings.temperatureWaitTime;
-    this.plasmaHeatMap.temperatureTimeIntervalForCooling = this.heatMapSettings.temperatureLifeTime;
+    this.activeHeatMap = [
+      new HexagonalHeatMap(width, height, this.hexHeatPointSize, this.gradient),
+      new PixelHeatMap(width, height, this.plasmaHeatPointSize, this.gradient)
+    ];
+    this.activeHeatMap.forEach((heatMap: HeatMap): void => {
+      heatMap.create(this.mapId);
+      heatMap.temperatureTimeIntervalForHeating = this.heatMapSettings.temperatureWaitTime;
+      heatMap.temperatureTimeIntervalForCooling = this.heatMapSettings.temperatureLifeTime;
+    });
   }
 
 }

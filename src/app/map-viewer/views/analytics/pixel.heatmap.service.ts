@@ -5,7 +5,6 @@ import {CoordinatesSocketData} from '../../publication.type';
 
 @Injectable()
 export class PixelHeatMap extends HexagonalHeatMap {
-  protected svgId: string = 'plasma-heatmap';
   protected heatElementClazz = 'pixel';
   private squareGridSize: number = 3;
   private transformDistance: number;
@@ -15,6 +14,7 @@ export class PixelHeatMap extends HexagonalHeatMap {
     super(width, height, heatPointSize, heatColors);
     this.calculatePixelPoints();
     this.calculatePlasmaParameters();
+    this.setSvgId('pixel-heatmap');
   }
 
   protected calculateMap(): number[] {
@@ -29,7 +29,7 @@ export class PixelHeatMap extends HexagonalHeatMap {
 
   private calculatePlasmaParameters(): void {
     this.transformDistance = ((this.squareGridSize - 1) / 2 * this.heatPointSize + this.heatPointSize);
-}
+  }
 
   protected createNewHeatPoint (data: CoordinatesSocketData, timeNow: number): void {
     this.shapeStartPoint = this.findShapeStartPoint(data.coordinates.point);
@@ -48,7 +48,7 @@ export class PixelHeatMap extends HexagonalHeatMap {
           y: this.shapeStartPoint.y,
           element: nodes[index], tagShortId: data.coordinates.tagShortId,
           heat: 0,
-          heated: timeNow
+          timeHeated: timeNow
         });
       })
       .attr('tagShortId', data.coordinates.tagShortId.toString())
@@ -61,6 +61,10 @@ export class PixelHeatMap extends HexagonalHeatMap {
 
   protected addRelationWithSurrounding(data: CoordinatesSocketData, time: number): void {
     this.distributePlasmaOnHeatMapGrid(data, time);
+  }
+
+  private setSvgId(id: string) {
+    this.svgId = id;
   }
 
   private calculatePixelPoints(): void {
@@ -77,8 +81,6 @@ export class PixelHeatMap extends HexagonalHeatMap {
       x: this.shapeStartPoint.x -  this.transformDistance,
       y: this.shapeStartPoint.y - this.transformDistance
     };
-    // i and j are corresponding to unit vectors in plasma grid.
-    // Below loops will iterate through every pixel in the plasma activation grid to display each heat point that this.plasmaRadius allows to reach.
     for (let i = 0; i < this.squareGridSize; i++) {
       data.coordinates.point.x = firstPixelCoordinates.x + (this.heatPointSize * i);
       for (let j = 0; j < this.squareGridSize; j++) {
