@@ -666,16 +666,16 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
   private disconnectBySelectedLine() {
     const anchorAsConnectable: ConnectableDevice = this.selectedLine.connectedAnchor();
     const sinkAsConnectable: ConnectableDevice = this.selectedLine.connectedSink();
-    const mapAnchor = this.findMapDevice(DevicesComponent.getShortIdFromGroupSelection(anchorAsConnectable.group));
     let anchor = this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(anchorAsConnectable.group));
     let sink = <Sink>this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(sinkAsConnectable.group));
-    DevicesComponent.unblockSelectableBehavior(mapAnchor);
     this.removeConnectingLine(this.selectedLine);
     this.clearSelectedLine();
     sink = this.removeAnchorFromConfiguredSink(anchor, sink);
     anchor = this.updateDeviceCoordinatesFromMap(anchor);
     this.setNotConnectedAnchorInConfiguration(anchor);
     this.setSinkInConfiguration(sink);
+    this.turnOnSelectInAllBlockedDevices();
+    this.turnOffSelectInUnconnectableDevices();
   }
 
   private createConnection(sink: Expandable, anchor: Expandable, lineConfig: DrawConfiguration): ConnectingLine {
