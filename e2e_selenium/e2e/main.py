@@ -7,13 +7,10 @@ cwd = os.getcwd()
 sys.path.append(cwd)
 from tests.test_login_page import TestLoginPage
 from tests.constructions.test_complexes_page import TestComplexesPage
+from tests.constructions.test_buildings_page import TestBuildingsPage
+from tests.constructions.test_floors_page import TestFloorsPage
+from tests.devices.test_sinks_page import TestSinksPage
 
 if __name__ == '__main__':
-
-    # runner = HtmlTestRunner.HTMLTestRunner(output='')
-    # unittest.main(testRunner=runner)
-    unittest.main(
-      testRunner=xmlrunner.XMLTestRunner(output='test-reports'),
-      # these make sure that some options that are not applicable
-      # remain hidden from the help menu.
-      failfast=False, buffer=False, catchbreak=False)
+    # unittest.main()
+    unittest.main(testRunner=xmlrunner.XMLTestRunner(output='test-reports'), failfast=False, buffer=False, catchbreak=False)
