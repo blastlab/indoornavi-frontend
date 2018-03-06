@@ -2,7 +2,6 @@ import * as d3 from 'd3';
 import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Observable';
 import {SvgGroupWrapper} from '../../drawing.builder';
-import {ZoomService} from '../../../../services/zoom/zoom.service';
 
 
 export class Draggable {
@@ -14,8 +13,7 @@ export class Draggable {
   protected dragBehavior: d3.drag;
   protected mapAttributes: { width: number, height: number };
 
-  constructor(groupCreated: SvgGroupWrapper,
-              protected zoomService: ZoomService) {
+  constructor(groupCreated: SvgGroupWrapper) {
     this.group = groupCreated.group;
     this.container = groupCreated.container.select('image');
     this.mapAttributes = {width: this.container.attr('width'), height: this.container.attr('height')};

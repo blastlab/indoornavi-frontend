@@ -9,9 +9,8 @@ export class ConnectableDevice extends Draggable {
   public sinkConnections: ConnectingLine[];
   public anchorConnection: ConnectingLine;
 
-  constructor(group: SvgGroupWrapper,
-              zoomService: ZoomService) {
-    super(group, zoomService);
+  constructor(group: SvgGroupWrapper) {
+    super(group);
     this.sinkConnections = [];
     this.anchorConnection = null;
     this.handleHovering();
