@@ -829,7 +829,7 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
     const mapDevice: Expandable = {
       groupCreated: droppedDevice,
       selectable: new SelectableDevice(droppedDevice),
-      connectable: new ConnectableDevice(droppedDevice, this.zoomService)
+      connectable: new ConnectableDevice(droppedDevice)
     };
     this.mapDevices.push(mapDevice);
     this.subscribeForDraggedOnMapEvent(mapDevice);
