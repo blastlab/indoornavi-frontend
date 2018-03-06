@@ -710,7 +710,7 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
   }
 
   private deselectDevice(device: Expandable, preserveLine: boolean): void {
-    if (!this.modifyingConnectionsFlag && !!device.connectable && !!device.connectable.anchorConnection) {
+    if (!this.modifyingConnectionsFlag && !!device && !!device.connectable && !!device.connectable.anchorConnection) {
       device.connectable.unlockConnections();
       if (!preserveLine) {
         device.connectable.anchorConnection.hide()
