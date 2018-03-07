@@ -20,12 +20,13 @@ import {Area} from '../../map-editor/tool-bar/tools/area/area.type';
 import {Movable} from '../../shared/wrappers/movable/movable';
 import {Scale} from '../../map-editor/tool-bar/tools/scale/scale.type';
 import {MapObjectService} from '../../shared/utils/drawing/map.object.service';
-import {log} from 'util';
 import {FloorService} from '../../floor/floor.service';
 import {Floor} from '../../floor/floor.type';
 import {TagVisibilityTogglerService} from '../../shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
 import {TagToggle} from '../../shared/components/tag-visibility-toggler/tag-toggle.type';
 import {Tag} from '../../device/device.type';
+import {BreadcrumbService} from '../../shared/services/breadcrumbs/breadcrumb.service';
+import {SvgAnimator} from '../../shared/utils/drawing/animator';
 
 @Component({
   templateUrl: './socket-connector.component.html'
@@ -34,13 +35,14 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   protected socketSubscription: Subscription;
   protected d3map: MapSvg = null;
   protected scale: Scale;
+  protected tagsOnMap: Dictionary<number, Movable> = new Dictionary<number, Movable>();
   private dataReceived = new Subject<CoordinatesSocketData>();
   private transitionEnded = new Subject<number>();
-  private tagsOnMap: Dictionary<number, Movable> = new Dictionary<number, Movable>();
   private areasOnMap: Dictionary<number, SvgGroupWrapper> = new Dictionary<number, SvgGroupWrapper>();
   private originListeningOnEvent: Dictionary<string, MessageEvent[]> = new Dictionary<string, MessageEvent[]>();
   private floor: Floor;
   private tags: Tag[] = [];
+  private visibleTags: Map<number, boolean> = new Map();
 
   constructor(protected ngZone: NgZone,
               protected socketService: SocketService,
@@ -52,7 +54,26 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
               private iconService: IconService,
               private mapObjectService: MapObjectService,
               private floorService: FloorService,
-              private tagTogglerService: TagVisibilityTogglerService) {
+              protected tagTogglerService: TagVisibilityTogglerService,
+              private breadcrumbService: BreadcrumbService
+  ) {
+
+    this.route.params
+      .subscribe((params: Params) => {
+        const floorId = +params['id'];
+        floorService.getFloor(floorId).subscribe((floor: Floor) => {
+          breadcrumbService.publishIsReady([
+            {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
+            {label: floor.building.complex.name, routerLink: `/complexes/${floor.building.complex.id}/buildings`, routerLinkActiveOptions: {exact: true}},
+            {
+              label: floor.building.name,
+              routerLink: `/complexes/${floor.building.complex.id}/buildings/${floor.building.id}/floors`,
+              routerLinkActiveOptions: {exact: true}
+            },
+            {label: `${(floor.name.length ? floor.name : floor.level)}`, disabled: true}
+          ]);
+        });
+      });
   }
 
   ngOnInit(): void {
@@ -66,6 +87,9 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
             this.d3map = mapSvg;
             this.publishedService.getTagsAvailableForUser(floor.id).subscribe((tags: Tag[]) => {
               this.tags = tags;
+              this.tags.forEach((tag: Tag) => {
+                this.visibleTags.set(tag.shortId, true);
+              });
               this.tagTogglerService.setTags(tags);
               if (!!floor.scale) {
                 this.scale = new Scale(this.floor.scale);
@@ -107,15 +131,16 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
 
   protected handleCoordinatesData(data: CoordinatesSocketData): void {
     const deviceId: number = data.coordinates.tagShortId;
-    if (!this.isOnMap(deviceId)) {
+    if (!this.isOnMap(deviceId) && this.visibleTags.get(deviceId)) {
       const drawBuilder = new DrawBuilder(this.d3map.container, {id: `tag-${deviceId}`, clazz: 'tag'});
       const tagOnMap: SvgGroupWrapper = drawBuilder
         .createGroup()
         .addIcon({x: 0, y: 0}, this.iconService.getIcon(NaviIcons.TAG))
         .addText({x: 0, y: 36}, `${deviceId}`)
         .place({x: data.coordinates.point.x, y: data.coordinates.point.y});
+      SvgAnimator.startBlinking(tagOnMap.getElements(ElementType.ICON));
       this.tagsOnMap.setValue(deviceId, new Movable(tagOnMap).setShortId(deviceId));
-    } else {
+    } else if (this.visibleTags.get(deviceId)) {
       this.moveTagOnMap(data.coordinates.point, deviceId);
     }
     if (this.originListeningOnEvent.containsKey('coordinates')) {
@@ -123,6 +148,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         event.source.postMessage({type: 'coordinates', coordinates: data}, event.origin);
       })
     }
+    this.removeNotVisableTags();
   }
 
   protected whenTransitionEnded(): Observable<number> {
@@ -170,9 +196,12 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       this.setSocketConfiguration();
       this.tagTogglerService.onToggleTag().subscribe((tagToggle: TagToggle) => {
         this.socketService.send({type: CommandType[CommandType.TOGGLE_TAG], args: tagToggle.tag.shortId});
+        this.visibleTags.set(tagToggle.tag.shortId, tagToggle.selected);
+        if (!tagToggle.selected) {
+           this.removeNotVisableTags();
+        }
       });
-
-      this.socketSubscription = stream.subscribe((data: MeasureSocketData) => {
+      this.socketSubscription = stream.subscribe((data: MeasureSocketData): void => {
         this.ngZone.run(() => {
           if (this.isCoordinatesData(data)) {
             const coordinateSocketData: CoordinatesSocketData = (<CoordinatesSocketData>data);
@@ -187,6 +216,15 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       });
     });
   };
+
+  private removeNotVisableTags (): void {
+    this.visibleTags.forEach((value: boolean, key: number, map: Map<number, boolean>): void => {
+      if (!value && this.isOnMap(key)) {
+        this.tagsOnMap.getValue(key).remove();
+        this.tagsOnMap.remove(key);
+      }
+    });
+  }
 
   private drawAreas(floorId: number): void {
     this.areaService.getAllByFloor(floorId).first().subscribe((areas: Area[]): void => {

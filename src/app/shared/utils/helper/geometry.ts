@@ -10,13 +10,14 @@ export class Geometry {
     // arcRelocationValue value can be in the future set to other value to increase or decrease angular pitch precision
     const arcPitchRelocationValue = 22.5;
     const differenceBetweenPointsInX: number = p2.x - p1.x;
-    const radiansArc = (arcToRadians: number): number => arcToRadians * Math.PI / 180;
     // calculate angular p1 position regarding to p2 and 0X axis
     let arcPositionValueClockwise: number =  Math.floor((360 - Geometry.calculateDegree(p1 , p2) + (arcPitchRelocationValue / 2)) / arcPitchRelocationValue);
     arcPositionValueClockwise = arcPositionValueClockwise === 0 ? 16 : arcPositionValueClockwise; // multiplying by 0 is null,
-    const calculateDeltaY = (arcToCalculateTangentFrom: number): number => differenceBetweenPointsInX * Math.tan(radiansArc(arcToCalculateTangentFrom));
+    const calculateDeltaY = (arcToCalculateTangentFrom: number): number => differenceBetweenPointsInX * Math.tan(Geometry.radiansArc(arcToCalculateTangentFrom));
     return arcPositionValueClockwise === 12 || arcPositionValueClockwise === 4 ? null : calculateDeltaY(arcPositionValueClockwise * arcPitchRelocationValue);
   }
+
+  static radiansArc (arcToRadians: number): number { return arcToRadians * Math.PI / 180 }
 
   static getVerticalEndingOffset( line: Line, endSize: number): number {
     const slope = this.getSlope(line.startPoint, line.endPoint);

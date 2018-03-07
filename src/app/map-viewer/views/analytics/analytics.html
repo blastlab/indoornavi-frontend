@@ -1,29 +1,5 @@
-<p-toolbar id="map-toolbar">
-  <div class="ui-toolbar-group-left">
-    <div>
-      <button pButton pTooltip="{{'path.length'|translate}}"
-              icon="fa-arrows-h"
-              (click)="toggleSlider()">
-      </button>
-    </div>
-  </div>
-  <div>
-    <p-slider
-      class="ui-g-5 ui-md-3 ui-lg-3"
-      *ngIf="pathSliderView"
-      pTooltip="{{'path.length'|translate}}"
-      [ngModel]="heatMapSettings.path"
-      (ngModelChange) = "setPathLength($event)"
-      [min]="25000" [max]="2500000"
-    ></p-slider>
-  </div>
-  <div class="ui-toolbar-group-right">
-    <button pButton pTooltip="{{'show.heat.map'|translate}}" icon="fa-play"
-            [disabled]="playingAnimation" (click)="toggleHeatAnimation()">
-    </button>
-    <button pButton pTooltip="{{'stop.heat.map'|translate}}" icon="fa-stop"
-            [disabled]="!playingAnimation" (click)="toggleHeatAnimation()">
-    </button>
-  </div>
-</p-toolbar>
-<app-map *ngIf="!!activeMap" [floor]="activeMap.floor"></app-map>
+<app-map *ngIf="!!floor" [floor]="floor">
+  <app-heat-map-controller></app-heat-map-controller>
+  <app-tag-visibility-toggler></app-tag-visibility-toggler>
+</app-map>
+
