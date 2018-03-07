@@ -18,5 +18,4 @@ export class SvgAnimator {
     blinker();
   }
 
-  constructor() {}
 }

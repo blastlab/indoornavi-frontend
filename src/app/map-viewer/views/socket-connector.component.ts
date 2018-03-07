@@ -27,7 +27,6 @@ import {TagToggle} from '../../shared/components/tag-visibility-toggler/tag-togg
 import {Tag} from '../../device/device.type';
 import {BreadcrumbService} from '../../shared/services/breadcrumbs/breadcrumb.service';
 import {SvgAnimator} from '../../shared/utils/drawing/animator';
-import * as d3 from 'd3';
 
 @Component({
   templateUrl: './socket-connector.component.html'
