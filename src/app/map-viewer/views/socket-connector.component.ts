@@ -287,7 +287,9 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         case 'removeObject':
           this.mapObjectService.remove(data['args']);
           break;
+
       }
     }
+
   }
 }
