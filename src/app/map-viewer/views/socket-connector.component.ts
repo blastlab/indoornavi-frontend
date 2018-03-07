@@ -26,7 +26,6 @@ import {TagVisibilityTogglerService} from '../../shared/components/tag-visibilit
 import {TagToggle} from '../../shared/components/tag-visibility-toggler/tag-toggle.type';
 import {Tag} from '../../device/device.type';
 import {BreadcrumbService} from '../../shared/services/breadcrumbs/breadcrumb.service';
-import {SvgAnimator} from '../../shared/utils/drawing/animator';
 
 @Component({
   templateUrl: './socket-connector.component.html'
@@ -138,7 +137,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         .addIcon({x: 0, y: 0}, this.iconService.getIcon(NaviIcons.TAG))
         .addText({x: 0, y: 36}, `${deviceId}`)
         .place({x: data.coordinates.point.x, y: data.coordinates.point.y});
-      SvgAnimator.startBlinking(tagOnMap.getElements(ElementType.ICON));
       this.tagsOnMap.setValue(deviceId, new Movable(tagOnMap).setShortId(deviceId));
     } else if (this.visibleTags.get(deviceId)) {
       this.moveTagOnMap(data.coordinates.point, deviceId);

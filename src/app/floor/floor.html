@@ -15,26 +15,18 @@
   <p-column header="{{'th.actions'|translate}}" styleClass="col-button">
     <ng-template let-floor="rowData" let-i="rowIndex" pTemplate="body">
       <button [appHasPermission]="'PUBLICATION_READ'"
-              pTooltip="{{'go.to.map'|translate}}"
-              type="button" pButton (click)="goToMap(floor)" icon="fa-eye">
-      </button>
-      <button [appHasPermission]="'PUBLICATION_READ'"
-              pTooltip="{{'go.to.analytics'|translate}}"
-              type="button" pButton (click)="goToHeatMap(floor)" icon="fa-area-chart">
+              pTooltip="{{'go.to.map'|translate}}" type="button" pButton (click)="goToMap(floor)" icon="fa-eye">
       </button>
       <button [appHasPermission]="'FLOOR_UPDATE'"
-              pTooltip="{{'go.to.mapEditor'|translate}}" type="button" pButton
-              (click)="goToEditor(floor)" class="ui-button-info" icon="fa-pencil">
+              pTooltip="{{'go.to.mapEditor'|translate}}" type="button" pButton (click)="goToEditor(floor)" icon="fa-pencil">
       </button>
       <button
         [appHasPermission]="'FLOOR_UPDATE'"
-        pTooltip="{{'edit'|translate}}" type="button" pButton
-        (click)="openDialog(floor)" class="ui-button-info" icon="fa-edit">
+        pTooltip="{{'edit'|translate}}" type="button" pButton (click)="openDialog(floor)" icon="fa-edit">
       </button>
       <button
         [appHasPermission]="'FLOOR_DELETE'"
-        pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(i)" class="ui-button-danger"
-        icon="fa-trash">
+        pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(i)" icon="fa-trash">
       </button>
     </ng-template>
   </p-column>

@@ -51,12 +51,12 @@ export class CrudHelper {
    * @param {CrudItem[]} from - the list of items
    * @return {CrudItem[]} the list without removed item
    */
-  static remove(index: number, from: CrudItem[]): CrudItem[] {
+  static remove(index: number, from: CrudItem[]) {
     from.splice(index, 1);
     return [...from];
   }
 
-  static validateAllFields(form: NgForm): void {
+  static validateAllFields(form: NgForm) {
     Object.keys(form.controls).forEach(field => {
       const control = form.controls[field];
       control.markAsTouched({onlySelf: true});

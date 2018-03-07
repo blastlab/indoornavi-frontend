@@ -5,7 +5,6 @@ import {Config} from '../../../../config';
 import 'rxjs/add/observable/throw';
 import {ActivatedRoute, Params} from '@angular/router';
 import {AuthGuard} from '../../../auth/auth.guard';
-import {Configuration} from '../../../map-editor/action-bar/actionbar.type';
 
 @Injectable()
 export class HttpService {
@@ -19,7 +18,7 @@ export class HttpService {
       return res.blob();
     }
     if (res.status === 200) {
-      return JSON.parse(res.text(), HttpService.reviver);
+      return res.json();
     }
   }
 
@@ -34,13 +33,6 @@ export class HttpService {
       return Observable.throw(err.json().code);
     }
     return Observable.throw('S_000');
-  }
-
-  private static reviver(key, value): any {
-    if (!!value && Configuration.getDateFields().includes(key)) {
-      return new Date(value);
-    }
-    return value;
   }
 
   constructor(private http: Http, private authGuard: AuthGuard, private route: ActivatedRoute) {

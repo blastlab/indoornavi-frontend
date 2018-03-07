@@ -52,8 +52,7 @@ import {
   SidebarModule,
   SliderModule,
   ToolbarModule,
-  TooltipModule,
-  RadioButtonModule
+  TooltipModule
 } from 'primeng/primeng';
 import {HintBarService} from './map-editor/hint-bar/hintbar.service';
 import {ToolbarService} from './map-editor/tool-bar/toolbar.service';
@@ -100,8 +99,6 @@ import {MapObjectService} from './shared/utils/drawing/map.object.service';
 import {MinSelectedValidator} from './shared/directive/minselected.directive';
 import {TagVisibilityTogglerComponent} from './shared/components/tag-visibility-toggler/tag-visibility-toggler';
 import {TagVisibilityTogglerService} from './shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
-import {HeatMapControllerComponent} from './shared/components/heat-map-controller/heat-map-controller/heat-map-controller.component';
-import {HeatMapControllerService} from './shared/components/heat-map-controller/heat-map-controller/heat-map-controller.service';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -142,8 +139,7 @@ export function HttpLoaderFactory(http: Http) {
     AreaDetailsComponent,
     AnalyticsComponent,
     MinSelectedValidator,
-    TagVisibilityTogglerComponent,
-    HeatMapControllerComponent
+    TagVisibilityTogglerComponent
   ],
   entryComponents: [
     PublicationDialogComponent,
@@ -184,8 +180,7 @@ export function HttpLoaderFactory(http: Http) {
     ProgressSpinnerModule,
     OverlayPanelModule,
     ContextMenuModule,
-    FileUploadModule,
-    RadioButtonModule
+    FileUploadModule
   ],
   providers: [
     BuildingService,
@@ -226,8 +221,7 @@ export function HttpLoaderFactory(http: Http) {
     ContextMenuService,
     MapObjectService,
     ContextMenuService,
-    TagVisibilityTogglerService,
-    HeatMapControllerService
+    TagVisibilityTogglerService
   ], bootstrap: [AppComponent]
 })
 

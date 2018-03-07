@@ -21,17 +21,17 @@ export class PublishedComponent extends SocketConnectorComponent implements OnIn
 
   constructor(
     ngZone: NgZone,
-              socketService: SocketService,
-              route: ActivatedRoute,
-              publishedService: PublishedService,
-              mapLoaderInformer: MapLoaderInformerService,
-              areaService: AreaService,
-              translateService: TranslateService,
-              iconService: IconService,
-              mapObjectService: MapObjectService,
-              floorService: FloorService,
-              tagToggler: TagVisibilityTogglerService,
-              breadcrumbService: BreadcrumbService
+    socketService: SocketService,
+    route: ActivatedRoute,
+    publishedService: PublishedService,
+    mapLoaderInformer: MapLoaderInformerService,
+    areaService: AreaService,
+    translateService: TranslateService,
+    iconService: IconService,
+    mapObjectService: MapObjectService,
+    floorService: FloorService,
+    tagToggler: TagVisibilityTogglerService,
+    breadcrumbService: BreadcrumbService
   ) {
 
     super(
@@ -46,8 +46,25 @@ export class PublishedComponent extends SocketConnectorComponent implements OnIn
       mapObjectService,
       floorService,
       tagToggler,
-      breadcrumbService,
+      breadcrumbService
     );
+
+    this.route.params
+      .subscribe((params: Params) => {
+        const floorId = +params['id'];
+        floorService.getFloor(floorId).subscribe((floor: Floor) => {
+          breadcrumbService.publishIsReady([
+            {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
+            {label: floor.building.complex.name, routerLink: `/complexes/${floor.building.complex.id}/buildings`, routerLinkActiveOptions: {exact: true}},
+            {
+              label: floor.building.name,
+              routerLink: `/complexes/${floor.building.complex.id}/buildings/${floor.building.id}/floors`,
+              routerLinkActiveOptions: {exact: true}
+            },
+            {label: `${(floor.name.length ? floor.name : floor.level)}`, disabled: true}
+          ]);
+        });
+      });
   }
 
 }
