@@ -25,7 +25,7 @@ export class MapObjectService {
 
   draw (objectMetadata: MapObjectMetadata, scale): void {
     const points: Point[] = [];
-    (<Polyline>objectMetadata.object).points.forEach((point: Point): void => {
+    (<CoordinatesArray>objectMetadata.object).points.forEach((point: Point): void => {
       points.push(Geometry.calculatePointPositionInPixels(Geometry.getDistanceBetweenTwoPoints(scale.start, scale.stop),
         scale.getRealDistanceInCentimeters(),
         point));
@@ -34,6 +34,8 @@ export class MapObjectService {
       case 'POLYLINE':
         this.objects.get(objectMetadata.object.id).addPolyline(points, this.pointRadius);
         break;
+      case 'AREA':
+        this.objects.get(objectMetadata.object.id).addPolygon(points);
     }
   }
 }
@@ -42,7 +44,7 @@ interface MapObject {
   id: number;
 }
 
-interface Polyline extends MapObject {
+interface CoordinatesArray extends MapObject {
   points: Point[];
 }
 
