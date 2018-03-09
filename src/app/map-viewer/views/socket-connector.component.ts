@@ -106,7 +106,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     window.addEventListener('message', (event: MessageEvent): void => {
-      console.log(event);
       this.route.queryParams.subscribe((params: Params) => {
         if (event.origin === window.location.origin) {
           return;
@@ -149,7 +148,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         event.source.postMessage({type: 'coordinates', coordinates: data}, event.origin);
       })
     }
-    this.removeNotVisableTags();
+    this.removeNotVisibleTags();
   }
 
   protected whenTransitionEnded(): Observable<number> {
@@ -199,7 +198,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         this.socketService.send({type: CommandType[CommandType.TOGGLE_TAG], args: tagToggle.tag.shortId});
         this.visibleTags.set(tagToggle.tag.shortId, tagToggle.selected);
         if (!tagToggle.selected) {
-           this.removeNotVisableTags();
+           this.removeNotVisibleTags();
         }
       });
       this.socketSubscription = stream.subscribe((data: MeasureSocketData): void => {
@@ -218,7 +217,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     });
   };
 
-  private removeNotVisableTags (): void {
+  private removeNotVisibleTags (): void {
     this.visibleTags.forEach((value: boolean, key: number, map: Map<number, boolean>): void => {
       if (!value && this.isOnMap(key)) {
         this.tagsOnMap.getValue(key).remove();
@@ -292,6 +291,9 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           break;
         case 'fillColor':
           this.mapObjectService.fillColor(data['args']);
+          break;
+        case 'strokeColor':
+          this.mapObjectService.strokeColor(data['args']);
           break;
         case 'setOpacity':
           this.mapObjectService.opacity(data['args']);

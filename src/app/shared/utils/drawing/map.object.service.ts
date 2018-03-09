@@ -40,12 +40,23 @@ export class MapObjectService {
   }
 
   fillColor(objectMetadata: MapObjectMetadata): void {
-    this.objects.get(objectMetadata.object.id).getGroup().attr('fill', ((<Color>objectMetadata.object).color));
+    console.log(this.objects.get(objectMetadata.object.id).getGroup());
+    this.objects.get(objectMetadata.object.id).getGroup().attr('fill', (<Color>objectMetadata.object).color);
+  }
+
+  strokeColor(objectMetadata: MapObjectMetadata): void {
+    this.objects.get(objectMetadata.object.id).getGroup().selectAll('line').nodes().forEach(node => {
+      d3.select(node).attr('stroke', (<Color>objectMetadata.object).color);
+    });
+    this.objects.get(objectMetadata.object.id).getGroup().selectAll('circle').nodes().forEach(node => {
+      d3.select(node).attr('stroke', (<Color>objectMetadata.object).color).style('fill',  (<Color>objectMetadata.object).color);
+    });
   }
 
   opacity(objectMetadata: MapObjectMetadata): void {
     this.objects.get(objectMetadata.object.id).getGroup().attr('fill-opacity', (<Opacity>objectMetadata.object).opacity);
   }
+
 }
 
 interface MapObject {
