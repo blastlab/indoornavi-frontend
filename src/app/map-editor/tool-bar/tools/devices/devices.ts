@@ -200,7 +200,7 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
     });
     if (!!this.selectedDevice) {
       const selectedMapDevice = this.findMapDevice(this.selectedDevice.shortId);
-      if (!selectedMapDevice.connectable.anchorConnection) {
+      if (!!selectedMapDevice && !selectedMapDevice.connectable.anchorConnection) {
         this.map.on('mousemove', () => {
           this.map.on('mousemove', null);
           this.startCreatingConnection(selectedMapDevice, DevicesComponent.getMouseCoordinates());
@@ -680,7 +680,7 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
 
   private createConnection(sink: Expandable, anchor: Expandable, lineConfig: DrawConfiguration): ConnectingLine {
     const drawBuilder = new DrawBuilder(this.map, lineConfig);
-    const connectingLine = new ConnectingLine(drawBuilder.createGroup(), sink.connectable, anchor.connectable, lineConfig.id);
+    const connectingLine = new ConnectingLine(drawBuilder.createGroup(), sink.connectable, anchor.connectable);
     sink.connectable.sinkConnections.push(connectingLine);
     anchor.connectable.anchorConnection = connectingLine;
     return connectingLine;

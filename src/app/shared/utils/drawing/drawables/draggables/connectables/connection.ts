@@ -12,12 +12,11 @@ export class ConnectingLine extends Selectable {
 
   constructor(group: SvgGroupWrapper,
               sink: ConnectableDevice,
-              anchor: ConnectableDevice,
-              id: string) {
+              anchor: ConnectableDevice) {
     super(group);
     this.sink = sink;
     this.anchor = anchor;
-    this.id = id;
+    this.id = this.getId();
     this.drawConnectingLine();
   }
 
@@ -49,9 +48,12 @@ export class ConnectingLine extends Selectable {
     this.lockVisibility = false;
   }
 
+  private getId(): string {
+    return this.group.group.attr('id');
+  }
+
   private drawConnectingLine(): void {
     this.connection = this.group.group.append('line')
-      .attr('id', this.id)
       .attr('x1', this.sink.group.attr('x'))
       .attr('y1', this.sink.group.attr('y'))
       .attr('x2', this.anchor.group.attr('x'))
@@ -65,5 +67,6 @@ export class ConnectingLine extends Selectable {
     this.anchor = null;
     this.id = null;
     this.connection.remove();
+    this.group.group.remove();
   }
 }
