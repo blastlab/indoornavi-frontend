@@ -104,6 +104,17 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
     };
   }
 
+  static erasePublishedDeviceData(device: Anchor | Sink): Anchor | Sink {
+    device.x = null;
+    device.y = null;
+    if (DevicesComponent.isSinkType(device)) {
+      const sink = <Sink>device;
+      sink.anchors = [];
+      return sink;
+    }
+    return device;
+  }
+
   static unblockSelectableBehavior(expandable: Expandable): void {
     expandable.connectable.handleHovering();
     expandable.selectable.handleHovering();
@@ -356,6 +367,7 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
             if (this.getIndexOfSinkInConfiguration(sink) >= 0) {
               sink = this.updateSinkFromConfiguration(sink);
             } else {
+              sink = <Sink>DevicesComponent.erasePublishedDeviceData(sink);
               this.devicePlacerController.addToRemainingDevicesList(sink);
             }
           }
@@ -371,6 +383,7 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
             if (this.getIndexOfAnchorInConfiguration(anchor) >= 0) {
               anchor = this.updateAnchorFromConfiguration(anchor);
             } else {
+              anchor = <Sink>DevicesComponent.erasePublishedDeviceData(anchor);
               this.devicePlacerController.addToRemainingDevicesList(anchor);
             }
           }
