@@ -15,6 +15,7 @@ class TestDriver():
         chrome_options.add_argument("--window-size=1920x1080")
 
         self.webdriver = webdriver.Chrome(options=chrome_options)
+        self.webdriver.set_page_load_timeout(120)
         self.webdriver.get(self.url)
 
     # Take screenshot on TestCase failure
