@@ -293,6 +293,9 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         case 'fillColor':
           this.mapObjectService.fillColor(data['args']);
           break;
+        case 'setOpacity':
+          this.mapObjectService.opacity(data['args']);
+          break;
       }
     }
   }

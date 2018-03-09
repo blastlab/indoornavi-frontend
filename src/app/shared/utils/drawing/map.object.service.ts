@@ -26,7 +26,6 @@ export class MapObjectService {
   draw (objectMetadata: MapObjectMetadata, scale): void {
     const points: Point[] = [];
     (<CoordinatesArray>objectMetadata.object).points.forEach((point: Point): void => {
-      console.log(scale);
       points.push(Geometry.calculatePointPositionInPixels(Geometry.getDistanceBetweenTwoPoints(scale.start, scale.stop),
         scale.getRealDistanceInCentimeters(),
         point));
@@ -41,7 +40,11 @@ export class MapObjectService {
   }
 
   fillColor(objectMetadata: MapObjectMetadata): void {
-    this.objects.get(objectMetadata.object.id).setFillColor((<Color>objectMetadata.object).color);
+    this.objects.get(objectMetadata.object.id).getGroup().attr('fill', ((<Color>objectMetadata.object).color));
+  }
+
+  opacity(objectMetadata: MapObjectMetadata): void {
+    this.objects.get(objectMetadata.object.id).getGroup().attr('fill-opacity', (<Opacity>objectMetadata.object).opacity);
   }
 }
 
@@ -55,6 +58,10 @@ interface CoordinatesArray extends MapObject {
 
 interface Color extends MapObject {
   color: string;
+}
+
+interface Opacity extends MapObject {
+  opacity: number;
 }
 
 interface MapObjectMetadata {
