@@ -82,6 +82,11 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       const floorId = +params['id'];
       this.floorService.getFloor(floorId).subscribe((floor: Floor): void => {
         this.floor = floor;
+        if (!!floor.scale) {
+          this.scale = new Scale(this.floor.scale);
+          this.drawAreas(floor.id);
+          this.initializeSocketConnection();
+        }
         if (floor.imageId != null) {
           this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg) => {
             this.d3map = mapSvg;
@@ -91,11 +96,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
                 this.visibleTags.set(tag.shortId, true);
               });
               this.tagTogglerService.setTags(tags);
-              if (!!floor.scale) {
-                this.scale = new Scale(this.floor.scale);
-                this.drawAreas(floor.id);
-                this.initializeSocketConnection();
-              }
             });
           });
         }
@@ -289,6 +289,9 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           break;
         case 'removeObject':
           this.mapObjectService.remove(data['args']);
+          break;
+        case 'fillColor':
+          this.mapObjectService.fillColor(data['args']);
           break;
       }
     }

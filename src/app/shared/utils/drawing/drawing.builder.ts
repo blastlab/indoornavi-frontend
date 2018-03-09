@@ -86,6 +86,12 @@ export class SvgGroupWrapper {
     return this;
   }
 
+  setFillColor(color: string): SvgGroupWrapper {
+    const element: d3.selection = this.group;
+    element.attr('fill', color);
+    return this;
+  }
+
   setDraggable(customDragging?: () => void): SvgGroupWrapper {
     const dragStart = (): void => {
       d3.event.sourceEvent.stopPropagation();

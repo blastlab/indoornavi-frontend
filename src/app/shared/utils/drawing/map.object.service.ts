@@ -26,6 +26,7 @@ export class MapObjectService {
   draw (objectMetadata: MapObjectMetadata, scale): void {
     const points: Point[] = [];
     (<CoordinatesArray>objectMetadata.object).points.forEach((point: Point): void => {
+      console.log(scale);
       points.push(Geometry.calculatePointPositionInPixels(Geometry.getDistanceBetweenTwoPoints(scale.start, scale.stop),
         scale.getRealDistanceInCentimeters(),
         point));
@@ -38,6 +39,10 @@ export class MapObjectService {
         this.objects.get(objectMetadata.object.id).addPolygon(points);
     }
   }
+
+  fillColor(objectMetadata: MapObjectMetadata): void {
+    this.objects.get(objectMetadata.object.id).setFillColor((<Color>objectMetadata.object).color);
+  }
 }
 
 interface MapObject {
@@ -46,6 +51,10 @@ interface MapObject {
 
 interface CoordinatesArray extends MapObject {
   points: Point[];
+}
+
+interface Color extends MapObject {
+  color: string;
 }
 
 interface MapObjectMetadata {
