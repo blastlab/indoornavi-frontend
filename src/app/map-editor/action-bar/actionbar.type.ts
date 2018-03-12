@@ -2,17 +2,11 @@ import {Scale} from '../tool-bar/tools/scale/scale.type';
 import {Area} from '../tool-bar/tools/area/area.type';
 import {Sink} from '../../device/device.type';
 
-export class Configuration {
-  id: number;
+export interface Configuration {
   version: number;
   floorId: number;
-  savedDraftDate: Date;
-  publishedDate: Date;
+  publishedDate: number;
   data: ConfigurationData;
-
-  static getDateFields() {
-    return ['savedDraftDate', 'publishedDate'];
-  }
 }
 
 export interface ConfigurationData {
