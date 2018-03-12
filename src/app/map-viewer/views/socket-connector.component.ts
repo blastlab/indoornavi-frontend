@@ -84,8 +84,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         this.floor = floor;
         if (!!floor.scale) {
           this.scale = new Scale(this.floor.scale);
-          this.drawAreas(floor.id);
-          this.initializeSocketConnection();
         }
         if (floor.imageId != null) {
           this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg) => {
@@ -96,6 +94,10 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
                 this.visibleTags.set(tag.shortId, true);
               });
               this.tagTogglerService.setTags(tags);
+              if (!!floor.scale) {
+                this.drawAreas(floor.id);
+                this.initializeSocketConnection();
+              }
             });
           });
         }
