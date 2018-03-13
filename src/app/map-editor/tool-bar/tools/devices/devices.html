@@ -4,3 +4,31 @@
         icon="fa-list-ul"
         [disabled]="disabled">
 </button>
+
+<p-dialog header="{{'devices.warning.sink.deletion'|translate}}" [draggable]="true" [(visible)]="displayDialog"
+          [responsive]="true" showEffect="fade" [modal]="true"  [contentStyle]="{ overflow: 'visible' }"
+          [width]="600" [closable]="false">
+  <form #sinkWarning="ngForm" novalidate>
+    <div class="ui-g">
+      <div class="ui-g-12">
+        {{title|translate}}
+      </div>
+    </div>
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-12 ui-lg-12">
+        <h4>{{'devices.warning.deletion.text'|translate}}</h4>
+        <p>{{'devices.warning.removal.info'|translate}}</p>
+      </div>
+    </div>
+    <p-footer>
+      <div class="ui-dialog-buttonpane ui-helper-clearfix">
+        <button type="button" pButton icon="fa-trash" (click)="removeWithAnchors()"
+                label="{{'devices.remove.with.anchors'|translate}}"></button>
+        <button type="button" pButton icon="fa-ban" (click)="removeSinkOnly()"
+                label="{{'devices.remove.sink.only'|translate}}"></button>
+        <button type="button" pButton icon="fa-close" (click)="cancelRemoval()"
+                label="{{'cancel'|translate}}"></button>
+      </div>
+    </p-footer>
+  </form>
+</p-dialog>

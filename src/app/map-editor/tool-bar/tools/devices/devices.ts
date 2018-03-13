@@ -33,6 +33,7 @@ import {MapEditorService} from '../../../map.editor.service';
 export class DevicesComponent implements Tool, OnInit, OnDestroy {
   active: boolean = false;
   disabled: boolean = true;
+  displayDialog: boolean = false;
   private draggedDevice: Anchor | Sink;
   private deviceDrop: Subscription;
   private listEvents: Subscription[];
@@ -53,7 +54,7 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
   private creatingConnection: d3.selection;
   private selectedLine: ConnectingLine;
   private connectingLines: ConnectingLine[] = [];
-  private managedSelectableLines: Subscription[];
+  private managedSelectableLines: Subscription[] = [];
   private scaleFactor: number;
   private scaleChanged: Subscription;
 
@@ -97,7 +98,7 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
 
   static buildConnectingLineConfiguration(id: string | number): DrawConfiguration {
     return {
-      id: `${id}`,
+      id: `line${id}`,
       clazz: `connection`,
       cursor: `inherit`,
       color: `orange`
@@ -621,20 +622,20 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
 
   private findConnectingLine(searchedLine: d3.selection): ConnectingLine {
     return this.connectingLines.find((line: ConnectingLine) => {
-      return searchedLine.attr(`id`) === line.connection.attr(`id`);
+      return searchedLine.attr(`id`) === line.id;
     });
   }
 
   private handleSingleConnection(line: ConnectingLine): void {
     line.selectOn();
     const subscribeSelectedLine = line.onSelected().subscribe((selectedLine: d3.selection) => {
+      console.log(selectedLine);
       this.setSelectedLine(this.findConnectingLine(selectedLine));
     });
     this.managedSelectableLines.push(subscribeSelectedLine);
   }
 
   private handleSelectableConnections(): void {
-    this.managedSelectableLines = [];
     this.connectingLines.forEach((line: ConnectingLine) => {
       this.handleSingleConnection(line);
     })
@@ -673,7 +674,6 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
     this.managedSelectableLines.forEach((subscription: Subscription) => {
       subscription.unsubscribe();
     });
-    this.managedSelectableLines = [];
   }
 
   private disconnectBySelectedLine() {
@@ -819,7 +819,7 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
 
   private setTranslations(): void {
     this.translate.setDefaultLang('en');
-    this.translate.get('anchor.first.message').subscribe((value: string) => {
+    this.translate.get('devices.first.message').subscribe((value: string) => {
       this.hintMessage = value;
     });
   }
@@ -888,6 +888,7 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
     this.removeFromRemainingDevices(device);
     this.accButtons.decisionMade.first().subscribe((decision) => {
       if (decision) {
+        // this.decisionMade = false;
         device.x = coordinates.x;
         device.y = coordinates.y;
         if (DevicesComponent.isSinkType(device)) {
@@ -950,6 +951,7 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
     const mapDevice = this.findMapDevice(device.shortId);
     if (DevicesComponent.isSinkType(device)) {
       if ((<Sink>device).anchors.length !== 0) {
+        this.displayDialog = true;
         // ask user about deletion decision
         // option where anchors stay on map
         const sinkWithConnections = <Sink>device;
