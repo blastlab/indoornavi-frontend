@@ -153,7 +153,11 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     }
     if (this.originListeningOnEvent.containsKey('coordinates')) {
       this.originListeningOnEvent.getValue('coordinates').forEach((event: MessageEvent): void => {
-        data.coordinates.point = Geometry.calculatePointPositionInCentimeters(this.scaleCalculations.scaleLengthInPixels, this.scaleCalculations.scaleInCentimeters, data.coordinates.point);
+        data.coordinates.point = Geometry.calculatePointPositionInCentimeters(
+          this.scaleCalculations.scaleLengthInPixels,
+          this.scaleCalculations.scaleInCentimeters,
+          data.coordinates.point
+        );
         event.source.postMessage({type: 'coordinates', coordinates: data.coordinates}, event.origin);
       })
     }
