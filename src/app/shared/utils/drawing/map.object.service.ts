@@ -40,7 +40,6 @@ export class MapObjectService {
   }
 
   fillColor(objectMetadata: MapObjectMetadata): void {
-    console.log(this.objects.get(objectMetadata.object.id).getGroup());
     this.objects.get(objectMetadata.object.id).getGroup().attr('fill', (<Color>objectMetadata.object).color);
   }
 

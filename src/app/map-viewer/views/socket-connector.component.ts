@@ -27,6 +27,7 @@ import {TagToggle} from '../../shared/components/tag-visibility-toggler/tag-togg
 import {Tag} from '../../device/device.type';
 import {BreadcrumbService} from '../../shared/services/breadcrumbs/breadcrumb.service';
 import {SvgAnimator} from '../../shared/utils/drawing/animator';
+import {ScaleCalculations} from '../../map-editor/tool-bar/tools/wizard/wizard.type';
 
 @Component({
   templateUrl: './socket-connector.component.html'
@@ -43,6 +44,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   private floor: Floor;
   private tags: Tag[] = [];
   private visibleTags: Map<number, boolean> = new Map();
+  private scaleCalculations: ScaleCalculations;
 
   constructor(protected ngZone: NgZone,
               protected socketService: SocketService,
@@ -84,6 +86,10 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         this.floor = floor;
         if (!!floor.scale) {
           this.scale = new Scale(this.floor.scale);
+          this.scaleCalculations = {
+            scaleLengthInPixels: Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
+            scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
+          };
         }
         if (floor.imageId != null) {
           this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg) => {
@@ -147,7 +153,8 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     }
     if (this.originListeningOnEvent.containsKey('coordinates')) {
       this.originListeningOnEvent.getValue('coordinates').forEach((event: MessageEvent): void => {
-        event.source.postMessage({type: 'coordinates', coordinates: data}, event.origin);
+        data.coordinates.point = Geometry.calculatePointPositionInCentimeters(this.scaleCalculations.scaleLengthInPixels, this.scaleCalculations.scaleInCentimeters, data.coordinates.point);
+        event.source.postMessage({type: 'coordinates', coordinates: data.coordinates}, event.origin);
       })
     }
     this.removeNotVisibleTags();
