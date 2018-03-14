@@ -7,10 +7,15 @@
             icon="fa-plus" iconPos="left">
     </button>
   </div>
+
   <div class="ui-toolbar-group-right">
-    <span *ngIf="updateMode">
+    <span class="ui-toolbar" *ngIf="updateMode">
+      <p-fileUpload class="ui-fileupload-buttonbar" #firmware mode="basic" name="firmware[]" [customUpload]="true"
+                    (uploadHandler)="upload($event)"></p-fileUpload>
       <span id="hint">{{'device.update.hint'|translate}}</span>
-      <p-fileUpload #firmware mode="basic" name="firmware[]" [customUpload]="true" (uploadHandler)="upload($event)"></p-fileUpload>
+      <span>  </span>
+      <p-checkbox name="deviceToUpdate" [value]="all" (onChange)="selectALLToUpload()" label="{{'devices.select.all'|translate}}"
+                  [(ngModel)]="allSelected"></p-checkbox>
       <button pButton class="ui-button-secondary"
               id="update-mode" [appHasPermission]="editPermission"
               (click)="firmware.upload()"
@@ -50,7 +55,8 @@
             [appHasPermission]="deletePermission"
             pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(device)" icon="fa-trash">
           </button>
-          <p-checkbox *ngIf="updateMode" name="deviceToUpdate" [value]="device" [(ngModel)]="devicesToUpdate"></p-checkbox>
+          <p-checkbox *ngIf="updateMode" name="deviceToUpdate" [value]="device" (onChange)="checkAllSelected()"
+                      [(ngModel)]="devicesToUpdate"></p-checkbox>
         </div>
       </div>
     </div>

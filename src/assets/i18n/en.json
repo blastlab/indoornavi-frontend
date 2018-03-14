@@ -61,6 +61,7 @@
 	"device.remove.success": "Device has been removed",
 	"device.save.success": "Device has been saved",
 	"device.searchByShortId": "Search by short id",
+  "devices.select.all" : "Select All",
 	"device.shortId": "Short Id",
 	"device.shortId.mustBeNumber": "Short Id must be a number.",
 	"device.shortId.required": "Short Id is required.",

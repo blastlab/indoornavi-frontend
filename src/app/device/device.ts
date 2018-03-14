@@ -27,7 +27,8 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   public displayDialog: boolean = false;
   public device: Device;
   public updateMode: boolean = false;
-  public devicesToUpdate: Device[];
+  public devicesToUpdate: Device[] = [];
+  public allSelected: string;
 
   @ViewChild('deviceForm') deviceForm: NgForm;
 
@@ -140,7 +141,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     });
   }
 
-  onItemMoved(movedDevices: Device[]) {
+  onItemMoved(movedDevices: Device[]): void {
     movedDevices.forEach((device: Device) => {
       device.verified = !device.verified;
       this.deviceService.update(device).subscribe((savedDevice: Device) => {
@@ -149,11 +150,24 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     });
   }
 
-  update() {
-
+  selectALLToUpload (): void {
+    this.devicesToUpdate = [];
+    console.log(this.allSelected);
+    if (this.allSelected) {
+      this.notVerified.forEach((device: Device) => {
+        console.log(device);
+        this.devicesToUpdate.push(device)
+      });
+      this.verified.forEach((device: Device) => this.devicesToUpdate.push(device));
+    }
+    console.log(this.devicesToUpdate);
+  }
+  checkAllSelected(): void {
+    console.log(this.device);
+    console.log(this.devicesToUpdate);
   }
 
-  upload(data: { files: File[] }) {
+  upload(data: { files: File[] }): void {
     console.log(data.files)
     if (data.files.length === 1) {
       this.getBase64(data.files[0]).then((base64: string) => {
@@ -162,7 +176,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     }
   }
 
-  toggleUpdateMode() {
+  toggleUpdateMode(): void {
     this.updateMode = !this.updateMode;
     if (this.updateMode) {
       const stream = this.socketService.connect(Config.WEB_SOCKET_URL + `info?client`);
@@ -178,19 +192,19 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     return new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = error => reject(error);
+      reader.addEventListener('onload', () => resolve(reader.result));
+      reader.addEventListener('onerror', () => error => reject(error));
     });
   }
 
-  private setPermissions() {
+  private setPermissions(): void {
     const prefix: string = DeviceService.getDevicePermissionPrefix(this.deviceType);
     this.createPermission = `${prefix}_CREATE`;
     this.editPermission = `${prefix}_UPDATE`;
     this.deletePermission = `${prefix}_DELETE`;
   }
 
-  private isAlreadyOnAnyList(device: Device) {
+  private isAlreadyOnAnyList(device: Device): boolean {
     return this.verified.findIndex((d: Device) => {
         return d.id === device.id;
       }) >= 0 ||
@@ -199,7 +213,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       }) >= 0;
   }
 
-  private removeFromList(device: Device) {
+  private removeFromList(device: Device): void {
     const deviceList = (this.verified.findIndex((d: Device) => {
       return d.id === device.id;
     }) >= 0) ? this.verified : this.notVerified;
