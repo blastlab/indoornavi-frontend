@@ -245,8 +245,12 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
     this.active = true;
     this.subscribeForListEvents();
     this.showAllDevicesOnMap();
+    if (!this.placementDone) {
+      this.accButtons.publishVisibility(true);
+    } else {
+      this.devicePlacerController.setListVisibility(true);
+    }
     this.allowToDragAllAnchorsOnMap();
-    this.devicePlacerController.setListVisibility(true);
     this.activateAllSelectablesBahavior();
   }
 
@@ -256,7 +260,6 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
     this.active = false;
     this.unsubscribeFromAllListEvents();
     if (!this.placementDone) {
-      this.accButtons.publishDecision(false);
       this.accButtons.publishVisibility(false);
     }
     this.deactivateAllSelectablesBahavior();
@@ -629,7 +632,6 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
   private handleSingleConnection(line: ConnectingLine): void {
     line.selectOn();
     const subscribeSelectedLine = line.onSelected().subscribe((selectedLine: d3.selection) => {
-      console.log(selectedLine);
       this.setSelectedLine(this.findConnectingLine(selectedLine));
     });
     this.managedSelectableLines.push(subscribeSelectedLine);
@@ -888,7 +890,6 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
     this.removeFromRemainingDevices(device);
     this.accButtons.decisionMade.first().subscribe((decision) => {
       if (decision) {
-        // this.decisionMade = false;
         device.x = coordinates.x;
         device.y = coordinates.y;
         if (DevicesComponent.isSinkType(device)) {
@@ -902,6 +903,7 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
         this.manageSingleSelectable(expandableMapObject);
         expandableMapObject.selectable.select();
         expandableMapObject.connectable.toggleDragEmitLock();
+        this.finishPlacement();
       } else {
         if (!!connectingLine) {
           this.removeConnectingLine(connectingLine)
@@ -909,11 +911,15 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
         this.removeFromMapDevices(expandableMapObject);
         this.removeChosenAnchor(expandableMapObject);
         this.addToRemainingDevices(device);
+        this.finishPlacement();
       }
-      this.devicePlacerController.resetCoordinates();
-      this.placementDone = true;
-      this.devicePlacerController.setListVisibility(true);
     });
+  }
+
+  private finishPlacement(): void {
+    this.devicePlacerController.resetCoordinates();
+    this.placementDone = true;
+    this.devicePlacerController.setListVisibility(true);
   }
 
   private addToRemainingDevices(device: Sink | Anchor): void {
