@@ -70,19 +70,6 @@ table th.col-button, table td.col-button, table th.col-checkbox, table td.col-ch
   width: 100%;
 }
 
-.device-list .ui-picklist-list {
-  height: 400px;
-}
-
-.device-list .ui-picklist-listwrapper button {
-  display: inline-block;
-  float: right;
-}
-
-.device-list .device-details {
-  font-size: 0.8em;
-}
-
 .ui-message {
   font-size: 0.8em;
 }

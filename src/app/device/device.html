@@ -7,6 +7,25 @@
             icon="fa-plus" iconPos="left">
     </button>
   </div>
+  <div class="ui-toolbar-group-right">
+    <span *ngIf="updateMode">
+      <span id="hint">{{'device.update.hint'|translate}}</span>
+      <p-fileUpload #firmware mode="basic" name="firmware[]" [customUpload]="true" (uploadHandler)="upload($event)"></p-fileUpload>
+      <button pButton class="ui-button-secondary"
+              id="update-mode" [appHasPermission]="editPermission"
+              (click)="firmware.upload()"
+              label="{{'update'|translate}}"
+              icon="fa-upload" iconPos="left">
+      </button>
+    </span>
+    <button pButton class="ui-button-secondary"
+            id="update" [appHasPermission]="editPermission"
+            (click)="toggleUpdateMode()"
+            [ngClass]="{'ui-state-active': updateMode, 'ui-state-default': !updateMode}"
+            label="{{'device.update.mode'|translate}}"
+            icon="fa-briefcase" iconPos="left">
+    </button>
+  </div>
 </p-toolbar>
 
 <p-pickList class="device-list" [source]="notVerified" [target]="verified" dragdrop="true" [responsive]="true"
@@ -31,6 +50,7 @@
             [appHasPermission]="deletePermission"
             pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(device)" icon="fa-trash">
           </button>
+          <p-checkbox *ngIf="updateMode" name="deviceToUpdate" [value]="device" [(ngModel)]="devicesToUpdate"></p-checkbox>
         </div>
       </div>
     </div>

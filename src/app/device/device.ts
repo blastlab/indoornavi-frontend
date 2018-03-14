@@ -1,11 +1,11 @@
-import {Component, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, NgZone, OnDestroy, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {Subscription} from 'rxjs/Rx';
 import {Config} from '../../config';
 import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute} from '@angular/router';
 import {DeviceService} from './device.service';
 import {CrudComponent, CrudHelper} from '../shared/components/crud/crud.component';
-import {Device} from './device.type';
+import {Device, UpdateRequest} from './device.type';
 import {NgForm} from '@angular/forms';
 import {ConfirmationService} from 'primeng/primeng';
 import {MessageServiceWrapper} from '../shared/services/message/message.service';
@@ -13,7 +13,9 @@ import {SocketService} from '../shared/services/socket/socket.service';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
 
 @Component({
-  templateUrl: './device.html'
+  templateUrl: './device.html',
+  styleUrls: ['./device.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   public verified: Device[] = [];
@@ -24,10 +26,13 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   public editPermission: string;
   public displayDialog: boolean = false;
   public device: Device;
+  public updateMode: boolean = false;
+  public devicesToUpdate: Device[];
 
   @ViewChild('deviceForm') deviceForm: NgForm;
 
   private socketSubscription: Subscription;
+  private firmwareSocketSubscription: Subscription;
   private confirmBody: string;
 
   constructor(private socketService: SocketService,
@@ -141,6 +146,40 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       this.deviceService.update(device).subscribe((savedDevice: Device) => {
         this.messageService.success('device.save.success');
       });
+    });
+  }
+
+  update() {
+
+  }
+
+  upload(data: { files: File[] }) {
+    console.log(data.files)
+    if (data.files.length === 1) {
+      this.getBase64(data.files[0]).then((base64: string) => {
+        this.socketService.send(new UpdateRequest([65535], base64));
+      });
+    }
+  }
+
+  toggleUpdateMode() {
+    this.updateMode = !this.updateMode;
+    if (this.updateMode) {
+      const stream = this.socketService.connect(Config.WEB_SOCKET_URL + `info?client`);
+      this.firmwareSocketSubscription = stream.subscribe((message) => {
+        console.log(message);
+      });
+    } else {
+      this.firmwareSocketSubscription.unsubscribe();
+    }
+  }
+
+  private getBase64(file: File): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
     });
   }
 

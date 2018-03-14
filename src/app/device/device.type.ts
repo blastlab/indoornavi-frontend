@@ -29,3 +29,10 @@ export interface Tag extends Device {
 export interface Sink extends Anchor {
   anchors: Anchor[];
 }
+
+export class UpdateRequest {
+  constructor(private devicesShortIds: number[], private base64file: string) {
+    this.devicesShortIds = devicesShortIds;
+    this.base64file = base64file;
+  }
+}
