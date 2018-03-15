@@ -5,7 +5,7 @@
         [disabled]="disabled">
 </button>
 
-<p-dialog header="{{'devices.warning.sink.deletion'|translate}}" [draggable]="true" [(visible)]="displayDialog"
+<p-dialog header="{{'devices.warning.sink.deletion'|translate}}" [draggable]="true" [(visible)]="!!sinkRemoval"
           [responsive]="true" showEffect="fade" [modal]="true"  [contentStyle]="{ overflow: 'visible' }"
           [width]="600" [closable]="false">
   <form #sinkWarning="ngForm" novalidate>
@@ -22,9 +22,9 @@
     </div>
     <p-footer>
       <div class="ui-dialog-buttonpane ui-helper-clearfix">
-        <button type="button" pButton icon="fa-trash" (click)="removeWithAnchors()"
+        <button type="button" pButton icon="fa-trash" (click)="removeSinkContainingAnchors(true)"
                 label="{{'devices.remove.with.anchors'|translate}}"></button>
-        <button type="button" pButton icon="fa-ban" (click)="removeSinkOnly()"
+        <button type="button" pButton icon="fa-ban" (click)="removeSinkContainingAnchors(false)"
                 label="{{'devices.remove.sink.only'|translate}}"></button>
         <button type="button" pButton icon="fa-close" (click)="cancelRemoval()"
                 label="{{'cancel'|translate}}"></button>

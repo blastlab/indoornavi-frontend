@@ -33,7 +33,7 @@ import {MapEditorService} from '../../../map.editor.service';
 export class DevicesComponent implements Tool, OnInit, OnDestroy {
   active: boolean = false;
   disabled: boolean = true;
-  displayDialog: boolean = false;
+  sinkRemoval: Sink;
   private draggedDevice: Anchor | Sink;
   private deviceDrop: Subscription;
   private listEvents: Subscription[];
@@ -105,7 +105,7 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
     };
   }
 
-  static erasePublishedDeviceData(device: Anchor | Sink): Anchor | Sink {
+  static eraseDevicePublicationData(device: Anchor | Sink): Anchor | Sink {
     device.x = null;
     device.y = null;
     if (DevicesComponent.isSinkType(device)) {
@@ -154,9 +154,6 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
   @HostListener('document:keydown.escape', [])
   private handleEscapeKey(): void {
     if (!this.selectedDevice && this.modifyingConnectionsFlag && !this.selectedLine) {
-      this.translate.get('connections.manipulationTurnedOff').subscribe((value: string) => {
-        this.hintBarService.sendHintMessage(value);
-      });
       this.endModifyingConnections();
       this.devicePlacerController.setConnectingMode(false);
     }
@@ -199,11 +196,15 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
     if (!!this.creatingConnection) {
       this.resetConnecting()
     }
-    this.removeFromConfiguration(this.selectedDevice);
-    const mapDevice = this.findMapDevice(this.selectedDevice.shortId);
-    mapDevice.groupCreated.remove();
-    this.clearSelections();
-    this.removeFromMapDevices(mapDevice);
+    if (DevicesComponent.isSinkType(this.selectedDevice) && (<Sink>this.selectedDevice).anchors.length !== 0) {
+      this.sinkRemoval = <Sink>this.selectedDevice
+    } else {
+      this.removeFromConfiguration(this.selectedDevice);
+      const mapDevice = this.findMapDevice(this.selectedDevice.shortId);
+      mapDevice.groupCreated.remove();
+      this.clearSelections();
+      this.removeFromMapDevices(mapDevice);
+    }
   }
 
   private modifyConnections(): void {
@@ -371,7 +372,7 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
             if (this.getIndexOfSinkInConfiguration(sink) >= 0) {
               sink = this.updateSinkFromConfiguration(sink);
             } else {
-              sink = <Sink>DevicesComponent.erasePublishedDeviceData(sink);
+              sink = <Sink>DevicesComponent.eraseDevicePublicationData(sink);
               this.devicePlacerController.addToRemainingDevicesList(sink);
             }
           }
@@ -387,7 +388,7 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
             if (this.getIndexOfAnchorInConfiguration(anchor) >= 0) {
               anchor = this.updateAnchorFromConfiguration(anchor);
             } else {
-              anchor = <Sink>DevicesComponent.erasePublishedDeviceData(anchor);
+              anchor = <Sink>DevicesComponent.eraseDevicePublicationData(anchor);
               this.devicePlacerController.addToRemainingDevicesList(anchor);
             }
           }
@@ -604,6 +605,9 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
       this.removeDashedLine()
     }
     this.modifyingConnectionsFlag = false;
+    this.translate.get('connections.manipulationTurnedOff').subscribe((value: string) => {
+      this.hintBarService.sendHintMessage(value);
+    });
     this.turnOffSelectInConnectingLines();
     this.turnOnSelectInAllBlockedDevices();
     this.hideAllConnections();
@@ -955,33 +959,43 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
 
   private removeFromConfiguration(device: Sink | Anchor): void {
     const mapDevice = this.findMapDevice(device.shortId);
-    if (DevicesComponent.isSinkType(device)) {
-      if ((<Sink>device).anchors.length !== 0) {
-        this.displayDialog = true;
-        // ask user about deletion decision
-        // option where anchors stay on map
-        const sinkWithConnections = <Sink>device;
-        sinkWithConnections.anchors.forEach((connectedAnchor) => {
-          const anchorOnMap = this.findMapDevice(connectedAnchor.shortId);
-          this.removeConnectingLine(anchorOnMap.connectable.anchorConnection);
-          anchorOnMap.connectable.anchorConnection = null;
-          this.setNotConnectedAnchorInConfiguration(connectedAnchor);
-        });
-        mapDevice.connectable.sinkConnections.forEach((sinkConnection) => {
-          this.removeConnectingLine(sinkConnection);
-          sinkConnection = null;
-        })
-      }
-      this.removeSinkFromConfiguration(<Sink>device)
-    } else {
-      if (!!mapDevice.connectable.anchorConnection) {
-        this.removeConnectingLine(mapDevice.connectable.anchorConnection);
-        this.removeAnchorFromConfiguredSink(device, this.chosenSink);
-        this.devicePlacerController.addToRemainingDevicesList(device);
-      } else {
-        this.removeAnchorFromConfiguration(device);
-      }
+    if (DevicesComponent.isSinkType(this.selectedDevice)) {
+      this.removeSinkFromConfiguration(<Sink>device);
     }
+    if (!!mapDevice.connectable.anchorConnection) {
+      this.removeConnectingLine(mapDevice.connectable.anchorConnection);
+      this.removeAnchorFromConfiguredSink(device, this.chosenSink);
+      this.devicePlacerController.addToRemainingDevicesList(device);
+    } else {
+      this.removeAnchorFromConfiguration(device);
+    }
+  }
+
+  public removeSinkContainingAnchors(withAnchors: boolean): void {
+    const mapSink = this.findMapDevice(this.sinkRemoval.shortId);
+    this.sinkRemoval.anchors.forEach((connectedAnchor) => {
+      const anchorOnMap = this.findMapDevice(connectedAnchor.shortId);
+      this.removeConnectingLine(anchorOnMap.connectable.anchorConnection);
+      anchorOnMap.connectable.anchorConnection = null;
+      if (withAnchors) {
+        const mapAnchor = this.findMapDevice(connectedAnchor.shortId);
+        mapAnchor.groupCreated.remove();
+        this.removeFromMapDevices(mapAnchor);
+        this.addToRemainingDevices(connectedAnchor);
+      } else {this.setNotConnectedAnchorInConfiguration(connectedAnchor)}
+    });
+    mapSink.connectable.sinkConnections.forEach((sinkConnection) => {
+      this.removeConnectingLine(sinkConnection);
+      sinkConnection = null;
+    });
+    mapSink.groupCreated.remove();
+    this.removeFromMapDevices(mapSink);
+    this.removeSinkFromConfiguration(this.sinkRemoval);
+    this.sinkRemoval = null;
+  }
+
+  public cancelRemoval(): void {
+    this.sinkRemoval = null;
   }
 
   private removeConnectingLine(connectingLine: ConnectingLine): void {
