@@ -7,7 +7,7 @@ import {DeviceService} from './device.service';
 import {CrudComponent, CrudHelper} from '../shared/components/crud/crud.component';
 import {Device, UpdateRequest} from './device.type';
 import {NgForm} from '@angular/forms';
-import {ConfirmationService} from 'primeng/primeng';
+import {ConfirmationService, Message} from 'primeng/primeng';
 import {MessageServiceWrapper} from '../shared/services/message/message.service';
 import {SocketService} from '../shared/services/socket/socket.service';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
@@ -28,16 +28,25 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   public device: Device;
   public updateMode: boolean = false;
   public devicesToUpdate: Device[] = [];
-  public allSelected: string;
+  public devicesUpdating: Device[] = [];
+  public allSelected: boolean = false;
+  public uploadingMessage: Message[] = [];
+  public displayInfoDialog: boolean = false;
 
   @ViewChild('deviceForm') deviceForm: NgForm;
 
   private socketSubscription: Subscription;
+  private translateUploadingFirmwareMessage: Subscription;
   private firmwareSocketSubscription: Subscription;
+  private confirmBodyTranslate: Subscription;
+  private uploadBodyTranslate: Subscription;
   private confirmBody: string;
+  private uploadBody: string;
 
-  constructor(private socketService: SocketService,
+
+  constructor(
               public translate: TranslateService,
+              private socketService: SocketService,
               private messageService: MessageServiceWrapper,
               private ngZone: NgZone,
               private route: ActivatedRoute,
@@ -51,8 +60,11 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     this.setPermissions();
     this.translate.setDefaultLang('en');
     this.deviceService.setUrl(this.deviceType + '/');
-    this.translate.get('confirm.body').subscribe((value: string) => {
+    this.confirmBodyTranslate = this.translate.get('confirm.body').subscribe((value: string): void => {
       this.confirmBody = value;
+    });
+    this.uploadBodyTranslate = this.translate.get('upload.body.info').subscribe((value: string): void => {
+      this.uploadBody = value;
     });
     this.translate.get(this.deviceType + '.header').subscribe((value: string) => {
       this.breadcrumbService.publishIsReady([
@@ -66,6 +78,10 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       this.socketSubscription = stream.subscribe((devices: Array<Device>) => {
         this.ngZone.run(() => {
           devices.forEach((device: Device) => {
+            // todo: delete after setting device firmware property on server
+            // this is only a mocked value
+            device.firmware = 'Beta 0.0.4';
+            // delete till there ----------------------
             if (this.isAlreadyOnAnyList(device)) {
               return;
             }
@@ -84,6 +100,15 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     if (this.socketSubscription) {
       this.socketSubscription.unsubscribe();
     }
+    if (this.translateUploadingFirmwareMessage) {
+      this.translateUploadingFirmwareMessage.unsubscribe();
+    }
+    if (this.uploadBodyTranslate) {
+      this.uploadBodyTranslate.unsubscribe();
+    }
+    if (this.confirmBodyTranslate) {
+      this.confirmBodyTranslate.unsubscribe();
+    }
   }
 
   save(isValid: boolean): void {
@@ -92,7 +117,6 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       if (!isNew) { // if it's an update then we need to remove it first so updated version will show up on the list when websocket get it
         this.removeFromList(this.device);
       }
-
       (!!this.device.id ?
           this.deviceService.update(this.device)
           :
@@ -152,26 +176,33 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
 
   selectALLToUpload (): void {
     this.devicesToUpdate = [];
-    console.log(this.allSelected);
     if (this.allSelected) {
-      this.notVerified.forEach((device: Device) => {
-        console.log(device);
-        this.devicesToUpdate.push(device)
-      });
+      this.notVerified.forEach((device: Device) => this.devicesToUpdate.push(device));
       this.verified.forEach((device: Device) => this.devicesToUpdate.push(device));
     }
-    console.log(this.devicesToUpdate);
   }
+
   checkAllSelected(): void {
-    console.log(this.device);
-    console.log(this.devicesToUpdate);
+    if (this.allSelected) {
+      this.allSelected = !this.allSelected
+    } else if (this.devicesToUpdate.length === this.verified.length + this.notVerified.length) {
+      this.allSelected = true;
+    }
   }
 
   upload(data: { files: File[] }): void {
-    console.log(data.files)
+    this.devicesUpdating = this.devicesToUpdate;
+    if (this.devicesToUpdate.length === 0) {
+      this.displayInfoDialog = true;
+      return;
+    }
     if (data.files.length === 1) {
-      this.getBase64(data.files[0]).then((base64: string) => {
-        this.socketService.send(new UpdateRequest([65535], base64));
+      this.getBase64(data.files[0]).then((base64: string): void => {
+        this.socketService.send(new UpdateRequest(this.devicesToUpdate.map((device: Device): number => device.shortId), base64));
+        this.translateUploadingFirmwareMessage =  this.translate.get('uploading.firmware.message').subscribe((value: string) => {
+          this.uploadingMessage = [];
+          this.uploadingMessage.push({severity:'info', detail: value});
+        });
       });
     }
   }

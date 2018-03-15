@@ -10,18 +10,13 @@
 
   <div class="ui-toolbar-group-right">
     <span class="ui-toolbar" *ngIf="updateMode">
+      <span *ngIf="devicesToUpdate.length === 0" id="hint">{{'device.update.hint'|translate}}</span>
+      <p-checkbox *ngIf="devicesUpdating.length === 0" name="deviceToUpdate" binary=true (onChange)="selectALLToUpload()"
+                  label="{{'devices.select.all'|translate}}"
+                  [(ngModel)]="allSelected"></p-checkbox>
+      <span>  </span>
       <p-fileUpload class="ui-fileupload-buttonbar" #firmware mode="basic" name="firmware[]" [customUpload]="true"
                     (uploadHandler)="upload($event)"></p-fileUpload>
-      <span id="hint">{{'device.update.hint'|translate}}</span>
-      <span>  </span>
-      <p-checkbox name="deviceToUpdate" [value]="all" (onChange)="selectALLToUpload()" label="{{'devices.select.all'|translate}}"
-                  [(ngModel)]="allSelected"></p-checkbox>
-      <button pButton class="ui-button-secondary"
-              id="update-mode" [appHasPermission]="editPermission"
-              (click)="firmware.upload()"
-              label="{{'update'|translate}}"
-              icon="fa-upload" iconPos="left">
-      </button>
     </span>
     <button pButton class="ui-button-secondary"
             id="update" [appHasPermission]="editPermission"
@@ -41,12 +36,13 @@
   <ng-template let-device pTemplate="item">
     <div class="ui-helper-clearfix">
       <div class="ui-g">
-        <div class="ui-g-9 ui-md-9 ui-lg-9 device-details">
+        <div class="ui-g-8 ui-md-8 ui-lg-8 device-details">
           <div><b>{{'device.shortId'|translate}}:</b> {{device['shortId']}}</div>
           <div><b>{{'device.longId'|translate}}:</b> {{device['longId']}}</div>
           <div><b>{{'device.name'|translate}}:</b> {{device['name']}}</div>
+          <div *ngIf="device['firmware']" ><b>{{'device.firmware.version'|translate}}:</b> {{device['firmware']}}</div>
         </div>
-        <div class="ui-g-3 ui-md-3 ui-lg-3">
+        <div class="ui-g-4 ui-md-4 ui-lg-4">
           <button
             [appHasPermission]="editPermission"
             pTooltip="{{'edit'|translate}}" type="button" pButton (click)="openDialog(device)" icon="fa-edit">
@@ -55,8 +51,12 @@
             [appHasPermission]="deletePermission"
             pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(device)" icon="fa-trash">
           </button>
-          <p-checkbox *ngIf="updateMode" name="deviceToUpdate" [value]="device" (onChange)="checkAllSelected()"
+          <p-checkbox *ngIf="updateMode && devicesUpdating.length === 0" name="deviceToUpdate" [value]="device" (onChange)="checkAllSelected()"
                       [(ngModel)]="devicesToUpdate"></p-checkbox>
+          <p-progressSpinner *ngIf="updateMode && devicesUpdating.indexOf(device) >= 0" [style]="{width: '20px', height: '20px'}"
+                             strokeWidth="8"
+                             fill="#EEEEEE"
+                             animationDuration="1s"></p-progressSpinner>
         </div>
       </div>
     </div>
@@ -118,4 +118,11 @@
   </form>
 </p-dialog>
 
+<p-growl [(value)]="uploadingMessage"></p-growl>
+
 <p-confirmDialog icon="fa fa-question-circle" width="425"></p-confirmDialog>
+
+<p-dialog header="{{'information.important'|translate}}" [(visible)]="displayInfoDialog" modal="modal" [responsive]="true" [width]="350" [minWidth]="200">
+    <p>{{uploadBody}}</p>
+    <button type="button" pButton icon="fa-check" (click)="displayInfoDialog=false" label="{{'ok'|translate}}"></button>
+</p-dialog>
