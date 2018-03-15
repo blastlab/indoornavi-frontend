@@ -6,25 +6,9 @@ from tests.devices.test_base import TestBase
 from pages.devices.devices_page import DevicesPage
 from pages.base_page import BasePage
 from pages.login_page import LoginPage
+import inspect
 
-class TestDevicesPage(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        cls.test_failed = True
-        cls.login_page_url = LoginPage.login_url
-        cls.webdriver = webdriver
-        TestDriver.setUp(cls, cls.login_page_url)
-        cls.base_page = BasePage(cls.webdriver)
-        cls.devices_page = DevicesPage(cls.webdriver, 'sink')
-        cls.page = LoginPage(cls.webdriver)
-        cls.option = 1
-        # login before each test case
-        cls.base_page.truncate_db()
-        # cls.devices_page.create_devices_db_env()
-        cls.page.login_process(cls.option)
-        # locators
-        cls.locator = cls.devices_page.base_locators
+class TestDevicesPage(object):
 
     def method_test_setUp(self, test_method, name, shortId, longId):
 
@@ -175,9 +159,11 @@ class TestDevicesPage(unittest.TestCase):
         self.assertTrue(len(result_short_ids) == 1)
         self.test_failed = False
 
-    def test_01_sinks_page_is_loaded_correctly(self):
+    def test_01_devices_page_is_loaded_correctly(self):
 
-        """Test that sinks page has been correctly loaded"""
+        """Test that devices page has been correctly loaded"""
+
+        # self.set_function_name(inspect.stack()[0][3]+'sinking')
 
         self.assertTrue(self.devices_page.is_add_device_button_clickable())
         self.devices_page.dropdown_menu_click()
@@ -186,12 +172,12 @@ class TestDevicesPage(unittest.TestCase):
         self.assertTrue(TestBase.is_page_loaded_correctly(self))
         self.test_failed = False
 
-    def test_02_add_new_sink_correctly(self):
+    def test_02_add_device_device_correctly(self):
 
-        """Test that sink will be added with correct data"""
+        """Test that device will be added with correct data"""
 
         self.method_test_setUp('add',
-                               'TestSink',
+                               'Test'+self.module,
                                self.locator.new_device_short_id,
                                self.locator.new_device_long_id)
 
@@ -204,13 +190,13 @@ class TestDevicesPage(unittest.TestCase):
         # Check the new device saved in db
         self.assertEqual(self.devices_page.if_saved_in_db(), self.locator.new_device_name)
         self.test_failed = False
+    #
+    def test_03_add_new_device_negative_existing_short_id(self):
 
-    def test_03_add_new_sink_negative_existing_short_id(self):
-
-        """Test that sink will be added with existing Short Id"""
+        """Test that device will be added with existing Short Id"""
 
         self.method_test_setUp('add',
-                               'TestSinkAddNegativeExistingShortId',
+                               'Test' + self.module + 'AddNegativeExistingShortId',
                                self.locator.new_device_short_id,
                                '999')
 
@@ -219,12 +205,12 @@ class TestDevicesPage(unittest.TestCase):
         self.assertTrue(self.devices_page.is_toast_disappear(self.locator.unique_short_id_toast))
         self.test_failed = False
 
-    def test_04_add_new_sink_negative_existing_long_id(self):
+    def test_04_add_new_device_negative_existing_long_id(self):
 
-        """Test that sink will be added with existing Long Id"""
+        """Test that device will be added with existing Long Id"""
 
         self.method_test_setUp('add',
-                               'TestSinkAddNegativeExistingLongId',
+                               'Test' + self.module + 'AddNegativeExistingLongId',
                                '999',
                                self.locator.new_device_long_id)
 
@@ -233,11 +219,11 @@ class TestDevicesPage(unittest.TestCase):
         self.assertTrue(self.devices_page.is_toast_disappear(self.locator.unique_long_id_toast))
         self.test_failed = False
 
-    def test_05_add_new_sink_negative_empty_short_id(self):
+    def test_05_add_new_device_negative_empty_short_id(self):
 
-        """Test that sink will be added with empty Short Id"""
+        """Test that device will be added with empty Short Id"""
 
-        self.method_test_setUp('add', 'TestSinkAddNegativeEmptyShortId', '', '999')
+        self.method_test_setUp('add', 'Test' + self.module + 'AddNegativeEmptyShortId', '', '999')
 
         # Check the "Short Id is required." warning
         self.assertEqual(self.devices_page.error_message_name(), 'Short Id is required.')
@@ -245,24 +231,25 @@ class TestDevicesPage(unittest.TestCase):
         self.devices_page.cancel_add_new_device_click()
         self.test_failed = False
 
-    def test_06_add_new_sink_negative_empty_long_id(self):
+    def test_06_add_new_device_negative_empty_long_id(self):
 
-        """Test that sink will be added with empty Long Id"""
+        """Test that device will be added with empty Long Id"""
 
-        self.method_test_setUp('add', 'TestSinkAddNegativeEmptyLongId', '999', '')
+        self.method_test_setUp('add', 'Test' + self.module + 'AddNegativeEmptyLongId', '999', '')
 
         # Check the "Short Id is required." warning
         self.assertEqual(self.devices_page.error_message_name(), 'Long Id is required.')
         # Cancel Action
         self.devices_page.cancel_add_new_device_click()
         self.test_failed = False
+    #
+    #     # TODO - Test od czasu do czasu nie przechodzi, wpisujac nie pelnego stringa np. "TstSink"
 
-        # TODO - Test od czasu do czasu nie przechodzi, wpisujac nie pelnego stringa np. "TstSink"
-    def _test_07_edit_last_sink_correctly(self):
+    def _test_07_edit_last_device_correctly(self):
 
-        """Test editing sink correctly"""
+        """Test editing device correctly"""
 
-        self.method_test_setUp('edit', 'TestEditSink', '1234', '12345')
+        self.method_test_setUp('edit', 'TestEdit'+self.module, '1234', '12345')
 
         # Check the add toast is displayed
         self.assertTrue(self.devices_page.is_toast_present(self.locator.edited_toast))
@@ -274,11 +261,11 @@ class TestDevicesPage(unittest.TestCase):
         self.assertEqual(self.devices_page.if_saved_in_db(), self.locator.edit_device_name)
         self.test_failed = False
 
-    def test_08_edit_sink_negative_empty_short_id(self):
+    def test_08_edit_device_negative_empty_short_id(self):
 
-        """Test editing sink with empty short id input"""
+        """Test editing device with empty short id input"""
 
-        self.method_test_setUp('edit', 'TestEditSink', '', '12345')
+        self.method_test_setUp('edit', 'TestEdit'+self.module, '', '12345')
 
         # Check the "Short Id is required." warning
         self.assertEqual(self.devices_page.error_message_name(), 'Short Id is required.')
@@ -286,11 +273,11 @@ class TestDevicesPage(unittest.TestCase):
         self.devices_page.cancel_add_new_device_click()
         self.test_failed = False
 
-    def test_09_edit_sink_negative_empty_long_id(self):
+    def test_09_edit_device_negative_empty_long_id(self):
 
-        """Test editing sink with empty long id input"""
+        """Test editing device with empty long id input"""
 
-        self.method_test_setUp('edit', 'TestEditSink', '1234', '')
+        self.method_test_setUp('edit', 'TestEdit'+self.module, '1234', '')
 
         # Check the "Long Id is required." warning
         self.assertEqual(self.devices_page.error_message_name(), 'Long Id is required.')
@@ -298,13 +285,13 @@ class TestDevicesPage(unittest.TestCase):
         self.devices_page.cancel_add_new_device_click()
         self.test_failed = False
 
-    def test_10_delete_sink_cancel(self):
+    def test_10_delete_device_cancel(self):
 
-        """Test cancel deleting sink"""
+        """Test cancel deleting device"""
 
         # Check the delete button is clickable
         self.assertTrue(self.devices_page.is_delete_device_button_clickable())
-        # Click Delete sink
+        # Click Delete device
         self.devices_page.delete_button_click()
         # Check is modal displayed
         self.assertTrue(self.devices_page.is_confirm_remove_window_present())
@@ -317,13 +304,13 @@ class TestDevicesPage(unittest.TestCase):
         # Check that the confirm remove modal disappeared
         self.test_failed = False
 
-    def test_11_delete_sink_correctly(self):
+    def test_11_delete_device_correctly(self):
 
-        """Test deleting sink correctly"""
+        """Test deleting device correctly"""
 
         # Check the delete button is clickable
         self.assertTrue(self.devices_page.is_delete_device_button_clickable())
-        # Click Delete sink
+        # Click Delete device
         self.devices_page.delete_button_click()
         # Check is modal displayed
         self.assertTrue(self.devices_page.is_confirm_remove_window_present())
@@ -341,16 +328,16 @@ class TestDevicesPage(unittest.TestCase):
 
     def test_12_search_devices_not_verified(self):
 
-        """Test searching sink by short id in unverified list"""
+        """Test searching device by short id in unverified list"""
 
-        # Add 2 additional sinks
+        # Add 2 additional devices
         self.method_test_setUp('add',
-                               'TestSinkToSearch 123321',
+                               'Test'+self.module+'ToSearch 123321',
                                self.locator.new_device_short_id+'321',
                                self.locator.new_device_long_id+'321')
 
         self.method_test_setUp('add',
-                               'TestSinkToSearch 123999',
+                               'Test'+self.module+'ToSearch 123999',
                                self.locator.new_device_short_id+'999',
                                self.locator.new_device_long_id+'999')
 
@@ -358,51 +345,46 @@ class TestDevicesPage(unittest.TestCase):
 
     def test_13_move_all_to_verified_list(self):
 
-        """Test moving all sinks to verified list"""
+        """Test moving all devices to verified list"""
 
         # pass variable from which list test starts
         self.method_test_move_all_setUp('not_verified')
 
     def test_14_search_devices_verified(self):
 
-        """Test searching sink by short id in verified list"""
+        """Test searching device by short id in verified list"""
 
         self.method_test_search_setUp('verified')
 
     def test_15_move_all_to_unverified_list(self):
 
-        """Test moving all sinks to unverified list"""
+        """Test moving all devices to unverified list"""
 
         # pass variable from which list test starts
         self.method_test_move_all_setUp('verified')
 
     def test_16_move_single_to_verified_list(self):
 
-        """Test moving single sink to verified list"""
+        """Test moving single device to verified list"""
 
         self.method_test_move_single_setUp('verified')
 
     def test_17_move_single_to_unverified_list(self):
 
-        """Test moving single sink to unverified list"""
+        """Test moving single device to unverified list"""
 
         self.method_test_move_single_setUp('not_verified')
 
     def test_18_drag_and_drop_to_verified_list(self):
 
-        """Test that moving sinks to verified list by drag&drop """
+        """Test that moving devices to verified list by drag&drop """
 
         self.method_test_drag_and_drop('verified')
 
     def test_19_drag_and_drop_to_unverified_list(self):
 
-        """Test that moving sinks to unverified list by drag&drop """
+        """Test that moving devices to unverified list by drag&drop """
 
         self.method_test_drag_and_drop('not_verified')
 
-    def tearDown(self):
-        TestDriver.tearDown(self)
 
-    @classmethod
-    def tearDownClass(cls):
-        cls.webdriver.quit()
