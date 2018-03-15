@@ -73,11 +73,15 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     });
 
     this.ngZone.runOutsideAngular(() => {
-      const stream = this.socketService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.deviceType}`);
+      // const stream = this.socketService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.deviceType}`);
+      // todo: delete below code as this is mocked only for testing purposes
+      const stream = this.socketService.connect(`ws://localhost:8888`);
 
-      this.socketSubscription = stream.subscribe((devices: Array<Device>) => {
-        this.ngZone.run(() => {
+      this.socketSubscription = stream.subscribe((devices: Array<Device>): void => {
+        this.ngZone.run((): void => {
+          console.log(devices);
           devices.forEach((device: Device) => {
+            this.removeDeviceFromUpdating(device);
             // todo: delete after setting device firmware property on server
             // this is only a mocked value
             device.firmware = 'Beta 0.0.4';
@@ -108,6 +112,9 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     }
     if (this.confirmBodyTranslate) {
       this.confirmBodyTranslate.unsubscribe();
+    }
+    if (this.firmwareSocketSubscription) {
+      this.firmwareSocketSubscription.unsubscribe();
     }
   }
 
@@ -196,12 +203,18 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       this.displayInfoDialog = true;
       return;
     }
+
     if (data.files.length === 1) {
       this.getBase64(data.files[0]).then((base64: string): void => {
+
         this.socketService.send(new UpdateRequest(this.devicesToUpdate.map((device: Device): number => device.shortId), base64));
+
+        // todo: remove below line of code, it is for marking response on fake web socket only
+        this.socketService.send('message');
+
         this.translateUploadingFirmwareMessage =  this.translate.get('uploading.firmware.message').subscribe((value: string) => {
           this.uploadingMessage = [];
-          this.uploadingMessage.push({severity:'info', detail: value});
+          this.uploadingMessage.push({severity: 'info', detail: value});
         });
       });
     }
@@ -217,6 +230,11 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     } else {
       this.firmwareSocketSubscription.unsubscribe();
     }
+  }
+
+  private removeDeviceFromUpdating(deviceUpdated: Device): void {
+    const index = this.devicesUpdating.findIndex((deviceUpdating: Device): boolean => deviceUpdating.shortId === deviceUpdated.shortId);
+    this.devicesUpdating.splice(index, 1);
   }
 
   private getBase64(file: File): Promise<string> {
