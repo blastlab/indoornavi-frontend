@@ -208,10 +208,6 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       this.getBase64(data.files[0]).then((base64: string): void => {
 
         this.socketService.send(new UpdateRequest(this.devicesToUpdate.map((device: Device): number => device.shortId), base64));
-
-        // todo: remove below line of code, it is for marking response on fake web socket only
-        this.socketService.send('message');
-
         this.translateUploadingFirmwareMessage =  this.translate.get('uploading.firmware.message').subscribe((value: string) => {
           this.uploadingMessage = [];
           this.uploadingMessage.push({severity: 'info', detail: value});
@@ -235,6 +231,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   private removeDeviceFromUpdating(deviceUpdated: Device): void {
     const index = this.devicesUpdating.findIndex((deviceUpdating: Device): boolean => deviceUpdating.shortId === deviceUpdated.shortId);
     this.devicesUpdating.splice(index, 1);
+    this.checkAllSelected();
   }
 
   private getBase64(file: File): Promise<string> {
