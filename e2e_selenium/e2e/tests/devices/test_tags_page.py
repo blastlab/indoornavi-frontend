@@ -9,11 +9,11 @@ from pages.login_page import LoginPage
 from tests.devices.test_devices_page import TestDevicesPage
 
 
-class TestSinksPage(unittest.TestCase, TestDevicesPage):
+class TestTagsPage(unittest.TestCase, TestDevicesPage):
 
     @classmethod
     def setUpClass(cls):
-        cls.module = 'sink'
+        cls.module = 'tag'
         cls.test_failed = True
         cls.login_page_url = LoginPage.login_url
         cls.webdriver = webdriver

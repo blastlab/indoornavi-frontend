@@ -41,6 +41,7 @@ class BasePage(object):
         cursor.execute("TRUNCATE TABLE floor")
         cursor.execute("TRUNCATE TABLE sink")
         cursor.execute("TRUNCATE TABLE anchor")
+        cursor.execute("TRUNCATE TABLE tag")
         cursor.execute("TRUNCATE TABLE device")
         cursor.execute('SET FOREIGN_KEY_CHECKS=1;')
         cursor.close()
