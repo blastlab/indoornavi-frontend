@@ -16,6 +16,7 @@ export class DevicesListComponent implements OnInit, AfterViewInit, OnDestroy {
   public queryString: string;
   public selectedDevice: Expandable;
   public listFloatLeft = true;
+  public connectingFlag: boolean;
   @ViewChild(`toolDetails`) private devicesList: ToolDetailsComponent;
   private devices = new Set<Anchor | Sink>();
   private addSubscription: Subscription;
@@ -24,7 +25,6 @@ export class DevicesListComponent implements OnInit, AfterViewInit, OnDestroy {
   private selectedElement: Subscription;
   private deselection: Subscription;
   private connectingState: Subscription;
-  private connectingFlag: boolean;
   private detailsElement: ElementRef;
 
   constructor(public translate: TranslateService,
