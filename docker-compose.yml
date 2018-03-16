@@ -63,6 +63,3 @@ services:
 
 volumes:
   m2: {}
-
-
-

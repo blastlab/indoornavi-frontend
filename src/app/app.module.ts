@@ -50,7 +50,7 @@ import {
   FileUploadModule,
   GrowlModule,
   MultiSelectModule,
-  PanelMenuModule,
+  PanelMenuModule, RadioButtonModule,
   SidebarModule,
   SliderModule,
   ToolbarModule,
@@ -103,6 +103,8 @@ import {MapObjectService} from './shared/utils/drawing/map.object.service';
 import {MinSelectedValidator} from './shared/directive/minselected.directive';
 import {TagVisibilityTogglerComponent} from './shared/components/tag-visibility-toggler/tag-visibility-toggler';
 import {TagVisibilityTogglerService} from './shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
+import {HeatMapControllerComponent} from './shared/components/heat-map-controller/heat-map-controller/heat-map-controller.component';
+import {HeatMapControllerService} from './shared/components/heat-map-controller/heat-map-controller/heat-map-controller.service';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -148,7 +150,8 @@ export function HttpLoaderFactory(http: Http) {
     AreaDetailsComponent,
     AnalyticsComponent,
     MinSelectedValidator,
-    TagVisibilityTogglerComponent
+    TagVisibilityTogglerComponent,
+    HeatMapControllerComponent
   ],
   entryComponents: [
     PublicationDialogComponent,
@@ -189,7 +192,8 @@ export function HttpLoaderFactory(http: Http) {
     ProgressSpinnerModule,
     OverlayPanelModule,
     ContextMenuModule,
-    FileUploadModule
+    FileUploadModule,
+    RadioButtonModule
   ],
   providers: [
     BuildingService,
@@ -231,7 +235,8 @@ export function HttpLoaderFactory(http: Http) {
     ContextMenuService,
     MapObjectService,
     ContextMenuService,
-    TagVisibilityTogglerService
+    TagVisibilityTogglerService,
+    HeatMapControllerService
   ], bootstrap: [AppComponent]
 })
 

@@ -1,6 +1,4 @@
 <div id="actionbar">
-  <span [@draftStateAnimation]="draftState" id="savingDraft">{{draftStateText}}</span>
-
   <!--menu-buttons are wrapped with span, so tooltip can be displayed even when button is disabled -->
   <span pTooltip="{{'saveDraft'|translate}}">
     <button pButton
@@ -9,7 +7,7 @@
             icon="fa-floppy-o">
     </button>
   </span>
-  <span pTooltip="{{undoTooltip}}">
+  <span pTooltip="{{'resetToPrevious'|translate}}">
     <button pButton
             [disabled]="resetButtonDisabled" (click)="resetToPreviousPublication()"
             icon="fa-undo">
