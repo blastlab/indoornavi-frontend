@@ -78,18 +78,25 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       this.socketSubscription = stream.subscribe((devices: Array<Device>): void => {
         this.ngZone.run((): void => {
           devices.forEach((device: Device) => {
-            this.removeDeviceFromUpdating(device);
-            // todo: delete after setting device firmware property on a server
-            // this is only a mocked value
-            device.firmware = 'Beta 0.0.4';
-            // delete till there ----------------------
-            if (this.isAlreadyOnAnyList(device)) {
-              return;
-            }
-            if (device.verified) {
-              this.verified.push(device);
+            // TODO: flag updating needs to be set on server site, for properly allocate device
+            // todo: in case user will reload the page or route somewhere and the route back
+            // todo: during process of updating
+            if (!device.updating) {
+              this.removeDeviceFromUpdating(device);
+              // TODO: delete after setting device firmware property on a server
+              // todo: this is only a mocked value
+              device.firmware = 'Beta 0.0.4';
+              // todo: delete till there ----------------------
+              if (this.isAlreadyOnAnyList(device)) {
+                return;
+              }
+              if (device.verified) {
+                this.verified.push(device);
+              } else {
+                this.notVerified.push(device);
+              }
             } else {
-              this.notVerified.push(device);
+              this.devicesUpdating.push(device);
             }
           });
         });
@@ -225,7 +232,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   // TODO: use this method to remove spinner indication that device is updating.
-  // this method should to react to websocket subscription that sends information about updated devices to the front end
+  // todo this method should to react to websocket subscription that sends information about updated devices to the front end
   private removeDeviceFromUpdating(deviceUpdated: Device): void {
     const index = this.devicesUpdating.findIndex((deviceUpdating: Device): boolean => deviceUpdating.shortId === deviceUpdated.shortId);
     this.devicesUpdating.splice(index, 1);

@@ -8,8 +8,9 @@ export class Device {
   y?: number;
   floorId?: number;
   firmware?: string;
+  updating?: boolean;
 
-  constructor(shortId: number, longId: number, verified: boolean, id?: number, name?: string, x?: number, y?: number, floorId?: number, firmware?: string) {
+  constructor(shortId: number, longId: number, verified: boolean, id?: number, name?: string, x?: number, y?: number, floorId?: number, firmware?: string, updating?: boolean) {
     this.id = id;
     this.name = name;
     this.shortId = shortId;
@@ -19,6 +20,7 @@ export class Device {
     this.y = y;
     this.floorId = floorId;
     this.firmware = firmware;
+    this.updating = updating;
   }
 }
 
