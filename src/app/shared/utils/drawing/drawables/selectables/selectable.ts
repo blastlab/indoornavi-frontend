@@ -73,6 +73,7 @@ export class Selectable {
   public highlightSet(color?: string): void {
     const setColor = (color) ? color : 'red';
     if (!this.lockedSelecting) {
+      this.group.showTexts();
       this.group.changeColor(setColor);
       this.group.strokeConnectingLineBold();
     }
@@ -80,6 +81,7 @@ export class Selectable {
 
   public highlightReset(): void {
     if (!this.lockedSelecting) {
+      this.group.hideTexts();
       this.group.resetColor();
       this.group.strokeConnectingLineNormal();
     }

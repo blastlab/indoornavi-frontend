@@ -76,9 +76,26 @@ export class SvgGroupWrapper {
       .attr('x', coordinates.x)
       .attr('y', coordinates.y)
       .attr('fill', this.color)
+      .attr('display', 'none')
       .text(text);
     this.addElement(ElementType.TEXT, element);
     return this;
+  }
+
+  getTexts(): d3.selection {
+    return this.getElements(ElementType.TEXT);
+  }
+
+  showTexts(): void {
+    this.getTexts().forEach((text: d3.selection) => {
+      text.attr('display', 'block');
+    });
+  }
+
+  hideTexts(): void {
+    this.getTexts().forEach((text: d3.selection) => {
+      text.attr('display', 'none');
+    });
   }
 
   addPolygon(points: Point[]): SvgGroupWrapper {
