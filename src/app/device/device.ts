@@ -73,16 +73,13 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     });
 
     this.ngZone.runOutsideAngular(() => {
-      // const stream = this.socketService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.deviceType}`);
-      // todo: delete below code as this is mocked only for testing purposes
-      const stream = this.socketService.connect(`ws://localhost:8888`);
+      const stream = this.socketService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.deviceType}`);
 
       this.socketSubscription = stream.subscribe((devices: Array<Device>): void => {
         this.ngZone.run((): void => {
-          console.log(devices);
           devices.forEach((device: Device) => {
             this.removeDeviceFromUpdating(device);
-            // todo: delete after setting device firmware property on server
+            // todo: delete after setting device firmware property on a server
             // this is only a mocked value
             device.firmware = 'Beta 0.0.4';
             // delete till there ----------------------
@@ -206,7 +203,6 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
 
     if (data.files.length === 1) {
       this.getBase64(data.files[0]).then((base64: string): void => {
-
         this.socketService.send(new UpdateRequest(this.devicesToUpdate.map((device: Device): number => device.shortId), base64));
         this.translateUploadingFirmwareMessage =  this.translate.get('uploading.firmware.message').subscribe((value: string) => {
           this.uploadingMessage = [];
@@ -228,6 +224,8 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     }
   }
 
+  // TODO: use this method to remove spinner indication that device is updating.
+  // this method should to react to websocket subscription that sends information about updated devices to the front end
   private removeDeviceFromUpdating(deviceUpdated: Device): void {
     const index = this.devicesUpdating.findIndex((deviceUpdating: Device): boolean => deviceUpdating.shortId === deviceUpdated.shortId);
     this.devicesUpdating.splice(index, 1);
