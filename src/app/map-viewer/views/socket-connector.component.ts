@@ -274,6 +274,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   }
 
   private handleCommands(event: MessageEvent): void {
+    console.log(event);
     const data = event.data;
     if ('command' in data) {
       switch (data['command']) {

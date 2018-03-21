@@ -3,6 +3,7 @@ import {Injectable} from '@angular/core';
 import * as d3 from 'd3';
 import {Point} from '../../../map-editor/map.type';
 import {Geometry} from 'app/shared/utils/helper/geometry';
+import {IconService, NaviIcons} from '../../services/drawing/icon.service';
 
 @Injectable()
 export class MapObjectService {
@@ -10,7 +11,9 @@ export class MapObjectService {
   // TODO: standardize pointRadius for all points that will be drawn on the map
   private pointRadius: number = 5;
 
-  constructor() {}
+  constructor(
+    private iconService: IconService,
+  ) {}
 
   create(container: d3.selection): number {
     const id = this.objects.size + 1;
@@ -36,6 +39,11 @@ export class MapObjectService {
         break;
       case 'AREA':
         this.objects.get(objectMetadata.object.id).addPolygon(points);
+        break;
+      case 'MARKER':
+        console.log(objectMetadata.object.id);
+        this.objects.get(objectMetadata.object.id).addIcon(points[0], this.iconService.getIcon(NaviIcons.TAG));
+        break;
     }
   }
 
