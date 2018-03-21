@@ -4,6 +4,15 @@ import {DrawConfiguration} from '../../../map-viewer/publication.type';
 import {Helper} from '../helper/helper';
 import {Anchor, Sink} from '../../../device/device.type';
 
+export enum ElementType {
+  ICON,
+  TEXT,
+  POLYGON,
+  CIRCLE,
+  LINE,
+  DRAGAREA
+}
+
 export class SvgGroupWrapper {
   private elements: Map<ElementType, d3.selection[]> = new Map();
   container: d3.selection;
@@ -345,13 +354,4 @@ export class DrawBuilder {
       ? new SvgGroupWrapper(group, this.appendable, this.configuration.color)
       : new SvgGroupWrapper(group, this.appendable);
   }
-}
-
-export enum ElementType {
-  ICON,
-  TEXT,
-  POLYGON,
-  CIRCLE,
-  LINE,
-  DRAGAREA
 }
