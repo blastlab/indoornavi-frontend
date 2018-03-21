@@ -167,7 +167,18 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
     if (!!this.selectedLine) {
       this.clearSelectedLine();
     }
+    /*if (!this.placementDone) {
+      this.accButtons.publishDecision(false);
+    }*/
   }
+
+  // TODO refactor this part into accButtons method
+  /*@HostListener('document:keydown.enter', [])
+  private handleEnterKey(): void {
+    if (!this.placementDone) {
+      this.accButtons.publishDecision(true);
+    }
+  }*/
 
   @HostListener('document:keydown.delete', [])
   private handleDeleteKey(): void {
