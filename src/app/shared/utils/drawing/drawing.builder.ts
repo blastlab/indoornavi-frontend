@@ -2,6 +2,7 @@ import * as d3 from 'd3';
 import {Point} from '../../../map-editor/map.type';
 import {DrawConfiguration} from '../../../map-viewer/publication.type';
 import {Helper} from '../helper/helper';
+import {Anchor, Sink} from '../../../device/device.type';
 
 export class SvgGroupWrapper {
   private elements: Map<ElementType, d3.selection[]> = new Map();
@@ -290,6 +291,37 @@ export class SvgGroupWrapper {
 }
 
 export class DrawBuilder {
+
+  static buildAnchorDrawConfiguration(anchor: Anchor): DrawConfiguration {
+    return {
+      id: `${anchor.shortId}`,
+      clazz: `anchor`,
+      name: `${anchor.name}`,
+      cursor: `pointer`,
+      color: `green`,
+      display: `none`
+    };
+  }
+
+  static buildSinkDrawConfiguration(sink: Sink): DrawConfiguration {
+    return {
+      id: `${sink.shortId}`,
+      clazz: `sink anchor`,
+      name: `${sink.name}`,
+      cursor: `pointer`,
+      color: `orange`,
+      display: `none`
+    };
+  }
+
+  static buildConnectingLineConfiguration(id: string | number): DrawConfiguration {
+    return {
+      id: `line${id}`,
+      clazz: `connection`,
+      cursor: `inherit`,
+      color: `orange`
+    };
+  }
 
   constructor(protected appendable: d3.selection,
               protected configuration: DrawConfiguration) {

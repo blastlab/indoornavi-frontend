@@ -74,37 +74,6 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
     return {x: d3.event.offsetX, y: d3.event.offsetY};
   }
 
-  static buildAnchorDrawConfiguration(anchor: Anchor): DrawConfiguration {
-    return {
-      id: `${anchor.shortId}`,
-      clazz: `anchor`,
-      name: `${anchor.name}`,
-      cursor: `pointer`,
-      color: `green`,
-      display: `none`
-    };
-  }
-
-  static buildSinkDrawConfiguration(sink: Sink): DrawConfiguration {
-    return {
-      id: `${sink.shortId}`,
-      clazz: `sink anchor`,
-      name: `${sink.name}`,
-      cursor: `pointer`,
-      color: `orange`,
-      display: `none`
-    };
-  }
-
-  static buildConnectingLineConfiguration(id: string | number): DrawConfiguration {
-    return {
-      id: `line${id}`,
-      clazz: `connection`,
-      cursor: `inherit`,
-      color: `orange`
-    };
-  }
-
   static eraseDevicePublicationData(device: Anchor | Sink): Anchor | Sink {
     device.x = null;
     device.y = null;
@@ -534,7 +503,7 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
               }
               const identifier = '' + sink.shortId + anchor.shortId;
               const connectingLine = this.createConnection(this.findMapDevice(sink.shortId), this.findMapDevice(anchor.shortId),
-                DevicesComponent.buildConnectingLineConfiguration(identifier));
+                DrawBuilder.buildConnectingLineConfiguration(identifier));
               this.connectingLines.push(connectingLine);
               this.handleSelectableConnections();
               DevicesComponent.showSingleConnection(connectingLine);
@@ -799,13 +768,13 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
 
   private drawSinksAndConnectedAnchors(sinks: Array<Sink>): void {
     sinks.forEach((sink) => {
-      const mapSink = this.drawDevice(DevicesComponent.buildSinkDrawConfiguration(sink),
+      const mapSink = this.drawDevice(DrawBuilder.buildSinkDrawConfiguration(sink),
         {x: sink.x, y: sink.y});
       sink.anchors.forEach((anchor) => {
-        const mapAnchor = this.drawDevice(DevicesComponent.buildAnchorDrawConfiguration(anchor),
+        const mapAnchor = this.drawDevice(DrawBuilder.buildAnchorDrawConfiguration(anchor),
           {x: anchor.x, y: anchor.y});
         const identifier = '' + sink.shortId + anchor.shortId;
-        const connectingLine = this.createConnection(mapSink, mapAnchor, DevicesComponent.buildConnectingLineConfiguration(identifier));
+        const connectingLine = this.createConnection(mapSink, mapAnchor, DrawBuilder.buildConnectingLineConfiguration(identifier));
         this.connectingLines.push(connectingLine);
       });
     });
@@ -813,7 +782,7 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
 
   private drawAnchorsWithoutConnection(anchors: Array<Anchor>): void {
     anchors.forEach((anchor) => {
-      this.drawDevice(DevicesComponent.buildAnchorDrawConfiguration(anchor), {x: anchor.x, y: anchor.y});
+      this.drawDevice(DrawBuilder.buildAnchorDrawConfiguration(anchor), {x: anchor.x, y: anchor.y});
     });
   }
 
@@ -887,15 +856,15 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
 
   private placeDeviceOnMap(device: Anchor | Sink, coordinates: Point): void {
     const drawOptions = (DevicesComponent.isSinkType(device))
-      ? DevicesComponent.buildSinkDrawConfiguration(<Sink>device)
-      : DevicesComponent.buildAnchorDrawConfiguration(<Anchor>device);
+      ? DrawBuilder.buildSinkDrawConfiguration(<Sink>device)
+      : DrawBuilder.buildAnchorDrawConfiguration(<Anchor>device);
     drawOptions.display = `block`;
     const expandableMapObject = this.drawDevice(drawOptions, coordinates);
     let connectingLine: ConnectingLine;
     if (!!this.chosenSink && !DevicesComponent.isSinkType(device)) {
       const identifier = '' + this.chosenSink.shortId + device.shortId;
       const mapSink = this.findMapDevice(this.chosenSink.shortId);
-      connectingLine = this.createConnection(mapSink, expandableMapObject, DevicesComponent.buildConnectingLineConfiguration(identifier));
+      connectingLine = this.createConnection(mapSink, expandableMapObject, DrawBuilder.buildConnectingLineConfiguration(identifier));
       DevicesComponent.showSingleConnection(connectingLine);
       this.connectingLines.push(connectingLine);
     }
