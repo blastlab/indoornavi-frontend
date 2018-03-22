@@ -8,8 +8,13 @@ import {IconService, NaviIcons} from '../../services/drawing/icon.service';
 @Injectable()
 export class MapObjectService {
   private objects: Map<number, SvgGroupWrapper> = new Map();
+  private icons: Map<number, Icon> = new Map();
   // TODO: standardize pointRadius for all points that will be drawn on the map
   private pointRadius: number = 5;
+  private marker: Marker = {
+    icon: NaviIcons.MARKER,
+    translation: {x: 12, y: 22}
+  };
 
   constructor(
     private iconService: IconService,
@@ -41,17 +46,30 @@ export class MapObjectService {
         this.objects.get(objectMetadata.object.id).addPolygon(points);
         break;
       case 'MARKER':
-        console.log(objectMetadata.object.id);
-        this.objects.get(objectMetadata.object.id).addIcon(points[0], this.iconService.getIcon(NaviIcons.TAG));
+        this.addMarker(objectMetadata, points);
         break;
     }
   }
 
-  fillColor(objectMetadata: MapObjectMetadata): void {
+  addMarker(objectMetadata: MapObjectMetadata, points: Point[]): void {
+    let icon: Icon = {path: this.iconService.getIcon(this.marker.icon), point: {x: points[0].x - this.marker.translation.x, y: points[0].y - this.marker.translation.y}};
+    if (this.icons.get(objectMetadata.object.id)) {
+      icon = this.icons.get(objectMetadata.object.id);
+    } else {
+      this.icons.set(objectMetadata.object.id, icon);
+    }
+    if (this.objects.get(objectMetadata.object.id).getGroup()) {
+      console.log(this.objects.get(objectMetadata.object.id).getGroup().select('svg'));
+    }
+    this.objects.get(objectMetadata.object.id)
+      .addIcon(icon.point, icon.path);
+  }
+
+  setFillColor(objectMetadata: MapObjectMetadata): void {
     this.objects.get(objectMetadata.object.id).getGroup().attr('fill', (<Color>objectMetadata.object).color);
   }
 
-  strokeColor(objectMetadata: MapObjectMetadata): void {
+  setStrokeColor(objectMetadata: MapObjectMetadata): void {
     this.objects.get(objectMetadata.object.id).getGroup().selectAll('line').nodes().forEach(node => {
       d3.select(node).attr('stroke', (<Color>objectMetadata.object).color);
     });
@@ -60,8 +78,15 @@ export class MapObjectService {
     });
   }
 
-  opacity(objectMetadata: MapObjectMetadata): void {
+  setOpacity(objectMetadata: MapObjectMetadata): void {
     this.objects.get(objectMetadata.object.id).getGroup().attr('fill-opacity', (<Opacity>objectMetadata.object).opacity);
+  }
+
+  setIcon(objectMetadata: MapObjectMetadata): void {
+    const element: d3.selection = this.objects.get(objectMetadata.object.id).getGroup();
+    const icon = (<IconDto>objectMetadata.object).icon;
+    this.icons.set(element.id, icon);
+    console.log(element);
   }
 
 }
@@ -85,4 +110,18 @@ interface Opacity extends MapObject {
 interface MapObjectMetadata {
   type: string;
   object: MapObject
+}
+
+interface Marker {
+  icon: string;
+  translation: Point;
+}
+
+interface IconDto extends MapObject {
+  icon: Icon;
+}
+
+interface Icon {
+  path: string;
+  point: Point;
 }

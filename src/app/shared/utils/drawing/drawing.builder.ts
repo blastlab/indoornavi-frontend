@@ -32,6 +32,7 @@ export class SvgGroupWrapper {
       .append('text')
       .attr('x', coordinates.x)
       .attr('y', coordinates.y)
+      .attr('id', 'marker')
       .attr('fill', 'black')
       .text(text);
     this.addElement(ElementType.TEXT, element);
@@ -193,4 +194,15 @@ export enum ElementType {
   POLYGON,
   CIRCLE,
   LINE
+}
+
+export enum Position {
+  TOP,
+  RIGHT,
+  BOTTOM,
+  LEFT,
+  TOP_RIGHT,
+  TOP_LEFT,
+  BOTTOM_RIGHT,
+  BOTTOM_LEFT
 }
