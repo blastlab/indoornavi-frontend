@@ -52,17 +52,18 @@ export class MapObjectService {
   }
 
   addMarker(objectMetadata: MapObjectMetadata, points: Point[]): void {
-    let icon: Icon = {path: this.iconService.getIcon(this.marker.icon), point: {x: points[0].x - this.marker.translation.x, y: points[0].y - this.marker.translation.y}};
+    let markerIcon: Icon = {path: this.iconService.getIcon(this.marker.icon), point: {x: points[0].x - this.marker.translation.x, y: points[0].y - this.marker.translation.y}};
     if (this.icons.get(objectMetadata.object.id)) {
-      icon = this.icons.get(objectMetadata.object.id);
+      markerIcon = this.icons.get(objectMetadata.object.id);
+      markerIcon.point = {x: points[0].x - markerIcon.point.x, y: points[0].y - markerIcon.point.y}
     } else {
-      this.icons.set(objectMetadata.object.id, icon);
+      this.icons.set(objectMetadata.object.id, markerIcon);
     }
-    if (this.objects.get(objectMetadata.object.id).getGroup()) {
-      console.log(this.objects.get(objectMetadata.object.id).getGroup().select('svg'));
+    if (!!this.objects.get(objectMetadata.object.id).getGroup().select('svg')) {
+      this.objects.get(objectMetadata.object.id).getGroup().select('svg').remove();
     }
     this.objects.get(objectMetadata.object.id)
-      .addIcon(icon.point, icon.path);
+      .addIcon(markerIcon.point, markerIcon.path);
   }
 
   setFillColor(objectMetadata: MapObjectMetadata): void {
@@ -83,10 +84,8 @@ export class MapObjectService {
   }
 
   setIcon(objectMetadata: MapObjectMetadata): void {
-    const element: d3.selection = this.objects.get(objectMetadata.object.id).getGroup();
     const icon = (<IconDto>objectMetadata.object).icon;
-    this.icons.set(element.id, icon);
-    console.log(element);
+    this.icons.set(objectMetadata.object.id, icon);
   }
 
 }
