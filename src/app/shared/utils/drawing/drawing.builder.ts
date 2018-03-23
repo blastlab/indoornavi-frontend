@@ -195,14 +195,3 @@ export enum ElementType {
   CIRCLE,
   LINE
 }
-
-export enum Position {
-  TOP,
-  RIGHT,
-  BOTTOM,
-  LEFT,
-  TOP_RIGHT,
-  TOP_LEFT,
-  BOTTOM_RIGHT,
-  BOTTOM_LEFT
-}

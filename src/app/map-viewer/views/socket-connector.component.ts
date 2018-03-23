@@ -315,6 +315,12 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         case 'setIcon':
           this.mapObjectService.setIcon(data['args']);
           break;
+        case 'setLabel':
+          this.mapObjectService.setLabel(data['args']);
+          break;
+        case 'setInfoWindow':
+          this.mapObjectService.setLabel(data['args']);
+          break;
       }
     }
   }
