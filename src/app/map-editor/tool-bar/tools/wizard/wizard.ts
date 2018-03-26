@@ -1,4 +1,4 @@
-import {Component, Input, NgZone, OnInit} from '@angular/core';
+import {Component, Input, NgZone, OnDestroy, OnInit} from '@angular/core';
 import {ToolName} from '../tools.enum';
 import {Tool} from '../tool';
 import {TranslateService} from '@ngx-translate/core';
@@ -8,7 +8,7 @@ import {SocketService} from '../../../../shared/services/socket/socket.service';
 import {FirstStep} from './first-step/first-step';
 import {SecondStep} from './second-step/second-step';
 import {ActionBarService} from '../../../action-bar/actionbar.service';
-import {ObjectParams, ScaleCalculations, SocketMessage, WizardData, WizardStep} from './wizard.type';
+import {ScaleCalculations, SocketMessage, WizardData, WizardStep} from './wizard.type';
 import {Floor} from '../../../../floor/floor.type';
 import {SelectItem} from 'primeng/primeng';
 import {ThirdStep} from './third-step/third-step';
@@ -17,29 +17,30 @@ import * as d3 from 'd3';
 import {ToolbarService} from '../../toolbar.service';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
 import {AcceptButtonsService} from '../../../../shared/components/accept-buttons/accept-buttons.service';
-import {DrawBuilder} from '../../../../shared/utils/drawing/drawing.builder';
-import {IconService, NaviIcons} from '../../../../shared/services/drawing/icon.service';
-import {MapEditorService} from '../../../map.editor.service';
 import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
 import {ScaleService} from '../../../../shared/services/scale/scale.service';
 import {Scale, ScaleDto} from '../scale/scale.type';
 import {Geometry} from '../../../../shared/utils/helper/geometry';
 import {Anchor, Sink} from '../../../../device/device.type';
+import {DrawConfiguration} from '../../../../map-viewer/publication.type';
+import {MapLoaderInformerService} from '../../../../shared/services/map-loader-informer/map-loader-informer.service';
+import {DevicePlacerController} from '../devices/device-placer.controller';
+import {IconService, NaviIcons} from '../../../../shared/services/drawing/icon.service';
+import {DrawBuilder} from '../../../../shared/utils/drawing/drawing.builder';
 
 
 @Component({
   selector: 'app-wizard',
   templateUrl: './wizard.html'
 })
-export class WizardComponent implements Tool, OnInit {
+export class WizardComponent implements Tool, OnInit, OnDestroy {
   @Input() floor: Floor;
   displayDialog: boolean = false;
-  options: SelectItem[] = [];
-  selected: number;
+  options: SelectItem[];
+  selectedItemId: number;
   placeholder: string;
   title: string;
   isLoading: boolean = true;
-  displayError: boolean;
   active: boolean = false;
   disabled: boolean = true;
   private scale: Scale;
@@ -47,6 +48,8 @@ export class WizardComponent implements Tool, OnInit {
   private activeStep: WizardStep;
   private currentIndex: number = 0;
   private socketSubscription: Subscription;
+  private map: d3.selection;
+  private mapLoadedSubscription: Subscription;
   private wizardData: WizardData = new WizardData();
   private hintMessage: string;
   private scaleCalculations: ScaleCalculations;
@@ -56,18 +59,19 @@ export class WizardComponent implements Tool, OnInit {
               private socketService: SocketService,
               private acceptButtons: AcceptButtonsService,
               private toolbarService: ToolbarService,
+              private iconService: IconService,
+              private devicePlacerController: DevicePlacerController,
+              private mapLoaderInformer: MapLoaderInformerService,
               private hintBarService: HintBarService,
               private actionBarService: ActionBarService,
-              private iconService: IconService,
               private zoomService: ZoomService,
-              private scaleService: ScaleService
-              ) {
+              private scaleService: ScaleService) {
   }
 
   ngOnInit() {
     this.setTranslations();
     this.steps = [new FirstStep(this.floor.id), new SecondStep(), new ThirdStep()];
-    this.checkIsLoading();
+    this.getMapSelection();
     this.scaleService.scaleChanged.subscribe((scale: ScaleDto): void => {
       this.scale = new Scale(scale);
       if (!!this.scale.start && !!this.scale.stop) {
@@ -79,6 +83,17 @@ export class WizardComponent implements Tool, OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    this.mapLoadedSubscription.unsubscribe();
+    this.mapLoadedSubscription = null;
+  }
+
+  private getMapSelection(): void {
+    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapLoaded) => {
+      this.map = mapLoaded.container;
+    });
+  }
+
   nextStep(): void {
     if (!this.activeStep) { // init wizard
       this.toolbarService.emitToolChanged(this);
@@ -86,7 +101,7 @@ export class WizardComponent implements Tool, OnInit {
       this.openSocket();
     } else {
       this.activeStep.afterPlaceOnMap();
-      this.activeStep.updateWizardData(this.wizardData, this.selected, this.scaleCalculations);
+      this.activeStep.updateWizardData(this.wizardData, this.selectedItemId, this.scaleCalculations);
       const message: SocketMessage = this.activeStep.prepareToSend(this.wizardData);
       this.socketService.send(message);
       this.currentIndex += 1;
@@ -115,36 +130,34 @@ export class WizardComponent implements Tool, OnInit {
     this.currentIndex -= 1;
     this.activeStep = this.steps[this.currentIndex];
     this.activeStep.clean();
-    this.activeStep.updateWizardData(this.wizardData, this.selected, this.scaleCalculations);
+    this.activeStep.updateWizardData(this.wizardData, this.selectedItemId, this.scaleCalculations);
     const message: SocketMessage = this.activeStep.prepareToSend(this.wizardData);
     this.socketService.send(message);
     this.stepChanged();
   }
 
   placeOnMap(): void {
-    if (!this.selected) { // Do not allow to go to the next step if there is no selected item
-      this.displayError = true;
-      return;
-    }
     this.hintBarService.sendHintMessage(this.activeStep.getBeforePlaceOnMapHint());
-    this.displayError = false;
-    this.activeStep.beforePlaceOnMap(this.selected);
+    this.activeStep.beforePlaceOnMap(this.selectedItemId);
     this.displayDialog = false;
-    const map: d3.selector = d3.select(`#${MapEditorService.MAP_LAYER_SELECTOR_ID}`);
-    map.style('cursor', 'crosshair');
-    map.on('click', () => {
+    this.map.style('cursor', 'crosshair');
+    this.map.on('click', () => {
       const coordinates: Point = this.zoomService.calculateTransition({x: d3.event.offsetX, y: d3.event.offsetY});
-      const device: ObjectParams = this.activeStep.getDrawingObjectParams(this.selected);
-      const drawBuilder = new DrawBuilder(map, {id: device.id, clazz: device.groupClass});
-      drawBuilder
-        .createGroup()
-        .addIcon({x: -12, y: -12}, this.iconService.getIcon(NaviIcons.POINTER))
-        .addIcon({x: 0, y: 0}, this.iconService.getIcon(device.iconName))
-        .addText({x: 0, y: 36}, device.id)
+      const deviceConfig: DrawConfiguration = this.activeStep.getDrawConfiguration(this.selectedItemId);
+      const drawBuilder = new DrawBuilder(this.map, deviceConfig);
+      const drawnDevice = drawBuilder.createGroup();
+      drawnDevice
+        .addPointer({x: -12, y: -12}, this.iconService.getIcon(NaviIcons.POINTER))
+        .addText({x: 0, y: 36}, deviceConfig.id)
         .place({x: coordinates.x, y: coordinates.y})
         .setDraggable();
-      map.on('click', null);
-      map.style('cursor', 'default');
+      if (deviceConfig.clazz.includes(`sink`)) {
+        drawnDevice.addIcon({x: 5, y: 5}, this.iconService.getIcon(NaviIcons.SINK));
+      } else if (deviceConfig.clazz.includes(`anchor`)) {
+        drawnDevice.addIcon({x: 5, y: 5}, this.iconService.getIcon(NaviIcons.ANCHOR));
+      }
+      this.map.on('click', null);
+      this.map.style('cursor', 'default');
       this.showAcceptButtons();
     });
   }
@@ -195,7 +208,7 @@ export class WizardComponent implements Tool, OnInit {
 
   private cleanBeforeClosingWizard(): void {
     if (!!this.activeStep) {
-      this.activeStep.setSelectedItemId(this.selected);
+      this.activeStep.setSelectedItemId(this.selectedItemId);
       this.activeStep.clean();
     }
     this.steps.forEach((step: WizardStep) => {
@@ -204,14 +217,13 @@ export class WizardComponent implements Tool, OnInit {
     });
     this.activeStep = null;
     this.displayDialog = false;
-    this.selected = undefined;
-    this.displayError = false;
+    this.selectedItemId = undefined;
   }
 
   private stepChanged() {
     this.placeholder = this.activeStep.getPlaceholder();
     this.title = this.activeStep.getTitle();
-    this.selected = undefined;
+    this.selectedItemId = undefined;
     this.options = [];
     this.isLoading = true;
   }
@@ -221,7 +233,7 @@ export class WizardComponent implements Tool, OnInit {
     this.acceptButtons.publishVisibility(true);
     this.acceptButtons.decisionMade.first().subscribe(
       data => {
-        this.activeStep.setSelectedItemId(this.selected);
+        this.activeStep.setSelectedItemId(this.selectedItemId);
         if (data) {
           this.removeGroupDrag();
           this.nextStep();
@@ -238,6 +250,7 @@ export class WizardComponent implements Tool, OnInit {
       this.socketSubscription = stream.subscribe((message: any) => {
         this.ngZone.run(() => {
           this.options = this.activeStep.load(this.options, message, this.scaleCalculations);
+          this.isLoading = !this.options.length;
         });
       });
     });
@@ -250,10 +263,9 @@ export class WizardComponent implements Tool, OnInit {
   }
 
   private removeGroupDrag(): void {
-    const map = d3.select(`#${MapEditorService.MAP_LAYER_SELECTOR_ID}`);
     const selections: d3.selection[] = [
-      map.select('#anchor' + this.selected),
-      map.select('#sink' + this.selected)
+      this.map.select('#anchor' + this.selectedItemId),
+      this.map.select('#sink' + this.selectedItemId)
     ];
     selections.forEach((selection: d3.selection): void => {
       if (!selection.empty()) {
@@ -262,15 +274,7 @@ export class WizardComponent implements Tool, OnInit {
         selection.select('.pointer').attr('fill', 'rgba(0,0,0,0.7)');
       }
     });
-    map.style('cursor', 'default');
-  }
-
-  private checkIsLoading(): void {
-    setInterval((): void => {
-      if (this.options.length) {
-        this.isLoading = false;
-      }
-    }, 300);
+    this.map.style('cursor', 'default');
   }
 
   private setTranslations(): void {

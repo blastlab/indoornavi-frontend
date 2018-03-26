@@ -30,7 +30,7 @@ export class DevicePlacerController {
   removedDevice = this.removeListDevice.asObservable();
   listVisibility = this.showDevicesList.asObservable();
 
-  deviceDropped(): void {
+  devicePlacement(): void {
     this.droppedOnMap.next();
   }
 
