@@ -8,7 +8,7 @@ import {IconService, NaviIcons} from '../../services/drawing/icon.service';
 @Injectable()
 export class MapObjectService {
   private objects: Map<number, SvgGroupWrapper> = new Map();
-  private icons: Map<number, Icon> = new Map();
+  private icons: Map<number, string> = new Map();
   private labels: Map<number, string> = new Map();
   private markersPlacement: Map<number, Point[]> = new Map();
   private infoWindows: Map<number, InfoWindow> = new Map();
@@ -55,27 +55,27 @@ export class MapObjectService {
   }
 
   setMarker(objectMetadata: MapObjectMetadata, points: Point[]): void {
-    let markerIcon: Icon = {path: this.iconService.getIcon(this.marker.icon), point: {x: points[0].x - this.marker.translation.x, y: points[0].y - this.marker.translation.y}};
-    if (!!this.icons.get(objectMetadata.object.id)) {
-      markerIcon = this.icons.get(objectMetadata.object.id);
-      markerIcon.point = {x: points[0].x - markerIcon.point.x, y: points[0].y - markerIcon.point.y};
-    } else {
-      this.icons.set(objectMetadata.object.id, markerIcon);
-    }
     if (!!this.markersPlacement.get(objectMetadata.object.id)) {
       this.objects.get(objectMetadata.object.id).getGroup().select('svg').remove();
     }
+    if (!!this.icons.get(objectMetadata.object.id)) {
+      this.objects.get(objectMetadata.object.id).addCustomIcon(points[0], this.icons.get(objectMetadata.object.id));
+    } else {
+      const point: Point = {
+        x: points[0].x - this.marker.translation.x,
+        y: points[0].y - this.marker.translation.y
+      } ;
+      this.objects.get(objectMetadata.object.id)
+        .addIcon(point, this.iconService.getIcon(this.marker.icon));
+    }
     this.markersPlacement.set(objectMetadata.object.id, points);
-    this.objects.get(objectMetadata.object.id)
-      .addIcon(markerIcon.point, markerIcon.path);
   }
 
-  reloadIcon (objectMetadata: MapObjectMetadata, icon: Icon): void {
+  reloadIcon (objectMetadata: MapObjectMetadata, icon: string): void {
     const coordinates: Point = this.markersPlacement.get(objectMetadata.object.id)[0];
     const element = this.objects.get(objectMetadata.object.id);
-    icon.point = {x: coordinates.x - icon.point.x , y: coordinates.y - icon.point.y};
     element.getGroup().select('svg').remove();
-    element.addIcon(icon.point, icon.path);
+    element.addCustomIcon(coordinates, icon);
   }
 
   setFillColor(objectMetadata: MapObjectMetadata): void {
@@ -96,9 +96,9 @@ export class MapObjectService {
   }
 
   setIcon(objectMetadata: MapObjectMetadata): void {
-    this.icons.set(objectMetadata.object.id, (<IconDto>objectMetadata.object).icon);
+    this.icons.set(objectMetadata.object.id, (<Icon>objectMetadata.object).icon);
     if (!!this.markersPlacement.get(objectMetadata.object.id)) {
-      this.reloadIcon(objectMetadata, (<IconDto>objectMetadata.object).icon);
+      this.reloadIcon(objectMetadata, (<Icon>objectMetadata.object).icon);
     }
   }
 
@@ -144,13 +144,8 @@ interface Marker {
   translation: Point;
 }
 
-interface IconDto extends MapObject {
-  icon: Icon;
-}
-
-interface Icon {
-  path: string;
-  point: Point;
+interface Icon extends MapObject {
+  icon: string;
 }
 
 interface Label extends MapObject {

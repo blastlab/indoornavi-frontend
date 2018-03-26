@@ -27,6 +27,28 @@ export class SvgGroupWrapper {
     return this;
   }
 
+  addCustomIcon(coordinates: Point, image: string): SvgGroupWrapper {
+    const element: d3.selection = this.group
+      .append('svg:image')
+      .attr('xlink:href', image)
+      .attr('x', coordinates.x - 10)
+      .attr('y', coordinates.y - 20)
+      .attr('width', 20)
+      .attr('height', 20)
+      // .html(icon)
+      .attr('stroke', 'black')
+      .attr('fill', 'black');
+    this.addElement(ElementType.IMAGE, element);
+    return this;
+  }
+
+  translate(vector: Point): SvgGroupWrapper {
+    const element: d3.selection = this.group
+      .attr('x', - vector.x)
+      .attr('y', - vector.y);
+    return this;
+  }
+
   addText(coordinates: Point, text: string): SvgGroupWrapper {
     const element: d3.selection = this.group
       .append('text')
@@ -193,5 +215,6 @@ export enum ElementType {
   TEXT,
   POLYGON,
   CIRCLE,
-  LINE
+  LINE,
+  IMAGE
 }
