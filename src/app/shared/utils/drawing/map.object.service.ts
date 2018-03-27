@@ -32,6 +32,10 @@ export class MapObjectService {
   remove(objectMetadata: MapObjectMetadata): void {
     this.objects.get(objectMetadata.object.id).remove();
     this.objects.delete(objectMetadata.object.id);
+    this.labels.delete(objectMetadata.object.id);
+    this.icons.delete(objectMetadata.object.id);
+    this.markersPlacement.delete(objectMetadata.object.id);
+    this.infoWindows.delete(objectMetadata.object.id);
   }
 
   draw (objectMetadata: MapObjectMetadata, scale): void {
@@ -56,8 +60,7 @@ export class MapObjectService {
 
   setMarker(objectMetadata: MapObjectMetadata, points: Point[]): void {
     if (!!this.markersPlacement.get(objectMetadata.object.id)) {
-      // TODO: buf at thi point
-      this.objects.get(objectMetadata.object.id).getGroup().remove();
+      this.objects.get(objectMetadata.object.id).getGroup().select('svg').remove();
     }
     if (!!this.icons.get(objectMetadata.object.id)) {
       this.objects.get(objectMetadata.object.id).addCustomIcon(points[0], this.icons.get(objectMetadata.object.id));
@@ -71,7 +74,7 @@ export class MapObjectService {
     }
     this.markersPlacement.set(objectMetadata.object.id, points);
     if (!!this.labels.get(objectMetadata.object.id)) {
-      this.setLabel(objectMetadata);
+      // this.setLabel(objectMetadata);
     }
   }
 
@@ -81,7 +84,7 @@ export class MapObjectService {
     element.getGroup().select('svg').remove();
     element.addCustomIcon(coordinates, icon);
     if (!!this.labels.get(objectMetadata.object.id)) {
-      this.setLabel(objectMetadata);
+      // this.setLabel(objectMetadata);
     }
   }
 
