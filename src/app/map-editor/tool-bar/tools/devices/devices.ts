@@ -2,7 +2,6 @@ import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {Tool} from '../tool';
 import {ToolName} from '../tools.enum';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
-import {IconService, NaviIcons} from '../../../../shared/services/drawing/icon.service';
 import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
 import {ToolbarService} from '../../toolbar.service';
 import {MapLoaderInformerService} from '../../../../shared/services/map-loader-informer/map-loader-informer.service';
@@ -24,13 +23,15 @@ import {DrawBuilder} from '../../../../shared/utils/drawing/drawing.builder';
 import {Anchor, Sink} from '../../../../device/device.type';
 import {DrawConfiguration} from '../../../../map-viewer/publication.type';
 import {MapEditorService} from '../../../map.editor.service';
+import {CommonDevice} from '../../../../shared/utils/drawing/common/device';
+import {IconService} from '../../../../shared/services/drawing/icon.service';
 
 @Component({
   selector: 'app-devices',
   templateUrl: './devices.html',
   styleUrls: ['../tool.css', './devices.css']
 })
-export class DevicesComponent implements Tool, OnInit, OnDestroy {
+export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDestroy {
   active: boolean = false;
   disabled: boolean = true;
   sinkRemoval: Sink;
@@ -107,6 +108,7 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
   }
 
   constructor(public translate: TranslateService,
+              protected icons: IconService,
               private devicePlacerController: DevicePlacerController,
               private accButtons: AcceptButtonsService,
               private deviceService: DeviceService,
@@ -115,8 +117,8 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
               private toolbarService: ToolbarService,
               private zoomService: ZoomService,
               private mapEditorService: MapEditorService,
-              private icons: IconService,
               private hintBarService: HintBarService) {
+    super(icons);
     this.setTranslations();
   }
 
@@ -813,23 +815,8 @@ export class DevicesComponent implements Tool, OnInit, OnDestroy {
   private drawDevice(deviceConfig: DrawConfiguration,
                      coordinates: Point): Expandable {
     const drawBuilder = new DrawBuilder(this.map, deviceConfig);
-    const text = (deviceConfig.name !== null)
-      ? `${deviceConfig.name}-${deviceConfig.id}`
-      : `${deviceConfig.clazz}-${deviceConfig.id}`;
-    const droppedDevice = drawBuilder.createGroup()
-      .place(coordinates)
-      .addPointer({x: -12, y: -12}, this.icons.getIcon(NaviIcons.POINTER))
-      .addText({x: 5, y: -5}, text);
-    if (deviceConfig.clazz.includes(`sink`)) {
-      droppedDevice.addIcon({x: 5, y: 5}, this.icons.getIcon(NaviIcons.SINK));
-    } else if (deviceConfig.clazz.includes(`anchor`)) {
-      droppedDevice.addIcon({x: 5, y: 5}, this.icons.getIcon(NaviIcons.ANCHOR));
-    }
-    const mapDevice: Expandable = {
-      groupCreated: droppedDevice,
-      selectable: new SelectableDevice(droppedDevice),
-      connectable: new ConnectableDevice(droppedDevice)
-    };
+    const droppedDevice = this.drawEditorDevice(drawBuilder, deviceConfig, coordinates);
+    const mapDevice = DevicesComponent.createConnectableDevice(droppedDevice);
     this.mapDevices.push(mapDevice);
     this.subscribeForDraggedOnMapEvent(mapDevice);
     return mapDevice;

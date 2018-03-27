@@ -25,15 +25,16 @@ import {Anchor, Sink} from '../../../../device/device.type';
 import {DrawConfiguration} from '../../../../map-viewer/publication.type';
 import {MapLoaderInformerService} from '../../../../shared/services/map-loader-informer/map-loader-informer.service';
 import {DevicePlacerController} from '../devices/device-placer.controller';
-import {IconService, NaviIcons} from '../../../../shared/services/drawing/icon.service';
+import {IconService} from '../../../../shared/services/drawing/icon.service';
 import {DrawBuilder} from '../../../../shared/utils/drawing/drawing.builder';
+import {CommonDevice} from '../../../../shared/utils/drawing/common/device';
 
 
 @Component({
   selector: 'app-wizard',
   templateUrl: './wizard.html'
 })
-export class WizardComponent implements Tool, OnInit, OnDestroy {
+export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDestroy {
   @Input() floor: Floor;
   displayDialog: boolean = false;
   options: SelectItem[];
@@ -55,17 +56,18 @@ export class WizardComponent implements Tool, OnInit, OnDestroy {
   private scaleCalculations: ScaleCalculations;
 
   constructor(public translate: TranslateService,
+              protected iconService: IconService,
               private ngZone: NgZone,
               private socketService: SocketService,
               private acceptButtons: AcceptButtonsService,
               private toolbarService: ToolbarService,
-              private iconService: IconService,
-              private devicePlacerController: DevicePlacerController,
               private mapLoaderInformer: MapLoaderInformerService,
               private hintBarService: HintBarService,
               private actionBarService: ActionBarService,
               private zoomService: ZoomService,
+              private placerController: DevicePlacerController,
               private scaleService: ScaleService) {
+    super(iconService);
   }
 
   ngOnInit() {
@@ -145,17 +147,9 @@ export class WizardComponent implements Tool, OnInit, OnDestroy {
       const coordinates: Point = this.zoomService.calculateTransition({x: d3.event.offsetX, y: d3.event.offsetY});
       const deviceConfig: DrawConfiguration = this.activeStep.getDrawConfiguration(this.selectedItemId);
       const drawBuilder = new DrawBuilder(this.map, deviceConfig);
-      const drawnDevice = drawBuilder.createGroup();
-      drawnDevice
-        .addPointer({x: -12, y: -12}, this.iconService.getIcon(NaviIcons.POINTER))
-        .addText({x: 0, y: 36}, deviceConfig.id)
-        .place({x: coordinates.x, y: coordinates.y})
-        .setDraggable();
-      if (deviceConfig.clazz.includes(`sink`)) {
-        drawnDevice.addIcon({x: 5, y: 5}, this.iconService.getIcon(NaviIcons.SINK));
-      } else if (deviceConfig.clazz.includes(`anchor`)) {
-        drawnDevice.addIcon({x: 5, y: 5}, this.iconService.getIcon(NaviIcons.ANCHOR));
-      }
+      const wrapper = this.drawEditorDevice(drawBuilder, deviceConfig, coordinates);
+      const drawnDevice = WizardComponent.createConnectableDevice(wrapper);
+      // TODO save expandable to send it to device placer via controller
       this.map.on('click', null);
       this.map.style('cursor', 'default');
       this.showAcceptButtons();
@@ -204,6 +198,7 @@ export class WizardComponent implements Tool, OnInit, OnDestroy {
       y: this.wizardData.sinkPosition.y,
       anchors: anchors
     });
+    // TODO send to placerController probably here
   }
 
   private cleanBeforeClosingWizard(): void {
@@ -264,8 +259,7 @@ export class WizardComponent implements Tool, OnInit, OnDestroy {
 
   private removeGroupDrag(): void {
     const selections: d3.selection[] = [
-      this.map.select('#anchor' + this.selectedItemId),
-      this.map.select('#sink' + this.selectedItemId)
+      this.map.select((`[id='${this.selectedItemId}']`)),
     ];
     selections.forEach((selection: d3.selection): void => {
       if (!selection.empty()) {
