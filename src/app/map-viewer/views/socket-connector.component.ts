@@ -124,7 +124,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         }
         this.publishedService.checkOrigin(params['api_key'], event.origin).subscribe((verified: boolean): void => {
           if (verified && !!this.scale) {
-            console.log(event);
             this.handleCommands(event);
           }
         });
@@ -236,7 +235,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   };
 
   private removeNotVisibleTags (): void {
-    this.visibleTags.forEach((value: boolean, key: number, map: Map<number, boolean>): void => {
+    this.visibleTags.forEach((value: boolean, key: number): void => {
       if (!value && this.isOnMap(key)) {
         this.tagsOnMap.getValue(key).remove();
         this.tagsOnMap.remove(key);
@@ -279,7 +278,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   }
 
   private handleCommands(event: MessageEvent): void {
-    console.log(event.data);
     const data = event.data;
     if ('command' in data) {
       switch (data['command']) {
@@ -325,6 +323,9 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           break;
         case 'setInfoWindow':
           this.mapObjectService.setInfoWindow(data['args']);
+          break;
+        case 'addMarkerEventListener':
+          this.mapObjectService.addEventListener(data['args']);
           break;
       }
     }
