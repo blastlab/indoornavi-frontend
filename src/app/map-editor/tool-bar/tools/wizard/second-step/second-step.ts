@@ -44,6 +44,7 @@ export class SecondStep implements WizardStep {
     };
   }
 
+  // TODO fix bug with boxMargin
   beforePlaceOnMap (selectedItem: number): void {
     const map = d3.select('#map');
     const boxMargin = 20;
