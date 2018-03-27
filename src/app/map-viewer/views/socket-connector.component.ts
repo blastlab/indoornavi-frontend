@@ -80,6 +80,11 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.translateService.setDefaultLang('en');
+    this.subscribeToMapParametersChange();
+    this.init();
+  }
+
+  private subscribeToMapParametersChange() {
     this.route.params.subscribe((params: Params) => {
       const floorId = +params['id'];
       this.floorService.getFloor(floorId).subscribe((floor: Floor): void => {
@@ -109,7 +114,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         }
       });
     });
-    this.init();
   }
 
   ngAfterViewInit(): void {
@@ -119,7 +123,8 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           return;
         }
         this.publishedService.checkOrigin(params['api_key'], event.origin).subscribe((verified: boolean): void => {
-          if (verified) {
+          if (verified && !!this.scale) {
+            console.log(event);
             this.handleCommands(event);
           }
         });
@@ -274,7 +279,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   }
 
   private handleCommands(event: MessageEvent): void {
-    console.log(event);
     const data = event.data;
     if ('command' in data) {
       switch (data['command']) {
@@ -319,7 +323,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           this.mapObjectService.setLabel(data['args']);
           break;
         case 'setInfoWindow':
-          this.mapObjectService.setLabel(data['args']);
+          this.mapObjectService.setInfoWindow(data['args']);
           break;
       }
     }

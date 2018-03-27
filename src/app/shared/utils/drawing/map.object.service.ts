@@ -56,7 +56,8 @@ export class MapObjectService {
 
   setMarker(objectMetadata: MapObjectMetadata, points: Point[]): void {
     if (!!this.markersPlacement.get(objectMetadata.object.id)) {
-      this.objects.get(objectMetadata.object.id).getGroup().select('svg').remove();
+      // TODO: buf at thi point
+      this.objects.get(objectMetadata.object.id).getGroup().remove();
     }
     if (!!this.icons.get(objectMetadata.object.id)) {
       this.objects.get(objectMetadata.object.id).addCustomIcon(points[0], this.icons.get(objectMetadata.object.id));
@@ -69,6 +70,9 @@ export class MapObjectService {
         .addIcon(point, this.iconService.getIcon(this.marker.icon));
     }
     this.markersPlacement.set(objectMetadata.object.id, points);
+    if (!!this.labels.get(objectMetadata.object.id)) {
+      this.setLabel(objectMetadata);
+    }
   }
 
   reloadIcon (objectMetadata: MapObjectMetadata, icon: string): void {
@@ -76,6 +80,9 @@ export class MapObjectService {
     const element = this.objects.get(objectMetadata.object.id);
     element.getGroup().select('svg').remove();
     element.addCustomIcon(coordinates, icon);
+    if (!!this.labels.get(objectMetadata.object.id)) {
+      this.setLabel(objectMetadata);
+    }
   }
 
   setFillColor(objectMetadata: MapObjectMetadata): void {
@@ -103,9 +110,13 @@ export class MapObjectService {
   }
 
   setLabel(objectMetadata: MapObjectMetadata): void {
-    this.labels.set(objectMetadata.object.id, (<Label>objectMetadata.object).label);
-    if (!!this.markersPlacement.get(objectMetadata.object.id)) {
-      // reload label
+    if (!!(<Label>objectMetadata.object).label) {
+      this.labels.set(objectMetadata.object.id, (<Label>objectMetadata.object).label);
+    }
+    if (!!this.markersPlacement.get(objectMetadata.object.id) && this.labels.get(objectMetadata.object.id)) {
+      const coordinates: Point = this.markersPlacement.get(objectMetadata.object.id)[0];
+      const coordinatesTranslated: Point = {x: coordinates.x + SvgGroupWrapper.customIconSize.width / 2, y: coordinates.y - SvgGroupWrapper.customIconSize.height / 2};
+      this.objects.get(objectMetadata.object.id).addText(coordinatesTranslated, (<Label>objectMetadata.object).label);
     }
   }
 

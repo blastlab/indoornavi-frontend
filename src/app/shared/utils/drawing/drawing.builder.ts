@@ -3,6 +3,10 @@ import {Point} from '../../../map-editor/map.type';
 import {DrawConfiguration} from '../../../map-viewer/publication.type';
 
 export class SvgGroupWrapper {
+  static customIconSize: BoxSize = {
+    width: 20,
+    height: 20
+  };
   private elements: Map<ElementType, d3.selection[]> = new Map();
 
   constructor(private group: d3.selection) {
@@ -31,11 +35,10 @@ export class SvgGroupWrapper {
     const element: d3.selection = this.group
       .append('svg:image')
       .attr('xlink:href', image)
-      .attr('x', coordinates.x - 10)
-      .attr('y', coordinates.y - 20)
-      .attr('width', 20)
-      .attr('height', 20)
-      // .html(icon)
+      .attr('x', coordinates.x - SvgGroupWrapper.customIconSize.width / 2)
+      .attr('y', coordinates.y - SvgGroupWrapper.customIconSize.height)
+      .attr('width', SvgGroupWrapper.customIconSize.width)
+      .attr('height', SvgGroupWrapper.customIconSize.height)
       .attr('stroke', 'black')
       .attr('fill', 'black');
     this.addElement(ElementType.IMAGE, element);
@@ -217,4 +220,9 @@ export enum ElementType {
   CIRCLE,
   LINE,
   IMAGE
+}
+
+interface BoxSize {
+  width: number;
+  height: number;
 }

@@ -160,6 +160,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   onClick(): void {
+    // TODO: resolve bug with hint bur message
     this.toolbarService.emitToolChanged(this);
   }
 
