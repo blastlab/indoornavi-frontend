@@ -44,16 +44,14 @@ export class SecondStep implements WizardStep {
     };
   }
 
-  // TODO fix bug with boxMargin
   beforePlaceOnMap (selectedItem: number): void {
     const map = d3.select('#map');
-    const boxMargin = 20;
     const sinkX = map.select('.wizard.sink').attr('x');
     const sinkY = map.select('.wizard.sink').attr('y');
     map.append('circle')
       .attr('id', 'sinkDistance')
-      .attr('cx', parseInt(sinkX, 10) + boxMargin)
-      .attr('cy', parseInt(sinkY, 10) + boxMargin)
+      .attr('cx', parseInt(sinkX, 10))
+      .attr('cy', parseInt(sinkY, 10))
       .attr('r', this.distances.find((distance: AnchorDistance): boolean => {
         return distance.anchorId === selectedItem;
       }).distance)
