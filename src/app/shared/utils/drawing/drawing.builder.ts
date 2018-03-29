@@ -38,6 +38,7 @@ export class SvgGroupWrapper {
   addCustomIcon(coordinates: Point, image: string): SvgGroupWrapper {
     const element: d3.selection = this.group
       .append('svg:image')
+      .attr('id', '1')
       .attr('xlink:href', image)
       .attr('x', coordinates.x - SvgGroupWrapper.customIconSize.width / 2)
       .attr('y', coordinates.y - SvgGroupWrapper.customIconSize.height)

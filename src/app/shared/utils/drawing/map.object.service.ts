@@ -7,14 +7,11 @@ import {IconService, NaviIcons} from '../../services/drawing/icon.service';
 
 @Injectable()
 export class MapObjectService {
+  private events: string[] = ['click', 'mouseover'];
   private objects: Map<number, SvgGroupWrapper> = new Map();
-  private icons: Map<number, string> = new Map();
-  private labels: Map<number, string> = new Map();
-  private markersPlacement: Map<number, Point[]> = new Map();
-  private infoWindows: Map<number, InfoWindow> = new Map();
   // TODO: standardize pointRadius for all points that will be drawn on the map
   private pointRadius: number = 5;
-  private marker: Marker = {
+  private defaultIcon: DefaultIcon = {
     icon: NaviIcons.MARKER,
     translation: {x: 12, y: 22}
   };
@@ -32,10 +29,6 @@ export class MapObjectService {
   remove(objectMetadata: MapObjectMetadata): void {
     this.objects.get(objectMetadata.object.id).remove();
     this.objects.delete(objectMetadata.object.id);
-    this.labels.delete(objectMetadata.object.id);
-    this.icons.delete(objectMetadata.object.id);
-    this.markersPlacement.delete(objectMetadata.object.id);
-    this.infoWindows.delete(objectMetadata.object.id);
   }
 
   draw (objectMetadata: MapObjectMetadata, scale): void {
@@ -53,37 +46,44 @@ export class MapObjectService {
         this.objects.get(objectMetadata.object.id).addPolygon(points);
         break;
       case 'MARKER':
-        this.setMarker(objectMetadata, points);
+        this.placeMarkerOnMap(objectMetadata, points[0]);
         break;
     }
   }
 
-  setMarker(objectMetadata: MapObjectMetadata, points: Point[]): void {
-    if (!!this.markersPlacement.get(objectMetadata.object.id)) {
-      this.objects.get(objectMetadata.object.id).getGroup().select('svg').remove();
-    }
-    if (!!this.icons.get(objectMetadata.object.id)) {
-      this.objects.get(objectMetadata.object.id).addCustomIcon(points[0], this.icons.get(objectMetadata.object.id));
-    } else {
-      const point: Point = {
-        x: points[0].x - this.marker.translation.x,
-        y: points[0].y - this.marker.translation.y
-      } ;
-      this.objects.get(objectMetadata.object.id)
-        .addIcon(point, this.iconService.getIcon(this.marker.icon));
-    }
-    this.markersPlacement.set(objectMetadata.object.id, points);
-    const label: string = this.labels.get(objectMetadata.object.id);
-    if (!!label) {
-      this.drawLabel(objectMetadata, label);
-    }
-  }
-
-  reloadIcon (objectMetadata: MapObjectMetadata, icon: string): void {
-    const coordinates: Point = this.markersPlacement.get(objectMetadata.object.id)[0];
+  placeMarkerOnMap(objectMetadata: MapObjectMetadata, point: Point): void {
     const element = this.objects.get(objectMetadata.object.id);
-    element.getGroup().select('svg').remove();
-    element.addCustomIcon(coordinates, icon);
+    if (!!(<Marker>objectMetadata.object).icon) {
+      element.addCustomIcon(point, (<Marker>objectMetadata.object).icon);
+      if ((<Marker>objectMetadata.object).events.length > 0) {
+        (<Marker>objectMetadata.object).events.forEach( (event: number): void => {
+          element.getGroup().selectAll('image').on(this.events[event], () => console.log('qqqqq'));
+        });
+      }
+    } else {
+      element.addIcon(
+        {
+          x: point.x - this.defaultIcon.translation.x,
+          y: point.y - this.defaultIcon.translation.y
+        },
+        this.iconService.getIcon(this.defaultIcon.icon));
+      if ((<Marker>objectMetadata.object).events.length > 0) {
+        (<Marker>objectMetadata.object).events.forEach( (event: number): void => {
+          element.getGroup().selectAll('svg').on(this.events[event], () => console.log('qqqqq'));
+        });
+      }
+    }
+    if (!!(<Marker>objectMetadata.object).label) {
+      element.addText(
+        {
+          x: point.x + SvgGroupWrapper.customIconSize.width / 2,
+          y: point.y - SvgGroupWrapper.customIconSize.height / 2
+        },
+        (<Marker>objectMetadata.object).label)
+    }
+    if ((<Marker>objectMetadata.object).infoWindow) {
+      console.log((<Marker>objectMetadata.object).infoWindow.content);
+    }
   }
 
   setFillColor(objectMetadata: MapObjectMetadata): void {
@@ -101,40 +101,6 @@ export class MapObjectService {
 
   setOpacity(objectMetadata: MapObjectMetadata): void {
     this.objects.get(objectMetadata.object.id).getGroup().attr('fill-opacity', (<Opacity>objectMetadata.object).opacity);
-  }
-
-  setIcon(objectMetadata: MapObjectMetadata): void {
-    this.icons.set(objectMetadata.object.id, (<Icon>objectMetadata.object).icon);
-    if (!!this.markersPlacement.get(objectMetadata.object.id)) {
-      this.reloadIcon(objectMetadata, (<Icon>objectMetadata.object).icon);
-    }
-  }
-
-  setLabel(objectMetadata: MapObjectMetadata): void {
-    if (!!(<Label>objectMetadata.object).label) {
-      this.labels.set(objectMetadata.object.id, (<Label>objectMetadata.object).label);
-    }
-    if (!!this.markersPlacement.get(objectMetadata.object.id) && this.labels.get(objectMetadata.object.id)) {
-      this.drawLabel(objectMetadata, this.labels.get(objectMetadata.object.id));
-    }
-  }
-
-  drawLabel(objectMetadata: MapObjectMetadata, label: string): void {
-    const coordinates: Point = this.markersPlacement.get(objectMetadata.object.id)[0];
-    const coordinatesTranslated: Point = {x: coordinates.x + SvgGroupWrapper.customIconSize.width / 2, y: coordinates.y - SvgGroupWrapper.customIconSize.height / 2};
-    this.objects.get(objectMetadata.object.id).addText(coordinatesTranslated, label);
-  }
-
-  setInfoWindow(objectMetadata: MapObjectMetadata): void {
-    this.infoWindows.set(objectMetadata.object.id, (<InfoWindowDto>objectMetadata.object).infoWindow);
-    if (!!this.markersPlacement.get(objectMetadata.object.id)) {
-      // reload InfoWindow
-    }
-  }
-
-  addEventListener(objectMetadata: MapObjectMetadata): void {
-    console.log(objectMetadata);
-    this.objects.get(objectMetadata.object.id).getGroup().selectAll().select().on('click', () => console.log('clicked'));
   }
 
 }
@@ -160,35 +126,31 @@ interface MapObjectMetadata {
   object: MapObject
 }
 
-interface Marker {
+interface Marker extends MapObject {
+  events: number[];
   icon: string;
-  translation: Point;
-}
-
-interface Icon extends MapObject {
-  icon: string;
-}
-
-interface Label extends MapObject {
-  label: string;
-}
-
-interface InfoWindowDto extends MapObject {
   infoWindow: InfoWindow;
+  label: string;
+  points: Point[];
 }
 
 interface InfoWindow {
   content: string;
-  position: Positions;
+  position: number;
 }
 
-enum Positions {
-  TOP,
-  RIGHT,
-  BOTTOM,
-  LEFT,
-  TOP_RIGHT,
-  TOP_LEFT,
-  BOTTOM_RIGHT,
-  BOTTOM_LEFT
+interface DefaultIcon {
+  icon: string;
+  translation: Point;
 }
+
+// enum Positions {
+//   TOP,
+//   RIGHT,
+//   BOTTOM,
+//   LEFT,
+//   TOP_RIGHT,
+//   TOP_LEFT,
+//   BOTTOM_RIGHT,
+//   BOTTOM_LEFT
+// }

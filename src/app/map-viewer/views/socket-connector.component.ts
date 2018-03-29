@@ -315,18 +315,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         case 'setOpacity':
           this.mapObjectService.setOpacity(data['args']);
           break;
-        case 'setIcon':
-          this.mapObjectService.setIcon(data['args']);
-          break;
-        case 'setLabel':
-          this.mapObjectService.setLabel(data['args']);
-          break;
-        case 'setInfoWindow':
-          this.mapObjectService.setInfoWindow(data['args']);
-          break;
-        case 'addMarkerEventListener':
-          this.mapObjectService.addEventListener(data['args']);
-          break;
       }
     }
   }
