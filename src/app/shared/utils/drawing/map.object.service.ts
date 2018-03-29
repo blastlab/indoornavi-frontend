@@ -4,6 +4,8 @@ import * as d3 from 'd3';
 import {Point} from '../../../map-editor/map.type';
 import {Geometry} from 'app/shared/utils/helper/geometry';
 import {IconService, NaviIcons} from '../../services/drawing/icon.service';
+import {Scale} from '../../../map-editor/tool-bar/tools/scale/scale.type';
+import {SocketConnectorComponent} from '../../../map-viewer/views/socket-connector.component';
 
 @Injectable()
 export class MapObjectService {
@@ -17,7 +19,7 @@ export class MapObjectService {
   };
 
   constructor(
-    private iconService: IconService,
+    private iconService: IconService
   ) {}
 
   create(container: d3.selection): number {
@@ -31,7 +33,7 @@ export class MapObjectService {
     this.objects.delete(objectMetadata.object.id);
   }
 
-  draw (objectMetadata: MapObjectMetadata, scale): void {
+  draw (objectMetadata: MapObjectMetadata, scale: Scale, originMessageEvent: MessageEvent): void {
     const points: Point[] = [];
     (<CoordinatesArray>objectMetadata.object).points.forEach((point: Point): void => {
       points.push(Geometry.calculatePointPositionInPixels(Geometry.getDistanceBetweenTwoPoints(scale.start, scale.stop),
@@ -46,20 +48,14 @@ export class MapObjectService {
         this.objects.get(objectMetadata.object.id).addPolygon(points);
         break;
       case 'MARKER':
-        this.placeMarkerOnMap(objectMetadata, points[0]);
+        this.placeMarkerOnMap(this.objects.get(objectMetadata.object.id), objectMetadata, points[0], originMessageEvent);
         break;
     }
   }
 
-  placeMarkerOnMap(objectMetadata: MapObjectMetadata, point: Point): void {
-    const element = this.objects.get(objectMetadata.object.id);
+  placeMarkerOnMap(element: SvgGroupWrapper, objectMetadata: MapObjectMetadata, point: Point, originMessageEvent: MessageEvent): void {
     if (!!(<Marker>objectMetadata.object).icon) {
       element.addCustomIcon(point, (<Marker>objectMetadata.object).icon);
-      if ((<Marker>objectMetadata.object).events.length > 0) {
-        (<Marker>objectMetadata.object).events.forEach( (event: number): void => {
-          element.getGroup().selectAll('image').on(this.events[event], () => console.log('qqqqq'));
-        });
-      }
     } else {
       element.addIcon(
         {
@@ -67,11 +63,13 @@ export class MapObjectService {
           y: point.y - this.defaultIcon.translation.y
         },
         this.iconService.getIcon(this.defaultIcon.icon));
-      if ((<Marker>objectMetadata.object).events.length > 0) {
-        (<Marker>objectMetadata.object).events.forEach( (event: number): void => {
-          element.getGroup().selectAll('svg').on(this.events[event], () => console.log('qqqqq'));
+    }
+    if ((<Marker>objectMetadata.object).events.length > 0) {
+      (<Marker>objectMetadata.object).events.forEach( (event: number): void => {
+        element.getGroup().on(this.events[event], (): void => {
+          SocketConnectorComponent.respondToOrigin(event, (<MapObject>objectMetadata.object).id, originMessageEvent);
         });
-      }
+      });
     }
     if (!!(<Marker>objectMetadata.object).label) {
       element.addText(

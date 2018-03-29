@@ -46,6 +46,10 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   private visibleTags: Map<number, boolean> = new Map();
   private scaleCalculations: ScaleCalculations;
 
+  static respondToOrigin (event: number, id: number, originMessageEvent: MessageEvent): void {
+    originMessageEvent.source.postMessage({type: `${event.toString(10)}-${id.toString(10)}`, objectId: id}, originMessageEvent.origin);
+  }
+
   constructor(protected ngZone: NgZone,
               protected socketService: SocketService,
               protected route: ActivatedRoute,
@@ -301,7 +305,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           event.source.postMessage({type: 'createObject', mapObjectId: mapObjectId}, event.origin);
           break;
         case 'drawObject':
-          this.mapObjectService.draw(data['args'], this.scale);
+          this.mapObjectService.draw(data['args'], this.scale, event);
           break;
         case 'removeObject':
           this.mapObjectService.remove(data['args']);
