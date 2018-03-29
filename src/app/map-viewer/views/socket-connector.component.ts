@@ -46,10 +46,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   private visibleTags: Map<number, boolean> = new Map();
   private scaleCalculations: ScaleCalculations;
 
-  static respondToOrigin (event: number, id: number, originMessageEvent: MessageEvent): void {
-    originMessageEvent.source.postMessage({type: `${event.toString(10)}-${id.toString(10)}`, objectId: id}, originMessageEvent.origin);
-  }
-
   constructor(protected ngZone: NgZone,
               protected socketService: SocketService,
               protected route: ActivatedRoute,

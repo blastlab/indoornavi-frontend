@@ -5,7 +5,6 @@ import {Point} from '../../../map-editor/map.type';
 import {Geometry} from 'app/shared/utils/helper/geometry';
 import {IconService, NaviIcons} from '../../services/drawing/icon.service';
 import {Scale} from '../../../map-editor/tool-bar/tools/scale/scale.type';
-import {SocketConnectorComponent} from '../../../map-viewer/views/socket-connector.component';
 
 @Injectable()
 export class MapObjectService {
@@ -17,6 +16,11 @@ export class MapObjectService {
     icon: NaviIcons.MARKER,
     translation: {x: 12, y: 22}
   };
+
+  static respondToOrigin (event: number, id: number, originMessageEvent: MessageEvent): void {
+    originMessageEvent.source.postMessage({type: `${event.toString(10)}-${id.toString(10)}`, objectId: id}, originMessageEvent.origin);
+  }
+
 
   constructor(
     private iconService: IconService
@@ -67,7 +71,7 @@ export class MapObjectService {
     if ((<Marker>objectMetadata.object).events.length > 0) {
       (<Marker>objectMetadata.object).events.forEach( (event: number): void => {
         element.getGroup().on(this.events[event], (): void => {
-          SocketConnectorComponent.respondToOrigin(event, (<MapObject>objectMetadata.object).id, originMessageEvent);
+          MapObjectService.respondToOrigin(event, (<MapObject>objectMetadata.object).id, originMessageEvent);
         });
       });
     }
