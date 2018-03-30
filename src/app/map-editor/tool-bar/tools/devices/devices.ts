@@ -335,20 +335,26 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
 
   private getWizardConfigurations(): void {
     this.wizardConfiguration = this.devicePlacerController.wizardSavesConfiguration.subscribe((devicesConfiguredInWizard) => {
+      const sinkShortId: number = DevicesComponent.getShortIdFromGroupSelection(devicesConfiguredInWizard[0].groupCreated.getGroup())
+      const isSinkPresentInMapDevices: boolean = !!this.findMapDevice(sinkShortId);
       this.mapDevices.concat(devicesConfiguredInWizard);
-      const sink: Sink = <Sink>this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(devicesConfiguredInWizard[0].groupCreated.getGroup()));
-      sink.anchors[0] = <Anchor>this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(devicesConfiguredInWizard[1].groupCreated.getGroup()));
-      sink.anchors[1] = <Anchor>this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(devicesConfiguredInWizard[2].groupCreated.getGroup()));
+      const sink: Sink = <Sink>this.findVerifiedDevice(sinkShortId);
       // TODO update objects coordinates
-      if (!this.checkSinkPresenceInMapDevices(sink.shortId)) {
+      console.log(devicesConfiguredInWizard[0].groupCreated.getGroup().attributes['x']);
+      console.log(devicesConfiguredInWizard[1].groupCreated.getGroup().attributes['y']);
+      console.log(devicesConfiguredInWizard[2].groupCreated.getGroup().attributes['id']);
+
+      const firstAnchor = <Anchor>this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(devicesConfiguredInWizard[1].groupCreated.getGroup()));
+      const secondAnchor = <Anchor>this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(devicesConfiguredInWizard[2].groupCreated.getGroup()));
+
+      if (!isSinkPresentInMapDevices) {
         this.drawSinksAndConnectedAnchors([sink]);
+        this.devicePlacerController.removeFromRemainingDevicesList(sink);
+        this.devicePlacerController.removeFromRemainingDevicesList(firstAnchor);
+        this.devicePlacerController.removeFromRemainingDevicesList(secondAnchor);
         // TODO remove those devices from remainingList
       }
     })
-  }
-
-  private checkSinkPresenceInMapDevices(shortId: number): boolean {
-    return !!this.findMapDevice(shortId);
   }
 
   private getConfiguredDevices(): void {
