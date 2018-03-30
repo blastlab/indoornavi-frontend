@@ -8,7 +8,7 @@ import {SocketService} from '../../../../shared/services/socket/socket.service';
 import {FirstStep} from './first-step/first-step';
 import {SecondStep} from './second-step/second-step';
 import {ActionBarService} from '../../../action-bar/actionbar.service';
-import {ScaleCalculations, SocketMessage, WizardData, WizardStep} from './wizard.type';
+import {SocketMessage, WizardData, WizardStep} from './wizard.type';
 import {Floor} from '../../../../floor/floor.type';
 import {SelectItem} from 'primeng/primeng';
 import {ThirdStep} from './third-step/third-step';
@@ -19,7 +19,7 @@ import {HintBarService} from '../../../hint-bar/hintbar.service';
 import {AcceptButtonsService} from '../../../../shared/components/accept-buttons/accept-buttons.service';
 import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
 import {ScaleService} from '../../../../shared/services/scale/scale.service';
-import {Scale, ScaleDto} from '../scale/scale.type';
+import {Scale, ScaleCalculations, ScaleDto} from '../scale/scale.type';
 import {Geometry} from '../../../../shared/utils/helper/geometry';
 import {Anchor, Sink} from '../../../../device/device.type';
 import {DrawConfiguration} from '../../../../map-viewer/publication.type';
@@ -28,6 +28,7 @@ import {DevicePlacerController} from '../devices/device-placer.controller';
 import {IconService} from '../../../../shared/services/drawing/icon.service';
 import {DrawBuilder} from '../../../../shared/utils/drawing/drawing.builder';
 import {CommonDevice} from '../../../../shared/utils/drawing/common/device';
+import {Expandable} from '../../../../shared/utils/drawing/drawables/expandable';
 
 
 @Component({
@@ -51,6 +52,7 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
   private socketSubscription: Subscription;
   private map: d3.selection;
   private mapLoadedSubscription: Subscription;
+  private drawnDevices: Expandable[] = [];
   private wizardData: WizardData = new WizardData();
   private hintMessage: string;
   private scaleCalculations: ScaleCalculations;
@@ -132,6 +134,7 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
     this.currentIndex -= 1;
     this.activeStep = this.steps[this.currentIndex];
     this.activeStep.clean();
+    this.drawnDevices[this.currentIndex] = null;
     this.activeStep.updateWizardData(this.wizardData, this.selectedItemId, this.scaleCalculations);
     const message: SocketMessage = this.activeStep.prepareToSend(this.wizardData);
     this.socketService.send(message);
@@ -149,7 +152,13 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
       const drawBuilder = new DrawBuilder(this.map, deviceConfig);
       const wrapper = this.drawEditorDevice(drawBuilder, deviceConfig, coordinates);
       const drawnDevice = WizardComponent.createConnectableDevice(wrapper);
-      // TODO save expandable to send it to device placer via controller
+      console.log(this.currentIndex);
+      console.log(this.drawnDevices);
+      this.drawnDevices[this.currentIndex] = drawnDevice;
+      console.log(this.drawnDevices[this.currentIndex]);
+      drawnDevice.connectable.dragOn();
+      drawnDevice.connectable.handleHovering();
+      drawnDevice.selectable.handleHovering();
       this.map.on('click', null);
       this.map.style('cursor', 'default');
       this.showAcceptButtons();
@@ -198,7 +207,7 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
       y: this.wizardData.sinkPosition.y,
       anchors: anchors
     });
-    // TODO send to placerController probably here
+    this.placerController.emitWizardSaveConfiguration(this.drawnDevices);
   }
 
   private cleanBeforeClosingWizard(): void {
@@ -230,7 +239,7 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
       data => {
         this.activeStep.setSelectedItemId(this.selectedItemId);
         if (data) {
-          this.removeGroupDrag();
+          this.drawnDevices[this.currentIndex].connectable.dragOff();
           this.nextStep();
         } else {
           this.activeStep.clean();
@@ -255,20 +264,6 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
     if (!!this.socketSubscription) {
       this.socketSubscription.unsubscribe();
     }
-  }
-
-  private removeGroupDrag(): void {
-    const selections: d3.selection[] = [
-      this.map.select((`[id='${this.selectedItemId}']`)),
-    ];
-    selections.forEach((selection: d3.selection): void => {
-      if (!selection.empty()) {
-        selection.on('.drag', null);
-        selection.style('cursor', 'default');
-        selection.select('.pointer').attr('fill', 'rgba(0,0,0,0.7)');
-      }
-    });
-    this.map.style('cursor', 'default');
   }
 
   private setTranslations(): void {

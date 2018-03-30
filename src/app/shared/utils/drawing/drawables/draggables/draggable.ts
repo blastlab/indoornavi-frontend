@@ -14,7 +14,7 @@ export class Draggable {
   protected mapAttributes: { width: number, height: number };
 
   constructor(groupCreated: SvgGroupWrapper) {
-    this.group = groupCreated.group;
+    this.group = groupCreated.getGroup();
     this.container = groupCreated.container.select('image');
     this.mapAttributes = {width: this.container.attr('width'), height: this.container.attr('height')};
   }

@@ -18,6 +18,7 @@ export class DevicePlacerController {
   private removeListDevice: Subject<Anchor | Sink> = new Subject<Anchor | Sink>();
   private connectingModeSet: Subject<boolean> = new Subject<false>();
   private showDevicesList: Subject<boolean> = new Subject<false>();
+  private wizardConfiguration: Subject<Expandable[]> = new Subject<Expandable[]>();
 
   droppedDevice = this.droppedOnMap.asObservable();
   newCoordinates = this.coordinates.asObservable();
@@ -29,6 +30,7 @@ export class DevicePlacerController {
   connectingMode = this.connectingModeSet.asObservable();
   removedDevice = this.removeListDevice.asObservable();
   listVisibility = this.showDevicesList.asObservable();
+  wizardSavesConfiguration = this.wizardConfiguration.asObservable();
 
   devicePlacement(): void {
     this.droppedOnMap.next();
@@ -81,4 +83,9 @@ export class DevicePlacerController {
   setListVisibility(shown: boolean): void {
     this.showDevicesList.next(shown);
   }
+
+  emitWizardSaveConfiguration(expandables: Expandable[]): void {
+    this.wizardConfiguration.next(expandables);
+  }
+
 }

@@ -25,6 +25,10 @@ import {DrawConfiguration} from '../../../../map-viewer/publication.type';
 import {MapEditorService} from '../../../map.editor.service';
 import {CommonDevice} from '../../../../shared/utils/drawing/common/device';
 import {IconService} from '../../../../shared/services/drawing/icon.service';
+import {ScaleCalculations} from '../scale/scale.type';
+import {ScaleService} from '../../../../shared/services/scale/scale.service';
+import {Scale, ScaleDto} from '../scale/scale.type';
+import {Geometry} from '../../../../shared/utils/helper/geometry';
 
 @Component({
   selector: 'app-devices',
@@ -35,6 +39,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   active: boolean = false;
   disabled: boolean = true;
   sinkRemoval: Sink;
+  private scale: Scale;
   private draggedDevice: Anchor | Sink;
   private deviceDrop: Subscription;
   private listEvents: Subscription[];
@@ -57,7 +62,10 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   private connectingLines: ConnectingLine[] = [];
   private managedSelectableLines: Subscription[] = [];
   private scaleFactor: number;
+  private scaleFactorChanged: Subscription;
+  private scaleCalculations: ScaleCalculations;
   private scaleChanged: Subscription;
+  private wizardConfiguration: Subscription;
 
   static getShortIdFromGroupSelection(selection: d3.selection): number {
     return parseInt(selection.attr('id'), 10);
@@ -117,7 +125,8 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
               private toolbarService: ToolbarService,
               private zoomService: ZoomService,
               private mapEditorService: MapEditorService,
-              private hintBarService: HintBarService) {
+              private hintBarService: HintBarService,
+              private scaleService: ScaleService) {
     super(icons);
     this.setTranslations();
   }
@@ -213,14 +222,18 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
 
   ngOnInit(): void {
     this.getMapSelection();
-    this.getScaleFactor();
+    this.getScaleFactorChanges();
+    this.getScaleChanges();
+    this.getWizardConfigurations();
     this.getConfiguredDevices();
     this.subscribeForDroppedDevice();
   }
 
   ngOnDestroy(): void {
     this.mapLoadedSubscription.unsubscribe();
+    this.scaleFactorChanged.unsubscribe();
     this.scaleChanged.unsubscribe();
+    this.wizardConfiguration.unsubscribe();
     this.deviceDrop.unsubscribe();
   }
 
@@ -302,10 +315,41 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
     });
   }
 
-  private getScaleFactor(): void {
-    this.scaleChanged = this.mapEditorService.mapIsTransformed().subscribe((mapTransform: Transform) => {
+  private getScaleFactorChanges(): void {
+    this.scaleFactorChanged = this.mapEditorService.mapIsTransformed().subscribe((mapTransform: Transform) => {
       this.scaleFactor = mapTransform.k;
     });
+  }
+
+  private getScaleChanges(): void {
+    this.scaleChanged = this.scaleService.scaleChanged.subscribe((scale: ScaleDto) => {
+      this.scale = new Scale(scale);
+      if (!!this.scale.start && !!this.scale.stop) {
+        this.scaleCalculations = {
+          scaleLengthInPixels: Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
+          scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
+        };
+      }
+    })
+  }
+
+  private getWizardConfigurations(): void {
+    this.wizardConfiguration = this.devicePlacerController.wizardSavesConfiguration.subscribe((devicesConfiguredInWizard) => {
+      this.mapDevices.concat(devicesConfiguredInWizard);
+      const sink: Sink = <Sink>this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(devicesConfiguredInWizard[0].groupCreated.getGroup()));
+      console.log(this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(devicesConfiguredInWizard[0].groupCreated.getGroup())));
+      sink.anchors[0] = <Anchor>this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(devicesConfiguredInWizard[1].groupCreated.getGroup()));
+      sink.anchors[1] = <Anchor>this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(devicesConfiguredInWizard[2].groupCreated.getGroup()));
+      // TODO update objects coordinates
+      if (!this.checkSinkPresenceInMapDevices(sink.shortId)) {
+        this.drawSinksAndConnectedAnchors([sink]);
+        // TODO remove those devices from remainingList
+      }
+    })
+  }
+
+  private checkSinkPresenceInMapDevices(shortId: number): boolean {
+    return !!this.findMapDevice(shortId);
   }
 
   private getConfiguredDevices(): void {
@@ -403,10 +447,12 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   private updateDeviceCoordinatesFromMap(device: Anchor | Sink): Anchor | Sink {
     const updated = device;
     this.mapDevices.forEach(mapDevice => {
-      const identificator = DevicesComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.group);
+      const identificator = DevicesComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.getGroup());
+      console.log(mapDevice.groupCreated.getGroup());
+      console.log(`mapDevice.groupCreated.getGroup()`);
       if (DevicesComponent.hasSameShortId(device, identificator)) {
-        updated.x = mapDevice.groupCreated.group.attr('x');
-        updated.y = mapDevice.groupCreated.group.attr('y');
+        updated.x = mapDevice.groupCreated.getGroup().attr('x');
+        updated.y = mapDevice.groupCreated.getGroup().attr('y');
       }
     });
     return updated
@@ -469,7 +515,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
     this.handledSelection = this.devicePlacerController.getSelectedDevice()
       .subscribe((selectedDevice) => {
         const lastSelected = this.selectedDevice;
-        const handledDevice = this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(selectedDevice.groupCreated.group));
+        const handledDevice = this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(selectedDevice.groupCreated.getGroup()));
         let preserveLine: boolean;
         if (!!handledDevice && DevicesComponent.isSinkType(handledDevice)) {
           if (!!lastSelected && this.getIndexOfAnchorInSinkArray(lastSelected, <Sink>handledDevice) > -1) {
@@ -532,18 +578,18 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   }
 
   private turnOffSelectInMapDevicesByType(devicePassed: Expandable): void {
-    const verifiedDevice = this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(devicePassed.groupCreated.group));
+    const verifiedDevice = this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(devicePassed.groupCreated.getGroup()));
     if (DevicesComponent.isSinkType(verifiedDevice)) {
       this.mapDevices.forEach((mapDevice) => {
         const connectable = <ConnectableDevice>mapDevice.connectable;
-        const device = this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.group));
+        const device = this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.getGroup()));
         if (DevicesComponent.isSinkType(device) || !!connectable.anchorConnection) {
           this.blockSelectableBehavior(mapDevice);
         }
       });
     } else {
       this.mapDevices.forEach((mapDevice) => {
-        const device = this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.group));
+        const device = this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.getGroup()));
         if (!DevicesComponent.isSinkType(device)) {
           this.blockSelectableBehavior(mapDevice);
         }
@@ -555,7 +601,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
     let notConnectedAnchors = 0;
     const sinks: Expandable[] = [];
     this.mapDevices.forEach((mapDevice) => {
-      const device = this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.group));
+      const device = this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.getGroup()));
       if (!DevicesComponent.isSinkType(device)) {
         notConnectedAnchors++;
         const connectable = <ConnectableDevice>mapDevice.connectable;
@@ -689,9 +735,9 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
 
   private createDashedLineAttachedToDevice(device: Expandable, mousePosition: Point): d3.selection {
     return this.map.append('line')
-      .attr('id', DevicesComponent.getShortIdFromGroupSelection(device.groupCreated.group))
-      .attr('x1', device.groupCreated.group.attr('x'))
-      .attr('y1', device.groupCreated.group.attr('y'))
+      .attr('id', DevicesComponent.getShortIdFromGroupSelection(device.groupCreated.getGroup()))
+      .attr('x1', device.groupCreated.getGroup().attr('x'))
+      .attr('y1', device.groupCreated.getGroup().attr('y'))
       .attr('x2', mousePosition.x)
       .attr('y2', mousePosition.y)
       .attr('pointer-events', 'none')
@@ -758,7 +804,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
 
   private findMapDevice(shortId: number): Expandable {
     return this.mapDevices.find((mapDevice: Expandable) => {
-      return shortId === DevicesComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.group);
+      return shortId === DevicesComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.getGroup());
     });
   }
 
@@ -770,9 +816,11 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
 
   private drawSinksAndConnectedAnchors(sinks: Array<Sink>): void {
     sinks.forEach((sink) => {
+      console.log(sink);
       const mapSink = this.drawDevice(DrawBuilder.buildSinkDrawConfiguration(sink),
         {x: sink.x, y: sink.y});
       sink.anchors.forEach((anchor) => {
+        console.log(anchor);
         const mapAnchor = this.drawDevice(DrawBuilder.buildAnchorDrawConfiguration(anchor),
           {x: anchor.x, y: anchor.y});
         const identifier = '' + sink.shortId + anchor.shortId;
@@ -902,7 +950,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   }
 
   private removeFromMapDevices(device: Expandable): void {
-    const index = this.mapDevices.findIndex(d => d.groupCreated.group === device.groupCreated.group);
+    const index = this.mapDevices.findIndex(d => d.groupCreated.getGroup() === device.groupCreated.getGroup());
     if (index >= 0) {
       this.mapDevices.splice(index, 1);
     } else {

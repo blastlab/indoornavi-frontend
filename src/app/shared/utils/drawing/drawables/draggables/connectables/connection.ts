@@ -49,11 +49,11 @@ export class ConnectingLine extends Selectable {
   }
 
   private getId(): string {
-    return this.group.group.attr('id');
+    return this.group.getGroup().attr('id');
   }
 
   private drawConnectingLine(): void {
-    this.connection = this.group.group.append('line')
+    this.connection = this.group.getGroup().append('line')
       .attr('x1', this.sink.group.attr('x'))
       .attr('y1', this.sink.group.attr('y'))
       .attr('x2', this.anchor.group.attr('x'))
@@ -67,6 +67,6 @@ export class ConnectingLine extends Selectable {
     this.anchor = null;
     this.id = null;
     this.connection.remove();
-    this.group.group.remove();
+    this.group.getGroup().remove();
   }
 }

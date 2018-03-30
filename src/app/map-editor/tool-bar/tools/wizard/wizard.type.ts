@@ -1,6 +1,7 @@
 import {Point} from '../../../map.type';
 import {SelectItem} from 'primeng/primeng';
 import {DrawConfiguration} from '../../../../map-viewer/publication.type';
+import {ScaleCalculations} from '../scale/scale.type';
 
 export interface SocketMessage {
   step: Step;
@@ -35,11 +36,6 @@ export enum Step {
   FIRST,
   SECOND,
   THIRD
-}
-
-export interface ScaleCalculations {
-  scaleLengthInPixels: number;
-  scaleInCentimeters: number;
 }
 
 export interface WizardStep {

@@ -1,9 +1,10 @@
 import * as d3 from 'd3';
 import {Point} from '../../../../map.type';
 import {SelectItem} from 'primeng/primeng';
-import {AnchorDistance, ScaleCalculations, SecondStepMessage, Step, WizardData, WizardStep} from '../wizard.type';
+import {AnchorDistance, SecondStepMessage, Step, WizardData, WizardStep} from '../wizard.type';
 import {Geometry} from '../../../../../shared/utils/helper/geometry';
 import {DrawConfiguration} from 'app/map-viewer/publication.type';
+import {ScaleCalculations} from '../../scale/scale.type';
 
 export class SecondStep implements WizardStep {
   private selectedItemId: number;

@@ -12,7 +12,7 @@ export class Selectable {
   }
 
   private emitSelectedEvent(): void {
-    this.selectedEmitter.next(this.group.group);
+    this.selectedEmitter.next(this.group.getGroup());
   }
 
   public onSelected(): Observable<d3.selection> {
@@ -25,24 +25,24 @@ export class Selectable {
 
   public handleHovering(): void {
     this.unlockHovering();
-    const onMouseEnterListener = this.group.group.on('mouseenter');
-    const onMouseLeaveListener = this.group.group.on('mouseleave');
+    const onMouseEnterListener = this.group.getGroup().on('mouseenter');
+    const onMouseLeaveListener = this.group.getGroup().on('mouseleave');
     if (onMouseEnterListener === undefined) {
-      this.group.group.on('mouseenter', () => {
+      this.group.getGroup().on('mouseenter', () => {
         this.highlightSet();
       });
     } else {
-        this.group.group.on('mouseenter', () => {
+        this.group.getGroup().on('mouseenter', () => {
           this.highlightSet();
           onMouseEnterListener();
         });
     }
     if (onMouseLeaveListener === undefined) {
-        this.group.group.on('mouseleave', () => {
+        this.group.getGroup().on('mouseleave', () => {
           this.highlightReset();
         });
     } else {
-        this.group.group.on('mouseleave', () => {
+        this.group.getGroup().on('mouseleave', () => {
           this.highlightReset();
           onMouseLeaveListener();
         });
@@ -50,7 +50,7 @@ export class Selectable {
   }
 
   public selectOn(): void {
-    this.group.group.on('click.select', () => {
+    this.group.getGroup().on('click.select', () => {
       this.select();
       event.stopPropagation();
     });
@@ -66,7 +66,7 @@ export class Selectable {
   }
 
   public selectOff(): void {
-    this.group.group.on('click.select', null);
+    this.group.getGroup().on('click.select', null);
     this.lockHovering();
   }
 
