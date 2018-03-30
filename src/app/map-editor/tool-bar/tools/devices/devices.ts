@@ -337,7 +337,6 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
     this.wizardConfiguration = this.devicePlacerController.wizardSavesConfiguration.subscribe((devicesConfiguredInWizard) => {
       this.mapDevices.concat(devicesConfiguredInWizard);
       const sink: Sink = <Sink>this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(devicesConfiguredInWizard[0].groupCreated.getGroup()));
-      console.log(this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(devicesConfiguredInWizard[0].groupCreated.getGroup())));
       sink.anchors[0] = <Anchor>this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(devicesConfiguredInWizard[1].groupCreated.getGroup()));
       sink.anchors[1] = <Anchor>this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(devicesConfiguredInWizard[2].groupCreated.getGroup()));
       // TODO update objects coordinates
@@ -448,8 +447,6 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
     const updated = device;
     this.mapDevices.forEach(mapDevice => {
       const identificator = DevicesComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.getGroup());
-      console.log(mapDevice.groupCreated.getGroup());
-      console.log(`mapDevice.groupCreated.getGroup()`);
       if (DevicesComponent.hasSameShortId(device, identificator)) {
         updated.x = mapDevice.groupCreated.getGroup().attr('x');
         updated.y = mapDevice.groupCreated.getGroup().attr('y');
@@ -816,11 +813,9 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
 
   private drawSinksAndConnectedAnchors(sinks: Array<Sink>): void {
     sinks.forEach((sink) => {
-      console.log(sink);
       const mapSink = this.drawDevice(DrawBuilder.buildSinkDrawConfiguration(sink),
         {x: sink.x, y: sink.y});
       sink.anchors.forEach((anchor) => {
-        console.log(anchor);
         const mapAnchor = this.drawDevice(DrawBuilder.buildAnchorDrawConfiguration(anchor),
           {x: anchor.x, y: anchor.y});
         const identifier = '' + sink.shortId + anchor.shortId;

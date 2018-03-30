@@ -152,10 +152,7 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
       const drawBuilder = new DrawBuilder(this.map, deviceConfig);
       const wrapper = this.drawEditorDevice(drawBuilder, deviceConfig, coordinates);
       const drawnDevice = WizardComponent.createConnectableDevice(wrapper);
-      console.log(this.currentIndex);
-      console.log(this.drawnDevices);
       this.drawnDevices[this.currentIndex] = drawnDevice;
-      console.log(this.drawnDevices[this.currentIndex]);
       drawnDevice.connectable.dragOn();
       drawnDevice.connectable.handleHovering();
       drawnDevice.selectable.handleHovering();
