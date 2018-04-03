@@ -4,8 +4,21 @@ import {DrawConfiguration} from '../../../map-viewer/publication.type';
 
 export class SvgGroupWrapper {
   static customIconSize: BoxSize = {
-    width: 20,
-    height: 20
+    width: 25,
+    height: 25
+  };
+  static infoWindowSize: BoxSize = {
+    width: 400,
+    height: 300
+  };
+  static infoWindowBoxProps: BoxProps = {
+    fill: '#cfdef7',
+    color: '#5382d1',
+    width: 2,
+    opacity: 0.9,
+    style: 'solid',
+    radius: 10,
+    padding: 5
   };
   private elements: Map<ElementType, d3.selection[]> = new Map();
 
@@ -54,6 +67,25 @@ export class SvgGroupWrapper {
     d3.selection = this.group
       .attr('x', - vector.x)
       .attr('y', - vector.y);
+    return this;
+  }
+
+  addInfoWindow(coordinates: Point, infoText: string): SvgGroupWrapper {
+    const element: d3.selection = this.group
+      .append('foreignObject')
+      .attr('x', coordinates.x - SvgGroupWrapper.infoWindowSize.width / 2)
+      .attr('y', coordinates.y - SvgGroupWrapper.infoWindowSize.height - SvgGroupWrapper.customIconSize.height)
+      .attr('width', SvgGroupWrapper.infoWindowSize.width)
+      .attr('height', SvgGroupWrapper.infoWindowSize.height)
+      .html(infoText)
+      .style('background-color', SvgGroupWrapper.infoWindowBoxProps.fill)
+      .style('border-style', SvgGroupWrapper.infoWindowBoxProps.style)
+      .style('border-radius', `${SvgGroupWrapper.infoWindowBoxProps.radius}px`)
+      .style('border-width', `${ SvgGroupWrapper.infoWindowBoxProps.width}px`)
+      .style('border-color', SvgGroupWrapper.infoWindowBoxProps.color)
+      .style('padding', `${SvgGroupWrapper.infoWindowBoxProps.padding}px`)
+      .attr('opacity', SvgGroupWrapper.infoWindowBoxProps.opacity);
+    this.addElement(ElementType.HTML, element);
     return this;
   }
 
@@ -221,10 +253,21 @@ export enum ElementType {
   POLYGON,
   CIRCLE,
   LINE,
-  IMAGE
+  IMAGE,
+  HTML
 }
 
 interface BoxSize {
   width: number;
   height: number;
+}
+
+interface BoxProps {
+  fill: string;
+  color: string;
+  width: number;
+  opacity: number;
+  style: string;
+  radius: number;
+  padding: number;
 }

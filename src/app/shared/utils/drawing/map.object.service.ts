@@ -54,6 +54,8 @@ export class MapObjectService {
       case 'MARKER':
         this.placeMarkerOnMap(this.objects.get(objectMetadata.object.id), objectMetadata, points[0], originMessageEvent);
         break;
+      case 'INFO_WINDOW':
+        this.objects.get(objectMetadata.object.id).addInfoWindow(points[0], (<InfoWindow>objectMetadata.object).content)
     }
   }
 
@@ -82,9 +84,6 @@ export class MapObjectService {
           y: point.y - SvgGroupWrapper.customIconSize.height / 2
         },
         (<Marker>objectMetadata.object).label)
-    }
-    if ((<Marker>objectMetadata.object).infoWindow) {
-      console.log((<Marker>objectMetadata.object).infoWindow.content);
     }
   }
 
@@ -131,12 +130,11 @@ interface MapObjectMetadata {
 interface Marker extends MapObject {
   events: number[];
   icon: string;
-  infoWindow: InfoWindow;
   label: string;
   points: Point[];
 }
 
-interface InfoWindow {
+interface InfoWindow extends MapObject{
   content: string;
   position: number;
 }
