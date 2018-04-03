@@ -73,8 +73,8 @@ export class SvgGroupWrapper {
   addInfoWindow(coordinates: Point, infoText: string): SvgGroupWrapper {
     const element: d3.selection = this.group
       .append('foreignObject')
-      .attr('x', coordinates.x - SvgGroupWrapper.infoWindowSize.width / 2)
-      .attr('y', coordinates.y - SvgGroupWrapper.infoWindowSize.height - SvgGroupWrapper.customIconSize.height)
+      .attr('x', coordinates.x)
+      .attr('y', coordinates.y)
       .attr('width', SvgGroupWrapper.infoWindowSize.width)
       .attr('height', SvgGroupWrapper.infoWindowSize.height)
       .html(infoText)

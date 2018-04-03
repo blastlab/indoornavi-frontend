@@ -55,7 +55,12 @@ export class MapObjectService {
         this.placeMarkerOnMap(this.objects.get(objectMetadata.object.id), objectMetadata, points[0], originMessageEvent);
         break;
       case 'INFO_WINDOW':
-        this.objects.get(objectMetadata.object.id).addInfoWindow(points[0], (<InfoWindow>objectMetadata.object).content)
+        console.log(this.calculatePosition(points, (<InfoWindow>objectMetadata.object).position));
+        this.objects.get(objectMetadata.object.id)
+          .addInfoWindow(this.calculatePosition(
+            points,
+            (<InfoWindow>objectMetadata.object).position), (<InfoWindow>objectMetadata.object).content
+          );
     }
   }
 
@@ -104,6 +109,50 @@ export class MapObjectService {
     this.objects.get(objectMetadata.object.id).getGroup().attr('fill-opacity', (<Opacity>objectMetadata.object).opacity);
   }
 
+  calculatePosition (points: Point[], position: Position): Point {
+    const coordinates: Point = {x: 0, y: 0};
+    const xs = points.map((point: Point): number => {
+      return point.x
+    });
+    const ys = points.map((point: Point): number => {
+      return point.y
+    });
+    switch (position) {
+      case Position.TOP:
+        coordinates.x = Math.min(...xs) + (Math.max(...xs) - Math.min(...xs)) / 2 - SvgGroupWrapper.infoWindowSize.width / 2;
+        coordinates.y = Math.min(...ys) - SvgGroupWrapper.infoWindowSize.height - SvgGroupWrapper.customIconSize.height;
+        break;
+      case Position.TOP_LEFT:
+        coordinates.x = Math.min(...xs) - SvgGroupWrapper.infoWindowSize.width;
+        coordinates.y = Math.min(...ys) - SvgGroupWrapper.infoWindowSize.height - SvgGroupWrapper.customIconSize.height;
+        break;
+      case Position.TOP_RIGHT:
+        coordinates.x = Math.max(...xs);
+        coordinates.y = Math.min(...ys) - SvgGroupWrapper.infoWindowSize.height - SvgGroupWrapper.customIconSize.height;
+        break;
+      case Position.LEFT:
+        coordinates.x = Math.min(...xs) - SvgGroupWrapper.infoWindowSize.width - SvgGroupWrapper.customIconSize.width / 2;
+        coordinates.y = Math.min(...ys) + (Math.max(...ys) - Math.min(...ys)) / 2 - SvgGroupWrapper.infoWindowSize.height / 2;
+        break;
+      case Position.RIGHT:
+        coordinates.x = Math.max(...xs) + SvgGroupWrapper.customIconSize.width / 2;
+        coordinates.y = Math.min(...ys) + (Math.max(...ys) - Math.min(...ys)) / 2 - SvgGroupWrapper.infoWindowSize.height / 2;
+        break;
+      case Position.BOTTOM:
+        coordinates.x = Math.min(...xs) + (Math.max(...xs) - Math.min(...xs)) / 2 - SvgGroupWrapper.infoWindowSize.width / 2;
+        coordinates.y = Math.max(...ys) + SvgGroupWrapper.customIconSize.height;
+        break;
+      case Position.BOTTOM_LEFT:
+        coordinates.x = Math.min(...xs) - SvgGroupWrapper.infoWindowSize.width;
+        coordinates.y = Math.max(...ys) + SvgGroupWrapper.customIconSize.height;
+        break;
+      case Position.BOTTOM_RIGHT:
+        coordinates.x = Math.max(...xs);
+        coordinates.y = Math.max(...ys) + SvgGroupWrapper.customIconSize.height;
+        break;
+    }
+    return coordinates;
+  }
 }
 
 interface MapObject {
@@ -144,13 +193,13 @@ interface DefaultIcon {
   translation: Point;
 }
 
-// enum Positions {
-//   TOP,
-//   RIGHT,
-//   BOTTOM,
-//   LEFT,
-//   TOP_RIGHT,
-//   TOP_LEFT,
-//   BOTTOM_RIGHT,
-//   BOTTOM_LEFT
-// }
+enum Position {
+  TOP,
+  RIGHT,
+  BOTTOM,
+  LEFT,
+  TOP_RIGHT,
+  TOP_LEFT,
+  BOTTOM_RIGHT,
+  BOTTOM_LEFT
+}
