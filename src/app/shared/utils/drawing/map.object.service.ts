@@ -31,6 +31,12 @@ export class MapObjectService {
     return id;
   }
 
+  addToMapContainer(objectMetadata: MapObjectMetadata, container: d3.selection): void {
+    this.objects.set(objectMetadata.object.id,
+      new DrawBuilder(container, {id: `map-object-${objectMetadata.type}-${objectMetadata.object.id}`, clazz: 'map-object'})
+        .createGroup());
+  }
+
   unset(objectMetadata: MapObjectMetadata): void {
     this.objects.get(objectMetadata.object.id).remove();
     this.objects.set(objectMetadata.object.id, null);
@@ -50,32 +56,20 @@ export class MapObjectService {
     });
     switch (objectMetadata.type) {
       case 'POLYLINE':
-        this.objects.set(
-          objectMetadata.object.id,
-          new DrawBuilder(container, {id: `map-object-${objectMetadata.type}-${objectMetadata.object.id}`, clazz: 'map-object'})
-            .createGroup());
+        this.addToMapContainer(objectMetadata, container);
         this.objects.get(objectMetadata.object.id).addPolyline(points, this.pointRadius);
         break;
       case 'AREA':
-        this.objects.set(
-          objectMetadata.object.id,
-          new DrawBuilder(container, {id: `map-object-${objectMetadata.type}-${objectMetadata.object.id}`, clazz: 'map-object'})
-            .createGroup());
+        this.addToMapContainer(objectMetadata, container);
         this.objects.get(objectMetadata.object.id).addPolygon(points);
         break;
       case 'MARKER':
-        this.objects.set(
-          objectMetadata.object.id,
-          new DrawBuilder(container, {id: `map-object-${objectMetadata.type}-${objectMetadata.object.id}`, clazz: 'map-object'})
-            .createGroup());
+        this.addToMapContainer(objectMetadata, container);
         this.placeMarkerOnMap(this.objects.get(objectMetadata.object.id), objectMetadata, points[0], originMessageEvent);
         break;
       case 'INFO_WINDOW':
         if (!this.objects.get(objectMetadata.object.id)) {
-          this.objects.set(
-            objectMetadata.object.id,
-            new DrawBuilder(container, {id: `map-object-${objectMetadata.type}-${objectMetadata.object.id}`, clazz: 'map-object'})
-              .createGroup());
+          this.addToMapContainer(objectMetadata, container);
           const self = this;
           const anchorPointCoordinates: Point = this.calculateInfoWindowPosition(points, (<InfoWindow>objectMetadata.object).position);
           const closingInfoWindowPointCoordinates: Point = {x: anchorPointCoordinates.x + SvgGroupWrapper.infoWindowSize.width - 20, y: anchorPointCoordinates.y + 20};
@@ -86,7 +80,7 @@ export class MapObjectService {
             .select('text')
             .attr('cursor', 'pointer')
             .on('click', () => {
-              // TODO: post message to the api source.
+              // TODO: post message that info window has been closed to the API source.
               self.unset(objectMetadata);
             });
         }
@@ -173,15 +167,15 @@ export class MapObjectService {
         break;
       case Position.BOTTOM:
         coordinates.x = xMin + (xMax - xMin) / 2 - SvgGroupWrapper.infoWindowSize.width / 2;
-        coordinates.y = yMax + SvgGroupWrapper.customIconSize.height;
+        coordinates.y = yMax;
         break;
       case Position.BOTTOM_LEFT:
         coordinates.x = xMin - SvgGroupWrapper.infoWindowSize.width;
-        coordinates.y = yMax + SvgGroupWrapper.customIconSize.height;
+        coordinates.y = yMax;
         break;
       case Position.BOTTOM_RIGHT:
         coordinates.x = xMax;
-        coordinates.y = yMax + SvgGroupWrapper.customIconSize.height;
+        coordinates.y = yMax;
         break;
     }
     return coordinates;
