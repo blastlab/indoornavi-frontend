@@ -297,7 +297,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           }
           break;
         case 'createObject':
-          const mapObjectId: number = this.mapObjectService.create(this.d3map.container);
+          const mapObjectId: number = this.mapObjectService.create();
           event.source.postMessage({type: `createObject-${event.data.object}`, mapObjectId: mapObjectId}, event.origin);
           break;
         case 'drawObject':
