@@ -18,11 +18,11 @@ export class SvgGroupWrapper {
     opacity: 0.9,
     style: 'solid',
     radius: 10,
-    padding: 5
+    padding: 20
   };
   private elements: Map<ElementType, d3.selection[]> = new Map();
 
-  static throwErrorTypeNull (elementType: ElementType): void {
+  static throwErrorTypeNull(elementType: ElementType): void {
     throw new Error(`${elementType} is null or undefined`);
   }
 
@@ -65,8 +65,8 @@ export class SvgGroupWrapper {
 
   translate(vector: Point): SvgGroupWrapper {
     d3.selection = this.group
-      .attr('x', - vector.x)
-      .attr('y', - vector.y);
+      .attr('x', -vector.x)
+      .attr('y', -vector.y);
     return this;
   }
 

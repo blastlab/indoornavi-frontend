@@ -1,4 +1,4 @@
-import {DrawBuilder, SvgGroupWrapper} from './drawing.builder';
+import {DrawBuilder, ElementType, SvgGroupWrapper} from './drawing.builder';
 import {Injectable} from '@angular/core';
 import * as d3 from 'd3';
 import {Point} from '../../../map-editor/map.type';
@@ -17,14 +17,13 @@ export class MapObjectService {
     translation: {x: 12, y: 22}
   };
 
-  static respondToOrigin (event: number, id: number, originMessageEvent: MessageEvent): void {
+  static respondToOrigin(event: number, id: number, originMessageEvent: MessageEvent): void {
     originMessageEvent.source.postMessage({type: `${event.toString(10)}-${id.toString(10)}`, objectId: id}, originMessageEvent.origin);
   }
 
 
-  constructor(
-    private iconService: IconService
-  ) {}
+  constructor(private iconService: IconService) {
+  }
 
   create(container: d3.selection): number {
     const id = this.objects.size + 1;
@@ -37,7 +36,7 @@ export class MapObjectService {
     this.objects.delete(objectMetadata.object.id);
   }
 
-  draw (objectMetadata: MapObjectMetadata, scale: Scale, originMessageEvent: MessageEvent): void {
+  draw(objectMetadata: MapObjectMetadata, scale: Scale, originMessageEvent: MessageEvent, container: d3.selection): void {
     const points: Point[] = [];
     (<CoordinatesArray>objectMetadata.object).points.forEach((point: Point): void => {
       points.push(Geometry.calculatePointPositionInPixels(Geometry.getDistanceBetweenTwoPoints(scale.start, scale.stop),
@@ -55,29 +54,39 @@ export class MapObjectService {
         this.placeMarkerOnMap(this.objects.get(objectMetadata.object.id), objectMetadata, points[0], originMessageEvent);
         break;
       case 'INFO_WINDOW':
-        console.log(this.calculateInfoWindowPosition(points, (<InfoWindow>objectMetadata.object).position));
-        console.log(objectMetadata.object.id);
-        this.objects.get(objectMetadata.object.id)
-          .addInfoWindow(this.calculateInfoWindowPosition(
-            points,
-            (<InfoWindow>objectMetadata.object).position), (<InfoWindow>objectMetadata.object).content
-          );
+        if (!this.objects.get(objectMetadata.object.id).getElements(ElementType.HTML)) {
+          const self = this;
+          const anchorPointCoordinates: Point = this.calculateInfoWindowPosition(points, (<InfoWindow>objectMetadata.object).position);
+          const closingInfoWindowPointCoordinates: Point = {x: anchorPointCoordinates.x + SvgGroupWrapper.infoWindowSize.width - 20, y: anchorPointCoordinates.y + 20};
+          this.objects.get(objectMetadata.object.id)
+            .addInfoWindow(anchorPointCoordinates, (<InfoWindow>objectMetadata.object).content)
+            .addText(closingInfoWindowPointCoordinates, 'X')
+            .getGroup()
+            .select('text')
+            .attr('cursor', 'pointer')
+            .on('click', () => {
+              self.remove(objectMetadata);
+              self.objects
+                .set(objectMetadata.object.id, new DrawBuilder(container, {id: `map-object-${objectMetadata.object.id}`, clazz: 'map-object'})
+                  .createGroup());
+            });
+        }
     }
   }
 
   placeMarkerOnMap(element: SvgGroupWrapper, objectMetadata: MapObjectMetadata, point: Point, originMessageEvent: MessageEvent): void {
     if (!!(<Marker>objectMetadata.object).icon) {
-      element.addCustomIcon(point, (<Marker>objectMetadata.object).icon);
+      element.addCustomIcon(point, (<Marker>objectMetadata.object).icon).getGroup().attr('cursor', 'pointer');
     } else {
       element.addIcon(
         {
           x: point.x - this.defaultIcon.translation.x,
           y: point.y - this.defaultIcon.translation.y
         },
-        this.iconService.getIcon(this.defaultIcon.icon));
+        this.iconService.getIcon(this.defaultIcon.icon)).getGroup().attr('cursor', 'pointer');
     }
     if ((<Marker>objectMetadata.object).events.length > 0) {
-      (<Marker>objectMetadata.object).events.forEach( (event: number): void => {
+      (<Marker>objectMetadata.object).events.forEach((event: number): void => {
         element.getGroup().on(this.events[event], (): void => {
           MapObjectService.respondToOrigin(event, (<MapObject>objectMetadata.object).id, originMessageEvent);
         });
@@ -102,7 +111,7 @@ export class MapObjectService {
       d3.select(node).attr('stroke', (<Color>objectMetadata.object).color);
     });
     this.objects.get(objectMetadata.object.id).getGroup().selectAll('circle').nodes().forEach(node => {
-      d3.select(node).attr('stroke', (<Color>objectMetadata.object).color).style('fill',  (<Color>objectMetadata.object).color);
+      d3.select(node).attr('stroke', (<Color>objectMetadata.object).color).style('fill', (<Color>objectMetadata.object).color);
     });
   }
 
@@ -110,7 +119,7 @@ export class MapObjectService {
     this.objects.get(objectMetadata.object.id).getGroup().attr('fill-opacity', (<Opacity>objectMetadata.object).opacity);
   }
 
-  calculateInfoWindowPosition (points: Point[], position: Position): Point {
+  calculateInfoWindowPosition(points: Point[], position: Position): Point {
     const coordinates: Point = {x: 0, y: 0};
     const xs = points.map((point: Point): number => {
       return point.x
@@ -188,7 +197,7 @@ interface Marker extends MapObject {
   points: Point[];
 }
 
-interface InfoWindow extends MapObject{
+interface InfoWindow extends MapObject {
   content: string;
   position: number;
 }
