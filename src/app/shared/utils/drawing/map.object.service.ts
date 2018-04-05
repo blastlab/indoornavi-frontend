@@ -80,6 +80,12 @@ export class MapObjectService {
         if (!this.objects.get(objectMetadata.object.id)) {
           this.addToMapContainer(objectMetadata, container);
           const self = this;
+          if (!!(<InfoWindow>objectMetadata.object).width) {
+            console.log((<InfoWindow>objectMetadata.object).width);
+          }
+          if (!!(<InfoWindow>objectMetadata.object).height) {
+            console.log((<InfoWindow>objectMetadata.object).height);
+          }
           const anchorPointCoordinates: Point = this.calculateInfoWindowPosition(points, (<InfoWindow>objectMetadata.object).position);
           const closingInfoWindowPointCoordinates: Point = {x: anchorPointCoordinates.x + SvgGroupWrapper.infoWindowSize.width - 20, y: anchorPointCoordinates.y + 20};
           this.objects.get(objectMetadata.object.id)
@@ -226,6 +232,8 @@ interface Marker extends MapObject {
 interface InfoWindow extends MapObject {
   content: string;
   position: number;
+  width: number;
+  height: number;
 }
 
 interface DefaultIcon {

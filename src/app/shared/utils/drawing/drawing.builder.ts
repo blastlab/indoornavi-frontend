@@ -8,7 +8,7 @@ export class SvgGroupWrapper {
     height: 25
   };
   static infoWindowSize: BoxSize = {
-    width: 300,
+    width: 350,
     height: 250
   };
   static infoWindowBoxProps: BoxProps = {
@@ -18,7 +18,7 @@ export class SvgGroupWrapper {
     opacity: 0.9,
     style: 'solid',
     radius: 10,
-    padding: 20
+    padding: 25
   };
   private elements: Map<ElementType, d3.selection[]> = new Map();
 
@@ -77,7 +77,7 @@ export class SvgGroupWrapper {
       .attr('y', coordinates.y)
       .attr('width', SvgGroupWrapper.infoWindowSize.width)
       .attr('height', SvgGroupWrapper.infoWindowSize.height)
-      .html(infoText)
+      .html(`<div>${infoText}</div>`)
       .style('background-color', SvgGroupWrapper.infoWindowBoxProps.fill)
       .style('border-style', SvgGroupWrapper.infoWindowBoxProps.style)
       .style('border-radius', `${SvgGroupWrapper.infoWindowBoxProps.radius}px`)
