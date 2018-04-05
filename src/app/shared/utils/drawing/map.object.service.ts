@@ -1,4 +1,4 @@
-import {DrawBuilder, ElementType, SvgGroupWrapper} from './drawing.builder';
+import {DrawBuilder, SvgGroupWrapper} from './drawing.builder';
 import {Injectable} from '@angular/core';
 import * as d3 from 'd3';
 import {Point} from '../../../map-editor/map.type';
@@ -58,10 +58,19 @@ export class MapObjectService {
       case 'POLYLINE':
         this.addToMapContainer(objectMetadata, container);
         this.objects.get(objectMetadata.object.id).addPolyline(points, this.pointRadius);
+        if (!!(<Stroke>objectMetadata.object).stroke) {
+          this.setStrokeColor(objectMetadata);
+        }
         break;
       case 'AREA':
         this.addToMapContainer(objectMetadata, container);
         this.objects.get(objectMetadata.object.id).addPolygon(points);
+        if (!!(<Fill>objectMetadata.object).fill) {
+          this.setFillColor(objectMetadata);
+        }
+        if (!!(<Opacity>objectMetadata.object).opacity) {
+          this.setOpacity(objectMetadata);
+        }
         break;
       case 'MARKER':
         this.addToMapContainer(objectMetadata, container);
@@ -116,15 +125,15 @@ export class MapObjectService {
   }
 
   setFillColor(objectMetadata: MapObjectMetadata): void {
-    this.objects.get(objectMetadata.object.id).getGroup().attr('fill', (<Color>objectMetadata.object).color);
+    this.objects.get(objectMetadata.object.id).getGroup().attr('fill', (<Fill>objectMetadata.object).fill)
   }
 
   setStrokeColor(objectMetadata: MapObjectMetadata): void {
     this.objects.get(objectMetadata.object.id).getGroup().selectAll('line').nodes().forEach(node => {
-      d3.select(node).attr('stroke', (<Color>objectMetadata.object).color);
+      d3.select(node).attr('stroke', (<Stroke>objectMetadata.object).stroke);
     });
     this.objects.get(objectMetadata.object.id).getGroup().selectAll('circle').nodes().forEach(node => {
-      d3.select(node).attr('stroke', (<Color>objectMetadata.object).color).style('fill', (<Color>objectMetadata.object).color);
+      d3.select(node).attr('stroke', (<Stroke>objectMetadata.object).stroke).style('fill', (<Stroke>objectMetadata.object).stroke);
     });
   }
 
@@ -190,8 +199,12 @@ interface CoordinatesArray extends MapObject {
   points: Point[];
 }
 
-interface Color extends MapObject {
-  color: string;
+interface Stroke extends MapObject {
+  stroke: string;
+}
+
+interface Fill extends MapObject {
+  fill: string;
 }
 
 interface Opacity extends MapObject {
@@ -219,6 +232,7 @@ interface DefaultIcon {
   icon: string;
   translation: Point;
 }
+
 
 enum Position {
   TOP,
