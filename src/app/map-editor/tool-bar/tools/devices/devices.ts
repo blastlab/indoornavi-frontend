@@ -83,6 +83,12 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
     return {x: d3.event.offsetX, y: d3.event.offsetY};
   }
 
+  static updateDeviceCoordinatesFromGroupSelection(device: Sink | Anchor, group: d3.selecton): Sink | Anchor {
+    device.x = group.attr('x');
+    device.y = group.attr('y');
+    return device;
+  }
+
   static eraseDevicePublicationData(device: Anchor | Sink): Anchor | Sink {
     device.x = null;
     device.y = null;
@@ -339,20 +345,17 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
       const isSinkPresentInMapDevices: boolean = !!this.findMapDevice(sinkShortId);
       this.mapDevices.concat(devicesConfiguredInWizard);
       const sink: Sink = <Sink>this.findVerifiedDevice(sinkShortId);
-      // TODO update objects coordinates
-      console.log(devicesConfiguredInWizard[0].groupCreated.getGroup().attributes['x']);
-      console.log(devicesConfiguredInWizard[1].groupCreated.getGroup().attributes['y']);
-      console.log(devicesConfiguredInWizard[2].groupCreated.getGroup().attributes['id']);
-
+      DevicesComponent.updateDeviceCoordinatesFromGroupSelection(sink, devicesConfiguredInWizard[0].groupCreated.getGroup());
       const firstAnchor = <Anchor>this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(devicesConfiguredInWizard[1].groupCreated.getGroup()));
+      DevicesComponent.updateDeviceCoordinatesFromGroupSelection(firstAnchor, devicesConfiguredInWizard[1].groupCreated.getGroup());
       const secondAnchor = <Anchor>this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(devicesConfiguredInWizard[2].groupCreated.getGroup()));
-
+      DevicesComponent.updateDeviceCoordinatesFromGroupSelection(secondAnchor, devicesConfiguredInWizard[2].groupCreated.getGroup());
+      sink.anchors.push(firstAnchor, secondAnchor);
       if (!isSinkPresentInMapDevices) {
         this.drawSinksAndConnectedAnchors([sink]);
         this.devicePlacerController.removeFromRemainingDevicesList(sink);
         this.devicePlacerController.removeFromRemainingDevicesList(firstAnchor);
         this.devicePlacerController.removeFromRemainingDevicesList(secondAnchor);
-        // TODO remove those devices from remainingList
       }
     })
   }
