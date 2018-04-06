@@ -57,8 +57,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
               private mapObjectService: MapObjectService,
               private floorService: FloorService,
               protected tagTogglerService: TagVisibilityTogglerService,
-              private breadcrumbService: BreadcrumbService
-  ) {
+              private breadcrumbService: BreadcrumbService) {
 
     this.route.params
       .subscribe((params: Params) => {
@@ -215,7 +214,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         this.socketService.send({type: CommandType[CommandType.TOGGLE_TAG], args: tagToggle.tag.shortId});
         this.visibleTags.set(tagToggle.tag.shortId, tagToggle.selected);
         if (!tagToggle.selected) {
-           this.removeNotVisibleTags();
+          this.removeNotVisibleTags();
         }
       });
       this.socketSubscription = stream.subscribe((data: MeasureSocketData): void => {
@@ -234,7 +233,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     });
   };
 
-  private removeNotVisibleTags (): void {
+  private removeNotVisibleTags(): void {
     this.visibleTags.forEach((value: boolean, key: number): void => {
       if (!value && this.isOnMap(key)) {
         this.tagsOnMap.getValue(key).remove();
@@ -256,6 +255,16 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         this.areasOnMap.setValue(area.id, areaOnMap);
       });
     });
+  }
+
+  private removeObjectFromMapObjectService(data): void {
+    if ('type' in data['args']) {
+      if (data['args']['type'] === 'INFO_WINDOW') {
+        this.mapObjectService.removeInfoWindow((data['args']));
+      } else {
+        this.mapObjectService.removeObject(data['args']);
+      }
+    }
   }
 
   private handleEventData(data: EventSocketData): void {
@@ -304,7 +313,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           this.mapObjectService.draw(data['args'], this.scale, event, this.d3map.container);
           break;
         case 'removeObject':
-          this.mapObjectService.remove(data['args']);
+          this.removeObjectFromMapObjectService(data);
           break;
         case 'fillColor':
           this.mapObjectService.setFillColor(data['args']);
@@ -319,3 +328,4 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     }
   }
 }
+

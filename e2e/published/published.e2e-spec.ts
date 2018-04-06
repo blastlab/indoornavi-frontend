@@ -13,7 +13,7 @@
 //     expect(AppPage.getTitle()).toBe('Published maps');
 //   });
 //
-//   it('should create, edit and then remove views map', (done: DoneFn) => {
+//   it('should create, edit and then removeObject views map', (done: DoneFn) => {
 //     // first we need to create floor with uploaded image and scale set
 //     const elementName = 'Published Map Test Floor';
 //     MapPage.prepareAndOpenFloor(elementName);

@@ -11,7 +11,7 @@
 //     expect(AppPage.getTitle()).toEqual('Permission groups');
 //   });
 //
-//   it('Adds new permission group, edit it and then remove it', (done: DoneFn) => {
+//   it('Adds new permission group, edit it and then removeObject it', (done: DoneFn) => {
 //     Utils.getNumberOfTagTrElements().then((initCount: number) => {
 //       PermissionGroupPage.addPermissionGroup();
 //

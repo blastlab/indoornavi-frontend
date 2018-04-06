@@ -32,7 +32,7 @@ export class PermissionGroupPage {
   }
 
   static removeLastPermissionGroup() {
-    element.all(by.tagName('tr')).last().element(by.className('remove-button')).click();
+    element.all(by.tagName('tr')).last().element(by.className('removeObject-button')).click();
   }
 
   static getLastPermissionGroup() {

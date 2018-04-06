@@ -7,10 +7,10 @@ export class UserPage {
   }
 
   static prepareToAddUser() {
-    // first, we check that user with username 'test' already exists, if so we remove him
-    element(by.id('remove-test')).isPresent().then((isPresent: boolean) => {
+    // first, we check that user with username 'test' already exists, if so we removeObject him
+    element(by.id('removeObject-test')).isPresent().then((isPresent: boolean) => {
       if (isPresent) {
-        element(by.id('remove-test')).click();
+        element(by.id('removeObject-test')).click();
       }
     });
   }
@@ -31,7 +31,7 @@ export class UserPage {
   }
 
   static removeLastAddedUser() {
-    element.all(by.className('remove-button')).last().click();
+    element.all(by.className('removeObject-button')).last().click();
   }
 
   static openAddUserModal() {

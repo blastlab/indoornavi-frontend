@@ -1,24 +1,11 @@
 import * as d3 from 'd3';
-import {Point} from '../../../map-editor/map.type';
 import {DrawConfiguration} from '../../../map-viewer/publication.type';
+import {Point} from '../../../map-editor/map.type';
 
 export class SvgGroupWrapper {
   static customIconSize: BoxSize = {
     width: 25,
     height: 25
-  };
-  static infoWindowSize: BoxSize = {
-    width: 350,
-    height: 250
-  };
-  static infoWindowBoxProps: BoxProps = {
-    fill: '#cfdef7',
-    color: '#5382d1',
-    width: 2,
-    opacity: 0.9,
-    style: 'solid',
-    radius: 10,
-    padding: 25
   };
   private elements: Map<ElementType, d3.selection[]> = new Map();
 
@@ -26,7 +13,7 @@ export class SvgGroupWrapper {
     throw new Error(`${elementType} is null or undefined`);
   }
 
-  constructor(private group: d3.selection) {
+  constructor(protected group: d3.selection) {
   }
 
   place(coordinates: Point): SvgGroupWrapper {
@@ -67,25 +54,6 @@ export class SvgGroupWrapper {
     d3.selection = this.group
       .attr('x', -vector.x)
       .attr('y', -vector.y);
-    return this;
-  }
-
-  addInfoWindow(coordinates: Point, infoText: string): SvgGroupWrapper {
-    const element: d3.selection = this.group
-      .append('foreignObject')
-      .attr('x', coordinates.x)
-      .attr('y', coordinates.y)
-      .attr('width', SvgGroupWrapper.infoWindowSize.width)
-      .attr('height', SvgGroupWrapper.infoWindowSize.height)
-      .html(`<div>${infoText}</div>`)
-      .style('background-color', SvgGroupWrapper.infoWindowBoxProps.fill)
-      .style('border-style', SvgGroupWrapper.infoWindowBoxProps.style)
-      .style('border-radius', `${SvgGroupWrapper.infoWindowBoxProps.radius}px`)
-      .style('border-width', `${ SvgGroupWrapper.infoWindowBoxProps.width}px`)
-      .style('border-color', SvgGroupWrapper.infoWindowBoxProps.color)
-      .style('padding', `${SvgGroupWrapper.infoWindowBoxProps.padding}px`)
-      .attr('opacity', SvgGroupWrapper.infoWindowBoxProps.opacity);
-    this.addElement(ElementType.HTML, element);
     return this;
   }
 
@@ -216,13 +184,75 @@ export class SvgGroupWrapper {
     }
   }
 
-  private addElement(type: ElementType, element: d3.selection): void {
+  protected addElement(type: ElementType, element: d3.selection): void {
     if (this.elements.has(type)) {
       this.elements.get(type).push(element);
     } else {
       this.elements.set(type, [element]);
     }
   }
+}
+
+export class InfoWindowGroupWrapper extends SvgGroupWrapper {
+  private infoWindowSize: BoxSize = {
+    width: 350,
+    height: 250
+  };
+  private infoWindowBoxProps: BoxProps = {
+    fill: '#cfdef7',
+    color: '#5382d1',
+    width: 2,
+    opacity: 0.9,
+    style: 'solid',
+    radius: 10,
+    padding: 25
+  };
+
+  constructor(protected group: d3.selection) {
+    super(group);
+  }
+
+  addInfoWindow(coordinates: Point, infoText: string): InfoWindowGroupWrapper {
+    const element: d3.selection = this.group
+      .append('foreignObject')
+      .attr('x', coordinates.x)
+      .attr('y', coordinates.y)
+      .attr('width', this.infoWindowSize.width)
+      .attr('height', this.infoWindowSize.height)
+      .html(`<div>${infoText}</div>`)
+      .style('background-color', this.infoWindowBoxProps.fill)
+      .style('border-style', this.infoWindowBoxProps.style)
+      .style('border-radius', `${this.infoWindowBoxProps.radius}px`)
+      .style('border-width', `${ this.infoWindowBoxProps.width}px`)
+      .style('border-color', this.infoWindowBoxProps.color)
+      .style('padding', `${this.infoWindowBoxProps.padding}px`)
+      .attr('opacity', this.infoWindowBoxProps.opacity);
+    this.addElement(ElementType.HTML, element);
+    return this;
+  }
+
+  set width(width: number) {
+    this.infoWindowSize.width = width;
+  }
+
+  set height(height: number) {
+    this.infoWindowSize.height = height;
+  }
+
+  get size(): BoxSize {
+    return this.infoWindowSize;
+  }
+
+}
+
+interface BoxProps {
+  fill: string;
+  color: string;
+  width: number;
+  opacity: number;
+  style: string;
+  radius: number;
+  padding: number;
 }
 
 export class DrawBuilder {
@@ -245,6 +275,20 @@ export class DrawBuilder {
     return new SvgGroupWrapper(group);
   }
 
+  createInfoWindowGroup(): InfoWindowGroupWrapper {
+    const group = this.appendable
+      .append('svg')
+      .attr('id', this.configuration.id)
+      .attr('class', this.configuration.clazz)
+      .attr('overflow', 'visible')
+      .attr('x', 0)
+      .attr('y', 0);
+    if (this.configuration.cursor) {
+      group.style('cursor', this.configuration.cursor);
+    }
+    return new InfoWindowGroupWrapper(group);
+  }
+
 }
 
 export enum ElementType {
@@ -257,17 +301,7 @@ export enum ElementType {
   HTML
 }
 
-interface BoxSize {
+export interface BoxSize {
   width: number;
   height: number;
-}
-
-interface BoxProps {
-  fill: string;
-  color: string;
-  width: number;
-  opacity: number;
-  style: string;
-  radius: number;
-  padding: number;
 }

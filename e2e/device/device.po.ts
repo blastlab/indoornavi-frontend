@@ -4,10 +4,10 @@ import {Utils} from '../utils';
 export class DevicePage {
 
   static prepareToAddAnchor(shortId: string) {
-    // first, we check that anchor with shortId already exists, if so we remove him
-    element(by.id('remove-' + shortId)).isPresent().then((isPresent: boolean) => {
+    // first, we check that anchor with shortId already exists, if so we removeObject him
+    element(by.id('removeObject-' + shortId)).isPresent().then((isPresent: boolean) => {
       if (isPresent) {
-        element(by.id('remove-' + shortId)).click();
+        element(by.id('removeObject-' + shortId)).click();
       }
     });
   }
@@ -33,7 +33,7 @@ export class DevicePage {
   }
 
   static removeAnchor(shortId: string) {
-    element(by.id('remove-' + shortId)).click();
+    element(by.id('removeObject-' + shortId)).click();
   }
 
   static editLastAnchor(shortId: string, longId: string, name: string, doSave: boolean) {

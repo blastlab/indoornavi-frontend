@@ -1,4 +1,4 @@
-import {DrawBuilder, SvgGroupWrapper} from './drawing.builder';
+import {DrawBuilder, InfoWindowGroupWrapper, SvgGroupWrapper} from './drawing.builder';
 import {Injectable} from '@angular/core';
 import * as d3 from 'd3';
 import {Point} from '../../../map-editor/map.type';
@@ -10,6 +10,7 @@ import {Scale} from '../../../map-editor/tool-bar/tools/scale/scale.type';
 export class MapObjectService {
   private events: string[] = ['click', 'mouseover'];
   private objects: Map<number, SvgGroupWrapper> = new Map();
+  private infoWindows: Map<number, InfoWindowGroupWrapper> = new Map();
   // TODO: standardize pointRadius for all points that will be drawn on the map
   private pointRadius: number = 5;
   private defaultIcon: DefaultIcon = {
@@ -37,14 +38,30 @@ export class MapObjectService {
         .createGroup());
   }
 
+  addInfoWindowToMapContainer(objectMetadata: MapObjectMetadata, container: d3.selection): void {
+    this.infoWindows.set(objectMetadata.object.id,
+      new DrawBuilder(container, {id: `map-object-${objectMetadata.type}-${objectMetadata.object.id}`, clazz: 'map-object'})
+        .createInfoWindowGroup());
+  }
+
   unset(objectMetadata: MapObjectMetadata): void {
     this.objects.get(objectMetadata.object.id).remove();
     this.objects.set(objectMetadata.object.id, null);
   }
 
-  remove(objectMetadata: MapObjectMetadata): void {
+  unsetInfoWindow(objectMetadata: MapObjectMetadata): void {
+    this.infoWindows.get(objectMetadata.object.id).remove();
+    this.infoWindows.set(objectMetadata.object.id, null);
+  }
+
+  removeObject(objectMetadata: MapObjectMetadata): void {
     this.objects.get(objectMetadata.object.id).remove();
     this.objects.delete(objectMetadata.object.id);
+  }
+
+  removeInfoWindow(objectMetadata: MapObjectMetadata): void {
+    this.infoWindows.get(objectMetadata.object.id).remove();
+    this.infoWindows.delete(objectMetadata.object.id);
   }
 
   draw(objectMetadata: MapObjectMetadata, scale: Scale, originMessageEvent: MessageEvent, container: d3.selection): void {
@@ -77,26 +94,26 @@ export class MapObjectService {
         this.placeMarkerOnMap(this.objects.get(objectMetadata.object.id), objectMetadata, points[0], originMessageEvent);
         break;
       case 'INFO_WINDOW':
-        if (!this.objects.get(objectMetadata.object.id)) {
-          this.addToMapContainer(objectMetadata, container);
+        if (!this.infoWindows.get(objectMetadata.object.id)) {
+          this.addInfoWindowToMapContainer(objectMetadata, container);
+          const infoWindowObject = this.infoWindows.get(objectMetadata.object.id);
           const self = this;
           if (!!(<InfoWindow>objectMetadata.object).width) {
-            console.log((<InfoWindow>objectMetadata.object).width);
+            infoWindowObject.width = (<InfoWindow>objectMetadata.object).width;
           }
           if (!!(<InfoWindow>objectMetadata.object).height) {
-            console.log((<InfoWindow>objectMetadata.object).height);
+            infoWindowObject.height = (<InfoWindow>objectMetadata.object).height;
           }
-          const anchorPointCoordinates: Point = this.calculateInfoWindowPosition(points, (<InfoWindow>objectMetadata.object).position);
-          const closingInfoWindowPointCoordinates: Point = {x: anchorPointCoordinates.x + SvgGroupWrapper.infoWindowSize.width - 20, y: anchorPointCoordinates.y + 20};
-          this.objects.get(objectMetadata.object.id)
-            .addInfoWindow(anchorPointCoordinates, (<InfoWindow>objectMetadata.object).content)
+          const anchorPointCoordinates: Point = this.calculateInfoWindowPosition(infoWindowObject, points, (<InfoWindow>objectMetadata.object).position);
+          const closingInfoWindowPointCoordinates: Point = {x: anchorPointCoordinates.x + infoWindowObject.size.width - 20, y: anchorPointCoordinates.y + 20};
+          infoWindowObject.addInfoWindow(anchorPointCoordinates, (<InfoWindow>objectMetadata.object).content)
             .addText(closingInfoWindowPointCoordinates, 'X')
             .getGroup()
             .select('text')
             .attr('cursor', 'pointer')
             .on('click', () => {
               // TODO: post message that info window has been closed to the API source.
-              self.unset(objectMetadata);
+              self.unsetInfoWindow(objectMetadata);
             });
         }
     }
@@ -147,7 +164,7 @@ export class MapObjectService {
     this.objects.get(objectMetadata.object.id).getGroup().attr('fill-opacity', (<Opacity>objectMetadata.object).opacity);
   }
 
-  calculateInfoWindowPosition(points: Point[], position: Position): Point {
+  calculateInfoWindowPosition(infoWindowObject: InfoWindowGroupWrapper, points: Point[], position: Position): Point {
     const coordinates: Point = {x: 0, y: 0};
     const xs = points.map((point: Point): number => {
       return point.x
@@ -161,31 +178,31 @@ export class MapObjectService {
     const yMax = Math.max(...ys);
     switch (position) {
       case Position.TOP:
-        coordinates.x = xMin + (xMax - xMin) / 2 - SvgGroupWrapper.infoWindowSize.width / 2;
-        coordinates.y = yMin - SvgGroupWrapper.infoWindowSize.height - SvgGroupWrapper.customIconSize.height;
+        coordinates.x = xMin + (xMax - xMin) / 2 - infoWindowObject.size.width / 2;
+        coordinates.y = yMin - infoWindowObject.size.height - SvgGroupWrapper.customIconSize.height;
         break;
       case Position.TOP_LEFT:
-        coordinates.x = xMin - SvgGroupWrapper.infoWindowSize.width;
-        coordinates.y = yMin - SvgGroupWrapper.infoWindowSize.height - SvgGroupWrapper.customIconSize.height;
+        coordinates.x = xMin - infoWindowObject.size.width;
+        coordinates.y = yMin - infoWindowObject.size.height - infoWindowObject.size.height;
         break;
       case Position.TOP_RIGHT:
         coordinates.x = xMax;
-        coordinates.y = xMin - SvgGroupWrapper.infoWindowSize.height - SvgGroupWrapper.customIconSize.height;
+        coordinates.y = xMin - infoWindowObject.size.height - infoWindowObject.size.height;
         break;
       case Position.LEFT:
-        coordinates.x = xMin - SvgGroupWrapper.infoWindowSize.width - SvgGroupWrapper.customIconSize.width / 2;
-        coordinates.y = yMin + (yMax - yMin) / 2 - SvgGroupWrapper.infoWindowSize.height / 2;
+        coordinates.x = xMin - infoWindowObject.size.width - infoWindowObject.size.width / 2;
+        coordinates.y = yMin + (yMax - yMin) / 2 - infoWindowObject.size.height / 2;
         break;
       case Position.RIGHT:
-        coordinates.x = xMax + SvgGroupWrapper.customIconSize.width / 2;
-        coordinates.y = yMin + (yMax - yMin) / 2 - SvgGroupWrapper.infoWindowSize.height / 2;
+        coordinates.x = xMax + infoWindowObject.size.width / 2;
+        coordinates.y = yMin + (yMax - yMin) / 2 - infoWindowObject.size.height / 2;
         break;
       case Position.BOTTOM:
-        coordinates.x = xMin + (xMax - xMin) / 2 - SvgGroupWrapper.infoWindowSize.width / 2;
+        coordinates.x = xMin + (xMax - xMin) / 2 - infoWindowObject.size.width / 2;
         coordinates.y = yMax;
         break;
       case Position.BOTTOM_LEFT:
-        coordinates.x = xMin - SvgGroupWrapper.infoWindowSize.width;
+        coordinates.x = xMin - infoWindowObject.size.width;
         coordinates.y = yMax;
         break;
       case Position.BOTTOM_RIGHT:
@@ -217,7 +234,7 @@ interface Opacity extends MapObject {
   opacity: number;
 }
 
-interface MapObjectMetadata {
+export interface MapObjectMetadata {
   type: string;
   object: MapObject
 }

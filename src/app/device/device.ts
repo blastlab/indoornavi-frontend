@@ -83,7 +83,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   save(isValid: boolean): void {
     if (isValid) {
       const isNew = !(!!this.device.id);
-      if (!isNew) { // if it's an update then we need to remove it first so updated version will show up on the list when websocket get it
+      if (!isNew) { // if it's an update then we need to removeObject it first so updated version will show up on the list when websocket get it
         this.removeFromList(this.device);
       }
 

@@ -11,7 +11,7 @@
 //     expect(AppPage.getTitle()).toEqual('Your building complexes');
 //   });
 //
-//   it('...be able to add new, edit, cancel editing, open (then go back) and remove complex', (done: DoneFn) => {
+//   it('...be able to add new, edit, cancel editing, open (then go back) and removeObject complex', (done: DoneFn) => {
 //     const name = 'testAddEditRemove';
 //     const newName = 'testRename';
 //     AppPage.getElementsCount('tr.complex').then(initCount => {

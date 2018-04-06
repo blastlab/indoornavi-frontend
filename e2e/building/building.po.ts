@@ -12,8 +12,8 @@ export class BuildingPage {
   static destroyLastComplex() {
     ComplexPage.navigateToHome();
     ComplexPage.removeLastComplex();
-    if (!!element(by.id('complex-confirm-remove-button'))) {
-      element(by.id('complex-confirm-remove-button')).click();
+    if (!!element(by.id('complex-confirm-removeObject-button'))) {
+      element(by.id('complex-confirm-removeObject-button')).click();
     }
   }
 
@@ -24,7 +24,7 @@ export class BuildingPage {
   }
 
   static removeLastBuilding() {
-    element.all(by.css('.building-remove-button')).last().click();
+    element.all(by.css('.building-removeObject-button')).last().click();
   }
 
   static editLastBuilding(name: string, doSave: boolean) {

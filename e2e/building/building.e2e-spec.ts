@@ -15,7 +15,7 @@
 //     expect(AppPage.getTitle()).toEqual('Your buildings');
 //   });
 //
-//   it('should be able to add new, and remove building', (done: DoneFn) => {
+//   it('should be able to add new, and removeObject building', (done: DoneFn) => {
 //     const name = 'testAddBuilding';
 //     const newName = 'testRename';
 //     AppPage.getElementsCount('tr.building').then(initCount => {
