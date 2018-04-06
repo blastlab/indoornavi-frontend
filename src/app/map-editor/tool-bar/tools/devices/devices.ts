@@ -346,9 +346,9 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
       this.mapDevices.concat(devicesConfiguredInWizard);
       const sink: Sink = <Sink>this.findVerifiedDevice(sinkShortId);
       DevicesComponent.updateDeviceCoordinatesFromGroupSelection(sink, devicesConfiguredInWizard[0].groupCreated.getGroup());
-      const firstAnchor = <Anchor>this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(devicesConfiguredInWizard[1].groupCreated.getGroup()));
+      const firstAnchor: Anchor = <Anchor>this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(devicesConfiguredInWizard[1].groupCreated.getGroup()));
       DevicesComponent.updateDeviceCoordinatesFromGroupSelection(firstAnchor, devicesConfiguredInWizard[1].groupCreated.getGroup());
-      const secondAnchor = <Anchor>this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(devicesConfiguredInWizard[2].groupCreated.getGroup()));
+      const secondAnchor: Anchor = <Anchor>this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(devicesConfiguredInWizard[2].groupCreated.getGroup()));
       DevicesComponent.updateDeviceCoordinatesFromGroupSelection(secondAnchor, devicesConfiguredInWizard[2].groupCreated.getGroup());
       sink.anchors.push(firstAnchor, secondAnchor);
       if (!isSinkPresentInMapDevices) {
