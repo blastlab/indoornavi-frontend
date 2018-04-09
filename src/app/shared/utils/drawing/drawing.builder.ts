@@ -93,19 +93,26 @@ export class SvgGroupWrapper {
   }
 
   getTexts(): d3.selection {
+    console.log(this.getElements(ElementType.TEXT));
     return this.getElements(ElementType.TEXT);
   }
 
   showTexts(): void {
-    this.getTexts().forEach((text: d3.selection) => {
-      text.attr('display', 'block');
-    });
+    const textsToShow: d3.selection[] = this.getTexts();
+    if (!!textsToShow) {
+      textsToShow.forEach((text: d3.selection) => {
+        text.attr('display', 'block');
+      });
+    }
   }
 
   hideTexts(): void {
-    this.getTexts().forEach((text: d3.selection) => {
-      text.attr('display', 'none');
-    });
+    const textsToHide: d3.selection[] = this.getTexts();
+    if (!!textsToHide) {
+      textsToHide.forEach((text: d3.selection) => {
+        text.attr('display', 'none');
+      });
+    }
   }
 
   addPolygon(points: Point[]): SvgGroupWrapper {
