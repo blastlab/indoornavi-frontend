@@ -364,14 +364,30 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
     this.configurationService.configurationLoaded().first().subscribe((configuration) => {
       this.floorId = configuration.floorId;
       if (!!configuration.data.sinks) {
-        this.drawSinksAndConnectedAnchors(configuration.data.sinks);
+        const sinks: Sink[] = [];
+        configuration.data.sinks.forEach((sink: Sink) => {
+          this.recalculateDeviceCoordinatesFromCentimetersToPixels(sink);
+          sinks.push(sink)
+        });
+        this.drawSinksAndConnectedAnchors(sinks);
       }
       if (!!configuration.data.anchors) {
+        // TODO recalculate anchors like above, & then
+        // make opposite operation before saving to configuration
         this.drawAnchorsWithoutConnection(configuration.data.anchors);
       }
       this.configuration = configuration;
       this.fetchDevices();
     });
+  }
+
+  private recalculateDeviceCoordinatesFromCentimetersToPixels(device: Sink | Anchor): Sink | Anchor {
+    const coordinates: Point = {x: device.x, y: device.y};
+    const positionInPixels: Point = Geometry.calculatePointPositionInCentimeters(
+      this.scaleCalculations.scaleLengthInPixels, this.scaleCalculations.scaleInCentimeters, coordinates);
+    device.x = positionInPixels.x;
+    device.y = positionInPixels.y;
+    return device;
   }
 
   private subscribeForDroppedDevice(): void {
