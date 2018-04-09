@@ -55,6 +55,7 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
   private drawnDevices: Expandable[] = [];
   private wizardData: WizardData = new WizardData();
   private hintMessage: string;
+  private scaleChanged: Subscription;
   private scaleCalculations: ScaleCalculations;
 
   constructor(public translate: TranslateService,
@@ -76,7 +77,23 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
     this.setTranslations();
     this.steps = [new FirstStep(this.floor.id), new SecondStep(), new ThirdStep()];
     this.getMapSelection();
-    this.scaleService.scaleChanged.subscribe((scale: ScaleDto): void => {
+    this.getScaleChanges();
+  }
+
+  ngOnDestroy(): void {
+    this.mapLoadedSubscription.unsubscribe();
+    this.mapLoadedSubscription = null;
+    this.scaleChanged.unsubscribe();
+  }
+
+  private getMapSelection(): void {
+    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapLoaded) => {
+      this.map = mapLoaded.container;
+    });
+  }
+
+  private getScaleChanges(): void {
+    this.scaleChanged = this.scaleService.scaleChanged.subscribe((scale: ScaleDto): void => {
       this.scale = new Scale(scale);
       if (!!this.scale.start && !!this.scale.stop) {
         this.scaleCalculations = {
@@ -84,18 +101,7 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
           scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
         };
       }
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.mapLoadedSubscription.unsubscribe();
-    this.mapLoadedSubscription = null;
-  }
-
-  private getMapSelection(): void {
-    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapLoaded) => {
-      this.map = mapLoaded.container;
-    });
+    })
   }
 
   nextStep(): void {

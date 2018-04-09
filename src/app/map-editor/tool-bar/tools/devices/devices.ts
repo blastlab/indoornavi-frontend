@@ -72,7 +72,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   }
 
   static isSinkType(checkType: any): boolean {
-    return (<Sink>checkType.anchors) !== undefined;
+    if (!!checkType) {return (<Sink>checkType.anchors) !== undefined; }
   }
 
   static hasSameShortId(device: Sink | Anchor, id: number): boolean {
@@ -341,7 +341,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
 
   private getWizardConfigurations(): void {
     this.wizardConfiguration = this.devicePlacerController.wizardSavesConfiguration.subscribe((devicesConfiguredInWizard) => {
-      const sinkShortId: number = DevicesComponent.getShortIdFromGroupSelection(devicesConfiguredInWizard[0].groupCreated.getGroup())
+      const sinkShortId: number = DevicesComponent.getShortIdFromGroupSelection(devicesConfiguredInWizard[0].groupCreated.getGroup());
       const isSinkPresentInMapDevices: boolean = !!this.findMapDevice(sinkShortId);
       this.mapDevices.concat(devicesConfiguredInWizard);
       const sink: Sink = <Sink>this.findVerifiedDevice(sinkShortId);
