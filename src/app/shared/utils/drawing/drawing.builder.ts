@@ -93,7 +93,6 @@ export class SvgGroupWrapper {
   }
 
   getTexts(): d3.selection {
-    console.log(this.getElements(ElementType.TEXT));
     return this.getElements(ElementType.TEXT);
   }
 
