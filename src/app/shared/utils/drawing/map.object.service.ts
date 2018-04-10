@@ -22,6 +22,50 @@ export class MapObjectService {
     originMessageEvent.source.postMessage({type: `${event.toString(10)}-${id.toString(10)}`, objectId: id}, originMessageEvent.origin);
   }
 
+  static calculateInfoWindowPosition(infoWindowObject: InfoWindowGroupWrapper, object: d3.selection, position: Position): Point {
+    const box: Box = object.getGroup().node().getBBox();
+    Object.keys(box).forEach((key: string): number => box[key] = Math.round(box[key]));
+    const coordinates: Point = {
+      x: 0,
+      y: 0
+    };
+    switch (position) {
+      case Position.TOP:
+        coordinates.x = box.x + box.width / 2 - infoWindowObject.size.width / 2;
+        coordinates.y = box.y - infoWindowObject.size.height;
+        break;
+      case Position.TOP_LEFT:
+        coordinates.x = box.x - infoWindowObject.size.width;
+        coordinates.y = box.y - infoWindowObject.size.height;
+        break;
+      case Position.TOP_RIGHT:
+        coordinates.x = box.x + box.width;
+        coordinates.y = box.y - infoWindowObject.size.height;
+        break;
+      case Position.LEFT:
+        coordinates.x = box.x - infoWindowObject.size.width;
+        coordinates.y = box.y + box.height / 2 - infoWindowObject.size.height / 2;
+        break;
+      case Position.RIGHT:
+        coordinates.x = box.x + box.width;
+        coordinates.y = box.y + box.height / 2 - infoWindowObject.size.height / 2;
+        break;
+      case Position.BOTTOM:
+        coordinates.x = box.x + box.width / 2 - infoWindowObject.size.width / 2;
+        coordinates.y = box.y + box.height;
+        break;
+      case Position.BOTTOM_LEFT:
+        coordinates.x = box.x - infoWindowObject.size.width;
+        coordinates.y = box.y + box.height;
+        break;
+      case Position.BOTTOM_RIGHT:
+        coordinates.x = box.x + box.width;
+        coordinates.y = box.x + box.height;
+        break;
+    }
+    return coordinates;
+  }
+
 
   constructor(private iconService: IconService) {
   }
@@ -66,11 +110,13 @@ export class MapObjectService {
 
   draw(objectMetadata: MapObjectMetadata, scale: Scale, originMessageEvent: MessageEvent, container: d3.selection): void {
     const points: Point[] = [];
-    (<CoordinatesArray>objectMetadata.object).points.forEach((point: Point): void => {
-      points.push(Geometry.calculatePointPositionInPixels(Geometry.getDistanceBetweenTwoPoints(scale.start, scale.stop),
-        scale.getRealDistanceInCentimeters(),
-        point));
-    });
+    if (!!(<CoordinatesArray>objectMetadata.object).points) {
+      (<CoordinatesArray>objectMetadata.object).points.forEach((point: Point): void => {
+        points.push(Geometry.calculatePointPositionInPixels(Geometry.getDistanceBetweenTwoPoints(scale.start, scale.stop),
+          scale.getRealDistanceInCentimeters(),
+          point));
+      });
+    }
     switch (objectMetadata.type) {
       case 'POLYLINE':
         this.addToMapContainer(objectMetadata, container);
@@ -104,10 +150,11 @@ export class MapObjectService {
           if (!!(<InfoWindow>objectMetadata.object).height) {
             infoWindowObject.height = (<InfoWindow>objectMetadata.object).height;
           }
-          const anchorPointCoordinates: Point = this.calculateInfoWindowPosition(infoWindowObject, points, (<InfoWindow>objectMetadata.object).position);
+          const element = this.objects.get((<InfoWindow>objectMetadata.object).relatedObjectId);
+          const anchorPointCoordinates: Point = MapObjectService.calculateInfoWindowPosition(infoWindowObject, element, (<InfoWindow>objectMetadata.object).position);
           const closingInfoWindowPointCoordinates: Point = {x: anchorPointCoordinates.x + infoWindowObject.size.width - 20, y: anchorPointCoordinates.y + 20};
           infoWindowObject.addInfoWindow(anchorPointCoordinates, (<InfoWindow>objectMetadata.object).content)
-            .addText(closingInfoWindowPointCoordinates, 'X')
+            .addText(closingInfoWindowPointCoordinates, 'x')
             .getGroup()
             .select('text')
             .attr('cursor', 'pointer')
@@ -164,54 +211,7 @@ export class MapObjectService {
     this.objects.get(objectMetadata.object.id).getGroup().attr('fill-opacity', (<Opacity>objectMetadata.object).opacity);
   }
 
-  calculateInfoWindowPosition(infoWindowObject: InfoWindowGroupWrapper, points: Point[], position: Position): Point {
-    const coordinates: Point = {x: 0, y: 0};
-    const xs = points.map((point: Point): number => {
-      return point.x
-    });
-    const ys = points.map((point: Point): number => {
-      return point.y
-    });
-    const xMin = Math.min(...xs);
-    const xMax = Math.max(...xs);
-    const yMin = Math.min(...ys);
-    const yMax = Math.max(...ys);
-    switch (position) {
-      case Position.TOP:
-        coordinates.x = xMin + (xMax - xMin) / 2 - infoWindowObject.size.width / 2;
-        coordinates.y = yMin - infoWindowObject.size.height - SvgGroupWrapper.customIconSize.height;
-        break;
-      case Position.TOP_LEFT:
-        coordinates.x = xMin - infoWindowObject.size.width;
-        coordinates.y = yMin - infoWindowObject.size.height - infoWindowObject.size.height;
-        break;
-      case Position.TOP_RIGHT:
-        coordinates.x = xMax;
-        coordinates.y = xMin - infoWindowObject.size.height - infoWindowObject.size.height;
-        break;
-      case Position.LEFT:
-        coordinates.x = xMin - infoWindowObject.size.width - infoWindowObject.size.width / 2;
-        coordinates.y = yMin + (yMax - yMin) / 2 - infoWindowObject.size.height / 2;
-        break;
-      case Position.RIGHT:
-        coordinates.x = xMax + infoWindowObject.size.width / 2;
-        coordinates.y = yMin + (yMax - yMin) / 2 - infoWindowObject.size.height / 2;
-        break;
-      case Position.BOTTOM:
-        coordinates.x = xMin + (xMax - xMin) / 2 - infoWindowObject.size.width / 2;
-        coordinates.y = yMax;
-        break;
-      case Position.BOTTOM_LEFT:
-        coordinates.x = xMin - infoWindowObject.size.width;
-        coordinates.y = yMax;
-        break;
-      case Position.BOTTOM_RIGHT:
-        coordinates.x = xMax;
-        coordinates.y = yMax;
-        break;
-    }
-    return coordinates;
-  }
+
 }
 
 interface MapObject {
@@ -220,6 +220,13 @@ interface MapObject {
 
 interface CoordinatesArray extends MapObject {
   points: Point[];
+}
+
+interface Box {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
 }
 
 interface Stroke extends MapObject {
@@ -251,6 +258,7 @@ interface InfoWindow extends MapObject {
   position: number;
   width: number;
   height: number;
+  relatedObjectId: number;
 }
 
 interface DefaultIcon {
@@ -258,8 +266,7 @@ interface DefaultIcon {
   translation: Point;
 }
 
-
-enum Position {
+export enum Position {
   TOP,
   RIGHT,
   BOTTOM,
