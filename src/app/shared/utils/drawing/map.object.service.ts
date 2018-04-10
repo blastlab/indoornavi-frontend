@@ -222,7 +222,7 @@ interface CoordinatesArray extends MapObject {
   points: Point[];
 }
 
-interface Box {
+export interface Box {
   x: number;
   y: number;
   width: number;
