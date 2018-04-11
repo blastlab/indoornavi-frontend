@@ -251,7 +251,6 @@ export class SvgGroupWrapper {
       });
       elements.length = 0;
     }
-    SvgGroupWrapper.throwErrorTypeNull(type);
   }
 
   removeLastElement(type: ElementType): void {
