@@ -5,7 +5,7 @@ import {ToolbarService} from '../../toolbar.service';
 import {MapLoaderInformerService} from '../../../../shared/services/map-loader-informer/map-loader-informer.service';
 import * as d3 from 'd3';
 import {Point} from '../../../map.type';
-import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../../../shared/utils/drawing/drawing.builder';
+import {DrawBuilder, ElementType, GroupType, SvgGroupWrapper} from '../../../../shared/utils/drawing/drawing.builder';
 import {MapSvg} from '../../../../map/map.type';
 import {AreaDetailsService} from './details/area-details.service';
 import {Area, AreaBag} from './area.type';
@@ -114,7 +114,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     this.active = true;
 
     this.container.style('cursor', 'crosshair');
-    this.currentAreaGroup = this.createBuilder().createGroup();
+    this.currentAreaGroup = this.createBuilder().createGroup(GroupType.OBJECT);
 
     this.layer.on('click', (_, i: number, nodes: d3.selection[]): void => {
       const coordinates: Point = this.zoomService.calculateTransition({x: d3.mouse(nodes[i])[0], y: d3.mouse(nodes[i])[1]});
@@ -134,7 +134,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
 
     let index = 0;
     this.areas.forEach((areaBag: AreaBag): void => {
-      areaBag.editable = new Editable(this.createBuilder(index).createGroup(), this.contextMenuService);
+      areaBag.editable = new Editable(this.createBuilder(index).createGroup(GroupType.OBJECT), this.contextMenuService);
       this.applyRightMouseButtonClick(areaBag.editable);
       areaBag.editable.onSelected().subscribe((selected: Editable) => {
         this.selectedEditable = selected;
