@@ -261,7 +261,7 @@ export class DrawBuilder {
               protected configuration: DrawConfiguration) {
   }
 
-  createGroup(): SvgGroupWrapper {
+  createGroup(type: GroupType): SvgGroupWrapper|InfoWindowGroupWrapper {
     const group = this.appendable
       .append('svg')
       .attr('id', this.configuration.id)
@@ -272,23 +272,13 @@ export class DrawBuilder {
     if (this.configuration.cursor) {
       group.style('cursor', this.configuration.cursor);
     }
-    return new SvgGroupWrapper(group);
-  }
-
-  createInfoWindowGroup(): InfoWindowGroupWrapper {
-    const group = this.appendable
-      .append('svg')
-      .attr('id', this.configuration.id)
-      .attr('class', this.configuration.clazz)
-      .attr('overflow', 'visible')
-      .attr('x', 0)
-      .attr('y', 0);
-    if (this.configuration.cursor) {
-      group.style('cursor', this.configuration.cursor);
+    switch (type) {
+      case GroupType.OBJECT:
+        return new SvgGroupWrapper(group);
+      case GroupType.INFO_WINDOW:
+        return new InfoWindowGroupWrapper(group);
     }
-    return new InfoWindowGroupWrapper(group);
   }
-
 }
 
 export enum ElementType {
@@ -304,4 +294,9 @@ export enum ElementType {
 export interface BoxSize {
   width: number;
   height: number;
+}
+
+export enum GroupType {
+  OBJECT,
+  INFO_WINDOW
 }

@@ -1,4 +1,4 @@
-import {DrawBuilder, InfoWindowGroupWrapper, SvgGroupWrapper} from './drawing.builder';
+import {DrawBuilder, GroupType, InfoWindowGroupWrapper, SvgGroupWrapper} from './drawing.builder';
 import {Injectable} from '@angular/core';
 import * as d3 from 'd3';
 import {Point} from '../../../map-editor/map.type';
@@ -25,10 +25,7 @@ export class MapObjectService {
   static calculateInfoWindowPosition(infoWindowObject: InfoWindowGroupWrapper, object: d3.selection, position: Position): Point {
     const box: Box = object.getGroup().node().getBBox();
     Object.keys(box).forEach((key: string): number => box[key] = Math.round(box[key]));
-    const coordinates: Point = {
-      x: 0,
-      y: 0
-    };
+    const coordinates: Point = { x: 0, y: 0 };
     switch (position) {
       case Position.TOP:
         coordinates.x = box.x + box.width / 2 - infoWindowObject.size.width / 2;
@@ -79,18 +76,13 @@ export class MapObjectService {
   addToMapContainer(objectMetadata: MapObjectMetadata, container: d3.selection): void {
     this.objects.set(objectMetadata.object.id,
       new DrawBuilder(container, {id: `map-object-${objectMetadata.type}-${objectMetadata.object.id}`, clazz: 'map-object'})
-        .createGroup());
+        .createGroup(GroupType.OBJECT));
   }
 
   addInfoWindowToMapContainer(objectMetadata: MapObjectMetadata, container: d3.selection): void {
     this.infoWindows.set(objectMetadata.object.id,
-      new DrawBuilder(container, {id: `map-object-${objectMetadata.type}-${objectMetadata.object.id}`, clazz: 'map-object'})
-        .createInfoWindowGroup());
-  }
-
-  unset(objectMetadata: MapObjectMetadata): void {
-    this.objects.get(objectMetadata.object.id).remove();
-    this.objects.set(objectMetadata.object.id, null);
+      (<InfoWindowGroupWrapper>new DrawBuilder(container, {id: `map-object-${objectMetadata.type}-${objectMetadata.object.id}`, clazz: 'map-object'})
+        .createGroup(GroupType.INFO_WINDOW)));
   }
 
   unsetInfoWindow(objectMetadata: MapObjectMetadata): void {
@@ -160,6 +152,7 @@ export class MapObjectService {
             .attr('cursor', 'pointer')
             .on('click', () => {
               // TODO: post message that info window has been closed to the API source.
+              // todo: this todo should be made in future issues
               self.unsetInfoWindow(objectMetadata);
             });
         }

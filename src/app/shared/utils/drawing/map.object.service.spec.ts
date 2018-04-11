@@ -1,14 +1,10 @@
 import {MapObjectService, Position, Box} from './map.object.service';
 import * as d3 from 'd3';
 import {InfoWindowGroupWrapper} from './drawing.builder';
+
 // when
 const svgElement = d3.select().append('svg');
 const infoWindowGroupWrapper = new InfoWindowGroupWrapper(svgElement);
-
-// given
-
-infoWindowGroupWrapper.height = 200;
-infoWindowGroupWrapper.width = 200;
 
 // mocking MapObject
 class MapObject {
@@ -33,6 +29,11 @@ class MapObject {
     }
   }
 }
+
+// given
+
+infoWindowGroupWrapper.height = 200;
+infoWindowGroupWrapper.width = 200;
 
 const mapObject = new MapObject(10, 10, 100, 100);
 

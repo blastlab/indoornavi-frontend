@@ -3,7 +3,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {AreaEventMode, CommandType, CoordinatesSocketData, EventSocketData, MeasureSocketData, MeasureSocketDataType} from '../publication.type';
 import {Subject} from 'rxjs/Subject';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
-import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.builder';
+import {DrawBuilder, ElementType, GroupType, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.builder';
 import {SocketService} from '../../shared/services/socket/socket.service';
 import {ActivatedRoute, Params} from '@angular/router';
 import {PublishedService} from '../publication.service';
@@ -145,7 +145,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     if (!this.isOnMap(deviceId) && this.visibleTags.get(deviceId)) {
       const drawBuilder = new DrawBuilder(this.d3map.container, {id: `tag-${deviceId}`, clazz: 'tag'});
       const tagOnMap: SvgGroupWrapper = drawBuilder
-        .createGroup()
+        .createGroup(GroupType.OBJECT)
         .addIcon({x: 0, y: 0}, this.iconService.getIcon(NaviIcons.TAG))
         .addText({x: 0, y: 36}, `${deviceId}`)
         .place({x: data.coordinates.point.x, y: data.coordinates.point.y});
@@ -247,7 +247,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       areas.forEach((area: Area) => {
         const drawBuilder: DrawBuilder = new DrawBuilder(this.d3map.container, {id: `area-${area.id}`, clazz: 'area'});
         const areaOnMap = drawBuilder
-          .createGroup()
+          .createGroup(GroupType.OBJECT)
           .addPolygon(area.points);
         areaOnMap.getLastElement(ElementType.POLYGON)
           .style('opacity', Area.getCustomSettings().opacity)
