@@ -22,7 +22,7 @@ export class FloorPage {
   }
 
   static removeLastFloor(): void {
-    element.all(by.css('.floor-removeObject-button')).last().click();
+    element.all(by.css('.floor-remove-button')).last().click();
   }
 
   static editLastFloor(name: string, level: number, doSave: boolean) {

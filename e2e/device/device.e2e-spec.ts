@@ -9,7 +9,7 @@
 //     expect(AppPage.getTitle()).toEqual('Anchors');
 //   });
 //
-//   it('should be able to add new anchor, edit it and then removeObject it', (done: DoneFn) => {
+//   it('should be able to add new anchor, edit it and then remove it', (done: DoneFn) => {
 //     const shortId = '123';
 //     const longId = '12345';
 //     const name = 'name';

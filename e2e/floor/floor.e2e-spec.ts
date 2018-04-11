@@ -15,7 +15,7 @@
 //     expect(AppPage.getTitle()).toEqual('Floors');
 //   });
 //
-//   it('should be able to add new, and removeObject floor', (done: DoneFn) => {
+//   it('should be able to add new, and remove floor', (done: DoneFn) => {
 //     const name = 'testAddFloor';
 //     const newName = 'testRename';
 //     AppPage.getElementsCount('tr.floor').then(initCount => {

@@ -69,8 +69,8 @@ export class ScaleTool {
   }
 
   static deleteLastAddedComplex() {
-    element.all(by.className('complex-removeObject-button')).last().click();
-    element(by.id('complex-confirm-removeObject-button')).click();
+    element.all(by.className('complex-remove-button')).last().click();
+    element(by.id('complex-confirm-remove-button')).click();
   }
 
   static turnOffScaleTool() {

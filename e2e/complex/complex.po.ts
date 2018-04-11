@@ -13,7 +13,7 @@ export class ComplexPage {
   }
 
   static removeLastComplex() {
-      element.all(by.css('.complex-removeObject-button')).last().click();
+      element.all(by.css('.complex-remove-button')).last().click();
   }
 
   static editLastComplex(name: string, doSave: boolean) {
