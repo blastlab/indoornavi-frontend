@@ -17,7 +17,7 @@ import * as d3 from 'd3';
 import {ToolbarService} from '../../toolbar.service';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
 import {AcceptButtonsService} from '../../../../shared/components/accept-buttons/accept-buttons.service';
-import {DrawBuilder} from '../../../../shared/utils/drawing/drawing.builder';
+import {DrawBuilder, GroupType} from '../../../../shared/utils/drawing/drawing.builder';
 import {IconService, NaviIcons} from '../../../../shared/services/drawing/icon.service';
 import {MapEditorService} from '../../../map.editor.service';
 import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
@@ -142,7 +142,7 @@ export class WizardComponent implements Tool, OnInit {
       const device: ObjectParams = this.activeStep.getDrawingObjectParams(this.selected);
       const drawBuilder = new DrawBuilder(map, {id: device.id, clazz: device.groupClass});
       drawBuilder
-        .createGroup()
+        .createGroup(GroupType.OBJECT)
         .addIcon({x: -12, y: -12}, this.iconService.getIcon(NaviIcons.POINTER))
         .addIcon({x: 0, y: 0}, this.iconService.getIcon(device.iconName))
         .addText({x: 0, y: 36}, device.id)
