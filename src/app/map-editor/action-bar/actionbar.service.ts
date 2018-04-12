@@ -130,7 +130,7 @@ export class ActionBarService {
       ActionBarService.parseCoordinatesToIntegers(anchor);
     });
     sinks.add(sinkCopy);
-    this.configuration.data.sinks = sinks.toArray();
+    this.configuration.data.sinks = Helper.deepCopy(sinks.toArray());
     this.sendConfigurationChangedEvent();
   }
 
@@ -145,7 +145,7 @@ export class ActionBarService {
     if (sinks.contains(sinkCopy)) {
       sinks.remove(sinkCopy);
     }
-    this.configuration.data.sinks = sinks.toArray();
+    this.configuration.data.sinks = Helper.deepCopy(sinks.toArray());
     this.sendConfigurationChangedEvent();
   }
 
@@ -157,7 +157,7 @@ export class ActionBarService {
     }
     ActionBarService.parseCoordinatesToIntegers(anchorCopy);
     anchors.add(anchorCopy);
-    this.configuration.data.anchors = anchors.toArray();
+    this.configuration.data.anchors = Helper.deepCopy(anchors.toArray());
     this.sendConfigurationChangedEvent();
   }
 
@@ -167,7 +167,7 @@ export class ActionBarService {
     if (anchors.contains(anchorCopy)) {
       anchors.remove(anchorCopy);
     }
-    this.configuration.data.anchors = anchors.toArray();
+    this.configuration.data.anchors = Helper.deepCopy(anchors.toArray());
     this.sendConfigurationChangedEvent();
   }
 

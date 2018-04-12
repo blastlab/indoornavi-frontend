@@ -29,6 +29,7 @@ import {ScaleCalculations} from '../scale/scale.type';
 import {ScaleService} from '../../../../shared/services/scale/scale.service';
 import {Scale, ScaleDto} from '../scale/scale.type';
 import {Geometry} from '../../../../shared/utils/helper/geometry';
+import {Helper} from '../../../../shared/utils/helper/helper';
 
 @Component({
   selector: 'app-devices',
@@ -72,7 +73,11 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   }
 
   static isSinkType(checkType: any): boolean {
-    if (!!checkType) {return (<Sink>checkType.anchors) !== undefined; }
+    if (!!checkType) {
+      return (<Sink>checkType.anchors) !== undefined;
+    } else {
+      throw new Error(`${checkType} was sent into isSinkType static method.`);
+    }
   }
 
   static hasSameShortId(device: Sink | Anchor, id: number): boolean {
@@ -367,14 +372,21 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
         const sinks: Sink[] = [];
         configuration.data.sinks.forEach((sink: Sink) => {
           this.recalculateDeviceCoordinatesFromCentimetersToPixels(sink);
+          if (!!sink.anchors.length) {
+            sink.anchors.forEach((connectedAnchor: Anchor) => {
+              this.recalculateDeviceCoordinatesFromCentimetersToPixels(connectedAnchor);
+            })
+          }
           sinks.push(sink)
         });
         this.drawSinksAndConnectedAnchors(sinks);
       }
       if (!!configuration.data.anchors) {
-        // TODO recalculate anchors like above, & then
-        // make opposite operation before saving to configuration
-        this.drawAnchorsWithoutConnection(configuration.data.anchors);
+        const anchors: Anchor[] = [];
+        configuration.data.anchors.forEach((anchor: Anchor) => {
+          anchors.push(this.recalculateDeviceCoordinatesFromCentimetersToPixels(anchor));
+        });
+        this.drawAnchorsWithoutConnection(anchors);
       }
       this.configuration = configuration;
       this.fetchDevices();
@@ -382,12 +394,23 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   }
 
   private recalculateDeviceCoordinatesFromCentimetersToPixels(device: Sink | Anchor): Sink | Anchor {
-    const coordinates: Point = {x: device.x, y: device.y};
+    const recalculated = Helper.deepCopy(device);
+    const coordinates: Point = {x: recalculated.x, y: recalculated.y};
     const positionInPixels: Point = Geometry.calculatePointPositionInCentimeters(
       this.scaleCalculations.scaleLengthInPixels, this.scaleCalculations.scaleInCentimeters, coordinates);
-    device.x = positionInPixels.x;
-    device.y = positionInPixels.y;
-    return device;
+    recalculated.x = positionInPixels.x;
+    recalculated.y = positionInPixels.y;
+    return recalculated;
+  }
+
+  private recalculateDeviceCoordinatesFromPixelsToCentimeters(device: Sink | Anchor): Sink | Anchor {
+    const recalculated = Helper.deepCopy(device);
+    const coordinates: Point = {x: recalculated.x, y: recalculated.y};
+    const positionInCentimeters: Point = Geometry.calculatePointPositionInPixels(
+      this.scaleCalculations.scaleLengthInPixels, this.scaleCalculations.scaleInCentimeters, coordinates);
+    recalculated.x = positionInCentimeters.x;
+    recalculated.y = positionInCentimeters.y;
+    return recalculated;
   }
 
   private subscribeForDroppedDevice(): void {
@@ -785,9 +808,13 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
         device.connectable.anchorConnection.hide()
       }
     }
-    const selectableDevice = <SelectableDevice>device.selectable;
-    selectableDevice.removeBorderBox();
-    this.devicePlacerController.deselectedDevice(device);
+    if (!!device) {
+      const selectableDevice = <SelectableDevice>device.selectable;
+      selectableDevice.removeBorderBox();
+      this.devicePlacerController.deselectedDevice(device);
+    } else {
+      throw new Error(`Device has been not found and border cannot be removed.`);
+    }
   }
 
   private clearSelections(preserveLine?: boolean): void {
@@ -979,17 +1006,26 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   }
 
   private setSinkInConfiguration(sink: Sink): void {
-    this.configurationService.setSink(sink);
+    if (!!sink.anchors.length) {
+      sink.anchors.forEach((connectedAnchor: Anchor) => {
+        this.recalculateDeviceCoordinatesFromPixelsToCentimeters(connectedAnchor);
+      })
+    }
+    this.configurationService.setSink(<Sink>
+      this.recalculateDeviceCoordinatesFromPixelsToCentimeters(sink));
   }
 
   private setAnchorInConfiguredSink(anchor: Anchor, sink: Sink): void {
-    sink.anchors.push(anchor);
+    sink.anchors.push(
+      this.recalculateDeviceCoordinatesFromPixelsToCentimeters(anchor));
     this.configurationService.removeAnchor(anchor);
-    this.configurationService.setSink(sink);
+    this.configurationService.setSink(<Sink>
+      this.recalculateDeviceCoordinatesFromPixelsToCentimeters(sink));
   }
 
   private setNotConnectedAnchorInConfiguration(anchor: Anchor): void {
-    this.configurationService.setAnchor(anchor);
+    this.configurationService.setAnchor(
+      this.recalculateDeviceCoordinatesFromPixelsToCentimeters(anchor));
   }
 
   private removeFromConfiguration(device: Sink | Anchor): void {
@@ -1017,7 +1053,9 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
         mapAnchor.groupCreated.remove();
         this.removeFromMapDevices(mapAnchor);
         this.addToRemainingDevices(connectedAnchor);
-      } else {this.setNotConnectedAnchorInConfiguration(connectedAnchor)}
+      } else {
+        this.setNotConnectedAnchorInConfiguration(connectedAnchor)
+      }
     });
     mapSink.connectable.sinkConnections.forEach((sinkConnection) => {
       this.removeConnectingLine(sinkConnection);
