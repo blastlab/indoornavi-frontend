@@ -371,13 +371,12 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
       if (!!configuration.data.sinks) {
         const sinks: Sink[] = [];
         configuration.data.sinks.forEach((sink: Sink) => {
-          this.recalculateDeviceCoordinatesFromCentimetersToPixels(sink);
           if (!!sink.anchors.length) {
             sink.anchors.forEach((connectedAnchor: Anchor) => {
               this.recalculateDeviceCoordinatesFromCentimetersToPixels(connectedAnchor);
             })
           }
-          sinks.push(sink)
+          sinks.push(<Sink>this.recalculateDeviceCoordinatesFromCentimetersToPixels(sink))
         });
         this.drawSinksAndConnectedAnchors(sinks);
       }
@@ -408,6 +407,9 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
     const coordinates: Point = {x: recalculated.x, y: recalculated.y};
     const positionInCentimeters: Point = Geometry.calculatePointPositionInPixels(
       this.scaleCalculations.scaleLengthInPixels, this.scaleCalculations.scaleInCentimeters, coordinates);
+    console.log(this.scaleCalculations.scaleLengthInPixels);
+    console.log(this.scaleCalculations.scaleInCentimeters);
+    console.log(coordinates);
     recalculated.x = positionInCentimeters.x;
     recalculated.y = positionInCentimeters.y;
     return recalculated;
