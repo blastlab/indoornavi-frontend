@@ -1,13 +1,13 @@
-import {Component, NgZone, OnDestroy, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
+import {Component, NgZone, OnDestroy, OnInit, ViewChild, ViewChildren, ViewEncapsulation} from '@angular/core';
 import {Subscription} from 'rxjs/Rx';
 import {Config} from '../../config';
 import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute} from '@angular/router';
 import {DeviceService} from './device.service';
 import {CrudComponent, CrudHelper} from '../shared/components/crud/crud.component';
-import {Device, UpdateRequest} from './device.type';
+import {Device, DeviceStatus, Status, UpdateRequest} from './device.type';
 import {NgForm} from '@angular/forms';
-import {ConfirmationService, Message} from 'primeng/primeng';
+import {Checkbox, ConfirmationService} from 'primeng/primeng';
 import {MessageServiceWrapper} from '../shared/services/message/message.service';
 import {SocketService} from '../shared/services/socket/socket.service';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
@@ -30,8 +30,8 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   public devicesToUpdate: Device[] = [];
   public devicesUpdating: Device[] = [];
   public allSelected: boolean = false;
-  public uploadingMessage: Message[] = [];
   public displayInfoDialog: boolean = false;
+  @ViewChildren('updateCheckbox') public deviceCheckboxes: Checkbox[];
 
   @ViewChild('deviceForm') deviceForm: NgForm;
 
@@ -44,8 +44,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   private uploadBody: string;
 
 
-  constructor(
-              public translate: TranslateService,
+  constructor(public translate: TranslateService,
               private socketService: SocketService,
               private messageService: MessageServiceWrapper,
               private ngZone: NgZone,
@@ -73,34 +72,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     });
 
     this.ngZone.runOutsideAngular(() => {
-      const stream = this.socketService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.deviceType}`);
-
-      this.socketSubscription = stream.subscribe((devices: Array<Device>): void => {
-        this.ngZone.run((): void => {
-          devices.forEach((device: Device) => {
-            // TODO: flag updating needs to be set on server site, for properly allocate device
-            // todo: in case user will reload the page or route somewhere and the route back
-            // todo: during process of updating
-            if (!device.updating) {
-              this.removeDeviceFromUpdating(device);
-              // TODO: delete after setting device firmware property on a server
-              // todo: this is only a mocked value
-              device.firmware = 'Beta 0.0.4';
-              // todo: delete till there ----------------------
-              if (this.isAlreadyOnAnyList(device)) {
-                return;
-              }
-              if (device.verified) {
-                this.verified.push(device);
-              } else {
-                this.notVerified.push(device);
-              }
-            } else {
-              this.devicesUpdating.push(device);
-            }
-          });
-        });
-      });
+      this.connectToRegistrationSocket();
     });
   }
 
@@ -185,18 +157,26 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     });
   }
 
-  selectALLToUpload (): void {
+  selectAllToUpload(): void {
     this.devicesToUpdate = [];
     if (this.allSelected) {
-      this.notVerified.forEach((device: Device) => this.devicesToUpdate.push(device));
-      this.verified.forEach((device: Device) => this.devicesToUpdate.push(device));
+      this.verified.forEach((device: Device) => {
+        if (!this.getCheckboxById(device.shortId).disabled) {
+          this.devicesToUpdate.push(device);
+        }
+      });
+      this.notVerified.forEach((device: Device) => {
+        if (!this.getCheckboxById(device.shortId).disabled) {
+          this.devicesToUpdate.push(device);
+        }
+      });
     }
   }
 
   checkAllSelected(): void {
     if (this.allSelected) {
       this.allSelected = !this.allSelected
-    } else if (this.devicesToUpdate.length === this.verified.length + this.notVerified.length) {
+    } else if (this.devicesToUpdate.length === (this.verified.length + this.notVerified.length)) {
       this.allSelected = true;
     }
   }
@@ -211,10 +191,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     if (data.files.length === 1) {
       this.getBase64(data.files[0]).then((base64: string): void => {
         this.socketService.send(new UpdateRequest(this.devicesToUpdate.map((device: Device): number => device.shortId), base64));
-        this.translateUploadingFirmwareMessage =  this.translate.get('uploading.firmware.message').subscribe((value: string) => {
-          this.uploadingMessage = [];
-          this.uploadingMessage.push({severity: 'info', detail: value});
-        });
+        this.messageService.success('uploading.firmware.message');
       });
     }
   }
@@ -222,29 +199,84 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   toggleUpdateMode(): void {
     this.updateMode = !this.updateMode;
     if (this.updateMode) {
-      const stream = this.socketService.connect(Config.WEB_SOCKET_URL + `info?client`);
+      const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}info?client&${this.deviceType}`);
       this.firmwareSocketSubscription = stream.subscribe((message) => {
-        console.log(message);
+        if (message.type === 'INFO') {
+          message.devices.forEach((deviceStatus: DeviceStatus) => {
+            if (deviceStatus.status.toString() === Status[Status.ONLINE] || deviceStatus.status.toString() === Status[Status.OFFLINE]) {
+              const checkbox: Checkbox = this.getCheckboxById(deviceStatus.device.shortId);
+              if (!!checkbox) {
+                checkbox.setDisabledState(deviceStatus.status.toString() === Status[Status.OFFLINE]);
+              }
+              this.updateFirmwareVersion(deviceStatus);
+            } else if (deviceStatus.status.toString() === Status[Status.UPDATING]) {
+              this.devicesUpdating.push(deviceStatus.device);
+            } else if (deviceStatus.status.toString() === Status[Status.UPDATED]) {
+              this.removeFromUpdating(deviceStatus);
+              this.removeFromToUpdate(deviceStatus);
+              this.checkAllSelected();
+            }
+          });
+        } else if (message.type === 'INFO_ERROR') {
+          const deviceStatus: DeviceStatus = message.deviceStatus;
+          if (!!deviceStatus) {
+            this.removeFromUpdating(deviceStatus);
+            this.removeFromToUpdate(deviceStatus);
+          } else {
+            this.devicesToUpdate.length = 0;
+            this.devicesUpdating.length = 0;
+          }
+          this.messageService.failed(message.code);
+        }
       });
     } else {
       this.firmwareSocketSubscription.unsubscribe();
+      this.connectToRegistrationSocket();
     }
   }
 
-  // TODO: use this method to remove spinner indication that device is updating.
-  // todo this method should to react to websocket subscription that sends information about updated devices to the front end
-  private removeDeviceFromUpdating(deviceUpdated: Device): void {
-    const index = this.devicesUpdating.findIndex((deviceUpdating: Device): boolean => deviceUpdating.shortId === deviceUpdated.shortId);
-    this.devicesUpdating.splice(index, 1);
-    this.checkAllSelected();
+  private updateFirmwareVersion(deviceStatus: DeviceStatus) {
+    let deviceToChangeFirmware: Device;
+    deviceToChangeFirmware = this.verified.find((device: Device) => {
+      return device.shortId === deviceStatus.device.shortId;
+    });
+    if (!!deviceToChangeFirmware) {
+      deviceToChangeFirmware.firmwareVersion = deviceStatus.device.firmwareVersion;
+      return;
+    }
+    deviceToChangeFirmware = this.notVerified.find((device: Device) => {
+      return device.shortId === deviceStatus.device.shortId;
+    });
+    if (!!deviceToChangeFirmware) {
+      deviceToChangeFirmware.firmwareVersion = deviceStatus.device.firmwareVersion;
+      return;
+    }
+  }
+
+  private removeFromUpdating(deviceStatus: DeviceStatus) {
+    this.devicesUpdating = this.devicesUpdating.filter((device: Device) => {
+      return device.shortId !== deviceStatus.device.shortId;
+    });
+  }
+
+  private removeFromToUpdate(deviceStatus: DeviceStatus) {
+    this.devicesToUpdate = this.devicesToUpdate.filter((device: Device) => {
+      return device.shortId !== deviceStatus.device.shortId;
+    });
+  }
+
+  private getCheckboxById(shortId: number): Checkbox {
+    return this.deviceCheckboxes.find((checkbox: Checkbox) => {
+      return checkbox.value.shortId === shortId;
+    });
   }
 
   private getBase64(file: File): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
-      reader.addEventListener('onload', () => resolve(reader.result));
-      reader.addEventListener('onerror', () => error => reject(error));
+      reader.addEventListener('load', () => resolve(reader.result));
+      reader.addEventListener('error', () => error => reject(error));
     });
   }
 
@@ -272,5 +304,24 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       return d.id === device.id;
     });
     CrudHelper.remove(deviceIndex, deviceList);
+  }
+
+  private connectToRegistrationSocket() {
+    const stream = this.socketService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.deviceType}`);
+
+    this.socketSubscription = stream.subscribe((devices: Array<Device>): void => {
+      this.ngZone.run((): void => {
+        devices.forEach((device: Device) => {
+          if (this.isAlreadyOnAnyList(device)) {
+            return;
+          }
+          if (device.verified) {
+            this.verified.push(device);
+          } else {
+            this.notVerified.push(device);
+          }
+        });
+      });
+    });
   }
 }
