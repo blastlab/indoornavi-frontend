@@ -1,10 +1,12 @@
-import {DrawBuilder, GroupType, InfoWindowGroupWrapper, SvgGroupWrapper} from './drawing.builder';
+import {DrawBuilder, SvgGroupWrapper} from './drawing.builder';
 import {Injectable} from '@angular/core';
 import * as d3 from 'd3';
 import {Point} from '../../../map-editor/map.type';
 import {Geometry} from 'app/shared/utils/helper/geometry';
 import {IconService, NaviIcons} from '../../services/drawing/icon.service';
 import {Scale} from '../../../map-editor/tool-bar/tools/scale/scale.type';
+import {InfoWindowBuilder, InfoWindowGroupWrapper} from './info.window';
+import {CoordinatesArray, DefaultIcon, Fill, InfoWindow, MapObject, MapObjectMetadata, Marker, Opacity, Stroke} from './drawing.types';
 
 @Injectable()
 export class MapObjectService {
@@ -22,48 +24,6 @@ export class MapObjectService {
     originMessageEvent.source.postMessage({type: `${event.toString(10)}-${id.toString(10)}`, objectId: id}, originMessageEvent.origin);
   }
 
-  static calculateInfoWindowPosition(infoWindowObject: InfoWindowGroupWrapper, object: d3.selection, position: Position): Point {
-    const box: Box = object.getGroup().node().getBBox();
-    Object.keys(box).forEach((key: string): number => box[key] = Math.round(box[key]));
-    const coordinates: Point = { x: 0, y: 0 };
-    switch (position) {
-      case Position.TOP:
-        coordinates.x = box.x + box.width / 2 - infoWindowObject.size.width / 2;
-        coordinates.y = box.y - infoWindowObject.size.height;
-        break;
-      case Position.TOP_LEFT:
-        coordinates.x = box.x - infoWindowObject.size.width;
-        coordinates.y = box.y - infoWindowObject.size.height;
-        break;
-      case Position.TOP_RIGHT:
-        coordinates.x = box.x + box.width;
-        coordinates.y = box.y - infoWindowObject.size.height;
-        break;
-      case Position.LEFT:
-        coordinates.x = box.x - infoWindowObject.size.width;
-        coordinates.y = box.y + box.height / 2 - infoWindowObject.size.height / 2;
-        break;
-      case Position.RIGHT:
-        coordinates.x = box.x + box.width;
-        coordinates.y = box.y + box.height / 2 - infoWindowObject.size.height / 2;
-        break;
-      case Position.BOTTOM:
-        coordinates.x = box.x + box.width / 2 - infoWindowObject.size.width / 2;
-        coordinates.y = box.y + box.height;
-        break;
-      case Position.BOTTOM_LEFT:
-        coordinates.x = box.x - infoWindowObject.size.width;
-        coordinates.y = box.y + box.height;
-        break;
-      case Position.BOTTOM_RIGHT:
-        coordinates.x = box.x + box.width;
-        coordinates.y = box.x + box.height;
-        break;
-    }
-    return coordinates;
-  }
-
-
   constructor(private iconService: IconService) {
   }
 
@@ -76,13 +36,13 @@ export class MapObjectService {
   addToMapContainer(objectMetadata: MapObjectMetadata, container: d3.selection): void {
     this.objects.set(objectMetadata.object.id,
       new DrawBuilder(container, {id: `map-object-${objectMetadata.type}-${objectMetadata.object.id}`, clazz: 'map-object'})
-        .createGroup(GroupType.OBJECT));
+        .createGroup());
   }
 
   addInfoWindowToMapContainer(objectMetadata: MapObjectMetadata, container: d3.selection): void {
     this.infoWindows.set(objectMetadata.object.id,
-      (<InfoWindowGroupWrapper>new DrawBuilder(container, {id: `map-object-${objectMetadata.type}-${objectMetadata.object.id}`, clazz: 'map-object'})
-        .createGroup(GroupType.INFO_WINDOW)));
+      new InfoWindowBuilder(container, {id: `map-object-${objectMetadata.type}-${objectMetadata.object.id}`, clazz: 'map-object'})
+        .createGroup());
   }
 
   unsetInfoWindow(objectMetadata: MapObjectMetadata): void {
@@ -143,7 +103,7 @@ export class MapObjectService {
             infoWindowObject.height = (<InfoWindow>objectMetadata.object).height;
           }
           const element = this.objects.get((<InfoWindow>objectMetadata.object).relatedObjectId);
-          const anchorPointCoordinates: Point = MapObjectService.calculateInfoWindowPosition(infoWindowObject, element, (<InfoWindow>objectMetadata.object).position);
+          const anchorPointCoordinates: Point = infoWindowObject.calculateInfoWindowPosition(element, (<InfoWindow>objectMetadata.object).position);
           const closingInfoWindowPointCoordinates: Point = {x: anchorPointCoordinates.x + infoWindowObject.size.width - 20, y: anchorPointCoordinates.y + 20};
           infoWindowObject.addInfoWindow(anchorPointCoordinates, (<InfoWindow>objectMetadata.object).content)
             .addText(closingInfoWindowPointCoordinates, 'x')
@@ -207,65 +167,4 @@ export class MapObjectService {
 
 }
 
-interface MapObject {
-  id: number;
-}
 
-interface CoordinatesArray extends MapObject {
-  points: Point[];
-}
-
-export interface Box {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
-
-interface Stroke extends MapObject {
-  stroke: string;
-}
-
-interface Fill extends MapObject {
-  fill: string;
-}
-
-interface Opacity extends MapObject {
-  opacity: number;
-}
-
-export interface MapObjectMetadata {
-  type: string;
-  object: MapObject
-}
-
-interface Marker extends MapObject {
-  events: number[];
-  icon: string;
-  label: string;
-  points: Point[];
-}
-
-interface InfoWindow extends MapObject {
-  content: string;
-  position: number;
-  width: number;
-  height: number;
-  relatedObjectId: number;
-}
-
-interface DefaultIcon {
-  icon: string;
-  translation: Point;
-}
-
-export enum Position {
-  TOP,
-  RIGHT,
-  BOTTOM,
-  LEFT,
-  TOP_RIGHT,
-  TOP_LEFT,
-  BOTTOM_RIGHT,
-  BOTTOM_LEFT
-}
