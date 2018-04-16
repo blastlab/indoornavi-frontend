@@ -57,6 +57,7 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
   private hintMessage: string;
   private scaleChanged: Subscription;
   private scaleCalculations: ScaleCalculations;
+  private disabledHandler: Subscription;
 
   constructor(public translate: TranslateService,
               protected iconService: IconService,
@@ -78,12 +79,14 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
     this.steps = [new FirstStep(this.floor.id), new SecondStep(), new ThirdStep()];
     this.getMapSelection();
     this.getScaleChanges();
+    this.handleDisablingFromService();
   }
 
   ngOnDestroy(): void {
     this.mapLoadedSubscription.unsubscribe();
     this.mapLoadedSubscription = null;
     this.scaleChanged.unsubscribe();
+    this.disabledHandler.unsubscribe();
   }
 
   private getMapSelection(): void {
@@ -101,6 +104,12 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
           scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
         };
       }
+    })
+  }
+
+  private handleDisablingFromService(): void {
+    this.disabledHandler = this.toolbarService.wizardDisabled.subscribe((setDisabled) => {
+      this.disabled = setDisabled;
     })
   }
 

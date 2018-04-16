@@ -281,6 +281,10 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
     this.disabled = value;
   }
 
+  private lockWizard(disable: boolean): void {
+    this.toolbarService.setWizardDisabled(disable);
+  }
+
   private subscribeForListEvents(): void {
     this.listEvents = [];
     this.listEvents.push(this.devicePlacerController.draggingDevice.subscribe((device: Anchor | Sink) => {
@@ -407,9 +411,6 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
     const coordinates: Point = {x: recalculated.x, y: recalculated.y};
     const positionInCentimeters: Point = Geometry.calculatePointPositionInPixels(
       this.scaleCalculations.scaleLengthInPixels, this.scaleCalculations.scaleInCentimeters, coordinates);
-    console.log(this.scaleCalculations.scaleLengthInPixels);
-    console.log(this.scaleCalculations.scaleInCentimeters);
-    console.log(coordinates);
     recalculated.x = positionInCentimeters.x;
     recalculated.y = positionInCentimeters.y;
     return recalculated;
@@ -419,6 +420,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
     this.deviceDrop = this.devicePlacerController.droppedDevice.subscribe(() => {
       if (!!this.draggedDevice) {
         this.placementDone = false;
+        this.lockWizard(true);
         this.devicePlacerController.newCoordinates.first().subscribe((coords) => {
           let coordinates: Point;
           if (!coords) {
@@ -956,6 +958,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
     expandableMapObject.connectable.dragOn();
     expandableMapObject.connectable.toggleDragEmitLock();
     this.removeFromRemainingDevices(device);
+    // TODO move decision to separate method before QA
     this.accButtons.decisionMade.first().subscribe((decision) => {
       if (decision) {
         device.x = coordinates.x;
@@ -987,6 +990,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   private finishPlacement(): void {
     this.devicePlacerController.resetCoordinates();
     this.placementDone = true;
+    this.lockWizard(false);
     this.devicePlacerController.setListVisibility(true);
   }
 
