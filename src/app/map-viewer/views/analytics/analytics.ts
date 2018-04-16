@@ -2,31 +2,35 @@ import {ActivatedRoute} from '@angular/router';
 import {Component, NgZone, OnInit} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {SocketConnectorComponent} from '../socket-connector.component';
-import {TimeStepBuffer} from './analytics.type';
+import {HeatMap, HeatMapPath, TimeStepBuffer} from './analytics.type';
 import {SocketService} from '../../../shared/services/socket/socket.service';
 import {PublishedService} from '../../publication.service';
 import {AreaService} from '../../../shared/services/area/area.service';
 import {IconService} from '../../../shared/services/drawing/icon.service';
 import {MapLoaderInformerService} from '../../../shared/services/map-loader-informer/map-loader-informer.service';
 import {CoordinatesSocketData} from '../../publication.type';
-import {HexagonHeatMap} from './hexagon-heatmap.service';
+import {HexagonalHeatMap} from './hexagonal.heatmap.service';
 import * as d3 from 'd3';
 import {Movable} from '../../../shared/wrappers/movable/movable';
 import {MapSvg} from '../../../map/map.type';
 import {FloorService} from '../../../floor/floor.service';
 import {TagVisibilityTogglerService} from '../../../shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
 import {MapObjectService} from '../../../shared/utils/drawing/map.object.service';
+import {BreadcrumbService} from '../../../shared/services/breadcrumbs/breadcrumb.service';
+import {HeatMapControllerService} from '../../../shared/components/heat-map-controller/heat-map-controller/heat-map-controller.service';
+import {TagToggle} from '../../../shared/components/tag-visibility-toggler/tag-toggle.type';
+import {PixelHeatMap} from './pixel.heatmap.service';
+import {HeatMapType} from '../../../shared/components/heat-map-controller/heat-map-controller/heat-map-controller.component';
 
 @Component({
   templateUrl: './analytics.html'
 })
 export class AnalyticsComponent extends SocketConnectorComponent implements OnInit {
-  private pathSliderView: boolean = false;
   private timeStepBuffer: Map<number, TimeStepBuffer[]> = new Map();
   private mapId = 'map';
-  private heatMap: HexagonHeatMap;
-  // hexRadius set to tag icon size equal 20px x 20px square
-  private hexSize: number = 20;
+  private activeHeatMap: HeatMap[] = [];
+  private hexHeatPointSize: number = 10;
+  private plasmaHeatPointSize: number = 5;
   private gradient: string[] = [
     '#ebff81',
     '#fffb00',
@@ -36,14 +40,15 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     '#ff000c'
   ];
 
-  public heatMapSettings = {
-    path: 2500,
-    heatingTime: 2000
+  private heatMapSettings: HeatMapPath = {
+    temperatureLifeTime: 25000,
+    temperatureWaitTime: 5000,
   };
+  private playingAnimation: boolean = false;
+  private heatMapType: number = HeatMapType.HEXAGONAL;
 
-  public playingAnimation: boolean = false;
-
-  constructor(ngZone: NgZone,
+  constructor(
+              ngZone: NgZone,
               socketService: SocketService,
               route: ActivatedRoute,
               publishedService: PublishedService,
@@ -53,9 +58,12 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
               iconService: IconService,
               mapObjectService: MapObjectService,
               floorService: FloorService,
-              tagTogglerService: TagVisibilityTogglerService
+              tagTogglerService: TagVisibilityTogglerService,
+              breadcrumbService: BreadcrumbService,
+              private heatMapControllerService: HeatMapControllerService
               ) {
-    super(ngZone,
+    super(
+      ngZone,
       socketService,
       route,
       publishedService,
@@ -65,13 +73,33 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       iconService,
       mapObjectService,
       floorService,
-      tagTogglerService
+      tagTogglerService,
+      breadcrumbService
     );
   }
 
   protected init(): void {
+    this.heatMapControllerService.onHeaMapTypeChange().subscribe((type: HeatMapType): void => {
+      this.heatMapType = type;
+    });
+    this.heatMapControllerService.onAnimationToggled().subscribe((animationToggle: boolean): void => {
+      this.playingAnimation = animationToggle;
+      if (!this.playingAnimation) {
+        this.getActiveHeatMap().erase();
+      }
+
+    });
+    this.heatMapControllerService.onHeatMapWaterfallDisplayTimesChange().subscribe((heatMapWaterfallDisplayTime: number): void => {
+      this.heatMapSettings.temperatureLifeTime = heatMapWaterfallDisplayTime;
+      this.getActiveHeatMap().temperatureTimeIntervalForCooling = this.heatMapSettings.temperatureLifeTime;
+    });
+    this.heatMapControllerService.onHeatMapTimeGapChange().subscribe((heatTimeGap: number): void => {
+      this.heatMapSettings.temperatureWaitTime = heatTimeGap;
+      this.getActiveHeatMap().temperatureTimeIntervalForHeating = this.heatMapSettings.temperatureWaitTime;
+    });
     this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg): void => {
-      this.createHexagonalHeatMapGrid(mapSvg.layer);
+      // both hexagonalHeatMap and pixelHeatMap needs to be created upfront, to be displayed in svg layer below tags svg layer
+      this.createHeatMapGrid(mapSvg.layer);
     });
     this.whenDataArrived().subscribe((data: CoordinatesSocketData): void => {
       // update
@@ -83,48 +111,46 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       }
       this.handleCoordinatesData(data);
     });
+    this.tagTogglerService.onToggleTag().subscribe((tagToggle: TagToggle) => {
+      if (this.tagsOnMap.containsKey(tagToggle.tag.shortId) && !tagToggle.selected) {
+        this.timeStepBuffer.delete(tagToggle.tag.shortId);
+        this.getActiveHeatMap().erase(tagToggle.tag.shortId);
+      }
+    });
     this.whenTransitionEnded().subscribe((tagShortId: number): void => {
-      // release to setHeatMap only those data that are in proper time step up to transition of the tag
-      // from timeStepBuffer
       const timeStepBuffer = this.timeStepBuffer.get(tagShortId);
-      const timeWhenTransitionIsFinished: number = Date.now() - Movable.TRANSITION_DURATION;
-      for (let index = 0; index < timeStepBuffer.length; index ++) {
-        if (timeStepBuffer[index].timeOfDataStep < timeWhenTransitionIsFinished) {
-          if (this.playingAnimation) {
-            this.heatUpHexes(timeStepBuffer[index].data);
+      if (!!timeStepBuffer && timeStepBuffer.length > 0 && !document.hidden) {
+        const timeWhenTransitionIsFinished: number = Date.now() - Movable.TRANSITION_DURATION;
+        for (let index = 0; index < timeStepBuffer.length; index ++) {
+          if (timeStepBuffer[index].timeOfDataStep < timeWhenTransitionIsFinished) {
+            if (this.playingAnimation) {
+              this.getActiveHeatMap().feedWithCoordinates(timeStepBuffer[index].data);
+            }
+            timeStepBuffer.splice(0, index);
           }
-          timeStepBuffer.splice(0, index);
         }
       }
     });
   }
 
-  setPathLength (event): void {
-    this.heatMapSettings.path = event;
-    this.heatMap.coolingDown = this.heatMapSettings.path;
+  private getActiveHeatMap() {
+    return this.activeHeatMap[this.heatMapType];
   }
 
-  toggleSlider(): void {
-    this.pathSliderView = !this.pathSliderView;
-  }
-
-  toggleHeatAnimation(): void {
-    this.playingAnimation = !this.playingAnimation;
-    if (!this.playingAnimation) {
-      this.heatMap.eraseHeatMap();
-    }
-  }
-
-  private heatUpHexes(data: CoordinatesSocketData): void {
-    this.heatMap.feedWithCoordinates(data.coordinates.point);
-  }
-
-  private createHexagonalHeatMapGrid (mapNode: d3.selection): void {
+  // grid needs to be calculated upfront before starting heat map,
+  // it is needed for having correct grid dimension corresponding with map img size and current pan & zoom
+  private createHeatMapGrid (mapNode: d3.selection): void {
     const height = Number.parseInt(mapNode.node().getBBox().height);
     const width = Number.parseInt(mapNode.node().getBBox().width);
-    this.heatMap = new HexagonHeatMap(width, height, this.hexSize, this.gradient);
-    this.heatMap.create(this.mapId);
-    this.heatMap.heatingUp = this.heatMapSettings.heatingTime;
-    this.heatMap.coolingDown = this.heatMapSettings.path;
+    this.activeHeatMap = [
+      new HexagonalHeatMap(width, height, this.hexHeatPointSize, this.gradient),
+      new PixelHeatMap(width, height, this.plasmaHeatPointSize, this.gradient)
+    ];
+    this.activeHeatMap.forEach((heatMap: HeatMap): void => {
+      heatMap.create(this.mapId);
+      heatMap.temperatureTimeIntervalForHeating = this.heatMapSettings.temperatureWaitTime;
+      heatMap.temperatureTimeIntervalForCooling = this.heatMapSettings.temperatureLifeTime;
+    });
   }
+
 }
