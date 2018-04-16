@@ -12,23 +12,6 @@ services:
     working_dir: /app
     command: bash -c "npm install; ng serve --host=0.0.0.0 --disable-host-check"
 
-  core:
-    build: backend
-    container_name:
-      core
-    volumes:
-      - ./backend/deployments:/opt/jboss/wildfly/standalone/deployments
-    entrypoint: ["wait-for-container-end.sh", "-c", "liquibase", "--", "/start-server.sh"]
-    depends_on:
-      - db
-    ports:
-      - '90:8080'
-    environment:
-      TZ: Europe/Warsaw
-      APP_ENVIRONMENT: development
-      APP_DB_HOST: db
-
-
   db:
     extends:
       file: backend/database/docker-compose.yml
@@ -37,24 +20,46 @@ services:
       db
 
   liquibase:
-    extends:
-      file: backend/database/docker-compose.yml
-      service: liquibase
+    build: backend/database
+    ports:
+      - '2306:80'
+    environment:
+      HOST: db
+      SCHEMA: navi
+      USER: root
+      PASSWORD: ""
+    volumes:
+      - ./backend/database/src/main/resources:/liquibase/changelog
+    entrypoint: ["wait-for-it", "db:3306", "-t", "0", "--", "/run.sh"]
+
+  core:
+    build: backend
     container_name:
-      liquibase
+      core
+    ports:
+      - '90:8080'
+      - '8787:8787'
+      - '9990:9990'
+    volumes:
+      - ./backend/deployments:/opt/jboss/wildfly/standalone/deployments
+    depends_on:
+      - db
+    environment:
+      TZ: Europe/Warsaw
+      APP_ENVIRONMENT: development
+      APP_DB_HOST: db
+    entrypoint: ["wait-for-it", "liquibase:80", "-t", "0", "--", "/start-server.sh"]
+
 
   core_compiler:
-    extends:
-      file: backend/docker-compose.override.yml
-      service: core_compiler
+    build: backend/compiler
+    volumes:
+      - ./backend:/app
+      - m2:/root/.m2
     container_name:
       core_compiler
 
 
+
 volumes:
-  # For Liquibase container.
-  maven_liquibase: {}
-  deployments: {}
-  maven_core_compiler: {}
-
-
+  m2: {}

@@ -46,24 +46,8 @@ export class PublishedComponent extends SocketConnectorComponent implements OnIn
       mapObjectService,
       floorService,
       tagToggler,
+      breadcrumbService,
     );
-
-    this.route.params
-      .subscribe((params: Params) => {
-        const floorId = +params['id'];
-        floorService.getFloor(floorId).subscribe((floor: Floor) => {
-          breadcrumbService.publishIsReady([
-            {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
-            {label: floor.building.complex.name, routerLink: `/complexes/${floor.building.complex.id}/buildings`, routerLinkActiveOptions: {exact: true}},
-            {
-              label: floor.building.name,
-              routerLink: `/complexes/${floor.building.complex.id}/buildings/${floor.building.id}/floors`,
-              routerLinkActiveOptions: {exact: true}
-            },
-            {label: `${(floor.name.length ? floor.name : floor.level)}`, disabled: true}
-          ]);
-        });
-      });
   }
 
 }
