@@ -7,6 +7,7 @@ from pages.base_page import BasePage
 from pages.constructions.complexes_page import ComplexesPage
 from pages.login_page import LoginPage
 
+
 class TestComplexesPage(unittest.TestCase):
 
     @classmethod
@@ -21,9 +22,12 @@ class TestComplexesPage(unittest.TestCase):
         cls.construction_page = ConstructionPage(cls.webdriver, 'complex')
         cls.option = 1
         # login before each test case
-        cls.base_page.truncate_db()
-        cls.construction_page.create_construction_db_env()
         cls.page.login_process(cls.option)
+
+    def setUp(self):
+        self.base_page.truncate_db()
+        self.construction_page.create_construction_db_env()
+        self.webdriver.refresh()
 
     def _test_complexes_page_is_loaded_correctly(self):
 
@@ -86,7 +90,7 @@ class TestComplexesPage(unittest.TestCase):
         # self.assertTrue(self.complexes_page.is_removed_complex_disappeared())
 
         # Check that new complex has been saved in db -> now last complex name is Test Industry
-        self.assertEqual(self.construction_page.if_saved_in_db(), 'Test Industry')
+        self.assertEqual(self.construction_page.if_saved_in_db(), 'Test Mall')
         self.test_failed = False
 
     def test_04_delete_complex_cancel(self):

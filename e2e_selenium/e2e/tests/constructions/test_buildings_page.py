@@ -8,6 +8,7 @@ from pages.base_page import BasePage
 from pages.constructions.buildings_page import BuildingsPage
 from pages.login_page import LoginPage
 
+
 class TestBuildingsPage(unittest.TestCase):
 
     @classmethod
@@ -22,18 +23,22 @@ class TestBuildingsPage(unittest.TestCase):
         cls.construction_page = ConstructionPage(cls.webdriver, 'building')
         cls.option = 1
         # login before each test case
-        cls.base_page.truncate_db()
-        cls.construction_page.create_construction_db_env()
         cls.page.login_process(cls.option)
+        # check tested page is loaded correctly
+        cls.building_page_is_loaded_correctly(cls)
 
-    def test_01_building_page_is_loaded_correctly(self):
+    def setUp(self):
+        self.base_page.truncate_db()
+        self.construction_page.create_construction_db_env()
+        self.webdriver.refresh()
+
+    def building_page_is_loaded_correctly(self):
 
         """Test that building page has been correctly loaded"""
 
-        self.assertTrue(self.construction_page.is_redirect_button_clickable())
-
+        assert self.construction_page.is_redirect_button_clickable()
         self.construction_page.redirect_button_click()
-        self.assertTrue(TestBase.multi_assertion(self))
+        assert TestBase.multi_assertion(self)
         self.test_failed = False
 
     def test_02_add_new_building_correctly(self):
@@ -112,7 +117,7 @@ class TestBuildingsPage(unittest.TestCase):
         # self.assertTrue(self.construction_page.is_removed_building_disappeared())
         # TODO sprawdzenie czy wpis w bazie danych został usunięty ()
         # Check that new building has been saved in db -> now last building name is Test Industry
-        self.assertEqual(self.construction_page.if_saved_in_db(), 'Test Building B')
+        self.assertEqual(self.construction_page.if_saved_in_db(), 'Test Building A')
         self.test_failed = False
 
     def test_06_delete_building_cancel(self):
