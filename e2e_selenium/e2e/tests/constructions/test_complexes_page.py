@@ -72,6 +72,7 @@ class TestComplexesPage(unittest.TestCase):
 
         """Test deleting complex correctly"""
 
+        self.assertTrue(self.construction_page.is_remove_button_clickable())
         # Click last complex remove button
         self.construction_page.remove_button_click()
         # Check that the confirm window present
@@ -97,6 +98,7 @@ class TestComplexesPage(unittest.TestCase):
 
         """Test canceling delete complex """
 
+        self.assertTrue(self.construction_page.is_remove_button_clickable())
         # Click last complex remove button
         self.construction_page.remove_button_click()
         # Check that the confirm window present

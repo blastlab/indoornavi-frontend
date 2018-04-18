@@ -97,6 +97,8 @@ class TestBuildingsPage(unittest.TestCase):
 
     def test_05_delete_building_correctly(self):
         """Test that building will be deleted correctly"""
+
+        self.assertTrue(self.construction_page.is_remove_button_clickable())
         # Click last building remove button
         self.construction_page.remove_button_click()
         # Check that the confirm window present
@@ -122,6 +124,8 @@ class TestBuildingsPage(unittest.TestCase):
 
     def test_06_delete_building_cancel(self):
         """Test cancel of deleting building """
+
+        self.assertTrue(self.construction_page.is_remove_button_clickable())
         # Click last building remove button
         self.construction_page.remove_button_click()
         # Check that the confirm window present
@@ -157,6 +161,8 @@ class TestBuildingsPage(unittest.TestCase):
 
     def test_08_edit_building_negative_empty_input(self):
         """Test editing building with empty input"""
+
+        self.assertTrue(self.construction_page.is_edit_button_present())
         self.construction_page.edit_button_click()
         self.construction_page.clear_edit_input()
         self.construction_page.save_edit_click()
@@ -166,6 +172,8 @@ class TestBuildingsPage(unittest.TestCase):
 
     def test_09_edit_building_cancel(self):
         """Test cancel editing building"""
+
+        self.assertTrue(self.construction_page.is_edit_button_present())
         # Click last building edit button
         self.construction_page.edit_button_click()
         # TODO Zmienic tytul modala -  Edit building

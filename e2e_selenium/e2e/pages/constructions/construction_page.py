@@ -97,6 +97,10 @@ class ConstructionPage(BasePage):
         return True if self.is_element_present(self.base_locators.created_construction_row) else False
 
     # Remove last construction
+
+    def is_remove_button_clickable(self):
+        return True if self.wait_for_element_clickable(self.base_locators.remove_last_construction_btn) else False
+
     def remove_button_click(self):
         return self.click_button(*self.base_locators.remove_last_construction_btn)
 
