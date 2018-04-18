@@ -15,6 +15,7 @@ export enum ElementType {
 
 export class SvgGroupWrapper {
   private elements: Map<ElementType, d3.selection[]> = new Map();
+  private textsHidden: boolean = true;
   container: d3.selection;
   private color: string;
 
@@ -92,7 +93,7 @@ export class SvgGroupWrapper {
     return this;
   }
 
-  getTexts(): d3.selection {
+  getTexts(): d3.selection[] {
     return this.getElements(ElementType.TEXT);
   }
 
@@ -103,6 +104,7 @@ export class SvgGroupWrapper {
         text.attr('display', 'block');
       });
     }
+    this.textsHidden = false;
   }
 
   hideTexts(): void {
@@ -112,6 +114,7 @@ export class SvgGroupWrapper {
         text.attr('display', 'none');
       });
     }
+    this.textsHidden = true;
   }
 
   addPolygon(points: Point[]): SvgGroupWrapper {
@@ -173,7 +176,10 @@ export class SvgGroupWrapper {
     const boxWidth = 2;
     const padding: {x: number , y: number} = Helper.getChildrenExtremeValues(parentElement);
     const paddingX = padding.x * 1 + boxWidth * 1;
-    const paddingY = padding.y - boxWidth - 6;
+    let paddingY = padding.y - boxWidth - 6;
+    if (this.textsHidden) {
+      paddingY += 10;
+    }
     this.group
       .append('rect')
       .classed('group-border-box', true)

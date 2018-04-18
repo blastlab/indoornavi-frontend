@@ -11,7 +11,7 @@ export class CommonDevice {
   static createConnectableDevice(droppedDevice: SvgGroupWrapper): Expandable {
     return <Expandable>{
       groupCreated: droppedDevice,
-      selectable: new SelectableDevice(droppedDevice),
+      selectable: new SelectableDevice(droppedDevice, 'red'),
       connectable: new ConnectableDevice(droppedDevice)
     };
   }

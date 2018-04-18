@@ -583,7 +583,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
           DevicesComponent.markSinkSubselection(selectedDevice.connectable.anchorConnection);
         }
         const selectableDevice = <SelectableDevice>selectedDevice.selectable;
-        selectableDevice.setBorderBox(this.scaleFactor, 'red');
+        selectableDevice.setBorderBox(this.scaleFactor);
         if (this.modifyingConnectionsFlag) {
           if (!this.creatingConnection) {
             this.startCreatingConnection(selectedDevice, DevicesComponent.getMouseCoordinates());
