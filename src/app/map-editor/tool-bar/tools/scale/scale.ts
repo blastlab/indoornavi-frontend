@@ -199,7 +199,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   private setTranslations() {
     this.translate.setDefaultLang('en');
-    this.translate.get('scale.basic.msg').subscribe((value: string) => {
+    this.translate.get('scale.set.first.point').subscribe((value: string) => {
       this.hintMessage = value;
     });
   }
