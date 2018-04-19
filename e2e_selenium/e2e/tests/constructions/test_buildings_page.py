@@ -22,24 +22,29 @@ class TestBuildingsPage(unittest.TestCase):
         cls.buildings_page = BuildingsPage(cls.webdriver)
         cls.construction_page = ConstructionPage(cls.webdriver, 'building')
         cls.option = 1
-        # login before each test case
+        # truncate db & create env before all tests
+        cls.base_page.truncate_db()
+        cls.construction_page.create_construction_db_env()
+        # login before all tests
         cls.page.login_process(cls.option)
-        # check tested page is loaded correctly
-        cls.building_page_is_loaded_correctly(cls)
+        # check the tested page is loaded correctly
+        cls.building_page_is_loaded_correctly()
+
+    @classmethod
+    def building_page_is_loaded_correctly(cls):
+
+        """Before - Test that building page has been correctly loaded"""
+
+        assert cls.construction_page.is_redirect_button_clickable()
+        cls.construction_page.redirect_button_click()
+        assert TestBase.multi_assertion(cls)
+        cls.test_failed = False
 
     def setUp(self):
+        self.test_failed = True
         self.base_page.truncate_db()
         self.construction_page.create_construction_db_env()
         self.webdriver.refresh()
-
-    def building_page_is_loaded_correctly(self):
-
-        """Test that building page has been correctly loaded"""
-
-        assert self.construction_page.is_redirect_button_clickable()
-        self.construction_page.redirect_button_click()
-        assert TestBase.multi_assertion(self)
-        self.test_failed = False
 
     def test_02_add_new_building_correctly(self):
 

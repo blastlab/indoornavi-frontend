@@ -21,25 +21,32 @@ class TestComplexesPage(unittest.TestCase):
         cls.complexes_page = ComplexesPage(cls.webdriver)
         cls.construction_page = ConstructionPage(cls.webdriver, 'complex')
         cls.option = 1
-        # login before each test case
+        # truncate db & create env before all tests
+        cls.base_page.truncate_db()
+        cls.construction_page.create_construction_db_env()
+        # login before all tests
         cls.page.login_process(cls.option)
+        # check the tested page is loaded correctly
+        cls.complexes_page_is_loaded_correctly()
+
+    @classmethod
+    def complexes_page_is_loaded_correctly(cls):
+
+        """Before - Test that complexes page has been correctly loaded"""
+
+        assert (TestBase.multi_assertion(cls))
 
     def setUp(self):
+        self.test_failed = True
         self.base_page.truncate_db()
         self.construction_page.create_construction_db_env()
         self.webdriver.refresh()
-
-    def _test_complexes_page_is_loaded_correctly(self):
-
-        """Test that complexes page has been correctly loaded"""
-
-        self.assertTrue(TestBase.multi_assertion(self))
 
     def test_01_add_new_complex_correctly(self):
 
         """Test adding new complex correctly"""
 
-        self.assertTrue(TestBase.multi_assertion(self))
+        self.assertTrue(self.complexes_page.is_add_button_present())
         self.complexes_page.add_button_click()
         # TODO Zmienic tytul modala -  Add complex / Add new complex
         # self.assertTrue(self.complexes_page.check_add_modal_title())
@@ -62,6 +69,7 @@ class TestComplexesPage(unittest.TestCase):
 
         """Test adding new complex with empty input"""
 
+        self.assertTrue(self.complexes_page.is_add_button_present())
         self.complexes_page.add_button_click()
         self.construction_page.save_add_new_construction()
         self.assertEqual(self.construction_page.error_message_name(), 'Complex name is required.')

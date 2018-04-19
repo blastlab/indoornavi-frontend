@@ -9,4 +9,4 @@ class ComplexesPage(BasePage):
         return self.click_button(*self.add_button_complex)
 
     def is_add_button_present(self):
-        return True if self.is_element_present(self.add_button_complex) else False
+        return True if self.wait_for_element_clickable(self.add_button_complex) else False
