@@ -4,7 +4,13 @@ import {Box, Position} from './drawing.types';
 
 // when
 const svgElement = d3.select().append('svg');
-const infoWindowGroupWrapper = new InfoWindowGroupWrapper(svgElement);
+const DrawConfigurationMock = {
+  id: '',
+  clazz: '',
+  cursor: ''
+};
+
+const infoWindowGroupWrapper = new InfoWindowGroupWrapper(svgElement, DrawConfigurationMock);
 
 // mocking MapObject
 class MapObject {
