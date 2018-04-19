@@ -14,7 +14,7 @@ export class SvgGroupWrapper {
     throw new Error(`${elementType} is null or undefined`);
   }
 
-  constructor(protected group: d3.selection) {
+  constructor(private group: d3.selection) {
   }
 
   place(coordinates: Point): SvgGroupWrapper {

@@ -5,12 +5,11 @@ import {Point} from '../../../map-editor/map.type';
 import {Geometry} from 'app/shared/utils/helper/geometry';
 import {IconService, NaviIcons} from '../../services/drawing/icon.service';
 import {Scale} from '../../../map-editor/tool-bar/tools/scale/scale.type';
-import {InfoWindowBuilder, InfoWindowGroupWrapper} from './info.window';
+import {InfoWindowGroupWrapper} from './info.window';
 import {CoordinatesArray, DefaultIcon, Fill, InfoWindow, MapObject, MapObjectMetadata, Marker, Opacity, Stroke} from './drawing.types';
 
 @Injectable()
 export class MapObjectService {
-  private events: string[] = ['click', 'mouseover'];
   private objects: Map<number, SvgGroupWrapper> = new Map();
   private infoWindows: Map<number, InfoWindowGroupWrapper> = new Map();
   // TODO: standardize pointRadius for all points that will be drawn on the map
@@ -28,7 +27,7 @@ export class MapObjectService {
   }
 
   create(): number {
-    const id = this.objects.size + 1;
+    const id = Date.now() +  Math.round(Math.random() * 100);
     this.objects.set(id, null);
     return id;
   }
@@ -41,8 +40,7 @@ export class MapObjectService {
 
   addInfoWindowToMapContainer(objectMetadata: MapObjectMetadata, container: d3.selection): void {
     this.infoWindows.set(objectMetadata.object.id,
-      new InfoWindowBuilder(container, {id: `map-object-${objectMetadata.type}-${objectMetadata.object.id}`, clazz: 'map-object'})
-        .createGroup());
+      new InfoWindowGroupWrapper(container, {id: `map-object-${objectMetadata.type}-${objectMetadata.object.id}`, clazz: 'map-object'}));
   }
 
   unsetInfoWindow(objectMetadata: MapObjectMetadata): void {
@@ -68,6 +66,9 @@ export class MapObjectService {
           scale.getRealDistanceInCentimeters(),
           point));
       });
+    }
+    if (!!this.objects.get(objectMetadata.object.id)) {
+      this.removeObject(objectMetadata);
     }
     switch (objectMetadata.type) {
       case 'POLYLINE':
@@ -95,26 +96,16 @@ export class MapObjectService {
         if (!this.infoWindows.get(objectMetadata.object.id)) {
           this.addInfoWindowToMapContainer(objectMetadata, container);
           const infoWindowObject = this.infoWindows.get(objectMetadata.object.id);
-          const self = this;
-          if (!!(<InfoWindow>objectMetadata.object).width) {
-            infoWindowObject.width = (<InfoWindow>objectMetadata.object).width;
+          const infoWindow: InfoWindow = (<InfoWindow>objectMetadata.object);
+          if (!!infoWindow.width) {
+            infoWindowObject.width = infoWindow.width;
           }
-          if (!!(<InfoWindow>objectMetadata.object).height) {
-            infoWindowObject.height = (<InfoWindow>objectMetadata.object).height;
+          if (!!infoWindow.height) {
+            infoWindowObject.height = infoWindow.height;
           }
-          const element = this.objects.get((<InfoWindow>objectMetadata.object).relatedObjectId);
-          const anchorPointCoordinates: Point = infoWindowObject.calculateInfoWindowPosition(element, (<InfoWindow>objectMetadata.object).position);
-          const closingInfoWindowPointCoordinates: Point = {x: anchorPointCoordinates.x + infoWindowObject.size.width - 20, y: anchorPointCoordinates.y + 20};
-          infoWindowObject.addInfoWindow(anchorPointCoordinates, (<InfoWindow>objectMetadata.object).content)
-            .addText(closingInfoWindowPointCoordinates, 'x')
-            .getGroup()
-            .select('text')
-            .attr('cursor', 'pointer')
-            .on('click', () => {
-              // TODO: post message that info window has been closed to the API source.
-              // todo: this todo should be made in future issues
-              self.unsetInfoWindow(objectMetadata);
-            });
+          const element = this.objects.get(infoWindow.relatedObjectId);
+          const topLeftCornerOfInfoWindow: Point = infoWindowObject.calculateInfoWindowPosition(element, infoWindow.position);
+          infoWindowObject.draw(topLeftCornerOfInfoWindow, infoWindow.content, this.unsetInfoWindow.bind(this), objectMetadata);
         }
     }
   }
@@ -132,7 +123,7 @@ export class MapObjectService {
     }
     if ((<Marker>objectMetadata.object).events.length > 0) {
       (<Marker>objectMetadata.object).events.forEach((event: number): void => {
-        element.getGroup().on(this.events[event], (): void => {
+        element.getGroup().on(event, (): void => {
           MapObjectService.respondToOrigin(event, (<MapObject>objectMetadata.object).id, originMessageEvent);
         });
       });
