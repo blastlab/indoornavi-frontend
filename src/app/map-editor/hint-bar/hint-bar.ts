@@ -27,11 +27,10 @@ export class HintBarComponent implements OnInit {
       this.hintMessage = this.defaultHintMessage;
     });
     this.toolbarService.onToolChanged().subscribe((tool: Tool) => {
-      console.log(tool);
       if (!!tool) {
-        console.log(tool.getHintMessage());
         this.toolName = ToolName[tool.getToolName()];
         this.translate.get(tool.getHintMessage()).subscribe((translated: string) => {
+          console.log(translated);
           this.hintMessage = translated;
         });
       } else {
