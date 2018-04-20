@@ -25,9 +25,8 @@ import {DrawConfiguration} from '../../../../map-viewer/publication.type';
 import {MapEditorService} from '../../../map.editor.service';
 import {CommonDevice} from '../../../../shared/utils/drawing/common/device';
 import {IconService} from '../../../../shared/services/drawing/icon.service';
-import {ScaleCalculations} from '../scale/scale.type';
+import {Scale, ScaleCalculations, ScaleDto} from '../scale/scale.type';
 import {ScaleService} from '../../../../shared/services/scale/scale.service';
-import {Scale, ScaleDto} from '../scale/scale.type';
 import {Geometry} from '../../../../shared/utils/helper/geometry';
 import {Helper} from '../../../../shared/utils/helper/helper';
 
@@ -158,18 +157,8 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
     if (!!this.selectedLine) {
       this.clearSelectedLine();
     }
-    /*if (!this.placementDone) {
-      this.accButtons.publishDecision(false);
-    }*/
-  }
 
-  // TODO refactor this part into accButtons method
-  /*@HostListener('document:keydown.enter', [])
-  private handleEnterKey(): void {
-    if (!this.placementDone) {
-      this.accButtons.publishDecision(true);
-    }
-  }*/
+  }
 
   @HostListener('document:keydown.delete', [])
   private handleDeleteKey(): void {
@@ -954,11 +943,14 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
       DevicesComponent.showSingleConnection(connectingLine);
       this.connectingLines.push(connectingLine);
     }
+    this.openAcceptanceButtons(device, coordinates, expandableMapObject, connectingLine);
+  }
+
+  private openAcceptanceButtons(device: Sink | Anchor, coordinates: Point, asExpandable: Expandable, connection: ConnectingLine): void {
     this.accButtons.publishVisibility(true);
-    expandableMapObject.connectable.dragOn();
-    expandableMapObject.connectable.toggleDragEmitLock();
+    asExpandable.connectable.dragOn();
+    asExpandable.connectable.toggleDragEmitLock();
     this.removeFromRemainingDevices(device);
-    // TODO move decision to separate method before QA
     this.accButtons.decisionMade.first().subscribe((decision) => {
       if (decision) {
         device.x = coordinates.x;
@@ -967,20 +959,20 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
           this.setSinkInConfiguration(<Sink>device);
         } else if (!!this.chosenSink) {
           this.setAnchorInConfiguredSink(device, this.chosenSink);
-          DevicesComponent.hideSingleConnection(connectingLine)
+          DevicesComponent.hideSingleConnection(connection)
         } else {
           this.setNotConnectedAnchorInConfiguration(device);
         }
-        this.manageSingleSelectable(expandableMapObject);
-        expandableMapObject.selectable.select();
-        expandableMapObject.connectable.toggleDragEmitLock();
+        this.manageSingleSelectable(asExpandable);
+        asExpandable.selectable.select();
+        asExpandable.connectable.toggleDragEmitLock();
         this.finishPlacement();
       } else {
-        if (!!connectingLine) {
-          this.removeConnectingLine(connectingLine)
+        if (!!connection) {
+          this.removeConnectingLine(connection)
         }
-        this.removeFromMapDevices(expandableMapObject);
-        this.removeChosenAnchor(expandableMapObject);
+        this.removeFromMapDevices(asExpandable);
+        this.removeChosenAnchor(asExpandable);
         this.addToRemainingDevices(device);
         this.finishPlacement();
       }
