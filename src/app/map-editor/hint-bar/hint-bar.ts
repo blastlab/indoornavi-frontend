@@ -40,7 +40,6 @@ export class HintBarComponent implements OnInit {
     this.hintBarService.onHintMessageReceived().subscribe((key: string) => {
       this.translate.get(key).subscribe((translated: string) => {
         this.hintMessage = translated;
-        console.log(translated);
       });
     });
   }

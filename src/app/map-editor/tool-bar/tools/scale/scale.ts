@@ -41,7 +41,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private scaleGroup = d3.select(`#${ScaleComponent.SCALE_GROUP_SELECTOR_ID}`);
   private scale: Scale;
   private scaleBackup: Scale;
-  private hintMessage: string;
+  private hintMessage: string = 'scale.set.first.point';
   private pointsArray: Point[] = [];
   private linesArray: Line[] = [];
 
