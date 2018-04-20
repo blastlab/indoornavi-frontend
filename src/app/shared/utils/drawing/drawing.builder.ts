@@ -17,7 +17,7 @@ export class SvgGroupWrapper {
   private elements: Map<ElementType, d3.selection[]> = new Map();
   private textsHidden: boolean = true;
   container: d3.selection;
-  private color: string;
+  private groupDefaultColor: string;
 
   static throwErrorTypeNull (elementType: ElementType): void {
     throw new Error(`${elementType} is null or undefined`);
@@ -28,7 +28,7 @@ export class SvgGroupWrapper {
               colored?: string) {
     this.group = group;
     this.container = container;
-    this.color = (colored) ? colored : 'black';
+    this.groupDefaultColor = (colored) ? colored : 'black';
   }
 
   place(coordinates: Point): SvgGroupWrapper {
@@ -53,8 +53,8 @@ export class SvgGroupWrapper {
       .attr('x', coordinates.x)
       .attr('y', coordinates.y)
       .html(icon)
-      .attr('stroke', this.color)
-      .attr('fill', this.color);
+      .attr('stroke', this.groupDefaultColor)
+      .attr('fill', this.groupDefaultColor);
     this.addElement(ElementType.ICON, element);
     return this;
   }
@@ -86,7 +86,7 @@ export class SvgGroupWrapper {
       .append('text')
       .attr('x', coordinates.x)
       .attr('y', coordinates.y)
-      .attr('fill', this.color)
+      .attr('fill', this.groupDefaultColor)
       .attr('display', 'none')
       .text(text);
     this.addElement(ElementType.TEXT, element);
@@ -170,7 +170,7 @@ export class SvgGroupWrapper {
   }
 
   addBorderBox(scale: number, defineColor?: string) {
-    const boxColor = (defineColor) ? defineColor : this.color;
+    const boxColor = (defineColor) ? defineColor : this.groupDefaultColor;
     const parentElement: SVGElement = this.group.node();
     const domRect: DOMRectInit = parentElement.getBoundingClientRect();
     const boxWidth = 2;
@@ -230,7 +230,7 @@ export class SvgGroupWrapper {
   }
 
   resetColor() {
-    this.changeColor(this.color);
+    this.changeColor(this.groupDefaultColor);
   }
 
   getGroup(): d3.selection {
