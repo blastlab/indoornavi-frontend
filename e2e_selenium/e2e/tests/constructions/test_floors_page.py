@@ -21,26 +21,37 @@ class TestFloorsPage(unittest.TestCase):
         cls.floors_page = FloorsPage(cls.webdriver)
         cls.construction_page = ConstructionPage(cls.webdriver, 'floor')
         cls.option = 1
-        # login before each test case
+        # truncate db & create env before all tests
         cls.base_page.truncate_db()
         cls.construction_page.create_construction_db_env()
+        # login before all tests
         cls.page.login_process(cls.option)
+        # check the tested page is loaded correctly
+        cls.floors_page_is_loaded_correctly()
 
-    # TC[001]
-    def test_01_floors_page_is_loaded_correctly(self):
+    @classmethod
+    def floors_page_is_loaded_correctly(cls):
         """Test that floors page is loaded correctly"""
-        self.construction_page.redirect_button_click()
+
+        assert cls.construction_page.is_redirect_button_clickable()
+        cls.construction_page.redirect_button_click()
         # time.sleep(5)
-        self.construction_page.is_redirect_button_clickable()
-        self.construction_page.redirect_button_click()
-        self.assertTrue(TestBase.multi_assertion(self))
-        self.test_failed = False
+        assert cls.construction_page.is_redirect_button_clickable()
+        cls.construction_page.redirect_button_click()
+        assert TestBase.multi_assertion(cls)
+        cls.test_failed = False
+
+    def setUp(self):
+        self.test_failed = True
+        self.base_page.truncate_db()
+        self.construction_page.create_construction_db_env()
+        self.webdriver.refresh()
 
     # TC[002]
     def test_02_add_new_floor_correctly(self):
 
         """Test adding new floor correctly"""
-        self.floors_page.is_add_button_clickable()
+        self.assertTrue(self.floors_page.is_add_button_clickable())
         self.floors_page.add_button_click()
         # TODO Zmienic tytul modala -  Add floor / Add new floor
         # self.assertTrue(self.complexes_page.check_add_modal_title())
@@ -67,6 +78,8 @@ class TestFloorsPage(unittest.TestCase):
     # TC[004]
     def test_04_delete_floor_correctly(self):
         """Test that deleting floor is correct"""
+
+        self.assertTrue(self.construction_page.is_remove_button_clickable())
         # Click last floor remove button
         self.construction_page.remove_button_click()
         # Check that the confirm window present
@@ -83,12 +96,14 @@ class TestFloorsPage(unittest.TestCase):
         # Check that toast is disappeared
         self.assertTrue(self.construction_page.is_remove_construction_toast_disappear())
         # Check that new floor has been saved in db -> now last floor name is Test Floor B
-        self.assertEqual(self.construction_page.if_saved_in_db(), 'Test Floor B')
+        self.assertEqual(self.construction_page.if_saved_in_db(), 'Test Floor A')
         self.test_failed = False
 
     # TC[005]
     def test_05_delete_floor_cancel(self):
         """Test cancel deleting action is correct"""
+
+        self.assertTrue(self.construction_page.is_remove_button_clickable())
         # Click last floor remove button
         self.construction_page.remove_button_click()
         # Check that the confirm window present
@@ -104,6 +119,10 @@ class TestFloorsPage(unittest.TestCase):
     # TC[006]
     def test_06_edit_floor_correctly(self):
         """Test that edit floor action is correct"""
+
+        # Check that edit button click is clickable
+        self.assertTrue(self.construction_page.is_edit_button_present())
+
         self.construction_page.edit_button_click()
         # TODO Zmienic tytul modala -  Edit floor
         # self.assertTrue(self.construction_page.check_add_modal_title())
@@ -127,6 +146,9 @@ class TestFloorsPage(unittest.TestCase):
     def test_07_edit_floor_negative_existing_level(self):
 
         """Test editing floor action with existing level"""
+
+        # Check that edit button click is clickable
+        self.assertTrue(self.construction_page.is_edit_button_present())
 
         self.construction_page.edit_button_click()
         # TODO Zmienic tytul modala -  Edit floor

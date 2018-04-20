@@ -145,7 +145,7 @@ class TestBuildingsPage(unittest.TestCase):
 
     def test_07_edit_building_correctly(self):
         """Test editing building correctly"""
-        
+
         self.assertTrue(self.construction_page.is_edit_button_present())
         self.construction_page.edit_button_click()
         # TODO Zmienic tytul modala -  Edit building
