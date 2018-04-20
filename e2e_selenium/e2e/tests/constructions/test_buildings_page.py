@@ -143,8 +143,10 @@ class TestBuildingsPage(unittest.TestCase):
         # Check that the confirm remove modal disappeared
         self.test_failed = False
 
-    def _test_07_edit_building_correctly(self):
+    def test_07_edit_building_correctly(self):
         """Test editing building correctly"""
+        
+        self.assertTrue(self.construction_page.is_edit_button_present())
         self.construction_page.edit_button_click()
         # TODO Zmienic tytul modala -  Edit building
         # self.assertTrue(self.construction_page.check_add_modal_title())
@@ -188,12 +190,6 @@ class TestBuildingsPage(unittest.TestCase):
         self.assertTrue(self.construction_page.is_cancel_button_present())
         self.construction_page.cancel_button_click()
         self.assertFalse(self.construction_page.is_edit_modal_displayed())
-        self.test_failed = False
-
-    def _test_redirect_building_to_floors_page(self):
-        # Click last complex redirect click
-        self.construction_page.redirect_button_click()
-        self.assertTrue(self.construction_page.check_construction_column_title_after_redirect())
         self.test_failed = False
 
     def tearDown(self):
