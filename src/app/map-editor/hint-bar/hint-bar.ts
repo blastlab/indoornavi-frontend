@@ -30,7 +30,6 @@ export class HintBarComponent implements OnInit {
       if (!!tool) {
         this.toolName = ToolName[tool.getToolName()];
         this.translate.get(tool.getHintMessage()).subscribe((translated: string) => {
-          console.log(translated);
           this.hintMessage = translated;
         });
       } else {
