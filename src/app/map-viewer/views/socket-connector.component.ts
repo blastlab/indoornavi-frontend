@@ -57,8 +57,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
               private mapObjectService: MapObjectService,
               private floorService: FloorService,
               protected tagTogglerService: TagVisibilityTogglerService,
-              private breadcrumbService: BreadcrumbService
-  ) {
+              private breadcrumbService: BreadcrumbService) {
 
     this.route.params
       .subscribe((params: Params) => {
@@ -66,7 +65,11 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         floorService.getFloor(floorId).subscribe((floor: Floor) => {
           breadcrumbService.publishIsReady([
             {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
-            {label: floor.building.complex.name, routerLink: `/complexes/${floor.building.complex.id}/buildings`, routerLinkActiveOptions: {exact: true}},
+            {
+              label: floor.building.complex.name,
+              routerLink: `/complexes/${floor.building.complex.id}/buildings`,
+              routerLinkActiveOptions: {exact: true}
+            },
             {
               label: floor.building.name,
               routerLink: `/complexes/${floor.building.complex.id}/buildings/${floor.building.id}/floors`,
@@ -121,6 +124,8 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         this.publishedService.checkOrigin(params['api_key'], event.origin).subscribe((verified: boolean): void => {
           if (verified) {
             this.handleCommands(event);
+          } else {
+            event.source.postMessage({type: 'error', message: 'Origin not verified. Make sure you use your own API KEY.'}, event.origin);
           }
         });
       });
@@ -211,7 +216,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         this.socketService.send({type: CommandType[CommandType.TOGGLE_TAG], args: tagToggle.tag.shortId});
         this.visibleTags.set(tagToggle.tag.shortId, tagToggle.selected);
         if (!tagToggle.selected) {
-           this.removeNotVisibleTags();
+          this.removeNotVisibleTags();
         }
       });
       this.socketSubscription = stream.subscribe((data: MeasureSocketData): void => {
@@ -230,7 +235,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     });
   };
 
-  private removeNotVisibleTags (): void {
+  private removeNotVisibleTags(): void {
     this.visibleTags.forEach((value: boolean, key: number, map: Map<number, boolean>): void => {
       if (!value && this.isOnMap(key)) {
         this.tagsOnMap.getValue(key).remove();
