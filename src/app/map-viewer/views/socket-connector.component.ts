@@ -28,6 +28,7 @@ import {Tag} from '../../device/device.type';
 import {BreadcrumbService} from '../../shared/services/breadcrumbs/breadcrumb.service';
 import {SvgAnimator} from '../../shared/utils/drawing/animator';
 import {ScaleCalculations} from '../../map-editor/tool-bar/tools/wizard/wizard.type';
+import {MapObjectMetadata} from '../../shared/utils/drawing/drawing.types';
 
 @Component({
   templateUrl: './socket-connector.component.html'
@@ -257,12 +258,12 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private removeObjectFromMapObjectService(data): void {
-    if ('type' in data['args']) {
-      if (data['args']['type'] === 'INFO_WINDOW') {
-        this.mapObjectService.removeInfoWindow((data['args']));
+  private removeObjectFromMapObjectService(data: MapObjectMetadata): void {
+    if ('type' in data) {
+      if (data.type === 'INFO_WINDOW') {
+        this.mapObjectService.removeInfoWindow((data));
       } else {
-        this.mapObjectService.removeObject(data['args']);
+        this.mapObjectService.removeObject(data);
       }
     }
   }
@@ -313,7 +314,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           this.mapObjectService.draw(data['args'], this.scale, event, this.d3map.container);
           break;
         case 'removeObject':
-          this.removeObjectFromMapObjectService(data);
+          this.removeObjectFromMapObjectService(data['args']);
           break;
         case 'fillColor':
           this.mapObjectService.setFillColor(data['args']);
