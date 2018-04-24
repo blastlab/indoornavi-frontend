@@ -3,5 +3,5 @@ export enum ToolName {
   SCALE,
   WIZARD,
   DEVICES,
-  AREA
+  AREAS
 }

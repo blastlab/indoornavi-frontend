@@ -34,7 +34,7 @@ export class MapObjectService {
       case 'POLYLINE':
         this.objects.get(objectMetadata.object.id).addPolyline(points, this.pointRadius);
         break;
-      case 'AREA':
+      case 'AREAS':
         this.objects.get(objectMetadata.object.id).addPolygon(points);
     }
   }

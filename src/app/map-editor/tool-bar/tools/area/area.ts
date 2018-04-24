@@ -107,7 +107,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
   }
 
   getToolName(): ToolName {
-    return ToolName.AREA;
+    return ToolName.AREAS;
   }
 
   setActive(): void {
