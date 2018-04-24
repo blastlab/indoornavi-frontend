@@ -41,9 +41,10 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private scaleGroup = d3.select(`#${ScaleComponent.SCALE_GROUP_SELECTOR_ID}`);
   private scale: Scale;
   private scaleBackup: Scale;
-  private hintMessage: string = 'scale.set.first.point';
+  private hintMessage: string;
   private pointsArray: Point[] = [];
   private linesArray: Line[] = [];
+  private hintBarMessages: Subscription;
 
   constructor(private translate: TranslateService,
               private scaleInputService: ScaleInputService,
@@ -77,6 +78,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.pointsArray = [];
     this.linesArray = [];
     this.isFirstPointDrawn = false;
+    this.hintBarMessages.unsubscribe();
   }
 
   ngOnInit(): void {
@@ -132,6 +134,9 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     });
     this.scaleInputService.rejected.subscribe(() => {
       this.rejectChanges();
+    });
+    this.hintBarMessages = this.hintBarService.onHintMessageReceived().subscribe((message: string) => {
+      this.hintMessage = message;
     });
   }
 
@@ -200,9 +205,8 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private setTranslations() {
     this.translate.setDefaultLang('en');
     this.translate.get('scale.set.first.point').subscribe((value: string) => {
-      this.hintBarService.onHintMessageReceived().subscribe((message: string) => {
-        this.hintMessage = message;
-      });
+      console.log(value);
+      this.hintMessage = value;
     });
   }
 
