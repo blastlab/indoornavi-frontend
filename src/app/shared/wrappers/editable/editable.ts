@@ -1,8 +1,8 @@
 import * as d3 from 'd3';
 import {ContextMenuService} from './editable.service';
-import {SvgGroupWrapper} from '../../utils/drawing/drawing.builder';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
+import {SvgGroupWrapper} from '../../utils/drawing/drawing.builder';
 
 export class Editable {
 

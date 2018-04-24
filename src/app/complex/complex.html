@@ -18,11 +18,11 @@
       </button>
       <button
         [appHasPermission]="'COMPLEX_UPDATE'"
-        pTooltip="{{'edit'|translate}}" type="button" pButton (click)="openDialog(complex)" icon="fa-edit">
+        pTooltip="{{'edit'|translate}}" type="button" pButton (click)="openDialog(complex)" icon="fa-edit" class="ui-button-info">
       </button>
       <button
         [appHasPermission]="'COMPLEX_DELETE'"
-        pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(i)" icon="fa-trash">
+        pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(i)" icon="fa-trash" class="ui-button-danger">
       </button>
     </ng-template>
   </p-column>

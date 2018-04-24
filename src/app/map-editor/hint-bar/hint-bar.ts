@@ -22,10 +22,27 @@ export class HintBarComponent implements OnInit {
 
   ngOnInit(): void {
     this.translate.setDefaultLang('en');
+    this.translateHintBarMessage();
+    this.detectToolChange();
+    this.handleIncomingMessage();
+  }
+
+  private translateHintBarMessage() {
     this.translate.get('hint.chooseTool').subscribe((value: string) => {
       this.defaultHintMessage = value;
       this.hintMessage = this.defaultHintMessage;
     });
+  }
+
+  private handleIncomingMessage() {
+    this.hintBarService.onHintMessageReceived().subscribe((key: string) => {
+      this.translate.get(key).subscribe((translated: string) => {
+        this.hintMessage = translated;
+      });
+    });
+  }
+
+  private detectToolChange() {
     this.toolbarService.onToolChanged().subscribe((tool: Tool) => {
       if (!!tool) {
         this.toolName = ToolName[tool.getToolName()];
@@ -36,11 +53,6 @@ export class HintBarComponent implements OnInit {
         this.toolName = ToolName[ToolName.NONE];
         this.hintMessage = this.defaultHintMessage;
       }
-    });
-    this.hintBarService.onHintMessageReceived().subscribe((key: string) => {
-      this.translate.get(key).subscribe((translated: string) => {
-        this.hintMessage = translated;
-      });
     });
   }
 }

@@ -16,8 +16,9 @@ RUN apt-get update && apt-get install -y \
 	xvfb \
 	libasound2 \
 	libgtk-3-0 \
-    default-jre
-
+    	default-jre \
+	libappindicator3-1
+	
 
 # install chromedriver and google-chrome
 
