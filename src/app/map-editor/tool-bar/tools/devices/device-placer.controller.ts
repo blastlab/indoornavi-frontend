@@ -11,7 +11,7 @@ export class DevicePlacerController {
   private dragEnd: Subject<any> = new Subject();
   private coordinates: Subject<Point> = new Subject<Point>();
   private selectedDevice: Subject<Expandable> = new Subject<Expandable>();
-  removedDevice = this.removeListDevice.asObservable();
+  private deselectDevice: Subject<any> = new Subject();
   private removal: Subject<any> = new Subject();
   private addListDevice: Subject<Anchor | Sink> = new Subject<Anchor | Sink>();
   private draggedDevice: Subject<Anchor | Sink> = new Subject<Anchor | Sink>();
@@ -23,7 +23,7 @@ export class DevicePlacerController {
   droppedDevice = this.droppedOnMap.asObservable();
   newCoordinates = this.coordinates.asObservable();
   addedDevice = this.addListDevice.asObservable();
-  private deselectDevice: Subject<any> = new Subject();
+  removedDevice = this.removeListDevice.asObservable();
   deselectedDevice = this.deselectDevice.asObservable();
   deleteClicked = this.removal.asObservable();
   draggingDevice = this.draggedDevice.asObservable();
