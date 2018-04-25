@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, ViewChild, Renderer2, ElementRef, AfterViewInit} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {DevicePlacerController} from '../device-placer.controller';
 import {Subscription} from 'rxjs/Subscription';
@@ -45,7 +45,7 @@ export class DevicesListComponent implements OnInit, AfterViewInit, OnDestroy {
     this.listVisibility = this.devicePlacerController.listVisibility.subscribe((shown) => {
       shown ? this.devicesList.show() : this.devicesList.hide();
     });
-    this.deselection = this.devicePlacerController.deselected.subscribe((device) => {
+    this.deselection = this.devicePlacerController.deselectedDevice.subscribe((device) => {
       if (this.selectedDevice === device) {this.selectedDevice = null}
     });
     this.selectedElement = this.devicePlacerController.getSelectedDevice().subscribe((selected) => {

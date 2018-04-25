@@ -77,8 +77,8 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
   ngOnInit() {
     this.setTranslations();
     this.steps = [new FirstStep(this.floor.id), new SecondStep(), new ThirdStep()];
-    this.getMapSelection();
-    this.getScaleChanges();
+    this.bindMapSelection();
+    this.captureScaleChanges();
     this.handleDisablingFromService();
   }
 
@@ -89,13 +89,13 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
     this.disabledHandler.unsubscribe();
   }
 
-  private getMapSelection(): void {
+  private bindMapSelection(): void {
     this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapLoaded) => {
       this.map = mapLoaded.container;
     });
   }
 
-  private getScaleChanges(): void {
+  private captureScaleChanges(): void {
     this.scaleChanged = this.scaleService.scaleChanged.subscribe((scale: ScaleDto): void => {
       this.scale = new Scale(scale);
       if (!!this.scale.start && !!this.scale.stop) {

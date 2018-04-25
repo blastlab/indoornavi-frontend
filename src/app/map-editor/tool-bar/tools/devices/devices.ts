@@ -221,11 +221,11 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   }
 
   ngOnInit(): void {
-    this.getMapSelection();
-    this.getScaleFactorChanges();
-    this.getScaleChanges();
-    this.getWizardConfigurations();
-    this.getConfiguredDevices();
+    this.bindMapSelection();
+    this.captureScaleFactorChanges();
+    this.captureScaleChanges();
+    this.captureWizardConfigurations();
+    this.fetchConfiguredDevices();
     this.subscribeForDroppedDevice();
   }
 
@@ -313,19 +313,19 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
     })
   }
 
-  private getMapSelection(): void {
+  private bindMapSelection(): void {
     this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapLoaded) => {
       this.map = mapLoaded.container;
     });
   }
 
-  private getScaleFactorChanges(): void {
+  private captureScaleFactorChanges(): void {
     this.scaleFactorChanged = this.mapEditorService.mapIsTransformed().subscribe((mapTransform: Transform) => {
       this.scaleFactor = mapTransform.k;
     });
   }
 
-  private getScaleChanges(): void {
+  private captureScaleChanges(): void {
     this.scaleChanged = this.scaleService.scaleChanged.subscribe((scale: ScaleDto) => {
       this.scale = new Scale(scale);
       if (!!this.scale.start && !!this.scale.stop) {
@@ -337,7 +337,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
     })
   }
 
-  private getWizardConfigurations(): void {
+  private captureWizardConfigurations(): void {
     this.wizardConfiguration = this.devicePlacerController.wizardSavesConfiguration.subscribe((devicesConfiguredInWizard) => {
       const sinkShortId: number = DevicesComponent.getShortIdFromGroupSelection(devicesConfiguredInWizard[0].groupCreated.getGroup());
       const isSinkPresentInMapDevices: boolean = !!this.findMapDevice(sinkShortId);
@@ -358,7 +358,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
     })
   }
 
-  private getConfiguredDevices(): void {
+  private fetchConfiguredDevices(): void {
     this.configurationService.configurationLoaded().first().subscribe((configuration) => {
       this.floorId = configuration.floorId;
       if (!!configuration.data.sinks) {
@@ -804,7 +804,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
     if (!!device) {
       const selectableDevice = <SelectableDevice>device.selectable;
       selectableDevice.removeBorderBox();
-      this.devicePlacerController.deselectedDevice(device);
+      this.devicePlacerController.deselected(device);
     } else {
       throw new Error(`Device has been not found and border cannot be removed.`);
     }

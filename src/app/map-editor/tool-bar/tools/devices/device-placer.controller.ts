@@ -11,7 +11,7 @@ export class DevicePlacerController {
   private dragEnd: Subject<any> = new Subject();
   private coordinates: Subject<Point> = new Subject<Point>();
   private selectedDevice: Subject<Expandable> = new Subject<Expandable>();
-  private deselect: Subject<any> = new Subject();
+  removedDevice = this.removeListDevice.asObservable();
   private removal: Subject<any> = new Subject();
   private addListDevice: Subject<Anchor | Sink> = new Subject<Anchor | Sink>();
   private draggedDevice: Subject<Anchor | Sink> = new Subject<Anchor | Sink>();
@@ -23,12 +23,12 @@ export class DevicePlacerController {
   droppedDevice = this.droppedOnMap.asObservable();
   newCoordinates = this.coordinates.asObservable();
   addedDevice = this.addListDevice.asObservable();
-  deselected = this.deselect.asObservable();
+  private deselectDevice: Subject<any> = new Subject();
+  deselectedDevice = this.deselectDevice.asObservable();
   deleteClicked = this.removal.asObservable();
   draggingDevice = this.draggedDevice.asObservable();
   dragEnded = this.dragEnd.asObservable();
   connectingMode = this.connectingModeSet.asObservable();
-  removedDevice = this.removeListDevice.asObservable();
   listVisibility = this.showDevicesList.asObservable();
   wizardSavesConfiguration = this.wizardConfiguration.asObservable();
 
@@ -48,8 +48,8 @@ export class DevicePlacerController {
     this.selectedDevice.next(device);
   }
 
-  deselectedDevice(device: Expandable): void {
-    this.deselect.next(device);
+  deselected(device: Expandable): void {
+    this.deselectDevice.next(device);
   }
 
   getSelectedDevice(): Observable<Expandable> {
