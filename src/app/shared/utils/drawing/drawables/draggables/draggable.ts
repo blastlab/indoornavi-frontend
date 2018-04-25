@@ -30,7 +30,7 @@ export class Draggable {
       })
       .on('end.draggable', () => {
         if (this.isDraggedNow) {
-          this.updateConfiguration();
+          this.emitUpdateConfigurationEvent();
           this.isDraggedNow = !this.isDraggedNow;
         }
         event.stopPropagation();
@@ -55,7 +55,7 @@ export class Draggable {
     return this.lockDragEmit;
   }
 
-  private updateConfiguration(): void {
+  private emitUpdateConfigurationEvent(): void {
     if (!this.lockDragEmit) {
       this.draggedEmitter.next(this.group);
     }
