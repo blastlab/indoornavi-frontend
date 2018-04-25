@@ -8,7 +8,7 @@ import * as Collections from 'typescript-collections';
 import {Subject} from 'rxjs/Subject';
 import {Md5} from 'ts-md5/dist/md5';
 import {Helper} from '../../shared/utils/helper/helper';
-import {Area} from '../tool-bar/tools/area/area.type';
+import {Area} from '../tool-bar/tools/area/areas.type';
 import {Anchor, Sink} from '../../device/device.type';
 
 @Injectable()

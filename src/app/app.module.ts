@@ -50,7 +50,8 @@ import {
   FileUploadModule,
   GrowlModule,
   MultiSelectModule,
-  PanelMenuModule, RadioButtonModule,
+  PanelMenuModule,
+  RadioButtonModule,
   SidebarModule,
   SliderModule,
   ToolbarModule,
@@ -91,7 +92,7 @@ import {MdIconRegistry} from '@angular/material';
 import {SocketConnectorComponent} from './map-viewer/views/socket-connector.component';
 import {ZoomService} from './shared/services/zoom/zoom.service';
 import {MapComponent} from './map/map';
-import {AreaComponent} from './map-editor/tool-bar/tools/area/area';
+import {AreasComponent} from './map-editor/tool-bar/tools/area/areas';
 import {AreaDetailsComponent} from './map-editor/tool-bar/tools/area/details/area-details';
 import {AreaDetailsService} from './map-editor/tool-bar/tools/area/details/area-details.service';
 import {ContextMenuService} from './shared/wrappers/editable/editable.service';
@@ -141,7 +142,7 @@ export function HttpLoaderFactory(http: Http) {
     DeviceComponent,
     SocketConnectorComponent,
     MapComponent,
-    AreaComponent,
+    AreasComponent,
     AreaDetailsComponent,
     AppAutoFocusDirective,
     DevicesComponent,

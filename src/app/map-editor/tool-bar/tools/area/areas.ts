@@ -8,7 +8,7 @@ import {Point} from '../../../map.type';
 import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../../../shared/utils/drawing/drawing.builder';
 import {MapSvg} from '../../../../map/map.type';
 import {AreaDetailsService} from './details/area-details.service';
-import {Area, AreaBag} from './area.type';
+import {Area, AreaBag} from './areas.type';
 import {Editable} from '../../../../shared/wrappers/editable/editable';
 import {ContextMenuService} from '../../../../shared/wrappers/editable/editable.service';
 import {ActionBarService} from '../../../action-bar/actionbar.service';
@@ -22,9 +22,9 @@ import {Geometry} from '../../../../shared/utils/helper/geometry';
 
 @Component({
   selector: 'app-area',
-  templateUrl: './area.html'
+  templateUrl: './areas.html'
 })
-export class AreaComponent implements Tool, OnInit, OnDestroy {
+export class AreasComponent implements Tool, OnInit, OnDestroy {
   public static NEW_AREA_ID = 'area-new';
   private static CIRCLE_R: number = 5;
 
@@ -227,7 +227,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
 
   private drawPoint(point: Point): d3.selection {
     const pointSelection: d3.selection = this.currentAreaGroup
-      .addCircle(point, AreaComponent.CIRCLE_R)
+      .addCircle(point, AreasComponent.CIRCLE_R)
       .getLastElement(ElementType.CIRCLE);
 
     pointSelection
@@ -455,7 +455,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
   }
 
   private isCurrentAreaGroupNew(): boolean {
-    return !!this.currentAreaGroup && this.currentAreaGroup.getGroup().attr('id') === AreaComponent.NEW_AREA_ID;
+    return !!this.currentAreaGroup && this.currentAreaGroup.getGroup().attr('id') === AreasComponent.NEW_AREA_ID;
   }
 
   private isSelectedDifferentThanCurrent(): boolean {

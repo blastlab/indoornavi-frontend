@@ -1,6 +1,13 @@
 import {AfterViewInit, Component, NgZone, OnInit} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
-import {AreaEventMode, CommandType, CoordinatesSocketData, EventSocketData, MeasureSocketData, MeasureSocketDataType} from '../publication.type';
+import {
+  AreaEventMode,
+  CommandType,
+  CoordinatesSocketData,
+  EventSocketData,
+  MeasureSocketData,
+  MeasureSocketDataType
+} from '../publication.type';
 import {Subject} from 'rxjs/Subject';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
 import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.builder';
@@ -16,9 +23,9 @@ import {TranslateService} from '@ngx-translate/core';
 import {Config} from '../../../config';
 import {MapLoaderInformerService} from '../../shared/services/map-loader-informer/map-loader-informer.service';
 import {MapSvg} from '../../map/map.type';
-import {Area} from '../../map-editor/tool-bar/tools/area/area.type';
+import {Area} from '../../map-editor/tool-bar/tools/area/areas.type';
 import {Movable} from '../../shared/wrappers/movable/movable';
-import {Scale} from '../../map-editor/tool-bar/tools/scale/scale.type';
+import {Scale, ScaleCalculations} from '../../map-editor/tool-bar/tools/scale/scale.type';
 import {MapObjectService} from '../../shared/utils/drawing/map.object.service';
 import {FloorService} from '../../floor/floor.service';
 import {Floor} from '../../floor/floor.type';
@@ -27,7 +34,6 @@ import {TagToggle} from '../../shared/components/tag-visibility-toggler/tag-togg
 import {Tag} from '../../device/device.type';
 import {BreadcrumbService} from '../../shared/services/breadcrumbs/breadcrumb.service';
 import {SvgAnimator} from '../../shared/utils/drawing/animator';
-import {ScaleCalculations} from '../../map-editor/tool-bar/tools/scale/scale.type';
 
 @Component({
   templateUrl: './socket-connector.component.html'

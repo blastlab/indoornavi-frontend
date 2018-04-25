@@ -2,7 +2,7 @@
 	"add": "Add",
 	"analytics": "Analise map events ",
 	"anchors.header": "Anchors",
-	"area": "Area",
+  "areas": "Areas",
 	"area.form.invalid": "Please fill required fields",
 	"area.hint.first": "Click on the map to start drawing area or right mouse click on already created areas to edit or remove",
 	"area.hint.second": "Now you can close area by clicking on first or last point",
