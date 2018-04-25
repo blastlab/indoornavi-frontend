@@ -46,4 +46,5 @@ export class NaviIcons {
   public static SINK: string = 'fiber_smart_record';
   public static TAG: string = 'settings_remote';
   public static POINTER: string = 'add';
+  public static MARKER: string = 'place';
 }
