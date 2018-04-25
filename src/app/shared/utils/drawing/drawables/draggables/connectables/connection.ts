@@ -40,6 +40,24 @@ export class ConnectingLine extends Selectable {
     }
   }
 
+  public highlightSet(color?: string): void {
+    super.highlightSet(color);
+    this.strokeConnectingLineBold();
+  }
+
+  public highlightReset(): void {
+    super.highlightReset();
+    this.strokeConnectingLineNormal();
+  }
+
+  private strokeConnectingLineBold(): void {
+    this.group.getGroup().attr('stroke-width', '3');
+  }
+
+  private strokeConnectingLineNormal(): void {
+    this.group.getGroup().attr('stroke-width', '1');
+  }
+
   public lock(): void {
     this.lockVisibility = true;
   }

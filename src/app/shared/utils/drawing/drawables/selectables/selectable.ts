@@ -75,7 +75,6 @@ export class Selectable {
     if (!this.lockedSelecting) {
       this.group.showTexts();
       this.group.changeColor(setColor);
-      this.group.strokeConnectingLineBold();
     }
   }
 
@@ -83,7 +82,6 @@ export class Selectable {
     if (!this.lockedSelecting) {
       this.group.hideTexts();
       this.group.resetColor();
-      this.group.strokeConnectingLineNormal();
     }
   }
 
