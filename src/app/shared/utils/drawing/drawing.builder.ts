@@ -199,6 +199,7 @@ export class SvgGroupWrapper {
     this.group.select('rect.group-border-box').remove();
   }
 
+  // TODO: Refactor this method to be more specific - remember about usages
   changeColor(newColor) {
     const parentElement: SVGElement = this.group.node();
     const childrenCount: number = parentElement.childElementCount;
