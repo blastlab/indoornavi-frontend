@@ -1,6 +1,5 @@
 import {CoordinatesSocketData} from '../../publication.type';
 import * as d3 from 'd3';
-import {Point} from '../../../map-editor/map.type';
 
 export interface TimeStepBuffer {
   data: CoordinatesSocketData;

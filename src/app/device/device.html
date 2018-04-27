@@ -28,11 +28,11 @@
         <div class="ui-g-3 ui-md-3 ui-lg-3">
           <button
             [appHasPermission]="editPermission"
-            pTooltip="{{'edit'|translate}}" type="button" pButton (click)="openDialog(device)" icon="fa-edit">
+            pTooltip="{{'edit'|translate}}" type="button" pButton (click)="openDialog(device)" icon="fa-edit" class="ui-button-info">
           </button>
           <button
             [appHasPermission]="deletePermission"
-            pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(device)" icon="fa-trash">
+            pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(device)" icon="fa-trash" class="ui-button-danger">
           </button>
         </div>
       </div>

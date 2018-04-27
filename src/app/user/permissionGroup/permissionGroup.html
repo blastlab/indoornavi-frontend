@@ -19,11 +19,11 @@
     <ng-template let-permissionGroup="rowData" let-i="rowIndex" pTemplate="body">
       <button
         [appHasPermission]="'PERMISSION_GROUP_UPDATE'"
-        pTooltip="{{'edit'|translate}}" type="button" pButton (click)="openDialog(permissionGroup)" icon="fa-edit">
+        pTooltip="{{'edit'|translate}}" type="button" pButton (click)="openDialog(permissionGroup)" icon="fa-edit" class="ui-button-info">
       </button>
       <button
         [appHasPermission]="'PERMISSION_GROUP_DELETE'"
-        pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(i)" icon="fa-trash">
+        pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(i)" icon="fa-trash" class="ui-button-danger">
       </button>
     </ng-template>
   </p-column>

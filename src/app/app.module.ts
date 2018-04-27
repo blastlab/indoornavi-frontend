@@ -106,6 +106,7 @@ import {TagVisibilityTogglerComponent} from './shared/components/tag-visibility-
 import {TagVisibilityTogglerService} from './shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
 import {HeatMapControllerComponent} from './shared/components/heat-map-controller/heat-map-controller/heat-map-controller.component';
 import {HeatMapControllerService} from './shared/components/heat-map-controller/heat-map-controller/heat-map-controller.service';
+import {MousePositionViewerComponent} from './map-editor/mouse-position-viewer/mouse-position-viewer.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -152,7 +153,8 @@ export function HttpLoaderFactory(http: Http) {
     AnalyticsComponent,
     MinSelectedValidator,
     TagVisibilityTogglerComponent,
-    HeatMapControllerComponent
+    HeatMapControllerComponent,
+    MousePositionViewerComponent
   ],
   entryComponents: [
     PublicationDialogComponent,

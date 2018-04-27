@@ -124,7 +124,7 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
       const message: SocketMessage = this.activeStep.prepareToSend(this.wizardData);
       this.socketService.send(message);
       this.currentIndex += 1;
-      if (this.currentIndex === 3) { // No more steps, wizard configuration is done
+      if (this.isFinalStep()) {
         this.saveConfiguration();
         this.activeStep = null;
         this.currentIndex = 0;
@@ -135,6 +135,10 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
     }
     this.stepChanged();
     this.displayDialog = true;
+  }
+
+  private isFinalStep() {
+    return this.currentIndex === this.steps.length;
   }
 
   previousStep(): void {
