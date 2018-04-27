@@ -1,5 +1,4 @@
-import {
-  AfterViewInit, Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild,
+import {Component, OnDestroy, OnInit, ViewChild,
   ViewEncapsulation
 } from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';

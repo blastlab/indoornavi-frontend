@@ -11,8 +11,7 @@ export enum ElementType {
   CIRCLE,
   LINE,
   DRAGAREA,
-  IMAGE,
-  HTML
+  IMAGE
 }
 
 export class SvgGroupWrapper {
@@ -20,9 +19,9 @@ export class SvgGroupWrapper {
     width: 25,
     height: 25
   };
+  container: d3.selection;
   private elements: Map<ElementType, d3.selection[]> = new Map();
   private textsHidden: boolean = true;
-  container: d3.selection;
   private groupDefaultColor: string;
 
   static throwErrorTypeNull(elementType: ElementType): void {
@@ -189,34 +188,6 @@ export class SvgGroupWrapper {
       }
       lastPoint = point;
     });
-    return this;
-  }
-
-  setDraggable(customDragging?: () => void): SvgGroupWrapper {
-    const dragStart = (): void => {
-      d3.event.sourceEvent.stopPropagation();
-      this.group.classed('dragging', true);
-    };
-
-    const dragging = !!customDragging ? customDragging : (): void => {
-      this.group.attr('x', d3.event.dx + parseInt(this.group.attr('x'), 10)).attr('y', d3.event.dy + parseInt(this.group.attr('y'), 10));
-    };
-
-    const dragStop = (): void => {
-      this.group.classed('dragging', false);
-    };
-
-    const subject = (): Point => {
-      return {x: d3.event.x, y: d3.event.y}
-    };
-    const dragGroup = d3.drag()
-      .subject(subject)
-      .on('start', dragStart)
-      .on('drag', dragging)
-      .on('end', dragStop);
-
-    this.group.call(dragGroup);
-
     return this;
   }
 
