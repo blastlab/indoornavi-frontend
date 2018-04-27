@@ -10,16 +10,22 @@ export enum ElementType {
   POLYGON,
   CIRCLE,
   LINE,
-  DRAGAREA
+  DRAGAREA,
+  IMAGE,
+  HTML
 }
 
 export class SvgGroupWrapper {
+  static customIconSize: BoxSize = {
+    width: 25,
+    height: 25
+  };
   private elements: Map<ElementType, d3.selection[]> = new Map();
   private textsHidden: boolean = true;
   container: d3.selection;
   private groupDefaultColor: string;
 
-  static throwErrorTypeNull (elementType: ElementType): void {
+  static throwErrorTypeNull(elementType: ElementType): void {
     throw new Error(`${elementType} is null or undefined`);
   }
 
@@ -56,6 +62,27 @@ export class SvgGroupWrapper {
       .attr('stroke', this.groupDefaultColor)
       .attr('fill', this.groupDefaultColor);
     this.addElement(ElementType.ICON, element);
+    return this;
+  }
+
+  addCustomIcon(coordinates: Point, image: string): SvgGroupWrapper {
+    const element: d3.selection = this.group
+      .append('svg:image')
+      .attr('xlink:href', image)
+      .attr('x', coordinates.x - SvgGroupWrapper.customIconSize.width / 2)
+      .attr('y', coordinates.y - SvgGroupWrapper.customIconSize.height)
+      .attr('width', SvgGroupWrapper.customIconSize.width)
+      .attr('height', SvgGroupWrapper.customIconSize.height)
+      .attr('stroke', 'black')
+      .attr('fill', 'black');
+    this.addElement(ElementType.IMAGE, element);
+    return this;
+  }
+
+  translate(vector: Point): SvgGroupWrapper {
+    d3.selection = this.group
+      .attr('x', -vector.x)
+      .attr('y', -vector.y);
     return this;
   }
 
@@ -165,6 +192,34 @@ export class SvgGroupWrapper {
     return this;
   }
 
+  setDraggable(customDragging?: () => void): SvgGroupWrapper {
+    const dragStart = (): void => {
+      d3.event.sourceEvent.stopPropagation();
+      this.group.classed('dragging', true);
+    };
+
+    const dragging = !!customDragging ? customDragging : (): void => {
+      this.group.attr('x', d3.event.dx + parseInt(this.group.attr('x'), 10)).attr('y', d3.event.dy + parseInt(this.group.attr('y'), 10));
+    };
+
+    const dragStop = (): void => {
+      this.group.classed('dragging', false);
+    };
+
+    const subject = (): Point => {
+      return {x: d3.event.x, y: d3.event.y}
+    };
+    const dragGroup = d3.drag()
+      .subject(subject)
+      .on('start', dragStart)
+      .on('drag', dragging)
+      .on('end', dragStop);
+
+    this.group.call(dragGroup);
+
+    return this;
+  }
+
   remove(): void {
     this.group.remove();
   }
@@ -256,7 +311,7 @@ export class SvgGroupWrapper {
     }
   }
 
-  private addElement(type: ElementType, element: d3.selection): void {
+  protected addElement(type: ElementType, element: d3.selection): void {
     if (this.elements.has(type)) {
       this.elements.get(type).push(element);
     } else {
@@ -272,6 +327,7 @@ export class SvgGroupWrapper {
 }
 
 export class DrawBuilder {
+    protected group: d3.selection;
 
   static buildAnchorDrawConfiguration(anchor: Anchor): DrawConfiguration {
     return {
@@ -309,6 +365,11 @@ export class DrawBuilder {
   }
 
   createGroup(): SvgGroupWrapper {
+    this.appendSvgToGroup();
+    return new SvgGroupWrapper(this.group, this.appendable);
+  }
+
+  protected appendSvgToGroup() {
     const group = this.appendable
       .append('svg')
       .attr('id', this.configuration.id)
@@ -326,4 +387,9 @@ export class DrawBuilder {
       ? new SvgGroupWrapper(group, this.appendable, this.configuration.color)
       : new SvgGroupWrapper(group, this.appendable);
   }
+}
+
+export interface BoxSize {
+  width: number;
+  height: number;
 }
