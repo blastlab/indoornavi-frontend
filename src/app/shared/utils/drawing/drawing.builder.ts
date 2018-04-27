@@ -337,11 +337,11 @@ export class DrawBuilder {
 
   createGroup(): SvgGroupWrapper {
     this.appendSvgToGroup();
-    return new SvgGroupWrapper(this.group, this.appendable);
+    return new SvgGroupWrapper(this.group, this.appendable, this.configuration.color);
   }
 
   protected appendSvgToGroup() {
-    const group = this.appendable
+    this.group = this.appendable
       .append('svg')
       .attr('id', this.configuration.id)
       .attr('class', this.configuration.clazz)
@@ -349,14 +349,14 @@ export class DrawBuilder {
       .attr('x', 0)
       .attr('y', 0);
     if (this.configuration.cursor) {
-      group.style('cursor', this.configuration.cursor);
+      this.group.style('cursor', this.configuration.cursor);
     }
     if (this.configuration.display) {
-      group.attr('display', this.configuration.display);
+      this.group.attr('display', this.configuration.display);
     }
     return (this.configuration.color)
-      ? new SvgGroupWrapper(group, this.appendable, this.configuration.color)
-      : new SvgGroupWrapper(group, this.appendable);
+      ? new SvgGroupWrapper(this.group, this.appendable, this.configuration.color)
+      : new SvgGroupWrapper(this.group, this.appendable);
   }
 }
 

@@ -25,9 +25,6 @@ export class CommonDevice {
     const text = (!drawConfiguration.name)
       ? `${drawConfiguration.name}-${drawConfiguration.id}`
       : `${drawConfiguration.clazz}-${drawConfiguration.id}`;
-    console.log(drawBuilder);
-    console.log(drawConfiguration);
-    console.log(coordinates);
     const wrapper = drawBuilder.createGroup()
       .place(coordinates)
       .addPointer({x: -12, y: -12}, this.icons.getIcon(NaviIcons.POINTER))
@@ -37,7 +34,6 @@ export class CommonDevice {
     } else if (drawConfiguration.clazz.includes(`anchor`)) {
       wrapper.addIcon({x: 5, y: 5}, this.icons.getIcon(NaviIcons.ANCHOR));
     }
-    console.log(wrapper);
     return wrapper;
   }
 
