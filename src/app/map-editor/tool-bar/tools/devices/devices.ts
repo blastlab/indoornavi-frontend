@@ -23,7 +23,7 @@ import {DrawBuilder} from '../../../../shared/utils/drawing/drawing.builder';
 import {Anchor, Sink} from '../../../../device/device.type';
 import {DrawConfiguration} from '../../../../map-viewer/publication.type';
 import {MapEditorService} from '../../../map.editor.service';
-import {CommonDevice} from '../../../../shared/utils/drawing/common/device';
+import {CommonDevice} from '../../../../shared/utils/drawing/common/device.common';
 import {IconService} from '../../../../shared/services/drawing/icon.service';
 import {Scale, ScaleCalculations, ScaleDto} from '../scale/scale.type';
 import {ScaleService} from '../../../../shared/services/scale/scale.service';

@@ -27,7 +27,7 @@ import {MapLoaderInformerService} from '../../../../shared/services/map-loader-i
 import {DevicePlacerController} from '../devices/device-placer.controller';
 import {IconService} from '../../../../shared/services/drawing/icon.service';
 import {DrawBuilder} from '../../../../shared/utils/drawing/drawing.builder';
-import {CommonDevice} from '../../../../shared/utils/drawing/common/device';
+import {CommonDevice} from '../../../../shared/utils/drawing/common/device.common';
 import {Expandable} from '../../../../shared/utils/drawing/drawables/expandable';
 
 
