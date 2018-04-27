@@ -11,6 +11,11 @@
   width: 80%;
 }
 
+.float-right .ui-dialog.ui-widget {
+  right: 0;
+  left: auto;
+}
+
 .float-right .device-list-float .material-icons {
   transform: rotate(180deg);
 }

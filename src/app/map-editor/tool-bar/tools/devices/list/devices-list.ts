@@ -1,4 +1,7 @@
-import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild} from '@angular/core';
+import {
+  AfterViewInit, Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild,
+  ViewEncapsulation
+} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {DevicePlacerController} from '../device-placer.controller';
 import {Subscription} from 'rxjs/Subscription';
@@ -9,9 +12,10 @@ import {Anchor, Sink} from '../../../../../device/device.type';
 @Component({
   selector: 'app-devices-list',
   templateUrl: './devices-list.html',
-  styleUrls: ['./devices-list.css']
+  styleUrls: ['./devices-list.css'],
+  encapsulation: ViewEncapsulation.None
 })
-export class DevicesListComponent implements OnInit, AfterViewInit, OnDestroy {
+export class DevicesListComponent implements OnInit, OnDestroy {
   public remainingDevices: Array<Anchor | Sink> = [];
   public queryString: string;
   public selectedDevice: Expandable;
@@ -25,12 +29,9 @@ export class DevicesListComponent implements OnInit, AfterViewInit, OnDestroy {
   private selectedElement: Subscription;
   private deselection: Subscription;
   private connectingState: Subscription;
-  private detailsElement: ElementRef;
 
   constructor(public translate: TranslateService,
-              private devicePlacerController: DevicePlacerController,
-              private renderer: Renderer2,
-              private el: ElementRef) {
+              private devicePlacerController: DevicePlacerController) {
   }
 
   ngOnInit(): void {
@@ -56,10 +57,6 @@ export class DevicesListComponent implements OnInit, AfterViewInit, OnDestroy {
     })
   }
 
-  ngAfterViewInit(): void {
-    this.detailsElement = this.el.nativeElement.firstChild.firstChild;
-  }
-
   ngOnDestroy(): void {
     this.addSubscription.unsubscribe();
     this.removeSubscription.unsubscribe();
@@ -79,9 +76,6 @@ export class DevicesListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public swapFloat(): void {
     this.listFloatLeft = !this.listFloatLeft;
-    const float = this.listFloatLeft ? 'left' : 'right';
-    this.renderer.setStyle(this.detailsElement, float, '0');
-    this.renderer.setStyle(this.detailsElement, (float === 'left' ? 'right' : 'left'), 'auto');
   }
 
   public modifyConnections(): void {
