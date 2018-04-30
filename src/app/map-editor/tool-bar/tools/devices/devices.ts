@@ -812,7 +812,10 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
 
   private clearSelections(preserveLine?: boolean): void {
     if (!!this.selectedDevice) {
-      this.deselectDevice(this.findMapDevice(this.selectedDevice.shortId), preserveLine);
+      const mapDevice = this.findMapDevice(this.selectedDevice.shortId);
+      if (!!mapDevice) {
+        this.deselectDevice(mapDevice, preserveLine);
+      }
     }
     if (!!this.chosenSink) {
       this.chosenSink = null;
