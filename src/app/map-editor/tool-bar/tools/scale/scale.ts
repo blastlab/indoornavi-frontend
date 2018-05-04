@@ -44,6 +44,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private hintMessage: string;
   private pointsArray: Point[] = [];
   private linesArray: Line[] = [];
+  private hintBarMessages: Subscription;
 
   constructor(private translate: TranslateService,
               private scaleInputService: ScaleInputService,
@@ -77,6 +78,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.pointsArray = [];
     this.linesArray = [];
     this.isFirstPointDrawn = false;
+    this.hintBarMessages.unsubscribe();
   }
 
   ngOnInit(): void {
@@ -133,6 +135,9 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.scaleInputService.rejected.subscribe(() => {
       this.rejectChanges();
     });
+    this.hintBarMessages = this.hintBarService.onHintMessageReceived().subscribe((message: string) => {
+      this.hintMessage = message;
+    });
   }
 
   getHintMessage(): string {
@@ -145,14 +150,14 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   setActive(): void {
     this.active = true;
+    this.changeHintBarMessage();
     this.startCreatingScale();
-    this.hintBarService.sendHintMessage('scale.basic.msg');
   }
 
   setInactive(): void {
     this.hideScale();
     this.active = false;
-    this.hintBarService.sendHintMessage('hint.chooseTool');
+    this.changeHintBarMessage();
   }
 
   // implements Tool so needs to have this method
@@ -160,6 +165,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   onClick(): void {
+    // TODO: resolve bug with hint bur message
     this.toolbarService.emitToolChanged(this);
   }
 
@@ -199,7 +205,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   private setTranslations() {
     this.translate.setDefaultLang('en');
-    this.translate.get('scale.basic.msg').subscribe((value: string) => {
+    this.translate.get('scale.set.first.point').subscribe((value: string) => {
       this.hintMessage = value;
     });
   }
@@ -213,6 +219,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     if (this.linesArray.length !== 1) {
       mapBackground.on('click', () => {
         this.addPoint();
+        this.changeHintBarMessage();
       });
       this.scaleService.changeVisibility(false);
     }
@@ -470,5 +477,21 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     }
     this.scaleService.publishScaleChanged(this.scale);
     this.updateScaleGroup();
+  }
+
+  private changeHintBarMessage() {
+    if (!this.active) {
+      this.hintBarService.sendHintMessage('hint.chooseTool');
+    } else {
+      if ( !!this.scale.start && !!this.scale.stop && !!this.scale.measure ) {
+        this.hintBarService.sendHintMessage('scale.move.to.change');
+      } else if ( this.pointsArray.length === 2 ) {
+        this.hintBarService.sendHintMessage('scale.enter.real.distance');
+      } else if ( this.pointsArray.length === 1 ) {
+        this.hintBarService.sendHintMessage('scale.set.second.point');
+      } else {
+        this.hintBarService.sendHintMessage('scale.set.first.point');
+      }
+    }
   }
 }

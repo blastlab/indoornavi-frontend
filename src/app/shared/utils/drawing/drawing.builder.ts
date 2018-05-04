@@ -1,9 +1,18 @@
 import * as d3 from 'd3';
-import {Point} from '../../../map-editor/map.type';
 import {DrawConfiguration} from '../../../map-viewer/publication.type';
+import {Point} from '../../../map-editor/map.type';
+
 
 export class SvgGroupWrapper {
+  static customIconSize: BoxSize = {
+    width: 25,
+    height: 25
+  };
   private elements: Map<ElementType, d3.selection[]> = new Map();
+
+  static throwErrorTypeNull(elementType: ElementType): void {
+    throw new Error(`${elementType} is null or undefined`);
+  }
 
   constructor(private group: d3.selection) {
   }
@@ -27,11 +36,33 @@ export class SvgGroupWrapper {
     return this;
   }
 
+  addCustomIcon(coordinates: Point, image: string): SvgGroupWrapper {
+    const element: d3.selection = this.group
+      .append('svg:image')
+      .attr('xlink:href', image)
+      .attr('x', coordinates.x - SvgGroupWrapper.customIconSize.width / 2)
+      .attr('y', coordinates.y - SvgGroupWrapper.customIconSize.height)
+      .attr('width', SvgGroupWrapper.customIconSize.width)
+      .attr('height', SvgGroupWrapper.customIconSize.height)
+      .attr('stroke', 'black')
+      .attr('fill', 'black');
+    this.addElement(ElementType.IMAGE, element);
+    return this;
+  }
+
+  translate(vector: Point): SvgGroupWrapper {
+    d3.selection = this.group
+      .attr('x', -vector.x)
+      .attr('y', -vector.y);
+    return this;
+  }
+
   addText(coordinates: Point, text: string): SvgGroupWrapper {
     const element: d3.selection = this.group
       .append('text')
       .attr('x', coordinates.x)
       .attr('y', coordinates.y)
+      .attr('id', 'marker')
       .attr('fill', 'black')
       .text(text);
     this.addElement(ElementType.TEXT, element);
@@ -131,7 +162,7 @@ export class SvgGroupWrapper {
     if (!!elements) {
       return elements[elements.length - 1];
     }
-    this.throwErrorTypeNull(type);
+    SvgGroupWrapper.throwErrorTypeNull(type);
   }
 
   removeElements(type: ElementType): void {
@@ -142,7 +173,7 @@ export class SvgGroupWrapper {
       });
       elements.length = 0;
     }
-    this.throwErrorTypeNull(type);
+    SvgGroupWrapper.throwErrorTypeNull(type);
   }
 
   removeLastElement(type: ElementType): void {
@@ -153,27 +184,30 @@ export class SvgGroupWrapper {
     }
   }
 
-  private addElement(type: ElementType, element: d3.selection): void {
+  protected addElement(type: ElementType, element: d3.selection): void {
     if (this.elements.has(type)) {
       this.elements.get(type).push(element);
     } else {
       this.elements.set(type, [element]);
     }
   }
-
-  private throwErrorTypeNull (elementType: ElementType): void {
-    throw new Error(`${elementType} is null or undefined`);
-  }
 }
 
+
 export class DrawBuilder {
+  protected group: d3.selection;
 
   constructor(protected appendable: d3.selection,
               protected configuration: DrawConfiguration) {
   }
 
   createGroup(): SvgGroupWrapper {
-    const group = this.appendable
+    this.appendSvgToGroup();
+    return new SvgGroupWrapper(this.group);
+  }
+
+  protected appendSvgToGroup() {
+    this.group = this.appendable
       .append('svg')
       .attr('id', this.configuration.id)
       .attr('class', this.configuration.clazz)
@@ -181,9 +215,8 @@ export class DrawBuilder {
       .attr('x', 0)
       .attr('y', 0);
     if (this.configuration.cursor) {
-      group.style('cursor', this.configuration.cursor);
+      this.group.style('cursor', this.configuration.cursor);
     }
-    return new SvgGroupWrapper(group);
   }
 }
 
@@ -192,5 +225,12 @@ export enum ElementType {
   TEXT,
   POLYGON,
   CIRCLE,
-  LINE
+  LINE,
+  IMAGE,
+  HTML
+}
+
+export interface BoxSize {
+  width: number;
+  height: number;
 }

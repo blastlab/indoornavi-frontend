@@ -27,7 +27,8 @@ import {TagToggle} from '../../shared/components/tag-visibility-toggler/tag-togg
 import {Tag} from '../../device/device.type';
 import {BreadcrumbService} from '../../shared/services/breadcrumbs/breadcrumb.service';
 import {SvgAnimator} from '../../shared/utils/drawing/animator';
-import * as d3 from 'd3';
+import {ScaleCalculations} from '../../map-editor/tool-bar/tools/wizard/wizard.type';
+import {MapObjectMetadata} from '../../shared/utils/drawing/drawing.types';
 
 @Component({
   templateUrl: './socket-connector.component.html'
@@ -44,6 +45,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   private floor: Floor;
   private tags: Tag[] = [];
   private visibleTags: Map<number, boolean> = new Map();
+  private scaleCalculations: ScaleCalculations;
 
   constructor(protected ngZone: NgZone,
               protected socketService: SocketService,
@@ -56,8 +58,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
               private mapObjectService: MapObjectService,
               private floorService: FloorService,
               protected tagTogglerService: TagVisibilityTogglerService,
-              private breadcrumbService: BreadcrumbService
-  ) {
+              private breadcrumbService: BreadcrumbService) {
 
     this.route.params
       .subscribe((params: Params) => {
@@ -79,10 +80,22 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.translateService.setDefaultLang('en');
+    this.subscribeToMapParametersChange();
+    this.init();
+  }
+
+  private subscribeToMapParametersChange() {
     this.route.params.subscribe((params: Params) => {
       const floorId = +params['id'];
       this.floorService.getFloor(floorId).subscribe((floor: Floor): void => {
         this.floor = floor;
+        if (!!floor.scale) {
+          this.scale = new Scale(this.floor.scale);
+          this.scaleCalculations = {
+            scaleLengthInPixels: Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
+            scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
+          };
+        }
         if (floor.imageId != null) {
           this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg) => {
             this.d3map = mapSvg;
@@ -93,7 +106,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
               });
               this.tagTogglerService.setTags(tags);
               if (!!floor.scale) {
-                this.scale = new Scale(this.floor.scale);
                 this.drawAreas(floor.id);
                 this.initializeSocketConnection();
               }
@@ -102,7 +114,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         }
       });
     });
-    this.init();
   }
 
   ngAfterViewInit(): void {
@@ -112,7 +123,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           return;
         }
         this.publishedService.checkOrigin(params['api_key'], event.origin).subscribe((verified: boolean): void => {
-          if (verified) {
+          if (verified && !!this.scale) {
             this.handleCommands(event);
           }
         });
@@ -146,10 +157,15 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     }
     if (this.originListeningOnEvent.containsKey('coordinates')) {
       this.originListeningOnEvent.getValue('coordinates').forEach((event: MessageEvent): void => {
-        event.source.postMessage({type: 'coordinates', coordinates: data}, event.origin);
+        data.coordinates.point = Geometry.calculatePointPositionInCentimeters(
+          this.scaleCalculations.scaleLengthInPixels,
+          this.scaleCalculations.scaleInCentimeters,
+          data.coordinates.point
+        );
+        event.source.postMessage({type: 'coordinates', coordinates: data.coordinates}, event.origin);
       })
     }
-    this.removeNotVisableTags();
+    this.removeNotVisibleTags();
   }
 
   protected whenTransitionEnded(): Observable<number> {
@@ -199,7 +215,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         this.socketService.send({type: CommandType[CommandType.TOGGLE_TAG], args: tagToggle.tag.shortId});
         this.visibleTags.set(tagToggle.tag.shortId, tagToggle.selected);
         if (!tagToggle.selected) {
-           this.removeNotVisableTags();
+          this.removeNotVisibleTags();
         }
       });
       this.socketSubscription = stream.subscribe((data: MeasureSocketData): void => {
@@ -218,8 +234,8 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     });
   };
 
-  private removeNotVisableTags (): void {
-    this.visibleTags.forEach((value: boolean, key: number, map: Map<number, boolean>): void => {
+  private removeNotVisibleTags(): void {
+    this.visibleTags.forEach((value: boolean, key: number): void => {
       if (!value && this.isOnMap(key)) {
         this.tagsOnMap.getValue(key).remove();
         this.tagsOnMap.remove(key);
@@ -240,6 +256,16 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         this.areasOnMap.setValue(area.id, areaOnMap);
       });
     });
+  }
+
+  private removeObjectFromMapObjectService(data: MapObjectMetadata): void {
+    if ('type' in data) {
+      if (data.type === 'INFO_WINDOW') {
+        this.mapObjectService.removeInfoWindow((data));
+      } else {
+        this.mapObjectService.removeObject(data);
+      }
+    }
   }
 
   private handleEventData(data: EventSocketData): void {
@@ -281,16 +307,26 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           }
           break;
         case 'createObject':
-          const mapObjectId: number = this.mapObjectService.create(this.d3map.container);
-          event.source.postMessage({type: 'createObject', mapObjectId: mapObjectId}, event.origin);
+          const mapObjectId: number = this.mapObjectService.create();
+          event.source.postMessage({type: `createObject-${event.data.object}`, mapObjectId: mapObjectId}, event.origin);
           break;
         case 'drawObject':
-          this.mapObjectService.draw(data['args'], this.scale);
+          this.mapObjectService.draw(data['args'], this.scale, event, this.d3map.container);
           break;
         case 'removeObject':
-          this.mapObjectService.remove(data['args']);
+          this.removeObjectFromMapObjectService(data['args']);
+          break;
+        case 'fillColor':
+          this.mapObjectService.setFillColor(data['args']);
+          break;
+        case 'strokeColor':
+          this.mapObjectService.setStrokeColor(data['args']);
+          break;
+        case 'setOpacity':
+          this.mapObjectService.setOpacity(data['args']);
           break;
       }
     }
   }
 }
+

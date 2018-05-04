@@ -16,11 +16,11 @@
       </button>
       <button
         [appHasPermission]="'BUILDING_UPDATE'"
-        pTooltip="{{'edit'|translate}}" type="button" pButton (click)="openDialog(building)" icon="fa-edit">
+        pTooltip="{{'edit'|translate}}" type="button" pButton (click)="openDialog(building)" icon="fa-edit" class="ui-button-info">
       </button>
       <button
         [appHasPermission]="'BUILDING_DELETE'"
-        pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(i)" icon="fa-trash">
+        pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(i)" icon="fa-trash" class="ui-button-danger">
       </button>
     </ng-template>
   </p-column>
