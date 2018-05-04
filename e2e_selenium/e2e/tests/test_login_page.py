@@ -2,6 +2,7 @@ import unittest
 from selenium import webdriver
 from tests.test_driver import TestDriver
 from pages.login_page import LoginPage
+import time
 
 class TestLoginPage(unittest.TestCase):
 
@@ -35,6 +36,23 @@ class TestLoginPage(unittest.TestCase):
         for option in range(2, 4):
             self.__init_test_method()
             self.assertTrue(self.page.login_process(option))
+        self.test_failed = False
+
+    def test_logout(self):
+        """Test logout """
+        self.__init_test_method()
+        # [TS003].Clear form, fill with correct data and submit
+        self.assertEqual(self.page.login_process(self.option), 'Complexes')
+        # is dropdown button clickable
+        # click dropdown button
+        self.assertTrue(self.page.is_dropdown_button_clickable())
+        self.page.click_dropdown_button()
+        # is logout button clickable
+        self.assertTrue(self.page.is_logout_button_clickable())
+        # click logout button
+        self.page.click_logout_button()
+        self.assertFalse(self.webdriver.execute_script("return window.localStorage.length;"))
+        self.assertEqual(self.webdriver.current_url[-5:], 'login')
         self.test_failed = False
 
     def tearDown(self):
