@@ -239,9 +239,10 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
 
   private updateFirmwareVersion(deviceStatus: DeviceStatus) {
     let deviceToChangeFirmware: Device;
-    if (this.devicesWaitingForNewFirmwareVersion.length && this.devicesWaitingForNewFirmwareVersion.findIndex((ds: DeviceStatus) => {
+    const index = this.devicesWaitingForNewFirmwareVersion.findIndex((ds: DeviceStatus) => {
       return ds.device.shortId === deviceStatus.device.shortId;
-    }) >= 0) {
+    });
+    if (index >= 0) {
       this.removeFromUpdating(deviceStatus);
       this.removeFromToUpdate(deviceStatus);
       this.checkAllSelected();
@@ -251,6 +252,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       });
       if (!!deviceToChangeFirmware) {
         deviceToChangeFirmware.firmwareVersion = deviceStatus.device.firmwareVersion;
+        this.devicesWaitingForNewFirmwareVersion.splice(index, 1);
         return;
       }
       deviceToChangeFirmware = this.notVerified.find((device: Device) => {
@@ -258,6 +260,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       });
       if (!!deviceToChangeFirmware) {
         deviceToChangeFirmware.firmwareVersion = deviceStatus.device.firmwareVersion;
+        this.devicesWaitingForNewFirmwareVersion.splice(index, 1);
         return;
       }
     }
