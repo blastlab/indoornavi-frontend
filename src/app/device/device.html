@@ -18,14 +18,19 @@
         </p-checkbox>
       </div>
       <div>
-        <p-fileUpload class="ui-fileupload-buttonbar" #firmware mode="basic" name="firmware[]" [showUploadButton]="false"
-                      [customUpload]="true"
-                      (uploadHandler)="upload($event)"></p-fileUpload>
+        <input #firmwareInput name="firmware[]" type="file" [ngStyle]="{ 'display': 'none' }" (change)="fileSelected()">
+        <button pButton #firmwareButton
+                class="ui-button-secondary"
+                (click)="firmwareInput.click()"
+                [ngClass]="{'ui-state-active': updateMode, 'ui-state-default': !updateMode}"
+                label="{{'device.upload.choose'|translate}}"
+                icon="fa-plus" iconPos="left">
+        </button>
       </div>
       <div>
         <button pButton class="ui-button-secondary"
                 id="upload" [appHasPermission]="editPermission"
-                (click)="firmware.upload()"
+                (click)="upload()"
                 [ngClass]="{'ui-state-active': updateMode, 'ui-state-default': !updateMode}"
                 label="{{'device.upload.mode'|translate}}"
                 icon="fa-upload" iconPos="left">
@@ -145,6 +150,8 @@
 
 <p-dialog header="{{'information.important'|translate}}" [(visible)]="displayInfoDialog" modal="modal" [responsive]="true" [width]="350"
           [minWidth]="200">
-  <p>{{uploadBody}}</p>
-  <button type="button" pButton icon="fa-check" (click)="displayInfoDialog=false" label="{{'ok'|translate}}"></button>
+  <div>{{'device.update.hint'|translate}}</div>
+  <p-footer>
+    <button type="button" pButton icon="fa-check" (click)="displayInfoDialog=false" label="{{'ok'|translate}}"></button>
+  </p-footer>
 </p-dialog>

@@ -1,4 +1,4 @@
-import {Component, NgZone, OnDestroy, OnInit, ViewChild, ViewChildren, ViewEncapsulation} from '@angular/core';
+import {Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild, ViewChildren, ViewEncapsulation} from '@angular/core';
 import {Subscription} from 'rxjs/Rx';
 import {Config} from '../../config';
 import {TranslateService} from '@ngx-translate/core';
@@ -32,6 +32,8 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   public allSelected: boolean = false;
   public displayInfoDialog: boolean = false;
   @ViewChildren('updateCheckbox') public deviceCheckboxes: Checkbox[];
+  @ViewChild('firmwareInput') public firmwareInput: ElementRef;
+  @ViewChild('firmwareButton') public firmwareButton: ElementRef;
 
   @ViewChild('deviceForm') deviceForm: NgForm;
 
@@ -41,8 +43,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   private confirmBodyTranslate: Subscription;
   private uploadBodyTranslate: Subscription;
   private confirmBody: string;
-  private uploadBody: string;
-
+  private devicesWaitingForNewFirmwareVersion: DeviceStatus[] = [];
 
   constructor(public translate: TranslateService,
               private socketService: SocketService,
@@ -61,9 +62,6 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     this.deviceService.setUrl(this.deviceType + '/');
     this.confirmBodyTranslate = this.translate.get('confirm.body').subscribe((value: string): void => {
       this.confirmBody = value;
-    });
-    this.uploadBodyTranslate = this.translate.get('upload.body.info').subscribe((value: string): void => {
-      this.uploadBody = value;
     });
     this.translate.get(this.deviceType + '.header').subscribe((value: string) => {
       this.breadcrumbService.publishIsReady([
@@ -181,19 +179,25 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     }
   }
 
-  upload(data: { files: File[] }): void {
-    this.devicesUpdating = this.devicesToUpdate;
-    if (this.devicesToUpdate.length === 0) {
+  fileSelected() {
+    const file = this.firmwareInput.nativeElement.files[0];
+    this.firmwareButton.nativeElement.querySelector('.ui-button-text').innerText = file.name;
+  }
+
+  upload(): void {
+    const files = this.firmwareInput.nativeElement.files;
+
+    if (this.devicesToUpdate.length === 0 || files.length === 0) {
       this.displayInfoDialog = true;
       return;
     }
 
-    if (data.files.length === 1) {
-      this.getBase64(data.files[0]).then((base64: string): void => {
-        this.socketService.send(new UpdateRequest(this.devicesToUpdate.map((device: Device): number => device.shortId), base64));
-        this.messageService.success('uploading.firmware.message');
-      });
-    }
+    this.devicesUpdating = this.devicesToUpdate;
+
+    this.getBase64(files[0]).then((base64: string): void => {
+      this.socketService.send(new UpdateRequest(this.devicesToUpdate.map((device: Device): number => device.shortId), base64));
+      this.messageService.success('uploading.firmware.message');
+    });
   }
 
   toggleUpdateMode(): void {
@@ -212,9 +216,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
             } else if (deviceStatus.status.toString() === Status[Status.UPDATING]) {
               this.devicesUpdating.push(deviceStatus.device);
             } else if (deviceStatus.status.toString() === Status[Status.UPDATED]) {
-              this.removeFromUpdating(deviceStatus);
-              this.removeFromToUpdate(deviceStatus);
-              this.checkAllSelected();
+              this.devicesWaitingForNewFirmwareVersion.push(deviceStatus)
             }
           });
         } else if (message.type === 'INFO_ERROR') {
@@ -237,19 +239,27 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
 
   private updateFirmwareVersion(deviceStatus: DeviceStatus) {
     let deviceToChangeFirmware: Device;
-    deviceToChangeFirmware = this.verified.find((device: Device) => {
-      return device.shortId === deviceStatus.device.shortId;
-    });
-    if (!!deviceToChangeFirmware) {
-      deviceToChangeFirmware.firmwareVersion = deviceStatus.device.firmwareVersion;
-      return;
-    }
-    deviceToChangeFirmware = this.notVerified.find((device: Device) => {
-      return device.shortId === deviceStatus.device.shortId;
-    });
-    if (!!deviceToChangeFirmware) {
-      deviceToChangeFirmware.firmwareVersion = deviceStatus.device.firmwareVersion;
-      return;
+    if (this.devicesWaitingForNewFirmwareVersion.length && this.devicesWaitingForNewFirmwareVersion.findIndex((ds: DeviceStatus) => {
+      return ds.device.shortId === deviceStatus.device.shortId;
+    }) >= 0) {
+      this.removeFromUpdating(deviceStatus);
+      this.removeFromToUpdate(deviceStatus);
+      this.checkAllSelected();
+
+      deviceToChangeFirmware = this.verified.find((device: Device) => {
+        return device.shortId === deviceStatus.device.shortId;
+      });
+      if (!!deviceToChangeFirmware) {
+        deviceToChangeFirmware.firmwareVersion = deviceStatus.device.firmwareVersion;
+        return;
+      }
+      deviceToChangeFirmware = this.notVerified.find((device: Device) => {
+        return device.shortId === deviceStatus.device.shortId;
+      });
+      if (!!deviceToChangeFirmware) {
+        deviceToChangeFirmware.firmwareVersion = deviceStatus.device.firmwareVersion;
+        return;
+      }
     }
   }
 
@@ -324,4 +334,5 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       });
     });
   }
+
 }
