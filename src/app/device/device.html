@@ -76,11 +76,11 @@
         <div class="ui-g-4 ui-md-4 ui-lg-4">
           <button
             [appHasPermission]="editPermission"
-            pTooltip="{{'edit'|translate}}" type="button" pButton (click)="openDialog(device)" icon="fa-edit">
+            pTooltip="{{'edit'|translate}}" type="button" pButton (click)="openDialog(device)" icon="fa-edit" class="ui-button-info">
           </button>
           <button
             [appHasPermission]="deletePermission"
-            pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(device)" icon="fa-trash">
+            pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(device)" icon="fa-trash" class="ui-button-danger">
           </button>
           <p-checkbox #updateCheckbox *ngIf="updateMode && devicesUpdating.length === 0" name="deviceToUpdate" id="{{device.shortId}}" [value]="device" (onChange)="checkAllSelected()"
                       [(ngModel)]="devicesToUpdate" [disabled]="true">

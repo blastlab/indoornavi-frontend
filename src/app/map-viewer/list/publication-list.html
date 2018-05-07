@@ -28,9 +28,9 @@
   </p-column>
   <p-column header="{{'th.actions'|translate}}" styleClass="col-button">
     <ng-template let-publishedMap="rowData" let-i="rowIndex" pTemplate="body">
-      <button pButton ngClass="editButton" pTooltip="{{'edit'|translate}}" [appHasPermission]="'PUBLICATION_UPDATE'" (click)="openDialog(publishedMap)" icon="fa-edit">
+      <button pButton ngClass="editButton ui-button-info" pTooltip="{{'edit'|translate}}" [appHasPermission]="'PUBLICATION_UPDATE'" (click)="openDialog(publishedMap)" icon="fa-edit">
       </button>
-      <button pButton ngClass="deleteButton" pTooltip="{{'remove'|translate}}" [appHasPermission]="'PUBLICATION_DELETE'" (click)="remove(i)" icon="fa-trash">
+      <button pButton ngClass="deleteButton ui-button-danger" pTooltip="{{'remove'|translate}}" [appHasPermission]="'PUBLICATION_DELETE'" (click)="remove(i)" icon="fa-trash">
       </button>
     </ng-template>
   </p-column>
