@@ -260,6 +260,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
     }
     this.deactivateAllSelectablesBahavior();
     this.hideAllDevicesOnMap();
+    this.hideAllConnections();
   }
 
   getToolName(): ToolName {

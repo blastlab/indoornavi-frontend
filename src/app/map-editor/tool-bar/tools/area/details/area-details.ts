@@ -69,8 +69,7 @@ export class AreaDetailsComponent implements OnInit {
 
       // we need to add shift since coordinates of points are within svg group and when user moves svg group we need to shift coordinates
       this.shift = (<Point>{x: +svgGroup.attr('x'), y: +svgGroup.attr('y')});
-      let firstPoint: d3.selection; // todo: resolve bug found below
-      // bug started
+      let firstPoint: d3.selection;
       pointsSelection.each((_, i, nodes) => {
         const point: d3.selection = d3.select(nodes[i]);
         if (i === 0) {
@@ -80,7 +79,7 @@ export class AreaDetailsComponent implements OnInit {
       });
       if (firstPoint) {
         this.addPoint(firstPoint); // we need to add first point as last because of Spatial Geometry (mysql)
-      } // bug ended
+      }
 
       // change to centimeters
       this.areaConfigurationOnEnter.offset *= 100;
