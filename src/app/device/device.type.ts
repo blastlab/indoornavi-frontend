@@ -7,8 +7,9 @@ export class Device {
   x?: number;
   y?: number;
   floorId?: number;
+  firmwareVersion?: string;
 
-  constructor(shortId: number, longId: number, verified: boolean, id?: number, name?: string, x?: number, y?: number, floorId?: number) {
+  constructor(shortId: number, longId: number, verified: boolean, id?: number, name?: string, x?: number, y?: number, floorId?: number, firmwareVersion?: string) {
     this.id = id;
     this.name = name;
     this.shortId = shortId;
@@ -17,6 +18,7 @@ export class Device {
     this.x = x;
     this.y = y;
     this.floorId = floorId;
+    this.firmwareVersion = firmwareVersion;
   }
 }
 
@@ -28,4 +30,20 @@ export interface Tag extends Device {
 
 export interface Sink extends Anchor {
   anchors: Anchor[];
+}
+
+export class UpdateRequest {
+  constructor(private devicesShortIds: number[], private base64file: string) {
+    this.devicesShortIds = devicesShortIds;
+    this.base64file = base64file;
+  }
+}
+
+export interface DeviceStatus {
+  device: Device;
+  status: Status;
+}
+
+export enum Status {
+  ONLINE, OFFLINE, UPDATING, UPDATED
 }

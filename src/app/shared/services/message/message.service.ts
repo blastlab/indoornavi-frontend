@@ -2,8 +2,6 @@ import {Injectable, OnInit} from '@angular/core';
 import {MessageService} from 'primeng/components/common/messageservice';
 import {TranslateService} from '@ngx-translate/core';
 
-// TODO: move to services directory
-
 @Injectable()
 export class MessageServiceWrapper implements OnInit {
   private successSummary: string;
