@@ -66,7 +66,11 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         floorService.getFloor(floorId).subscribe((floor: Floor) => {
           breadcrumbService.publishIsReady([
             {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
-            {label: floor.building.complex.name, routerLink: `/complexes/${floor.building.complex.id}/buildings`, routerLinkActiveOptions: {exact: true}},
+            {
+              label: floor.building.complex.name,
+              routerLink: `/complexes/${floor.building.complex.id}/buildings`,
+              routerLinkActiveOptions: {exact: true}
+            },
             {
               label: floor.building.name,
               routerLink: `/complexes/${floor.building.complex.id}/buildings/${floor.building.id}/floors`,
@@ -125,6 +129,8 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         this.publishedService.checkOrigin(params['api_key'], event.origin).subscribe((verified: boolean): void => {
           if (verified && !!this.scale) {
             this.handleCommands(event);
+          } else {
+            event.source.postMessage({type: 'error', message: 'Origin not verified. Make sure you use your own API KEY.'}, event.origin);
           }
         });
       });
