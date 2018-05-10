@@ -361,27 +361,23 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
 
   private fetchConfiguredDevices(): void {
     this.configurationService.configurationLoaded().first().subscribe((configuration) => {
-      this.floorId = configuration.floorId;
-      if (!!configuration.data.sinks) {
+      const config = Helper.deepCopy(configuration);
+      this.floorId = config.floorId;
+      if (!!config.data.sinks) {
         const sinks: Sink[] = [];
-        configuration.data.sinks.forEach((sink: Sink) => {
-          if (!!sink.anchors.length) {
-            sink.anchors.forEach((connectedAnchor: Anchor) => {
-              this.recalculateDeviceCoordinatesFromCentimetersToPixels(connectedAnchor);
-            })
-          }
+        config.data.sinks.forEach((sink: Sink) => {
           sinks.push(<Sink>this.recalculateDeviceCoordinatesFromCentimetersToPixels(sink))
         });
         this.drawSinksAndConnectedAnchors(sinks);
       }
-      if (!!configuration.data.anchors) {
+      if (!!config.data.anchors) {
         const anchors: Anchor[] = [];
-        configuration.data.anchors.forEach((anchor: Anchor) => {
+        config.data.anchors.forEach((anchor: Anchor) => {
           anchors.push(this.recalculateDeviceCoordinatesFromCentimetersToPixels(anchor));
         });
         this.drawAnchorsWithoutConnection(anchors);
       }
-      this.configuration = configuration;
+      this.configuration = config;
       this.fetchDevices();
     });
   }
@@ -389,7 +385,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   private recalculateDeviceCoordinatesFromCentimetersToPixels(device: Sink | Anchor): Sink | Anchor {
     const recalculated = Helper.deepCopy(device);
     const coordinates: Point = {x: recalculated.x, y: recalculated.y};
-    const positionInPixels: Point = Geometry.calculatePointPositionInCentimeters(
+    const positionInPixels: Point = Geometry.calculatePointPositionInPixels(
       this.scaleCalculations.scaleLengthInPixels, this.scaleCalculations.scaleInCentimeters, coordinates);
     recalculated.x = positionInPixels.x;
     recalculated.y = positionInPixels.y;
@@ -399,7 +395,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   private recalculateDeviceCoordinatesFromPixelsToCentimeters(device: Sink | Anchor): Sink | Anchor {
     const recalculated = Helper.deepCopy(device);
     const coordinates: Point = {x: recalculated.x, y: recalculated.y};
-    const positionInCentimeters: Point = Geometry.calculatePointPositionInPixels(
+    const positionInCentimeters: Point = Geometry.calculatePointPositionInCentimeters(
       this.scaleCalculations.scaleLengthInPixels, this.scaleCalculations.scaleInCentimeters, coordinates);
     recalculated.x = positionInCentimeters.x;
     recalculated.y = positionInCentimeters.y;
@@ -594,7 +590,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
               this.connectingLines.push(connectingLine);
               this.handleSelectableConnections();
               DevicesComponent.showSingleConnection(connectingLine);
-              this.setAnchorInConfiguredSink(anchor, sink);
+              this.configurationService.setAnchorInSink(anchor, sink);
               this.clearSelections();
               this.resetConnecting();
             }
@@ -753,13 +749,12 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
     const anchorAsConnectable: ConnectableDevice = this.selectedLine.connectedAnchor();
     const sinkAsConnectable: ConnectableDevice = this.selectedLine.connectedSink();
     let anchor = this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(anchorAsConnectable.group));
-    let sink = <Sink>this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(sinkAsConnectable.group));
+    const sink = <Sink>this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(sinkAsConnectable.group));
     this.removeConnectingLine(this.selectedLine);
     this.clearSelectedLine();
-    sink = this.removeAnchorFromConfiguredSink(anchor, sink);
+    this.configurationService.removeAnchorFromSink(anchor, sink);
     anchor = this.updateDeviceCoordinatesFromMap(anchor);
     this.setNotConnectedAnchorInConfiguration(anchor);
-    this.setSinkInConfiguration(sink);
     this.turnOnSelectInAllBlockedDevices();
     this.turnOffSelectInUnconnectableDevices();
   }
@@ -865,8 +860,9 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
       const mapSink = this.drawDevice(DrawBuilder.buildSinkDrawConfiguration(sink),
         {x: sink.x, y: sink.y});
       sink.anchors.forEach((anchor) => {
+        const deviceRecalculatedToPixels = this.recalculateDeviceCoordinatesFromCentimetersToPixels(Helper.deepCopy(anchor));
         const mapAnchor = this.drawDevice(DrawBuilder.buildAnchorDrawConfiguration(anchor),
-          {x: anchor.x, y: anchor.y});
+          {x: deviceRecalculatedToPixels.x, y: deviceRecalculatedToPixels.y});
         const identifier = '' + sink.shortId + anchor.shortId;
         const connectingLine = this.createConnection(mapSink, mapAnchor, DrawBuilder.buildConnectingLineConfiguration(identifier));
         this.connectingLines.push(connectingLine);
@@ -923,10 +919,11 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
       } else if (!!expandable.connectable.anchorConnection) {
         const sinkAsConnectable = expandable.connectable.anchorConnection.connectedSink();
         const sink = <Sink>this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(sinkAsConnectable.group));
-        sink.anchors.forEach(anchor => {
-          this.updateDeviceCoordinatesFromMap(anchor)
+        const draggedAnchor = sink.anchors.find((anchor) => {
+          return anchor.shortId === device.shortId;
         });
-        this.setSinkInConfiguration(sink);
+        this.updateDeviceCoordinatesFromMap(draggedAnchor);
+        this.configurationService.setAnchorInSink(this.recalculateDeviceCoordinatesFromPixelsToCentimeters(draggedAnchor), sink);
       } else {
         this.setNotConnectedAnchorInConfiguration(device);
       }
@@ -962,7 +959,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
         if (DevicesComponent.isSinkType(device)) {
           this.setSinkInConfiguration(<Sink>device);
         } else if (!!this.chosenSink) {
-          this.setAnchorInConfiguredSink(device, this.chosenSink);
+          this.configurationService.setAnchorInSink(this.recalculateDeviceCoordinatesFromPixelsToCentimeters(device), this.chosenSink);
           DevicesComponent.hideSingleConnection(connection)
         } else {
           this.setNotConnectedAnchorInConfiguration(device);
@@ -1008,19 +1005,6 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   }
 
   private setSinkInConfiguration(sink: Sink): void {
-    if (!!sink.anchors.length) {
-      sink.anchors.forEach((connectedAnchor: Anchor) => {
-        this.recalculateDeviceCoordinatesFromPixelsToCentimeters(connectedAnchor);
-      })
-    }
-    this.configurationService.setSink(<Sink>
-      this.recalculateDeviceCoordinatesFromPixelsToCentimeters(sink));
-  }
-
-  private setAnchorInConfiguredSink(anchor: Anchor, sink: Sink): void {
-    sink.anchors.push(
-      this.recalculateDeviceCoordinatesFromPixelsToCentimeters(anchor));
-    this.configurationService.removeAnchor(anchor);
     this.configurationService.setSink(<Sink>
       this.recalculateDeviceCoordinatesFromPixelsToCentimeters(sink));
   }

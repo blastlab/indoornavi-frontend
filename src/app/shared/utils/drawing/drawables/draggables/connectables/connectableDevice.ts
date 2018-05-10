@@ -1,8 +1,6 @@
 import {ConnectingLine} from './connection';
-import * as d3 from 'd3';
 import {Draggable} from '../draggable';
 import {SvgGroupWrapper} from 'app/shared/utils/drawing/drawing.builder';
-import {ZoomService} from '../../../../../services/zoom/zoom.service';
 
 
 export class ConnectableDevice extends Draggable {

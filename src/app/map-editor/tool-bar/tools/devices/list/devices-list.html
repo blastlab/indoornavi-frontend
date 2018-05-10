@@ -1,4 +1,4 @@
-<app-tool-details #toolDetails [ngClass]="{'float-right': !listFloatLeft}">
+<app-tool-details #toolDetails [ngClass]="listFloatLeft ? 'float-left' :'float-right'">
   <div id="remaining-devices-list">
     <table cellpadding="10" cellspacing="0">
       <tr>
