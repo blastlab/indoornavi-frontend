@@ -590,7 +590,9 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
               this.connectingLines.push(connectingLine);
               this.handleSelectableConnections();
               DevicesComponent.showSingleConnection(connectingLine);
-              this.configurationService.setAnchorInSink(anchor, sink);
+              this.removeAnchorFromConfiguration(anchor);
+              this.updateDeviceCoordinatesFromMap(anchor);
+              this.configurationService.setAnchorInSink(this.recalculateDeviceCoordinatesFromPixelsToCentimeters(anchor), sink);
               this.clearSelections();
               this.resetConnecting();
             }
@@ -1058,6 +1060,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   }
 
   private removeConnectingLine(connectingLine: ConnectingLine): void {
+
     const connectedSink = connectingLine.connectedSink();
     const connectedAnchor = connectingLine.connectedAnchor();
     connectedAnchor.anchorConnection = null;
