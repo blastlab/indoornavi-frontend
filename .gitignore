@@ -9,7 +9,7 @@
 node_modules/**
 
 # generated
-package-lock.json
+#package-lock.json
 
 # IDEs and editors
 /.idea

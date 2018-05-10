@@ -25,7 +25,7 @@ export const appRoutes: Routes = [
   {path: 'sinks', component: DeviceComponent, canActivate: [CanRead], data: {permission: 'SINK'}},
   {path: 'publications', component: PublishedListComponent, canActivate: [CanRead], data: {permission: 'PUBLICATION'}},
   {path: 'publications/:id', component: PublishedComponent, canActivate: [CanRead], data: {permission: 'PUBLICATION'}},
-  {path: 'embedded/:id', component: PublishedComponent},
+  {path: 'embedded/:id', component: PublishedComponent, data: {isPublic: true}},
   {path: 'analytics', component: AnalyticsComponent, canActivate: [CanRead], data: {permission: 'PUBLICATION'}},
   {path: 'analytics/:id', component: AnalyticsComponent, canActivate: [CanRead], data: {permission: 'PUBLICATION'}},
   {path: 'users', component: UserComponent, canActivate: [CanRead], data: {permission: 'USER'}},

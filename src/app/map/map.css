@@ -4,3 +4,9 @@
   height: 80vh;
   position: relative;
 }
+
+#map-container.public {
+  height: 95vh;
+  border: none;
+}
+
