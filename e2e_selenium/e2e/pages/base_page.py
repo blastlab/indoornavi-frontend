@@ -8,6 +8,7 @@ import mysql.connector
 from pyquibase.pyquibase import Pyquibase
 from selenium.webdriver import ActionChains
 
+
 class BasePage(object):
 
     base_url = 'http://localhost:4200/'
@@ -87,19 +88,23 @@ class BasePage(object):
         return True
 
     def wait_for_element(self, locator):
-        element = ui.WebDriverWait(self.driver, 100).until(EC.presence_of_element_located(locator))
+        element = ui.WebDriverWait(self.driver, 100).until(EC.presence_of_element_located(locator),
+                                                           'Element has not presented yet.')
         return element
 
     def wait_for_element_clickable(self, locator):
-        element = ui.WebDriverWait(self.driver, 100).until(EC.element_to_be_clickable(locator))
+        element = ui.WebDriverWait(self.driver, 100).until(EC.element_to_be_clickable(locator),
+                                                           'Element has not been ready to be clicked.')
         return element
 
     def wait_for_element_visibility(self, locator):
-        element = ui.WebDriverWait(self.driver, 100).until(EC.visibility_of_element_located(locator))
+        element = ui.WebDriverWait(self.driver, 100).until(EC.visibility_of_element_located(locator),
+                                                           'Element has not been visible yet.')
         return element
 
     def wait_for_element_disappear(self, locator):
-        element = ui.WebDriverWait(self.driver, 100).until_not(EC.visibility_of_element_located(locator))
+        element = ui.WebDriverWait(self.driver, 100).until_not(EC.visibility_of_element_located(locator),
+                                                               'Element has not disappeared yet.')
         return element
 
     def open_page(self, page_url):
@@ -120,7 +125,9 @@ class BasePage(object):
         for i in text:
             input_element.send_keys(i)
 
-    # .execute_script("document.getElementsById('id')[0].value='"+text+"'")
+    def click_element(self, locator):
+        element = self.wait_for_element_clickable(locator)
+        return self.driver.execute_script("arguments[0].click();", element)
 
     def click_button(self, *locator):
         button = self.driver.find_element(*locator)
@@ -167,5 +174,4 @@ class BasePage(object):
         return get_array
 
     def drag_and_drop(self, source_element, dest_element):
-
         return self.actions.click_and_hold(source_element).move_by_offset(1000, 0).release(dest_element).perform()

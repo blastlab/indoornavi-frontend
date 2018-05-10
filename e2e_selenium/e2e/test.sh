@@ -1,22 +1,18 @@
 #!/bin/bash
 
+count=$1
+passed=0
+failure=0
+
 for ((i = 1; i <= $1; i++)); do
-   date=$(date +'%d-%m-%Y %H:%M:%S:%3N')
-   echo ' ';
-   echo "---------------------START TEST SUITE $i OF $1--------------------: "
-   echo ' '
-   echo "TEST START DATE : $date"
-   echo ' '
-   echo "------------------------------------------------------------------: "
-
-   python3 main.py -v
-
-   echo ' '
-   echo "---------------------END TEST SUITE $i OF $1----------------------: "
-   echo ' '
-   echo "TEST END DATE : $date"
-   echo ' '
-   echo "------------------------------------------------------------------: "
+   if python3.5 main.py TestPermissionsPage.test_02_multi_select_in_add_permission_group;then
+    passed=$[$passed +1]
+   else
+    failure=$[$failure +1]
+   fi
 
 done
 
+echo "For $1 Tests : "
+echo "PASSED: $passed"
+echo "FAILED: $failure"
