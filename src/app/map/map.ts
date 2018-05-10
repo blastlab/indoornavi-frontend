@@ -26,10 +26,6 @@ export class MapComponent implements OnInit {
     this.route.data.subscribe((data: Data) => {
       this.isPublic = !!(data.isPublic);
     });
-this.mapEditorService.drawMap(this.floor).then((mapSvg: MapSvg) => {
-  this.imageLoaded = true;
-  this.mapLoaderInformer.publishIsLoaded(mapSvg);
-});
     this.mapEditorService.drawMap(this.floor).then((mapSvg: MapSvg) => {
       this.imageLoaded = true;
       this.mapLoaderInformer.publishIsLoaded(mapSvg);
