@@ -12,6 +12,7 @@ from tests.constructions.test_floors_page import TestFloorsPage
 from tests.devices.test_sinks_page import TestSinksPage
 from tests.devices.test_anchors_page import TestAnchorsPage
 from tests.devices.test_tags_page import TestTagsPage
+from tests.permissions.test_permissions_page import TestPermissionsPage
 
 if __name__ == '__main__':
 
