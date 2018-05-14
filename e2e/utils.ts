@@ -19,11 +19,13 @@ export module Utils {
 
   export function getScreenshots(testFileName: string) {
     const time = Date.now();
+
     function writeScreenShot(data, filename) {
       const stream = fs.createWriteStream(filename);
       stream.write(new Buffer(data, 'base64'));
       stream.end();
     }
+
     browser.takeScreenshot().then(function (png) {
       writeScreenShot(png, `${testFileName}_${time}_test.png`);
     })

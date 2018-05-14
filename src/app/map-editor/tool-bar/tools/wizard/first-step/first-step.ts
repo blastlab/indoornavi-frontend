@@ -1,11 +1,12 @@
 import * as d3 from 'd3';
 import * as Collections from 'typescript-collections';
 import {Point} from '../../../../map.type';
-import {FirstStepMessage, ObjectParams, ScaleCalculations, Step, WizardData, WizardStep} from '../wizard.type';
+import {FirstStepMessage, Step, WizardData, WizardStep} from '../wizard.type';
 import {SelectItem} from 'primeng/primeng';
-import {NaviIcons} from '../../../../../shared/services/drawing/icon.service';
 import {Geometry} from '../../../../../shared/utils/helper/geometry';
 import {Sink} from '../../../../../device/device.type';
+import {DrawConfiguration} from 'app/map-viewer/publication.type';
+import {ScaleCalculations} from '../../scale/scale.type';
 
 export class FirstStep implements WizardStep {
   private selectedItemId: number;
@@ -29,10 +30,10 @@ export class FirstStep implements WizardStep {
     return [...items];
   }
 
-  getDrawingObjectParams(selectedItem: number): ObjectParams {
+  getDrawConfiguration(selectedItemID: number): DrawConfiguration {
     return {
-      id: 'sink' + selectedItem, iconName: NaviIcons.ANCHOR,
-      groupClass: 'wizardSink', markerClass: 'sinkMarker', fill: 'blue'
+      id: `` + selectedItemID, clazz: 'wizard sink anchor', name: 'sink' + selectedItemID,
+      color: 'blue', display: 'true'
     };
   }
 
@@ -40,7 +41,7 @@ export class FirstStep implements WizardStep {
   }
 
   afterPlaceOnMap(): void {
-    const objectOnMap: d3.selection = d3.select('#map').select('#sink' + this.selectedItemId);
+    const objectOnMap: d3.selection = d3.select('#map').select(`[id='${this.selectedItemId}']`);
     this.coordinates = {x: +objectOnMap.attr('x'), y: +objectOnMap.attr('y')};
   }
 
@@ -79,6 +80,6 @@ export class FirstStep implements WizardStep {
 
   clean(): void {
     const map = d3.select('#map');
-    map.select('#sink' + this.selectedItemId).remove();
+    map.select(`[id='${this.selectedItemId}']`).remove();
   }
 }

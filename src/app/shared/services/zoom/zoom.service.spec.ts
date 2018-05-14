@@ -108,7 +108,8 @@ describe('ZoomService', () => {
 
   }));
 
-  it('should return transformation with proper values for all parameters (x, y and zoom) being transformed ', inject([ZoomService, MapEditorService], (zoomService, mapViewerService) => {
+  it('should return transformation with proper values for all parameters (x, y and zoom) being transformed ',
+    inject([ZoomService, MapEditorService], (zoomService, mapViewerService) => {
     // given
     const transformation = {x: 100, y: 100, k: 2};
     // when

@@ -1,0 +1,51 @@
+<app-tool-details #toolDetails [ngClass]="listFloatLeft ? 'float-left' :'float-right'">
+  <div id="remaining-devices-list">
+    <table cellpadding="10" cellspacing="0">
+      <tr>
+        <th *ngIf="!connectingFlag" colspan="2" class="remaining-devices-header">
+          <h2 class="remaining-devices-heading">{{'device-list.listOfDevices'|translate}}</h2>
+        </th>
+        <th *ngIf="connectingFlag" colspan="2" class="remaining-devices-header">
+          <h2 class="remaining-devices-heading">{{'device-list.connectingMode'|translate}}</h2>
+        </th>
+        <th>
+          <button class="device-list-delete" (click)="deleteDevice()" [disabled]="!selectedDevice">
+            <i class="material-icons">delete</i>
+          </button>
+          <button [ngClass]="{'active': connectingFlag}" class="device-list-deselect" (click)="modifyConnections()">
+            <i class="material-icons">timeline</i>
+          </button>
+          <button class="device-list-float" (click)="swapFloat()">
+            <i class="material-icons">keyboard_tab</i>
+          </button>
+        </th>
+      </tr>
+      <ng-container *ngIf="!connectingFlag">
+        <tr>
+          <th colspan="2" class="remaining-devices-subheader">
+            <h3 class="remaining-devices-subheading">{{'device-list.searchByAllFields'|translate}}:</h3>
+          </th>
+          <th>
+            <input autofocus autocomplete="off" type="text"
+                   id="deviceNameFilter" class="form-control"
+                   placeholder="{{'filter.findByAllFields'|translate}}" [(ngModel)]="queryString">
+          </th>
+        </tr>
+        <tr>
+          <th>{{'device.shortId'|translate}}</th>
+          <th>{{'device.longId'|translate}}</th>
+          <th>{{'device.name'|translate}}</th>
+        </tr>
+        <tr *ngIf="!remainingDevices.length">
+          <td colspan="3">{{'device-list.noRemainingDevicesLeft'|translate}}</td>
+        </tr>
+        <tr *ngFor="let device of remainingDevices | allFieldsFilter:queryString; let i = index"
+            pDraggable="devices" (onDragStart)="dragDeviceStarted(device, $event)" (onDragEnd)="dragDeviceEnded()">
+          <td>{{device.shortId}}</td>
+          <td>{{device.longId}}</td>
+          <td>{{device.name}}</td>
+        </tr>
+      </ng-container>
+    </table>
+  </div>
+</app-tool-details>

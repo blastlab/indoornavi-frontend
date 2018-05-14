@@ -28,6 +28,9 @@ export class AppComponent implements OnInit, OnDestroy {
     });
     this.isUserLoggedIn = !!localStorage.getItem('currentUser');
     this.userLoggedInSubscription = this.authGuard.userLoggedIn().subscribe((loggedIn: boolean) => {
+      if (!loggedIn) {
+        localStorage.removeItem('currentUser');
+      }
       this.isUserLoggedIn = loggedIn;
     });
     this.breadcrumbIsReadySubscription = this.breadcrumbService.isReady().subscribe((breadcrumbs: MenuItem[]) => {

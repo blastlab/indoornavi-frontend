@@ -1,9 +1,10 @@
 import * as d3 from 'd3';
 import {Point} from '../../../../map.type';
-import {AnchorSuggestedPositions, ObjectParams, ScaleCalculations, SocketMessage, Step, WizardData, WizardStep} from '../wizard.type';
+import {AnchorSuggestedPositions, SocketMessage, Step, WizardData, WizardStep} from '../wizard.type';
 import {SelectItem} from 'primeng/primeng';
-import {NaviIcons} from '../../../../../shared/services/drawing/icon.service';
 import {Geometry} from '../../../../../shared/utils/helper/geometry';
+import {DrawConfiguration} from 'app/map-viewer/publication.type';
+import {ScaleCalculations} from '../../scale/scale.type';
 
 export class ThirdStep implements WizardStep {
   private selectedItemId: number;
@@ -42,10 +43,10 @@ export class ThirdStep implements WizardStep {
     }
   }
 
-  getDrawingObjectParams(selectedItem: number): ObjectParams {
+  getDrawConfiguration(selectedItemID: number): DrawConfiguration {
     return {
-      id: 'anchor' + selectedItem, iconName: NaviIcons.ANCHOR,
-      groupClass: 'wizardAnchor', markerClass: 'anchorMarker', fill: 'green'
+      id: `` + selectedItemID, clazz: 'wizard anchor', name: 'anchor' + selectedItemID,
+      color: 'green', display: 'true'
     };
   }
 
@@ -68,7 +69,7 @@ export class ThirdStep implements WizardStep {
   }
 
   afterPlaceOnMap(): void {
-    const objectOnMap: d3.selection = d3.select('#map').select('#anchor' + this.selectedItemId);
+    const objectOnMap: d3.selection = d3.select('#map').select(`[id='${this.selectedItemId}']`);
     this.coordinates = {x: +objectOnMap.attr('x'), y: +objectOnMap.attr('y')};
     d3.select('#map').selectAll('.suggested-position').remove();
   }
@@ -103,7 +104,7 @@ export class ThirdStep implements WizardStep {
   clean(): void {
     const map = d3.select('#map');
     map.selectAll('.suggested-position').remove();
-    map.select('#anchor' + this.selectedItemId).remove();
+    map.select(`[id='${this.selectedItemId}']`).remove();
   }
 
 }

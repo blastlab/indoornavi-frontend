@@ -28,7 +28,7 @@ export class ChangePasswordComponent implements OnInit {
     this.currentUserName = JSON.parse(localStorage.getItem('currentUser'))['username'];
   }
 
-  ngOnInit () {
+  ngOnInit() {
     this.translateService.get(`changePassword.header`).subscribe((value: string) => {
       this.breadcrumbService.publishIsReady([
         {label: value, disabled: true}
@@ -42,7 +42,10 @@ export class ChangePasswordComponent implements OnInit {
 
   save(isValid: boolean): void {
     if (isValid) {
-      this.userService.changePassword({oldPassword: this.model.oldPassword, newPassword: this.model.newPassword}).subscribe(() => {
+      this.userService.changePassword({
+        oldPassword: this.model.oldPassword,
+        newPassword: this.model.newPassword
+      }).subscribe(() => {
         this.messageService.success('user.changePassword.success');
       }, (msg: string) => {
         this.messageService.failed(msg);

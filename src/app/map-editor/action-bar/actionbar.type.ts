@@ -1,6 +1,6 @@
 import {Scale} from '../tool-bar/tools/scale/scale.type';
-import {Area} from '../tool-bar/tools/area/area.type';
-import {Sink} from '../../device/device.type';
+import {Area} from '../tool-bar/tools/area/areas.type';
+import {Anchor, Sink} from '../../device/device.type';
 
 export class Configuration {
   id: number;
@@ -17,6 +17,7 @@ export class Configuration {
 
 export interface ConfigurationData {
   sinks: Sink[];
+  anchors: Anchor[];
   scale: Scale;
   areas: Area[];
 }

@@ -1,20 +1,39 @@
 import * as d3 from 'd3';
-import {DrawConfiguration} from '../../../map-viewer/publication.type';
 import {Point} from '../../../map-editor/map.type';
+import {DrawConfiguration} from '../../../map-viewer/publication.type';
+import {Helper} from '../helper/helper';
+import {Anchor, Sink} from '../../../device/device.type';
 
+export enum ElementType {
+  ICON,
+  TEXT,
+  POLYGON,
+  CIRCLE,
+  LINE,
+  DRAGAREA,
+  IMAGE
+}
 
 export class SvgGroupWrapper {
   static customIconSize: BoxSize = {
     width: 25,
     height: 25
   };
+  container: d3.selection;
   private elements: Map<ElementType, d3.selection[]> = new Map();
+  private textsHidden: boolean = true;
+  private groupDefaultColor: string;
 
   static throwErrorTypeNull(elementType: ElementType): void {
     throw new Error(`${elementType} is null or undefined`);
   }
 
-  constructor(private group: d3.selection) {
+  constructor(private group: d3.selection,
+              container: d3.selection,
+              colored?: string) {
+    this.group = group;
+    this.container = container;
+    this.groupDefaultColor = (colored) ? colored : 'black';
   }
 
   place(coordinates: Point): SvgGroupWrapper {
@@ -25,13 +44,22 @@ export class SvgGroupWrapper {
   }
 
   addIcon(coordinates: Point, icon: string): SvgGroupWrapper {
-    const element: d3.selection = this.group
+    let element: d3.selection;
+    element = this.group
+      .append('circle')
+      .attr('cx', coordinates.x + 12)
+      .attr('cy', coordinates.y + 12)
+      .attr('r', '10px')
+      .classed('dragarea', true)
+      .attr('fill', 'transparent');
+    this.addElement(ElementType.DRAGAREA, element);
+    element = this.group
       .append('svg')
       .attr('x', coordinates.x)
       .attr('y', coordinates.y)
       .html(icon)
-      .attr('stroke', 'black')
-      .attr('fill', 'black');
+      .attr('stroke', this.groupDefaultColor)
+      .attr('fill', this.groupDefaultColor);
     this.addElement(ElementType.ICON, element);
     return this;
   }
@@ -57,16 +85,62 @@ export class SvgGroupWrapper {
     return this;
   }
 
+  addPointer(coordinates: Point, icon: string): SvgGroupWrapper {
+    let element: d3.selection;
+    element = this.group
+      .append('circle')
+      .attr('cx', coordinates.x + 12)
+      .attr('cy', coordinates.y + 12)
+      .attr('r', '7px')
+      .classed('dragarea', true)
+      .attr('fill', 'transparent');
+    this.addElement(ElementType.DRAGAREA, element);
+    element = this.group
+      .append('svg')
+      .attr('x', coordinates.x)
+      .attr('y', coordinates.y)
+      .html(icon)
+      .classed('pointer', true)
+      .attr('stroke', 'black')
+      .attr('fill', 'black');
+    this.addElement(ElementType.ICON, element);
+    return this;
+  }
+
   addText(coordinates: Point, text: string): SvgGroupWrapper {
     const element: d3.selection = this.group
       .append('text')
       .attr('x', coordinates.x)
       .attr('y', coordinates.y)
-      .attr('id', 'marker')
-      .attr('fill', 'black')
+      .attr('fill', this.groupDefaultColor)
+      .attr('display', 'none')
       .text(text);
     this.addElement(ElementType.TEXT, element);
     return this;
+  }
+
+  getTexts(): d3.selection[] {
+    return this.getElements(ElementType.TEXT);
+  }
+
+  showTexts(): void {
+    const textsToShow: d3.selection[] = this.getTexts();
+    if (!!textsToShow) {
+      textsToShow.forEach((text: d3.selection) => {
+        text.attr('display', 'block');
+      });
+    }
+    this.textsHidden = false;
+  }
+
+  hideTexts(): void {
+    const textsToHide: d3.selection[] = this.getTexts();
+    if (!!textsToHide) {
+      textsToHide.forEach((text: d3.selection) => {
+        text.attr('display', 'none');
+      });
+    }
+    this.textsHidden = true;
   }
 
   addPolygon(points: Point[]): SvgGroupWrapper {
@@ -117,36 +191,61 @@ export class SvgGroupWrapper {
     return this;
   }
 
-  setDraggable(customDragging?: () => void): SvgGroupWrapper {
-    const dragStart = (): void => {
-      d3.event.sourceEvent.stopPropagation();
-      this.group.classed('dragging', true);
-    };
-
-    const dragging = !!customDragging ? customDragging : (): void => {
-      this.group.attr('x', d3.event.dx + parseInt(this.group.attr('x'), 10)).attr('y', d3.event.dy + parseInt(this.group.attr('y'), 10));
-    };
-
-    const dragStop = (): void => {
-      this.group.classed('dragging', false);
-    };
-
-    const subject = (): Point => {
-      return {x: d3.event.x, y: d3.event.y}
-    };
-    const dragGroup = d3.drag()
-      .subject(subject)
-      .on('start', dragStart)
-      .on('drag', dragging)
-      .on('end', dragStop);
-
-    this.group.call(dragGroup);
-
-    return this;
-  }
-
   remove(): void {
     this.group.remove();
+  }
+
+  addBorderBox(scale: number, defineColor?: string) {
+    const boxColor = (defineColor) ? defineColor : this.groupDefaultColor;
+    const parentElement: SVGElement = this.group.node();
+    const domRect: DOMRectInit = parentElement.getBoundingClientRect();
+    const boxWidth = 2;
+    const padding: {x: number , y: number} = Helper.getChildrenExtremeValues(parentElement);
+    const paddingX = padding.x * 1 + boxWidth * 1;
+    let paddingY = padding.y - boxWidth - 6;
+    if (this.textsHidden) {
+      paddingY += 10;
+    }
+    this.group
+      .append('rect')
+      .classed('group-border-box', true)
+      .attr('x', paddingX)
+      .attr('y', paddingY)
+      .attr('width', (domRect.width * (1 / scale) + boxWidth * 2))
+      .attr('height', (domRect.height * (1 / scale) + boxWidth * 2))
+      .attr('stroke', boxColor)
+      .attr('stroke-width', boxWidth)
+      .attr('opacity', '0.5')
+      .attr('stroke-linecap', 'round')
+      .attr('stroke-dasharray', '20,10,5,5,5,10')
+      .attr('fill', 'none');
+  }
+
+  removeBorderBox() {
+    this.group.select('rect.group-border-box').remove();
+  }
+
+  // TODO: Refactor this method to be more specific - remember about usages
+  changeColor(newColor) {
+    const parentElement: SVGElement = this.group.node();
+    const childrenCount: number = parentElement.childElementCount;
+    const children: NodeList = parentElement.childNodes;
+    for (let i = 0; i < childrenCount; i++) {
+      const classed = children[i].attributes['class'];
+      if (!classed || (!!classed && classed.value !== 'pointer' && classed.value !== 'dragarea' && classed.value !== 'group-border-box' )) {
+        const child = d3.select(children[i]);
+        if (child.attr('stroke') !== null) {
+          child.attr('stroke', newColor)
+        }
+        if (child.attr('fill') !== null) {
+          child.attr('fill', newColor);
+        }
+      }
+    }
+  }
+
+  resetColor() {
+    this.changeColor(this.groupDefaultColor);
   }
 
   getGroup(): d3.selection {
@@ -173,7 +272,6 @@ export class SvgGroupWrapper {
       });
       elements.length = 0;
     }
-    SvgGroupWrapper.throwErrorTypeNull(type);
   }
 
   removeLastElement(type: ElementType): void {
@@ -191,11 +289,47 @@ export class SvgGroupWrapper {
       this.elements.set(type, [element]);
     }
   }
+
+  setVisibility(visible: boolean): void {
+    const displayValue: string = visible ? `inline` : `none`;
+    return this.group.attr(`display`, displayValue);
+  }
+
 }
 
-
 export class DrawBuilder {
-  protected group: d3.selection;
+    protected group: d3.selection;
+
+  static buildAnchorDrawConfiguration(anchor: Anchor): DrawConfiguration {
+    return {
+      id: `${anchor.shortId}`,
+      clazz: `anchor`,
+      name: `${anchor.name}`,
+      cursor: `pointer`,
+      color: `green`,
+      display: `none`
+    };
+  }
+
+  static buildSinkDrawConfiguration(sink: Sink): DrawConfiguration {
+    return {
+      id: `${sink.shortId}`,
+      clazz: `sink anchor`,
+      name: `${sink.name}`,
+      cursor: `pointer`,
+      color: `orange`,
+      display: `none`
+    };
+  }
+
+  static buildConnectingLineConfiguration(id: string | number): DrawConfiguration {
+    return {
+      id: `line${id}`,
+      clazz: `connection`,
+      cursor: `inherit`,
+      color: `orange`
+    };
+  }
 
   constructor(protected appendable: d3.selection,
               protected configuration: DrawConfiguration) {
@@ -203,7 +337,7 @@ export class DrawBuilder {
 
   createGroup(): SvgGroupWrapper {
     this.appendSvgToGroup();
-    return new SvgGroupWrapper(this.group);
+    return new SvgGroupWrapper(this.group, this.appendable, this.configuration.color);
   }
 
   protected appendSvgToGroup() {
@@ -217,17 +351,13 @@ export class DrawBuilder {
     if (this.configuration.cursor) {
       this.group.style('cursor', this.configuration.cursor);
     }
+    if (this.configuration.display) {
+      this.group.attr('display', this.configuration.display);
+    }
+    return (this.configuration.color)
+      ? new SvgGroupWrapper(this.group, this.appendable, this.configuration.color)
+      : new SvgGroupWrapper(this.group, this.appendable);
   }
-}
-
-export enum ElementType {
-  ICON,
-  TEXT,
-  POLYGON,
-  CIRCLE,
-  LINE,
-  IMAGE,
-  HTML
 }
 
 export interface BoxSize {

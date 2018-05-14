@@ -39,7 +39,11 @@ export class FloorComponent implements OnInit, CrudComponent {
           this.loading = false;
           this.breadcrumbsService.publishIsReady([
             {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
-            {label: building.complex.name, routerLink: `/complexes/${this.building.complex.id}/buildings`, routerLinkActiveOptions: {exact: true}},
+            {
+              label: building.complex.name,
+              routerLink: `/complexes/${this.building.complex.id}/buildings`,
+              routerLinkActiveOptions: {exact: true}
+            },
             {label: building.name, disabled: true}
           ]);
         });

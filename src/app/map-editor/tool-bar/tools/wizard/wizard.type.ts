@@ -1,5 +1,7 @@
 import {Point} from '../../../map.type';
 import {SelectItem} from 'primeng/primeng';
+import {DrawConfiguration} from '../../../../map-viewer/publication.type';
+import {ScaleCalculations} from '../scale/scale.type';
 
 export interface SocketMessage {
   step: Step;
@@ -36,14 +38,9 @@ export enum Step {
   THIRD
 }
 
-export interface ScaleCalculations {
-  scaleLengthInPixels: number;
-  scaleInCentimeters: number;
-}
-
 export interface WizardStep {
   load(items: SelectItem[], message: string, scaleCalculations?: ScaleCalculations): SelectItem[];
-  getDrawingObjectParams(selectedItem: number): ObjectParams;
+  getDrawConfiguration(selectedItem: number): DrawConfiguration;
   beforePlaceOnMap(selectedItem?: number): void;
   afterPlaceOnMap(): void;
   getBeforePlaceOnMapHint(): string;
@@ -54,14 +51,6 @@ export interface WizardStep {
   prepareToSend(wizardData: WizardData): SocketMessage;
   updateWizardData(wizardData: WizardData, id: number, scaleCalculations: ScaleCalculations): void;
   clean(): void;
-}
-
-export interface ObjectParams {
-  id: string;
-  iconName: string;
-  groupClass: string;
-  markerClass: string;
-  fill: string;
 }
 
 export interface AnchorDistance {

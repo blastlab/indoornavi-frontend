@@ -15,7 +15,7 @@ export interface CrudComponentForm {
 export interface CrudComponentList {
   openDialog(object?: CrudItem): void;
 
-  remove(indexOrItem: number|CrudItem): void;
+  remove(indexOrItem: number | CrudItem): void;
 
   goTo?(object: CrudItem): void;
 }

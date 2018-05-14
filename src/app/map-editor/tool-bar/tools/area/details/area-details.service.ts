@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
-import {AreaBag} from '../area.type';
+import {AreaBag} from '../areas.type';
 
 @Injectable()
 export class AreaDetailsService {

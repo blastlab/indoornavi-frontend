@@ -8,8 +8,8 @@ import * as Collections from 'typescript-collections';
 import {Subject} from 'rxjs/Subject';
 import {Md5} from 'ts-md5/dist/md5';
 import {Helper} from '../../shared/utils/helper/helper';
-import {Area} from '../tool-bar/tools/area/area.type';
-import {Sink} from '../../device/device.type';
+import {Area} from '../tool-bar/tools/area/areas.type';
+import {Anchor, Sink} from '../../device/device.type';
 
 @Injectable()
 export class ActionBarService {
@@ -31,6 +31,11 @@ export class ActionBarService {
     }).find((configuration: Configuration): boolean => {
       return !!configuration.publishedDate;
     });
+  }
+
+  private static parseCoordinatesToIntegers(device: Anchor | Sink): void {
+    device.x = Math.round(device.x);
+    device.y = Math.round(device.y);
   }
 
   private static compareFn(sink: Sink): string {
@@ -73,9 +78,11 @@ export class ActionBarService {
           version: 0,
           savedDraftDate: null,
           publishedDate: null,
-          data: {
+          data: <ConfigurationData>{
             sinks: [],
-            scale: null
+            anchors: [],
+            scale: null,
+            areas: []
           }
         });
         this.latestPublishedConfiguration = null;
@@ -121,20 +128,12 @@ export class ActionBarService {
     this.sendConfigurationChangedEvent();
   }
 
-  public setSink(sink: Sink): void {
-    const sinks: Collections.Set<Sink> = this.getConfigurationSinks();
-    const sinkCopy = {...sink};
-    if (sinks.contains(sinkCopy)) {
-      sinks.remove(sinkCopy);
-    }
-    sinks.add(sinkCopy);
-    this.configuration.data.sinks = sinks.toArray();
-    this.sendConfigurationChangedEvent();
-  }
-
-  public setAreas(areas: Area[]): void {
-    this.configuration.data.areas = areas;
-    this.sendConfigurationChangedEvent();
+  private getConfigurationAnchors(): Collections.Set<Anchor> {
+    const anchors = new Collections.Set<Anchor>(ActionBarService.compareFn);
+    this.configuration.data.anchors.forEach((configurationAnchor: Anchor) => {
+      anchors.add(configurationAnchor);
+    });
+    return anchors;
   }
 
   private getConfigurationSinks(): Collections.Set<Sink> {
@@ -143,6 +142,95 @@ export class ActionBarService {
       sinks.add(configurationSink);
     });
     return sinks;
+  }
+
+  public setSink(sink: Sink): void {
+    const sinks: Collections.Set<Sink> = this.getConfigurationSinks();
+    const sinkCopy = {...sink};
+    if (sinks.contains(sinkCopy)) {
+      sinks.remove(sinkCopy);
+    }
+    ActionBarService.parseCoordinatesToIntegers(sinkCopy);
+    sinkCopy.anchors.forEach((anchor) => {
+      ActionBarService.parseCoordinatesToIntegers(anchor);
+    });
+    sinks.add(sinkCopy);
+    this.configuration.data.sinks = Helper.deepCopy(sinks.toArray());
+    this.sendConfigurationChangedEvent();
+  }
+
+  public setAreas(areas: Area[]): void {
+    this.configuration.data.areas = areas;
+    this.sendConfigurationChangedEvent();
+  }
+
+  public removeSink(sink: Sink): void {
+    const sinks: Collections.Set<Sink> = this.getConfigurationSinks();
+    const sinkCopy = {...sink};
+    if (sinks.contains(sinkCopy)) {
+      sinks.remove(sinkCopy);
+    }
+    this.configuration.data.sinks = Helper.deepCopy(sinks.toArray());
+    this.sendConfigurationChangedEvent();
+  }
+
+  private getAnchorsInSink(sink: Sink): Collections.Set<Anchor> {
+    const anchorsInSink = new Collections.Set<Anchor>(ActionBarService.compareFn);
+    sink.anchors.forEach((anchorInSink: Anchor): void => {
+      anchorsInSink.add(anchorInSink);
+    });
+    return anchorsInSink;
+  }
+
+  private getConfiguredSink(sink: Sink): Sink {
+    return this.getConfigurationSinks().toArray().find( (s: Sink) => {
+      return s.shortId === sink.shortId;
+    });
+  }
+
+  public setAnchorInSink(anchor: Anchor, sink: Sink): void {
+    const configuredSink = this.getConfiguredSink(sink);
+    const sinkAnchors: Collections.Set<Anchor> = this.getAnchorsInSink(configuredSink);
+    const anchorCopy = {...anchor};
+    if (sinkAnchors.contains(anchorCopy)) {
+      sinkAnchors.remove(anchorCopy);
+    }
+    sinkAnchors.add(anchorCopy);
+    configuredSink.anchors = Helper.deepCopy(sinkAnchors.toArray());
+    this.setSink(configuredSink);
+  }
+
+  public removeAnchorFromSink(anchor: Anchor, sink: Sink): void {
+    const configuredSink = this.getConfiguredSink(sink);
+    const sinkAnchors: Collections.Set<Anchor> = this.getAnchorsInSink(configuredSink);
+    const anchorCopy = {...anchor};
+    if (sinkAnchors.contains(anchorCopy)) {
+      sinkAnchors.remove(anchorCopy);
+    }
+    configuredSink.anchors = Helper.deepCopy(sinkAnchors.toArray());
+    this.setSink(configuredSink);
+  }
+
+  public setAnchor(anchor: Anchor): void {
+    const anchors: Collections.Set<Anchor> = this.getConfigurationAnchors();
+    const anchorCopy = {...anchor};
+    if (anchors.contains(anchorCopy)) {
+      anchors.remove(anchorCopy);
+    }
+    ActionBarService.parseCoordinatesToIntegers(anchorCopy);
+    anchors.add(anchorCopy);
+    this.configuration.data.anchors = Helper.deepCopy(anchors.toArray());
+    this.sendConfigurationChangedEvent();
+  }
+
+  public removeAnchor(anchor: Anchor): void {
+    const anchors: Collections.Set<Anchor> = this.getConfigurationAnchors();
+    const anchorCopy = {...anchor};
+    if (anchors.contains(anchorCopy)) {
+      anchors.remove(anchorCopy);
+    }
+    this.configuration.data.anchors = Helper.deepCopy(anchors.toArray());
+    this.sendConfigurationChangedEvent();
   }
 
   private hashConfiguration(): string | Int32Array {

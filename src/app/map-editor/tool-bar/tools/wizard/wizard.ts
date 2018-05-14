@@ -1,4 +1,4 @@
-import {Component, Input, NgZone, OnInit} from '@angular/core';
+import {Component, Input, NgZone, OnDestroy, OnInit} from '@angular/core';
 import {ToolName} from '../tools.enum';
 import {Tool} from '../tool';
 import {TranslateService} from '@ngx-translate/core';
@@ -8,7 +8,7 @@ import {SocketService} from '../../../../shared/services/socket/socket.service';
 import {FirstStep} from './first-step/first-step';
 import {SecondStep} from './second-step/second-step';
 import {ActionBarService} from '../../../action-bar/actionbar.service';
-import {ObjectParams, ScaleCalculations, SocketMessage, WizardData, WizardStep} from './wizard.type';
+import {SocketMessage, WizardData, WizardStep} from './wizard.type';
 import {Floor} from '../../../../floor/floor.type';
 import {SelectItem} from 'primeng/primeng';
 import {ThirdStep} from './third-step/third-step';
@@ -17,59 +17,86 @@ import * as d3 from 'd3';
 import {ToolbarService} from '../../toolbar.service';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
 import {AcceptButtonsService} from '../../../../shared/components/accept-buttons/accept-buttons.service';
-import {DrawBuilder} from '../../../../shared/utils/drawing/drawing.builder';
-import {IconService, NaviIcons} from '../../../../shared/services/drawing/icon.service';
-import {MapEditorService} from '../../../map.editor.service';
 import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
 import {ScaleService} from '../../../../shared/services/scale/scale.service';
-import {Scale, ScaleDto} from '../scale/scale.type';
+import {Scale, ScaleCalculations, ScaleDto} from '../scale/scale.type';
 import {Geometry} from '../../../../shared/utils/helper/geometry';
 import {Anchor, Sink} from '../../../../device/device.type';
+import {DrawConfiguration} from '../../../../map-viewer/publication.type';
+import {MapLoaderInformerService} from '../../../../shared/services/map-loader-informer/map-loader-informer.service';
+import {DevicePlacerController} from '../devices/device-placer.controller';
+import {IconService} from '../../../../shared/services/drawing/icon.service';
+import {DrawBuilder} from '../../../../shared/utils/drawing/drawing.builder';
+import {CommonDevice} from '../../../../shared/utils/drawing/common/device.common';
+import {Expandable} from '../../../../shared/utils/drawing/drawables/expandable';
 
 
 @Component({
   selector: 'app-wizard',
   templateUrl: './wizard.html'
 })
-export class WizardComponent implements Tool, OnInit {
+export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDestroy {
   @Input() floor: Floor;
   displayDialog: boolean = false;
-  options: SelectItem[] = [];
-  selected: number;
+  options: SelectItem[];
+  selectedItemId: number;
   placeholder: string;
   title: string;
   isLoading: boolean = true;
-  displayError: boolean;
   active: boolean = false;
   disabled: boolean = true;
   private scale: Scale;
-
   private steps: WizardStep[];
   private activeStep: WizardStep;
   private currentIndex: number = 0;
   private socketSubscription: Subscription;
+  private map: d3.selection;
+  private mapLoadedSubscription: Subscription;
+  private drawnDevices: Expandable[] = [];
   private wizardData: WizardData = new WizardData();
   private hintMessage: string;
+  private scaleChanged: Subscription;
   private scaleCalculations: ScaleCalculations;
+  private disabledHandler: Subscription;
 
   constructor(public translate: TranslateService,
+              protected iconService: IconService,
               private ngZone: NgZone,
               private socketService: SocketService,
               private acceptButtons: AcceptButtonsService,
               private toolbarService: ToolbarService,
+              private mapLoaderInformer: MapLoaderInformerService,
               private hintBarService: HintBarService,
               private actionBarService: ActionBarService,
-              private iconService: IconService,
               private zoomService: ZoomService,
-              private scaleService: ScaleService
-              ) {
+              private placerController: DevicePlacerController,
+              private scaleService: ScaleService) {
+    super(iconService);
   }
 
   ngOnInit() {
     this.setTranslations();
     this.steps = [new FirstStep(this.floor.id), new SecondStep(), new ThirdStep()];
-    this.checkIsLoading();
-    this.scaleService.scaleChanged.subscribe((scale: ScaleDto): void => {
+    this.bindMapSelection();
+    this.captureScaleChanges();
+    this.handleDisablingFromService();
+  }
+
+  ngOnDestroy(): void {
+    this.mapLoadedSubscription.unsubscribe();
+    this.mapLoadedSubscription = null;
+    this.scaleChanged.unsubscribe();
+    this.disabledHandler.unsubscribe();
+  }
+
+  private bindMapSelection(): void {
+    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapLoaded) => {
+      this.map = mapLoaded.container;
+    });
+  }
+
+  private captureScaleChanges(): void {
+    this.scaleChanged = this.scaleService.scaleChanged.subscribe((scale: ScaleDto): void => {
       this.scale = new Scale(scale);
       if (!!this.scale.start && !!this.scale.stop) {
         this.scaleCalculations = {
@@ -77,7 +104,13 @@ export class WizardComponent implements Tool, OnInit {
           scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
         };
       }
-    });
+    })
+  }
+
+  private handleDisablingFromService(): void {
+    this.disabledHandler = this.toolbarService.wizardDisabled.subscribe((setDisabled) => {
+      this.disabled = setDisabled;
+    })
   }
 
   nextStep(): void {
@@ -87,7 +120,7 @@ export class WizardComponent implements Tool, OnInit {
       this.openSocket();
     } else {
       this.activeStep.afterPlaceOnMap();
-      this.activeStep.updateWizardData(this.wizardData, this.selected, this.scaleCalculations);
+      this.activeStep.updateWizardData(this.wizardData, this.selectedItemId, this.scaleCalculations);
       const message: SocketMessage = this.activeStep.prepareToSend(this.wizardData);
       this.socketService.send(message);
       this.currentIndex += 1;
@@ -120,36 +153,30 @@ export class WizardComponent implements Tool, OnInit {
     this.currentIndex -= 1;
     this.activeStep = this.steps[this.currentIndex];
     this.activeStep.clean();
-    this.activeStep.updateWizardData(this.wizardData, this.selected, this.scaleCalculations);
+    this.drawnDevices[this.currentIndex] = null;
+    this.activeStep.updateWizardData(this.wizardData, this.selectedItemId, this.scaleCalculations);
     const message: SocketMessage = this.activeStep.prepareToSend(this.wizardData);
     this.socketService.send(message);
     this.stepChanged();
   }
 
   placeOnMap(): void {
-    if (!this.selected) { // Do not allow to go to the next step if there is no selected item
-      this.displayError = true;
-      return;
-    }
     this.hintBarService.sendHintMessage(this.activeStep.getBeforePlaceOnMapHint());
-    this.displayError = false;
-    this.activeStep.beforePlaceOnMap(this.selected);
+    this.activeStep.beforePlaceOnMap(this.selectedItemId);
     this.displayDialog = false;
-    const map: d3.selector = d3.select(`#${MapEditorService.MAP_LAYER_SELECTOR_ID}`);
-    map.style('cursor', 'crosshair');
-    map.on('click', () => {
+    this.map.style('cursor', 'crosshair');
+    this.map.on('click', () => {
       const coordinates: Point = this.zoomService.calculateTransition({x: d3.event.offsetX, y: d3.event.offsetY});
-      const device: ObjectParams = this.activeStep.getDrawingObjectParams(this.selected);
-      const drawBuilder = new DrawBuilder(map, {id: device.id, clazz: device.groupClass});
-      drawBuilder
-        .createGroup()
-        .addIcon({x: -12, y: -12}, this.iconService.getIcon(NaviIcons.POINTER))
-        .addIcon({x: 0, y: 0}, this.iconService.getIcon(device.iconName))
-        .addText({x: 0, y: 36}, device.id)
-        .place({x: coordinates.x, y: coordinates.y})
-        .setDraggable();
-      map.on('click', null);
-      map.style('cursor', 'default');
+      const deviceConfig: DrawConfiguration = this.activeStep.getDrawConfiguration(this.selectedItemId);
+      const drawBuilder = new DrawBuilder(this.map, deviceConfig);
+      const wrapper = this.drawEditorDevice(drawBuilder, deviceConfig, coordinates);
+      const drawnDevice = WizardComponent.createConnectableDevice(wrapper);
+      this.drawnDevices[this.currentIndex] = drawnDevice;
+      drawnDevice.connectable.dragOn();
+      drawnDevice.connectable.handleHovering();
+      drawnDevice.selectable.handleHovering();
+      this.map.on('click', null);
+      this.map.style('cursor', 'default');
       this.showAcceptButtons();
     });
   }
@@ -196,11 +223,12 @@ export class WizardComponent implements Tool, OnInit {
       y: this.wizardData.sinkPosition.y,
       anchors: anchors
     });
+    this.placerController.emitWizardSaveConfiguration(this.drawnDevices);
   }
 
   private cleanBeforeClosingWizard(): void {
     if (!!this.activeStep) {
-      this.activeStep.setSelectedItemId(this.selected);
+      this.activeStep.setSelectedItemId(this.selectedItemId);
       this.activeStep.clean();
     }
     this.steps.forEach((step: WizardStep) => {
@@ -209,14 +237,13 @@ export class WizardComponent implements Tool, OnInit {
     });
     this.activeStep = null;
     this.displayDialog = false;
-    this.selected = undefined;
-    this.displayError = false;
+    this.selectedItemId = undefined;
   }
 
   private stepChanged() {
     this.placeholder = this.activeStep.getPlaceholder();
     this.title = this.activeStep.getTitle();
-    this.selected = undefined;
+    this.selectedItemId = undefined;
     this.options = [];
     this.isLoading = true;
   }
@@ -226,9 +253,9 @@ export class WizardComponent implements Tool, OnInit {
     this.acceptButtons.publishVisibility(true);
     this.acceptButtons.decisionMade.first().subscribe(
       data => {
-        this.activeStep.setSelectedItemId(this.selected);
+        this.activeStep.setSelectedItemId(this.selectedItemId);
         if (data) {
-          this.removeGroupDrag();
+          this.drawnDevices[this.currentIndex].connectable.dragOff();
           this.nextStep();
         } else {
           this.activeStep.clean();
@@ -243,6 +270,7 @@ export class WizardComponent implements Tool, OnInit {
       this.socketSubscription = stream.subscribe((message: any) => {
         this.ngZone.run(() => {
           this.options = this.activeStep.load(this.options, message, this.scaleCalculations);
+          this.isLoading = !this.options.length;
         });
       });
     });
@@ -252,30 +280,6 @@ export class WizardComponent implements Tool, OnInit {
     if (!!this.socketSubscription) {
       this.socketSubscription.unsubscribe();
     }
-  }
-
-  private removeGroupDrag(): void {
-    const map = d3.select(`#${MapEditorService.MAP_LAYER_SELECTOR_ID}`);
-    const selections: d3.selection[] = [
-      map.select('#anchor' + this.selected),
-      map.select('#sink' + this.selected)
-    ];
-    selections.forEach((selection: d3.selection): void => {
-      if (!selection.empty()) {
-        selection.on('.drag', null);
-        selection.style('cursor', 'default');
-        selection.select('.pointer').attr('fill', 'rgba(0,0,0,0.7)');
-      }
-    });
-    map.style('cursor', 'default');
-  }
-
-  private checkIsLoading(): void {
-    setInterval((): void => {
-      if (this.options.length) {
-        this.isLoading = false;
-      }
-    }, 300);
   }
 
   private setTranslations(): void {

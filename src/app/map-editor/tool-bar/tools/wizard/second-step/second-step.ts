@@ -1,9 +1,10 @@
 import * as d3 from 'd3';
 import {Point} from '../../../../map.type';
 import {SelectItem} from 'primeng/primeng';
-import {AnchorDistance, ObjectParams, ScaleCalculations, SecondStepMessage, Step, WizardData, WizardStep} from '../wizard.type';
-import {NaviIcons} from 'app/shared/services/drawing/icon.service';
+import {AnchorDistance, SecondStepMessage, Step, WizardData, WizardStep} from '../wizard.type';
 import {Geometry} from '../../../../../shared/utils/helper/geometry';
+import {DrawConfiguration} from 'app/map-viewer/publication.type';
+import {ScaleCalculations} from '../../scale/scale.type';
 
 export class SecondStep implements WizardStep {
   private selectedItemId: number;
@@ -37,22 +38,21 @@ export class SecondStep implements WizardStep {
     }
   }
 
-  getDrawingObjectParams (selectedItem: number): ObjectParams {
+  getDrawConfiguration (selectedItemID: number): DrawConfiguration {
     return {
-      id: 'anchor' + selectedItem, iconName: NaviIcons.ANCHOR,
-      groupClass: 'wizardAnchor', markerClass: 'anchorMarker', fill: 'green'
+      id: `` + selectedItemID, clazz: 'wizard anchor', name: 'anchor' + selectedItemID,
+      color: 'green', display: 'true'
     };
   }
 
   beforePlaceOnMap (selectedItem: number): void {
     const map = d3.select('#map');
-    const boxMargin = 20 ;
-    const sinkX = map.select('.wizardSink').attr('x');
-    const sinkY = map.select('.wizardSink').attr('y');
+    const sinkX = map.select('.wizard.sink').attr('x');
+    const sinkY = map.select('.wizard.sink').attr('y');
     map.append('circle')
       .attr('id', 'sinkDistance')
-      .attr('cx', parseInt(sinkX, 10) + boxMargin)
-      .attr('cy', parseInt(sinkY, 10) + boxMargin)
+      .attr('cx', parseInt(sinkX, 10))
+      .attr('cy', parseInt(sinkY, 10))
       .attr('r', this.distances.find((distance: AnchorDistance): boolean => {
         return distance.anchorId === selectedItem;
       }).distance)
@@ -63,7 +63,7 @@ export class SecondStep implements WizardStep {
   }
 
   afterPlaceOnMap (): void {
-    const objectOnMap: d3.selection = d3.select('#map').select('#anchor' + this.selectedItemId);
+    const objectOnMap: d3.selection = d3.select('#map').select(`[id='${this.selectedItemId}']`);
     this.coordinates = {x: +objectOnMap.attr('x'), y: +objectOnMap.attr('y')};
     d3.select('#map').select('#sinkDistance').remove();
   }
@@ -108,6 +108,6 @@ export class SecondStep implements WizardStep {
   clean(): void {
     const map = d3.select('#map');
     map.select('#sinkDistance').remove();
-    map.select('#anchor' + this.selectedItemId).remove();
+    map.select(`[id='${this.selectedItemId}']`).remove();
   }
 }

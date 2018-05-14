@@ -1,7 +1,10 @@
-/* You can add global styles to this file, and also import other style files */
+@import '~@angular/material/core/theming/prebuilt/deeppurple-amber.css';
+@import '~primeng/resources/primeng.css';
+@import '~primeng/resources/themes/ludvig/theme.css';
+@import '~font-awesome/css/font-awesome.css';
+
 body {
   font-family: 'Roboto', sans-serif;
-  margin: 0.5em;
 }
 
 .error-toast {
@@ -43,10 +46,6 @@ body {
   visibility: hidden;
 }
 
-@import '~@angular/material/core/theming/prebuilt/deeppurple-amber.css';
-@import '~primeng/resources/primeng.css';
-@import '~primeng/resources/themes/ludvig/theme.css';
-@import '~font-awesome/css/font-awesome.css';
 
 table th.col-button, table td.col-button, table th.col-checkbox, table td.col-checkbox {
   width: 1%;
@@ -79,8 +78,13 @@ table th.col-button, table td.col-button, table th.col-checkbox, table td.col-ch
   float: right;
 }
 
-.device-list .device-details {
+.device-list .device-details,
+.device-list .device-published-details {
   font-size: 0.8em;
+}
+
+.device-list .device-published-details {
+  margin: auto;
 }
 
 .ui-message {
@@ -128,13 +132,11 @@ table th.col-button, table td.col-button, table th.col-checkbox, table td.col-ch
 app-auth > div {
   width: 400px;
   height: 250px;
-
   position: absolute;
-  top:0;
+  top: 0;
   bottom: 0;
   left: 25px;
   right: 0;
-
   margin: auto;
 }
 

@@ -6,6 +6,9 @@ import {Observable} from 'rxjs/Observable';
 @Injectable()
 export class ToolbarService {
   private changed = new Subject<Tool>();
+  private disableWizard: Subject<boolean> = new Subject<boolean>();
+
+  wizardDisabled = this.disableWizard.asObservable();
 
   onToolChanged(): Observable<Tool> {
     return this.changed.asObservable();
@@ -14,4 +17,9 @@ export class ToolbarService {
   emitToolChanged(tool: Tool): void {
     this.changed.next(tool);
   }
+
+  setWizardDisabled(disabled: boolean): void {
+    this.disableWizard.next(disabled);
+  }
+
 }

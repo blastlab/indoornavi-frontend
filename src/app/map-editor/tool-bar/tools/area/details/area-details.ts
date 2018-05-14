@@ -1,14 +1,14 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {ToolDetailsComponent} from '../../../shared/details/tool-details';
 import {AreaDetailsService} from './area-details.service';
-import {Area, AreaBag, AreaConfiguration, Mode} from '../area.type';
+import {Area, AreaBag, AreaConfiguration, Mode} from '../areas.type';
 import {DeviceService} from '../../../../../device/device.service';
 import {Floor} from '../../../../../floor/floor.type';
 import * as d3 from 'd3';
 import {Helper} from '../../../../../shared/utils/helper/helper';
 import {Editable} from '../../../../../shared/wrappers/editable/editable';
 import {Point} from '../../../../map.type';
-import {AreaComponent} from '../area';
+import {AreasComponent} from '../areas';
 import {MessageServiceWrapper} from '../../../../../shared/services/message/message.service';
 import {Tag} from '../../../../../device/device.type';
 
@@ -63,14 +63,13 @@ export class AreaDetailsComponent implements OnInit {
   confirm(isValid: boolean): void {
     if (isValid) {
       this.area.points.length = 0;
-      const selector = `${!!this.editable ? '#' + this.editable.groupWrapper.getGroup().attr('id') : '#' + AreaComponent.NEW_AREA_ID}`;
+      const selector = `${!!this.editable ? '#' + this.editable.groupWrapper.getGroup().attr('id') : '#' + AreasComponent.NEW_AREA_ID}`;
       const svgGroup = d3.select(selector);
       const pointsSelection: d3.selection = svgGroup.selectAll('circle');
 
       // we need to add shift since coordinates of points are within svg group and when user moves svg group we need to shift coordinates
       this.shift = (<Point>{x: +svgGroup.attr('x'), y: +svgGroup.attr('y')});
-      let firstPoint: d3.selection; // todo: resolve bug found below
-      // bug started
+      let firstPoint: d3.selection;
       pointsSelection.each((_, i, nodes) => {
         const point: d3.selection = d3.select(nodes[i]);
         if (i === 0) {
@@ -80,7 +79,7 @@ export class AreaDetailsComponent implements OnInit {
       });
       if (firstPoint) {
         this.addPoint(firstPoint); // we need to add first point as last because of Spatial Geometry (mysql)
-      } // bug ended
+      }
 
       // change to centimeters
       this.areaConfigurationOnEnter.offset *= 100;

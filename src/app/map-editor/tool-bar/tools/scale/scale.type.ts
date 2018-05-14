@@ -23,3 +23,8 @@ export enum Measure {
   CENTIMETERS,
   METERS
 }
+
+export interface ScaleCalculations {
+  scaleLengthInPixels: number;
+  scaleInCentimeters: number;
+}

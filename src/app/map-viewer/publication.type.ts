@@ -56,6 +56,9 @@ export interface DrawConfiguration {
   id: string;
   clazz: string;
   cursor?: string;
+  name?: string;
+  color?: string;
+  display?: string;
 }
 
 export interface ValidationResult {

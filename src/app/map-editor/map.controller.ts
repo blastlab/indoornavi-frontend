@@ -37,12 +37,9 @@ export class MapControllerComponent implements OnInit, AfterViewInit {
           this.buildingService.getComplexWithBuildings(complexId).subscribe((complex: Complex) => {
             this.breadcrumbsService.publishIsReady([
               {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
-              {label: complex.name, routerLink: `/complexes/${complexId}/buildings`, routerLinkActiveOptions: {exact: true}},
-              {
-                label: floor.building.name,
-                routerLink: `/complexes/${complexId}/buildings/${buildingId}/floors`,
-                routerLinkActiveOptions: {exact: true}
+              {label: complex.name, routerLink: `/complexes/${complexId}/buildings`, routerLinkActiveOptions: {exact: true}
               },
+              {label: floor.building.name, routerLink: `/complexes/${complexId}/buildings/${buildingId}/floors`, routerLinkActiveOptions: {exact: true}},
               {label: `${(floor.name.length ? floor.name : floor.level)}`, disabled: true}
             ]);
           });

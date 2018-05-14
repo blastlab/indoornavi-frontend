@@ -1,5 +1,5 @@
 .ui-dialog {
-  left: 0 !important;
+  left: 0; /* do not put !important here */
   top: 0 !important;
   position: absolute !important;
 }

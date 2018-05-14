@@ -7,12 +7,14 @@
       <app-area-details [floor]="floor"></app-area-details>
       <app-scale-input></app-scale-input>
       <app-accept-buttons></app-accept-buttons>
+      <app-devices-list></app-devices-list>
     </app-map>
     <p-contextMenu #contextMenu appendTo="body" [model]="contextMenuItems"></p-contextMenu>
     <app-hint-bar></app-hint-bar>
   </ng-template>
 
   <ng-template #not_uploaded>
-    <app-map-uploader [appHasPermission]="'FLOOR_UPDATE'" [floor]="floor" (imageUploaded)="onImageUploaded($event)"></app-map-uploader>
+    <app-map-uploader [appHasPermission]="'FLOOR_UPDATE'" [floor]="floor"
+                      (imageUploaded)="onImageUploaded($event)"></app-map-uploader>
   </ng-template>
 </div>
