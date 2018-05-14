@@ -27,7 +27,7 @@ class LoginPage(BasePage):
         return True if self.wait_for_element(self.form_locator) else False
 
     def get_button_text(self):
-        login_button_text = self.identify_element(*self.button_text_locator).text
+        login_button_text = self.wait_for_element_clickable(self.button_text_locator).text
         return login_button_text
 
     def is_dropdown_button_clickable(self):
