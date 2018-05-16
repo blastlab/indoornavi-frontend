@@ -62,8 +62,8 @@ class LoginPage(BasePage):
             password = self.valid_password
 
         # find element, clear & fill it
-        self.clear_and_fill_input(username, *self.usr_input_locator)
-        self.clear_and_fill_input(password, *self.usr_password_locator)
+        self.clear_and_fill_input(username, self.usr_input_locator)
+        self.clear_and_fill_input(password, self.usr_password_locator)
         # click Login
         self.click_button(*self.button_locator)
 
