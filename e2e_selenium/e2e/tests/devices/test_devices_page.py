@@ -120,7 +120,7 @@ class TestDevicesPage(object):
             self.devices_page.insert_into_search_device_input(short_id, side)
             self.assertTrue(self.devices_page.is_there_only_founded_device_row() == 1)
 
-        self.devices_page.clear_text_input(*search_input)
+        self.devices_page.clear_text_input(search_input)
         self.test_failed = False
 
     def method_test_drag_and_drop(self, side):

@@ -1,6 +1,7 @@
 from pages.base_page import BasePage
 from locators.devices_base_locators import DevicesBaseLocators
 
+
 class DevicesPage(BasePage):
 
     def __init__(self, driver, module_query):
@@ -99,22 +100,22 @@ class DevicesPage(BasePage):
         return self.wait_for_element_clickable(self.base_locators.input)
 
     def enter_device_name(self, name):
-        return self.clear_and_fill_input(name, *self.base_locators.input)
+        return self.clear_and_fill_input(name, self.base_locators.input)
 
     def clear_short_id_input(self):
-        return self.clear_text_input(*self.base_locators.short_id_input)
+        return self.clear_text_input(self.base_locators.short_id_input)
 
     def clear_long_id_input(self):
-        return self.clear_text_input(*self.base_locators.long_id_input)
+        return self.clear_text_input(self.base_locators.long_id_input)
 
     def clear_device_name_input(self):
-        return self.clear_text_input(*self.base_locators.input)
+        return self.clear_text_input(self.base_locators.input)
 
     def enter_short_id(self, short_id):
-        return self.clear_and_fill_input(short_id, *self.base_locators.short_id_input)
+        return self.clear_and_fill_input(short_id, self.base_locators.short_id_input)
 
     def enter_long_id(self, long_id):
-        return self.clear_and_fill_input(long_id, *self.base_locators.long_id_input)
+        return self.clear_and_fill_input(long_id, self.base_locators.long_id_input)
 
     def save_add_device_click(self):
         return self.click_button(*self.base_locators.save_button)
@@ -226,7 +227,7 @@ class DevicesPage(BasePage):
             search_input = self.base_locators.search_verified_input
 
         filtered_num = self.get_numbers_from_string(short_id)[0]
-        self.clear_and_fill_input(filtered_num, *search_input)
+        self.clear_and_fill_input(filtered_num, search_input)
 
     def is_there_only_founded_device_row(self):
         return self.count_of_visible_elements(*self.base_locators.devices_table_item)
