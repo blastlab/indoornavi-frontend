@@ -67,10 +67,10 @@ class ConstructionPage(BasePage):
         return self.wait_for_element_clickable(self.base_locators.cancel_button)
 
     def enter_construction_name(self):
-        return self.clear_and_fill_input(self.base_locators.new_construction_name, *self.base_locators.input)
+        return self.clear_and_fill_input(self.base_locators.new_construction_name, self.base_locators.input)
 
     def enter_illegal_chars(self):
-        return self.clear_and_fill_input(self.base_locators.illegal_name, *self.base_locators.input)
+        return self.clear_and_fill_input(self.base_locators.illegal_name, self.base_locators.input)
 
     def save_add_new_construction(self):
         return self.click_button(*self.base_locators.save_button)
@@ -146,7 +146,7 @@ class ConstructionPage(BasePage):
         return self.click_button(*self.base_locators.cancel_button)
 
     def enter_edit_construction_name(self):
-        return self.clear_and_fill_input(self.base_locators.edit_construction_name, *self.base_locators.input)
+        return self.clear_and_fill_input(self.base_locators.edit_construction_name, self.base_locators.input)
 
     def is_edit_construction_toast_present(self):
         return True if self.is_element_present(self.base_locators.edited_toast) else False
@@ -158,7 +158,7 @@ class ConstructionPage(BasePage):
         return True if self.is_element_present(self.base_locators.edited_construction_row) else False
 
     def clear_edit_input(self):
-        return self.clear_text_input(*self.base_locators.input)
+        return self.clear_text_input(self.base_locators.input)
 
     def save_edit_click(self):
         return self.click_button(*self.base_locators.save_button)

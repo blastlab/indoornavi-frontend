@@ -19,7 +19,7 @@ class FloorsPage(BasePage):
         return True if self.is_element_present(self.unique_level_warning) else False
 
     def enter_existing_level(self):
-        return self.clear_and_fill_input(self.existing_level, *self.input_level_floor)
+        return self.clear_and_fill_input(self.existing_level, self.input_level_floor)
 
     def add_button_click(self):
         return self.click_button(*self.add_button_floor)
