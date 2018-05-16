@@ -3,7 +3,7 @@ from selenium.webdriver.chrome.options import Options
 import time
 
 
-class TestDriver():
+class TestDriver(object):
 
     def setUp(self, page_url):
 

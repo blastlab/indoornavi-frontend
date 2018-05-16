@@ -105,7 +105,26 @@ class PermissionsPage(BasePage, PermissionsBaseLocators):
         rows = self.driver.find_elements(*self.multiselect_checkbox_single)
         return rows[number].click()
 
+    def close_modal_click(self):
+        return self.click_element(self.modal_close_button)
+
     def single_permission_label(self, number):
         rows = self.driver.find_elements(*self.multiselect_row_label)
         row = rows[number].text
         return row
+
+    def enter_search_permission(self, insert_data):
+        return self.clear_and_fill_input(insert_data, self.searching_per_input)
+
+    def clear_search_input(self):
+        return self.clear_text_input(self.searching_per_input)
+
+    def verify_elements_count_and_text_contain(self, count=1):
+        result_array = []
+        result_rows = self.count_of_visible_elements(*self.multiselect_row)
+        result_array.append(True) if result_rows == count else result_array.append(False)
+        row_elements = self.driver.find_elements(*self.multiselect_row)
+        for row_element in row_elements:
+            if row_element.is_displayed():
+                result_array.append(row_element.text)
+        return result_array
