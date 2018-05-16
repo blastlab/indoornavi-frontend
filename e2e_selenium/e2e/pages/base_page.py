@@ -110,17 +110,17 @@ class BasePage(object):
     def open_page(self, page_url):
         return self.driver.get(page_url)
 
-    def clear_input(self, *input_locator):
-        input_element = self.identify_element(*input_locator)
+    def clear_input(self, input_locator):
+        input_element = self.wait_for_element_clickable(input_locator)
         input_element.clear()
 
-    def clear_text_input(self, *input_locator):
-        input_element = self.identify_element(*input_locator)
+    def clear_text_input(self, input_locator):
+        input_element = self.wait_for_element_clickable(input_locator)
         length = len(input_element.get_attribute('value'))
         input_element.send_keys(length * Keys.BACKSPACE)
 
-    def clear_and_fill_input(self, text, *input_locator):
-        input_element = self.identify_element(*input_locator)
+    def clear_and_fill_input(self, text, input_locator):
+        input_element = self.wait_for_element_clickable(input_locator)
         input_element.clear()
         for i in text:
             input_element.send_keys(i)
