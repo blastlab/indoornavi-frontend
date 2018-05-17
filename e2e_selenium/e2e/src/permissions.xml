@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+  <changeSet id="permission09" author="motlowski" context="permission" runOnChange="true" labels="permission" runAlways="true">
+    <loadUpdateData tableName="permission" file="src/test_data/permission.csv" primaryKey="id"/>
+  </changeSet>
+  <changeSet id="permission_group99" author="motlowski" context="permission_group" runOnChange="true" labels="permission_group" runAlways="true">
+    <loadUpdateData tableName="permissiongroup" file="src/test_data/permission_group.csv" primaryKey="id"/>
+  </changeSet>
+   <changeSet id="permission_group_permission99" author="motlowski" context="permission_group_permission" runOnChange="true" labels="permission_group" runAlways="true">
+    <loadUpdateData tableName="permissiongroup_permission" file="src/test_data/permission_group_permission.csv" primaryKey="id"/>
+  </changeSet>
+</databaseChangeLog>

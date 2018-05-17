@@ -4,7 +4,7 @@ from selenium.webdriver.common.by import By
 class PermissionsBaseLocators(object):
 
     def __init__(self):
-
+        self.xml_filename = 'src/permissions.xml'
         # Test input data
         self.searching_data = 'ANCHOR_CREATE'
         self.searching_data_array = [True, self.searching_data]
@@ -17,6 +17,8 @@ class PermissionsBaseLocators(object):
                                         'FLOOR_UPDATE', 'TAG_UPDATE', 'USER_UPDATE',
                                         'PERMISSION_GROUP_UPDATE', 'SINK_UPDATE', 'PUBLICATION_UPDATE']
 
+        self.new_name = "TestPermissionGroup"
+        self.created_permission_row = (By.XPATH, "//span[contains(text(),'" + self.new_name + "')]")
         # Locators
         self.dropdown_button = (By.CSS_SELECTOR, 'button#menu')
         self.add_permission_button = (By.XPATH, '//button[@ng-reflect-label="Add"]')
@@ -27,6 +29,8 @@ class PermissionsBaseLocators(object):
         self.groups_list = (By.CLASS_NAME, 'ui-datatable-tablewrapper')
         self.modal_window = (By.CLASS_NAME, 'ui-dialog')
         self.modal_close_button = (By.CLASS_NAME, 'ui-dialog-titlebar-close')
+        self.save_button = (By.XPATH, '//button[@ng-reflect-label="Save"]')
+        self.modal_new_name = (By.CSS_SELECTOR, 'input#name')
 
         self.multiselect_label = (By.CLASS_NAME, 'ui-multiselect-label')
         self.multiselect_arrow = (By.CLASS_NAME, 'ui-multiselect-trigger')
@@ -44,3 +48,8 @@ class PermissionsBaseLocators(object):
         self.multiselect_label_container_title = (By.CLASS_NAME, 'ui-multiselect-label-container')
 
         self.searching_per_input = (By.CSS_SELECTOR, '.ui-multiselect-filter-container .ui-inputtext ')
+        # Warnings
+        self.removed_toast = (By.XPATH, "//p[contains(text(),'Device has been removed')]")
+        self.added_toast = (By.XPATH, "//p[contains(text(),'Permission group has been created.')]")
+        self.edited_toast = (By.XPATH, "//p[contains(text(),'Device has been saved')]")
+        self.name_warning = (By.CSS_SELECTOR, 'div.ui-messages-error')

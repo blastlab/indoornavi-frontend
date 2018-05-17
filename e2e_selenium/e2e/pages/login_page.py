@@ -47,7 +47,7 @@ class LoginPage(BasePage):
     # 2. Login with invalid password
     # 3. Login with invalid username
 
-    def login_process(self, option=1):
+    def login_process(self, option=1, additional=None):
 
         if option == 1:
             username = self.valid_username
@@ -68,9 +68,10 @@ class LoginPage(BasePage):
         self.click_button(*self.button_locator)
 
         # there should be complexes' page loaded & return complexes title
+        if additional == 1:
+            return
         if option == 1:
             return self.wait_for_element(self.next_page_title_locator).text
-
         elif option == 2:
             return self.is_element_present(self.login_warning)
 

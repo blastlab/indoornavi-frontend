@@ -48,9 +48,31 @@ class BasePage(object):
         cursor.close()
         db.close()
 
+    def truncate_db_permissions(self):
+
+        db = mysql.connector.connect(user='root', password='', host=self.db_hostname, database='Navi')
+        cursor = db.cursor()
+        cursor.execute('SET FOREIGN_KEY_CHECKS=0;')
+        cursor.execute("TRUNCATE TABLE complex")
+        cursor.execute("TRUNCATE TABLE building")
+        cursor.execute("TRUNCATE TABLE floor")
+        cursor.execute("TRUNCATE TABLE sink")
+        cursor.execute("TRUNCATE TABLE anchor")
+        cursor.execute("TRUNCATE TABLE tag")
+        cursor.execute("TRUNCATE TABLE device")
+        cursor.execute("TRUNCATE TABLE permission")
+        cursor.execute("TRUNCATE TABLE permissiongroup")
+        cursor.execute("TRUNCATE TABLE permissiongroup_permission")
+        cursor.execute('SET FOREIGN_KEY_CHECKS=1;')
+        cursor.close()
+        db.close()
+
     # Prepare environment
     def create_db_env(self, file_path):
-
+        print('create_db_env')
+        db = mysql.connector.connect(user='root', password='', host=self.db_hostname, database='Navi')
+        cursor = db.cursor()
+        cursor.execute('SET FOREIGN_KEY_CHECKS=0;')
         pyquibase = Pyquibase.mysql(
           host=self.db_hostname,
           port=3306,
@@ -60,7 +82,9 @@ class BasePage(object):
           change_log_file=file_path
         )
         pyquibase.update()
-
+        cursor.execute('SET FOREIGN_KEY_CHECKS=1;')
+        cursor.close()
+        db.close()
     def refresh_page(self):
         return self.driver.refresh()
 

@@ -10,6 +10,10 @@ class PermissionsPage(BasePage, PermissionsBaseLocators):
         self.driver = driver
         PermissionsBaseLocators.__init__(self)
 
+    def create_permissions_db_env(self):
+        print('create permission group  method')
+        return self.create_db_env(self.xml_filename)
+
     #
     # IS ELEMENT DISPLAYED
     #
@@ -23,14 +27,26 @@ class PermissionsPage(BasePage, PermissionsBaseLocators):
     def is_modal_window_displayed(self):
         return True if self.is_element_displayed(*self.modal_window) else False
 
+    def is_modal_window_disappeared(self):
+        return True if self.is_element_disappear(self.modal_window) else False
+
     def is_permissions_title_correct(self):
         title = 'Permission groups'
         return self.check_title_is_correct(title, *self.permission_title)
+
+    def is_new_permission_present(self):
+        return True if self.is_element_present(self.created_permission_row) else False
 
     def is_all_permissions_highlighted(self):
         rows = self.count_of_visible_elements(*self.multiselect_row)
         rows_highlighted = self.count_of_visible_elements(*self.multiselect_row_highlighted)
         return True if rows == rows_highlighted else False
+
+    def is_toast_present(self, toast):
+        return True if self.is_element_present(toast) else False
+
+    def is_toast_disappear(self, toast):
+        return True if self.is_element_disappear(toast) else False
 
     #
     # ELEMENT CLICK
@@ -47,6 +63,9 @@ class PermissionsPage(BasePage, PermissionsBaseLocators):
 
     def add_permission_button_click(self):
         return self.click_element(self.add_permission_button)
+
+    def save_permission_button_click(self):
+        return self.click_element(self.save_button)
 
     def multi_select_label_click(self):
         return self.click_element(self.multiselect_label)
@@ -128,3 +147,6 @@ class PermissionsPage(BasePage, PermissionsBaseLocators):
             if row_element.is_displayed():
                 result_array.append(row_element.text)
         return result_array
+
+    def enter_new_permission_name(self, insert_data):
+        return self.clear_and_fill_input(insert_data, self.modal_new_name)
