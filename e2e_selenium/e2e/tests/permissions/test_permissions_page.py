@@ -151,3 +151,21 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
         self.assertTrue(self.is_toast_disappear(self.added_toast))
 
         self.assertTrue(self.is_new_permission_present())
+
+    def _test_05_test_add_permission_group_correctly_with_all_permissions(self):
+
+        """Test that add permission group correctly with all permissions"""
+
+        self.dropdown_menu_click()
+        self.dropdown_permissions_button_click()
+
+        self.add_permission_button_click()
+        self.assertTrue(self.is_modal_window_displayed(), 'Modal window has not been displayed.')
+
+        self.multi_select_label_click()
+        self.assertTrue(self.is_multiselect_dropdown_displayed(), 'Multiselect dropdown has not been activated.')
+
+        self.enter_new_permission_name(self.new_name)
+        self.multi_select_click_all_chekboxes()
+        self.save_permission_button_click()
+        # self.assertTrue(self.is_all_permissions_highlighted(), 'All permissions have not been highlighted.')
