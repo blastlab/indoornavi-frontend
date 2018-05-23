@@ -31,9 +31,6 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
     def tearDownClass(cls):
         cls.webdriver.quit()
 
-    # TC003 Test searching permission
-    # TC004 Test adding permission group correctly without assigned permission
-    # TC005 Test adding permission group correctly with all permissions
     # TC006 Test adding permission group incorrectly with empty input [name]
     # TC007 Test cancel adding permission group by hash button click
     # TC008 Test cancel adding permission group by cancel button click
@@ -152,7 +149,7 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
 
         self.assertTrue(self.is_new_permission_present())
 
-    def _test_05_test_add_permission_group_correctly_with_all_permissions(self):
+    def test_05_test_add_permission_group_correctly_with_all_permissions(self):
 
         """Test that add permission group correctly with all permissions"""
 
@@ -167,5 +164,24 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
 
         self.enter_new_permission_name(self.new_name)
         self.multi_select_click_all_chekboxes()
+        self.assertTrue(self.is_all_permissions_highlighted(), 'All permissions have not been highlighted.')
         self.save_permission_button_click()
-        # self.assertTrue(self.is_all_permissions_highlighted(), 'All permissions have not been highlighted.')
+
+        self.assertTrue(self.is_modal_window_disappeared(), 'Modal window has not been disappeared.')
+        self.assertTrue(self.is_toast_present(self.added_toast))
+        self.assertTrue(self.is_toast_disappear(self.added_toast))
+        self.assertTrue(self.is_new_permission_present())
+
+        self.assertEqual(self.all_permissions, self.get_new_permission_text())
+
+    def test_06_test_adding_permission_group_incorrectly_with_empty_input_name(self):
+
+        """Test that add permission group correctly with all permissions"""
+
+        self.dropdown_menu_click()
+        self.dropdown_permissions_button_click()
+
+        self.add_permission_button_click()
+        self.assertTrue(self.is_modal_window_displayed(), 'Modal window has not been displayed.')
+        self.save_permission_button_click()
+        self.assertEqual(self.error_message_name(), 'Name is required.')

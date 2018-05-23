@@ -17,6 +17,14 @@ class PermissionsBaseLocators(object):
                                         'FLOOR_UPDATE', 'TAG_UPDATE', 'USER_UPDATE',
                                         'PERMISSION_GROUP_UPDATE', 'SINK_UPDATE', 'PUBLICATION_UPDATE']
 
+        self.all_permissions = 'ANCHOR_CREATE, ANCHOR_READ, ANCHOR_UPDATE, ANCHOR_DELETE, ' \
+                               'BUILDING_CREATE, BUILDING_READ, BUILDING_UPDATE, BUILDING_DELETE, ' \
+                               'COMPLEX_CREATE, COMPLEX_READ, COMPLEX_UPDATE, COMPLEX_DELETE, FLOOR_CREATE, ' \
+                               'FLOOR_READ, FLOOR_UPDATE, FLOOR_DELETE, TAG_CREATE, TAG_READ, TAG_UPDATE, ' \
+                               'TAG_DELETE, USER_CREATE, USER_READ, USER_UPDATE, USER_DELETE, PERMISSION_GROUP_CREATE, ' \
+                               'PERMISSION_GROUP_READ, PERMISSION_GROUP_UPDATE, PERMISSION_GROUP_DELETE, SINK_CREATE, SINK_READ,' \
+                               ' SINK_UPDATE, SINK_DELETE, PUBLICATION_CREATE, PUBLICATION_READ, PUBLICATION_UPDATE, PUBLICATION_DELETE'
+
         self.new_name = "TestPermissionGroup"
         self.created_permission_row = (By.XPATH, "//span[contains(text(),'" + self.new_name + "')]")
         # Locators
@@ -48,6 +56,8 @@ class PermissionsBaseLocators(object):
         self.multiselect_label_container_title = (By.CLASS_NAME, 'ui-multiselect-label-container')
 
         self.searching_per_input = (By.CSS_SELECTOR, '.ui-multiselect-filter-container .ui-inputtext ')
+
+        self.single_row_permission_span = (By.XPATH, '//div/ng-component/p-datatable/div/div[1]/table/tbody/tr[3]/td[2]/span/span')
         # Warnings
         self.removed_toast = (By.XPATH, "//p[contains(text(),'Device has been removed')]")
         self.added_toast = (By.XPATH, "//p[contains(text(),'Permission group has been created.')]")

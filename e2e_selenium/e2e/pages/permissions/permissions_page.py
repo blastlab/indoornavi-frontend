@@ -37,6 +37,9 @@ class PermissionsPage(BasePage, PermissionsBaseLocators):
     def is_new_permission_present(self):
         return True if self.is_element_present(self.created_permission_row) else False
 
+    def get_new_permission_text(self):
+        return self.get_all_elements_text(*self.single_row_permission_span)
+
     def is_all_permissions_highlighted(self):
         rows = self.count_of_visible_elements(*self.multiselect_row)
         rows_highlighted = self.count_of_visible_elements(*self.multiselect_row_highlighted)
@@ -48,6 +51,8 @@ class PermissionsPage(BasePage, PermissionsBaseLocators):
     def is_toast_disappear(self, toast):
         return True if self.is_element_disappear(toast) else False
 
+    def error_message_name(self):
+        return self.wait_for_element(self.name_warning).text
     #
     # ELEMENT CLICK
     #

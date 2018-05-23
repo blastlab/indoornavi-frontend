@@ -85,6 +85,7 @@ class BasePage(object):
         cursor.execute('SET FOREIGN_KEY_CHECKS=1;')
         cursor.close()
         db.close()
+        
     def refresh_page(self):
         return self.driver.refresh()
 
@@ -160,6 +161,19 @@ class BasePage(object):
     def get_text(self, locator):
         item_text = self.wait_for_element_visibility(locator).text
         return item_text
+
+    def get_all_elements_text(self, *locator):
+        """
+        All elements text are merged to one string
+        :param locator - single selector to element where text is stored i.e <span>, <a>
+        :return: string
+        """
+        all_texts = []
+        elements = self.driver.find_elements(*locator)
+        for element in elements:
+            element_text = element.text
+            all_texts.append(element_text)
+        return " ".join(all_texts).strip("[]")
 
     def check_title_is_correct(self, title, *locator):
         element_text = self.identify_element(*locator).text
