@@ -28,6 +28,7 @@ class PermissionsBaseLocators(object):
         self.new_name = "TestPermissionGroup"
         self.edit_name = "TestEditPermissionGroup"
         self.created_permission_row = (By.XPATH, "//span[contains(text(),'" + self.new_name + "')]")
+        self.edited_permission_row = (By.XPATH, "//span[contains(text(),'" + self.edit_name + "')]")
         # Locators
         self.dropdown_button = (By.CSS_SELECTOR, 'button#menu')
         self.add_permission_button = (By.XPATH, '//button[@ng-reflect-label="Add"]')
@@ -61,7 +62,8 @@ class PermissionsBaseLocators(object):
 
         self.searching_per_input = (By.CSS_SELECTOR, '.ui-multiselect-filter-container .ui-inputtext ')
 
-        self.single_row_permission_span = (By.XPATH, '//div/ng-component/p-datatable/div/div[1]/table/tbody/tr[3]/td[2]/span/span')
+        self.single_row_permission_span_name = (By.XPATH, '//div/ng-component/p-datatable/div/div[1]/table/tbody/tr[3]/td[1]/span')
+        self.single_row_permission_span_perm = (By.XPATH, '//div/ng-component/p-datatable/div/div[1]/table/tbody/tr[3]/td[2]/span/span')
         # Warnings
         self.removed_toast = (By.XPATH, "//p[contains(text(),'Permission group has been removed')]")
         self.added_toast = (By.XPATH, "//p[contains(text(),'Permission group has been created.')]")

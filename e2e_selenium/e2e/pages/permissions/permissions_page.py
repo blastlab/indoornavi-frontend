@@ -36,8 +36,14 @@ class PermissionsPage(BasePage, PermissionsBaseLocators):
     def is_new_permission_present(self):
         return True if self.is_element_present(self.created_permission_row) else False
 
+    def is_edited_permission_present(self):
+        return True if self.is_element_present(self.edited_permission_row) else False
+
+    def get_new_permission_name(self):
+        return
+
     def get_new_permission_text(self):
-        return self.get_all_elements_text(*self.single_row_permission_span)
+        return self.get_all_elements_text(*self.single_row_permission_span_perm)
 
     def is_all_permissions_highlighted(self):
         rows = self.count_of_visible_elements(*self.multiselect_row)

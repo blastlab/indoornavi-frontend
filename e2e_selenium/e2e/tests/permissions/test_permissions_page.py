@@ -211,17 +211,16 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
 
     def test_09_test_edit_permission_group_correctly_with_new_permissions(self):
 
-        """Test that edit permission group with new new changed permissions"""
+        """Test that edit permission group with changed permissions"""
 
         self.dropdown_menu_click()
         self.dropdown_permissions_button_click()
         self.test_04_test_add_permission_group_correctly_without_assigned_permission()
         self.edit_permission_button_click()
-        self.enter_permission_name(self.edit_name)
         self.multi_select_arrow_click()
         self.multi_select_click_all_chekboxes()
         self.multi_select_click_all_chekboxes()
-        # self.checkboxes_simulator_click()
+
         permissions = self.checkboxes_simulator_click()
         permissions_result = self.get_multiselet_label_container_title()
 
@@ -233,3 +232,54 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
         self.assertTrue(self.is_toast_present(self.edited_toast))
         self.assertTrue(True if self.get_new_permission_text() == permissions[0]
                         or permissions[1] else False)
+
+    def test_10_test_edit_permission_group_correctly_with_new_name_and_permissions(self):
+
+        """Test that edit permission group with changed permissions and new name"""
+
+        self.dropdown_menu_click()
+        self.dropdown_permissions_button_click()
+        self.test_04_test_add_permission_group_correctly_without_assigned_permission()
+        self.edit_permission_button_click()
+        self.enter_permission_name(self.edit_name)
+        self.multi_select_arrow_click()
+        self.multi_select_click_all_chekboxes()
+        self.multi_select_click_all_chekboxes()
+
+        permissions = self.checkboxes_simulator_click()
+        permissions_result = self.get_multiselet_label_container_title()
+
+        self.assertTrue(True if permissions_result == permissions[0]
+                        or permissions[1] else False)
+
+        self.save_permission_button_click()
+
+        self.assertTrue(self.is_toast_present(self.edited_toast))
+        self.assertTrue(True if self.get_new_permission_text() == permissions[0]
+                        or permissions[1] else False)
+
+        self.assertTrue(self.is_edited_permission_present())
+
+    def test_11_test_cancel_edit_permission_group_by_hash_button_click(self):
+
+        """Test that cancel edit permission group by hash button click"""
+
+        self.dropdown_menu_click()
+        self.dropdown_permissions_button_click()
+        self.test_04_test_add_permission_group_correctly_without_assigned_permission()
+        self.edit_permission_button_click()
+        self.assertTrue(self.is_modal_window_displayed(), 'Modal window has not been displayed.')
+        self.close_modal_click()
+        self.assertTrue(self.is_modal_window_disappeared(), 'Modal window has not been disappeared.')
+
+    def test_12_test_cancel_edit_permission_group_by_cancel_button_click(self):
+
+        """Test that cancel edit permission group modal window will be closed by cancel button click"""
+
+        self.dropdown_menu_click()
+        self.dropdown_permissions_button_click()
+        self.test_04_test_add_permission_group_correctly_without_assigned_permission()
+        self.edit_permission_button_click()
+        self.assertTrue(self.is_modal_window_displayed(), 'Modal window has not been displayed.')
+        self.cancel_modal_click()
+        self.assertTrue(self.is_modal_window_disappeared(), 'Modal window has not been disappeared.')
