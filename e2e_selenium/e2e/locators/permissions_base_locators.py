@@ -38,6 +38,8 @@ class PermissionsBaseLocators(object):
         self.modal_window = (By.CLASS_NAME, 'ui-dialog')
         self.modal_close_button = (By.CLASS_NAME, 'ui-dialog-titlebar-close')
         self.save_button = (By.XPATH, '//button[@ng-reflect-label="Save"]')
+        self.cancel_button = (By.XPATH, '//button[@ng-reflect-label="Cancel"]')
+
         self.modal_new_name = (By.CSS_SELECTOR, 'input#name')
 
         self.multiselect_label = (By.CLASS_NAME, 'ui-multiselect-label')

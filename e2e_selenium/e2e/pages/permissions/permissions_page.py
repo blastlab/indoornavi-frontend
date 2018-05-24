@@ -129,6 +129,9 @@ class PermissionsPage(BasePage, PermissionsBaseLocators):
         rows = self.driver.find_elements(*self.multiselect_checkbox_single)
         return rows[number].click()
 
+    def cancel_modal_click(self):
+        return self.click_element(self.cancel_button)
+
     def close_modal_click(self):
         return self.click_element(self.modal_close_button)
 

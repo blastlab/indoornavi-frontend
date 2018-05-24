@@ -31,10 +31,6 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
     def tearDownClass(cls):
         cls.webdriver.quit()
 
-    # TC006 Test adding permission group incorrectly with empty input [name]
-    # TC007 Test cancel adding permission group by hash button click
-    # TC008 Test cancel adding permission group by cancel button click
-
     def __get_permissions_page(self):
 
         """ Additional method which redirect user to permission groups page"""
@@ -188,7 +184,7 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
 
     def test_07_test_cancel_adding_permission_group_by_hash_button_click(self):
 
-        """Test that add permission group modal window will be closed"""
+        """Test that add permission group modal window will be closed by hash button click"""
 
         self.dropdown_menu_click()
         self.dropdown_permissions_button_click()
@@ -196,4 +192,16 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
         self.add_permission_button_click()
         self.assertTrue(self.is_modal_window_displayed(), 'Modal window has not been displayed.')
         self.close_modal_click()
+        self.assertTrue(self.is_modal_window_disappeared(), 'Modal window has not been disappeared.')
+
+    def test_08_test_cancel_adding_permission_group_by_cancel_button_click(self):
+
+        """Test that add permission group modal window will be closed by cancel button click"""
+
+        self.dropdown_menu_click()
+        self.dropdown_permissions_button_click()
+
+        self.add_permission_button_click()
+        self.assertTrue(self.is_modal_window_displayed(), 'Modal window has not been displayed.')
+        self.cancel_modal_click()
         self.assertTrue(self.is_modal_window_disappeared(), 'Modal window has not been disappeared.')
