@@ -26,10 +26,12 @@ class PermissionsBaseLocators(object):
                                ' SINK_UPDATE, SINK_DELETE, PUBLICATION_CREATE, PUBLICATION_READ, PUBLICATION_UPDATE, PUBLICATION_DELETE'
 
         self.new_name = "TestPermissionGroup"
+        self.edit_name = "TestEditPermissionGroup"
         self.created_permission_row = (By.XPATH, "//span[contains(text(),'" + self.new_name + "')]")
         # Locators
         self.dropdown_button = (By.CSS_SELECTOR, 'button#menu')
         self.add_permission_button = (By.XPATH, '//button[@ng-reflect-label="Add"]')
+        self.edit_permission_button = (By.CSS_SELECTOR, 'tr:last-child > td.col-button > span > button:nth-last-child(2)')
         self.dropdown_permissions_button = (By.XPATH, '//button[@ng-reflect-router-link="./permissionGroups"]')
         self.dropdown_sinks_button = (By.XPATH, '//button[@ng-reflect-router-link="./sinks"]')
 
@@ -61,7 +63,7 @@ class PermissionsBaseLocators(object):
 
         self.single_row_permission_span = (By.XPATH, '//div/ng-component/p-datatable/div/div[1]/table/tbody/tr[3]/td[2]/span/span')
         # Warnings
-        self.removed_toast = (By.XPATH, "//p[contains(text(),'Device has been removed')]")
+        self.removed_toast = (By.XPATH, "//p[contains(text(),'Permission group has been removed')]")
         self.added_toast = (By.XPATH, "//p[contains(text(),'Permission group has been created.')]")
-        self.edited_toast = (By.XPATH, "//p[contains(text(),'Device has been saved')]")
+        self.edited_toast = (By.XPATH, "//p[contains(text(),'Permission group has been saved')]")
         self.name_warning = (By.CSS_SELECTOR, 'div.ui-messages-error')

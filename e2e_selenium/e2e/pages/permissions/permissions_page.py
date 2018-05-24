@@ -11,7 +11,6 @@ class PermissionsPage(BasePage, PermissionsBaseLocators):
         PermissionsBaseLocators.__init__(self)
 
     def create_permissions_db_env(self):
-        print('create permission group  method')
         return self.create_db_env(self.xml_filename)
 
     #
@@ -69,6 +68,9 @@ class PermissionsPage(BasePage, PermissionsBaseLocators):
     def add_permission_button_click(self):
         return self.click_element(self.add_permission_button)
 
+    def edit_permission_button_click(self):
+        return self.click_element(self.edit_permission_button)
+
     def save_permission_button_click(self):
         return self.click_element(self.save_button)
 
@@ -106,10 +108,9 @@ class PermissionsPage(BasePage, PermissionsBaseLocators):
         rows_labels = self.driver.find_elements(*self.multiselect_row_label)
 
         labels = []
-
         min_index = 0
         max_index = 35
-        max_range = randint(1, 3)
+        max_range = randint(1, 10)
 
         rand = sample(range(min_index, max_index), max_range)
 
@@ -118,12 +119,7 @@ class PermissionsPage(BasePage, PermissionsBaseLocators):
             label = rows_labels[i].text
             labels.append(label)
 
-        if max_range > 3:
-            return str(max_range) + ' items selected'
-        elif max_range == 0:
-            return 'Select permissions...'
-        else:
-            return ", ".join(labels).strip("[]")
+        return ", ".join(labels).strip("[]"), str(max_range) + ' items selected'
 
     def single_checkbox_click(self, number):
         rows = self.driver.find_elements(*self.multiselect_checkbox_single)
@@ -156,5 +152,5 @@ class PermissionsPage(BasePage, PermissionsBaseLocators):
                 result_array.append(row_element.text)
         return result_array
 
-    def enter_new_permission_name(self, insert_data):
+    def enter_permission_name(self, insert_data):
         return self.clear_and_fill_input(insert_data, self.modal_new_name)

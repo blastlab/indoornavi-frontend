@@ -91,9 +91,12 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
 
         self.multi_select_click_all_chekboxes()
         self.assertFalse(self.is_all_permissions_highlighted(), 'All permissions still have been highlighted.')
-        # time.sleep(5)
 
-        self.assertEqual(self.checkboxes_simulator_click(), self.get_multiselet_label_container_title())
+        permissions = self.checkboxes_simulator_click()
+        permissions_result = self.get_multiselet_label_container_title()
+
+        self.assertTrue(True if permissions_result == permissions[0]
+                        or permissions[1] else False)
 
     def test_03_test_searching_in_add_permission_group(self):
 
@@ -137,7 +140,7 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
         self.multi_select_label_click()
         self.assertTrue(self.is_multiselect_dropdown_displayed(), 'Multiselect dropdown has not been activated.')
 
-        self.enter_new_permission_name(self.new_name)
+        self.enter_permission_name(self.new_name)
         self.save_permission_button_click()
         self.assertTrue(self.is_modal_window_disappeared(), 'Modal window has not been disappeared.')
         self.assertTrue(self.is_toast_present(self.added_toast))
@@ -158,7 +161,7 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
         self.multi_select_label_click()
         self.assertTrue(self.is_multiselect_dropdown_displayed(), 'Multiselect dropdown has not been activated.')
 
-        self.enter_new_permission_name(self.new_name)
+        self.enter_permission_name(self.new_name)
         self.multi_select_click_all_chekboxes()
         self.assertTrue(self.is_all_permissions_highlighted(), 'All permissions have not been highlighted.')
         self.save_permission_button_click()
@@ -205,3 +208,28 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
         self.assertTrue(self.is_modal_window_displayed(), 'Modal window has not been displayed.')
         self.cancel_modal_click()
         self.assertTrue(self.is_modal_window_disappeared(), 'Modal window has not been disappeared.')
+
+    def test_09_test_edit_permission_group_correctly_with_new_permissions(self):
+
+        """Test that edit permission group with new new changed permissions"""
+
+        self.dropdown_menu_click()
+        self.dropdown_permissions_button_click()
+        self.test_04_test_add_permission_group_correctly_without_assigned_permission()
+        self.edit_permission_button_click()
+        self.enter_permission_name(self.edit_name)
+        self.multi_select_arrow_click()
+        self.multi_select_click_all_chekboxes()
+        self.multi_select_click_all_chekboxes()
+        # self.checkboxes_simulator_click()
+        permissions = self.checkboxes_simulator_click()
+        permissions_result = self.get_multiselet_label_container_title()
+
+        self.assertTrue(True if permissions_result == permissions[0]
+                        or permissions[1] else False)
+
+        self.save_permission_button_click()
+
+        self.assertTrue(self.is_toast_present(self.edited_toast))
+        self.assertTrue(True if self.get_new_permission_text() == permissions[0]
+                        or permissions[1] else False)
