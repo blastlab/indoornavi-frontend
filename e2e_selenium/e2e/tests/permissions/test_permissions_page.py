@@ -130,7 +130,7 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
 
     def test_04_test_add_permission_group_correctly_without_assigned_permission(self):
 
-        """Test that will be added without any chosen permission"""
+        """Test that permission group will be added without any chosen permission"""
 
         self.dropdown_menu_click()
         self.dropdown_permissions_button_click()
@@ -176,7 +176,7 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
 
     def test_06_test_adding_permission_group_incorrectly_with_empty_input_name(self):
 
-        """Test that add permission group correctly with all permissions"""
+        """Test that add permission group correctly will be added with all permissions"""
 
         self.dropdown_menu_click()
         self.dropdown_permissions_button_click()
@@ -185,3 +185,15 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
         self.assertTrue(self.is_modal_window_displayed(), 'Modal window has not been displayed.')
         self.save_permission_button_click()
         self.assertEqual(self.error_message_name(), 'Name is required.')
+
+    def test_07_test_cancel_adding_permission_group_by_hash_button_click(self):
+
+        """Test that add permission group modal window will be closed"""
+
+        self.dropdown_menu_click()
+        self.dropdown_permissions_button_click()
+
+        self.add_permission_button_click()
+        self.assertTrue(self.is_modal_window_displayed(), 'Modal window has not been displayed.')
+        self.close_modal_click()
+        self.assertTrue(self.is_modal_window_disappeared(), 'Modal window has not been disappeared.')
