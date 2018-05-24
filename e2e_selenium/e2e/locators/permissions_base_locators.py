@@ -33,16 +33,19 @@ class PermissionsBaseLocators(object):
         self.dropdown_button = (By.CSS_SELECTOR, 'button#menu')
         self.add_permission_button = (By.XPATH, '//button[@ng-reflect-label="Add"]')
         self.edit_permission_button = (By.CSS_SELECTOR, 'tr:last-child > td.col-button > span > button:nth-last-child(2)')
+        self.delete_permission_button = (By.CSS_SELECTOR, 'tr:last-child > td.col-button > span > button:nth-last-child(1)')
         self.dropdown_permissions_button = (By.XPATH, '//button[@ng-reflect-router-link="./permissionGroups"]')
         self.dropdown_sinks_button = (By.XPATH, '//button[@ng-reflect-router-link="./sinks"]')
 
         self.permission_title = (By.CLASS_NAME, 'ui-menuitem-text')
         self.groups_list = (By.CLASS_NAME, 'ui-datatable-tablewrapper')
         self.modal_window = (By.CLASS_NAME, 'ui-dialog')
+        self.confirm_window = (By.CLASS_NAME, 'ui-confirmdialog')
         self.modal_close_button = (By.CLASS_NAME, 'ui-dialog-titlebar-close')
         self.save_button = (By.XPATH, '//button[@ng-reflect-label="Save"]')
         self.cancel_button = (By.XPATH, '//button[@ng-reflect-label="Cancel"]')
-
+        self.yes_button = (By.XPATH, '//button[@ng-reflect-label="Yes"]')
+        self.no_button = (By.XPATH, '//button[@ng-reflect-label="No"]')
         self.modal_new_name = (By.CSS_SELECTOR, 'input#name')
 
         self.multiselect_label = (By.CLASS_NAME, 'ui-multiselect-label')

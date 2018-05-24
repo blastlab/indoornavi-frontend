@@ -125,7 +125,7 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
                              'Elements count or texts have not been the same.')
 
         self.close_modal_click()
-        self.assertFalse(self.is_modal_window_displayed(), 'Element has not been disappeared')
+        self.assertTrue(self.is_modal_window_disappeared(), 'Element has not been disappeared')
 
     def test_04_test_add_permission_group_correctly_without_assigned_permission(self):
 
@@ -283,3 +283,30 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
         self.assertTrue(self.is_modal_window_displayed(), 'Modal window has not been displayed.')
         self.cancel_modal_click()
         self.assertTrue(self.is_modal_window_disappeared(), 'Modal window has not been disappeared.')
+
+    def test_13_edit_permission_with_empty_input(self):
+
+        """Test that warning will appear after save edit permission group with empty input"""
+
+        self.dropdown_menu_click()
+        self.dropdown_permissions_button_click()
+        self.test_04_test_add_permission_group_correctly_without_assigned_permission()
+        self.edit_permission_button_click()
+        self.clear_text_input(self.modal_new_name)
+        self.assertEqual(self.error_message_name(), 'Name is required.')
+
+    # # TODO
+    # def _test_14_edit_permission_with_space_inserted_into_name_input(self):
+    #
+    #     print('TC14 - space inserted')
+
+    def test_15_delete_permission_group_correctly(self):
+
+        self.dropdown_menu_click()
+        self.dropdown_permissions_button_click()
+        self.test_04_test_add_permission_group_correctly_without_assigned_permission()
+        self.delete_permission_button_click()
+
+        self.assertTrue(self.is_confirm_window_displayed(), 'Modal window has not been displayed.')
+        self.yes_button_click()
+        self.assertTrue(self.is_confirm_window_disappeared(), 'Modal window has not been disappeared.')

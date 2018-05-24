@@ -24,10 +24,16 @@ class PermissionsPage(BasePage, PermissionsBaseLocators):
         return True if self.is_element_displayed(*self.groups_list) else False
 
     def is_modal_window_displayed(self):
-        return True if self.is_element_displayed(*self.modal_window) else False
+        return True if self.is_element_present(self.modal_window) else False
 
     def is_modal_window_disappeared(self):
         return True if self.is_element_disappear(self.modal_window) else False
+
+    def is_confirm_window_displayed(self):
+        return True if self.is_element_present(self.confirm_window) else False
+
+    def is_confirm_window_disappeared(self):
+        return True if self.is_element_disappear(self.confirm_window) else False
 
     def is_permissions_title_correct(self):
         title = 'Permission groups'
@@ -77,8 +83,17 @@ class PermissionsPage(BasePage, PermissionsBaseLocators):
     def edit_permission_button_click(self):
         return self.click_element(self.edit_permission_button)
 
+    def delete_permission_button_click(self):
+        return self.click_element(self.delete_permission_button)
+
     def save_permission_button_click(self):
         return self.click_element(self.save_button)
+
+    def yes_button_click(self):
+        return self.click_element(self.yes_button)
+
+    def no_button_click(self):
+        return self.click_element(self.no_button)
 
     def multi_select_label_click(self):
         return self.click_element(self.multiselect_label)
