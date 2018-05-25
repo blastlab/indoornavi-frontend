@@ -302,6 +302,8 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
 
     def test_15_delete_permission_group_correctly(self):
 
+        """Test that delete permission group correctly"""
+
         self.dropdown_menu_click()
         self.dropdown_permissions_button_click()
         self.test_04_test_add_permission_group_correctly_without_assigned_permission()
@@ -309,4 +311,34 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
 
         self.assertTrue(self.is_confirm_window_displayed(), 'Modal window has not been displayed.')
         self.yes_button_click()
+        self.assertTrue(self.is_confirm_window_disappeared(), 'Modal window has not been disappeared.')
+        self.assertTrue(self.is_toast_present(self.removed_toast))
+        self.assertTrue(self.is_toast_disappear(self.removed_toast))
+        self.assertTrue(self.is_removed_permission_disappeared())
+        self.assertEqual(self.if_exist_in_db(self.select_permission_group), 'Guest')
+
+    def test_16_cancel_delete_permission_group_with_no_button_click(self):
+
+        """Test that cancel delete permission group modal window will be closed by cancel button click"""
+
+        self.dropdown_menu_click()
+        self.dropdown_permissions_button_click()
+        self.test_04_test_add_permission_group_correctly_without_assigned_permission()
+        self.delete_permission_button_click()
+
+        self.assertTrue(self.is_confirm_window_displayed(), 'Modal window has not been displayed.')
+        self.no_button_click()
+        self.assertTrue(self.is_confirm_window_disappeared(), 'Modal window has not been disappeared.')
+
+    def test_17_cancel_delete_permission_group_with_hash_button_click(self):
+
+        """Test that cancel delete permission group modal window will be closed by hash button click"""
+
+        self.dropdown_menu_click()
+        self.dropdown_permissions_button_click()
+        self.test_04_test_add_permission_group_correctly_without_assigned_permission()
+        self.delete_permission_button_click()
+
+        self.assertTrue(self.is_confirm_window_displayed(), 'Modal window has not been displayed.')
+        self.close_confirm_modal_click()
         self.assertTrue(self.is_confirm_window_disappeared(), 'Modal window has not been disappeared.')

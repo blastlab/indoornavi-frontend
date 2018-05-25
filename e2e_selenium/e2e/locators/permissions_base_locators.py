@@ -25,6 +25,8 @@ class PermissionsBaseLocators(object):
                                'PERMISSION_GROUP_READ, PERMISSION_GROUP_UPDATE, PERMISSION_GROUP_DELETE, SINK_CREATE, SINK_READ,' \
                                ' SINK_UPDATE, SINK_DELETE, PUBLICATION_CREATE, PUBLICATION_READ, PUBLICATION_UPDATE, PUBLICATION_DELETE'
 
+        # DB
+        self.select_permission_group = ("SELECT name FROM permissiongroup ORDER BY id DESC LIMIT 1")
         self.new_name = "TestPermissionGroup"
         self.edit_name = "TestEditPermissionGroup"
         self.created_permission_row = (By.XPATH, "//span[contains(text(),'" + self.new_name + "')]")
@@ -42,6 +44,7 @@ class PermissionsBaseLocators(object):
         self.modal_window = (By.CLASS_NAME, 'ui-dialog')
         self.confirm_window = (By.CLASS_NAME, 'ui-confirmdialog')
         self.modal_close_button = (By.CLASS_NAME, 'ui-dialog-titlebar-close')
+        self.close_button = (By.XPATH, '//p-confirmdialog/div/div[1]/a/span')
         self.save_button = (By.XPATH, '//button[@ng-reflect-label="Save"]')
         self.cancel_button = (By.XPATH, '//button[@ng-reflect-label="Cancel"]')
         self.yes_button = (By.XPATH, '//button[@ng-reflect-label="Yes"]')

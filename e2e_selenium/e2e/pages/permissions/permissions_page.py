@@ -45,6 +45,9 @@ class PermissionsPage(BasePage, PermissionsBaseLocators):
     def is_edited_permission_present(self):
         return True if self.is_element_present(self.edited_permission_row) else False
 
+    def is_removed_permission_disappeared(self):
+        return True if self.is_element_disappear(self.created_permission_row) else False
+
     def get_new_permission_name(self):
         return
 
@@ -151,6 +154,9 @@ class PermissionsPage(BasePage, PermissionsBaseLocators):
 
     def close_modal_click(self):
         return self.click_element(self.modal_close_button)
+
+    def close_confirm_modal_click(self):
+        return self.click_element(self.close_button)
 
     def single_permission_label(self, number):
         rows = self.driver.find_elements(*self.multiselect_row_label)
