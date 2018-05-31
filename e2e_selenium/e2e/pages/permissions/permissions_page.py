@@ -7,7 +7,8 @@ from random import sample
 class PermissionsPage(BasePage, PermissionsBaseLocators):
 
     def __init__(self, driver):
-        self.driver = driver
+        self.__driver = driver
+        BasePage.__init__(self, self.__driver)
         PermissionsBaseLocators.__init__(self)
 
     def create_permissions_db_env(self):
@@ -36,8 +37,7 @@ class PermissionsPage(BasePage, PermissionsBaseLocators):
         return True if self.is_element_disappear(self.confirm_window) else False
 
     def is_permissions_title_correct(self):
-        title = 'Permission groups'
-        return self.check_title_is_correct(title, *self.permission_title)
+        return self.check_title_is_correct(self.permission_title_text, *self.permission_title)
 
     def is_new_permission_present(self):
         return True if self.is_element_present(self.created_permission_row) else False
@@ -47,9 +47,6 @@ class PermissionsPage(BasePage, PermissionsBaseLocators):
 
     def is_removed_permission_disappeared(self):
         return True if self.is_element_disappear(self.created_permission_row) else False
-
-    def get_new_permission_name(self):
-        return
 
     def get_new_permission_text(self):
         return self.get_all_elements_text(*self.single_row_permission_span_perm)
@@ -128,8 +125,8 @@ class PermissionsPage(BasePage, PermissionsBaseLocators):
 
         """
 
-        rows_checkboxes = self.driver.find_elements(*self.multiselect_checkbox_single)
-        rows_labels = self.driver.find_elements(*self.multiselect_row_label)
+        rows_checkboxes = self.__driver.find_elements(*self.multiselect_checkbox_single)
+        rows_labels = self.__driver.find_elements(*self.multiselect_row_label)
 
         labels = []
         min_index = 0
@@ -146,7 +143,7 @@ class PermissionsPage(BasePage, PermissionsBaseLocators):
         return ", ".join(labels).strip("[]"), str(max_range) + ' items selected'
 
     def single_checkbox_click(self, number):
-        rows = self.driver.find_elements(*self.multiselect_checkbox_single)
+        rows = self.__driver.find_elements(*self.multiselect_checkbox_single)
         return rows[number].click()
 
     def cancel_modal_click(self):
@@ -159,7 +156,7 @@ class PermissionsPage(BasePage, PermissionsBaseLocators):
         return self.click_element(self.close_button)
 
     def single_permission_label(self, number):
-        rows = self.driver.find_elements(*self.multiselect_row_label)
+        rows = self.__driver.find_elements(*self.multiselect_row_label)
         row = rows[number].text
         return row
 
@@ -173,7 +170,7 @@ class PermissionsPage(BasePage, PermissionsBaseLocators):
         result_array = []
         result_rows = self.count_of_visible_elements(*self.multiselect_row)
         result_array.append(True) if result_rows == count else result_array.append(False)
-        row_elements = self.driver.find_elements(*self.multiselect_row)
+        row_elements = self.__driver.find_elements(*self.multiselect_row)
         for row_element in row_elements:
             if row_element.is_displayed():
                 result_array.append(row_element.text)

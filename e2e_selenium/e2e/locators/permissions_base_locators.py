@@ -5,6 +5,7 @@ class PermissionsBaseLocators(object):
 
     def __init__(self):
         self.xml_filename = 'src/permissions.xml'
+        self.permission_title_text = 'Permission groups'
         # Test input data
         self.searching_data = 'ANCHOR_CREATE'
         self.searching_data_array = [True, self.searching_data]

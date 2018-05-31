@@ -1,7 +1,6 @@
 import unittest
 from selenium import webdriver
 from tests.test_driver import TestDriver
-from tests.constructions.test_base import TestBase
 from pages.permissions.permissions_page import PermissionsPage
 from pages.base_page import BasePage
 from pages.login_page import LoginPage

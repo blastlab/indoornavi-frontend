@@ -1,6 +1,7 @@
 from pages.base_page import BasePage
 from selenium.webdriver.common.by import By
 
+
 class LoginPage(BasePage):
 
     login_url = BasePage.base_url
@@ -22,6 +23,8 @@ class LoginPage(BasePage):
     invalid_password = 'admin1'
 
     # test cases collection
+    def __init__(self, webdriver):
+        BasePage.__init__(self, webdriver)
 
     def check_page_loaded_correctly(self):
         return True if self.wait_for_element(self.form_locator) else False

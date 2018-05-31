@@ -15,8 +15,8 @@ class BasePage(object):
     db_hostname = 'localhost'
 
     def __init__(self, driver):
-        self.driver = driver
-        self.actions = ActionChains(driver)
+        self.__driver = driver
+        self.actions = ActionChains(self.__driver)
 
     # Select from db
     def if_exist_in_db(self, query):
@@ -85,13 +85,13 @@ class BasePage(object):
         cursor.execute('SET FOREIGN_KEY_CHECKS=1;')
         cursor.close()
         db.close()
-        
+
     def refresh_page(self):
-        return self.driver.refresh()
+        return self.__driver.refresh()
 
     # Front
     def identify_element(self, *locator):
-        return self.driver.find_element(*locator)
+        return self.__driver.find_element(*locator)
 
     def is_element_displayed(self, *locator):
         element = self.identify_element(*locator)
@@ -113,27 +113,27 @@ class BasePage(object):
         return True
 
     def wait_for_element(self, locator):
-        element = ui.WebDriverWait(self.driver, 100).until(EC.presence_of_element_located(locator),
+        element = ui.WebDriverWait(self.__driver, 100).until(EC.presence_of_element_located(locator),
                                                            'Element has not presented yet.')
         return element
 
     def wait_for_element_clickable(self, locator):
-        element = ui.WebDriverWait(self.driver, 100).until(EC.element_to_be_clickable(locator),
+        element = ui.WebDriverWait(self.__driver, 100).until(EC.element_to_be_clickable(locator),
                                                            'Element has not been ready to be clicked.')
         return element
 
     def wait_for_element_visibility(self, locator):
-        element = ui.WebDriverWait(self.driver, 100).until(EC.visibility_of_element_located(locator),
+        element = ui.WebDriverWait(self.__driver, 100).until(EC.visibility_of_element_located(locator),
                                                            'Element has not been visible yet.')
         return element
 
     def wait_for_element_disappear(self, locator):
-        element = ui.WebDriverWait(self.driver, 100).until_not(EC.visibility_of_element_located(locator),
+        element = ui.WebDriverWait(self.__driver, 100).until_not(EC.visibility_of_element_located(locator),
                                                                'Element has not disappeared yet.')
         return element
 
     def open_page(self, page_url):
-        return self.driver.get(page_url)
+        return self.__driver.get(page_url)
 
     def clear_input(self, input_locator):
         input_element = self.wait_for_element_clickable(input_locator)
@@ -152,10 +152,10 @@ class BasePage(object):
 
     def click_element(self, locator):
         element = self.wait_for_element_clickable(locator)
-        return self.driver.execute_script("arguments[0].click();", element)
+        return self.__driver.execute_script("arguments[0].click();", element)
 
     def click_button(self, *locator):
-        button = self.driver.find_element(*locator)
+        button = self.__driver.find_element(*locator)
         button.click()
 
     def get_text(self, locator):
@@ -169,7 +169,7 @@ class BasePage(object):
         :return: string
         """
         all_texts = []
-        elements = self.driver.find_elements(*locator)
+        elements = self.__driver.find_elements(*locator)
         for element in elements:
             element_text = element.text
             all_texts.append(element_text)
@@ -182,15 +182,15 @@ class BasePage(object):
     # Methods recommended for : "Constructions"
 
     def count_of_inner_elements(self, *locator):
-        count = self.driver.find_elements(*locator)
+        count = self.__driver.find_elements(*locator)
         return len(count)
 
     def count_of_elements(self, *locator):
-        return len(self.driver.find_elements(*locator))
+        return len(self.__driver.find_elements(*locator))
 
     def count_of_visible_elements(self, *locator):
         counter = 0
-        elements = self.driver.find_elements(*locator)
+        elements = self.__driver.find_elements(*locator)
         for element in elements:
             if element.is_displayed():
                 counter += 1
