@@ -29,7 +29,7 @@ class TestBuildingsPage(unittest.TestCase):
         # check the tested page is loaded correctly
         cls.building_page_is_loaded_correctly()
 
-    @classmethod
+    @staticmethod
     def building_page_is_loaded_correctly(cls):
 
         """Before - Test that building page has been correctly loaded"""

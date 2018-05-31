@@ -27,7 +27,7 @@ class TestComplexesPage(unittest.TestCase, ComplexesPage):
         # check the tested page is loaded correctly
         cls.complexes_page_is_loaded_correctly()
 
-    @classmethod
+    @staticmethod
     def complexes_page_is_loaded_correctly(cls):
 
         """Before - Test that complexes page has been correctly loaded"""

@@ -26,7 +26,7 @@ class TestFloorsPage(unittest.TestCase):
         # check the tested page is loaded correctly
         cls.floors_page_is_loaded_correctly()
 
-    @classmethod
+    @staticmethod
     def floors_page_is_loaded_correctly(cls):
         """Test that floors page is loaded correctly"""
 
