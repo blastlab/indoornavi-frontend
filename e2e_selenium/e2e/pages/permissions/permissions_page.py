@@ -116,12 +116,7 @@ class PermissionsPage(BasePage, PermissionsBaseLocators):
 
         """
 
-        Additional method which support comparing content of multiselect labael container
-        It depends if count of indexes is greater than 3 function returns string how many
-        items is selected for example '5 items selected',
-        otherwise function returns string containing mentioned names of permissions.
-
-        :return: string depends how many items are selected
+        returns: string of items, which structure depends on how many of items where selected
 
         """
 
