@@ -25,14 +25,13 @@ class TestComplexesPage(unittest.TestCase, ComplexesPage):
         # login before all tests
         cls.page.login_process(cls.option)
         # check the tested page is loaded correctly
-        cls.complexes_page_is_loaded_correctly()
+        cls.complexes_page_is_loaded_correctly(cls)
 
-    @staticmethod
-    def complexes_page_is_loaded_correctly(cls):
+    def complexes_page_is_loaded_correctly(self):
 
         """Before - Test that complexes page has been correctly loaded"""
 
-        assert (cls.complexes_page.multi_assertion())
+        assert (self.complexes_page.multi_assertion())
 
     def setUp(self):
         self.test_failed = True

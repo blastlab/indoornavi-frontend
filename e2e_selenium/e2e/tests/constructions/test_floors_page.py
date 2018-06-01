@@ -7,6 +7,7 @@ from pages.base_page import BasePage
 from pages.constructions.floors_page import FloorsPage
 from pages.login_page import LoginPage
 
+
 class TestFloorsPage(unittest.TestCase):
 
     @classmethod
@@ -24,19 +25,18 @@ class TestFloorsPage(unittest.TestCase):
         # login before all tests
         cls.page.login_process(cls.option)
         # check the tested page is loaded correctly
-        cls.floors_page_is_loaded_correctly()
+        cls.floors_page_is_loaded_correctly(cls)
 
-    @staticmethod
-    def floors_page_is_loaded_correctly(cls):
+    def floors_page_is_loaded_correctly(self):
         """Test that floors page is loaded correctly"""
 
-        assert cls.floors_page.is_redirect_button_clickable()
-        cls.floors_page.redirect_button_click()
+        assert self.floors_page.is_redirect_button_clickable()
+        self.floors_page.redirect_button_click()
         # time.sleep(5)
-        assert cls.floors_page.is_redirect_button_clickable()
-        cls.floors_page.redirect_button_click()
-        assert cls.floors_page.multi_assertion()
-        cls.test_failed = False
+        assert self.floors_page.is_redirect_button_clickable()
+        self.floors_page.redirect_button_click()
+        assert self.floors_page.multi_assertion()
+        self.test_failed = False
 
     def setUp(self):
         self.test_failed = True

@@ -27,17 +27,16 @@ class TestBuildingsPage(unittest.TestCase):
         # login before all tests
         cls.page.login_process(cls.option)
         # check the tested page is loaded correctly
-        cls.building_page_is_loaded_correctly()
+        cls.building_page_is_loaded_correctly(cls)
 
-    @staticmethod
-    def building_page_is_loaded_correctly(cls):
+    def building_page_is_loaded_correctly(self):
 
         """Before - Test that building page has been correctly loaded"""
 
-        assert cls.buildings_page.is_redirect_button_clickable()
-        cls.buildings_page.redirect_button_click()
-        assert cls.buildings_page.multi_assertion()
-        cls.test_failed = False
+        assert self.buildings_page.is_redirect_button_clickable()
+        self.buildings_page.redirect_button_click()
+        assert self.buildings_page.multi_assertion()
+        self.test_failed = False
 
     def setUp(self):
         self.test_failed = True
