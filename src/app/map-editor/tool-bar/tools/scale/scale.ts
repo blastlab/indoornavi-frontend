@@ -79,6 +79,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.linesArray = [];
     this.isFirstPointDrawn = false;
     this.hintBarMessages.unsubscribe();
+    this.scaleBackup = null;
   }
 
   ngOnInit(): void {
