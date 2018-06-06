@@ -36,13 +36,13 @@ class ConstructionPage(BasePage):
         table_content = self.wait_for_element(self.table_content)
         count_rows = self.count_of_inner_elements(*self.table_rows)
         if count_rows == 0:
-          try:
-            self.identify_element(*self.empty_table).text == 'No records founds'
-          except NoSuchElementException:
-            return False
-          return True
+            try:
+                self.identify_element(*self.empty_table).text == 'No records founds'
+            except NoSuchElementException:
+                return False
+            return True
         else:
-          return True
+            return True
 
     def is_redirect_button_clickable(self):
         return True if self.wait_for_element_clickable(self.redirect_last_btn) else False

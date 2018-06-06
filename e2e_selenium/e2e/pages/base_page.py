@@ -7,6 +7,7 @@ import csv
 import mysql.connector
 from pyquibase.pyquibase import Pyquibase
 from selenium.webdriver import ActionChains
+from services.service_db import ServiceDb
 
 
 class BasePage(object):
@@ -17,74 +18,21 @@ class BasePage(object):
     def __init__(self, driver):
         self.__driver = driver
         self.actions = ActionChains(self.__driver)
+        self.service_db = ServiceDb
 
-    # Select from db
     def if_exist_in_db(self, query):
-
-        db = mysql.connector.connect(user='root', password='', host=self.db_hostname, database='Navi')
-        cursor = db.cursor()
-        cursor.execute(query)
-        last_construction_name = '';
-        for (name) in cursor:
-            last_construction_name = name[0]
-        cursor.close()
-        db.close()
-        return last_construction_name
+        return self.service_db().if_exist_in_db(query)
 
     # Truncate db
     def truncate_db(self):
-
-        db = mysql.connector.connect(user='root', password='', host=self.db_hostname, database='Navi')
-        cursor = db.cursor()
-        cursor.execute('SET FOREIGN_KEY_CHECKS=0;')
-        cursor.execute("TRUNCATE TABLE complex")
-        cursor.execute("TRUNCATE TABLE building")
-        cursor.execute("TRUNCATE TABLE floor")
-        cursor.execute("TRUNCATE TABLE sink")
-        cursor.execute("TRUNCATE TABLE anchor")
-        cursor.execute("TRUNCATE TABLE tag")
-        cursor.execute("TRUNCATE TABLE device")
-        cursor.execute('SET FOREIGN_KEY_CHECKS=1;')
-        cursor.close()
-        db.close()
+        return self.service_db().truncate_db()
 
     def truncate_db_permissions(self):
-
-        db = mysql.connector.connect(user='root', password='', host=self.db_hostname, database='Navi')
-        cursor = db.cursor()
-        cursor.execute('SET FOREIGN_KEY_CHECKS=0;')
-        cursor.execute("TRUNCATE TABLE complex")
-        cursor.execute("TRUNCATE TABLE building")
-        cursor.execute("TRUNCATE TABLE floor")
-        cursor.execute("TRUNCATE TABLE sink")
-        cursor.execute("TRUNCATE TABLE anchor")
-        cursor.execute("TRUNCATE TABLE tag")
-        cursor.execute("TRUNCATE TABLE device")
-        cursor.execute("TRUNCATE TABLE permission")
-        cursor.execute("TRUNCATE TABLE permissiongroup")
-        cursor.execute("TRUNCATE TABLE permissiongroup_permission")
-        cursor.execute('SET FOREIGN_KEY_CHECKS=1;')
-        cursor.close()
-        db.close()
+        return self.service_db().truncate_db_permissions()
 
     # Prepare environment
     def create_db_env(self, file_path):
-        print('create_db_env')
-        db = mysql.connector.connect(user='root', password='', host=self.db_hostname, database='Navi')
-        cursor = db.cursor()
-        cursor.execute('SET FOREIGN_KEY_CHECKS=0;')
-        pyquibase = Pyquibase.mysql(
-          host=self.db_hostname,
-          port=3306,
-          db_name='Navi',
-          username='root',
-          password='',
-          change_log_file=file_path
-        )
-        pyquibase.update()
-        cursor.execute('SET FOREIGN_KEY_CHECKS=1;')
-        cursor.close()
-        db.close()
+        return self.service_db().create_db_env(file_path)
 
     def refresh_page(self):
         return self.__driver.refresh()
