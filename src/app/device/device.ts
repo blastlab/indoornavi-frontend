@@ -203,10 +203,11 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   toggleUpdateMode(): void {
     this.updateMode = !this.updateMode;
     if (this.updateMode) {
+      this.socketSubscription.unsubscribe();
       const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}info?client&${this.deviceType}`);
       this.firmwareSocketSubscription = stream.subscribe((message) => {
         if (message.type === 'INFO') {
-          message.devices.forEach((deviceStatus: DeviceStatus) => {
+          (<DeviceStatus[]>message.devices).forEach((deviceStatus: DeviceStatus) => {
             if (deviceStatus.status.toString() === Status[Status.ONLINE] || deviceStatus.status.toString() === Status[Status.OFFLINE]) {
               const checkbox: Checkbox = this.getCheckboxById(deviceStatus.device.shortId);
               if (!!checkbox) {
