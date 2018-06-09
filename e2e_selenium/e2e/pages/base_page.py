@@ -3,11 +3,9 @@ import selenium.webdriver.support.ui as ui
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 import re
-import csv
-import mysql.connector
-from pyquibase.pyquibase import Pyquibase
 from selenium.webdriver import ActionChains
 from services.service_db import ServiceDb
+from services.service_upload import ServiceUpload
 
 
 class BasePage(object):
@@ -19,6 +17,7 @@ class BasePage(object):
         self.__driver = driver
         self.actions = ActionChains(self.__driver)
         self.service_db = ServiceDb
+        self.service_upload = ServiceUpload
 
     def if_exist_in_db(self, query):
         return self.service_db().if_exist_in_db(query)
@@ -46,38 +45,45 @@ class BasePage(object):
         displayed = element.is_displayed()
         return displayed
 
-    def is_element_present(self, locator):
+    def is_element_appeared(self, locator, **kwargs):
         try:
-          element = self.wait_for_element_visibility(locator)
+            __msg = [msg for key, msg in kwargs.items()]
+            self.wait_for_element(locator, __msg)
         except NoSuchElementException:
             return False
         return True
 
-    def is_element_disappear(self, locator):
+    def is_element_present(self, locator, **kwargs):
         try:
-          element = self.wait_for_element_disappear(locator)
+            __msg = [msg for key, msg in kwargs.items()]
+
+            self.wait_for_element_visibility(locator, __msg)
         except NoSuchElementException:
             return False
         return True
 
-    def wait_for_element(self, locator):
-        element = ui.WebDriverWait(self.__driver, 100).until(EC.presence_of_element_located(locator),
-                                                           'Element has not presented yet.')
+    def is_element_disappear(self, locator, **kwargs):
+        try:
+            __msg = [msg for key, msg in kwargs.items()]
+            self.wait_for_element_disappear(locator, __msg)
+        except NoSuchElementException:
+            return False
+        return True
+
+    def wait_for_element(self, locator, msg='Element has not presented yet.'):
+        element = ui.WebDriverWait(self.__driver, 2).until(EC.presence_of_element_located(locator),msg)
         return element
 
-    def wait_for_element_clickable(self, locator):
-        element = ui.WebDriverWait(self.__driver, 100).until(EC.element_to_be_clickable(locator),
-                                                           'Element has not been ready to be clicked.')
+    def wait_for_element_clickable(self, locator, msg='Element has not been ready to be clicked.'):
+        element = ui.WebDriverWait(self.__driver, 2).until(EC.element_to_be_clickable(locator), msg)
         return element
 
-    def wait_for_element_visibility(self, locator):
-        element = ui.WebDriverWait(self.__driver, 100).until(EC.visibility_of_element_located(locator),
-                                                           'Element has not been visible yet.')
+    def wait_for_element_visibility(self, locator, msg='Element has not been visible yet.'):
+        element = ui.WebDriverWait(self.__driver, 2).until(EC.visibility_of_element_located(locator), msg)
         return element
 
-    def wait_for_element_disappear(self, locator):
-        element = ui.WebDriverWait(self.__driver, 100).until_not(EC.visibility_of_element_located(locator),
-                                                               'Element has not disappeared yet.')
+    def wait_for_element_disappear(self, locator, msg='Element has not disappeared yet.'):
+        element = ui.WebDriverWait(self.__driver, 2).until_not(EC.visibility_of_element_located(locator), msg)
         return element
 
     def open_page(self, page_url):
@@ -153,7 +159,7 @@ class BasePage(object):
         last_element = rows[0]
         return last_element
 
-    # Additional methods
+    # Additional methods - services
 
     def get_numbers_from_string(self, str):
         get_array = re.findall('\d+', str)[0:3]
@@ -161,3 +167,9 @@ class BasePage(object):
 
     def drag_and_drop(self, source_element, dest_element):
         return self.actions.click_and_hold(source_element).move_by_offset(1000, 0).release(dest_element).perform()
+
+    def choose_file(self, choose_file_btn, file_path):
+        service_db = ServiceUpload(file_path)
+        abs_path = service_db.get_abs_path()
+        choose_btn = self.wait_for_element(choose_file_btn)
+        return choose_btn.send_keys(abs_path)
