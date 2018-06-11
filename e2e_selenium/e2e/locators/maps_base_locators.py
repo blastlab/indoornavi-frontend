@@ -6,6 +6,7 @@ class MapsBaseLocators(object):
     def __init__(self):
         # FILE PATHS
         self.correct_map_path = 'src/test_data_upload/correct_map'
+        self.small_map_path = 'src/test_data_upload/small_size'
         self.incorrect_image = 'src/test_data_upload/image_formats/test'
 
         self.db_maps_env_xml = 'src/test-complexes.xml'

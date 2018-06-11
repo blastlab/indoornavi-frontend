@@ -5,7 +5,6 @@ from pages.maps.maps_page import MapsPage
 from pages.base_page import BasePage
 from pages.login_page import LoginPage
 from pages.constructions.floors_page import FloorsPage
-import time
 
 
 class TestMapsPage(unittest.TestCase, MapsPage):
@@ -76,29 +75,33 @@ class TestMapsPage(unittest.TestCase, MapsPage):
 
         print('\ntest_03_map_loaded_correctly_after_drag_and_drop TestMapsPage \n')
 
-    def test_04_map_loaded_with_incorrect_file_format_bmp(self):
-        self.__test_map_image_with_invalid_format('.bmp')
+    # def test_04_map_loaded_with_incorrect_file_format_bmp(self):
+    #     self.__test_map_image_with_invalid_format('.bmp')
+    #
+    # def test_05_map_loaded_with_incorrect_file_format_dwg(self):
+    #     self.__test_map_image_with_invalid_format('.dwg')
+    #
+    # def test_06_map_loaded_with_incorrect_file_format_eps(self):
+    #     self.__test_map_image_with_invalid_format('.eps')
+    #
+    # def test_07_map_loaded_with_incorrect_file_format_svg(self):
+    #     self.__test_map_image_with_invalid_format('.svg')
+    #
+    # def test_08_map_loaded_with_incorrect_file_format_dxf(self):
+    #     self.__test_map_image_with_invalid_format('.dxf')
+    #
+    # def test_09_map_loaded_with_incorrect_file_format_gif(self):
+    #     self.__test_map_image_with_invalid_format('.gif')
+    #
+    # def test_10_map_loaded_with_incorrect_file_format_psd(self):
+    #     self.__test_map_image_with_invalid_format('.psd')
 
-    def test_05_map_loaded_with_incorrect_file_format_dwg(self):
-        self.__test_map_image_with_invalid_format('.dwg')
-
-    def test_06_map_loaded_with_incorrect_file_format_eps(self):
-        self.__test_map_image_with_invalid_format('.eps')
-
-    def test_07_map_loaded_with_incorrect_file_format_svg(self):
-        self.__test_map_image_with_invalid_format('.svg')
-
-    def test_08_map_loaded_with_incorrect_file_format_dxf(self):
-        self.__test_map_image_with_invalid_format('.dxf')
-
-    def test_09_map_loaded_with_incorrect_file_format_gif(self):
-        self.__test_map_image_with_invalid_format('.gif')
-
-    def test_10_map_loaded_with_incorrect_file_format_psd(self):
-        self.__test_map_image_with_invalid_format('.psd')
-
-    def pen_test(self):
-        print('First Pen test - Try to hack by JPG, SVG')
+    def test_11_map_loaded_with_small_size_image(self):
+        self.maps_page.choose_image(self.maps_page.small_map_path)
+        self.maps_page.is_image_preview_displayed()
+        self.maps_page.upload_button_click()
+        self.maps_page.is_image_uploaded()
+        self.test_failed = False
 
     def _test_05_map_loaded_with_small_size(self):
         print('\ntest_05_map_loaded_with_small_size TestMapsPage \n')
