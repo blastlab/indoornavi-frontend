@@ -78,7 +78,7 @@ export class MapObjectService {
           this.setStrokeColor(objectMetadata);
         }
         break;
-      case 'AREAS':
+      case 'AREA':
         this.addToMapContainer(objectMetadata, container);
         this.objects.get(objectMetadata.object.id).addPolygon(points);
         if (!!(<Fill>objectMetadata.object).fill) {
