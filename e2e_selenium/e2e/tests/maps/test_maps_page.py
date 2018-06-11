@@ -110,7 +110,7 @@ class TestMapsPage(unittest.TestCase, MapsPage):
 
         self.__test_map_image_with_invalid_format('.sql')
 
-    def test_11_map_loaded_with_small_dimensions(self):
+    def test_14_map_loaded_with_small_dimensions(self):
 
         self.maps_page.choose_image(self.maps_page.small_map_path)
         self.maps_page.is_image_preview_displayed()
@@ -118,13 +118,13 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         self.maps_page.is_image_uploaded()
         self.test_failed = False
 
-    def test_12_map_loaded_with_large_size_13MB(self):
+    def test_15_map_loaded_with_large_size_13MB(self):
 
         self.maps_page.choose_image(self.maps_page.large_map_path, '.jpg')
         self.assertTrue(self.maps_page.is_invalid_size_warning_present())
         self.test_failed = False
 
-    def test_13_upload_correct_image_after_warning(self):
+    def test_16_upload_correct_image_after_warning(self):
 
         self.maps_page.choose_image(self.maps_page.large_map_path, '.jpg')
         self.assertTrue(self.maps_page.is_invalid_size_warning_present())
@@ -135,7 +135,7 @@ class TestMapsPage(unittest.TestCase, MapsPage):
 
         self.test_failed = False
 
-    def test_14_upload_correct_image_after_cancel_warning(self):
+    def test_17_upload_correct_image_after_cancel_warning(self):
 
         self.maps_page.choose_image(self.maps_page.large_map_path, '.jpg')
         self.assertTrue(self.maps_page.is_invalid_size_warning_present())
