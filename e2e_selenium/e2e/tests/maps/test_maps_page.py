@@ -5,7 +5,7 @@ from pages.maps.maps_page import MapsPage
 from pages.base_page import BasePage
 from pages.login_page import LoginPage
 from pages.constructions.floors_page import FloorsPage
-
+import time
 
 class TestMapsPage(unittest.TestCase, MapsPage):
 
@@ -32,6 +32,7 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         cls.webdriver.quit()
 
     def __get_maps_page(self):
+
         assert self.floors_page.is_redirect_button_clickable()
         self.floors_page.redirect_button_click()
 
@@ -42,6 +43,7 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         self.maps_page.floor_update_button_click()
 
     def __test_map_image_with_invalid_format(self, extension):
+
         self.maps_page.choose_image(self.maps_page.incorrect_image, extension)
         self.assertTrue(self.maps_page.is_invalid_format_warning_present(extension))
         self.test_failed = False
@@ -96,15 +98,40 @@ class TestMapsPage(unittest.TestCase, MapsPage):
     # def test_10_map_loaded_with_incorrect_file_format_psd(self):
     #     self.__test_map_image_with_invalid_format('.psd')
 
-    def test_11_map_loaded_with_small_size_image(self):
+    def test_11_map_loaded_with_small_dimensions(self):
+
         self.maps_page.choose_image(self.maps_page.small_map_path)
         self.maps_page.is_image_preview_displayed()
         self.maps_page.upload_button_click()
         self.maps_page.is_image_uploaded()
         self.test_failed = False
 
-    def _test_05_map_loaded_with_small_size(self):
-        print('\ntest_05_map_loaded_with_small_size TestMapsPage \n')
+    def test_12_map_loaded_with_large_size_13MB(self):
 
-    def _test_06_map_is_removed_correctly(self):
-        print('\ntest_06_map_is_removed_correctly TestMapsPage \n')
+        self.maps_page.choose_image(self.maps_page.large_map_path, '.jpg')
+        self.assertTrue(self.maps_page.is_invalid_size_warning_present())
+        self.test_failed = False
+
+    def test_13_upload_correct_image_after_warning(self):
+
+        self.maps_page.choose_image(self.maps_page.large_map_path, '.jpg')
+        self.assertTrue(self.maps_page.is_invalid_size_warning_present())
+        self.maps_page.choose_image(self.maps_page.correct_map_path)
+        self.maps_page.is_image_preview_displayed()
+        self.maps_page.upload_button_click()
+        self.maps_page.is_image_uploaded()
+
+        self.test_failed = False
+
+    def test_14_upload_correct_image_after_cancel_warning(self):
+
+        self.maps_page.choose_image(self.maps_page.large_map_path, '.jpg')
+        self.assertTrue(self.maps_page.is_invalid_size_warning_present())
+        self.maps_page.warning_cancel_click()
+        self.assertTrue(self.maps_page.is_invalid_size_warning_disappear())
+        self.maps_page.choose_image(self.maps_page.correct_map_path)
+        self.maps_page.is_image_preview_displayed()
+        self.maps_page.upload_button_click()
+        self.maps_page.is_image_uploaded()
+
+        self.test_failed = False

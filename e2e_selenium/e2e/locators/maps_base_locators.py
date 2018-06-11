@@ -7,6 +7,7 @@ class MapsBaseLocators(object):
         # FILE PATHS
         self.correct_map_path = 'src/test_data_upload/correct_map'
         self.small_map_path = 'src/test_data_upload/small_size'
+        self.large_map_path = 'src/test_data_upload/large_size'
         self.incorrect_image = 'src/test_data_upload/image_formats/test'
 
         self.db_maps_env_xml = 'src/test-complexes.xml'
@@ -29,3 +30,5 @@ class MapsBaseLocators(object):
         self.hint_bar_scale = (By.XPATH, "//span[contains(text(),'Scale is not set')]")
 
         self.warning_invalid_format = (By.XPATH, "//span[contains(text(),'allowed file types: image/*.')]")
+        self.warning_invalid_size = (By.XPATH, "//span[contains(text(),'maximum upload size is 5.243 MB.')]")
+        self.warning_close_btn = (By.CSS_SELECTOR, 'div.ui-messages-error > a > i.fa-close')

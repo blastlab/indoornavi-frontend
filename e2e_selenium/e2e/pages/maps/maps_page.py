@@ -18,6 +18,9 @@ class MapsPage(BasePage, MapsBaseLocators):
     def upload_button_click(self):
         return self.click_element(self.upload_image_btn)
 
+    def warning_cancel_click(self):
+        return self.click_element(self.warning_close_btn)
+
     def is_choose_image_title_displayed(self):
         element_text = self.get_text(self.choose_image_title)
         return True if element_text == self.choose_image_string else False
@@ -32,6 +35,12 @@ class MapsPage(BasePage, MapsBaseLocators):
         __btn = self.choose_image_btn
         __path = path+extension
         return self.choose_file(__btn, __path)
+
+    def is_invalid_size_warning_present(self):
+        return True if self.is_element_present(self.warning_invalid_size) else False
+
+    def is_invalid_size_warning_disappear(self):
+        return True if self.is_element_disappear(self.warning_invalid_size) else False
 
     def is_invalid_format_warning_present(self, extension):
         __exception_msg = 'Warning that "File with extension: '+extension+' is incorrect" has not been appeared.'
@@ -53,6 +62,3 @@ class MapsPage(BasePage, MapsBaseLocators):
         self.is_element_present(self.uploaded_image)
         self.is_element_present(self.hint_bar)
         self.is_element_present(self.hint_bar_scale)
-
-    def __del__(self):
-        print('\n__del__ MapsPage \n')
