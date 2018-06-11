@@ -48,7 +48,7 @@ class BasePage(object):
     def is_element_appeared(self, locator, **kwargs):
         try:
             __msg = [msg for key, msg in kwargs.items()]
-            self.wait_for_element(locator, __msg)
+            self.wait_for_element(locator, __msg) if __msg else self.wait_for_element(locator)
         except NoSuchElementException:
             return False
         return True
@@ -56,8 +56,7 @@ class BasePage(object):
     def is_element_present(self, locator, **kwargs):
         try:
             __msg = [msg for key, msg in kwargs.items()]
-
-            self.wait_for_element_visibility(locator, __msg)
+            self.wait_for_element_visibility(locator, __msg) if __msg else self.wait_for_element_visibility(locator)
         except NoSuchElementException:
             return False
         return True
@@ -65,25 +64,25 @@ class BasePage(object):
     def is_element_disappear(self, locator, **kwargs):
         try:
             __msg = [msg for key, msg in kwargs.items()]
-            self.wait_for_element_disappear(locator, __msg)
+            self.wait_for_element_disappear(locator, __msg) if __msg else self.wait_for_element_disappear(locator)
         except NoSuchElementException:
             return False
         return True
 
     def wait_for_element(self, locator, msg='Element has not presented yet.'):
-        element = ui.WebDriverWait(self.__driver, 2).until(EC.presence_of_element_located(locator),msg)
+        element = ui.WebDriverWait(self.__driver, 100).until(EC.presence_of_element_located(locator),msg)
         return element
 
     def wait_for_element_clickable(self, locator, msg='Element has not been ready to be clicked.'):
-        element = ui.WebDriverWait(self.__driver, 2).until(EC.element_to_be_clickable(locator), msg)
+        element = ui.WebDriverWait(self.__driver, 100).until(EC.element_to_be_clickable(locator), msg)
         return element
 
     def wait_for_element_visibility(self, locator, msg='Element has not been visible yet.'):
-        element = ui.WebDriverWait(self.__driver, 2).until(EC.visibility_of_element_located(locator), msg)
+        element = ui.WebDriverWait(self.__driver, 100).until(EC.visibility_of_element_located(locator), msg)
         return element
 
     def wait_for_element_disappear(self, locator, msg='Element has not disappeared yet.'):
-        element = ui.WebDriverWait(self.__driver, 2).until_not(EC.visibility_of_element_located(locator), msg)
+        element = ui.WebDriverWait(self.__driver, 100).until_not(EC.visibility_of_element_located(locator), msg)
         return element
 
     def open_page(self, page_url):
