@@ -98,6 +98,18 @@ class TestMapsPage(unittest.TestCase, MapsPage):
     # def test_10_map_loaded_with_incorrect_file_format_psd(self):
     #     self.__test_map_image_with_invalid_format('.psd')
 
+    def test_11_map_loaded_with_incorrect_text_format_csv(self):
+
+        self.__test_map_image_with_invalid_format('.csv')
+
+    def test_12_map_loaded_with_incorrect_movie_format_mp4(self):
+
+        self.__test_map_image_with_invalid_format('.mp4')
+
+    def test_13_map_loaded_with_incorrect_format_sql(self):
+
+        self.__test_map_image_with_invalid_format('.sql')
+
     def test_11_map_loaded_with_small_dimensions(self):
 
         self.maps_page.choose_image(self.maps_page.small_map_path)
