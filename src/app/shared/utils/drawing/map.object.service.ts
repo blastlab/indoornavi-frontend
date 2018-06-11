@@ -7,6 +7,7 @@ import {IconService, NaviIcons} from '../../services/drawing/icon.service';
 import {Scale} from '../../../map-editor/tool-bar/tools/scale/scale.type';
 import {InfoWindowGroupWrapper} from './info.window';
 import {CoordinatesArray, DefaultIcon, Fill, InfoWindow, MapObject, MapObjectMetadata, Marker, Opacity, Stroke} from './drawing.types';
+import {MapEditorService} from '../../../map-editor/map.editor.service';
 
 @Injectable()
 export class MapObjectService {
@@ -153,6 +154,21 @@ export class MapObjectService {
 
   setOpacity(objectMetadata: MapObjectMetadata): void {
     this.objects.get(objectMetadata.object.id).getGroup().attr('fill-opacity', (<Opacity>objectMetadata.object).opacity);
+  }
+
+  getHeight(): number {
+    return d3.select(`#${MapEditorService.MAP_LAYER_SELECTOR_ID}`).attr('height');
+  }
+
+  getWidth(): number {
+    return d3.select(`#${MapEditorService.MAP_LAYER_SELECTOR_ID}`).attr('width');
+  }
+
+  getMousePosition(mapSvg): any {
+    const position = d3.mouse(mapSvg.container.node());
+    const x = Math.round(position[0]);
+    const y = Math.round(position[1]);
+    return {pos: position, x: x, y: y};
   }
 
 

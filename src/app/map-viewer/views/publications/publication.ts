@@ -12,6 +12,7 @@ import {FloorService} from '../../../floor/floor.service';
 import {TagVisibilityTogglerService} from '../../../shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
 import {BreadcrumbService} from '../../../shared/services/breadcrumbs/breadcrumb.service';
 import {Floor} from '../../../floor/floor.type';
+import {MapClickService} from "../../../shared/services/map-click/map-click.service";
 
 
 @Component({
@@ -25,6 +26,7 @@ export class PublishedComponent extends SocketConnectorComponent implements OnIn
               route: ActivatedRoute,
               publishedService: PublishedService,
               mapLoaderInformer: MapLoaderInformerService,
+              mapClickService: MapClickService,
               areaService: AreaService,
               translateService: TranslateService,
               iconService: IconService,
@@ -40,6 +42,7 @@ export class PublishedComponent extends SocketConnectorComponent implements OnIn
       route,
       publishedService,
       mapLoaderInformer,
+      mapClickService,
       areaService,
       translateService,
       iconService,
