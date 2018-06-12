@@ -156,21 +156,12 @@ export class MapObjectService {
     this.objects.get(objectMetadata.object.id).getGroup().attr('fill-opacity', (<Opacity>objectMetadata.object).opacity);
   }
 
-  getHeight(): number {
-    return d3.select(`#${MapEditorService.MAP_LAYER_SELECTOR_ID}`).attr('height');
-  }
-
-  getWidth(): number {
-    return d3.select(`#${MapEditorService.MAP_LAYER_SELECTOR_ID}`).attr('width');
-  }
-
   getMousePosition(mapSvg): any {
     const position = d3.mouse(mapSvg.container.node());
     const x = Math.round(position[0]);
     const y = Math.round(position[1]);
     return {pos: position, x: x, y: y};
   }
-
 
 }
 
