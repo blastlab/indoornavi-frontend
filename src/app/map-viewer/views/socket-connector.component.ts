@@ -37,6 +37,7 @@ import {SvgAnimator} from '../../shared/utils/drawing/animator';
 import {MapObjectMetadata} from '../../shared/utils/drawing/drawing.types';
 import {MapClickService} from "../../shared/services/map-click/map-click.service";
 import {Deferred} from '../../shared/utils/helper/deferred';
+import {Helper} from '../../shared/utils/helper/helper';
 
 @Component({
   templateUrl: './socket-connector.component.html'
@@ -55,7 +56,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   private tags: Tag[] = [];
   private visibleTags: Map<number, boolean> = new Map();
   private scaleCalculations: ScaleCalculations;
-  private loadMapDeferred;
+  private loadMapDeferred: Deferred<boolean>;
 
   constructor(protected ngZone: NgZone,
               protected socketService: SocketService,
@@ -71,6 +72,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
               protected tagTogglerService: TagVisibilityTogglerService,
               private breadcrumbService: BreadcrumbService) {
 
+    this.loadMapDeferred = new Deferred<boolean>();
     this.route.params
       .subscribe((params: Params) => {
         const floorId = +params['id'];
@@ -153,7 +155,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     this.whenDataArrived().subscribe((data: CoordinatesSocketData): void => {
       this.handleCoordinatesData(data);
     });
-    this.loadMapDeferred = new Deferred<boolean>();
     this.subscribeToMapClick();
   }
 
@@ -290,9 +291,9 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
 
   protected subscribeToMapClick() {
     this.mapClick.clickInvoked().subscribe((mapSvg: MapSvg) => {
-      const position = this.mapObjectService.getMousePosition(mapSvg);
+      const position: Point = Helper.getMousePosition(mapSvg);
 
-      if (!!this.originListeningOnClickMapEvent) {
+      if (this.originListeningOnClickMapEvent.length > 0) {
         this.originListeningOnClickMapEvent.forEach((event: MessageEvent): void => {
             event.source.postMessage({type: 'click', position}, event.origin);
         });
@@ -323,8 +324,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     this.loadMapDeferred.promise.then(() => {
       const height = this.d3map.container.node().getBBox().height;
       const width = this.d3map.container.node().getBBox().width;
-      const scale = {measure: this.scale.measure, realDistance: this.scale.realDistance ,start: this.scale.start, stop: this.scale.stop};
-      event.source.postMessage({type: `getMapDimensions`, mapObjectId: 'map', height: height, width: width, scale: scale}, event.origin);
+      event.source.postMessage({type: `getMapDimensions`, mapObjectId: 'map', height: height, width: width, scale: this.scale}, event.origin);
     });
   }
 
@@ -370,7 +370,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           this.getMapDimensions(event);
           break;
         case 'addClickEventListener':
-          if(!this.originListeningOnClickMapEvent.includes(event)) {
+          if(this.originListeningOnClickMapEvent.indexOf(event) < 0) {
             this.originListeningOnClickMapEvent.push(event);
           }
           break;

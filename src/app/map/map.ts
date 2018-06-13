@@ -16,10 +16,6 @@ export class MapComponent implements OnInit {
   @Input() floor: Floor;
   public isPublic: boolean = false;
   private imageLoaded: boolean = false;
-  private timer;
-  private isLongClick: boolean = false;
-  private mouseMove: boolean = false;
-  private mouseDown: boolean = false;
 
   constructor(private mapLoaderInformer: MapLoaderInformerService,
               private mapEditorService: MapEditorService,
@@ -35,7 +31,7 @@ export class MapComponent implements OnInit {
     this.mapEditorService.drawMap(this.floor).then((mapSvg: MapSvg) => {
       this.imageLoaded = true;
       this.mapLoaderInformer.publishIsLoaded(mapSvg);
-      this.onClickListener(mapSvg);
+      this.applyOnClickListener(mapSvg);
     });
   }
 
@@ -48,29 +44,33 @@ export class MapComponent implements OnInit {
     }
   }
 
-  onClickListener(mapSvg) {
-      mapSvg.container
-        .on('mousedown', () => {
-          this.mouseDown = true;
-          this.timer = setTimeout(() => {
-            if(this.mouseDown && !this.mouseMove) {
-              this.isLongClick = true;
-            }
-          }, 500);
-        })
-        .on('mouseup', () => {
-          this.mouseDown = false;
-          if(this.isLongClick && !this.mouseMove) {
-            this.mapClick.mapIsClicked(mapSvg);
+  applyOnClickListener(mapSvg: MapSvg) {
+   let isLongClick: boolean = false;
+   let mouseMove: boolean = false;
+   let mouseDown: boolean = false;
+
+    mapSvg.container
+      .on('mousedown', () => {
+        mouseDown = true;
+         setTimeout(() => {
+          if(mouseDown && !mouseMove) {
+            isLongClick = true;
           }
-          this.isLongClick = false;
-          this.mouseMove = false;
-        })
-        .on('mousemove', () => {
-          if(this.mouseDown) {
-            this.mouseMove = true;
-          }
-      });
+        }, 500);
+      })
+      .on('mouseup', () => {
+        mouseDown = false;
+        if(isLongClick && !mouseMove) {
+          this.mapClick.mapIsClicked(mapSvg);
+        }
+        isLongClick = false;
+        mouseMove = false;
+      })
+      .on('mousemove', () => {
+        if(mouseDown) {
+          mouseMove = true;
+        }
+    });
   }
 
 }

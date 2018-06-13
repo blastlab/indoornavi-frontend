@@ -7,7 +7,7 @@ import {IconService, NaviIcons} from '../../services/drawing/icon.service';
 import {Scale} from '../../../map-editor/tool-bar/tools/scale/scale.type';
 import {InfoWindowGroupWrapper} from './info.window';
 import {CoordinatesArray, DefaultIcon, Fill, InfoWindow, MapObject, MapObjectMetadata, Marker, Opacity, Stroke} from './drawing.types';
-import {MapEditorService} from '../../../map-editor/map.editor.service';
+import {Helper} from "../helper/helper";
 
 @Injectable()
 export class MapObjectService {
@@ -19,10 +19,6 @@ export class MapObjectService {
     icon: NaviIcons.MARKER,
     translation: {x: 12, y: 22}
   };
-
-  static respondToOrigin(event: number, id: number, originMessageEvent: MessageEvent): void {
-    originMessageEvent.source.postMessage({type: `${event.toString(10)}-${id.toString(10)}`, objectId: id}, originMessageEvent.origin);
-  }
 
   constructor(private iconService: IconService) {
   }
@@ -125,7 +121,7 @@ export class MapObjectService {
     if ((<Marker>objectMetadata.object).events.length > 0) {
       (<Marker>objectMetadata.object).events.forEach((event: number): void => {
         element.getGroup().on(event, (): void => {
-          MapObjectService.respondToOrigin(event, (<MapObject>objectMetadata.object).id, originMessageEvent);
+          Helper.respondToOrigin(event, (<MapObject>objectMetadata.object).id, originMessageEvent);
         });
       });
     }
@@ -154,13 +150,6 @@ export class MapObjectService {
 
   setOpacity(objectMetadata: MapObjectMetadata): void {
     this.objects.get(objectMetadata.object.id).getGroup().attr('fill-opacity', (<Opacity>objectMetadata.object).opacity);
-  }
-
-  getMousePosition(mapSvg): any {
-    const position = d3.mouse(mapSvg.container.node());
-    const x = Math.round(position[0]);
-    const y = Math.round(position[1]);
-    return {pos: position, x: x, y: y};
   }
 
 }
