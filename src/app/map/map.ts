@@ -32,6 +32,7 @@ export class MapComponent implements OnInit {
       this.imageLoaded = true;
       this.mapLoaderInformer.publishIsLoaded(mapSvg);
       this.applyOnClickListener(mapSvg);
+      this.applyOnTouchesListener(mapSvg);
     });
   }
 
@@ -71,6 +72,35 @@ export class MapComponent implements OnInit {
           mouseMove = true;
         }
     });
+  }
+
+  applyOnTouchesListener(mapSvg: MapSvg) {
+    let isLongTouch: boolean = false;
+    let touchMove: boolean = false;
+    let touchStart: boolean = false;
+
+    mapSvg.container
+      .on('touchstart', () => {
+        touchStart = true;
+        setTimeout(() => {
+          if(touchStart && !touchMove) {
+            isLongTouch = true;
+          }
+        }, 500);
+      })
+      .on('touchend', () => {
+        touchStart = false;
+        if(isLongTouch && !touchMove) {
+          this.mapClick.mapIsClicked(mapSvg);
+        }
+        isLongTouch = false;
+        touchMove = false;
+      })
+      .on('touchmove', () => {
+        if(touchStart) {
+          touchMove = true;
+        }
+      });
   }
 
 }

@@ -292,10 +292,9 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   protected subscribeToMapClick() {
     this.mapClick.clickInvoked().subscribe((mapSvg: MapSvg) => {
       const position: Point = Helper.getMousePosition(mapSvg);
-
       if (this.originListeningOnClickMapEvent.length > 0) {
         this.originListeningOnClickMapEvent.forEach((event: MessageEvent): void => {
-            event.source.postMessage({type: 'click', position}, event.origin);
+            event.source.postMessage({type: 'click', position: position}, event.origin);
         });
       }
     });
