@@ -35,6 +35,9 @@ import {Tag} from '../../device/device.type';
 import {BreadcrumbService} from '../../shared/services/breadcrumbs/breadcrumb.service';
 import {SvgAnimator} from '../../shared/utils/drawing/animator';
 import {MapObjectMetadata} from '../../shared/utils/drawing/drawing.types';
+import {MapClickService} from "../../shared/services/map-click/map-click.service";
+import {Deferred} from '../../shared/utils/helper/deferred';
+import {Helper} from '../../shared/utils/helper/helper';
 
 @Component({
   templateUrl: './socket-connector.component.html'
@@ -48,16 +51,19 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   private transitionEnded = new Subject<number>();
   private areasOnMap: Dictionary<number, SvgGroupWrapper> = new Dictionary<number, SvgGroupWrapper>();
   private originListeningOnEvent: Dictionary<string, MessageEvent[]> = new Dictionary<string, MessageEvent[]>();
+  private originListeningOnClickMapEvent: Array<MessageEvent> = new Array<MessageEvent>();
   private floor: Floor;
   private tags: Tag[] = [];
   private visibleTags: Map<number, boolean> = new Map();
   private scaleCalculations: ScaleCalculations;
+  private loadMapDeferred: Deferred<boolean>;
 
   constructor(protected ngZone: NgZone,
               protected socketService: SocketService,
               protected route: ActivatedRoute,
               protected publishedService: PublishedService,
               protected mapLoaderInformer: MapLoaderInformerService,
+              protected mapClick: MapClickService,
               private areaService: AreaService,
               private translateService: TranslateService,
               private iconService: IconService,
@@ -66,6 +72,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
               protected tagTogglerService: TagVisibilityTogglerService,
               private breadcrumbService: BreadcrumbService) {
 
+    this.loadMapDeferred = new Deferred<boolean>();
     this.route.params
       .subscribe((params: Params) => {
         const floorId = +params['id'];
@@ -109,6 +116,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         if (floor.imageId != null) {
           this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg) => {
             this.d3map = mapSvg;
+            this.loadMapDeferred.resolve();
             this.publishedService.getTagsAvailableForUser(floor.id).subscribe((tags: Tag[]) => {
               this.tags = tags;
               this.tags.forEach((tag: Tag) => {
@@ -147,6 +155,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     this.whenDataArrived().subscribe((data: CoordinatesSocketData): void => {
       this.handleCoordinatesData(data);
     });
+    this.subscribeToMapClick();
   }
 
   protected whenDataArrived(): Observable<CoordinatesSocketData> {
@@ -280,6 +289,17 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     }
   }
 
+  protected subscribeToMapClick() {
+    this.mapClick.clickInvoked().subscribe((mapSvg: MapSvg) => {
+      const position: Point = Helper.getMousePosition(mapSvg);
+      if (this.originListeningOnClickMapEvent.length > 0) {
+        this.originListeningOnClickMapEvent.forEach((event: MessageEvent): void => {
+            event.source.postMessage({type: 'click', position: position}, event.origin);
+        });
+      }
+    });
+  }
+
   private handleEventData(data: EventSocketData): void {
     const areaOnMap: SvgGroupWrapper = this.areasOnMap.getValue(data.event.areaId);
     if (!!areaOnMap) {
@@ -297,6 +317,14 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         }, Movable.TRANSITION_DURATION);
       });
     }
+  }
+
+  private getMapDimensions(event: MessageEvent) {
+    this.loadMapDeferred.promise.then(() => {
+      const height = this.d3map.container.node().getBBox().height;
+      const width = this.d3map.container.node().getBBox().width;
+      event.source.postMessage({type: `getMapDimensions`, mapObjectId: 'map', height: height, width: width, scale: this.scale}, event.origin);
+    });
   }
 
   private handleCommands(event: MessageEvent): void {
@@ -336,6 +364,14 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           break;
         case 'setOpacity':
           this.mapObjectService.setOpacity(data['args']);
+          break;
+        case 'getMapDimensions':
+          this.getMapDimensions(event);
+          break;
+        case 'addClickEventListener':
+          if(this.originListeningOnClickMapEvent.indexOf(event) < 0) {
+            this.originListeningOnClickMapEvent.push(event);
+          }
           break;
       }
     }
