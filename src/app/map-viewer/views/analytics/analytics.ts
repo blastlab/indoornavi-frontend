@@ -21,6 +21,7 @@ import {HeatMapControllerService} from '../../../shared/components/heat-map-cont
 import {TagToggle} from '../../../shared/components/tag-visibility-toggler/tag-toggle.type';
 import {PixelHeatMap} from './pixel.heatmap.service';
 import {HeatMapType} from '../../../shared/components/heat-map-controller/heat-map-controller/heat-map-controller.component';
+import {MapClickService} from "../../../shared/services/map-click/map-click.service";
 
 @Component({
   templateUrl: './analytics.html'
@@ -53,6 +54,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
               route: ActivatedRoute,
               publishedService: PublishedService,
               mapLoaderInformer: MapLoaderInformerService,
+              mapClickService: MapClickService,
               areaService: AreaService,
               translateService: TranslateService,
               iconService: IconService,
@@ -68,6 +70,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       route,
       publishedService,
       mapLoaderInformer,
+      mapClickService,
       areaService,
       translateService,
       iconService,
