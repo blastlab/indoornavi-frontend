@@ -119,7 +119,7 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         self.test_failed = False
 
     def test_15_map_loaded_with_large_size_13MB(self):
-
+        print(self.maps_page.large_map_path)
         self.maps_page.choose_image(self.maps_page.large_map_path, '.jpg')
         self.assertTrue(self.maps_page.is_invalid_size_warning_present())
         self.test_failed = False
@@ -147,3 +147,17 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         self.maps_page.is_image_uploaded()
 
         self.test_failed = False
+
+    def test_18_add_scale_straight_line(self):
+
+        self.maps_page.choose_image(self.maps_page.correct_map_path)
+        # Check thumb, filesize, filename, close btn appeared - preview
+        self.maps_page.is_image_preview_displayed()
+        self.maps_page.upload_button_click()
+        self.maps_page.is_image_uploaded()
+
+        # time.sleep(3)
+        self.maps_page.scale_button_click()
+        # Logic
+        self.maps_page.draw_scale_line(400, 0)
+        self.assertTrue(self.maps_page.is_scale_line_drawn_correctly(400, 0))

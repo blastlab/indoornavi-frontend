@@ -7,8 +7,9 @@ class ServiceDb(object):
     __db_hostname = 'localhost'
     __db_tables_array = ['complex', 'building', 'floor',
                         'sink', 'anchor', 'tag', 'device',
+                         'configuration',
                         'permission', 'permissiongroup',
-                        'permissiongroup_permission']
+                        'permissiongroup_permission', ]
 
     def __init__(self):
         self.db_connect = mysql.connector.connect(user='root', password='', host=self.__db_hostname, database='Navi')
@@ -30,11 +31,11 @@ class ServiceDb(object):
         return last_construction_name
 
     def truncate_db(self):
-        for table in self.__db_tables_array[0:7]:
+        for table in self.__db_tables_array[0:8]:
             self.db_cursor.execute("TRUNCATE TABLE {}".format(table))
 
     def truncate_db_permissions(self):
-        for table in self.__db_tables_array[0:10]:
+        for table in self.__db_tables_array[0:11]:
             self.db_cursor.execute("TRUNCATE TABLE {}".format(table))
 
     def create_db_env(self, file_path):

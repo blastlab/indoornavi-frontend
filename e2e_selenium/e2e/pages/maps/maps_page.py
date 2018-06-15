@@ -1,6 +1,8 @@
 from pages.base_page import BasePage
 from locators.maps_base_locators import MapsBaseLocators
-
+import time
+import autopy
+from decimal import *
 
 class MapsPage(BasePage, MapsBaseLocators):
 
@@ -61,4 +63,113 @@ class MapsPage(BasePage, MapsBaseLocators):
     def is_image_uploaded(self):
         self.is_element_present(self.uploaded_image)
         self.is_element_present(self.hint_bar)
-        self.is_element_present(self.hint_bar_scale)
+        # self.is_element_present(self.hint_bar_scale)
+
+    # SCALE
+    def scale_button_click(self):
+        return self.click_element(self.scale_button)
+
+    def is_hint_bar_prompt_displayed(self):
+        return True if self.is_element_present(self.hint_bar_scale_prompt) else False
+
+    def draw_scale_line(self, x_offset, y_offset):
+        """
+
+        :param x_offset: the number of pixels needed to move the mouse cursor on the x axis
+        :param y_offset: the number of pixels needed to move the mouse cursor on the y axis
+        :return: action which provide to draw scale line based on params
+
+        """
+        __x_offset = x_offset
+        __y_offset = y_offset
+        __element_image = self.wait_for_element_clickable(self.map_image)
+        self.log_cursor_coordinates()
+        return self.actions.click(__element_image).move_by_offset(__x_offset, __y_offset).click().perform()
+
+    @staticmethod
+    def __get_coordinates(DOM_element, **kwargs):
+        __coordinates = {}
+        for key, param in kwargs.items():
+            __coordinates[param] = DOM_element.get_attribute(param)
+        return __coordinates
+
+    @staticmethod
+    def __abs_value(a, b):
+        return abs(float(b)-float(a))
+
+    def get_scale_line_parameters(self):
+        """
+
+        :return: json -{} Dictionary information of scale line drawn on the map
+
+        """
+
+        # SCALE LINE PARTS
+        scale_line_dict = {}
+
+        point_a = self.wait_for_element(self.scale_line_point_a)
+        point_b = self.wait_for_element(self.scale_line_point_b)
+        scale_line = self.wait_for_element(self.scale_line)
+
+        point_a_params = self.__get_coordinates(point_a, x="cx", y="cy")
+        point_b_params = self.__get_coordinates(point_b, x="cx", y="cy")
+        scale_line_params = self.__get_coordinates(scale_line, x1="x1", x2="x2", y1="y1", y2="y2")
+
+        scale_line_dict["scale_line"] = scale_line_params
+        scale_line_dict["point_a"] = point_a_params
+        scale_line_dict["point_b"] = point_b_params
+        # print(scale_line_dict)
+        return scale_line_dict
+
+    def is_scale_line_drawn_correctly(self, x_offset, y_offset):
+
+        scale_line_params = self.get_scale_line_parameters()
+        expect_x = x_offset
+        expect_y = y_offset
+
+        # assert scale_line_params["point_a"][]
+        point_a_cx = scale_line_params["point_a"]['cx']
+        point_a_cy = scale_line_params["point_a"]['cy']
+        point_b_cx = scale_line_params["point_b"]['cx']
+        point_b_cy = scale_line_params["point_b"]['cy']
+        line_x1 = scale_line_params["scale_line"]['x1']
+        line_x2 = scale_line_params["scale_line"]['x2']
+        line_y1 = scale_line_params["scale_line"]['y1']
+        line_y2 = scale_line_params["scale_line"]['y2']
+        # offset x - difference
+        result_x = self.__abs_value(point_a_cx, point_b_cx)
+        result_y = self.__abs_value(point_a_cy, point_b_cy)
+        result_line_x = self.__abs_value(line_x1, line_x2)
+        result_line_y = self.__abs_value(line_y1, line_y2)
+
+        assert expect_x == result_x and expect_x == result_line_x, str(expect_x)+' is not equal '+str(result_x) + ' or '+ str(result_line_x)
+        assert expect_y == result_y and expect_y == result_line_y, str(expect_y)+' is not equal '+str(result_y) + ' or '+ str(result_line_y)
+        return True
+
+    def is_scale_line_displayed(self):
+        element = self.is_element_appeared(self.scale_line)
+        return True if element else False
+
+    # SUPPORT METHODS
+    def log_cursor_coordinates(self):
+        return self.__driver.execute_script('''
+        function findScreenCoords(mouseEvent)
+          {
+            var xpos;
+            var ypos;
+            if (mouseEvent)
+            {
+              //FireFox
+              xpos = mouseEvent.screenX;
+              ypos = mouseEvent.screenY;
+            }
+            else
+            {
+              //IE
+              xpos = window.event.screenX;
+              ypos = window.event.screenY;
+            }
+            console.log("LOG COORDINATES: "+ xpos + ", " + ypos);
+          }
+        document.getElementById("map").onmousemove = findScreenCoords;
+        ''')

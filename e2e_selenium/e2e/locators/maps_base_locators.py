@@ -32,3 +32,13 @@ class MapsBaseLocators(object):
         self.warning_invalid_format = (By.XPATH, "//span[contains(text(),'allowed file types: image/*.')]")
         self.warning_invalid_size = (By.XPATH, "//span[contains(text(),'maximum upload size is 5.243 MB.')]")
         self.warning_close_btn = (By.CSS_SELECTOR, 'div.ui-messages-error > a > i.fa-close')
+
+        # SCALE
+        self.scale_button = (By.XPATH, '//button[@ng-reflect-text="Scale"]')
+        self.hint_bar_scale_prompt = (By.XPATH, "//span[contains(text(),' Click on map to set starting point of measurement')]")
+
+        self.displayed_map = (By.CSS_SELECTOR, 'div#map-container > svg.drop-zone')
+        self.map_image = (By.CSS_SELECTOR, '#map')
+        self.scale_line = (By.CSS_SELECTOR, '#scaleGroup > line.connectLine')
+        self.scale_line_point_a = (By.CSS_SELECTOR, '#scaleGroup > circle:nth-child(2)')
+        self.scale_line_point_b = (By.CSS_SELECTOR, '#scaleGroup > circle:nth-child(5)')
