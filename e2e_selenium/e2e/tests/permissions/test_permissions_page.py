@@ -44,7 +44,7 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
         self.__get_permissions_page()
         self.assertEqual(self.webdriver.current_url[-16:], 'permissionGroups', 'Page url has not been correct.')
         self.assertTrue(self.is_groups_list_displayed(), 'Permission Groups has not been displayed.')
-        # self.assertTrue(self.is_permissions_title_correct(), 'Page title has not been correct.')
+        self.assertTrue(self.is_permissions_title_correct(), 'Page title has not been correct.')
 
     def test_02_multi_select_in_add_permission_group(self):
 

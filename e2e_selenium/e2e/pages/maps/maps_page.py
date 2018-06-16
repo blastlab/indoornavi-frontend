@@ -1,8 +1,6 @@
 from pages.base_page import BasePage
 from locators.maps_base_locators import MapsBaseLocators
-import time
-import autopy
-from decimal import *
+
 
 class MapsPage(BasePage, MapsBaseLocators):
 
