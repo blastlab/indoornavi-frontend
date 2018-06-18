@@ -148,6 +148,19 @@ class MapsPage(BasePage, MapsBaseLocators):
         element = self.is_element_appeared(self.scale_line)
         return True if element else False
 
+    def is_scale_modal_window_displayed(self):
+        element = self.is_element_appeared(self.scale_modal_window)
+        return True if element else False
+
+    def enter_scale_distance(self, value):
+        return self.clear_and_fill_input(value, self.scale_distance_input)
+
+    def set_scale_measurement(self, option):
+        self.click_element(self.scale_measurement)
+        print(self.click_element(self.scale_measurement_cent))
+
+        # return click(self.scale_measurement_cent)
+
     # SUPPORT METHODS
     def log_cursor_coordinates(self):
         return self.__driver.execute_script('''

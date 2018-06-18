@@ -7,6 +7,7 @@ from pages.login_page import LoginPage
 from pages.constructions.floors_page import FloorsPage
 import time
 
+
 class TestMapsPage(unittest.TestCase, MapsPage):
 
     @classmethod
@@ -30,6 +31,20 @@ class TestMapsPage(unittest.TestCase, MapsPage):
     @classmethod
     def tearDownClass(cls):
         cls.webdriver.quit()
+
+    def __add_scale_process(self, x, y):
+        self.maps_page.choose_image(self.maps_page.correct_map_path)
+        # Check thumb, filesize, filename, close btn appeared - preview
+        self.maps_page.is_image_preview_displayed()
+        self.maps_page.upload_button_click()
+        self.maps_page.is_image_uploaded()
+
+        # time.sleep(3)
+        self.maps_page.scale_button_click()
+        # Logic
+        self.maps_page.draw_scale_line(x, y)
+        self.assertTrue(self.maps_page.is_scale_line_drawn_correctly(x, y))
+        self.assertTrue(self.maps_page.is_scale_modal_window_displayed())
 
     def __get_maps_page(self):
 
@@ -148,16 +163,17 @@ class TestMapsPage(unittest.TestCase, MapsPage):
 
         self.test_failed = False
 
-    def test_18_add_scale_straight_line(self):
+    # SCALE TESTS
+    def _test_18_add_scale_straight_line(self):
+        # self.__get_maps_page()
+        self.__add_scale_process(400, 0)
+        self.maps_page.enter_scale_distance(725)
+        self.maps_page.choose_scale_measurement('centimeters')
 
-        self.maps_page.choose_image(self.maps_page.correct_map_path)
-        # Check thumb, filesize, filename, close btn appeared - preview
-        self.maps_page.is_image_preview_displayed()
-        self.maps_page.upload_button_click()
-        self.maps_page.is_image_uploaded()
-
-        # time.sleep(3)
-        self.maps_page.scale_button_click()
-        # Logic
-        self.maps_page.draw_scale_line(400, 0)
-        self.assertTrue(self.maps_page.is_scale_line_drawn_correctly(400, 0))
+    def _test_19_add_scale_diagonal_line(self):
+        print('diagonal line TEST - scale')
+        # self.__get_maps_page()
+        self.__add_scale_process(400, 200)
+        self.maps_page.enter_scale_distance(self.maps_page.scale_value)
+        self.maps_page.set_scale_measurement('centimeters')
+        time.sleep(5)

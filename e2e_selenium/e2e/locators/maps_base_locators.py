@@ -9,6 +9,7 @@ class MapsBaseLocators(object):
         self.small_map_path = 'src/test_data_upload/small_size'
         self.large_map_path = 'src/test_data_upload/large_size'
         self.incorrect_image = 'src/test_data_upload/image_formats/test'
+        # INPUT DATA
 
         self.db_maps_env_xml = 'src/test-complexes.xml'
         # LOCATORS
@@ -33,7 +34,9 @@ class MapsBaseLocators(object):
         self.warning_invalid_size = (By.XPATH, "//span[contains(text(),'maximum upload size is 5.243 MB.')]")
         self.warning_close_btn = (By.CSS_SELECTOR, 'div.ui-messages-error > a > i.fa-close')
 
-        # SCALE
+        # input data
+        self.scale_value = '750'
+        # scale locators
         self.scale_button = (By.XPATH, '//button[@ng-reflect-text="Scale"]')
         self.hint_bar_scale_prompt = (By.XPATH, "//span[contains(text(),' Click on map to set starting point of measurement')]")
 
@@ -42,3 +45,12 @@ class MapsBaseLocators(object):
         self.scale_line = (By.CSS_SELECTOR, '#scaleGroup > line.connectLine')
         self.scale_line_point_a = (By.CSS_SELECTOR, '#scaleGroup > circle:nth-child(2)')
         self.scale_line_point_b = (By.CSS_SELECTOR, '#scaleGroup > circle:nth-child(5)')
+        self.scale_modal_window = (By.CLASS_NAME, 'ui-dialog')
+
+        self.scale_measurement = (By.CSS_SELECTOR, '#map-container > app-scale-input > app-tool-details > div > div > form > div.ui-g-5 > p-dropdown > div > label')
+        self.scale_measurement_cent = (By.CSS_SELECTOR, ' #map-container > app-scale-input > app-tool-details > div > div > form > div.ui-g-5 > p-dropdown > div > div.ng-tns-c13-15 > div > ul > li.ng-tns-c13-15.ui-dropdown-item')
+        # self.scale_measurement_cent = (By.XPATH, "//span[contains(text(),'CENTIMETERS')]")
+        self.scale_measurement_meters = (By.XPATH, "div.ng-tns-c13-15 > div > ul > li.ng-tns-c13-15")
+        self.scale_distance_input = (By.CSS_SELECTOR, 'input#distance')
+        self.scale_ok_button = (By.XPATH, '//button[@ng-reflect-text="Ok"]')
+        self.scale_cancel_button = (By.XPATH, '//button[@ng-reflect-text="Cancel"]')
