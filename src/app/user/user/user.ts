@@ -53,7 +53,7 @@ export class UserComponent implements OnInit, CrudComponent {
   }
 
   save(isValid: boolean): void {
-    if (isValid) {
+    if (isValid && this.passwordsEqual) {
       (!!this.user.id ?
           this.userService.update(this.user)
           :

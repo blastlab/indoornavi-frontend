@@ -27,8 +27,9 @@ export class AreaConfiguration {
   tags: Tag[];
   mode: Mode;
 
-  constructor(mode: Mode) {
+  constructor(mode: Mode, offset: number) {
     this.mode = mode;
+    this.offset = offset;
   }
 }
 

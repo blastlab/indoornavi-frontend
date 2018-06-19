@@ -45,7 +45,7 @@ export class PermissionGroupComponent implements OnInit, CrudComponent {
   save(isValid: boolean) {
     if (isValid) {
       const isNew = !(!!this.permissionGroup.id);
-      this.permissionGroupService.save(this.permissionGroup).subscribe((permissionGroup: PermissionGroup) => {
+      this.permissionGroupService.save(this.permissionGroup).first().subscribe((permissionGroup: PermissionGroup) => {
         if (isNew) {
           this.messageService.success('permissionGroup.create.success');
         } else {
@@ -71,7 +71,7 @@ export class PermissionGroupComponent implements OnInit, CrudComponent {
     this.confirmationService.confirm({
       message: this.confirmBody,
       accept: () => {
-        this.permissionGroupService.remove(this.permissionGroups[index].id).subscribe(() => {
+        this.permissionGroupService.remove(this.permissionGroups[index].id).first().subscribe(() => {
           this.permissionGroups = <PermissionGroup[]>CrudHelper.remove(index, this.permissionGroups);
           this.messageService.success('permissionGroup.remove.success');
         }, (err: string) => {
@@ -83,10 +83,10 @@ export class PermissionGroupComponent implements OnInit, CrudComponent {
 
   private setTranslations() {
     this.translateService.setDefaultLang('en');
-    this.translateService.get('confirm.body').subscribe((value: string) => {
+    this.translateService.get('confirm.body').first().subscribe((value: string) => {
       this.confirmBody = value;
     });
-    this.translateService.get('permissionGroup.selectPermission').subscribe((value: string) => {
+    this.translateService.get('permissionGroup.selectPermission').first().subscribe((value: string) => {
       this.selectPermissionLabel = value;
     });
     this.translateService.get('permissionGroup.header').subscribe((value: string) => {
@@ -97,10 +97,10 @@ export class PermissionGroupComponent implements OnInit, CrudComponent {
   }
 
   private loadData() {
-    this.permissionGroupService.getPermissions().subscribe((permissions: Permission[]) => {
+    this.permissionGroupService.getPermissions().first().subscribe((permissions: Permission[]) => {
       this.permissions = permissions;
     });
-    this.permissionGroupService.getPermissionGroups().subscribe((permissionGroups: PermissionGroup[]) => {
+    this.permissionGroupService.getPermissionGroups().first().subscribe((permissionGroups: PermissionGroup[]) => {
       this.permissionGroups = permissionGroups;
       this.loading = false;
     });
