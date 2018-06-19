@@ -5,7 +5,7 @@ import {Floor} from '../floor/floor.type';
 import {MapSvg} from './map.type';
 import {ActivatedRoute, Data} from '@angular/router';
 import {DevicePlacerController} from '../map-editor/tool-bar/tools/devices/device-placer.controller';
-import {MapClickService} from "../shared/services/map-click/map-click.service";
+import {MapClickService} from '../shared/services/map-click/map-click.service';
 
 @Component({
   selector: 'app-map',
@@ -40,64 +40,63 @@ export class MapComponent implements OnInit {
     const pDragType = event.dataTransfer.getData('text');
     if (pDragType === 'devices') {
       this.devicePlacerController.devicePlacement();
-      this.devicePlacerController.setCoordinates(
-        {x: event.offsetX, y: event.offsetY});
+      this.devicePlacerController.setCoordinates({x: event.offsetX, y: event.offsetY});
     }
   }
 
   applyOnClickListener(mapSvg: MapSvg) {
-   let isLongClick: boolean = false;
-   let mouseMove: boolean = false;
-   let mouseDown: boolean = false;
+   let isLongClick = false;
+   let mouseMove = false;
+   let mouseDown = false;
 
     mapSvg.container
       .on('mousedown', () => {
         mouseDown = true;
          setTimeout(() => {
-          if(mouseDown && !mouseMove) {
+          if (mouseDown && !mouseMove) {
             isLongClick = true;
           }
         }, 500);
       })
       .on('mouseup', () => {
         mouseDown = false;
-        if(isLongClick && !mouseMove) {
+        if (isLongClick && !mouseMove) {
           this.mapClick.mapIsClicked(mapSvg);
         }
         isLongClick = false;
         mouseMove = false;
       })
       .on('mousemove', () => {
-        if(mouseDown) {
+        if (mouseDown) {
           mouseMove = true;
         }
     });
   }
 
   applyOnTouchesListener(mapSvg: MapSvg) {
-    let isLongTouch: boolean = false;
-    let touchMove: boolean = false;
-    let touchStart: boolean = false;
+    let isLongTouch = false;
+    let touchMove = false;
+    let touchStart = false;
 
     mapSvg.container
       .on('touchstart', () => {
         touchStart = true;
         setTimeout(() => {
-          if(touchStart && !touchMove) {
+          if (touchStart && !touchMove) {
             isLongTouch = true;
           }
         }, 500);
       })
       .on('touchend', () => {
         touchStart = false;
-        if(isLongTouch && !touchMove) {
+        if (isLongTouch && !touchMove) {
           this.mapClick.mapIsClicked(mapSvg);
         }
         isLongTouch = false;
         touchMove = false;
       })
       .on('touchmove', () => {
-        if(touchStart) {
+        if (touchStart) {
           touchMove = true;
         }
       });
