@@ -8,7 +8,7 @@ class MapsBaseLocators(object):
         self.correct_map_path = 'src/test_data_upload/correct_map'
         self.small_map_path = 'src/test_data_upload/small_size'
         self.large_map_path = 'src/test_data_upload/large_size'
-        self.incorrect_image = 'src/test_data_upload/image_formats/test'
+        self.incorrect_image = 'src/test_data_upload/image_formats/incorrect_map'
         # INPUT DATA
 
         self.db_maps_env_xml = 'src/test-complexes.xml'
