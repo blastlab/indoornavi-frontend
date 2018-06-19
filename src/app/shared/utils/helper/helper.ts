@@ -1,5 +1,3 @@
-import {Point} from '../../../map-editor/map.type';
-import * as d3 from 'd3';
 
 export class Helper {
 
@@ -26,10 +24,4 @@ export class Helper {
   static respondToOrigin(event: number, id: number, originMessageEvent: MessageEvent): void {
     originMessageEvent.source.postMessage({type: `${event.toString(10)}-${id.toString(10)}`, objectId: id}, originMessageEvent.origin);
   }
-
-  static getMousePosition(mapSvg): Point {
-    const position: Array<number> = d3.mouse(mapSvg.container.node());
-    return {x: Math.round(position[0]), y: Math.round(position[1])};
-  }
-
 }
