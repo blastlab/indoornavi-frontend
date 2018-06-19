@@ -22,8 +22,8 @@ export class AreaDetailsComponent implements OnInit {
 
   @Input() floor: Floor;
   area: Area;
-  areaConfigurationOnEnter: AreaConfiguration = new AreaConfiguration(Mode.ON_ENTER);
-  areaConfigurationOnLeave: AreaConfiguration = new AreaConfiguration(Mode.ON_LEAVE);
+  areaConfigurationOnEnter: AreaConfiguration = new AreaConfiguration(Mode.ON_ENTER, 0);
+  areaConfigurationOnLeave: AreaConfiguration = new AreaConfiguration(Mode.ON_LEAVE, 0);
   tags: Tag[] = [];
 
   private editable: Editable;
@@ -117,8 +117,8 @@ export class AreaDetailsComponent implements OnInit {
   }
 
   private cleanUp(): void {
-    this.areaConfigurationOnEnter = new AreaConfiguration(Mode.ON_ENTER);
-    this.areaConfigurationOnLeave = new AreaConfiguration(Mode.ON_LEAVE);
+    this.areaConfigurationOnEnter = new AreaConfiguration(Mode.ON_ENTER, 0);
+    this.areaConfigurationOnLeave = new AreaConfiguration(Mode.ON_LEAVE, 0);
     this.area = new Area(this.floor.id);
     this.editable = null;
   }
