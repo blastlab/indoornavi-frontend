@@ -89,20 +89,18 @@ export class PermissionGroupComponent implements OnInit, CrudComponent {
     this.translateService.get('permissionGroup.selectPermission').first().subscribe((value: string) => {
       this.selectPermissionLabel = value;
     });
-    this.permissionGroupService.getPermissions().first().subscribe((permissions: Permission[]) => {
-      this.permissions = permissions;
-    });
-    this.permissionGroupService.getPermissionGroups().first().subscribe((permissionGroups: PermissionGroup[]) => {
-      this.permissionGroups = permissionGroups;
-      this.loading = false;
+    this.translateService.get('permissionGroup.header').subscribe((value: string) => {
+      this.breadcrumbService.publishIsReady([
+        {label: value, disabled: true}
+      ]);
     });
   }
 
   private loadData() {
-    this.permissionGroupService.getPermissions().subscribe((permissions: Permission[]) => {
+    this.permissionGroupService.getPermissions().first().subscribe((permissions: Permission[]) => {
       this.permissions = permissions;
     });
-    this.permissionGroupService.getPermissionGroups().subscribe((permissionGroups: PermissionGroup[]) => {
+    this.permissionGroupService.getPermissionGroups().first().subscribe((permissionGroups: PermissionGroup[]) => {
       this.permissionGroups = permissionGroups;
       this.loading = false;
     });
