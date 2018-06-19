@@ -114,7 +114,6 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
     this.active = true;
 
     this.container.style('cursor', 'crosshair');
-    this.currentAreaGroup = this.createBuilder().createGroup();
 
     this.layer.on('click', (_, i: number, nodes: d3.selection[]): void => {
       const coordinates: Point = this.zoomService.calculateTransition({x: d3.mouse(nodes[i])[0], y: d3.mouse(nodes[i])[1]});
@@ -142,6 +141,8 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
       this.drawPolygon(areaBag.dto.points, areaBag.editable.groupWrapper);
       index++;
     });
+
+    this.currentAreaGroup = this.createBuilder().createGroup();
 
     this.container.on('contextmenu', (): void => {
       d3.event.preventDefault();
