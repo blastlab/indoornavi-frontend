@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '@angular/router';
 import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Observable';
+import {DeviceDetectorService} from 'ngx-device-detector';
 
 @Injectable()
 export class AuthGuard {
@@ -35,10 +36,15 @@ abstract class PermissionChecker {
 
 @Injectable()
 export class CanRead implements CanActivate {
-  constructor(private router: Router) {
+  constructor(private router: Router, private deviceDetector: DeviceDetectorService) {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+    if (this.deviceDetector.getDeviceInfo().browser !== 'chrome') {
+      this.router.navigate(['/notSupportedBrowser']);
+      return false;
+    }
+
     if (localStorage.getItem('currentUser')) {
       if (route.data.permission) {
         return PermissionChecker.check(route.data.permission + '_READ', this.router);

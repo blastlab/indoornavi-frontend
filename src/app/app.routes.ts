@@ -13,6 +13,7 @@ import {PublishedListComponent} from './map-viewer/list/publication-list';
 import {PublishedComponent} from './map-viewer/views/publications/publication';
 import {DeviceComponent} from './device/device';
 import {AnalyticsComponent} from './map-viewer/views/analytics/analytics';
+import {NotSupportedBrowserComponent} from './not-supported-browser/not-supported-browser';
 
 export const appRoutes: Routes = [
   {path: '', redirectTo: '/complexes', pathMatch: 'full'},
@@ -39,5 +40,6 @@ export const appRoutes: Routes = [
     data: {permission: 'FLOOR'}
   },
   {path: 'unauthorized', component: UnauthorizedComponent},
+  {path: 'notSupportedBrowser', component: NotSupportedBrowserComponent},
   {path: '**', redirectTo: '/complexes'}
 ];
