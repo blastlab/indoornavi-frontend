@@ -10,27 +10,23 @@ import time
 
 class TestMapsPage(unittest.TestCase, MapsPage):
 
-    @classmethod
-    def setUpClass(cls):
-        cls.test_failed = True
-        cls.webdriver = webdriver
-        cls.login_page_url = LoginPage.login_url
-        TestDriver.setUp(cls, cls.login_page_url)
-        cls.page = LoginPage(cls.webdriver)
-        cls.floors_page = FloorsPage(cls.webdriver, 'floors')
-        cls.maps_page = MapsPage(cls.webdriver)
-        cls.option = 1
-        cls.page.login_process(cls.option, 1)
-
     def setUp(self):
         self.test_failed = True
+        self.webdriver = webdriver
+        self.login_page_url = LoginPage.login_url
+        TestDriver.setUp(self, self.login_page_url)
+        self.page = LoginPage(self.webdriver)
+        self.floors_page = FloorsPage(self.webdriver, 'floors')
+        self.maps_page = MapsPage(self.webdriver)
+        self.option = 1
+        self.page.login_process(self.option, 1)
         self.maps_page.truncate_db()
         self.maps_page.create_maps_db_env()
         self.webdriver.refresh()
+        self.__get_maps_page()
 
-    @classmethod
-    def tearDownClass(cls):
-        cls.webdriver.quit()
+    def tearDown(self):
+        self.webdriver.quit()
 
     def __add_scale_process(self, x, y):
         self.maps_page.choose_image(self.maps_page.correct_map_path)
@@ -38,8 +34,6 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         self.maps_page.is_image_preview_displayed()
         self.maps_page.upload_button_click()
         self.maps_page.is_image_uploaded()
-
-        # time.sleep(3)
         self.maps_page.scale_button_click()
         # Logic
         self.maps_page.draw_scale_line(x, y)
@@ -64,8 +58,6 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         self.test_failed = False
 
     def test_01_maps_page_loaded_correctly(self):
-
-        self.__get_maps_page()
 
         self.assertTrue(self.maps_page.is_choose_image_title_displayed(),
                         'There has not been information to user could choose image.')
@@ -134,7 +126,6 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         self.test_failed = False
 
     def test_15_map_loaded_with_large_size_13MB(self):
-        print(self.maps_page.large_map_path)
         self.maps_page.choose_image(self.maps_page.large_map_path, '.jpg')
         self.assertTrue(self.maps_page.is_invalid_size_warning_present())
         self.test_failed = False
