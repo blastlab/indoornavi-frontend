@@ -108,7 +108,6 @@ import {HeatMapControllerComponent} from './shared/components/heat-map-controlle
 import {HeatMapControllerService} from './shared/components/heat-map-controller/heat-map-controller/heat-map-controller.service';
 import {MousePositionViewerComponent} from './map-editor/mouse-position-viewer/mouse-position-viewer.component';
 import {MapClickService} from './shared/services/map-click/map-click.service';
-import {DeviceDetectorModule} from 'ngx-device-detector';
 import {NotSupportedBrowserComponent} from './not-supported-browser/not-supported-browser';
 
 export function HttpLoaderFactory(http: Http) {
@@ -200,8 +199,7 @@ export function HttpLoaderFactory(http: Http) {
     OverlayPanelModule,
     ContextMenuModule,
     FileUploadModule,
-    RadioButtonModule,
-    DeviceDetectorModule.forRoot()
+    RadioButtonModule
   ],
   providers: [
     BuildingService,
