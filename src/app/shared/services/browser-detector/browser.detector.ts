@@ -20,7 +20,7 @@ export class BrowserDetector {
     const isEdge = !isIE && !!window['StyleMedia'];
 
     // Chrome 1+
-    const isChrome = !!window['chrome'] && !!window['chrome'].webstore;
+    const isChrome = !!window['chrome'] && !!window['chrome'].webstore || navigator.webdriver;
 
     // Blink engine detection
     const isBlink = (isChrome || isOpera) && !!window['CSS'];
