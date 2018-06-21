@@ -48,9 +48,13 @@ class MapsBaseLocators(object):
         self.scale_modal_window = (By.CLASS_NAME, 'ui-dialog')
 
         self.scale_measurement = (By.CSS_SELECTOR, '#map-container > app-scale-input > app-tool-details > div > div > form > div.ui-g-5 > p-dropdown > div > label')
-        self.scale_measurement_cent = (By.CSS_SELECTOR, ' #map-container > app-scale-input > app-tool-details > div > div > form > div.ui-g-5 > p-dropdown > div > div.ng-tns-c13-15 > div > ul > li.ng-tns-c13-15.ui-dropdown-item')
-        # self.scale_measurement_cent = (By.XPATH, "//span[contains(text(),'CENTIMETERS')]")
-        self.scale_measurement_meters = (By.XPATH, "div.ng-tns-c13-15 > div > ul > li.ng-tns-c13-15")
+        self.scale_measurement_cent = (By.XPATH, "//p-dropdown/div/div[4]/div/ul/li[1]/span")
+        self.scale_measurement_meters = (By.XPATH, "//p-dropdown/div/div[4]/div/ul/li[2]/span")
         self.scale_distance_input = (By.CSS_SELECTOR, 'input#distance')
-        self.scale_ok_button = (By.XPATH, '//button[@ng-reflect-text="Ok"]')
-        self.scale_cancel_button = (By.XPATH, '//button[@ng-reflect-text="Cancel"]')
+
+        self.scale_ok_button = (By.XPATH, '//button[@id="confirm-decision"]')
+        self.scale_cancel_button = (By.CSS_SELECTOR, '#reject-decision > span.ui-button-text.ui-clickable')
+        # self.scale_ok_button = (By.XPATH, '//button[@ng-reflect-text="Ok"]')
+        # self.scale_cancel_button = (By.XPATH, '//button[@ng-reflect-text="Cancel"]')
+        self.scale_set_toast = (By.XPATH, "//p[contains(text(),'Scale has been set.')]")
+        self.draft_saved = (By.XPATH, "//p[contains(text(),'Draft has been saved.')]")

@@ -1,6 +1,6 @@
 from pages.base_page import BasePage
 from locators.maps_base_locators import MapsBaseLocators
-
+from selenium.webdriver.common.keys import Keys
 
 class MapsPage(BasePage, MapsBaseLocators):
 
@@ -157,9 +157,34 @@ class MapsPage(BasePage, MapsBaseLocators):
 
     def set_scale_measurement(self, option):
         self.click_element(self.scale_measurement)
-        print(self.click_element(self.scale_measurement_cent))
+        self.click_element(self.scale_measurement_cent if option == 'centimeters'
+                           else self.scale_measurement_meters)
 
-        # return click(self.scale_measurement_cent)
+    def scale_ok_button_click(self):
+        ok_buttons = self.__driver.find_elements(*self.scale_ok_button)
+        return ok_buttons[1].click()
+
+    def scale_cancel_button_click(self):
+        cancel_buttons = self.__driver.find_elements(*self.scale_cancel_button)
+        return cancel_buttons[1].click()
+
+    def is_scale_set_toast_present(self):
+        return True if self.is_element_present(self.scale_set_toast) else False
+
+    def is_scale_set_toast_disappear(self):
+        return True if self.is_element_disappear(self.scale_set_toast) else False
+
+    def is_draft_saved_toast_present(self):
+        return True if self.is_element_present(self.draft_saved) else False
+
+    def is_draft_saved_toast_disappear(self):
+        return True if self.is_element_disappear(self.draft_saved) else False
+
+    def get_scale_location(self):
+        __scale_location = self.identify_element(*self.scale_line).location
+        print(__scale_location)
+        return __scale_location
+
 
     # SUPPORT METHODS
     def log_cursor_coordinates(self):
@@ -170,7 +195,7 @@ class MapsPage(BasePage, MapsBaseLocators):
             var ypos;
             if (mouseEvent)
             {
-              //FireFox
+              //FireFo
               xpos = mouseEvent.screenX;
               ypos = mouseEvent.screenY;
             }

@@ -155,11 +155,23 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         self.test_failed = False
 
     # SCALE TESTS
-    def _test_18_add_scale_straight_line(self):
-        # self.__get_maps_page()
+    def test_18_add_scale_straight_line(self):
+
         self.__add_scale_process(400, 0)
-        self.maps_page.enter_scale_distance(725)
-        self.maps_page.choose_scale_measurement('centimeters')
+        self.maps_page.enter_scale_distance('725')
+        self.maps_page.set_scale_measurement('centimeters')
+        expected_loc = self.maps_page.get_scale_location()
+        self.maps_page.scale_ok_button_click()
+        self.assertTrue(self.maps_page.is_scale_set_toast_present())
+        self.assertTrue(self.maps_page.is_scale_set_toast_disappear())
+        self.assertTrue(self.maps_page.is_draft_saved_toast_present())
+        self.assertTrue(self.maps_page.is_draft_saved_toast_disappear())
+        self.webdriver.refresh()
+        self.maps_page.scale_button_click()
+        self.assertTrue(self.maps_page.is_scale_line_displayed())
+        result_loc = self.maps_page.get_scale_location()
+
+        self.assertEqual(expected_loc, result_loc, "Scale position has been changed after page refresh.")
 
     def _test_19_add_scale_diagonal_line(self):
         print('diagonal line TEST - scale')
