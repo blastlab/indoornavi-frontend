@@ -18,16 +18,13 @@ class TestAnchorsPage(unittest.TestCase, TestDevicesPage):
         cls.login_page_url = LoginPage.login_url
         cls.webdriver = webdriver
         TestDriver.setUp(cls, cls.login_page_url)
-        cls.base_page = BasePage(cls.webdriver)
         cls.devices_page = DevicesPage(cls.webdriver, cls.module)
         cls.page = LoginPage(cls.webdriver)
         cls.option = 1
         # login before each test case
-        cls.base_page.truncate_db()
+        cls.devices_page.truncate_db()
         # cls.devices_page.create_devices_db_env()
         cls.page.login_process(cls.option)
-        # locators
-        cls.locator = cls.devices_page.base_locators
 
     def tearDown(self):
         TestDriver.tearDown(self)

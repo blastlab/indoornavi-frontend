@@ -1,7 +1,14 @@
 from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
+from pages.constructions.construction_page import ConstructionPage
 
-class FloorsPage(BasePage):
+
+class FloorsPage(ConstructionPage):
+
+    def __init__(self, driver, module_query):
+        self.__driver = driver
+        self.__module = module_query
+        ConstructionPage.__init__(self, self.__driver, self.__module)
 
     add_button_floor = (By.CSS_SELECTOR, 'button#add-floor')
     input_level_floor = (By.CSS_SELECTOR, 'input#level')
@@ -19,7 +26,7 @@ class FloorsPage(BasePage):
         return True if self.is_element_present(self.unique_level_warning) else False
 
     def enter_existing_level(self):
-        return self.clear_and_fill_input(self.existing_level, *self.input_level_floor)
+        return self.clear_and_fill_input(self.existing_level, self.input_level_floor)
 
     def add_button_click(self):
         return self.click_button(*self.add_button_floor)

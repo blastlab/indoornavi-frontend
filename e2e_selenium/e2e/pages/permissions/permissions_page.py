@@ -1,0 +1,175 @@
+from pages.base_page import BasePage
+from locators.permissions_base_locators import PermissionsBaseLocators
+from random import randint
+from random import sample
+
+
+class PermissionsPage(BasePage, PermissionsBaseLocators):
+
+    def __init__(self, driver):
+        self.__driver = driver
+        BasePage.__init__(self, self.__driver)
+        PermissionsBaseLocators.__init__(self)
+
+    def create_permissions_db_env(self):
+        return self.create_db_env(self.xml_filename)
+
+    #
+    # IS ELEMENT DISPLAYED
+    #
+
+    def is_multiselect_dropdown_displayed(self):
+        return True if self.is_element_displayed(*self.multiselect_dropdown) else False
+
+    def is_groups_list_displayed(self):
+        return True if self.is_element_displayed(*self.groups_list) else False
+
+    def is_modal_window_displayed(self):
+        return True if self.is_element_present(self.modal_window) else False
+
+    def is_modal_window_disappeared(self):
+        return True if self.is_element_disappear(self.modal_window) else False
+
+    def is_confirm_window_displayed(self):
+        return True if self.is_element_present(self.confirm_window) else False
+
+    def is_confirm_window_disappeared(self):
+        return True if self.is_element_disappear(self.confirm_window) else False
+
+    def is_permissions_title_correct(self):
+        return self.check_title_is_correct(self.permission_title_text, *self.permission_title)
+
+    def is_new_permission_present(self):
+        return True if self.is_element_present(self.created_permission_row) else False
+
+    def is_edited_permission_present(self):
+        return True if self.is_element_present(self.edited_permission_row) else False
+
+    def is_removed_permission_disappeared(self):
+        return True if self.is_element_disappear(self.created_permission_row) else False
+
+    def get_new_permission_text(self):
+        return self.get_all_elements_text(*self.single_row_permission_span_perm)
+
+    def is_all_permissions_highlighted(self):
+        rows = self.count_of_visible_elements(*self.multiselect_row)
+        rows_highlighted = self.count_of_visible_elements(*self.multiselect_row_highlighted)
+        return True if rows == rows_highlighted else False
+
+    def is_toast_present(self, toast):
+        return True if self.is_element_present(toast) else False
+
+    def is_toast_disappear(self, toast):
+        return True if self.is_element_disappear(toast) else False
+
+    def error_message_name(self):
+        return self.wait_for_element(self.name_warning).text
+    #
+    # ELEMENT CLICK
+    #
+
+    def dropdown_menu_click(self):
+        return self.click_element(self.dropdown_button)
+
+    def dropdown_sinks_button_click(self):
+        return self.click_element(self.dropdown_sinks_button)
+
+    def dropdown_permissions_button_click(self):
+        return self.click_element(self.dropdown_permissions_button)
+
+    def add_permission_button_click(self):
+        return self.click_element(self.add_permission_button)
+
+    def edit_permission_button_click(self):
+        return self.click_element(self.edit_permission_button)
+
+    def delete_permission_button_click(self):
+        return self.click_element(self.delete_permission_button)
+
+    def save_permission_button_click(self):
+        return self.click_element(self.save_button)
+
+    def yes_button_click(self):
+        return self.click_element(self.yes_button)
+
+    def no_button_click(self):
+        return self.click_element(self.no_button)
+
+    def multi_select_label_click(self):
+        return self.click_element(self.multiselect_label)
+
+    def multi_select_arrow_click(self):
+        return self.click_element(self.multiselect_arrow)
+
+    def multi_select_cancel_sharp_click(self):
+        return self.click_element(self.multiselect_cancel_sharp)
+
+    def multi_select_click_all_chekboxes(self):
+        return self.click_element(self.multiselect_checkbox_all)
+
+    def get_multiselet_label_container_title(self):
+        element = self.identify_element(*self.multiselect_label_container_title)
+        element.get_attribute("title")
+        return element.get_attribute("title")
+
+    def checkboxes_simulator_click(self):
+
+        """
+
+        returns: string of items, which structure depends on how many of items where selected
+
+        """
+
+        rows_checkboxes = self.__driver.find_elements(*self.multiselect_checkbox_single)
+        rows_labels = self.__driver.find_elements(*self.multiselect_row_label)
+
+        labels = []
+        min_index = 0
+        max_index = 35
+        max_range = randint(1, 10)
+
+        rand = sample(range(min_index, max_index), max_range)
+
+        for i in rand:
+            rows_checkboxes[i].click()
+            label = rows_labels[i].text
+            labels.append(label)
+
+        return ", ".join(labels).strip("[]"), str(max_range) + ' items selected'
+
+    def single_checkbox_click(self, number):
+        rows = self.__driver.find_elements(*self.multiselect_checkbox_single)
+        return rows[number].click()
+
+    def cancel_modal_click(self):
+        return self.click_element(self.cancel_button)
+
+    def close_modal_click(self):
+        return self.click_element(self.modal_close_button)
+
+    def close_confirm_modal_click(self):
+        return self.click_element(self.close_button)
+
+    def single_permission_label(self, number):
+        rows = self.__driver.find_elements(*self.multiselect_row_label)
+        row = rows[number].text
+        return row
+
+    def enter_search_permission(self, insert_data):
+        return self.clear_and_fill_input(insert_data, self.searching_per_input)
+
+    def clear_search_input(self):
+        return self.clear_text_input(self.searching_per_input)
+
+    def verify_elements_count_and_text_contain(self, count=1):
+        result_array = []
+        result_rows = self.count_of_visible_elements(*self.multiselect_row)
+        result_array.append(True) if result_rows == count else result_array.append(False)
+        row_elements = self.__driver.find_elements(*self.multiselect_row)
+        for row_element in row_elements:
+            if row_element.is_displayed():
+                result_array.append(row_element.text)
+        return result_array
+
+    def enter_permission_name(self, insert_data):
+        return self.clear_and_fill_input(insert_data, self.modal_new_name)
