@@ -28,7 +28,8 @@ class TestMapsPage(unittest.TestCase, MapsPage):
     def tearDown(self):
         self.webdriver.quit()
 
-    def __add_scale_process(self, x, y):
+    def __add_scale_process_correctly(self, x, y, measurement, distance):
+
         self.maps_page.choose_image(self.maps_page.correct_map_path)
         # Check thumb, filesize, filename, close btn appeared - preview
         self.maps_page.is_image_preview_displayed()
@@ -39,6 +40,21 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         self.maps_page.draw_scale_line(x, y)
         self.assertTrue(self.maps_page.is_scale_line_drawn_correctly(x, y))
         self.assertTrue(self.maps_page.is_scale_modal_window_displayed())
+
+        self.maps_page.enter_scale_distance(distance)
+        self.maps_page.set_scale_measurement(measurement)
+        self.assertTrue(self.maps_page.is_scale_line_drawn_correctly(x, y))
+        self.maps_page.scale_ok_button_click()
+
+        # Check components are displayed
+        self.assertTrue(self.maps_page.is_scale_set_toast_present())
+        self.assertTrue(self.maps_page.is_scale_set_toast_disappear())
+        self.assertTrue(self.maps_page.is_draft_saved_toast_present())
+        self.assertTrue(self.maps_page.is_draft_saved_toast_disappear())
+        self.webdriver.refresh()
+        self.maps_page.scale_button_click()
+        self.assertTrue(self.maps_page.is_scale_line_displayed())
+        self.test_failed = False
 
     def __get_maps_page(self):
 
@@ -157,26 +173,42 @@ class TestMapsPage(unittest.TestCase, MapsPage):
     # SCALE TESTS
     def test_18_add_scale_straight_line(self):
 
-        self.__add_scale_process(400, 0)
-        self.maps_page.enter_scale_distance('725')
-        self.maps_page.set_scale_measurement('centimeters')
-        expected_loc = self.maps_page.get_scale_location()
-        self.maps_page.scale_ok_button_click()
-        self.assertTrue(self.maps_page.is_scale_set_toast_present())
-        self.assertTrue(self.maps_page.is_scale_set_toast_disappear())
-        self.assertTrue(self.maps_page.is_draft_saved_toast_present())
-        self.assertTrue(self.maps_page.is_draft_saved_toast_disappear())
-        self.webdriver.refresh()
+        self.__add_scale_process_correctly(400, 0, 'centimeters', '725')
+
+    def test_19_add_scale_diagonal_line(self):
+
+        self.__add_scale_process_correctly(200, 100, 'centimeters', '425')
+
+    def test_20_add_scale_with_meters(self):
+
+        self.__add_scale_process_correctly(400, 0, 'meters', '995')
+
+    def test_21_add_scale_process_invalid_without_units(self):
+
+        self.maps_page.choose_image(self.maps_page.correct_map_path)
+        self.maps_page.is_image_preview_displayed()
+        self.maps_page.upload_button_click()
+        self.maps_page.is_image_uploaded()
         self.maps_page.scale_button_click()
-        self.assertTrue(self.maps_page.is_scale_line_displayed())
-        result_loc = self.maps_page.get_scale_location()
+        self.maps_page.draw_scale_line(333, 222)
+        self.assertTrue(self.maps_page.is_scale_line_drawn_correctly(333, 222))
+        self.assertTrue(self.maps_page.is_scale_modal_window_displayed())
+        self.maps_page.enter_scale_distance('777')
+        self.maps_page.scale_ok_button_click()
+        self.assertTrue(self.maps_page.is_set_measurement_toast_present())
+        self.assertTrue(self.maps_page.is_set_measurement_toast_disappear())
 
-        self.assertEqual(expected_loc, result_loc, "Scale position has been changed after page refresh.")
+    def test_22_add_scale_process_invalid_without_distance(self):
 
-    def _test_19_add_scale_diagonal_line(self):
-        print('diagonal line TEST - scale')
-        # self.__get_maps_page()
-        self.__add_scale_process(400, 200)
-        self.maps_page.enter_scale_distance(self.maps_page.scale_value)
-        self.maps_page.set_scale_measurement('centimeters')
-        time.sleep(5)
+        self.maps_page.choose_image(self.maps_page.correct_map_path)
+        self.maps_page.is_image_preview_displayed()
+        self.maps_page.upload_button_click()
+        self.maps_page.is_image_uploaded()
+        self.maps_page.scale_button_click()
+        self.maps_page.draw_scale_line(333, 222)
+        self.assertTrue(self.maps_page.is_scale_line_drawn_correctly(333, 222))
+        self.assertTrue(self.maps_page.is_scale_modal_window_displayed())
+        self.maps_page.set_scale_measurement('meters')
+        self.maps_page.scale_ok_button_click()
+        self.assertTrue(self.maps_page.is_must_be_integer_toast_present())
+        self.assertTrue(self.maps_page.is_must_be_integer_toast_disappear())

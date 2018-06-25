@@ -180,9 +180,20 @@ class MapsPage(BasePage, MapsBaseLocators):
     def is_draft_saved_toast_disappear(self):
         return True if self.is_element_disappear(self.draft_saved) else False
 
+    def is_set_measurement_toast_present(self):
+        return True if self.is_element_present(self.set_measurement_toast) else False
+
+    def is_set_measurement_toast_disappear(self):
+        return True if self.is_element_disappear(self.set_measurement_toast) else False
+
+    def is_must_be_integer_toast_present(self):
+        return True if self.is_element_present(self.must_be_integer_toast) else False
+
+    def is_must_be_integer_toast_disappear(self):
+        return True if self.is_element_disappear(self.must_be_integer_toast) else False
+
     def get_scale_location(self):
         __scale_location = self.identify_element(*self.scale_line).location
-        print(__scale_location)
         return __scale_location
 
 

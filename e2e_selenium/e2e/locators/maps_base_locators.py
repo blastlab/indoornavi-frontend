@@ -43,8 +43,8 @@ class MapsBaseLocators(object):
         self.displayed_map = (By.CSS_SELECTOR, 'div#map-container > svg.drop-zone')
         self.map_image = (By.CSS_SELECTOR, '#map')
         self.scale_line = (By.CSS_SELECTOR, '#scaleGroup > line.connectLine')
-        self.scale_line_point_a = (By.CSS_SELECTOR, '#scaleGroup > circle:nth-child(2)')
-        self.scale_line_point_b = (By.CSS_SELECTOR, '#scaleGroup > circle:nth-child(5)')
+        self.scale_line_point_a = (By.CSS_SELECTOR, ('#scaleGroup > circle:first-of-type'))
+        self.scale_line_point_b = (By.CSS_SELECTOR, ('#scaleGroup > circle:last-of-type'))
         self.scale_modal_window = (By.CLASS_NAME, 'ui-dialog')
 
         self.scale_measurement = (By.CSS_SELECTOR, '#map-container > app-scale-input > app-tool-details > div > div > form > div.ui-g-5 > p-dropdown > div > label')
@@ -58,3 +58,5 @@ class MapsBaseLocators(object):
         # self.scale_cancel_button = (By.XPATH, '//button[@ng-reflect-text="Cancel"]')
         self.scale_set_toast = (By.XPATH, "//p[contains(text(),'Scale has been set.')]")
         self.draft_saved = (By.XPATH, "//p[contains(text(),'Draft has been saved.')]")
+        self.set_measurement_toast = (By.XPATH, "//p[contains(text(),'Please set the measure unit.')]")
+        self.must_be_integer_toast = (By.XPATH, "//p[contains(text(),'Real distance must be an integer.')]")
