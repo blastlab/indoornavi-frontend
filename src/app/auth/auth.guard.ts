@@ -40,12 +40,12 @@ export class CanRead implements CanActivate {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    if (BrowserDetector.getBrowserName() !== 'Chrome') {
-      this.router.navigate(['/notSupportedBrowser']);
-      return false;
-    }
+    if (!!localStorage.getItem('currentUser')) {
+      if (BrowserDetector.getBrowserName() !== 'Chrome') {
+        this.router.navigate(['/notSupportedBrowser']);
+        return false;
+      }
 
-    if (localStorage.getItem('currentUser')) {
       if (route.data.permission) {
         return PermissionChecker.check(route.data.permission + '_READ', this.router);
       }
