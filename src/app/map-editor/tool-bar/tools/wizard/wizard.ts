@@ -58,6 +58,7 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
   private scaleChanged: Subscription;
   private scaleCalculations: ScaleCalculations;
   private disabledHandler: Subscription;
+  private decisionMadeSubscription: Subscription;
 
   constructor(public translate: TranslateService,
               protected iconService: IconService,
@@ -191,6 +192,7 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
     this.currentIndex = 0;
     this.cleanBeforeClosingWizard();
     this.acceptButtons.publishVisibility(false);
+    this.decisionMadeSubscription.unsubscribe();
   }
 
   setDisabled(value: boolean): void {
@@ -251,7 +253,7 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
   private showAcceptButtons(): void {
     this.hintBarService.sendHintMessage(this.activeStep.getAfterPlaceOnMapHint());
     this.acceptButtons.publishVisibility(true);
-    this.acceptButtons.decisionMade.first().subscribe(
+    this.decisionMadeSubscription = this.acceptButtons.decisionMade.first().subscribe(
       data => {
         this.activeStep.setSelectedItemId(this.selectedItemId);
         if (data) {
