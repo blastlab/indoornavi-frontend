@@ -1,6 +1,6 @@
 from pages.base_page import BasePage
 from locators.maps_base_locators import MapsBaseLocators
-from selenium.webdriver.common.keys import Keys
+
 
 class MapsPage(BasePage, MapsBaseLocators):
 
@@ -148,17 +148,27 @@ class MapsPage(BasePage, MapsBaseLocators):
         element = self.is_element_appeared(self.scale_line)
         return True if element else False
 
+    def is_scale_line_disappear(self):
+        return True if self.is_element_disappear(self.scale_line) else False
+
     def is_scale_modal_window_displayed(self):
         element = self.is_element_appeared(self.scale_modal_window)
         return True if element else False
+
+    def is_scale_modal_window_disappear(self):
+        return True if self.is_element_disappear(self.scale_modal_window) else False
 
     def enter_scale_distance(self, value):
         return self.clear_and_fill_input(value, self.scale_distance_input)
 
     def set_scale_measurement(self, option):
+
         self.click_element(self.scale_measurement)
-        self.click_element(self.scale_measurement_cent if option == 'centimeters'
-                           else self.scale_measurement_meters)
+        set_measurement = {
+            'centimeters': self.scale_measurement_cent,
+            'meters': self.scale_measurement_meters
+        }
+        return self.click_element(set_measurement[option])
 
     def scale_ok_button_click(self):
         ok_buttons = self.__driver.find_elements(*self.scale_ok_button)
@@ -196,8 +206,6 @@ class MapsPage(BasePage, MapsBaseLocators):
         __scale_location = self.identify_element(*self.scale_line).location
         return __scale_location
 
-
-    # SUPPORT METHODS
     def log_cursor_coordinates(self):
         return self.__driver.execute_script('''
         function findScreenCoords(mouseEvent)

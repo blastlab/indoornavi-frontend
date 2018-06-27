@@ -9,8 +9,6 @@ class MapsBaseLocators(object):
         self.small_map_path = 'src/test_data_upload/small_size'
         self.large_map_path = 'src/test_data_upload/large_size'
         self.incorrect_image = 'src/test_data_upload/image_formats/incorrect_map'
-        # INPUT DATA
-
         self.db_maps_env_xml = 'src/test-complexes.xml'
         # LOCATORS
         self.choose_image_string = 'Choose an image from disk or drag&drop it below. It will be used as a background for the floor.'
@@ -53,9 +51,7 @@ class MapsBaseLocators(object):
         self.scale_distance_input = (By.CSS_SELECTOR, 'input#distance')
 
         self.scale_ok_button = (By.XPATH, '//button[@id="confirm-decision"]')
-        self.scale_cancel_button = (By.CSS_SELECTOR, '#reject-decision > span.ui-button-text.ui-clickable')
-        # self.scale_ok_button = (By.XPATH, '//button[@ng-reflect-text="Ok"]')
-        # self.scale_cancel_button = (By.XPATH, '//button[@ng-reflect-text="Cancel"]')
+        self.scale_cancel_button = (By.XPATH, '//button[@id="reject-decision"]')
         self.scale_set_toast = (By.XPATH, "//p[contains(text(),'Scale has been set.')]")
         self.draft_saved = (By.XPATH, "//p[contains(text(),'Draft has been saved.')]")
         self.set_measurement_toast = (By.XPATH, "//p[contains(text(),'Please set the measure unit.')]")

@@ -26,6 +26,7 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         self.__get_maps_page()
 
     def tearDown(self):
+        TestDriver.tearDown(self)
         self.webdriver.quit()
 
     def __add_scale_process_correctly(self, x, y, measurement, distance):
@@ -54,6 +55,39 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         self.webdriver.refresh()
         self.maps_page.scale_button_click()
         self.assertTrue(self.maps_page.is_scale_line_displayed())
+        self.test_failed = False
+
+    def __add_scale_process_invalid(self, **kwargs):
+
+        self.maps_page.choose_image(self.maps_page.correct_map_path)
+        self.maps_page.is_image_preview_displayed()
+        self.maps_page.upload_button_click()
+        self.maps_page.is_image_uploaded()
+        self.maps_page.scale_button_click()
+        self.maps_page.draw_scale_line(333, 222)
+        self.assertTrue(self.maps_page.is_scale_line_drawn_correctly(333, 222))
+        self.assertTrue(self.maps_page.is_scale_modal_window_displayed())
+
+        if kwargs.get('distance') is not None:
+
+            if kwargs['distance'].isdigit():
+                self.maps_page.enter_scale_distance(kwargs['distance'])
+                self.maps_page.scale_ok_button_click()
+                self.assertTrue(self.maps_page.is_set_measurement_toast_present())
+                self.assertTrue(self.maps_page.is_set_measurement_toast_disappear())
+            else:
+                self.maps_page.enter_scale_distance(kwargs['distance'])
+                self.maps_page.set_scale_measurement(kwargs['measurement'])
+                self.maps_page.scale_ok_button_click()
+                self.assertTrue(self.maps_page.is_must_be_integer_toast_present())
+                self.assertTrue(self.maps_page.is_must_be_integer_toast_disappear())
+
+        else:
+            self.maps_page.set_scale_measurement(kwargs['measurement'])
+            self.maps_page.scale_ok_button_click()
+            self.assertTrue(self.maps_page.is_must_be_integer_toast_present())
+            self.assertTrue(self.maps_page.is_must_be_integer_toast_disappear())
+
         self.test_failed = False
 
     def __get_maps_page(self):
@@ -184,21 +218,15 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         self.__add_scale_process_correctly(400, 0, 'meters', '995')
 
     def test_21_add_scale_process_invalid_without_units(self):
-
-        self.maps_page.choose_image(self.maps_page.correct_map_path)
-        self.maps_page.is_image_preview_displayed()
-        self.maps_page.upload_button_click()
-        self.maps_page.is_image_uploaded()
-        self.maps_page.scale_button_click()
-        self.maps_page.draw_scale_line(333, 222)
-        self.assertTrue(self.maps_page.is_scale_line_drawn_correctly(333, 222))
-        self.assertTrue(self.maps_page.is_scale_modal_window_displayed())
-        self.maps_page.enter_scale_distance('777')
-        self.maps_page.scale_ok_button_click()
-        self.assertTrue(self.maps_page.is_set_measurement_toast_present())
-        self.assertTrue(self.maps_page.is_set_measurement_toast_disappear())
+        self.__add_scale_process_invalid(distance='777', measurement=None)
 
     def test_22_add_scale_process_invalid_without_distance(self):
+        self.__add_scale_process_invalid(distance=None, measurement='meters')
+
+    def test_23_add_scale_process_invalid_letters_into_input(self):
+        self.__add_scale_process_invalid(distance='+++++', measurement='meters')
+
+    def test_24_cancel_add_scale_process(self):
 
         self.maps_page.choose_image(self.maps_page.correct_map_path)
         self.maps_page.is_image_preview_displayed()
@@ -208,7 +236,9 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         self.maps_page.draw_scale_line(333, 222)
         self.assertTrue(self.maps_page.is_scale_line_drawn_correctly(333, 222))
         self.assertTrue(self.maps_page.is_scale_modal_window_displayed())
-        self.maps_page.set_scale_measurement('meters')
-        self.maps_page.scale_ok_button_click()
-        self.assertTrue(self.maps_page.is_must_be_integer_toast_present())
-        self.assertTrue(self.maps_page.is_must_be_integer_toast_disappear())
+        self.maps_page.enter_scale_distance('*test*()!#+_+')
+        self.maps_page.set_scale_measurement('centimeters')
+        self.maps_page.scale_cancel_button_click()
+        self.assertTrue(self.maps_page.is_scale_line_disappear())
+        self.assertTrue(self.maps_page.is_scale_modal_window_disappear())
+        self.test_failed = False
