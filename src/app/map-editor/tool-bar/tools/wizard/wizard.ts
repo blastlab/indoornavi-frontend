@@ -45,6 +45,7 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
   isLoading: boolean = true;
   active: boolean = false;
   disabled: boolean = true;
+  private deviceActive: boolean = false;
   private scale: Scale;
   private steps: WizardStep[];
   private activeStep: WizardStep;
@@ -88,33 +89,17 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
     this.mapLoadedSubscription = null;
     this.scaleChanged.unsubscribe();
     this.disabledHandler.unsubscribe();
-  }
-
-  private bindMapSelection(): void {
-    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapLoaded) => {
-      this.map = mapLoaded.container;
-    });
-  }
-
-  private captureScaleChanges(): void {
-    this.scaleChanged = this.scaleService.scaleChanged.subscribe((scale: ScaleDto): void => {
-      this.scale = new Scale(scale);
-      if (!!this.scale.start && !!this.scale.stop) {
-        this.scaleCalculations = {
-          scaleLengthInPixels: Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
-          scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
-        };
-      }
-    })
-  }
-
-  private handleDisablingFromService(): void {
-    this.disabledHandler = this.toolbarService.wizardDisabled.subscribe((setDisabled) => {
-      this.disabled = setDisabled;
-    })
+    if (!!this.decisionMadeSubscription) {
+      this.decisionMadeSubscription.unsubscribe();
+    }
   }
 
   nextStep(): void {
+    this.toggleDevice();
+    if (!this.deviceActive) {
+
+      return;
+    }
     if (!this.activeStep) { // init wizard
       this.toolbarService.emitToolChanged(this);
       this.activeStep = this.steps[this.currentIndex];
@@ -136,10 +121,6 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
     }
     this.stepChanged();
     this.displayDialog = true;
-  }
-
-  private isFinalStep() {
-    return this.currentIndex === this.steps.length;
   }
 
   previousStep(): void {
@@ -183,7 +164,9 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
   }
 
   setActive(): void {
+    console.log('drawn devices ', this.drawnDevices);
     this.active = true;
+    this.closeSocket();
   }
 
   setInactive(): void {
@@ -192,7 +175,9 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
     this.currentIndex = 0;
     this.cleanBeforeClosingWizard();
     this.acceptButtons.publishVisibility(false);
-    this.decisionMadeSubscription.unsubscribe();
+    if (!!this.decisionMadeSubscription) {
+      this.decisionMadeSubscription.unsubscribe();
+    }
   }
 
   setDisabled(value: boolean): void {
@@ -226,6 +211,38 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
       anchors: anchors
     });
     this.placerController.emitWizardSaveConfiguration(this.drawnDevices);
+  }
+
+  private toggleDevice() {
+    this.deviceActive = !this.deviceActive;
+  }
+
+  private isFinalStep() {
+    return this.currentIndex === this.steps.length;
+  }
+
+  private bindMapSelection(): void {
+    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapLoaded) => {
+      this.map = mapLoaded.container;
+    });
+  }
+
+  private captureScaleChanges(): void {
+    this.scaleChanged = this.scaleService.scaleChanged.subscribe((scale: ScaleDto): void => {
+      this.scale = new Scale(scale);
+      if (!!this.scale.start && !!this.scale.stop) {
+        this.scaleCalculations = {
+          scaleLengthInPixels: Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
+          scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
+        };
+      }
+    })
+  }
+
+  private handleDisablingFromService(): void {
+    this.disabledHandler = this.toolbarService.wizardDisabled.subscribe((setDisabled) => {
+      this.disabled = setDisabled;
+    })
   }
 
   private cleanBeforeClosingWizard(): void {
@@ -271,7 +288,9 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
       const stream = this.socketService.connect(Config.WEB_SOCKET_URL + 'wizard');
       this.socketSubscription = stream.subscribe((message: any) => {
         this.ngZone.run(() => {
+          console.log(this.options);
           this.options = this.activeStep.load(this.options, message, this.scaleCalculations);
+          console.log(this.options);
           this.isLoading = !this.options.length;
         });
       });
