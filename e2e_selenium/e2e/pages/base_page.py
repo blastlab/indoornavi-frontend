@@ -115,6 +115,10 @@ class BasePage(object):
         item_text = self.wait_for_element_visibility(locator).text
         return item_text
 
+    def get_value(self, locator):
+        value = self.wait_for_element_visibility(locator).get_attribute('value')
+        return value
+
     def get_all_elements_text(self, *locator):
         """
         All elements text are merged to one string

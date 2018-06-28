@@ -1,7 +1,7 @@
 from pages.base_page import BasePage
 from locators.maps_base_locators import MapsBaseLocators
-
-
+import json
+import time
 class MapsPage(BasePage, MapsBaseLocators):
 
     def __init__(self, driver):
@@ -64,6 +64,9 @@ class MapsPage(BasePage, MapsBaseLocators):
         # self.is_element_present(self.hint_bar_scale)
 
     # SCALE
+    def is_scale_button_displayed(self):
+        return True if self.is_element_present(self.scale_button) else False
+
     def scale_button_click(self):
         return self.click_element(self.scale_button)
 
@@ -228,3 +231,6 @@ class MapsPage(BasePage, MapsBaseLocators):
           }
         document.getElementById("map").onmousemove = findScreenCoords;
         ''')
+
+    # EDIT SCALE
+

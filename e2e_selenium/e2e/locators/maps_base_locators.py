@@ -13,6 +13,8 @@ class MapsBaseLocators(object):
         # LOCATORS
         self.choose_image_string = 'Choose an image from disk or drag&drop it below. It will be used as a background for the floor.'
         self.choose_image_title = (By.CSS_SELECTOR, "div app-map-uploader h4")
+        # QUERY
+        self.select_last_configuration = 'SELECT data FROM configuration ORDER BY id DESC LIMIT 1'
 
         self.floor_update_button = (By.CSS_SELECTOR, 'tr:last-child > td.col-button > span > button:nth-child(4)')
         self.choose_image_btn = (By.XPATH, "//div/app-map-uploader/p-fileupload/div/div[1]/span/input")
@@ -34,6 +36,7 @@ class MapsBaseLocators(object):
 
         # input data
         self.scale_value = '750'
+        self.edit_scale_distance = '999'
         # scale locators
         self.scale_button = (By.XPATH, '//button[@ng-reflect-text="Scale"]')
         self.hint_bar_scale_prompt = (By.XPATH, "//span[contains(text(),' Click on map to set starting point of measurement')]")

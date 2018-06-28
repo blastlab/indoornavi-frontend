@@ -6,6 +6,7 @@ from pages.base_page import BasePage
 from pages.login_page import LoginPage
 from pages.constructions.floors_page import FloorsPage
 import time
+import json
 
 
 class TestMapsPage(unittest.TestCase, MapsPage):
@@ -53,6 +54,7 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         self.assertTrue(self.maps_page.is_draft_saved_toast_present())
         self.assertTrue(self.maps_page.is_draft_saved_toast_disappear())
         self.webdriver.refresh()
+        self.assertTrue(self.maps_page.is_scale_button_displayed())
         self.maps_page.scale_button_click()
         self.assertTrue(self.maps_page.is_scale_line_displayed())
         self.test_failed = False
@@ -89,6 +91,16 @@ class TestMapsPage(unittest.TestCase, MapsPage):
             self.assertTrue(self.maps_page.is_must_be_integer_toast_disappear())
 
         self.test_failed = False
+
+    def __edit_scale_process_helper(self):
+        self.maps_page.scale_ok_button_click()
+        self.assertTrue(self.maps_page.is_scale_set_toast_present())
+        self.assertTrue(self.maps_page.is_scale_set_toast_disappear())
+        self.assertTrue(self.maps_page.is_draft_saved_toast_present())
+        self.assertTrue(self.maps_page.is_draft_saved_toast_disappear())
+        self.webdriver.refresh()
+        self.assertTrue(self.maps_page.is_scale_button_displayed())
+        self.maps_page.scale_button_click()
 
     def __get_maps_page(self):
 
@@ -241,4 +253,42 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         self.maps_page.scale_cancel_button_click()
         self.assertTrue(self.maps_page.is_scale_line_disappear())
         self.assertTrue(self.maps_page.is_scale_modal_window_disappear())
+        self.test_failed = False
+
+    def test_25_edit_scale_correctly_change_distance(self):
+        self.__add_scale_process_correctly(400, 0, 'centimeters', '725')
+        self.test_failed = True
+        expected_distance = self.maps_page.edit_scale_distance
+        self.maps_page.enter_scale_distance(expected_distance)
+        self.__edit_scale_process_helper()
+
+        # MAIN ASSERTS
+        result_distance = self.maps_page.get_value(self.maps_page.scale_distance_input)
+        self.assertEqual(result_distance, expected_distance)
+        self.test_failed = False
+
+    def test_26_edit_scale_correctly_change_units(self):
+        self.__add_scale_process_correctly(400, 0, 'centimeters', '725')
+        self.test_failed = True
+        self.maps_page.set_scale_measurement('meters')
+        self.__edit_scale_process_helper()
+
+        # MAIN ASSERTS
+        result_measurement = self.maps_page.get_text(self.maps_page.scale_measurement)
+        self.assertEqual(result_measurement, 'METERS')
+        self.test_failed = False
+
+    def test_27_edit_scale_correctly_units_and_distance(self):
+        self.__add_scale_process_correctly(400, 0, 'centimeters', '725')
+        self.test_failed = True
+        expected_distance = self.maps_page.edit_scale_distance
+        self.maps_page.enter_scale_distance(expected_distance)
+        self.maps_page.set_scale_measurement('meters')
+        self.__edit_scale_process_helper()
+
+        # MAIN ASSERTS
+        result_measurement = self.maps_page.get_text(self.maps_page.scale_measurement)
+        result_distance = self.maps_page.get_value(self.maps_page.scale_distance_input)
+        self.assertEqual(result_measurement, 'METERS')
+        self.assertEqual(result_distance, expected_distance)
         self.test_failed = False
