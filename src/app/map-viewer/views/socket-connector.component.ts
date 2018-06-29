@@ -1,13 +1,6 @@
 import {AfterViewInit, Component, NgZone, OnInit} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
-import {
-  AreaEventMode,
-  CommandType,
-  CoordinatesSocketData,
-  EventSocketData,
-  MeasureSocketData,
-  MeasureSocketDataType
-} from '../publication.type';
+import {AreaEventMode, CommandType, CoordinatesSocketData, EventSocketData, MeasureSocketData, MeasureSocketDataType} from '../publication.type';
 import {Subject} from 'rxjs/Subject';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
 import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.builder';
@@ -35,7 +28,7 @@ import {Tag} from '../../device/device.type';
 import {BreadcrumbService} from '../../shared/services/breadcrumbs/breadcrumb.service';
 import {SvgAnimator} from '../../shared/utils/drawing/animator';
 import {MapObjectMetadata} from '../../shared/utils/drawing/drawing.types';
-import {MapClickService} from "../../shared/services/map-click/map-click.service";
+import {MapClickService} from '../../shared/services/map-click/map-click.service';
 import {Deferred} from '../../shared/utils/helper/deferred';
 import {Helper} from '../../shared/utils/helper/helper';
 
@@ -43,6 +36,7 @@ import {Helper} from '../../shared/utils/helper/helper';
   templateUrl: './socket-connector.component.html'
 })
 export class SocketConnectorComponent implements OnInit, AfterViewInit {
+  public floor: Floor;
   protected socketSubscription: Subscription;
   protected d3map: MapSvg = null;
   protected scale: Scale;
@@ -51,8 +45,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   private transitionEnded = new Subject<number>();
   private areasOnMap: Dictionary<number, SvgGroupWrapper> = new Dictionary<number, SvgGroupWrapper>();
   private originListeningOnEvent: Dictionary<string, MessageEvent[]> = new Dictionary<string, MessageEvent[]>();
-  private originListeningOnClickMapEvent: Array<MessageEvent> = new Array<MessageEvent>();
-  private floor: Floor;
+  private originListeningOnClickMapEvent: Array<MessageEvent> = [];
   private tags: Tag[] = [];
   private visibleTags: Map<number, boolean> = new Map();
   private scaleCalculations: ScaleCalculations;
@@ -294,7 +287,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       const position: Point = Helper.getMousePosition(mapSvg);
       if (this.originListeningOnClickMapEvent.length > 0) {
         this.originListeningOnClickMapEvent.forEach((event: MessageEvent): void => {
-            event.source.postMessage({type: 'click', position: position}, event.origin);
+          event.source.postMessage({type: 'click', position: position}, event.origin);
         });
       }
     });
@@ -369,7 +362,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           this.getMapDimensions(event);
           break;
         case 'addClickEventListener':
-          if(this.originListeningOnClickMapEvent.indexOf(event) < 0) {
+          if (this.originListeningOnClickMapEvent.indexOf(event) < 0) {
             this.originListeningOnClickMapEvent.push(event);
           }
           break;
