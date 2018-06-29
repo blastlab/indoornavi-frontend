@@ -14,30 +14,20 @@ export class ConnectableDevice extends Draggable {
     this.handleHovering();
   }
 
-  public dragOn() {
+  dragOn(): void {
     super.dragOn();
     this.group.call(this.dragBehavior.on('drag.connectable', () => {
       this.dragMapDeviceBehavior();
     }));
   }
 
-  public dragOff() {
+  dragOff(): void {
     this.group.on('.drag', null);
     this.group.select('.pointer').attr('stroke', 'black');
     this.group.style('cursor', 'pointer');
   }
 
-  public lockConnections() {
-    if (!!this.sinkConnections.length) {
-      this.sinkConnections.forEach((line: ConnectingLine) => {
-        line.lock();
-      });
-    } else if (!!this.anchorConnection) {
-      this.anchorConnection.lock();
-    }
-  }
-
-  public unlockConnections() {
+  unlockConnections(): void {
     if (!!this.sinkConnections.length) {
       this.sinkConnections.forEach((line: ConnectingLine) => {
         line.unlock();
@@ -47,7 +37,7 @@ export class ConnectableDevice extends Draggable {
     }
   }
 
-  public handleHovering() {
+  handleHovering(): void {
       this.group.on('mouseenter', () => {
         this.showConnections();
       });
@@ -56,7 +46,7 @@ export class ConnectableDevice extends Draggable {
       });
   }
 
-  private showConnections() {
+  private showConnections(): void {
     if (!!this.sinkConnections.length) {
       this.sinkConnections.forEach((line: ConnectingLine) => {
         line.show();
@@ -66,7 +56,7 @@ export class ConnectableDevice extends Draggable {
     }
   }
 
-  private hideConnections() {
+  private hideConnections(): void {
     if (!!this.sinkConnections.length) {
       this.sinkConnections.forEach((line: ConnectingLine) => {
         line.hide();
@@ -76,9 +66,9 @@ export class ConnectableDevice extends Draggable {
     }
   }
 
-  private dragMapDeviceBehavior() {
-    const x = Math.max(0, Math.min(this.mapAttributes.width, this.group.attr('x')));
-    const y = Math.max(0, Math.min(this.mapAttributes.height, this.group.attr('y')));
+  private dragMapDeviceBehavior(): void {
+    const x: number = Math.max(0, Math.min(this.mapAttributes.width, this.group.attr('x')));
+    const y: number = Math.max(0, Math.min(this.mapAttributes.height, this.group.attr('y')));
     if (!!this.sinkConnections.length) {
       this.sinkConnections.forEach((line: ConnectingLine) => {
         line.connection.attr('x1', x);

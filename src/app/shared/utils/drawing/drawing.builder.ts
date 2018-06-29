@@ -195,14 +195,14 @@ export class SvgGroupWrapper {
     this.group.remove();
   }
 
-  addBorderBox(scale: number, defineColor?: string) {
-    const boxColor = (defineColor) ? defineColor : this.groupDefaultColor;
+  addBorderBox(scale: number, defineColor?: string): void {
+    const boxColor: string = (defineColor) ? defineColor : this.groupDefaultColor;
     const parentElement: SVGElement = this.group.node();
     const domRect: DOMRectInit = parentElement.getBoundingClientRect();
     const boxWidth = 2;
-    const padding: {x: number , y: number} = Helper.getChildrenExtremeValues(parentElement);
-    const paddingX = padding.x * 1 + boxWidth * 1;
-    let paddingY = padding.y - boxWidth - 6;
+    const padding: Point = Helper.getChildrenExtremeValues(parentElement);
+    const paddingX: number = padding.x * 1 + boxWidth * 1;
+    let paddingY: number = padding.y - boxWidth - 6;
     if (this.textsHidden) {
       paddingY += 10;
     }
@@ -221,19 +221,19 @@ export class SvgGroupWrapper {
       .attr('fill', 'none');
   }
 
-  removeBorderBox() {
+  removeBorderBox(): void {
     this.group.select('rect.group-border-box').remove();
   }
 
   // TODO: Refactor this method to be more specific - remember about usages
-  changeColor(newColor) {
+  changeColor(newColor): void {
     const parentElement: SVGElement = this.group.node();
     const childrenCount: number = parentElement.childElementCount;
     const children: NodeList = parentElement.childNodes;
     for (let i = 0; i < childrenCount; i++) {
-      const classed = children[i].attributes['class'];
+      const classed: Attr = children[i].attributes['class'];
       if (!classed || (!!classed && classed.value !== 'pointer' && classed.value !== 'dragarea' && classed.value !== 'group-border-box' )) {
-        const child = d3.select(children[i]);
+        const child: d3.selection = d3.select(children[i]);
         if (child.attr('stroke') !== null) {
           child.attr('stroke', newColor)
         }
@@ -244,7 +244,7 @@ export class SvgGroupWrapper {
     }
   }
 
-  resetColor() {
+  resetColor(): void {
     this.changeColor(this.groupDefaultColor);
   }
 
@@ -265,7 +265,7 @@ export class SvgGroupWrapper {
   }
 
   removeElements(type: ElementType): void {
-    const elements = this.elements.get(type);
+    const elements: d3.selection[] = this.elements.get(type);
     if (!!elements) {
       elements.forEach((element: d3.selection) => {
         element.remove();

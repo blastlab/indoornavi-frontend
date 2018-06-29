@@ -11,22 +11,22 @@ export class Selectable {
   constructor(protected group: SvgGroupWrapper) {
   }
 
-  private emitSelectedEvent(): void {
+  emitSelectedEvent(): void {
     this.selectedEmitter.next(this.group.getGroup());
   }
 
-  public onSelected(): Observable<d3.selection> {
+  onSelected(): Observable<d3.selection> {
     return this.selectedEmitter.asObservable();
   }
 
-  public select(): void {
+  select(): void {
     this.emitSelectedEvent();
   }
 
-  public handleHovering(): void {
+  handleHovering(): void {
     this.unlockHovering();
-    const onMouseEnterListener = this.group.getGroup().on('mouseenter');
-    const onMouseLeaveListener = this.group.getGroup().on('mouseleave');
+    const onMouseEnterListener: d3.selection = this.group.getGroup().on('mouseenter');
+    const onMouseLeaveListener:  d3.selection = this.group.getGroup().on('mouseleave');
     if (onMouseEnterListener === undefined) {
       this.group.getGroup().on('mouseenter', () => {
         this.highlightSet();
@@ -49,7 +49,7 @@ export class Selectable {
     }
   }
 
-  public selectOn(): void {
+  selectOn(): void {
     this.group.getGroup().on('click.select', () => {
       this.select();
       event.stopPropagation();
@@ -57,28 +57,28 @@ export class Selectable {
     this.handleHovering();
   }
 
-  public lockHovering(): void {
+  lockHovering(): void {
     this.lockedSelecting = true;
   }
 
-  public unlockHovering(): void {
+  unlockHovering(): void {
     this.lockedSelecting = false;
   }
 
-  public selectOff(): void {
+  selectOff(): void {
     this.group.getGroup().on('click.select', null);
     this.lockHovering();
   }
 
-  public highlightSet(color?: string): void {
-    const setColor = (color) ? color : 'red';
+  highlightSet(color?: string): void {
+    const setColor: string = (color) ? color : 'red';
     if (!this.lockedSelecting) {
       this.group.showTexts();
       this.group.changeColor(setColor);
     }
   }
 
-  public highlightReset(): void {
+  highlightReset(): void {
     if (!this.lockedSelecting) {
       this.group.hideTexts();
       this.group.resetColor();

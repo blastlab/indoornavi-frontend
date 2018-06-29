@@ -45,31 +45,27 @@ export class ActionBarService {
   constructor(private httpService: HttpService) {
   }
 
-  public configurationLoaded(): Observable<Configuration> {
+  configurationLoaded(): Observable<Configuration> {
     return this.loaded;
   }
 
-  public configurationReset(): Observable<Configuration> {
+  configurationReset(): Observable<Configuration> {
     return this.reset;
   }
 
-  public configurationChanged(): Observable<Configuration> {
+  configurationChanged(): Observable<Configuration> {
     return this.changed;
   }
 
-  public getLatestPublishedConfiguration(): Configuration {
+  getLatestPublishedConfiguration(): Configuration {
     return this.latestPublishedConfiguration;
   }
 
-  public getLatestConfiguration(): Configuration {
-    return this.latestConfiguration;
-  }
-
-  public publish(): Observable<ConfigurationData> {
+  publish(): Observable<ConfigurationData> {
     return this.httpService.doPost(ActionBarService.URL + this.configuration.floorId, {});
   }
 
-  public loadConfiguration(floor: Floor): void {
+  loadConfiguration(floor: Floor): void {
     this.httpService.doGet(ActionBarService.URL + floor.id).subscribe((configurations: Configuration[]): void => {
       if (configurations.length === 0) {
         this.configuration = (<Configuration>{
@@ -101,7 +97,7 @@ export class ActionBarService {
     });
   }
 
-  public saveDraft(): Promise<void> {
+  saveDraft(): Promise<void> {
     return new Promise<void>((resolve: Function): void => {
       if (this.hashConfiguration() !== this.configurationHash) {
         this.httpService.doPut(ActionBarService.URL, this.configuration).subscribe((): void => {
@@ -112,7 +108,7 @@ export class ActionBarService {
     });
   }
 
-  public undo(): Promise<Configuration> {
+  undo(): Promise<Configuration> {
     return new Promise<Configuration>((resolve: Function): void => {
       this.httpService.doDelete(ActionBarService.URL + this.configuration.floorId).subscribe((configuration: Configuration): void => {
         this.configuration = configuration;
@@ -123,30 +119,14 @@ export class ActionBarService {
     });
   }
 
-  public setScale(scale: Scale): void {
+  setScale(scale: Scale): void {
     this.configuration.data.scale = Helper.deepCopy(scale);
     this.sendConfigurationChangedEvent();
   }
 
-  private getConfigurationAnchors(): Collections.Set<Anchor> {
-    const anchors = new Collections.Set<Anchor>(ActionBarService.compareFn);
-    this.configuration.data.anchors.forEach((configurationAnchor: Anchor) => {
-      anchors.add(configurationAnchor);
-    });
-    return anchors;
-  }
-
-  private getConfigurationSinks(): Collections.Set<Sink> {
-    const sinks = new Collections.Set<Sink>(ActionBarService.compareFn);
-    this.configuration.data.sinks.forEach((configurationSink: Sink): void => {
-      sinks.add(configurationSink);
-    });
-    return sinks;
-  }
-
-  public setSink(sink: Sink): void {
+  setSink(sink: Sink): void {
     const sinks: Collections.Set<Sink> = this.getConfigurationSinks();
-    const sinkCopy = {...sink};
+    const sinkCopy: Sink = {...sink};
     if (sinks.contains(sinkCopy)) {
       sinks.remove(sinkCopy);
     }
@@ -159,14 +139,14 @@ export class ActionBarService {
     this.sendConfigurationChangedEvent();
   }
 
-  public setAreas(areas: Area[]): void {
+  setAreas(areas: Area[]): void {
     this.configuration.data.areas = areas;
     this.sendConfigurationChangedEvent();
   }
 
-  public removeSink(sink: Sink): void {
+  removeSink(sink: Sink): void {
     const sinks: Collections.Set<Sink> = this.getConfigurationSinks();
-    const sinkCopy = {...sink};
+    const sinkCopy: Sink = {...sink};
     if (sinks.contains(sinkCopy)) {
       sinks.remove(sinkCopy);
     }
@@ -174,8 +154,69 @@ export class ActionBarService {
     this.sendConfigurationChangedEvent();
   }
 
+  setAnchorInSink(anchor: Anchor, sink: Sink): void {
+    const configuredSink: Sink = this.getConfiguredSink(sink);
+    const sinkAnchors: Collections.Set<Anchor> = this.getAnchorsInSink(configuredSink);
+    const anchorCopy: Anchor = {...anchor};
+    if (sinkAnchors.contains(anchorCopy)) {
+      sinkAnchors.remove(anchorCopy);
+    }
+    sinkAnchors.add(anchorCopy);
+    configuredSink.anchors = Helper.deepCopy(sinkAnchors.toArray());
+    this.setSink(configuredSink);
+  }
+
+  removeAnchorFromSink(anchor: Anchor, sink: Sink): void {
+    const configuredSink: Sink = this.getConfiguredSink(sink);
+    const sinkAnchors: Collections.Set<Anchor> = this.getAnchorsInSink(configuredSink);
+    const anchorCopy: Anchor = {...anchor};
+    if (sinkAnchors.contains(anchorCopy)) {
+      sinkAnchors.remove(anchorCopy);
+    }
+    configuredSink.anchors = Helper.deepCopy(sinkAnchors.toArray());
+    this.setSink(configuredSink);
+  }
+
+  setAnchor(anchor: Anchor): void {
+    const anchors: Collections.Set<Anchor> = this.getConfigurationAnchors();
+    const anchorCopy: Anchor = {...anchor};
+    if (anchors.contains(anchorCopy)) {
+      anchors.remove(anchorCopy);
+    }
+    ActionBarService.parseCoordinatesToIntegers(anchorCopy);
+    anchors.add(anchorCopy);
+    this.configuration.data.anchors = Helper.deepCopy(anchors.toArray());
+    this.sendConfigurationChangedEvent();
+  }
+
+  removeAnchor(anchor: Anchor): void {
+    const anchors: Collections.Set<Anchor> = this.getConfigurationAnchors();
+    const anchorCopy: Anchor = {...anchor};
+    if (anchors.contains(anchorCopy)) {
+      anchors.remove(anchorCopy);
+    }
+    this.configuration.data.anchors = Helper.deepCopy(anchors.toArray());
+    this.sendConfigurationChangedEvent();
+  }
+
+  private getConfigurationAnchors(): Collections.Set<Anchor> {
+    const anchors: Collections.Set<Anchor> = new Collections.Set<Anchor>(ActionBarService.compareFn);
+    this.configuration.data.anchors.forEach((configurationAnchor: Anchor) => {
+      anchors.add(configurationAnchor);
+    });
+    return anchors;
+  }
+
+  private getConfigurationSinks(): Collections.Set<Sink> {
+    const sinks: Collections.Set<Sink> = new Collections.Set<Sink>(ActionBarService.compareFn);
+    this.configuration.data.sinks.forEach((configurationSink: Sink): void => {
+      sinks.add(configurationSink);
+    });
+    return sinks;
+  }
+
   private getAnchorsInSink(sink: Sink): Collections.Set<Anchor> {
-    const anchorsInSink = new Collections.Set<Anchor>(ActionBarService.compareFn);
+    const anchorsInSink: Collections.Set<Anchor> = new Collections.Set<Anchor>(ActionBarService.compareFn);
     sink.anchors.forEach((anchorInSink: Anchor): void => {
       anchorsInSink.add(anchorInSink);
     });
@@ -186,51 +227,6 @@ export class ActionBarService {
     return this.getConfigurationSinks().toArray().find( (s: Sink) => {
       return s.shortId === sink.shortId;
     });
-  }
-
-  public setAnchorInSink(anchor: Anchor, sink: Sink): void {
-    const configuredSink = this.getConfiguredSink(sink);
-    const sinkAnchors: Collections.Set<Anchor> = this.getAnchorsInSink(configuredSink);
-    const anchorCopy = {...anchor};
-    if (sinkAnchors.contains(anchorCopy)) {
-      sinkAnchors.remove(anchorCopy);
-    }
-    sinkAnchors.add(anchorCopy);
-    configuredSink.anchors = Helper.deepCopy(sinkAnchors.toArray());
-    this.setSink(configuredSink);
-  }
-
-  public removeAnchorFromSink(anchor: Anchor, sink: Sink): void {
-    const configuredSink = this.getConfiguredSink(sink);
-    const sinkAnchors: Collections.Set<Anchor> = this.getAnchorsInSink(configuredSink);
-    const anchorCopy = {...anchor};
-    if (sinkAnchors.contains(anchorCopy)) {
-      sinkAnchors.remove(anchorCopy);
-    }
-    configuredSink.anchors = Helper.deepCopy(sinkAnchors.toArray());
-    this.setSink(configuredSink);
-  }
-
-  public setAnchor(anchor: Anchor): void {
-    const anchors: Collections.Set<Anchor> = this.getConfigurationAnchors();
-    const anchorCopy = {...anchor};
-    if (anchors.contains(anchorCopy)) {
-      anchors.remove(anchorCopy);
-    }
-    ActionBarService.parseCoordinatesToIntegers(anchorCopy);
-    anchors.add(anchorCopy);
-    this.configuration.data.anchors = Helper.deepCopy(anchors.toArray());
-    this.sendConfigurationChangedEvent();
-  }
-
-  public removeAnchor(anchor: Anchor): void {
-    const anchors: Collections.Set<Anchor> = this.getConfigurationAnchors();
-    const anchorCopy = {...anchor};
-    if (anchors.contains(anchorCopy)) {
-      anchors.remove(anchorCopy);
-    }
-    this.configuration.data.anchors = Helper.deepCopy(anchors.toArray());
-    this.sendConfigurationChangedEvent();
   }
 
   private hashConfiguration(): string | Int32Array {
