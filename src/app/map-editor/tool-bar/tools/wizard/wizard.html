@@ -1,6 +1,6 @@
 <button id="wizard-activation"
         pButton
-        [ngClass]="{'active-tool' : active}" (click)="nextStep()"
+        [ngClass]="{'active-tool' : active}" (click)="begin()"
         pTooltip="{{'wizard.tooltip'|translate}}"
         icon="fa-sitemap" iconPos="left"
         [disabled]="disabled"

@@ -111,7 +111,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
     expandable.groupCreated.resetColor();
   }
 
-  static markSinkSubselection(connectingLine: ConnectingLine): void {
+  static markSinkSubSelection(connectingLine: ConnectingLine): void {
     DevicesComponent.showSingleConnection(connectingLine);
   }
 
@@ -139,81 +139,6 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
               private scaleService: ScaleService) {
     super(icons);
     this.setTranslations();
-  }
-
-  @HostListener('document:keydown.escape', [])
-  private handleEscapeKey(): void {
-    if (!this.selectedDevice && this.modifyingConnectionsFlag && !this.selectedLine) {
-      this.endModifyingConnections();
-      this.devicePlacerController.setConnectingMode(false);
-    }
-    if (this.selectedDevice) {
-      if (!!this.creatingConnection) {
-        this.resetConnecting();
-      }
-      this.clearSelections();
-      this.handleSelectableConnections();
-    }
-    if (!!this.selectedLine) {
-      this.clearSelectedLine();
-    }
-
-  }
-
-  @HostListener('document:keydown.delete', [])
-  private handleDeleteKey(): void {
-    if (!!this.selectedDevice) {
-      this.removeSelectedDevice();
-      this.clearSelections();
-    }
-    if (!!this.selectedLine) {
-      this.disconnectBySelectedLine();
-    }
-  }
-
-  public onClick(): void {
-    if (this.modifyingConnectionsFlag) {
-      if (!!this.creatingConnection) {
-        this.removeDashedLine()
-      }
-      this.endModifyingConnections();
-      this.devicePlacerController.setConnectingMode(false);
-    } else {
-      this.toolbarService.emitToolChanged(this);
-    }
-  }
-
-  private removeSelectedDevice(): void {
-    if (!!this.creatingConnection) {
-      this.resetConnecting()
-    }
-    if (DevicesComponent.isSinkType(this.selectedDevice) && (<Sink>this.selectedDevice).anchors.length !== 0) {
-      this.sinkRemoval = <Sink>this.selectedDevice
-    } else {
-      this.removeFromConfiguration(this.selectedDevice);
-      const mapDevice = this.findMapDevice(this.selectedDevice.shortId);
-      mapDevice.groupCreated.remove();
-      this.clearSelections();
-      this.removeFromMapDevices(mapDevice);
-    }
-  }
-
-  private modifyConnections(): void {
-    this.translate.get('connections.manipulationTurnedOn').subscribe((value: string) => {
-      this.hintBarService.sendHintMessage(value);
-    });
-    if (!!this.selectedDevice) {
-      const selectedMapDevice = this.findMapDevice(this.selectedDevice.shortId);
-      if (!!selectedMapDevice && !selectedMapDevice.connectable.anchorConnection) {
-        this.map.on('mousemove', () => {
-          this.map.on('mousemove', null);
-          this.startCreatingConnection(selectedMapDevice, DevicesComponent.getMouseCoordinates());
-        });
-      } else {
-        this.clearSelections();
-      }
-    }
-    this.startModifyingConnections();
   }
 
   getHintMessage(): string {
@@ -271,63 +196,138 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
     this.disabled = value;
   }
 
+  onClick(): void {
+    if (this.modifyingConnectionsFlag) {
+      if (!!this.creatingConnection) {
+        this.removeDashedLine()
+      }
+      this.endModifyingConnections();
+      this.devicePlacerController.setConnectingMode(false);
+    } else {
+      this.toolbarService.emitToolChanged(this);
+    }
+  }
+
+  @HostListener('document:keydown.escape', [])
+  private handleEscapeKey(): void {
+    if (!this.selectedDevice && this.modifyingConnectionsFlag && !this.selectedLine) {
+      this.endModifyingConnections();
+      this.devicePlacerController.setConnectingMode(false);
+    }
+    if (this.selectedDevice) {
+      if (!!this.creatingConnection) {
+        this.resetConnecting();
+      }
+      this.clearSelections();
+      this.handleSelectableConnections();
+    }
+    if (!!this.selectedLine) {
+      this.clearSelectedLine();
+    }
+
+  }
+
+  @HostListener('document:keydown.delete', [])
+  private handleDeleteKey(): void {
+    if (!!this.selectedDevice) {
+      this.removeSelectedDevice();
+      this.clearSelections();
+    }
+    if (!!this.selectedLine) {
+      this.disconnectBySelectedLine();
+    }
+  }
+
+  private removeSelectedDevice(): void {
+    if (!!this.creatingConnection) {
+      this.resetConnecting()
+    }
+    if (DevicesComponent.isSinkType(this.selectedDevice) && (<Sink>this.selectedDevice).anchors.length !== 0) {
+      this.sinkRemoval = <Sink>this.selectedDevice
+    } else {
+      this.removeFromConfiguration(this.selectedDevice);
+      const mapDevice = this.findMapDevice(this.selectedDevice.shortId);
+      mapDevice.groupCreated.remove();
+      this.clearSelections();
+      this.removeFromMapDevices(mapDevice);
+    }
+  }
+
+  private modifyConnections(): void {
+    this.translate.get('connections.manipulationTurnedOn').subscribe((value: string): void => {
+      this.hintBarService.sendHintMessage(value);
+    });
+    if (!!this.selectedDevice) {
+      const selectedMapDevice = this.findMapDevice(this.selectedDevice.shortId);
+      if (!!selectedMapDevice && !selectedMapDevice.connectable.anchorConnection) {
+        this.map.on('mousemove', (): void => {
+          this.map.on('mousemove', null);
+          this.startCreatingConnection(selectedMapDevice, DevicesComponent.getMouseCoordinates());
+        });
+      } else {
+        this.clearSelections();
+      }
+    }
+    this.startModifyingConnections();
+  }
+
   private lockWizard(disable: boolean): void {
     this.toolbarService.setWizardDisabled(disable);
   }
 
   private subscribeForListEvents(): void {
     this.listEvents = [];
-    this.listEvents.push(this.devicePlacerController.draggingDevice.subscribe((device: Anchor | Sink) => {
+    this.listEvents.push(this.devicePlacerController.draggingDevice.subscribe((device: Anchor | Sink): void => {
       this.draggedDevice = device;
       this.devicePlacerController.setListVisibility(false);
     }));
-    this.listEvents.push(this.devicePlacerController.dragEnded.subscribe(() => {
+    this.listEvents.push(this.devicePlacerController.dragEnded.subscribe((): void => {
       if (this.draggedDevice && this.placementDone) {
         this.devicePlacerController.setListVisibility(true);
       }
       this.draggedDevice = null;
     }));
-    this.listEvents.push(this.devicePlacerController.connectingMode.subscribe((on: boolean) => {
+    this.listEvents.push(this.devicePlacerController.connectingMode.subscribe((on: boolean): void => {
       on ? this.modifyConnections() : this.endModifyingConnections();
     }));
-    this.listEvents.push(this.devicePlacerController.deleteClicked.subscribe(() => {
+    this.listEvents.push(this.devicePlacerController.deleteClicked.subscribe((): void => {
       this.removeSelectedDevice();
     }));
   }
 
   private unsubscribeFromAllListEvents(): void {
-    this.listEvents.forEach((listEventSubscription) => {
+    this.listEvents.forEach((listEventSubscription): void => {
       listEventSubscription.unsubscribe();
     });
     this.listEvents = null;
   }
 
   private showAllDevicesOnMap(): void {
-    this.mapDevices.forEach((mapDevice: Expandable) => {
+    this.mapDevices.forEach((mapDevice: Expandable): void => {
       mapDevice.groupCreated.setVisibility(true);
     })
   }
 
   private hideAllDevicesOnMap(): void {
-    this.mapDevices.forEach((mapDevice: Expandable) => {
+    this.mapDevices.forEach((mapDevice: Expandable): void => {
       mapDevice.groupCreated.setVisibility(false);
     })
   }
 
   private bindMapSelection(): void {
-    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapLoaded) => {
+    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapLoaded): void => {
       this.map = mapLoaded.container;
     });
   }
 
   private captureScaleFactorChanges(): void {
-    this.scaleFactorChanged = this.mapEditorService.mapIsTransformed().subscribe((mapTransform: Transform) => {
+    this.scaleFactorChanged = this.mapEditorService.mapIsTransformed().subscribe((mapTransform: Transform): void => {
       this.scaleFactor = mapTransform.k;
     });
   }
 
   private captureScaleChanges(): void {
-    this.scaleChanged = this.scaleService.scaleChanged.subscribe((scale: ScaleDto) => {
+    this.scaleChanged = this.scaleService.scaleChanged.subscribe((scale: ScaleDto): void => {
       this.scale = new Scale(scale);
       if (!!this.scale.start && !!this.scale.stop) {
         this.scaleCalculations = {
@@ -339,7 +339,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   }
 
   private captureWizardConfigurations(): void {
-    this.wizardConfiguration = this.devicePlacerController.wizardSavesConfiguration.subscribe((devicesConfiguredInWizard) => {
+    this.wizardConfiguration = this.devicePlacerController.wizardSavesConfiguration.subscribe((devicesConfiguredInWizard): void => {
       const sinkShortId: number = DevicesComponent.getShortIdFromGroupSelection(devicesConfiguredInWizard[0].groupCreated.getGroup());
       const isSinkPresentInMapDevices: boolean = !!this.findMapDevice(sinkShortId);
       this.mapDevices.concat(devicesConfiguredInWizard);
@@ -360,19 +360,19 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   }
 
   private fetchConfiguredDevices(): void {
-    this.configurationService.configurationLoaded().first().subscribe((configuration) => {
+    this.configurationService.configurationLoaded().first().subscribe((configuration): void => {
       const config = Helper.deepCopy(configuration);
       this.floorId = config.floorId;
       if (!!config.data.sinks) {
         const sinks: Sink[] = [];
-        config.data.sinks.forEach((sink: Sink) => {
+        config.data.sinks.forEach((sink: Sink): void => {
           sinks.push(<Sink>this.recalculateDeviceCoordinatesFromCentimetersToPixels(sink))
         });
         this.drawSinksAndConnectedAnchors(sinks);
       }
       if (!!config.data.anchors) {
         const anchors: Anchor[] = [];
-        config.data.anchors.forEach((anchor: Anchor) => {
+        config.data.anchors.forEach((anchor: Anchor): void => {
           anchors.push(this.recalculateDeviceCoordinatesFromCentimetersToPixels(anchor));
         });
         this.drawAnchorsWithoutConnection(anchors);
@@ -403,13 +403,13 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   }
 
   private subscribeForDroppedDevice(): void {
-    this.deviceDrop = this.devicePlacerController.droppedDevice.subscribe(() => {
+    this.deviceDrop = this.devicePlacerController.droppedDevice.subscribe((): void => {
       if (!!this.draggedDevice) {
         this.placementDone = false;
         this.lockWizard(true);
-        this.devicePlacerController.newCoordinates.first().subscribe((coords) => {
+        this.devicePlacerController.newCoordinates.first().subscribe((newCoordinates): void => {
           let coordinates: Point;
-          if (!coords) {
+          if (!newCoordinates) {
             this.map.style('cursor', 'crosshair');
             this.map.on('click', () => {
               coordinates = this.zoomService.calculateTransition({x: d3.event.offsetX, y: d3.event.offsetY});
@@ -417,7 +417,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
               this.map.style('cursor', 'default');
             });
           } else {
-            coordinates = this.zoomService.calculateTransition(coords);
+            coordinates = this.zoomService.calculateTransition(newCoordinates);
           }
           this.placeDeviceOnMap(this.draggedDevice, coordinates);
         });
@@ -428,7 +428,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   private fetchDevices(): void {
     this.verifiedDevices = [];
     this.deviceService.setUrl('sinks/');
-    this.deviceService.getAll().subscribe((sinks: Sink[]) => {
+    this.deviceService.getAll().subscribe((sinks: Sink[]): void => {
       sinks.forEach((sink: Sink) => {
         if (sink.verified) {
           if (!sink.floorId || sink.floorId === this.configuration.floorId) {
@@ -444,7 +444,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
       });
     });
     this.deviceService.setUrl('anchors/');
-    this.deviceService.getAll().subscribe((anchors: Anchor[]) => {
+    this.deviceService.getAll().subscribe((anchors: Anchor[]): void => {
       anchors.forEach((anchor: Anchor) => {
         if (anchor.verified) {
           if (!anchor.floorId || anchor.floorId === this.configuration.floorId) {
@@ -463,7 +463,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
 
   private updateSinkFromConfiguration(sink: Sink): Sink {
     let updated = sink;
-    this.configuration.data.sinks.forEach((configSink) => {
+    this.configuration.data.sinks.forEach((configSink): void => {
       if (DevicesComponent.hasSameShortId(sink, configSink.shortId)) {
         updated = configSink;
       }
@@ -472,8 +472,8 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   }
 
   private updateAnchorFromConfiguration(anchor: Anchor): Anchor {
-    let updated = anchor;
-    this.configuration.data.anchors.forEach((configAnchor) => {
+    let updated: Anchor = anchor;
+    this.configuration.data.anchors.forEach((configAnchor): void => {
       if (DevicesComponent.hasSameShortId(anchor, configAnchor.shortId)) {
         updated = configAnchor;
       }
@@ -482,9 +482,9 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   }
 
   private updateDeviceCoordinatesFromMap(device: Anchor | Sink): Anchor | Sink {
-    const updated = device;
-    this.mapDevices.forEach(mapDevice => {
-      const identificator = DevicesComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.getGroup());
+    const updated: Anchor | Sink = device;
+    this.mapDevices.forEach((mapDevice: Expandable): void => {
+      const identificator: number = DevicesComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.getGroup());
       if (DevicesComponent.hasSameShortId(device, identificator)) {
         updated.x = mapDevice.groupCreated.getGroup().attr('x');
         updated.y = mapDevice.groupCreated.getGroup().attr('y');
@@ -494,15 +494,15 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   }
 
   private getIndexOfSinkInConfiguration(sink: Sink): number {
-    return this.configuration.data.sinks.findIndex(s => s.shortId === sink.shortId);
+    return this.configuration.data.sinks.findIndex((s: Sink): boolean => s.shortId === sink.shortId);
   }
 
   private getIndexOfAnchorInConfiguration(anchor: Anchor): number {
-    let index = this.configuration.data.anchors.findIndex(a => a.shortId === anchor.shortId);
+    let index = this.configuration.data.anchors.findIndex((a: Anchor): boolean => a.shortId === anchor.shortId);
     if (index >= 0) {
       return index;
     } else {
-      this.configuration.data.sinks.forEach((configSink) => {
+      this.configuration.data.sinks.forEach((configSink: Sink): void => {
         const i = this.getIndexOfAnchorInSinkArray(anchor, configSink);
         if (i >= 0) {
           index = i;
@@ -519,7 +519,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   private manageSingleSelectable(mapDevice: Expandable): void {
     mapDevice.selectable.selectOn();
     const managedSelectable: Subscription = mapDevice.selectable.onSelected()
-      .subscribe((selectedMapDevice): d3.selection => {
+      .subscribe((selectedMapDevice: d3.selection): void => {
         const deviceShortId = DevicesComponent.getShortIdFromGroupSelection(selectedMapDevice);
         this.devicePlacerController.setSelectedDevice(this.findMapDevice(deviceShortId));
       });
@@ -528,27 +528,27 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
 
   private activateAllSelectablesBahavior(): void {
     this.managedSelectableDevices = [];
-    this.mapDevices.forEach((mapDevice: Expandable) => {
+    this.mapDevices.forEach((mapDevice: Expandable): void => {
       this.manageSingleSelectable(mapDevice);
     });
     this.handleSelectedDevices();
   }
 
   private showAllConnections(): void {
-    this.connectingLines.forEach(connectingLine => {
+    this.connectingLines.forEach((connectingLine: ConnectingLine): void => {
       DevicesComponent.showSingleConnection(connectingLine);
     });
   }
 
   private hideAllConnections(): void {
-    this.connectingLines.forEach(connectingLine => {
+    this.connectingLines.forEach((connectingLine: ConnectingLine): void => {
       DevicesComponent.hideSingleConnection(connectingLine);
     });
   }
 
   private handleSelectedDevices(): void {
     this.handledSelection = this.devicePlacerController.getSelectedDevice()
-      .subscribe((selectedDevice) => {
+      .subscribe((selectedDevice: Expandable): void => {
         const lastSelected = this.selectedDevice;
         const handledDevice = this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(selectedDevice.groupCreated.getGroup()));
         let preserveLine: boolean;
@@ -566,7 +566,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
         } else if (!!selectedDevice.connectable.anchorConnection) {
           const sinkAsConnectable = selectedDevice.connectable.anchorConnection.connectedSink();
           this.chosenSink = <Sink>this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(sinkAsConnectable.group));
-          DevicesComponent.markSinkSubselection(selectedDevice.connectable.anchorConnection);
+          DevicesComponent.markSinkSubSelection(selectedDevice.connectable.anchorConnection);
         }
         const selectableDevice = <SelectableDevice>selectedDevice.selectable;
         selectableDevice.setBorderBox(this.scaleFactor);
@@ -608,7 +608,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   }
 
   private turnOnSelectInAllBlockedDevices(): void {
-    this.blockedDevices.forEach(blockedDevice => {
+    this.blockedDevices.forEach((blockedDevice: Expandable): void => {
       DevicesComponent.unblockSelectableBehavior(blockedDevice);
     });
     this.blockedDevices = [];
@@ -617,15 +617,15 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   private turnOffSelectInMapDevicesByType(devicePassed: Expandable): void {
     const verifiedDevice = this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(devicePassed.groupCreated.getGroup()));
     if (DevicesComponent.isSinkType(verifiedDevice)) {
-      this.mapDevices.forEach((mapDevice) => {
-        const connectable = <ConnectableDevice>mapDevice.connectable;
-        const device = this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.getGroup()));
+      this.mapDevices.forEach((mapDevice: Expandable): void => {
+        const connectable: ConnectableDevice = <ConnectableDevice>mapDevice.connectable;
+        const device: any = this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.getGroup()));
         if (DevicesComponent.isSinkType(device) || !!connectable.anchorConnection) {
           this.blockSelectableBehavior(mapDevice);
         }
       });
     } else {
-      this.mapDevices.forEach((mapDevice) => {
+      this.mapDevices.forEach((mapDevice: Expandable): void => {
         const device = this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.getGroup()));
         if (!DevicesComponent.isSinkType(device)) {
           this.blockSelectableBehavior(mapDevice);
@@ -634,10 +634,10 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
     }
   }
 
-  private turnOffSelectInUnconnectableDevices(): void {
+  private turnOffSelectInUnConnectableDevices(): void {
     let notConnectedAnchors = 0;
-    const sinks: Expandable[] = [];
-    this.mapDevices.forEach((mapDevice) => {
+    const sinksOnMap: Expandable[] = [];
+    this.mapDevices.forEach((mapDevice: Expandable): void => {
       const device = this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(mapDevice.groupCreated.getGroup()));
       if (!DevicesComponent.isSinkType(device)) {
         notConnectedAnchors++;
@@ -647,11 +647,11 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
           notConnectedAnchors--;
         }
       } else {
-        sinks.push(mapDevice)
+        sinksOnMap.push(mapDevice)
       }
     });
     if (notConnectedAnchors === 0) {
-      sinks.forEach(sink => {
+      sinksOnMap.forEach((sink: Expandable): void => {
         this.blockSelectableBehavior(sink);
       })
     }
@@ -659,7 +659,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
 
   private startModifyingConnections(): void {
     this.modifyingConnectionsFlag = true;
-    this.turnOffSelectInUnconnectableDevices();
+    this.turnOffSelectInUnConnectableDevices();
     this.removeDragFromAllAnchorsOnMap();
     this.showAllConnections();
     this.handleSelectableConnections();
@@ -670,7 +670,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
       this.removeDashedLine()
     }
     this.modifyingConnectionsFlag = false;
-    this.translate.get('connections.manipulationTurnedOff').subscribe((value: string) => {
+    this.translate.get('connections.manipulationTurnedOff').subscribe((value: string): void => {
       this.hintBarService.sendHintMessage(value);
     });
     this.turnOffSelectInConnectingLines();
@@ -680,34 +680,34 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   }
 
   private startCreatingConnection(firstSelection: d3.selection, mousePosition: Point): void {
-    const coordinates = this.zoomService.calculateTransition(mousePosition);
+    const coordinates: Point = this.zoomService.calculateTransition(mousePosition);
     this.creatingConnection = this.createDashedLineAttachedToDevice(firstSelection, coordinates);
     this.turnOffSelectInMapDevicesByType(firstSelection);
     this.turnOffSelectInConnectingLines();
-    this.map.on('mousemove', () => {
-      const mouseMapOffset = DevicesComponent.getMouseCoordinates();
-      const delta = this.zoomService.calculateTransition(mouseMapOffset);
+    this.map.on('mousemove', (): void => {
+      const mouseMapOffset: Point = DevicesComponent.getMouseCoordinates();
+      const delta: Point = this.zoomService.calculateTransition(mouseMapOffset);
       this.creatingConnection.attr('x2', delta.x);
       this.creatingConnection.attr('y2', delta.y);
     });
   }
 
   private findConnectingLine(searchedLine: d3.selection): ConnectingLine {
-    return this.connectingLines.find((line: ConnectingLine) => {
+    return this.connectingLines.find((line: ConnectingLine): boolean => {
       return searchedLine.attr(`id`) === line.id;
     });
   }
 
   private handleSingleConnection(line: ConnectingLine): void {
     line.selectOn();
-    const subscribeSelectedLine = line.onSelected().subscribe((selectedLine: d3.selection) => {
+    const subscribeSelectedLine = line.onSelected().subscribe((selectedLine: d3.selection): void => {
       this.setSelectedLine(this.findConnectingLine(selectedLine));
     });
     this.managedSelectableLines.push(subscribeSelectedLine);
   }
 
   private handleSelectableConnections(): void {
-    this.connectingLines.forEach((line: ConnectingLine) => {
+    this.connectingLines.forEach((line: ConnectingLine): void => {
       this.handleSingleConnection(line);
     })
   }
@@ -719,11 +719,11 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
     line.highlightSet();
     line.lockHovering();
     this.selectedLine = newSelectedLine;
-    this.selectedLine.connection.on('dblclick', () => {
+    this.selectedLine.connection.on('dblclick', (): void => {
       this.disconnectBySelectedLine();
       event.stopPropagation();
     });
-    this.map.on('click', () => {
+    this.map.on('click', (): void => {
       this.clearSelectedLine();
       this.map.on('click', null);
     });
@@ -739,15 +739,15 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   }
 
   private turnOffSelectInConnectingLines(): void {
-    this.connectingLines.forEach((line: ConnectingLine) => {
+    this.connectingLines.forEach((line: ConnectingLine): void => {
       line.selectOff();
     });
-    this.managedSelectableLines.forEach((subscription: Subscription) => {
+    this.managedSelectableLines.forEach((subscription: Subscription): void => {
       subscription.unsubscribe();
     });
   }
 
-  private disconnectBySelectedLine() {
+  private disconnectBySelectedLine(): void {
     const anchorAsConnectable: ConnectableDevice = this.selectedLine.connectedAnchor();
     const sinkAsConnectable: ConnectableDevice = this.selectedLine.connectedSink();
     let anchor = this.findVerifiedDevice(DevicesComponent.getShortIdFromGroupSelection(anchorAsConnectable.group));
@@ -758,12 +758,12 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
     anchor = this.updateDeviceCoordinatesFromMap(anchor);
     this.setNotConnectedAnchorInConfiguration(anchor);
     this.turnOnSelectInAllBlockedDevices();
-    this.turnOffSelectInUnconnectableDevices();
+    this.turnOffSelectInUnConnectableDevices();
   }
 
   private createConnection(sink: Expandable, anchor: Expandable, lineConfig: DrawConfiguration): ConnectingLine {
-    const drawBuilder = new DrawBuilder(this.map, lineConfig);
-    const connectingLine = new ConnectingLine(drawBuilder.createGroup(), sink.connectable, anchor.connectable);
+    const drawBuilder: DrawBuilder = new DrawBuilder(this.map, lineConfig);
+    const connectingLine: ConnectingLine = new ConnectingLine(drawBuilder.createGroup(), sink.connectable, anchor.connectable);
     sink.connectable.sinkConnections.push(connectingLine);
     anchor.connectable.anchorConnection = connectingLine;
     return connectingLine;
@@ -781,7 +781,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
       .style('stroke-dasharray', '5, 5');
   }
 
-  private setSelectedDevice(selectedDevice: Anchor | Sink) {
+  private setSelectedDevice(selectedDevice: Anchor | Sink): void {
     this.selectedDevice = selectedDevice;
     this.clearSelectedLine();
     this.map.on('click.deselect', () => {
@@ -825,7 +825,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   private resetConnecting(): void {
     this.removeDashedLine();
     this.turnOnSelectInAllBlockedDevices();
-    this.turnOffSelectInUnconnectableDevices();
+    this.turnOffSelectInUnConnectableDevices();
   }
 
   private removeDashedLine(): void {
@@ -902,8 +902,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
     });
   }
 
-  private drawDevice(deviceConfig: DrawConfiguration,
-                     coordinates: Point): Expandable {
+  private drawDevice(deviceConfig: DrawConfiguration, coordinates: Point): Expandable {
     const drawBuilder = new DrawBuilder(this.map, deviceConfig);
     const droppedDevice = this.drawEditorDevice(drawBuilder, deviceConfig, coordinates);
     const mapDevice = DevicesComponent.createConnectableDevice(droppedDevice);

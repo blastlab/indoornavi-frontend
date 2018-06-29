@@ -45,7 +45,6 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
   isLoading: boolean = true;
   active: boolean = false;
   disabled: boolean = true;
-  private deviceActive: boolean = false;
   private scale: Scale;
   private steps: WizardStep[];
   private activeStep: WizardStep;
@@ -94,13 +93,16 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
     }
   }
 
-  nextStep(): void {
-    this.toggleDevice();
-    if (!this.deviceActive) {
-
+  begin(): void { // init xor unset wizard
+    if (this.active) {
+      this.toolbarService.emitToolChanged(null);
       return;
     }
-    if (!this.activeStep) { // init wizard
+    this.nextStep();
+  }
+
+  nextStep(): void {
+    if (!this.activeStep) {
       this.toolbarService.emitToolChanged(this);
       this.activeStep = this.steps[this.currentIndex];
       this.openSocket();
@@ -164,9 +166,12 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
   }
 
   setActive(): void {
-    console.log('drawn devices ', this.drawnDevices);
-    this.active = true;
-    this.closeSocket();
+    if (this.active) {
+      this.setInactive();
+    } else {
+      this.active = true;
+      this.closeSocket();
+    }
   }
 
   setInactive(): void {
@@ -213,11 +218,7 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
     this.placerController.emitWizardSaveConfiguration(this.drawnDevices);
   }
 
-  private toggleDevice() {
-    this.deviceActive = !this.deviceActive;
-  }
-
-  private isFinalStep() {
+  private isFinalStep(): boolean {
     return this.currentIndex === this.steps.length;
   }
 
@@ -259,7 +260,7 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
     this.selectedItemId = undefined;
   }
 
-  private stepChanged() {
+  private stepChanged(): void {
     this.placeholder = this.activeStep.getPlaceholder();
     this.title = this.activeStep.getTitle();
     this.selectedItemId = undefined;
@@ -288,9 +289,7 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
       const stream = this.socketService.connect(Config.WEB_SOCKET_URL + 'wizard');
       this.socketSubscription = stream.subscribe((message: any) => {
         this.ngZone.run(() => {
-          console.log(this.options);
           this.options = this.activeStep.load(this.options, message, this.scaleCalculations);
-          console.log(this.options);
           this.isLoading = !this.options.length;
         });
       });
