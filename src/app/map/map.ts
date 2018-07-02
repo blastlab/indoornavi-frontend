@@ -35,7 +35,7 @@ export class MapComponent implements OnInit {
   droppedObject(event) {
     const pDragType = event.dataTransfer.getData('text');
     if (pDragType === 'devices') {
-      this.devicePlacerController.devicePlacement({x: event.offsetX, y: event.offsetY});
+      this.devicePlacerController.sendCoordinatesChanged({x: event.offsetX, y: event.offsetY});
     }
   }
 
