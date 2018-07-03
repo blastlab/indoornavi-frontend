@@ -35,7 +35,7 @@ import {Tag} from '../../device/device.type';
 import {BreadcrumbService} from '../../shared/services/breadcrumbs/breadcrumb.service';
 import {SvgAnimator} from '../../shared/utils/drawing/animator';
 import {MapObjectMetadata} from '../../shared/utils/drawing/drawing.types';
-import {MapClickService} from "../../shared/services/map-click/map-click.service";
+import {MapClickService} from '../../shared/services/map-click/map-click.service';
 import {Deferred} from '../../shared/utils/helper/deferred';
 import {Helper} from '../../shared/utils/helper/helper';
 
@@ -369,7 +369,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           this.getMapDimensions(event);
           break;
         case 'addClickEventListener':
-          if(this.originListeningOnClickMapEvent.indexOf(event) < 0) {
+          if (this.originListeningOnClickMapEvent.indexOf(event) < 0) {
             this.originListeningOnClickMapEvent.push(event);
           }
           break;
