@@ -22,11 +22,10 @@ export class ScaleHintComponent implements OnDestroy, OnInit {
   ngOnInit(): void {
     this.scaleHint = d3.select('#scaleHint');
 
-    this.scaleService.scaleChanged.subscribe(
-      data => {
-        this.scale = data;
-        this.showScaleValue();
-      });
+    this.scaleService.scaleChanged.subscribe((scale: Scale) => {
+      this.scale = scale;
+      this.showScaleValue();
+    });
     this.showScaleValue();
 
     this.scaleService.scaleVisibilityChanged.subscribe((isScaleVisible: boolean) => {

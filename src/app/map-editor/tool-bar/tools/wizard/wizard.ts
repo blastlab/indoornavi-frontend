@@ -98,7 +98,7 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
   private captureScaleChanges(): void {
     this.scaleChanged = this.scaleService.scaleChanged.subscribe((scale: ScaleDto): void => {
       this.scale = new Scale(scale);
-      if (!!this.scale.start && !!this.scale.stop) {
+      if (this.scale.isReady()) {
         this.scaleCalculations = {
           scaleLengthInPixels: Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
           scaleInCentimeters: this.scale.getRealDistanceInCentimeters()

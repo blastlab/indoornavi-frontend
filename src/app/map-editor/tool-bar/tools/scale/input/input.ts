@@ -52,13 +52,12 @@ export class ScaleInputComponent implements OnInit, OnDestroy {
     });
 
     this.scaleVisibilityChangedSubscription = this.scaleService.scaleVisibilityChanged.subscribe((isScaleVisible: boolean) => {
-        isScaleVisible ? this.toolDetails.show() : this.toolDetails.hide();
-      });
+      isScaleVisible ? this.toolDetails.show() : this.toolDetails.hide();
+    });
 
-    this.scaleChangedSubscription = this.scaleService.scaleChanged.subscribe(
-      scale => {
-        this.scale = scale;
-      });
+    this.scaleChangedSubscription = this.scaleService.scaleChanged.subscribe(scale => {
+      this.scale = scale;
+    });
   }
 
   ngOnDestroy() {
@@ -81,6 +80,7 @@ export class ScaleInputComponent implements OnInit, OnDestroy {
       this.messageService.success('scale.setSuccess');
     }
   }
+
   reject() {
     this.messageService.success('scale.changesRejected');
     this.scaleInputService.publishSaveClicked(null);
