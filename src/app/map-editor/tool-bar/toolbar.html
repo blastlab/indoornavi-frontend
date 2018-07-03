@@ -1,9 +1,9 @@
 <p-toolbar id="map-toolbar">
   <div class="ui-toolbar-group-left">
-    <app-scale #wizardDependent ></app-scale>
-    <app-wizard #tool #wizardDependent [floor]="floor"></app-wizard>
-    <app-area #tool #wizardDependent [floor]="floor"></app-area>
-    <app-devices #tool #wizardDependent></app-devices>
+    <app-scale #toolWizardDependent ></app-scale>
+    <app-wizard #toolScaleDependent #toolWizardDependent [floor]="floor"></app-wizard>
+    <app-area #toolScaleDependent #toolWizardDependent [floor]="floor"></app-area>
+    <app-devices #toolScaleDependent #toolWizardDependent></app-devices>
   </div>
   <div class="ui-toolbar-group-right">
     <app-actionbar [floor]="floor"></app-actionbar>
