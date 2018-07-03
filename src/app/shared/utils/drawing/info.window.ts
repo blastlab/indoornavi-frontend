@@ -7,6 +7,8 @@ import {Box, MapObjectMetadata, Position} from './drawing.types';
 
 export class InfoWindowGroupWrapper {
   private svgGroupWrapper: SvgGroupWrapper;
+  private closeIconContainerWidth: number = 13;
+  private closeIconContainerHeight: number = 16;
 
   private infoWindowSize: BoxSize = {
     width: 350,
@@ -37,9 +39,9 @@ export class InfoWindowGroupWrapper {
   draw(coordinates: Point, infoText: string, callback: Function, objectMetadata: MapObjectMetadata): InfoWindowGroupWrapper {
     const closingInfoWindowPointCoordinates: Point = {x: coordinates.x + this.size.width - 20, y: coordinates.y + 5 };
     this.svgGroupWrapper.getGroup()
-      .append('foreignObject')
       .attr('x', coordinates.x)
       .attr('y', coordinates.y)
+      .append('foreignObject')
       .attr('width', this.infoWindowSize.width)
       .attr('height', this.infoWindowSize.height)
       .html(`<div>${infoText}</div>`)
@@ -53,8 +55,10 @@ export class InfoWindowGroupWrapper {
 
     this.svgGroupWrapper.getGroup()
       .append('foreignObject')
-      .attr('x', closingInfoWindowPointCoordinates.x )
-      .attr('y', closingInfoWindowPointCoordinates.y)
+      .attr('x', closingInfoWindowPointCoordinates.x - coordinates.x)
+      .attr('y', closingInfoWindowPointCoordinates.y - coordinates.y)
+      .attr('width', this.closeIconContainerWidth)
+      .attr('height', this.closeIconContainerHeight)
       .attr('id', 'infoWindow-text')
       .attr('fill', 'black')
       .attr('cursor', 'pointer')
