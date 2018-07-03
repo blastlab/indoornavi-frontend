@@ -16,7 +16,6 @@ import {ScaleService} from '../../../../shared/services/scale/scale.service';
 import {Helper} from '../../../../shared/utils/helper/helper';
 import {ToolbarService} from '../../toolbar.service';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
-import {MapSvg} from '../../../../map/map.type';
 import {MapEditorService} from '../../../map.editor.service';
 import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
 
@@ -103,7 +102,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.drawScale(configuration.data.scale);
     });
 
-    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapSvg: MapSvg) => {
+    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe(() => {
       this.createSvgGroupWithScale();
     });
 
@@ -144,6 +143,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     return this.hintMessage;
   }
 
+
   getToolName(): ToolName {
     return ToolName.SCALE;
   }
@@ -160,8 +160,8 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.changeHintBarMessage();
   }
 
-  // implements Tool so needs to have this method
   setDisabled(value: boolean): void {
+    this.disabled = value;
   }
 
   onClick(): void {

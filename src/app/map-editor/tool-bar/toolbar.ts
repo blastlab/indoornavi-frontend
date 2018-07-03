@@ -5,6 +5,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {Floor} from '../../floor/floor.type';
 import {Configuration} from '../action-bar/actionbar.type';
 import {ActionBarService} from '../action-bar/actionbar.service';
+import {ToolName} from './tools/tools.enum';
 
 @Component({
   selector: 'app-toolbar',
@@ -13,6 +14,7 @@ import {ActionBarService} from '../action-bar/actionbar.service';
 export class ToolbarComponent implements OnInit, OnDestroy {
   @Input() floor: Floor;
   @ViewChildren('tool') tools: QueryList<Tool>;
+  @ViewChildren('wizardDependent') wizardDependentTools: QueryList<Tool>;
 
   private activeTool: Tool;
   private toolChangedSubscription: Subscription;
@@ -45,6 +47,11 @@ export class ToolbarComponent implements OnInit, OnDestroy {
       if (activate) {
         tool.setActive();
         this.activeTool = tool;
+        if (this.activeTool.getToolName() === ToolName.WIZARD) {
+          this.toggleWizardDependentToolDisable(true)
+        }
+      } else {
+        this.toggleWizardDependentToolDisable(false);
       }
     });
   }
@@ -60,6 +67,12 @@ export class ToolbarComponent implements OnInit, OnDestroy {
 
   private toggleDisable(value: boolean): void {
     this.tools.forEach((item: Tool) => {
+      item.setDisabled(value);
+    });
+  }
+
+  private toggleWizardDependentToolDisable(value: boolean): void {
+    this.wizardDependentTools.forEach((item: Tool) => {
       item.setDisabled(value);
     });
   }
