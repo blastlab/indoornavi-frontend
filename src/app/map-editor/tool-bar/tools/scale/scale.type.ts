@@ -4,7 +4,9 @@ export class ScaleDto {
   constructor(public start: Point,
               public stop: Point,
               public realDistance: number,
-              public measure: Measure) {}
+              public measure: Measure) {
+  }
+
 }
 
 export class Scale extends ScaleDto {
@@ -15,6 +17,10 @@ export class Scale extends ScaleDto {
 
   getRealDistanceInCentimeters(): number {
     return this.realDistance * (this.measure.toString() === Measure[Measure.METERS] ? 100 : 1);
+  }
+
+  isReady(): boolean {
+    return !!this.realDistance && !!this.measure && !!this.start && !!this.stop;
   }
 
 }

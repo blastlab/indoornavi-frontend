@@ -57,7 +57,7 @@
                  #usernameInput="ngModel"/>
         </div>
       </div>
-      <div class="ui-g">
+      <div class="ui-g" *ngIf="!user.id">
         <div class="ug-g-12 ui-md-4 ui-lg-4">
           <div class="ui-message ui-messages-error ui-corner-all"
                *ngIf="passwordInput.errors?.required && passwordInput.touched && passwordInput.dirty">
@@ -73,7 +73,7 @@
                  #passwordInput="ngModel"/>
         </div>
       </div>
-      <div class="ui-g">
+      <div class="ui-g" *ngIf="!user.id">
         <div class="ug-g-12 ui-md-4 ui-lg-4">
           <div class="ui-message ui-messages-error ui-corner-all"
                *ngIf="repeatPasswordInput.errors?.required && repeatPasswordInput.touched && repeatPasswordInput.dirty">
