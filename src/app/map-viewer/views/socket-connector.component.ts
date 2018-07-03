@@ -35,7 +35,7 @@ import {Tag} from '../../device/device.type';
 import {BreadcrumbService} from '../../shared/services/breadcrumbs/breadcrumb.service';
 import {SvgAnimator} from '../../shared/utils/drawing/animator';
 import {MapObjectMetadata} from '../../shared/utils/drawing/drawing.types';
-import {MapClickService} from "../../shared/services/map-click/map-click.service";
+import {MapClickService} from '../../shared/services/map-click/map-click.service';
 import {Deferred} from '../../shared/utils/helper/deferred';
 import {Helper} from '../../shared/utils/helper/helper';
 
@@ -141,11 +141,11 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           return;
         }
         this.publishedService.checkOrigin(params['api_key'], event.origin).subscribe((verified: boolean): void => {
-          if (verified && !!this.scale) {
+          // if (verified && !!this.scale) {
             this.handleCommands(event);
-          } else {
-            event.source.postMessage({type: 'error', message: 'Origin not verified. Make sure you use your own API KEY.'}, event.origin);
-          }
+          // } else {
+          //   event.source.postMessage({type: 'error', message: 'Origin not verified. Make sure you use your own API KEY.'}, '*');
+          // }
         });
       });
     }, false);
@@ -183,7 +183,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           this.scaleCalculations.scaleInCentimeters,
           data.coordinates.point
         );
-        event.source.postMessage({type: 'coordinates', coordinates: data.coordinates}, event.origin);
+        event.source.postMessage({type: 'coordinates', coordinates: data.coordinates}, '*');
       })
     }
     this.removeNotVisibleTags();
@@ -313,7 +313,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     if (this.originListeningOnEvent.containsKey('area')) {
       this.originListeningOnEvent.getValue('area').forEach((event: MessageEvent): void => {
         setTimeout((): void => {
-          event.source.postMessage({type: 'area', area: data.event}, event.origin);
+          event.source.postMessage({type: 'area', area: data.event}, '*');
         }, Movable.TRANSITION_DURATION);
       });
     }
@@ -348,7 +348,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           break;
         case 'createObject':
           const mapObjectId: number = this.mapObjectService.create();
-          event.source.postMessage({type: `createObject-${event.data.object}`, mapObjectId: mapObjectId}, event.origin);
+          event.source.postMessage({type: `createObject-${event.data.object}`, mapObjectId: mapObjectId}, '*');
           break;
         case 'drawObject':
           this.mapObjectService.draw(data['args'], this.scale, event, this.d3map.container);
@@ -369,7 +369,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           this.getMapDimensions(event);
           break;
         case 'addClickEventListener':
-          if(this.originListeningOnClickMapEvent.indexOf(event) < 0) {
+          if (this.originListeningOnClickMapEvent.indexOf(event) < 0) {
             this.originListeningOnClickMapEvent.push(event);
           }
           break;
