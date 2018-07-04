@@ -101,12 +101,6 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
     this.nextStep();
   }
 
-  private handleDisablingFromService(): void {
-    this.disabledHandler = this.toolbarService.wizardDisabled.subscribe((setDisabled) => {
-      this.disabled = setDisabled;
-    })
-  }
-
   nextStep(): void {
     if (!this.activeStep) {
       this.toolbarService.emitToolChanged(this);
