@@ -86,12 +86,12 @@ class MapsPage(BasePage, MapsBaseLocators):
         :return: action which provide to draw scale line based on params
 
         """
-        __x_offset = x_offset
-        __y_offset = y_offset
-        __element_image = self.wait_for_element_clickable(self.map_image)
-        __actions = ActionChains(self.__driver)
+        _x_offset = x_offset
+        _y_offset = y_offset
+        element_image = self.wait_for_element_clickable(self.map_image)
+        actions = ActionChains(self.__driver)
 
-        return __actions.click(__element_image).move_by_offset(__x_offset, __y_offset).click().perform()
+        return actions.click(element_image).move_by_offset(_x_offset, _y_offset).click().perform()
 
     def edit_scale_line(self, x_offset, y_offset, element):
         """
@@ -101,11 +101,11 @@ class MapsPage(BasePage, MapsBaseLocators):
         :return: action which provide to draw scale line with changed coordinates {params}
 
         """
-        __x_offset = x_offset
-        __y_offset = y_offset
-        __scale_line = self.wait_for_element_clickable(element)
+        _x_offset = x_offset
+        _y_offset = y_offset
+        scale_line = self.wait_for_element_clickable(element)
 
-        return self.__actions(self.__driver).drag_and_drop_by_offset(__scale_line, __x_offset, __y_offset).release().perform()
+        return self.__actions(self.__driver).drag_and_drop_by_offset(scale_line, _x_offset, _y_offset).release().perform()
 
     def undo_scale_line_drawing(self, x_offset, y_offset, element):
         """
@@ -132,14 +132,14 @@ class MapsPage(BasePage, MapsBaseLocators):
         return locations
 
     @staticmethod
-    def __get_coordinates(DOM_element, **kwargs):
-        __coordinates = {}
+    def get_coordinates(DOM_element, **kwargs):
+        coordinates = {}
         for key, param in kwargs.items():
-            __coordinates[param] = DOM_element.get_attribute(param)
-        return __coordinates
+            coordinates[param] = DOM_element.get_attribute(param)
+        return coordinates
 
     @staticmethod
-    def __abs_value(a, b):
+    def abs_value(a, b):
         return abs(float(b)-float(a))
 
     def get_scale_line_parameters(self):
