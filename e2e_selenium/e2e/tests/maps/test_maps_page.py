@@ -6,6 +6,7 @@ from pages.base_page import BasePage
 from pages.login_page import LoginPage
 from pages.constructions.floors_page import FloorsPage
 import time
+from selenium.webdriver import ActionChains
 import json
 
 
@@ -17,6 +18,7 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         self.login_page_url = LoginPage.login_url
         TestDriver.setUp(self, self.login_page_url)
         self.page = LoginPage(self.webdriver)
+        self.actions = ActionChains(self.webdriver)
         self.floors_page = FloorsPage(self.webdriver, 'floors')
         self.maps_page = MapsPage(self.webdriver)
         self.option = 1
@@ -292,3 +294,84 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         self.assertEqual(result_measurement, 'METERS')
         self.assertEqual(result_distance, expected_distance)
         self.test_failed = False
+
+    def test_28_edit_scale_change_line_length(self):
+        self.__add_scale_process_correctly(100, 0, 'centimeters', '725')
+        self.test_failed = True
+        self.maps_page.set_scale_measurement('meters')
+        self.__edit_scale_process_helper()
+        self.maps_page.edit_scale_line(100, 0, self.maps_page.scale_line_point_b)
+        time.sleep(3)
+        # MAIN ASSERTS
+        self.__edit_scale_process_helper()
+        result_measurement = self.maps_page.get_text(self.maps_page.scale_measurement)
+        self.assertEqual(result_measurement, 'METERS')
+        self.test_failed = False
+
+    def test_29_edit_scale_change_params(self):
+        self.__add_scale_process_correctly(100, 0, 'centimeters', '725')
+        self.test_failed = True
+        expected_distance = self.maps_page.edit_scale_distance
+        self.maps_page.enter_scale_distance(expected_distance)
+        self.maps_page.set_scale_measurement('meters')
+        self.__edit_scale_process_helper()
+        self.maps_page.edit_scale_line(200, 100, self.maps_page.scale_line_point_b)
+        time.sleep(3)
+        # MAIN ASSERTS
+        self.__edit_scale_process_helper()
+        result_measurement = self.maps_page.get_text(self.maps_page.scale_measurement)
+        result_distance = self.maps_page.get_value(self.maps_page.scale_distance_input)
+        self.assertEqual(result_measurement, 'METERS')
+        self.assertEqual(result_distance, expected_distance)
+        self.test_failed = False
+
+    def test_30_case_new_feature_undo_click_in_edit_scale(self):
+        self.__add_scale_process_correctly(100, 0, 'centimeters', '725')
+        self.test_failed = True
+        self.maps_page.set_scale_measurement('meters')
+        self.__edit_scale_process_helper()
+        result = self.maps_page.undo_scale_line_drawing(200, 100, self.maps_page.scale_line_point_b)
+
+        assert result[0] != result[1]
+
+        self.assertDictEqual(result[0], result[2])
+
+    def test_31_case_bug_undo_scale_line_disappeared(self):
+        self.__add_scale_process_correctly(100, 0, 'centimeters', '725')
+        self.test_failed = True
+        self.maps_page.set_scale_measurement('meters')
+        self.__edit_scale_process_helper()
+        self.maps_page.log_cursor_coordinates()
+        result = self.maps_page.undo_scale_line_drawing(200, 100, self.maps_page.scale_line_point_b)
+
+        # check the console log is empty
+        self.assertFalse(self.maps_page.get_browser_console_log())
+        # check the line is presented
+        self.assertTrue(self.maps_page.is_scale_line_displayed())
+
+        assert result[0] != result[1]
+
+        self.assertDictEqual(result[0], result[2])
+
+    def test_32_case_bug_undo_scale_line_cannot_repeat_drawing(self):
+        self.__add_scale_process_correctly(100, 0, 'centimeters', '725')
+        self.test_failed = True
+        self.maps_page.set_scale_measurement('meters')
+        self.__edit_scale_process_helper()
+        self.maps_page.log_cursor_coordinates()
+        result = self.maps_page.undo_scale_line_drawing(200, 100, self.maps_page.scale_line_point_b)
+
+        assert result[0] != result[1]
+
+        self.assertDictEqual(result[0], result[2])
+
+        self.assertTrue(self.maps_page.is_scale_line_displayed())
+        self.maps_page.scale_cancel_button_click()
+        self.maps_page.is_scale_modal_window_disappear()
+        self.maps_page.scale_button_click()
+        self.assertTrue(self.maps_page.is_scale_line_displayed())
+
+        element = self.maps_page.identify_element(*self.maps_page.scale_line_point_b)
+        location = self.maps_page.get_location(element)
+
+        self.assertDictEqual(result[0], location)

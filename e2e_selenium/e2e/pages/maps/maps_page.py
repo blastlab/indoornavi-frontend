@@ -1,11 +1,16 @@
 from pages.base_page import BasePage
 from locators.maps_base_locators import MapsBaseLocators
+from selenium.webdriver import ActionChains
+from selenium.webdriver.common.keys import Keys
 import json
 import time
+
+
 class MapsPage(BasePage, MapsBaseLocators):
 
     def __init__(self, driver):
         self.__driver = driver
+        self.__actions = ActionChains
         BasePage.__init__(self, self.__driver)
         MapsBaseLocators.__init__(self)
 
@@ -84,8 +89,47 @@ class MapsPage(BasePage, MapsBaseLocators):
         __x_offset = x_offset
         __y_offset = y_offset
         __element_image = self.wait_for_element_clickable(self.map_image)
-        self.log_cursor_coordinates()
-        return self.actions.click(__element_image).move_by_offset(__x_offset, __y_offset).click().perform()
+        __actions = ActionChains(self.__driver)
+
+        return __actions.click(__element_image).move_by_offset(__x_offset, __y_offset).click().perform()
+
+    def edit_scale_line(self, x_offset, y_offset, element):
+        """
+
+        :param x_offset: the number of pixels needed to drag point_b of scale on the x axis
+        :param y_offset: the number of pixels needed to drag point_b of scale on the y axis
+        :return: action which provide to draw scale line with changed coordinates {params}
+
+        """
+        __x_offset = x_offset
+        __y_offset = y_offset
+        __scale_line = self.wait_for_element_clickable(element)
+
+        return self.__actions(self.__driver).drag_and_drop_by_offset(__scale_line, __x_offset, __y_offset).release().perform()
+
+    def undo_scale_line_drawing(self, x_offset, y_offset, element):
+        """
+
+        :param x_offset: the number of pixels needed to drag point_b of scale on the x axis
+        :param y_offset: the number of pixels needed to drag point_b of scale on the y axis
+        :return: array of dictionaries with actual scale line's point_b location - [dict_a, dict_b, dict_c]
+
+        """
+        __x_offset = x_offset
+        __y_offset = y_offset
+        __scale_line = self.wait_for_element_clickable(element)
+        start_location = self.get_location(__scale_line)
+
+        self.__actions(self.__driver).click_and_hold(__scale_line).move_by_offset(__x_offset, __y_offset).perform()
+        action_location = self.get_location(__scale_line)
+
+        self.__actions(self.__driver).send_keys(Keys.ESCAPE).perform()
+        end_scale_line = self.wait_for_element_clickable(element)
+        end_location = self.get_location(end_scale_line)
+
+        locations = [start_location, action_location, end_location]
+
+        return locations
 
     @staticmethod
     def __get_coordinates(DOM_element, **kwargs):
@@ -205,9 +249,9 @@ class MapsPage(BasePage, MapsBaseLocators):
     def is_must_be_integer_toast_disappear(self):
         return True if self.is_element_disappear(self.must_be_integer_toast) else False
 
-    def get_scale_location(self):
-        __scale_location = self.identify_element(*self.scale_line).location
-        return __scale_location
+    def get_location(self, element):
+        __element_location = element.location
+        return __element_location
 
     def log_cursor_coordinates(self):
         return self.__driver.execute_script('''
