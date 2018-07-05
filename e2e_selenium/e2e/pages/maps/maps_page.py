@@ -156,9 +156,9 @@ class MapsPage(BasePage, MapsBaseLocators):
         point_b = self.wait_for_element(self.scale_line_point_b)
         scale_line = self.wait_for_element(self.scale_line)
 
-        point_a_params = self.__get_coordinates(point_a, x="cx", y="cy")
-        point_b_params = self.__get_coordinates(point_b, x="cx", y="cy")
-        scale_line_params = self.__get_coordinates(scale_line, x1="x1", x2="x2", y1="y1", y2="y2")
+        point_a_params = self.get_coordinates(point_a, x="cx", y="cy")
+        point_b_params = self.get_coordinates(point_b, x="cx", y="cy")
+        scale_line_params = self.get_coordinates(scale_line, x1="x1", x2="x2", y1="y1", y2="y2")
 
         scale_line_dict["scale_line"] = scale_line_params
         scale_line_dict["point_a"] = point_a_params
@@ -182,10 +182,10 @@ class MapsPage(BasePage, MapsBaseLocators):
         line_y1 = scale_line_params["scale_line"]['y1']
         line_y2 = scale_line_params["scale_line"]['y2']
         # offset x - difference
-        result_x = self.__abs_value(point_a_cx, point_b_cx)
-        result_y = self.__abs_value(point_a_cy, point_b_cy)
-        result_line_x = self.__abs_value(line_x1, line_x2)
-        result_line_y = self.__abs_value(line_y1, line_y2)
+        result_x = self.abs_value(point_a_cx, point_b_cx)
+        result_y = self.abs_value(point_a_cy, point_b_cy)
+        result_line_x = self.abs_value(line_x1, line_x2)
+        result_line_y = self.abs_value(line_y1, line_y2)
 
         assert expect_x == result_x and expect_x == result_line_x, str(expect_x)+' is not equal '+str(result_x) + ' or '+ str(result_line_x)
         assert expect_y == result_y and expect_y == result_line_y, str(expect_y)+' is not equal '+str(result_y) + ' or '+ str(result_line_y)
