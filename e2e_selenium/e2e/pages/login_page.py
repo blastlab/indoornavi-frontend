@@ -1,6 +1,7 @@
 from pages.base_page import BasePage
 from selenium.webdriver.common.by import By
 
+
 class LoginPage(BasePage):
 
     login_url = BasePage.base_url
@@ -13,7 +14,8 @@ class LoginPage(BasePage):
     usr_password_locator = (By.ID, 'user-password-input')
     next_page_title_locator = (By.CSS_SELECTOR, 'span.ui-menuitem-text')
     login_warning = (By.CSS_SELECTOR, 'div.ui-messages-error')
-
+    dropdown_button = (By.CSS_SELECTOR, 'button#menu')
+    logout_button = (By.CSS_SELECTOR, 'button#logout')
     # input credentials
     valid_username = 'admin'
     valid_password = 'admin'
@@ -21,20 +23,34 @@ class LoginPage(BasePage):
     invalid_password = 'admin1'
 
     # test cases collection
+    def __init__(self, webdriver):
+        BasePage.__init__(self, webdriver)
 
     def check_page_loaded_correctly(self):
         return True if self.wait_for_element(self.form_locator) else False
 
     def get_button_text(self):
-        login_button_text = self.identify_element(*self.button_text_locator).text
+        login_button_text = self.wait_for_element_clickable(self.button_text_locator).text
         return login_button_text
+
+    def is_dropdown_button_clickable(self):
+        return self.wait_for_element_clickable(self.dropdown_button)
+
+    def click_dropdown_button(self):
+        self.click_button(*self.dropdown_button)
+
+    def is_logout_button_clickable(self):
+        return self.wait_for_element_clickable(self.logout_button)
+
+    def click_logout_button(self):
+        self.click_button(*self.logout_button)
 
     # There are 3 options :
     # 1. Login with valid credentials
     # 2. Login with invalid password
     # 3. Login with invalid username
 
-    def login_process(self, option=1):
+    def login_process(self, option=1, additional=None):
 
         if option == 1:
             username = self.valid_username
@@ -49,15 +65,16 @@ class LoginPage(BasePage):
             password = self.valid_password
 
         # find element, clear & fill it
-        self.clear_and_fill_input(username, *self.usr_input_locator)
-        self.clear_and_fill_input(password, *self.usr_password_locator)
+        self.clear_and_fill_input(username, self.usr_input_locator)
+        self.clear_and_fill_input(password, self.usr_password_locator)
         # click Login
         self.click_button(*self.button_locator)
 
         # there should be complexes' page loaded & return complexes title
+        if additional == 1:
+            return
         if option == 1:
             return self.wait_for_element(self.next_page_title_locator).text
-
         elif option == 2:
             return self.is_element_present(self.login_warning)
 

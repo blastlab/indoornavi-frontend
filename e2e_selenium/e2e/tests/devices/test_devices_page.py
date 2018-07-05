@@ -8,6 +8,7 @@ from pages.base_page import BasePage
 from pages.login_page import LoginPage
 import inspect
 
+
 class TestDevicesPage(object):
 
     def method_test_setUp(self, test_method, name, shortId, longId):
@@ -68,8 +69,8 @@ class TestDevicesPage(object):
         self.assertTrue(expected_array == result_array)
 
         # Check the toasts are displayed & disappeared
-        self.assertTrue(self.devices_page.is_toast_present(self.locator.edited_toast))
-        self.assertTrue(self.devices_page.is_toast_disappear(self.locator.edited_toast))
+        self.assertTrue(self.devices_page.is_toast_present(self.devices_page.edited_toast))
+        self.assertTrue(self.devices_page.is_toast_disappear(self.devices_page.edited_toast))
         self.test_failed = False
 
     def method_test_move_single_setUp(self, side):
@@ -92,7 +93,7 @@ class TestDevicesPage(object):
         rgba_color_substr = first_sink.value_of_css_property("background-color")
 
         # Get array of numbers rgb[]
-        substr = self.base_page.get_numbers_from_string(rgba_color_substr)
+        substr = self.devices_page.get_numbers_from_string(rgba_color_substr)
 
         # Parse rgb to hex
         color_hex = "#{:02x}{:02x}{:02x}".format(int(substr[0]), int(substr[1]), int(substr[2]))
@@ -108,7 +109,7 @@ class TestDevicesPage(object):
         self.test_failed = False
 
     def method_test_search_setUp(self, side):
-        search_input = self.locator.search_not_verified_input if side == 'not_verified' else self.locator.search_verified_input
+        search_input = self.devices_page.search_not_verified_input if side == 'not_verified' else self.devices_page.search_verified_input
         # Check the search input is clickable
         self.assertTrue(self.devices_page.is_search_not_verified_input_clickable())
 
@@ -120,7 +121,7 @@ class TestDevicesPage(object):
             self.devices_page.insert_into_search_device_input(short_id, side)
             self.assertTrue(self.devices_page.is_there_only_founded_device_row() == 1)
 
-        self.devices_page.clear_text_input(*search_input)
+        self.devices_page.clear_text_input(search_input)
         self.test_failed = False
 
     def method_test_drag_and_drop(self, side):
@@ -149,9 +150,9 @@ class TestDevicesPage(object):
         self.devices_page.simulate_drag_and_drop_jquery(source_string, target_string)
 
         # Check the add toast is displayed
-        self.assertTrue(self.devices_page.is_toast_present(self.locator.edited_toast))
+        self.assertTrue(self.devices_page.is_toast_present(self.devices_page.edited_toast))
         # Check the add toast is disappeared
-        self.assertTrue(self.devices_page.is_toast_disappear(self.locator.edited_toast))
+        self.assertTrue(self.devices_page.is_toast_disappear(self.devices_page.edited_toast))
 
         result_web_elements = self.devices_page.find_devices(founded_target_devices)
         result_short_ids = [element.text for element in result_web_elements if element.text in expected_short_ids]
@@ -178,17 +179,17 @@ class TestDevicesPage(object):
 
         self.method_test_setUp('add',
                                'Test'+self.module,
-                               self.locator.new_device_short_id,
-                               self.locator.new_device_long_id)
+                               self.devices_page.new_device_short_id,
+                               self.devices_page.new_device_long_id)
 
         # Check the add toast is displayed
-        self.assertTrue(self.devices_page.is_toast_present(self.locator.added_toast))
+        self.assertTrue(self.devices_page.is_toast_present(self.devices_page.added_toast))
         # Check the add toast is disappeared
-        self.assertTrue(self.devices_page.is_toast_disappear(self.locator.added_toast))
+        self.assertTrue(self.devices_page.is_toast_disappear(self.devices_page.added_toast))
         # Check the new device is displayed
         self.assertTrue(self.devices_page.if_new_device_is_displayed())
         # Check the new device saved in db
-        self.assertEqual(self.devices_page.if_saved_in_db(), self.locator.new_device_name)
+        self.assertEqual(self.devices_page.if_saved_in_db(), self.devices_page.new_device_name)
         self.test_failed = False
     #
     def test_03_add_new_device_negative_existing_short_id(self):
@@ -197,12 +198,12 @@ class TestDevicesPage(object):
 
         self.method_test_setUp('add',
                                'Test' + self.module + 'AddNegativeExistingShortId',
-                               self.locator.new_device_short_id,
+                               self.devices_page.new_device_short_id,
                                '999')
 
         # Check the "Short Id must be unique"
-        self.assertTrue(self.devices_page.is_toast_present(self.locator.unique_short_id_toast))
-        self.assertTrue(self.devices_page.is_toast_disappear(self.locator.unique_short_id_toast))
+        self.assertTrue(self.devices_page.is_toast_present(self.devices_page.unique_short_id_toast))
+        self.assertTrue(self.devices_page.is_toast_disappear(self.devices_page.unique_short_id_toast))
         self.test_failed = False
 
     def test_04_add_new_device_negative_existing_long_id(self):
@@ -212,11 +213,11 @@ class TestDevicesPage(object):
         self.method_test_setUp('add',
                                'Test' + self.module + 'AddNegativeExistingLongId',
                                '999',
-                               self.locator.new_device_long_id)
+                               self.devices_page.new_device_long_id)
 
         # Check the "Long Id must be unique" warning
-        self.assertTrue(self.devices_page.is_toast_present(self.locator.unique_long_id_toast))
-        self.assertTrue(self.devices_page.is_toast_disappear(self.locator.unique_long_id_toast))
+        self.assertTrue(self.devices_page.is_toast_present(self.devices_page.unique_long_id_toast))
+        self.assertTrue(self.devices_page.is_toast_disappear(self.devices_page.unique_long_id_toast))
         self.test_failed = False
 
     def test_05_add_new_device_negative_empty_short_id(self):
@@ -252,13 +253,13 @@ class TestDevicesPage(object):
         self.method_test_setUp('edit', 'TestEdit'+self.module, '1234', '12345')
 
         # Check the add toast is displayed
-        self.assertTrue(self.devices_page.is_toast_present(self.locator.edited_toast))
+        self.assertTrue(self.devices_page.is_toast_present(self.devices_page.edited_toast))
         # Check the add toast is disappeared
-        self.assertTrue(self.devices_page.is_toast_disappear(self.locator.edited_toast))
+        self.assertTrue(self.devices_page.is_toast_disappear(self.devices_page.edited_toast))
         # Check the new device is displayed
         self.assertTrue(self.devices_page.if_edited_device_is_displayed())
         # Check the new device saved in db
-        self.assertEqual(self.devices_page.if_saved_in_db(), self.locator.edit_device_name)
+        self.assertEqual(self.devices_page.if_saved_in_db(), self.devices_page.edit_device_name)
         self.test_failed = False
 
     def test_08_edit_device_negative_empty_short_id(self):
@@ -333,13 +334,13 @@ class TestDevicesPage(object):
         # Add 2 additional devices
         self.method_test_setUp('add',
                                'Test'+self.module+'ToSearch 123321',
-                               self.locator.new_device_short_id+'321',
-                               self.locator.new_device_long_id+'321')
+                               self.devices_page.new_device_short_id+'321',
+                               self.devices_page.new_device_long_id+'321')
 
         self.method_test_setUp('add',
                                'Test'+self.module+'ToSearch 123999',
-                               self.locator.new_device_short_id+'999',
-                               self.locator.new_device_long_id+'999')
+                               self.devices_page.new_device_short_id+'999',
+                               self.devices_page.new_device_long_id+'999')
 
         self.method_test_search_setUp('not_verified')
 

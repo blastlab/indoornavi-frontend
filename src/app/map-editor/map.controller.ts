@@ -53,7 +53,9 @@ export class MapControllerComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.contextMenuService.onToggle().subscribe(() => {
-      this.contextMenu.toggle(d3.event);
+      if (!!this.contextMenu) {
+        this.contextMenu.toggle(d3.event);
+      }
     });
   }
 
