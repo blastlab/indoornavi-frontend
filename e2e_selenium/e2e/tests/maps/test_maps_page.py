@@ -32,6 +32,7 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         TestDriver.tearDown(self)
         self.webdriver.quit()
 
+    # TODO - temporary - time.sleep()
     def __add_scale_process_correctly(self, x, y, measurement, distance):
 
         self.maps_page.choose_image(self.maps_page.correct_map_path)
@@ -52,9 +53,10 @@ class TestMapsPage(unittest.TestCase, MapsPage):
 
         # Check components are displayed
         self.assertTrue(self.maps_page.is_scale_set_toast_present())
+        # self.assertTrue(self.maps_page.is_saving_draft_info_present())
         self.assertTrue(self.maps_page.is_scale_set_toast_disappear())
-        self.assertTrue(self.maps_page.is_draft_saved_toast_present())
-        self.assertTrue(self.maps_page.is_draft_saved_toast_disappear())
+        # self.assertTrue(self.maps_page.is_saving_draft_info_disappear())
+        time.sleep(5)
         self.webdriver.refresh()
         self.assertTrue(self.maps_page.is_scale_button_displayed())
         self.maps_page.scale_button_click()
@@ -94,12 +96,14 @@ class TestMapsPage(unittest.TestCase, MapsPage):
 
         self.test_failed = False
 
+    # TODO - temporary - time.sleep()
     def __edit_scale_process_helper(self):
         self.maps_page.scale_ok_button_click()
         self.assertTrue(self.maps_page.is_scale_set_toast_present())
+        # self.assertTrue(self.maps_page.is_saving_draft_info_present())
         self.assertTrue(self.maps_page.is_scale_set_toast_disappear())
-        self.assertTrue(self.maps_page.is_draft_saved_toast_present())
-        self.assertTrue(self.maps_page.is_draft_saved_toast_disappear())
+        time.sleep(5)
+        # self.assertTrue(self.maps_page.is_saving_draft_info_disappear())
         self.webdriver.refresh()
         self.assertTrue(self.maps_page.is_scale_button_displayed())
         self.maps_page.scale_button_click()

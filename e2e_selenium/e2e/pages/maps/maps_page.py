@@ -231,6 +231,12 @@ class MapsPage(BasePage, MapsBaseLocators):
     def is_scale_set_toast_disappear(self):
         return True if self.is_element_disappear(self.scale_set_toast) else False
 
+    def is_saving_draft_info_present(self):
+        return True if self.is_element_present(self.saving_draft_info) else False
+
+    def is_saving_draft_info_disappear(self):
+        return True if self.is_element_disappear(self.saving_draft_info) else False
+
     def is_draft_saved_toast_present(self):
         return True if self.is_element_present(self.draft_saved) else False
 

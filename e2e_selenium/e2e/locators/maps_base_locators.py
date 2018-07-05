@@ -57,5 +57,6 @@ class MapsBaseLocators(object):
         self.scale_cancel_button = (By.XPATH, '//button[@id="reject-decision"]')
         self.scale_set_toast = (By.XPATH, "//p[contains(text(),'Scale has been set.')]")
         self.draft_saved = (By.XPATH, "//p[contains(text(),'Draft has been saved.')]")
+        self.saving_draft_info = (By.XPATH, "//span[contains(text(),'Saving draft...')]")
         self.set_measurement_toast = (By.XPATH, "//p[contains(text(),'Please set the measure unit.')]")
         self.must_be_integer_toast = (By.XPATH, "//p[contains(text(),'Real distance must be an integer.')]")
