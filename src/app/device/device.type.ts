@@ -6,10 +6,11 @@ export class Device {
   verified: boolean;
   x?: number;
   y?: number;
+  z?: number;
   floorId?: number;
   firmwareVersion?: string;
 
-  constructor(shortId: number, longId: number, verified: boolean, id?: number, name?: string, x?: number, y?: number, floorId?: number, firmwareVersion?: string) {
+  constructor(shortId: number, longId: number, verified: boolean, id?: number, name?: string, x?: number, y?: number, z?: number, floorId?: number, firmwareVersion?: string) {
     this.id = id;
     this.name = name;
     this.shortId = shortId;

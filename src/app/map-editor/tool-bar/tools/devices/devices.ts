@@ -23,7 +23,7 @@ import {DrawBuilder} from '../../../../shared/utils/drawing/drawing.builder';
 import {Anchor, Sink} from '../../../../device/device.type';
 import {DrawConfiguration} from '../../../../map-viewer/publication.type';
 import {MapEditorService} from '../../../map.editor.service';
-import {CommonDevice} from '../../../../shared/utils/drawing/common/device.common';
+import {CommonDevice, CommonDeviceConfiguration} from '../../../../shared/utils/drawing/common/device.common';
 import {IconService} from '../../../../shared/services/drawing/icon.service';
 import {Scale, ScaleCalculations, ScaleDto} from '../scale/scale.type';
 import {ScaleService} from '../../../../shared/services/scale/scale.service';
@@ -902,7 +902,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
     });
   }
 
-  private drawDevice(deviceConfig: DrawConfiguration,
+  private drawDevice(deviceConfig: CommonDeviceConfiguration,
                      coordinates: Point): Expandable {
     const drawBuilder = new DrawBuilder(this.map, deviceConfig);
     const droppedDevice = this.drawEditorDevice(drawBuilder, deviceConfig, coordinates);

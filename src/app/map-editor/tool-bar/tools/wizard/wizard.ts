@@ -22,12 +22,11 @@ import {ScaleService} from '../../../../shared/services/scale/scale.service';
 import {Scale, ScaleCalculations, ScaleDto} from '../scale/scale.type';
 import {Geometry} from '../../../../shared/utils/helper/geometry';
 import {Anchor, Sink} from '../../../../device/device.type';
-import {DrawConfiguration} from '../../../../map-viewer/publication.type';
 import {MapLoaderInformerService} from '../../../../shared/services/map-loader-informer/map-loader-informer.service';
 import {DevicePlacerController} from '../devices/device-placer.controller';
 import {IconService} from '../../../../shared/services/drawing/icon.service';
 import {DrawBuilder} from '../../../../shared/utils/drawing/drawing.builder';
-import {CommonDevice} from '../../../../shared/utils/drawing/common/device.common';
+import {CommonDevice, CommonDeviceConfiguration} from '../../../../shared/utils/drawing/common/device.common';
 import {Expandable} from '../../../../shared/utils/drawing/drawables/expandable';
 
 
@@ -167,7 +166,7 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
     this.map.style('cursor', 'crosshair');
     this.map.on('click', () => {
       const coordinates: Point = this.zoomService.calculateTransition({x: d3.event.offsetX, y: d3.event.offsetY});
-      const deviceConfig: DrawConfiguration = this.activeStep.getDrawConfiguration(this.selectedItemId);
+      const deviceConfig: CommonDeviceConfiguration = this.activeStep.getDrawConfiguration(this.selectedItemId);
       const drawBuilder = new DrawBuilder(this.map, deviceConfig);
       const wrapper = this.drawEditorDevice(drawBuilder, deviceConfig, coordinates);
       const drawnDevice = WizardComponent.createConnectableDevice(wrapper);

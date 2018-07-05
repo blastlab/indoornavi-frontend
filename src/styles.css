@@ -164,3 +164,15 @@ app-auth > div {
 .ui-fileupload-content {
   min-height: 150px;
 }
+
+.flex {
+  display: flex;
+}
+
+.flex .v-center {
+  align-items: center;
+}
+
+.flex .h-center {
+  justify-content: center;
+}

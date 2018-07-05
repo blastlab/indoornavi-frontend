@@ -1,20 +1,23 @@
 <app-tool-details #toolDetails>
-  <div class="ui-g-7">
-    <i class="fa fa-question" pTooltip="{{'device.placement.hint'|translate}}"></i>
-    <span>{{'ask.to.confirm.placement'|translate}}</span>
-  </div>
-  <div class="ui-g-5">
-    <button pButton class="ui-button-success"
-            id="accepted-decision"
-            (click)="decide(true)"
-            icon="fa-check"
-            pTooltip="{{'yes'|translate}}"
-    ></button>
-    <button pButton class="ui-button-danger"
-            id="reject-decision"
-            (click)="decide(false)"
-            icon="fa-close"
-            pTooltip="{{'no'|translate}}"
-    ></button>
+  <div class="ui-g" id="accept-buttons-container">
+    <div class="ui-g-8">
+      <span>{{bodyTextKey|translate}}</span>
+    </div>
+    <div class="ui-g-4">
+      <div class="pull-right">
+        <button pButton class="ui-button-success"
+                id="accepted-decision"
+                (click)="decide(true)"
+                icon="fa-check"
+                pTooltip="{{confirmTextKey|translate}}">
+        </button>
+        <button pButton class="ui-button-danger"
+                id="reject-decision"
+                (click)="decide(false)"
+                icon="fa-close"
+                pTooltip="{{declineTextKey|translate}}">
+        </button>
+      </div>
+    </div>
   </div>
 </app-tool-details>
