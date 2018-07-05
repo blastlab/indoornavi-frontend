@@ -379,3 +379,6 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         location = self.maps_page.get_location(element)
 
         self.assertDictEqual(result[0], location)
+
+    def test_33_area(self):
+        print('test area')
