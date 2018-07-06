@@ -146,6 +146,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     return this.hintMessage;
   }
 
+
   getToolName(): ToolName {
     return ToolName.SCALE;
   }
@@ -162,8 +163,8 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.changeHintBarMessage();
   }
 
-  // implements Tool so needs to have this method
   setDisabled(value: boolean): void {
+    this.disabled = value;
   }
 
   onClick(): void {

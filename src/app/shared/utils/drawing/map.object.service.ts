@@ -24,7 +24,7 @@ export class MapObjectService {
   }
 
   create(): number {
-    const id = Date.now() +  Math.round(Math.random() * 100);
+    const id = Date.now() + Math.round(Math.random() * 100);
     this.objects.set(id, null);
     return id;
   }

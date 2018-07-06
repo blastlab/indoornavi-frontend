@@ -7,15 +7,15 @@ export class Helper {
     return JSON.parse(JSON.stringify(obj)); // this is a special way to make a deep copy
   }
 
-  static getChildrenExtremeValues(parentElement: SVGElement): {x: number, y: number} {
+  static getChildrenExtremeValues(parentElement: SVGElement): Point {
     let extremeLeftX = 0;
     let extremeTopY = 0;
     const childrenCount: number = parentElement.childElementCount;
     const children: NodeList = parentElement.childNodes;
     for (let i = 0; i < childrenCount; i++) {
       if (!!children[i].attributes['class'] && children[i].attributes['class'].value !== 'dragarea') {
-        const childX = children[i].attributes['x'].value;
-        const childY = children[i].attributes['y'].value;
+        const childX: number = children[i].attributes['x'].value;
+        const childY: number = children[i].attributes['y'].value;
         extremeLeftX = ( childX < extremeLeftX) ? childX : extremeLeftX;
         extremeTopY = ( childY < extremeTopY) ? childY : extremeTopY;
       }

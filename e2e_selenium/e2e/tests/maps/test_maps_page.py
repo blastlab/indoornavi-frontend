@@ -58,7 +58,7 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         # self.assertTrue(self.maps_page.is_saving_draft_info_disappear())
         time.sleep(5)
         self.webdriver.refresh()
-        self.assertTrue(self.maps_page.is_scale_button_displayed())
+        # self.assertTrue(self.maps_page.is_scale_button_displayed())
         self.maps_page.scale_button_click()
         self.assertTrue(self.maps_page.is_scale_line_displayed())
         self.test_failed = False
@@ -105,7 +105,7 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         time.sleep(5)
         # self.assertTrue(self.maps_page.is_saving_draft_info_disappear())
         self.webdriver.refresh()
-        self.assertTrue(self.maps_page.is_scale_button_displayed())
+        # self.assertTrue(self.maps_page.is_scale_button_displayed())
         self.maps_page.scale_button_click()
 
     def __get_maps_page(self):
@@ -261,7 +261,7 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         self.assertTrue(self.maps_page.is_scale_modal_window_disappear())
         self.test_failed = False
 
-    def test_25_edit_scale_correctly_change_distance(self):
+    def _test_25_edit_scale_correctly_change_distance(self):
         self.__add_scale_process_correctly(400, 0, 'centimeters', '725')
         self.test_failed = True
         expected_distance = self.maps_page.edit_scale_distance
@@ -273,7 +273,7 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         self.assertEqual(result_distance, expected_distance)
         self.test_failed = False
 
-    def test_26_edit_scale_correctly_change_units(self):
+    def _test_26_edit_scale_correctly_change_units(self):
         self.__add_scale_process_correctly(400, 0, 'centimeters', '725')
         self.test_failed = True
         self.maps_page.set_scale_measurement('meters')
@@ -284,7 +284,7 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         self.assertEqual(result_measurement, 'METERS')
         self.test_failed = False
 
-    def test_27_edit_scale_correctly_units_and_distance(self):
+    def _test_27_edit_scale_correctly_units_and_distance(self):
         self.__add_scale_process_correctly(400, 0, 'centimeters', '725')
         self.test_failed = True
         expected_distance = self.maps_page.edit_scale_distance
@@ -299,7 +299,7 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         self.assertEqual(result_distance, expected_distance)
         self.test_failed = False
 
-    def test_28_edit_scale_change_line_length(self):
+    def _test_28_edit_scale_change_line_length(self):
         self.__add_scale_process_correctly(100, 0, 'centimeters', '725')
         self.test_failed = True
         self.maps_page.set_scale_measurement('meters')
@@ -312,7 +312,7 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         self.assertEqual(result_measurement, 'METERS')
         self.test_failed = False
 
-    def test_29_edit_scale_change_params(self):
+    def _test_29_edit_scale_change_params(self):
         self.__add_scale_process_correctly(100, 0, 'centimeters', '725')
         self.test_failed = True
         expected_distance = self.maps_page.edit_scale_distance
@@ -329,7 +329,7 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         self.assertEqual(result_distance, expected_distance)
         self.test_failed = False
 
-    def test_30_case_new_feature_undo_click_in_edit_scale(self):
+    def _test_30_case_new_feature_undo_click_in_edit_scale(self):
         self.__add_scale_process_correctly(100, 0, 'centimeters', '725')
         self.test_failed = True
         self.maps_page.set_scale_measurement('meters')
@@ -340,12 +340,11 @@ class TestMapsPage(unittest.TestCase, MapsPage):
 
         self.assertDictEqual(result[0], result[2])
 
-    def test_31_case_bug_undo_scale_line_disappeared(self):
+    def _test_31_case_bug_undo_scale_line_disappeared(self):
         self.__add_scale_process_correctly(100, 0, 'centimeters', '725')
         self.test_failed = True
         self.maps_page.set_scale_measurement('meters')
         self.__edit_scale_process_helper()
-        self.maps_page.log_cursor_coordinates()
         result = self.maps_page.undo_scale_line_drawing(200, 100, self.maps_page.scale_line_point_b)
 
         # check the console log is empty
@@ -357,12 +356,11 @@ class TestMapsPage(unittest.TestCase, MapsPage):
 
         self.assertDictEqual(result[0], result[2])
 
-    def test_32_case_bug_undo_scale_line_cannot_repeat_drawing(self):
+    def _test_32_case_bug_undo_scale_line_cannot_repeat_drawing(self):
         self.__add_scale_process_correctly(100, 0, 'centimeters', '725')
         self.test_failed = True
         self.maps_page.set_scale_measurement('meters')
         self.__edit_scale_process_helper()
-        self.maps_page.log_cursor_coordinates()
         result = self.maps_page.undo_scale_line_drawing(200, 100, self.maps_page.scale_line_point_b)
 
         assert result[0] != result[1]

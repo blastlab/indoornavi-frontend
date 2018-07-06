@@ -20,8 +20,7 @@ export class CommonDevice {
     protected icons: IconService) {
   }
 
-  protected drawEditorDevice(drawBuilder: DrawBuilder, drawConfiguration: DrawConfiguration,
-                   coordinates: Point): SvgGroupWrapper {
+  protected drawEditorDevice(drawBuilder: DrawBuilder, drawConfiguration: DrawConfiguration, coordinates: Point): SvgGroupWrapper {
     const text = (!drawConfiguration.name)
       ? `${drawConfiguration.name}-${drawConfiguration.id}`
       : `${drawConfiguration.clazz}-${drawConfiguration.id}`;

@@ -32,11 +32,8 @@ export class DevicePlacerController {
   listVisibility = this.showDevicesList.asObservable();
   wizardSavesConfiguration = this.wizardConfiguration.asObservable();
 
-  devicePlacement(): void {
+  sendCoordinatesChanged(coords: Point): void {
     this.droppedOnMap.next();
-  }
-
-  setCoordinates(coords: Point): void {
     this.coordinates.next(coords);
   }
 

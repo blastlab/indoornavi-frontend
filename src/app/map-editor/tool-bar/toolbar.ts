@@ -5,6 +5,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {Floor} from '../../floor/floor.type';
 import {Configuration} from '../action-bar/actionbar.type';
 import {ActionBarService} from '../action-bar/actionbar.service';
+import {ToolName} from './tools/tools.enum';
 
 @Component({
   selector: 'app-toolbar',
@@ -12,7 +13,8 @@ import {ActionBarService} from '../action-bar/actionbar.service';
 })
 export class ToolbarComponent implements OnInit, OnDestroy {
   @Input() floor: Floor;
-  @ViewChildren('tool') tools: QueryList<Tool>;
+  @ViewChildren('toolScaleDependent') scaleDependentTools: QueryList<Tool>;
+  @ViewChildren('toolWizardDependent') wizardDependentTools: QueryList<Tool>;
 
   private activeTool: Tool;
   private toolChangedSubscription: Subscription;
@@ -27,13 +29,13 @@ export class ToolbarComponent implements OnInit, OnDestroy {
     this.configurationLoaded = this.actionBarService.configurationLoaded().first().subscribe((configuration: Configuration) => {
       if (!!configuration.data.scale) {
         this.scaleSet = true;
-        this.toggleDisable(false);
+        this.toggleScaleDependentToolsDisable(false);
       }
     });
     this.configurationChanged = this.actionBarService.configurationChanged().first().subscribe((configuration: Configuration) => {
       if (!!configuration.data.scale) {
         this.scaleSet = true;
-        this.toggleDisable(false);
+        this.toggleScaleDependentToolsDisable(false);
       }
     });
     this.toolChangedSubscription = this.toolbarService.onToolChanged().subscribe((tool: Tool) => {
@@ -45,6 +47,11 @@ export class ToolbarComponent implements OnInit, OnDestroy {
       if (activate) {
         tool.setActive();
         this.activeTool = tool;
+        if (this.activeTool.getToolName() === ToolName.WIZARD) {
+          this.toggleWizardDependentToolsDisable(true)
+        }
+      } else {
+        this.toggleWizardDependentToolsDisable(false);
       }
     });
   }
@@ -58,8 +65,14 @@ export class ToolbarComponent implements OnInit, OnDestroy {
     }
   }
 
-  private toggleDisable(value: boolean): void {
-    this.tools.forEach((item: Tool) => {
+  private toggleScaleDependentToolsDisable(value: boolean): void {
+    this.scaleDependentTools.forEach((item: Tool) => {
+      item.setDisabled(value);
+    });
+  }
+
+  private toggleWizardDependentToolsDisable(value: boolean): void {
+    this.wizardDependentTools.forEach((item: Tool) => {
       item.setDisabled(value);
     });
   }
