@@ -19,6 +19,9 @@ import {Subscription} from 'rxjs/Subscription';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
 import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
 import {Geometry} from '../../../../shared/utils/helper/geometry';
+import {Scale, ScaleCalculations, ScaleDto} from '../scale/scale.type';
+import {ScaleService} from '../../../../shared/services/scale/scale.service';
+import {Helper} from '../../../../shared/utils/helper/helper';
 
 @Component({
   selector: 'app-area',
@@ -46,13 +49,18 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
   private selectedEditable: Editable;
   private onDecisionMadeSubscription: Subscription;
 
+  private scaleChangedSubscription: Subscription;
+  private scale: Scale;
+  private scaleCalculations: ScaleCalculations;
+
   constructor(private toolbarService: ToolbarService,
               private mapLoaderInformer: MapLoaderInformerService,
               private zoomService: ZoomService,
               private areaDetailsService: AreaDetailsService,
               private contextMenuService: ContextMenuService,
               private actionBarService: ActionBarService,
-              private hintBarService: HintBarService) {
+              private hintBarService: HintBarService,
+              private scaleService: ScaleService) {
   }
 
   ngOnInit(): void {
@@ -62,7 +70,17 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
 
       this.actionBarService.configurationLoaded().first().subscribe((configuration: Configuration): void => {
         if (!!configuration.data.areas) {
-          configuration.data.areas.forEach((area: Area): void => {
+          const configurationCopy = Helper.deepCopy(configuration);
+          configurationCopy.data.areas.forEach((area: Area): void => {
+            const pointsInPixels = [];
+            area.points.forEach((point: Point) => {
+              pointsInPixels.push(
+                Geometry.calculatePointPositionInPixels(
+                  this.scaleCalculations.scaleLengthInPixels, this.scaleCalculations.scaleInCentimeters, point
+                )
+              )
+            });
+            area.points = pointsInPixels;
             this.areas.push({
               dto: area,
               editable: null
@@ -70,6 +88,16 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
           });
         }
       });
+    });
+
+    this.scaleChangedSubscription = this.scaleService.scaleChanged.subscribe((scale: ScaleDto) => {
+      this.scale = new Scale(scale);
+      if (this.scale.isReady()) {
+        this.scaleCalculations = {
+          scaleLengthInPixels: Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
+          scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
+        };
+      }
     });
 
     this.onDecisionMadeSubscription = this.areaDetailsService.onDecisionMade().subscribe((area: AreaBag): void => {
@@ -88,9 +116,22 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
           this.areas[index] = area;
         }
 
-        this.actionBarService.setAreas(this.areas.map((areaBag: AreaBag): Area => {
+        const calculatedAreas = Helper.deepCopy(this.areas.map((areaBag: AreaBag): Area => {
           return areaBag.dto;
         }));
+
+        calculatedAreas.forEach((areaDto: Area) => {
+          const pointsInCentimeters = [];
+          areaDto.points.forEach((point: Point) => {
+            pointsInCentimeters.push(
+              Geometry.calculatePointPositionInCentimeters(
+                this.scaleCalculations.scaleLengthInPixels, this.scaleCalculations.scaleInCentimeters, point
+              )
+            )
+          });
+          areaDto.points = pointsInCentimeters;
+        });
+        this.actionBarService.setAreas(calculatedAreas);
       }
       this.toggleActivity();
     });
@@ -99,6 +140,9 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (!!this.onDecisionMadeSubscription) {
       this.onDecisionMadeSubscription.unsubscribe();
+    }
+    if (!!this.scaleChangedSubscription) {
+      this.scaleChangedSubscription.unsubscribe();
     }
   }
 
@@ -190,7 +234,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
     this.disabled = value;
   }
 
-  private handleShiftKeyEvent (coordinates: Point): Point {
+  private handleShiftKeyEvent(coordinates: Point): Point {
     const secondPoint: Point = this.getCurrentAreaPoints()[this.getCurrentAreaPoints().length - 1];
     const deltaY = Geometry.getDeltaY(coordinates, secondPoint);
     if (!!deltaY) {

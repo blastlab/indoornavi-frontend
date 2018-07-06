@@ -45,14 +45,14 @@ export class MapComponent implements OnInit {
   }
 
   applyOnClickListener(mapSvg: MapSvg) {
-   let isLongClick = false;
-   let mouseMove = false;
-   let mouseDown = false;
+    let isLongClick = false;
+    let mouseMove = false;
+    let mouseDown = false;
 
     mapSvg.container
       .on('mousedown', () => {
         mouseDown = true;
-         setTimeout(() => {
+        setTimeout(() => {
           if (mouseDown && !mouseMove) {
             isLongClick = true;
           }
@@ -70,7 +70,7 @@ export class MapComponent implements OnInit {
         if (mouseDown) {
           mouseMove = true;
         }
-    });
+      });
   }
 
   applyOnTouchesListener(mapSvg: MapSvg) {
