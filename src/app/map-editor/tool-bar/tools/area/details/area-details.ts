@@ -67,7 +67,7 @@ export class AreaDetailsComponent implements OnInit {
         this.area.heightMax = null;
         this.area.heightMin = null;
       } else {
-        heightIsValid = (this.area.heightMin < this.area.heightMax && this.area.heightMin  > 0 && this.area.heightMax > 1);
+        heightIsValid = (this.area.heightMin < this.area.heightMax && this.area.heightMin  >= 0 && this.area.heightMax >= 1);
       }
       if (heightIsValid) {
         this.area.points.length = 0;
