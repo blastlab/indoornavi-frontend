@@ -379,4 +379,20 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         self.assertDictEqual(result[0], location)
 
     def test_33_area(self):
-        print('test area')
+        print('START TEST')
+        # self.maps_page.truncate_db()
+        print('TRUNCATE')
+        table = 'configuration'
+        columns = ('id', 'data', 'version', 'floor_id', 'publishedDate', 'saveDraftDate')
+        values = ('1'
+                  , '{"sinks":[],"scale":{"start":{"x":0,"y":0},"stop":{"x":50,"y":50},"realDistance":15,"measure":"CENTIMETERS"}}'
+                  , '0'
+                  , '1'
+                  , '2011-01-01 00:00:00'
+                  , '2011-01-01 00:00:00')
+
+        print('START TO INSERT CONF')
+        self.maps_page.insert_configuration_to_db(table, columns, values)
+        # self.maps_page.insert_configurration_to_db(table_image, columns_image, _)
+        # self.maps_page.create_scale_db_env()
+

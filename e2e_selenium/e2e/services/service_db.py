@@ -30,6 +30,39 @@ class ServiceDb(object):
             last_construction_name = name[0]
         return last_construction_name
 
+    def insert_to_db(self, table, columns, values):
+
+        print(table)
+        print(columns)
+        print(values)
+
+        if self.db_connect is not None and self.db_cursor is not None:
+           print('1st stage')
+           if type(values) is not tuple or type(columns) is not tuple or type(table) is not str:
+              raise ValueError('Wrong values passed to db insert method')
+           print(len(columns))
+           if len(columns) == len(values):
+              column_names_for_command = ", ".join([v for v in columns])
+              values_string_fields = ", ".join('%s' for _ in range(len(values)))
+              command_composition = ("INSERT INTO {} "
+                                     "({}) "
+                                     "VALUES ({})".format(table, column_names_for_command, values_string_fields)
+                                     )
+              print(column_names_for_command)
+              print(values_string_fields)
+              print(command_composition)
+              try:
+                self.db_cursor.execute(command_composition, values)
+              except ValueError as error:
+                print(error)
+           else:
+              raise ValueError('Number of columns is not equal to number of values')
+        else:
+          raise ValueError('Set connection to db before executing insertion')
+
+    def truncate_single_table(self, table):
+        self.db_cursor.execute("TRUNCATE TABLE {}".format(table))
+
     def truncate_db(self):
         for table in self.__db_tables_array[0:8]:
             self.db_cursor.execute("TRUNCATE TABLE {}".format(table))
