@@ -3,6 +3,7 @@ import {Point} from '../../../map-editor/map.type';
 import {DrawConfiguration} from '../../../map-viewer/publication.type';
 import {Helper} from '../helper/helper';
 import {Anchor, Sink} from '../../../device/device.type';
+import {CommonDeviceConfiguration} from './common/device.common';
 
 export enum ElementType {
   ICON,
@@ -231,7 +232,7 @@ export class SvgGroupWrapper {
     const childrenCount: number = parentElement.childElementCount;
     const children: NodeList = parentElement.childNodes;
     for (let i = 0; i < childrenCount; i++) {
-      const classed: Attr = children[i].attributes['class'];
+      const classed: Attr = children[i]['attributes']['class'];
       if (!classed || (!!classed && classed.value !== 'pointer' && classed.value !== 'dragarea' && classed.value !== 'group-border-box' )) {
         const child: d3.selection = d3.select(children[i]);
         if (child.attr('stroke') !== null) {
@@ -300,25 +301,27 @@ export class SvgGroupWrapper {
 export class DrawBuilder {
     protected group: d3.selection;
 
-  static buildAnchorDrawConfiguration(anchor: Anchor): DrawConfiguration {
+  static buildAnchorDrawConfiguration(anchor: Anchor): CommonDeviceConfiguration {
     return {
       id: `${anchor.shortId}`,
       clazz: `anchor`,
       name: `${anchor.name}`,
       cursor: `pointer`,
       color: `green`,
-      display: `none`
+      display: `none`,
+      heightInMeters: anchor.z / 100
     };
   }
 
-  static buildSinkDrawConfiguration(sink: Sink): DrawConfiguration {
+  static buildSinkDrawConfiguration(sink: Sink): CommonDeviceConfiguration {
     return {
       id: `${sink.shortId}`,
       clazz: `sink anchor`,
       name: `${sink.name}`,
       cursor: `pointer`,
       color: `orange`,
-      display: `none`
+      display: `none`,
+      heightInMeters: sink.z / 100
     };
   }
 
