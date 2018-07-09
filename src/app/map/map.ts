@@ -5,7 +5,7 @@ import {Floor} from '../floor/floor.type';
 import {MapSvg} from './map.type';
 import {ActivatedRoute, Data} from '@angular/router';
 import {DevicePlacerController} from '../map-editor/tool-bar/tools/devices/device-placer.controller';
-import {MapClickService} from "../shared/services/map-click/map-click.service";
+import {MapClickService} from '../shared/services/map-click/map-click.service';
 import * as d3 from 'd3';
 
 @Component({
@@ -33,7 +33,7 @@ export class MapComponent implements OnInit {
       this.imageLoaded = true;
       this.mapLoaderInformer.publishIsLoaded(mapSvg);
 
-      if(this.isPublic) {
+      if (this.isPublic) {
         this.applyOnClickListener(mapSvg);
         this.applyOnTouchesListener(mapSvg);
       }
@@ -48,16 +48,16 @@ export class MapComponent implements OnInit {
   }
 
   applyOnClickListener(mapSvg: MapSvg) {
-   let mouseMove: boolean = false;
-   let mouseDown: boolean = false;
-   let timer: number = 0;
+    let mouseMove = false;
+    let mouseDown = false;
+    let timer = 0;
 
     mapSvg.container
       .on('mousedown', () => {
         mouseDown = true;
         const position: Array<number> = d3.mouse(mapSvg.container.node());
-         timer = setTimeout(() => {
-          if(mouseDown && !mouseMove) {
+        timer = setTimeout(() => {
+          if (mouseDown && !mouseMove) {
             this.mapClick.mapIsClicked({x: Math.round(position[0]), y: Math.round(position[1])});
           }
         }, 800);
@@ -68,23 +68,23 @@ export class MapComponent implements OnInit {
         mouseMove = false;
       })
       .on('mousemove', () => {
-        if(mouseDown) {
+        if (mouseDown) {
           mouseMove = true;
         }
-    });
+      });
   }
 
   applyOnTouchesListener(mapSvg: MapSvg) {
-    let touchMove: boolean = false;
-    let touchStart: boolean = false;
-    let timer: number = 0;
+    let touchMove = false;
+    let touchStart = false;
+    let timer = 0;
 
     mapSvg.container
       .on('touchstart', () => {
         touchStart = true;
         const position: Array<number> = d3.mouse(mapSvg.container.node());
         timer = setTimeout(() => {
-          if(touchStart && !touchMove) {
+          if (touchStart && !touchMove) {
             this.mapClick.mapIsClicked({x: Math.round(position[0]), y: Math.round(position[1])});
           }
         }, 800);
@@ -95,7 +95,7 @@ export class MapComponent implements OnInit {
         touchMove = false;
       })
       .on('touchmove', () => {
-        if(touchStart) {
+        if (touchStart) {
           touchMove = true;
         }
       });

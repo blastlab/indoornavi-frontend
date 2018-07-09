@@ -12,9 +12,9 @@ export class Helper {
     const childrenCount: number = parentElement.childElementCount;
     const children: NodeList = parentElement.childNodes;
     for (let i = 0; i < childrenCount; i++) {
-      if (!!children[i].attributes['class'] && children[i].attributes['class'].value !== 'dragarea') {
-        const childX: number = children[i].attributes['x'].value;
-        const childY: number = children[i].attributes['y'].value;
+      if (!!children[i]['attributes']['class'] && children[i]['attributes']['class'].value !== 'dragarea') {
+        const childX: number = children[i]['attributes']['x'].value;
+        const childY: number = children[i]['attributes']['y'].value;
         extremeLeftX = ( childX < extremeLeftX) ? childX : extremeLeftX;
         extremeTopY = ( childY < extremeTopY) ? childY : extremeTopY;
       }

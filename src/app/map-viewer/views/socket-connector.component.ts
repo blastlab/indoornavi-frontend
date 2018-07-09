@@ -1,13 +1,6 @@
 import {AfterViewInit, Component, NgZone, OnInit} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
-import {
-  AreaEventMode,
-  CommandType,
-  CoordinatesSocketData,
-  EventSocketData,
-  MeasureSocketData,
-  MeasureSocketDataType
-} from '../publication.type';
+import {AreaEventMode, CommandType, CoordinatesSocketData, EventSocketData, MeasureSocketData, MeasureSocketDataType} from '../publication.type';
 import {Subject} from 'rxjs/Subject';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
 import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.builder';
