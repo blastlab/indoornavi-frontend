@@ -63,7 +63,7 @@ export class AreaDetailsComponent implements OnInit {
   confirm(formIsValid: boolean): void {
     if (formIsValid) {
       let heightIsValid = true;
-      if (!(!!this.area.heightMax || !!this.area.heightMin)) { // check if height values are set, if not or deleted than send null
+      if (!this.area.heightMax || !this.area.heightMin) { // check if height values are set, if not or deleted than send null
         this.area.heightMax = null;
         this.area.heightMin = null;
       } else {
