@@ -37,7 +37,6 @@ import {SvgAnimator} from '../../shared/utils/drawing/animator';
 import {MapObjectMetadata} from '../../shared/utils/drawing/drawing.types';
 import {MapClickService} from '../../shared/services/map-click/map-click.service';
 import {Deferred} from '../../shared/utils/helper/deferred';
-import {Helper} from '../../shared/utils/helper/helper';
 
 @Component({
   templateUrl: './socket-connector.component.html'
@@ -290,11 +289,10 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   }
 
   protected subscribeToMapClick() {
-    this.mapClick.clickInvoked().subscribe((mapSvg: MapSvg) => {
-      const position: Point = Helper.getMousePosition(mapSvg);
+    this.mapClick.clickInvoked().subscribe((point:  Point) => {
       if (this.originListeningOnClickMapEvent.length > 0) {
         this.originListeningOnClickMapEvent.forEach((event: MessageEvent): void => {
-            event.source.postMessage({type: 'click', position: position}, event.origin);
+            event.source.postMessage({type: 'click', position: point}, event.origin);
         });
       }
     });
