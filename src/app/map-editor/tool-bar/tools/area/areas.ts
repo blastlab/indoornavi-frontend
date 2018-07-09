@@ -190,6 +190,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
     this.disabled = value;
   }
 
+
   private handleShiftKeyEvent (coordinates: Point): Point {
     const secondPoint: Point = this.getCurrentAreaPoints()[this.getCurrentAreaPoints().length - 1];
     const deltaY = Geometry.getDeltaY(coordinates, secondPoint);

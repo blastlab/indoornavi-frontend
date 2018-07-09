@@ -8,6 +8,8 @@ export class Area {
   configurations: AreaConfiguration[] = [];
   points: Point[] = [];
   buffer: Point[];
+  heightMin: number;
+  heightMax: number;
   floorId: number;
 
   static getCustomSettings(): AreaCustomSettings {
