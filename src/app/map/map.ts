@@ -5,7 +5,8 @@ import {Floor} from '../floor/floor.type';
 import {MapSvg} from './map.type';
 import {ActivatedRoute, Data} from '@angular/router';
 import {DevicePlacerController} from '../map-editor/tool-bar/tools/devices/device-placer.controller';
-import {MapClickService} from '../shared/services/map-click/map-click.service';
+import {MapClickService} from "../shared/services/map-click/map-click.service";
+import * as d3 from 'd3';
 
 @Component({
   selector: 'app-map',
@@ -31,8 +32,11 @@ export class MapComponent implements OnInit {
     this.mapEditorService.drawMap(this.floor).then((mapSvg: MapSvg) => {
       this.imageLoaded = true;
       this.mapLoaderInformer.publishIsLoaded(mapSvg);
-      this.applyOnClickListener(mapSvg);
-      this.applyOnTouchesListener(mapSvg);
+
+      if(this.isPublic) {
+        this.applyOnClickListener(mapSvg);
+        this.applyOnTouchesListener(mapSvg);
+      }
     });
   }
 
@@ -44,58 +48,54 @@ export class MapComponent implements OnInit {
   }
 
   applyOnClickListener(mapSvg: MapSvg) {
-   let isLongClick = false;
-   let mouseMove = false;
-   let mouseDown = false;
+   let mouseMove: boolean = false;
+   let mouseDown: boolean = false;
+   let timer: number = 0;
 
     mapSvg.container
       .on('mousedown', () => {
         mouseDown = true;
-         setTimeout(() => {
-          if (mouseDown && !mouseMove) {
-            isLongClick = true;
+        const position: Array<number> = d3.mouse(mapSvg.container.node());
+         timer = setTimeout(() => {
+          if(mouseDown && !mouseMove) {
+            this.mapClick.mapIsClicked({x: Math.round(position[0]), y: Math.round(position[1])});
           }
-        }, 500);
+        }, 800);
       })
       .on('mouseup', () => {
+        clearTimeout(timer);
         mouseDown = false;
-        if (isLongClick && !mouseMove) {
-          this.mapClick.mapIsClicked(mapSvg);
-        }
-        isLongClick = false;
         mouseMove = false;
       })
       .on('mousemove', () => {
-        if (mouseDown) {
+        if(mouseDown) {
           mouseMove = true;
         }
     });
   }
 
   applyOnTouchesListener(mapSvg: MapSvg) {
-    let isLongTouch = false;
-    let touchMove = false;
-    let touchStart = false;
+    let touchMove: boolean = false;
+    let touchStart: boolean = false;
+    let timer: number = 0;
 
     mapSvg.container
       .on('touchstart', () => {
         touchStart = true;
-        setTimeout(() => {
-          if (touchStart && !touchMove) {
-            isLongTouch = true;
+        const position: Array<number> = d3.mouse(mapSvg.container.node());
+        timer = setTimeout(() => {
+          if(touchStart && !touchMove) {
+            this.mapClick.mapIsClicked({x: Math.round(position[0]), y: Math.round(position[1])});
           }
-        }, 500);
+        }, 800);
       })
       .on('touchend', () => {
+        clearTimeout(timer);
         touchStart = false;
-        if (isLongTouch && !touchMove) {
-          this.mapClick.mapIsClicked(mapSvg);
-        }
-        isLongTouch = false;
         touchMove = false;
       })
       .on('touchmove', () => {
-        if (touchStart) {
+        if(touchStart) {
           touchMove = true;
         }
       });
