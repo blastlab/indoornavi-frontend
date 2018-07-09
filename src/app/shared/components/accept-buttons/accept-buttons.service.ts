@@ -11,7 +11,7 @@ export class AcceptButtonsService {
 
   decisionMade: Observable<boolean> = this.decision.asObservable();
   visibilityChanged: Observable<boolean> = this.visibility.asObservable();
-  translationsChanged: Observable<boolean> = this.translations.asObservable();
+  translationsChanged: Observable<AcceptButtonsTranslations> = this.translations.asObservable();
 
   publishDecision(val: boolean): void {
     this.decision.next(val);

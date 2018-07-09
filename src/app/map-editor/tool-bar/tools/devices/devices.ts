@@ -932,7 +932,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   }
 
   private placeDeviceOnMap(device: Anchor | Sink, coordinates: Point): void {
-    const drawOptions: DrawConfiguration = (DevicesComponent.isSinkType(device))
+    const drawOptions: CommonDeviceConfiguration = (DevicesComponent.isSinkType(device))
       ? DrawBuilder.buildSinkDrawConfiguration(<Sink>device)
       : DrawBuilder.buildAnchorDrawConfiguration(<Anchor>device);
     drawOptions.display = `block`;
