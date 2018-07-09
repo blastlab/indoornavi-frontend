@@ -32,8 +32,11 @@ export class MapComponent implements OnInit {
     this.mapEditorService.drawMap(this.floor).then((mapSvg: MapSvg) => {
       this.imageLoaded = true;
       this.mapLoaderInformer.publishIsLoaded(mapSvg);
-      this.applyOnClickListener(mapSvg);
-      this.applyOnTouchesListener(mapSvg);
+
+      if(this.isPublic) {
+        this.applyOnClickListener(mapSvg);
+        this.applyOnTouchesListener(mapSvg);
+      }
     });
   }
 
