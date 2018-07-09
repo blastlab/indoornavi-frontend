@@ -15,7 +15,7 @@ class BasePage(object):
 
     def __init__(self, driver):
         self.__driver = driver
-        self.actions = ActionChains(self.__driver)
+
         self.service_db = ServiceDb
         self.service_upload = ServiceUpload
 
@@ -115,6 +115,10 @@ class BasePage(object):
         item_text = self.wait_for_element_visibility(locator).text
         return item_text
 
+    def get_value(self, locator):
+        value = self.wait_for_element_visibility(locator).get_attribute('value')
+        return value
+
     def get_all_elements_text(self, *locator):
         """
         All elements text are merged to one string
@@ -164,11 +168,22 @@ class BasePage(object):
         get_array = re.findall('\d+', str)[0:3]
         return get_array
 
-    def drag_and_drop(self, source_element, dest_element):
-        return self.actions.click_and_hold(source_element).move_by_offset(1000, 0).release(dest_element).perform()
+    def drag_and_drop(self, source_element):
+        return self.actions.drag_and_drop_by_offset(source_element, 100, 0).move_by_offset(100, 0).release().perform()
 
     def choose_file(self, choose_file_btn, file_path):
         service_db = ServiceUpload(file_path)
         abs_path = service_db.get_abs_path()
         choose_btn = self.wait_for_element(choose_file_btn)
         return choose_btn.send_keys(abs_path)
+
+    def get_browser_console_log(self):
+
+        """Get the browser console log"""
+        try:
+            log = self.__driver.get_log('browser')
+            print('log')
+            return log
+        except Exception as e:
+            print("Exception when reading Browser Console log")
+            print(str(e))

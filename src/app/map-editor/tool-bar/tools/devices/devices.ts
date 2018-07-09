@@ -23,7 +23,7 @@ import {DrawBuilder, SvgGroupWrapper} from '../../../../shared/utils/drawing/dra
 import {Anchor, Sink} from '../../../../device/device.type';
 import {DrawConfiguration} from '../../../../map-viewer/publication.type';
 import {MapEditorService} from '../../../map.editor.service';
-import {CommonDevice} from '../../../../shared/utils/drawing/common/device.common';
+import {CommonDevice, CommonDeviceConfiguration} from '../../../../shared/utils/drawing/common/device.common';
 import {IconService} from '../../../../shared/services/drawing/icon.service';
 import {Scale, ScaleCalculations, ScaleDto} from '../scale/scale.type';
 import {ScaleService} from '../../../../shared/services/scale/scale.service';
@@ -902,7 +902,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
     });
   }
 
-  private drawDevice(deviceConfig: DrawConfiguration, coordinates: Point): Expandable {
+  private drawDevice(deviceConfig: CommonDeviceConfiguration, coordinates: Point): Expandable {
     const drawBuilder: DrawBuilder = new DrawBuilder(this.map, deviceConfig);
     const droppedDevice: SvgGroupWrapper = this.drawEditorDevice(drawBuilder, deviceConfig, coordinates);
     const mapDevice: Expandable = DevicesComponent.createConnectableDevice(droppedDevice);
@@ -932,7 +932,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
   }
 
   private placeDeviceOnMap(device: Anchor | Sink, coordinates: Point): void {
-    const drawOptions: DrawConfiguration = (DevicesComponent.isSinkType(device))
+    const drawOptions: CommonDeviceConfiguration = (DevicesComponent.isSinkType(device))
       ? DrawBuilder.buildSinkDrawConfiguration(<Sink>device)
       : DrawBuilder.buildAnchorDrawConfiguration(<Anchor>device);
     drawOptions.display = `block`;

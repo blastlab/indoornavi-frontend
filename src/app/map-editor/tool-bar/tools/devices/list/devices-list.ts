@@ -1,6 +1,4 @@
-import {Component, OnDestroy, OnInit, ViewChild,
-  ViewEncapsulation
-} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {DevicePlacerController} from '../device-placer.controller';
 import {Subscription} from 'rxjs/Subscription';
@@ -19,7 +17,8 @@ export class DevicesListComponent implements OnInit, OnDestroy {
   public queryString: string;
   public selectedDevice: Expandable;
   public listFloatLeft = true;
-  public connectingFlag: boolean;
+  public heightInMeters: number = 2;
+  public connectingMode: boolean;
   @ViewChild(`toolDetails`) private devicesList: ToolDetailsComponent;
   private devices = new Set<Anchor | Sink>();
   private addSubscription: Subscription;
@@ -52,7 +51,7 @@ export class DevicesListComponent implements OnInit, OnDestroy {
       this.selectedDevice = selected;
     });
     this.connectingState = this.devicePlacerController.connectingMode.subscribe((state: boolean) => {
-      this.connectingFlag = state;
+      this.connectingMode = state;
     })
   }
 
@@ -66,6 +65,7 @@ export class DevicesListComponent implements OnInit, OnDestroy {
   }
 
   public dragDeviceStarted(device: Anchor | Sink): void {
+    device.z = this.heightInMeters * 100;
     this.devicePlacerController.emitDeviceDragStarted(device);
   }
 
@@ -78,7 +78,7 @@ export class DevicesListComponent implements OnInit, OnDestroy {
   }
 
   public modifyConnections(): void {
-    this.devicePlacerController.setConnectingMode(!this.connectingFlag);
+    this.devicePlacerController.setConnectingMode(!this.connectingMode);
   }
 
   public deleteDevice(): void {

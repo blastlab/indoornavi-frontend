@@ -1,11 +1,16 @@
 from pages.base_page import BasePage
 from locators.maps_base_locators import MapsBaseLocators
+from selenium.webdriver import ActionChains
+from selenium.webdriver.common.keys import Keys
+import json
+import time
 
 
 class MapsPage(BasePage, MapsBaseLocators):
 
     def __init__(self, driver):
         self.__driver = driver
+        self.__actions = ActionChains
         BasePage.__init__(self, self.__driver)
         MapsBaseLocators.__init__(self)
 
@@ -64,6 +69,9 @@ class MapsPage(BasePage, MapsBaseLocators):
         # self.is_element_present(self.hint_bar_scale)
 
     # SCALE
+    def is_scale_button_displayed(self):
+        return True if self.is_element_present(self.scale_button) else False
+
     def scale_button_click(self):
         return self.click_element(self.scale_button)
 
@@ -78,21 +86,60 @@ class MapsPage(BasePage, MapsBaseLocators):
         :return: action which provide to draw scale line based on params
 
         """
+        _x_offset = x_offset
+        _y_offset = y_offset
+        element_image = self.wait_for_element_clickable(self.map_image)
+        actions = ActionChains(self.__driver)
+
+        return actions.click(element_image).move_by_offset(_x_offset, _y_offset).click().perform()
+
+    def edit_scale_line(self, x_offset, y_offset, element):
+        """
+
+        :param x_offset: the number of pixels needed to drag point_b of scale on the x axis
+        :param y_offset: the number of pixels needed to drag point_b of scale on the y axis
+        :return: action which provide to draw scale line with changed coordinates {params}
+
+        """
+        _x_offset = x_offset
+        _y_offset = y_offset
+        scale_line = self.wait_for_element_clickable(element)
+
+        return self.__actions(self.__driver).drag_and_drop_by_offset(scale_line, _x_offset, _y_offset).release().perform()
+
+    def undo_scale_line_drawing(self, x_offset, y_offset, element):
+        """
+
+        :param x_offset: the number of pixels needed to drag point_b of scale on the x axis
+        :param y_offset: the number of pixels needed to drag point_b of scale on the y axis
+        :return: array of dictionaries with actual scale line's point_b location - [dict_a, dict_b, dict_c]
+
+        """
         __x_offset = x_offset
         __y_offset = y_offset
-        __element_image = self.wait_for_element_clickable(self.map_image)
-        self.log_cursor_coordinates()
-        return self.actions.click(__element_image).move_by_offset(__x_offset, __y_offset).click().perform()
+        __scale_line = self.wait_for_element_clickable(element)
+        start_location = self.get_location(__scale_line)
+
+        self.__actions(self.__driver).click_and_hold(__scale_line).move_by_offset(__x_offset, __y_offset).perform()
+        action_location = self.get_location(__scale_line)
+
+        self.__actions(self.__driver).send_keys(Keys.ESCAPE).perform()
+        end_scale_line = self.wait_for_element_clickable(element)
+        end_location = self.get_location(end_scale_line)
+
+        locations = [start_location, action_location, end_location]
+
+        return locations
 
     @staticmethod
-    def __get_coordinates(DOM_element, **kwargs):
-        __coordinates = {}
+    def get_coordinates(DOM_element, **kwargs):
+        coordinates = {}
         for key, param in kwargs.items():
-            __coordinates[param] = DOM_element.get_attribute(param)
-        return __coordinates
+            coordinates[param] = DOM_element.get_attribute(param)
+        return coordinates
 
     @staticmethod
-    def __abs_value(a, b):
+    def abs_value(a, b):
         return abs(float(b)-float(a))
 
     def get_scale_line_parameters(self):
@@ -109,9 +156,9 @@ class MapsPage(BasePage, MapsBaseLocators):
         point_b = self.wait_for_element(self.scale_line_point_b)
         scale_line = self.wait_for_element(self.scale_line)
 
-        point_a_params = self.__get_coordinates(point_a, x="cx", y="cy")
-        point_b_params = self.__get_coordinates(point_b, x="cx", y="cy")
-        scale_line_params = self.__get_coordinates(scale_line, x1="x1", x2="x2", y1="y1", y2="y2")
+        point_a_params = self.get_coordinates(point_a, x="cx", y="cy")
+        point_b_params = self.get_coordinates(point_b, x="cx", y="cy")
+        scale_line_params = self.get_coordinates(scale_line, x1="x1", x2="x2", y1="y1", y2="y2")
 
         scale_line_dict["scale_line"] = scale_line_params
         scale_line_dict["point_a"] = point_a_params
@@ -135,10 +182,10 @@ class MapsPage(BasePage, MapsBaseLocators):
         line_y1 = scale_line_params["scale_line"]['y1']
         line_y2 = scale_line_params["scale_line"]['y2']
         # offset x - difference
-        result_x = self.__abs_value(point_a_cx, point_b_cx)
-        result_y = self.__abs_value(point_a_cy, point_b_cy)
-        result_line_x = self.__abs_value(line_x1, line_x2)
-        result_line_y = self.__abs_value(line_y1, line_y2)
+        result_x = self.abs_value(point_a_cx, point_b_cx)
+        result_y = self.abs_value(point_a_cy, point_b_cy)
+        result_line_x = self.abs_value(line_x1, line_x2)
+        result_line_y = self.abs_value(line_y1, line_y2)
 
         assert expect_x == result_x and expect_x == result_line_x, str(expect_x)+' is not equal '+str(result_x) + ' or '+ str(result_line_x)
         assert expect_y == result_y and expect_y == result_line_y, str(expect_y)+' is not equal '+str(result_y) + ' or '+ str(result_line_y)
@@ -148,20 +195,70 @@ class MapsPage(BasePage, MapsBaseLocators):
         element = self.is_element_appeared(self.scale_line)
         return True if element else False
 
+    def is_scale_line_disappear(self):
+        return True if self.is_element_disappear(self.scale_line) else False
+
     def is_scale_modal_window_displayed(self):
         element = self.is_element_appeared(self.scale_modal_window)
         return True if element else False
+
+    def is_scale_modal_window_disappear(self):
+        return True if self.is_element_disappear(self.scale_modal_window) else False
 
     def enter_scale_distance(self, value):
         return self.clear_and_fill_input(value, self.scale_distance_input)
 
     def set_scale_measurement(self, option):
+
         self.click_element(self.scale_measurement)
-        print(self.click_element(self.scale_measurement_cent))
+        set_measurement = {
+            'centimeters': self.scale_measurement_cent,
+            'meters': self.scale_measurement_meters
+        }
+        return self.click_element(set_measurement[option])
 
-        # return click(self.scale_measurement_cent)
+    def scale_ok_button_click(self):
+        ok_buttons = self.__driver.find_elements(*self.scale_ok_button)
+        return ok_buttons[1].click()
 
-    # SUPPORT METHODS
+    def scale_cancel_button_click(self):
+        cancel_buttons = self.__driver.find_elements(*self.scale_cancel_button)
+        return cancel_buttons[1].click()
+
+    def is_scale_set_toast_present(self):
+        return True if self.is_element_present(self.scale_set_toast) else False
+
+    def is_scale_set_toast_disappear(self):
+        return True if self.is_element_disappear(self.scale_set_toast) else False
+
+    def is_saving_draft_info_present(self):
+        return True if self.is_element_present(self.saving_draft_info) else False
+
+    def is_saving_draft_info_disappear(self):
+        return True if self.is_element_disappear(self.saving_draft_info) else False
+
+    def is_draft_saved_toast_present(self):
+        return True if self.is_element_present(self.draft_saved) else False
+
+    def is_draft_saved_toast_disappear(self):
+        return True if self.is_element_disappear(self.draft_saved) else False
+
+    def is_set_measurement_toast_present(self):
+        return True if self.is_element_present(self.set_measurement_toast) else False
+
+    def is_set_measurement_toast_disappear(self):
+        return True if self.is_element_disappear(self.set_measurement_toast) else False
+
+    def is_must_be_integer_toast_present(self):
+        return True if self.is_element_present(self.must_be_integer_toast) else False
+
+    def is_must_be_integer_toast_disappear(self):
+        return True if self.is_element_disappear(self.must_be_integer_toast) else False
+
+    def get_location(self, element):
+        __element_location = element.location
+        return __element_location
+
     def log_cursor_coordinates(self):
         return self.__driver.execute_script('''
         function findScreenCoords(mouseEvent)
@@ -170,7 +267,7 @@ class MapsPage(BasePage, MapsBaseLocators):
             var ypos;
             if (mouseEvent)
             {
-              //FireFox
+              //FireFo
               xpos = mouseEvent.screenX;
               ypos = mouseEvent.screenY;
             }
@@ -184,3 +281,6 @@ class MapsPage(BasePage, MapsBaseLocators):
           }
         document.getElementById("map").onmousemove = findScreenCoords;
         ''')
+
+    # EDIT SCALE
+

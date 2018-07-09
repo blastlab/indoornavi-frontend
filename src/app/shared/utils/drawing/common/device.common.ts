@@ -20,10 +20,14 @@ export class CommonDevice {
     protected icons: IconService) {
   }
 
-  protected drawEditorDevice(drawBuilder: DrawBuilder, drawConfiguration: DrawConfiguration, coordinates: Point): SvgGroupWrapper {
-    const text = (!drawConfiguration.name)
+  protected drawEditorDevice(drawBuilder: DrawBuilder, drawConfiguration: CommonDeviceConfiguration,
+                   coordinates: Point): SvgGroupWrapper {
+    let text = (!drawConfiguration.name)
       ? `${drawConfiguration.name}-${drawConfiguration.id}`
       : `${drawConfiguration.clazz}-${drawConfiguration.id}`;
+    if (!!drawConfiguration.heightInMeters) {
+      text += ` (${drawConfiguration.heightInMeters}m)`
+    }
     const wrapper = drawBuilder.createGroup()
       .place(coordinates)
       .addPointer({x: -12, y: -12}, this.icons.getIcon(NaviIcons.POINTER))
@@ -36,4 +40,8 @@ export class CommonDevice {
     return wrapper;
   }
 
+}
+
+export interface CommonDeviceConfiguration extends DrawConfiguration {
+  heightInMeters: number;
 }
