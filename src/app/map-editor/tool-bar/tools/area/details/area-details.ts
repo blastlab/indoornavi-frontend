@@ -10,7 +10,7 @@ import {Editable} from '../../../../../shared/wrappers/editable/editable';
 import {Point} from '../../../../map.type';
 import {AreasComponent} from '../areas';
 import {MessageServiceWrapper} from '../../../../../shared/services/message/message.service';
-import {Tag} from '../../../../../device/device.type';
+import {SelectTag, Tag} from '../../../../../device/device.type';
 
 @Component({
   selector: 'app-area-details',
@@ -38,7 +38,14 @@ export class AreaDetailsComponent implements OnInit {
     this.tagService.setUrl('tags/');
     this.area = new Area(this.floor.id);
     this.tagService.getAll().subscribe((tags: Tag[]): void => {
-      this.tags = tags;
+      this.tags = [];
+      tags.forEach((tag: Tag): void => {
+        const selectTag: SelectTag = new SelectTag();
+        Object.keys(tag).forEach(key => selectTag[key] = tag[key]);
+        selectTag.shortIdSelect = tag.shortId.toString();
+        this.tags.push(selectTag);
+      });
+      console.log(this.tags);
     });
     this.areaDetailsService.onVisibilityChange().subscribe((value: boolean): void => {
       if (value) {

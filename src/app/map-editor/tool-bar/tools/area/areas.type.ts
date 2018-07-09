@@ -1,6 +1,6 @@
 import {Point} from '../../../map.type';
 import {Editable} from '../../../../shared/wrappers/editable/editable';
-import {Tag} from '../../../../device/device.type';
+import {SelectTag} from '../../../../device/device.type';
 
 export class Area {
   id: number;
@@ -26,7 +26,7 @@ export class Area {
 
 export class AreaConfiguration {
   offset: number;
-  tags: Tag[];
+  tags: SelectTag[];
   mode: Mode;
 
   constructor(mode: Mode, offset: number) {
