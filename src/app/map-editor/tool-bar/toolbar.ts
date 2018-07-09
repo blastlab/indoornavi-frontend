@@ -6,6 +6,7 @@ import {Floor} from '../../floor/floor.type';
 import {Configuration} from '../action-bar/actionbar.type';
 import {ActionBarService} from '../action-bar/actionbar.service';
 import {ToolName} from './tools/tools.enum';
+import {merge} from 'rxjs/observable/merge';
 
 @Component({
   selector: 'app-toolbar',
@@ -32,10 +33,13 @@ export class ToolbarComponent implements OnInit, OnDestroy {
         this.toggleScaleDependentToolsDisable(false);
       }
     });
-    this.configurationChanged = this.actionBarService.configurationChanged().first().subscribe((configuration: Configuration) => {
+    this.configurationChanged = merge(this.actionBarService.configurationChanged(), this.actionBarService.configurationReset()).subscribe((configuration: Configuration) => {
       if (!!configuration.data.scale) {
         this.scaleSet = true;
         this.toggleScaleDependentToolsDisable(false);
+      } else {
+        this.scaleSet = false;
+        this.toggleScaleDependentToolsDisable(true);
       }
     });
     this.toolChangedSubscription = this.toolbarService.onToolChanged().subscribe((tool: Tool) => {
@@ -50,7 +54,7 @@ export class ToolbarComponent implements OnInit, OnDestroy {
         if (this.activeTool.getToolName() === ToolName.WIZARD) {
           this.toggleWizardDependentToolsDisable(true)
         }
-      } else {
+      } else if (this.scaleSet) {
         this.toggleWizardDependentToolsDisable(false);
       }
     });
