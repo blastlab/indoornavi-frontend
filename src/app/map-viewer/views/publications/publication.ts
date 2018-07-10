@@ -1,5 +1,5 @@
 import {Component, NgZone, OnInit} from '@angular/core';
-import {ActivatedRoute, Params} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {SocketConnectorComponent} from '../socket-connector.component';
 import {TranslateService} from '@ngx-translate/core';
 import {SocketService} from '../../../shared/services/socket/socket.service';
@@ -11,8 +11,7 @@ import {MapObjectService} from '../../../shared/utils/drawing/map.object.service
 import {FloorService} from '../../../floor/floor.service';
 import {TagVisibilityTogglerService} from '../../../shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
 import {BreadcrumbService} from '../../../shared/services/breadcrumbs/breadcrumb.service';
-import {Floor} from '../../../floor/floor.type';
-import {MapClickService} from "../../../shared/services/map-click/map-click.service";
+import {MapClickService} from '../../../shared/services/map-click/map-click.service';
 
 
 @Component({

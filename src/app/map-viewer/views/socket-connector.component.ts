@@ -35,6 +35,7 @@ import {Deferred} from '../../shared/utils/helper/deferred';
   templateUrl: './socket-connector.component.html'
 })
 export class SocketConnectorComponent implements OnInit, AfterViewInit {
+  public floor: Floor;
   protected socketSubscription: Subscription;
   protected d3map: MapSvg = null;
   protected scale: Scale;
@@ -43,8 +44,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   private transitionEnded = new Subject<number>();
   private areasOnMap: Dictionary<number, SvgGroupWrapper> = new Dictionary<number, SvgGroupWrapper>();
   private originListeningOnEvent: Dictionary<string, MessageEvent[]> = new Dictionary<string, MessageEvent[]>();
-  private originListeningOnClickMapEvent: Array<MessageEvent> = new Array<MessageEvent>();
-  private floor: Floor;
+  private originListeningOnClickMapEvent: Array<MessageEvent> = [];
   private tags: Tag[] = [];
   private visibleTags: Map<number, boolean> = new Map();
   private scaleCalculations: ScaleCalculations;
@@ -285,7 +285,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     this.mapClick.clickInvoked().subscribe((point:  Point) => {
       if (this.originListeningOnClickMapEvent.length > 0) {
         this.originListeningOnClickMapEvent.forEach((event: MessageEvent): void => {
-            event.source.postMessage({type: 'click', position: point}, event.origin);
+          event.source.postMessage({type: 'click', position: point}, event.origin);
         });
       }
     });

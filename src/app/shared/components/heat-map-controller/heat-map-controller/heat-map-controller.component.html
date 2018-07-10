@@ -22,7 +22,6 @@
   <div class="ui-lg-11">
     <span>{{'heat.gap'|translate}}: {{heatTimeWait}} [s]</span>
     <p-slider
-      [ngModel]="heatMapWaterfallDisplayTime"
       (ngModelChange) = "setHeatTimeWait($event)"
       [min]="5" [max]="2000"
     ></p-slider>
@@ -30,7 +29,6 @@
   <div class="ui-lg-11">
     <span>{{'path.length'|translate}}: {{pathLength}} [s]</span>
     <p-slider
-      [ngModel]="heatMapWaterfallDisplayTime"
       (ngModelChange) = "setPathLength($event)"
       [min]="25" [max]="2500"
     ></p-slider>
