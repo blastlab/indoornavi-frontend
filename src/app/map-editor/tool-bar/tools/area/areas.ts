@@ -342,14 +342,14 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
 
   private isFirstPoint(): boolean {
     return d3.event.target.nodeName === 'circle' &&
-      this.firstPointSelection.attr('cx') === d3.event.target.cx.baseVal.valueAsString &&
-      this.firstPointSelection.attr('cy') === d3.event.target.cy.baseVal.valueAsString;
+      parseInt(this.firstPointSelection.attr('cx'), 10) === parseInt(d3.event.target.cx.baseVal.valueAsString, 10) &&
+      parseInt(this.firstPointSelection.attr('cy'), 10) === parseInt(d3.event.target.cy.baseVal.valueAsString, 10);
   }
 
   private isLastPoint(): boolean {
     return d3.event.target.nodeName === 'circle' &&
-      this.lastPointSelection.attr('cx') === d3.event.target.cx.baseVal.valueAsString &&
-      this.lastPointSelection.attr('cy') === d3.event.target.cy.baseVal.valueAsString;
+      parseInt(this.lastPointSelection.attr('cx'), 10) === parseInt(d3.event.target.cx.baseVal.valueAsString, 10) &&
+      parseInt(this.lastPointSelection.attr('cy'), 10) === parseInt(d3.event.target.cy.baseVal.valueAsString, 10);
   }
 
   private handleCircleDrag(): void {

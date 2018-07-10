@@ -1,11 +1,11 @@
 import {Point} from '../../../map.type';
 import {Editable} from '../../../../shared/wrappers/editable/editable';
-import {SelectTag} from '../../../../device/device.type';
+import {SelectTag, Tag} from '../../../../device/device.type';
 
 export class Area {
   id: number;
   name: string;
-  configurations: AreaConfiguration[] = [];
+  configurations: AreaConfigurationDto[] = [];
   points: Point[] = [];
   buffer: Point[];
   heightMin: number;
@@ -34,6 +34,13 @@ export class AreaConfiguration {
     this.offset = offset;
   }
 }
+
+export class AreaConfigurationDto {
+  offset: number;
+  tags: Tag[];
+  mode: Mode;
+}
+
 
 export enum Mode {
   ON_ENTER,

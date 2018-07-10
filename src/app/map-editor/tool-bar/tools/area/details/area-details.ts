@@ -1,7 +1,7 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {ToolDetailsComponent} from '../../../shared/details/tool-details';
 import {AreaDetailsService} from './area-details.service';
-import {Area, AreaBag, AreaConfiguration, Mode} from '../areas.type';
+import {Area, AreaBag, AreaConfiguration, AreaConfigurationDto, Mode} from '../areas.type';
 import {DeviceService} from '../../../../../device/device.service';
 import {Floor} from '../../../../../floor/floor.type';
 import * as d3 from 'd3';
@@ -10,7 +10,7 @@ import {Editable} from '../../../../../shared/wrappers/editable/editable';
 import {Point} from '../../../../map.type';
 import {AreasComponent} from '../areas';
 import {MessageServiceWrapper} from '../../../../../shared/services/message/message.service';
-import {SelectTag, Tag} from '../../../../../device/device.type';
+import {Tag} from '../../../../../device/device.type';
 
 @Component({
   selector: 'app-area-details',
@@ -38,14 +38,7 @@ export class AreaDetailsComponent implements OnInit {
     this.tagService.setUrl('tags/');
     this.area = new Area(this.floor.id);
     this.tagService.getAll().subscribe((tags: Tag[]): void => {
-      this.tags = [];
-      tags.forEach((tag: Tag): void => {
-        const selectTag: SelectTag = new SelectTag();
-        Object.keys(tag).forEach(key => selectTag[key] = tag[key]);
-        selectTag.shortIdSelect = tag.shortId.toString();
-        this.tags.push(selectTag);
-      });
-      console.log(this.tags);
+      this.tags = Helper.transformToMultiselectTagsConfigurationFormat(tags);
     });
     this.areaDetailsService.onVisibilityChange().subscribe((value: boolean): void => {
       if (value) {
@@ -100,12 +93,15 @@ export class AreaDetailsComponent implements OnInit {
         this.areaConfigurationOnEnter.offset *= 100;
         this.areaConfigurationOnLeave.offset *= 100;
 
+        const areaConfigurationOnEnterDto: AreaConfigurationDto = Helper.transformToAreaDtoFormat(this.areaConfigurationOnEnter);
+        const areaConfigurationOnLeaveDto: AreaConfigurationDto = Helper.transformToAreaDtoFormat(this.areaConfigurationOnLeave);
+
         if (!this.editable) {
           this.area.configurations.push(
-            this.areaConfigurationOnEnter
+            areaConfigurationOnEnterDto
           );
           this.area.configurations.push(
-            this.areaConfigurationOnLeave
+            areaConfigurationOnLeaveDto
           );
         }
         this.areaDetailsService.accept(<AreaBag>{dto: this.area, editable: this.editable});
