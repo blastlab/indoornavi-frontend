@@ -2,6 +2,7 @@ from pages.base_page import BasePage
 from locators.maps_base_locators import MapsBaseLocators
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
+from src.test_conf.test_config import *
 import json
 import time
 
@@ -16,6 +17,26 @@ class MapsPage(BasePage, MapsBaseLocators):
 
     def create_maps_db_env(self):
         return self.create_db_env(self.db_maps_env_xml)
+
+    def set_image_to_floor(self):
+        params = TEST_UPDATE_FLOOR_IMG_PARAMS
+        return self.service_db().update_table(params)
+
+    def insert_configuration_to_db(self):
+
+        _table = CONFIGURATION_TABLE
+        _columns = CONFIGURATION_COLUMNS
+        values = ('1', TEST_DATE, TEST_CONF_DATA, '0', '2', TEST_DATE)
+        return self.insert_to_db(_table, _columns, values)
+
+    def insert_image_to_db(self):
+
+        with open('src/test_data_upload/correct_map.png', "rb") as f:
+          blob = f.read()
+        _table = IMAGE_TABLE
+        _columns = IMAGE_COLUMNS
+        values = ('1', TEST_DATE, TEST_DATE, blob, '840', '1614')
+        return self.insert_to_db(_table, _columns, values)
 
     def floor_update_button_click(self):
         return self.click_element(self.floor_update_button)

@@ -33,7 +33,7 @@ class BasePage(object):
     def create_db_env(self, file_path):
         return self.service_db().create_db_env(file_path)
 
-    def insert_configuration_to_db(self, table, columns, values):
+    def insert_to_db(self, table, columns, values):
         return self.service_db().insert_to_db(table, columns, values)
 
     def refresh_page(self):

@@ -7,7 +7,7 @@ class ServiceDb(object):
     __db_hostname = 'localhost'
     __db_tables_array = ['complex', 'building', 'floor',
                         'sink', 'anchor', 'tag', 'device',
-                         'configuration',
+                        'configuration', 'image',
                         'permission', 'permissiongroup',
                         'permissiongroup_permission', ]
 
@@ -32,15 +32,9 @@ class ServiceDb(object):
 
     def insert_to_db(self, table, columns, values):
 
-        print(table)
-        print(columns)
-        print(values)
-
         if self.db_connect is not None and self.db_cursor is not None:
-           print('1st stage')
            if type(values) is not tuple or type(columns) is not tuple or type(table) is not str:
-              raise ValueError('Wrong values passed to db insert method')
-           print(len(columns))
+              raise ValueError('Wrong values passed to DB INSERT METHOD.')
            if len(columns) == len(values):
               column_names_for_command = ", ".join([v for v in columns])
               values_string_fields = ", ".join('%s' for _ in range(len(values)))
@@ -48,9 +42,6 @@ class ServiceDb(object):
                                      "({}) "
                                      "VALUES ({})".format(table, column_names_for_command, values_string_fields)
                                      )
-              print(column_names_for_command)
-              print(values_string_fields)
-              print(command_composition)
               try:
                 self.db_cursor.execute(command_composition, values)
               except ValueError as error:
@@ -60,15 +51,36 @@ class ServiceDb(object):
         else:
           raise ValueError('Set connection to db before executing insertion')
 
+    def update_table(self, update_params):
+
+        if self.db_connect is not None and self.db_cursor is not None:
+           if type(update_params) is not dict:
+              raise ValueError('Wrong parameters passed to DB UPDATE METHOD.')
+           if len(update_params) == 5:
+              update_table = update_params['table']
+              set_column = update_params['set_column']
+              set_value = update_params['set_value']
+              where_column = update_params['where_column']
+              where_value = update_params['where_value']
+              try:
+                 self.db_cursor.execute("UPDATE {} SET `{}`='{}' WHERE `{}`='{}';"
+                                        .format(update_table, set_column, set_value, where_column, where_value))
+              except ValueError as error:
+                print(error)
+           else:
+             raise ValueError('Number of parameters is not enough to make update.')
+        else:
+          raise ValueError('Set connection to db before executing update')
+
     def truncate_single_table(self, table):
         self.db_cursor.execute("TRUNCATE TABLE {}".format(table))
 
     def truncate_db(self):
-        for table in self.__db_tables_array[0:8]:
+        for table in self.__db_tables_array[0:9]:
             self.db_cursor.execute("TRUNCATE TABLE {}".format(table))
 
     def truncate_db_permissions(self):
-        for table in self.__db_tables_array[0:11]:
+        for table in self.__db_tables_array[0:12]:
             self.db_cursor.execute("TRUNCATE TABLE {}".format(table))
 
     def create_db_env(self, file_path):
