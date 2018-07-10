@@ -15,7 +15,6 @@ class BasePage(object):
 
     def __init__(self, driver):
         self.__driver = driver
-
         self.service_db = ServiceDb
         self.service_upload = ServiceUpload
 
@@ -73,19 +72,19 @@ class BasePage(object):
         return True
 
     def wait_for_element(self, locator, msg='Element has not presented yet.'):
-        element = ui.WebDriverWait(self.__driver, 100).until(EC.presence_of_element_located(locator),msg)
+        element = ui.WebDriverWait(self.__driver, 10).until(EC.presence_of_element_located(locator),msg)
         return element
 
     def wait_for_element_clickable(self, locator, msg='Element has not been ready to be clicked.'):
-        element = ui.WebDriverWait(self.__driver, 100).until(EC.element_to_be_clickable(locator), msg)
+        element = ui.WebDriverWait(self.__driver, 10).until(EC.element_to_be_clickable(locator), msg)
         return element
 
     def wait_for_element_visibility(self, locator, msg='Element has not been visible yet.'):
-        element = ui.WebDriverWait(self.__driver, 100).until(EC.visibility_of_element_located(locator), msg)
+        element = ui.WebDriverWait(self.__driver, 10).until(EC.visibility_of_element_located(locator), msg)
         return element
 
     def wait_for_element_disappear(self, locator, msg='Element has not disappeared yet.'):
-        element = ui.WebDriverWait(self.__driver, 100).until_not(EC.visibility_of_element_located(locator), msg)
+        element = ui.WebDriverWait(self.__driver, 10).until_not(EC.visibility_of_element_located(locator), msg)
         return element
 
     def open_page(self, page_url):

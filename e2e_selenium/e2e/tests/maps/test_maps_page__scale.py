@@ -1,7 +1,7 @@
 import unittest
 from selenium import webdriver
 from tests.test_driver import TestDriver
-from pages.maps.maps_page import MapsPage
+from pages.maps.maps_page__scale import MapsPageScale
 from pages.base_page import BasePage
 from pages.login_page import LoginPage
 from pages.constructions.floors_page import FloorsPage
@@ -9,7 +9,7 @@ import time
 from selenium.webdriver import ActionChains
 
 
-class TestMapsPageScale(unittest.TestCase, MapsPage):
+class TestMapsPageScale(unittest.TestCase, MapsPageScale):
 
     def setUp(self):
         self.test_failed = True
@@ -19,7 +19,7 @@ class TestMapsPageScale(unittest.TestCase, MapsPage):
         self.page = LoginPage(self.webdriver)
         self.actions = ActionChains(self.webdriver)
         self.floors_page = FloorsPage(self.webdriver, 'floors')
-        self.maps_page = MapsPage(self.webdriver)
+        self.maps_page = MapsPageScale(self.webdriver)
         self.option = 1
         # Prepare environment
         self.maps_page.truncate_db()
@@ -30,7 +30,6 @@ class TestMapsPageScale(unittest.TestCase, MapsPage):
 
     def tearDown(self):
         TestDriver.tearDown(self)
-        print('\nTEST STATUS: ' + str(self.test_failed))
         self.webdriver.quit()
 
     def __set_before_scale_db_configuration(self):
@@ -38,17 +37,19 @@ class TestMapsPageScale(unittest.TestCase, MapsPage):
         self.maps_page.insert_image_to_db()
         self.maps_page.set_image_to_floor()
         self.webdriver.refresh()
-        time.sleep(3)
+
+        self.assertTrue(self.maps_page.is_scale_button_displayed())
         self.maps_page.scale_button_click()
+        self.assertTrue(self.maps_page.is_scale_modal_window_displayed())
         self.assertTrue(self.maps_page.is_scale_line_displayed())
 
     def __add_scale_process_correctly(self, x, y, measurement, distance):
 
-        self.maps_page.choose_image(self.maps_page.correct_map_path)
-        # Check thumb, filesize, filename, close btn appeared - preview
-        self.maps_page.is_image_preview_displayed()
-        self.maps_page.upload_button_click()
-        self.maps_page.is_image_uploaded()
+        self.maps_page.insert_image_to_db()
+        self.maps_page.set_image_to_floor()
+        self.webdriver.refresh()
+        self.assertTrue(self.maps_page.is_scale_button_displayed())
+
         self.maps_page.scale_button_click()
         # Logic
         self.maps_page.draw_scale_line(x, y)
@@ -74,10 +75,11 @@ class TestMapsPageScale(unittest.TestCase, MapsPage):
 
     def __add_scale_process_invalid(self, **kwargs):
 
-        self.maps_page.choose_image(self.maps_page.correct_map_path)
-        self.maps_page.is_image_preview_displayed()
-        self.maps_page.upload_button_click()
-        self.maps_page.is_image_uploaded()
+        self.maps_page.insert_image_to_db()
+        self.maps_page.set_image_to_floor()
+        self.webdriver.refresh()
+        self.assertTrue(self.maps_page.is_scale_button_displayed())
+
         self.maps_page.scale_button_click()
         self.maps_page.draw_scale_line(333, 222)
         self.assertTrue(self.maps_page.is_scale_line_drawn_correctly(333, 222))
@@ -151,10 +153,11 @@ class TestMapsPageScale(unittest.TestCase, MapsPage):
 
     def test_07_cancel_add_scale_process(self):
 
-        self.maps_page.choose_image(self.maps_page.correct_map_path)
-        self.maps_page.is_image_preview_displayed()
-        self.maps_page.upload_button_click()
-        self.maps_page.is_image_uploaded()
+        self.maps_page.insert_image_to_db()
+        self.maps_page.set_image_to_floor()
+        self.webdriver.refresh()
+        self.assertTrue(self.maps_page.is_scale_button_displayed())
+
         self.maps_page.scale_button_click()
         self.maps_page.draw_scale_line(333, 222)
         self.assertTrue(self.maps_page.is_scale_line_drawn_correctly(333, 222))
@@ -167,14 +170,9 @@ class TestMapsPageScale(unittest.TestCase, MapsPage):
         self.test_failed = False
 
     def test_08_edit_scale_correctly_change_distance(self):
-        self.maps_page.insert_configuration_to_db()
-        self.maps_page.insert_image_to_db()
-        self.maps_page.set_image_to_floor()
-        self.webdriver.refresh()
-        time.sleep(3)
 
-        self.maps_page.scale_button_click()
-        self.assertTrue(self.maps_page.is_scale_line_displayed())
+        self.__set_before_scale_db_configuration()
+
         expected_distance = self.maps_page.edit_scale_distance
         self.maps_page.enter_scale_distance(expected_distance)
         self.__edit_scale_process_helper()
@@ -192,7 +190,7 @@ class TestMapsPageScale(unittest.TestCase, MapsPage):
         self.maps_page.set_scale_measurement('meters')
         self.__edit_scale_process_helper()
 
-        # # MAIN ASSERTS
+        # MAIN ASSERTS
         result_measurement = self.maps_page.get_text(self.maps_page.scale_measurement)
         self.assertEqual(result_measurement, 'METERS')
         self.test_failed = False
