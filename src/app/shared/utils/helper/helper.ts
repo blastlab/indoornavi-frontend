@@ -32,20 +32,21 @@ export class Helper {
     const areaConfigurationDto: AreaConfigurationDto = new AreaConfigurationDto();
     Object.keys(configObject).forEach((key: any): void => {
       if (key === 'tags') {
+        areaConfigurationDto[key] = [];
         configObject[key].forEach((tag: SelectTag): void => {
-          areaConfigurationDto[key].push(
-            {
-              id: tag['id'],
-              name: tag['name'],
-              shortId: tag['shortId'],
-              longId: tag['longId'],
-              verified: tag['verified'],
-              x: tag['x'],
-              y: tag['y'],
-              z: tag['z'],
-              floorId: tag['floorId'],
-              firmwareVersion: tag['firmwareVersion'],
-            });
+          const tagDto: Tag = {
+            id: tag['id'],
+            name: tag['name'],
+            shortId: tag['shortId'],
+            longId: tag['longId'],
+            verified: tag['verified'],
+            // x: tag['x'],
+            // y: tag['y'],
+            // z: tag['z'],
+            floorId: tag['floorId'],
+            firmwareVersion: tag['firmwareVersion'],
+          };
+          areaConfigurationDto[key].push(tagDto);
         });
       } else {
         areaConfigurationDto[key] = configObject[key]
@@ -54,8 +55,9 @@ export class Helper {
     return areaConfigurationDto;
   }
 
-  static transformToMultiselectTagsConfigurationFormat(tags: Tag[]): Tag[] {
+  static transformToMultiSelectTagsConfigurationFormat(tags: Tag[]): Tag[] {
     const transformedTags = [];
+    console.log(tags);
     tags.forEach((tag: Tag): void => {
       const selectTag: SelectTag = new SelectTag();
       Object.keys(tag).forEach(key => selectTag[key] = tag[key]);

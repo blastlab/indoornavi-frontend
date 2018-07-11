@@ -38,7 +38,7 @@ export class AreaDetailsComponent implements OnInit {
     this.tagService.setUrl('tags/');
     this.area = new Area(this.floor.id);
     this.tagService.getAll().subscribe((tags: Tag[]): void => {
-      this.tags = Helper.transformToMultiselectTagsConfigurationFormat(tags);
+      this.tags = Helper.transformToMultiSelectTagsConfigurationFormat(tags);
     });
     this.areaDetailsService.onVisibilityChange().subscribe((value: boolean): void => {
       if (value) {
