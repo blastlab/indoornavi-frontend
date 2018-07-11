@@ -1,6 +1,7 @@
 import {Point} from '../../../map-editor/map.type';
 import {SelectTag, Tag} from '../../../device/device.type';
 import {AreaConfiguration, AreaConfigurationDto} from '../../../map-editor/tool-bar/tools/area/areas.type';
+import {MultiSelect} from 'primeng/primeng';
 
 export class Helper {
 
@@ -57,7 +58,6 @@ export class Helper {
 
   static transformToMultiSelectTagsConfigurationFormat(tags: Tag[]): Tag[] {
     const transformedTags = [];
-    console.log(tags);
     tags.forEach((tag: Tag): void => {
       const selectTag: SelectTag = new SelectTag();
       Object.keys(tag).forEach(key => selectTag[key] = tag[key]);

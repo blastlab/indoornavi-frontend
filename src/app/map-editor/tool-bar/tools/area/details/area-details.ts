@@ -11,6 +11,7 @@ import {Point} from '../../../../map.type';
 import {AreasComponent} from '../areas';
 import {MessageServiceWrapper} from '../../../../../shared/services/message/message.service';
 import {Tag} from '../../../../../device/device.type';
+import {MultiSelect} from 'primeng/primeng';
 
 @Component({
   selector: 'app-area-details',
@@ -19,6 +20,8 @@ import {Tag} from '../../../../../device/device.type';
 })
 export class AreaDetailsComponent implements OnInit {
   @ViewChild('toolDetails') private toolDetails: ToolDetailsComponent;
+  @ViewChild('multiSelectOnEnter') private multiSelectOnEnter: MultiSelect;
+  @ViewChild('multiSelectOnLeave') private multiSelectOnLeave: MultiSelect;
 
   @Input() floor: Floor;
   area: Area;
@@ -135,6 +138,27 @@ export class AreaDetailsComponent implements OnInit {
     this.areaConfigurationOnLeave = new AreaConfiguration(Mode.ON_LEAVE, 0);
     this.area = new Area(this.floor.id);
     this.editable = null;
+    this.cleanMultiSelect();
   }
 
+  private cleanMultiSelect() {
+    const filteredValueOnEnter = this.multiSelectOnEnter.filterValue;
+    const formOnEnter = this.multiSelectOnLeave.filterInputChild.nativeElement.form;
+    Object.keys(formOnEnter).forEach((i: string): void => {
+      if (formOnEnter[i].value === filteredValueOnEnter) {
+        formOnEnter[i].value = '';
+      }
+    });
+    this.multiSelectOnEnter.filterValue = '';
+
+    const filteredValueOnLeave = this.multiSelectOnLeave.filterValue;
+    const formOnLeave = this.multiSelectOnLeave.filterInputChild.nativeElement.form;
+    Object.keys(formOnLeave).forEach((i: string): void => {
+      if (formOnLeave[i].value === filteredValueOnLeave) {
+        formOnLeave[i].value = '';
+      }
+    });
+    this.multiSelectOnLeave.filterValue = '';
+  }
 }
+
