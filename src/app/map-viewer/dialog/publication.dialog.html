@@ -3,7 +3,7 @@
           [responsive]="true" showEffect="fade" [modal]="true"
           [contentStyle]="{ overflow: 'visible' }"
           [width]="800"
-          dismissableMask="true">
+          dismissableMask="true" (onHide)="cancel()">
   <form #publishedMapForm="ngForm" novalidate>
     <div class="ui-g">
       <div class="ui-g-12 ui-md-4 ui-lg-4">

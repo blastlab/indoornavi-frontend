@@ -100,7 +100,7 @@
 <p-dialog header="{{'device.details'|translate}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
           [contentStyle]="{ overflow: 'visible' }"
           [width]="800"
-          dismissableMask="true">
+          dismissableMask="true" (onHide)="cancel()">
   <form #deviceForm="ngForm" novalidate>
     <div *ngIf="device">
       <div class="ui-g">
@@ -134,11 +134,18 @@
         </div>
       </div>
       <div class="ui-g">
-        <div class="ui-g-12 ui-md-2 ui-lg-2 ui-g-offset-12 ui-md-offset-4 ui-lg-offset-4">
+        <div class="ui-g-12 ui-md-4 ui-lg-4">
+          <div class="ui-message ui-messages-error ui-corner-all"
+               *ngIf="nameInput.errors?.properName && nameInput.touched && nameInput.dirty">
+            <i class="fa fa-warning"></i>
+            {{nameInput.errors?.properName|translate}}
+          </div>
+        </div>
+        <div class="ui-g-12 ui-md-2 ui-lg-2">
           <label for="name">{{'device.name'|translate}}</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input name="name" pInputText id="name" [(ngModel)]="device.name" #nameInput="ngModel"/>
+          <input properNameValidator name="name" pInputText id="name" [(ngModel)]="device.name" #nameInput="ngModel"/>
         </div>
       </div>
       <p-footer>

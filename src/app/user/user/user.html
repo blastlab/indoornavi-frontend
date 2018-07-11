@@ -38,7 +38,7 @@
 <p-dialog header="{{'user.details'|translate}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
           [contentStyle]="{ overflow: 'visible' }"
           [width]="800"
-          dismissableMask="true">
+          dismissableMask="true" (onHide)="cancel()">
   <div *ngIf="user">
     <form #userForm="ngForm" novalidate>
       <div class="ui-g">
