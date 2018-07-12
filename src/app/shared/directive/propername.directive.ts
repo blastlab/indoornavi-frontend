@@ -46,7 +46,7 @@ export class ProperNameDirective implements Validator, OnChanges  {
   }
 
   static inputContent(value: string): {[key: string]: any} {
-      if (/[ \t\r\n\v\f]/.test(value)) {
+      if (/[^!-~)]/.test(value)) {
         return {properName: 'validator.input.illegalCharacter'};
       }
     return null;
