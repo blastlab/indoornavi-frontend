@@ -21,8 +21,8 @@ export class ActionBarService {
   private configurationChangedEmitter: Subject<Configuration> = new Subject<Configuration>();
   private configurationResetEmitter: Subject<Configuration> = new Subject<Configuration>();
   private loaded = this.configurationLoadedEmitter.asObservable();
-  private reset = this.configurationResetEmitter.asObservable();
   private changed = this.configurationChangedEmitter.asObservable();
+  private reset = this.configurationResetEmitter.asObservable();
   private configurationHash: string | Int32Array;
 
   private static findLatestConfiguration(configurations: Configuration[]): Configuration {
@@ -49,12 +49,12 @@ export class ActionBarService {
     return this.loaded;
   }
 
-  configurationReset(): Observable<Configuration> {
-    return this.reset;
-  }
-
   configurationChanged(): Observable<Configuration> {
     return this.changed;
+  }
+
+  configurationReset(): Observable<Configuration> {
+    return this.reset;
   }
 
   getLatestPublishedConfiguration(): Configuration {
@@ -112,8 +112,8 @@ export class ActionBarService {
     return new Promise<Configuration>((resolve: Function): void => {
       this.httpService.doDelete(ActionBarService.URL + this.configuration.floorId).subscribe((configuration: Configuration): void => {
         this.configuration = configuration;
-        this.sendConfigurationResetEvent();
         this.configurationHash = this.hashConfiguration();
+        this.sendConfigurationResetEvent();
         resolve(configuration);
       });
     });
@@ -224,7 +224,7 @@ export class ActionBarService {
   }
 
   private getConfiguredSink(sink: Sink): Sink {
-    return this.getConfigurationSinks().toArray().find( (s: Sink) => {
+    return this.getConfigurationSinks().toArray().find((s: Sink) => {
       return s.shortId === sink.shortId;
     });
   }
