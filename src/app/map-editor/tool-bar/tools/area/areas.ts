@@ -72,8 +72,8 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
         if (!!configuration.data.areas) {
           const configurationCopy = Helper.deepCopy(configuration);
           configurationCopy.data.areas.forEach((area: Area): void => {
-            const pointsInPixels = [];
-            area.points.forEach((point: Point) => {
+            const pointsInPixels: Point[] = [];
+            area.points.forEach((point: Point): void => {
               pointsInPixels.push(
                 Geometry.calculatePointPositionInPixels(
                   this.scaleCalculations.scaleLengthInPixels, this.scaleCalculations.scaleInCentimeters, point
@@ -120,9 +120,9 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
           return areaBag.dto;
         }));
 
-        calculatedAreas.forEach((areaDto: Area) => {
-          const pointsInCentimeters = [];
-          areaDto.points.forEach((point: Point) => {
+        calculatedAreas.forEach((areaDto: Area): void => {
+          const pointsInCentimeters: Point[] = [];
+          areaDto.points.forEach((point: Point): void => {
             pointsInCentimeters.push(
               Geometry.calculatePointPositionInCentimeters(
                 this.scaleCalculations.scaleLengthInPixels, this.scaleCalculations.scaleInCentimeters, point
