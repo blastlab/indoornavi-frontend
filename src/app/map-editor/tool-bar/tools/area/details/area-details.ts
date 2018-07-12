@@ -50,6 +50,7 @@ export class AreaDetailsComponent implements OnInit {
     });
     this.areaDetailsService.onSet().subscribe((area: AreaBag): void => {
       this.area = Helper.deepCopy(area.dto);
+      // this.area.points.splice();
       this.editable = area.editable;
       this.area.configurations.forEach((areaConfiguration: AreaConfiguration) => {
         if (areaConfiguration.mode.toString() === Mode[Mode.ON_LEAVE] || areaConfiguration.mode === Mode.ON_LEAVE) {
@@ -107,8 +108,7 @@ export class AreaDetailsComponent implements OnInit {
             areaConfigurationOnLeaveDto
           );
         }
-        const areaDto: Area = this.getAreaInDatabasePolygonFormat();
-        this.areaDetailsService.accept(<AreaBag>{dto: areaDto, editable: this.editable});
+        this.areaDetailsService.accept(<AreaBag>{dto: this.area, editable: this.editable});
         this.toolDetails.hide();
         this.cleanUp();
       } else {
@@ -162,10 +162,4 @@ export class AreaDetailsComponent implements OnInit {
     this.multiSelectOnLeave.filterValue = '';
   }
 
-  private getAreaInDatabasePolygonFormat(): Area {
-    const areaDatabasePolygonFormat: Area = Helper.deepCopy(this.area);
-    areaDatabasePolygonFormat.points.splice(0, areaDatabasePolygonFormat.points.length - 2);
-    return areaDatabasePolygonFormat;
-  }
 }
-

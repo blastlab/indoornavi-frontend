@@ -19,6 +19,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
 import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
 import {Geometry} from '../../../../shared/utils/helper/geometry';
+import {Helper} from '../../../../shared/utils/helper/helper';
 
 @Component({
   selector: 'app-area',
@@ -138,7 +139,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
       areaBag.editable.onSelected().subscribe((selected: Editable) => {
         this.selectedEditable = selected;
       });
-      this.drawPolygon(areaBag.dto.points, areaBag.editable.groupWrapper);
+      this.drawPolygon(areaBag.dto.points.slice(0, areaBag.dto.points.length - 1), areaBag.editable.groupWrapper);
       index++;
     });
 
@@ -409,6 +410,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
         this.areaDetailsService.show();
         const index = this.findSelectedAreaBagIndex();
         const areaBag: AreaBag = this.areas[index];
+        areaBag.dto.points.splice(areaBag.dto.points.length - 1, 1); // do not draw last point as it is only valid for database
         this.areaDetailsService.set(areaBag);
         this.container.style('cursor', 'move');
         this.container.on('contextmenu', null);
