@@ -48,7 +48,7 @@ export class ToolbarComponent implements OnInit, OnDestroy {
         tool.setActive();
         this.activeTool = tool;
         if (this.activeTool.getToolName() === ToolName.WIZARD) {
-          this.toggleWizardDependentToolsDisable(true)
+          this.toggleWizardDependentToolsDisable(true);
         }
       } else {
         this.toggleWizardDependentToolsDisable(false);
