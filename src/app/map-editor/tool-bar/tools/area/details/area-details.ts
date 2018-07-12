@@ -107,7 +107,8 @@ export class AreaDetailsComponent implements OnInit {
             areaConfigurationOnLeaveDto
           );
         }
-        this.areaDetailsService.accept(<AreaBag>{dto: this.area, editable: this.editable});
+        const areaDto: Area = this.getAreaInDatabasePolygonFormat();
+        this.areaDetailsService.accept(<AreaBag>{dto: areaDto, editable: this.editable});
         this.toolDetails.hide();
         this.cleanUp();
       } else {
@@ -159,6 +160,12 @@ export class AreaDetailsComponent implements OnInit {
       }
     });
     this.multiSelectOnLeave.filterValue = '';
+  }
+
+  private getAreaInDatabasePolygonFormat(): Area {
+    const areaDatabasePolygonFormat: Area = Helper.deepCopy(this.area);
+    areaDatabasePolygonFormat.points.splice(0, areaDatabasePolygonFormat.points.length - 2);
+    return areaDatabasePolygonFormat;
   }
 }
 
