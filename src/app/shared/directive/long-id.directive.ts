@@ -1,5 +1,5 @@
 import {Directive, Input} from '@angular/core';
-import {AbstractControl, NG_VALIDATORS, Validator} from '@angular/forms';
+import {AbstractControl, NG_VALIDATORS, ValidationErrors, Validator} from '@angular/forms';
 
 @Directive({
   selector: '[properLongId]',
@@ -8,21 +8,21 @@ import {AbstractControl, NG_VALIDATORS, Validator} from '@angular/forms';
 export class LongIdValidator implements Validator {
 
   @Input() properLongId: number;
-  private message: any = null;
+  private message: ValidationErrors = null;
 
-  validate(control: AbstractControl): { [key: string]: any } {
-    this.message = LongIdValidator.isANumber(control.value);
+  validate(control: AbstractControl): ValidationErrors {
+    this.message = LongIdValidator.checkIsNumber(control.value);
     if(this.message == null) {
-      this.message = LongIdValidator.isInRange(control.value);
+      this.message = LongIdValidator.checkIsInRange(control.value);
     }
     return this.message;
   }
 
-  static isANumber(value: string) :{ [key: string]: any } {
+  static checkIsNumber(value: string): ValidationErrors {
     return /[0-9]/.test(value) ? null : {properLongId: 'validator.input.idNotANumber'}
   }
 
-  static isInRange(value: string) :{ [key: string]: any } {
+  static checkIsInRange(value: string): ValidationErrors {
     return  parseInt(value) < 9223372036854775807 ? null : {properLongId: 'validator.input.longIdOutOfRange'}
   }
 }
