@@ -50,7 +50,6 @@ export class AreaDetailsComponent implements OnInit {
     });
     this.areaDetailsService.onSet().subscribe((area: AreaBag): void => {
       this.area = Helper.deepCopy(area.dto);
-      // this.area.points.splice();
       this.editable = area.editable;
       this.area.configurations.forEach((areaConfiguration: AreaConfiguration) => {
         if (areaConfiguration.mode.toString() === Mode[Mode.ON_LEAVE] || areaConfiguration.mode === Mode.ON_LEAVE) {
@@ -89,10 +88,10 @@ export class AreaDetailsComponent implements OnInit {
           }
           this.addPoint(point);
         });
-        if (firstPoint) {
-          this.addPoint(firstPoint); // we need to add first point as last because of Spatial Geometry (mysql)
-        }
-
+        // if (firstPoint) {
+        //   this.addPoint(firstPoint); // we need to add first point as last because of Spatial Geometry (mysql)
+        // }
+        console.log(this.area.points);
         // change to centimeters
         this.areaConfigurationOnEnter.offset *= 100;
         this.areaConfigurationOnLeave.offset *= 100;
@@ -120,6 +119,7 @@ export class AreaDetailsComponent implements OnInit {
   }
 
   reject(): void {
+    console.log(this.area);
     this.cleanUp();
     this.toolDetails.hide();
     this.areaDetailsService.reject();
