@@ -110,12 +110,17 @@
             <i class="fa fa-warning"></i>
             {{'device.shortId.required'|translate}}
           </div>
+          <div class="ui-message ui-messages-error ui-corner-all"
+               *ngIf="shortIdInput.errors?.properShortId && shortIdInput.touched && shortIdInput.dirty && !shortIdInput.errors?.required">
+            <i class="fa fa-warning"></i>
+            {{shortIdInput.errors?.properShortId|translate}}
+          </div>
         </div>
         <div class="ui-g-12 ui-md-2 ui-lg-2">
           <label for="shortId">{{'device.shortId'|translate}} *</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input name="shortId" required [appAutoFocus]="displayDialog" pInputText id="shortId" [(ngModel)]="device.shortId" #shortIdInput="ngModel"/>
+          <input name="shortId" [properShortId]="deviceType" required [appAutoFocus]="displayDialog" pInputText id="shortId" [(ngModel)]="device.shortId" #shortIdInput="ngModel"/>
         </div>
       </div>
       <div class="ui-g">
@@ -125,12 +130,17 @@
             <i class="fa fa-warning"></i>
             {{'device.longId.required'|translate}}
           </div>
+          <div class="ui-message ui-messages-error ui-corner-all"
+               *ngIf="longIdInput.errors?.properLongId && longIdInput.touched && longIdInput.dirty && !longIdInput.errors?.required">
+            <i class="fa fa-warning"></i>
+            {{longIdInput.errors?.properLongId|translate}}
+          </div>
         </div>
         <div class="ui-g-12 ui-md-2 ui-lg-2">
           <label for="longId">{{'device.longId'|translate}} *</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input name="longId" required pInputText id="longId" [(ngModel)]="device.longId" #longIdInput="ngModel"/>
+          <input properLongId name="longId" required pInputText id="longId" [(ngModel)]="device.longId" #longIdInput="ngModel"/>
         </div>
       </div>
       <div class="ui-g">
