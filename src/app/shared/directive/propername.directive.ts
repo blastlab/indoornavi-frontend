@@ -1,5 +1,13 @@
-import {Directive, ExistingProvider, forwardRef, Input, OnChanges, SimpleChanges} from '@angular/core';
-import {AbstractControl, NG_VALIDATORS, Validator, ValidatorFn, Validators} from '@angular/forms';
+import {
+  Directive,
+  ExistingProvider,
+  forwardRef,
+  Input,
+  OnChanges,
+  SimpleChanges
+} from '@angular/core';
+import {AbstractControl, NG_VALIDATORS, Validator} from '@angular/forms';
+import {ValidationErrors} from '@angular/forms/src/directives/validators';
 
 const NAME_VALIDATOR : ExistingProvider = {
   provide: NG_VALIDATORS,
@@ -12,30 +20,29 @@ const NAME_VALIDATOR : ExistingProvider = {
   providers: [NAME_VALIDATOR]})
 export class ProperNameDirective implements Validator, OnChanges  {
   @Input() inputValidator: string;
-  private validator = Validators.nullValidator;
-  message : any = null;
+  private message : ValidationErrors = null;
 
 
   ngOnChanges(changes: SimpleChanges) {
     const change = changes['properNameValidator'];
     if (change) {
-      this.validator = this.validate(change.currentValue)
+      this.validate(change.currentValue)
     }
   }
 
-  validate(control: AbstractControl): ValidatorFn {
+  validate(control: AbstractControl): ValidationErrors {
 
     if(control.value){
-      this.message = ProperNameDirective.inputContent(control.value);
+      this.message = ProperNameDirective.checkContent(control.value);
       if(!this.message) {
-        this.message = ProperNameDirective.inputLength(control.value);
+        this.message = ProperNameDirective.checkLength(control.value);
       }
       return this.message;
     }
     return null;
   }
 
-  static inputLength(value: string) :{[key: string]: any} {
+  static checkLength(value: string): ValidationErrors {
     if(value.length < 4) {
       return {properName: "validator.input.min"};
     }
@@ -45,8 +52,8 @@ export class ProperNameDirective implements Validator, OnChanges  {
     return null;
   }
 
-  static inputContent(value: string): {[key: string]: any} {
-      if (/[^!-~)]/.test(value)) {
+  static checkContent(value: string): ValidationErrors {
+      if (/[^ -~)]/.test(value) || (!value.replace(/\s/g, '').length)) {
         return {properName: 'validator.input.illegalCharacter'};
       }
     return null;
