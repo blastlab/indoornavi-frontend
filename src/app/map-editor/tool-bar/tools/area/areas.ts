@@ -63,7 +63,6 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
       this.actionBarService.configurationLoaded().first().subscribe((configuration: Configuration): void => {
         if (!!configuration.data.areas) {
           configuration.data.areas.forEach((area: Area): void => {
-            // area.points.splice(area.points.length - 1, 1); // do not draw last point as it is only valid for database
             this.areas.push({
               dto: area,
               editable: null
@@ -78,7 +77,6 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
         this.currentAreaGroup.remove();
         this.currentAreaGroup = null;
       } else {
-        // area.dto.points.push(area.dto.points[0]);
         const index = this.findSelectedAreaBagIndex();
         if (index === -1) { // accepted new
           this.areas.push({
@@ -230,7 +228,6 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
   }
 
   private drawPoint(point: Point): d3.selection {
-    console.log('sasda');
     const pointSelection: d3.selection = this.currentAreaGroup
       .addCircle(point, AreasComponent.CIRCLE_R)
       .getLastElement(ElementType.CIRCLE);
@@ -329,13 +326,11 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
     this.layer.on('mousemove', null);
 
     const points: Point[] = this.getCurrentAreaPoints();
-    console.log(points);
     this.drawPolygon(points);
     this.removeLines();
     this.removePoints();
     this.applyHover(points);
     this.applyDrag();
-    console.log(this.getCurrentAreaPoints());
   }
 
   private createBuilder(index?: number): DrawBuilder {
@@ -411,13 +406,9 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
   private applyRightMouseButtonClick(editable: Editable): void {
     editable.on({
       edit: () => {
-        // this.areas.forEach((area: AreaBag): void => {
-        //   area.editable.contextMenuActive = false;
-        // });
         this.areaDetailsService.show();
         const index = this.findSelectedAreaBagIndex();
         const areaBag: AreaBag = this.areas[index];
-        console.log(areaBag.dto.points);
         this.areaDetailsService.set(areaBag);
         this.container.style('cursor', 'move');
         this.container.on('contextmenu', null);
@@ -430,9 +421,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
           this.currentAreaGroup.getGroup().selectAll('circle').remove();
           this.currentAreaGroup.getGroup().on('.drag', null);
           this.currentAreaGroup = areaBag.editable.groupWrapper;
-          console.log(areaBag.dto.points);
           const points: Point[] = this.getCurrentAreaPoints(areaBag);
-          console.log(points);
           this.applyHover(points);
           this.applyDrag();
         }
