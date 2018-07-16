@@ -119,7 +119,6 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
       const coordinates: Point = this.zoomService.calculateTransition({x: d3.mouse(nodes[i])[0], y: d3.mouse(nodes[i])[1]});
       this.handleMouseClick(coordinates);
     });
-
     this.layer.on('mousemove', (_, i: number, nodes: d3.selection[]): void => {
       if (!!this.firstPointSelection) {
         const coordinates: Point = this.zoomService.calculateTransition({x: d3.mouse(nodes[i])[0], y: d3.mouse(nodes[i])[1]});
@@ -130,17 +129,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
         }
       }
     });
-
-    let index = 0;
-    this.areas.forEach((areaBag: AreaBag): void => {
-      areaBag.editable = new Editable(this.createBuilder(index).createGroup(), this.contextMenuService);
-      this.applyRightMouseButtonClick(areaBag.editable);
-      areaBag.editable.onSelected().subscribe((selected: Editable) => {
-        this.selectedEditable = selected;
-      });
-      this.drawPolygon(areaBag.dto.points, areaBag.editable.groupWrapper);
-      index++;
-    });
+    this.setView();
 
     this.currentAreaGroup = this.createBuilder().createGroup();
 
@@ -167,11 +156,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
     this.draggingElement = null;
     this.selectedEditable = null;
 
-    this.areas.forEach((areaBag: AreaBag): void => {
-      areaBag.editable.off();
-      this.cleanGroup(areaBag.editable.groupWrapper);
-      areaBag.editable.groupWrapper.remove();
-    });
+    this.cleanView();
 
     if (this.isCurrentAreaGroupNew()) {
       this.currentAreaGroup.remove();
@@ -191,7 +176,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
   }
 
 
-  private handleShiftKeyEvent (coordinates: Point): Point {
+  private handleShiftKeyEvent(coordinates: Point): Point {
     const secondPoint: Point = this.getCurrentAreaPoints()[this.getCurrentAreaPoints().length - 1];
     const deltaY = Geometry.getDeltaY(coordinates, secondPoint);
     if (!!deltaY) {
@@ -406,10 +391,13 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
   private applyRightMouseButtonClick(editable: Editable): void {
     editable.on({
       edit: () => {
-        this.areaDetailsService.show();
         const index = this.findSelectedAreaBagIndex();
+        this.cleanView();
+        this.setView();
+        this.areaDetailsService.hide();
         const areaBag: AreaBag = this.areas[index];
         this.areaDetailsService.set(areaBag);
+        this.areaDetailsService.show();
         this.container.style('cursor', 'move');
         this.container.on('contextmenu', null);
         this.layer.on('click', null);
@@ -462,5 +450,26 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
 
   private isSelectedDifferentThanCurrent(): boolean {
     return this.currentAreaGroup.getGroup().attr('id') !== this.selectedEditable.groupWrapper.getGroup().attr('id');
+  }
+
+  private cleanView() {
+    this.areas.forEach((areaBag: AreaBag): void => {
+      areaBag.editable.off();
+      this.cleanGroup(areaBag.editable.groupWrapper);
+      areaBag.editable.groupWrapper.remove();
+    });
+  }
+
+  private setView() {
+    let index = 0;
+    this.areas.forEach((areaBag: AreaBag): void => {
+      areaBag.editable = new Editable(this.createBuilder(index).createGroup(), this.contextMenuService);
+      this.applyRightMouseButtonClick(areaBag.editable);
+      areaBag.editable.onSelected().subscribe((selected: Editable) => {
+        this.selectedEditable = selected;
+      });
+      this.drawPolygon(areaBag.dto.points, areaBag.editable.groupWrapper);
+      index++;
+    });
   }
 }
