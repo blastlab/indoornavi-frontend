@@ -169,7 +169,7 @@ class TestMapsPageScale(unittest.TestCase, MapsPageScale):
         self.assertTrue(self.maps_page.is_scale_modal_window_disappear())
         self.test_failed = False
 
-    def test_08_edit_scale_correctly_change_distance(self):
+    def _test_08_edit_scale_correctly_change_distance(self):
 
         self.__set_before_scale_db_configuration()
 
@@ -182,7 +182,7 @@ class TestMapsPageScale(unittest.TestCase, MapsPageScale):
         self.assertEqual(result_distance, expected_distance)
         self.test_failed = False
 
-    def test_09_edit_scale_correctly_change_units(self):
+    def _test_09_edit_scale_correctly_change_units(self):
 
         # SET CONFIGURATION
         self.__set_before_scale_db_configuration()
@@ -195,7 +195,7 @@ class TestMapsPageScale(unittest.TestCase, MapsPageScale):
         self.assertEqual(result_measurement, 'METERS')
         self.test_failed = False
 
-    def test_10_edit_scale_correctly_units_and_distance(self):
+    def _test_10_edit_scale_correctly_units_and_distance(self):
         # SET CONFIGURATION
         self.__set_before_scale_db_configuration()
 
@@ -211,7 +211,7 @@ class TestMapsPageScale(unittest.TestCase, MapsPageScale):
         self.assertEqual(result_distance, expected_distance)
         self.test_failed = False
 
-    def test_11_edit_scale_change_line_length(self):
+    def _test_11_edit_scale_change_line_length(self):
         # SET CONFIGURATION
         self.__set_before_scale_db_configuration()
 
@@ -225,7 +225,7 @@ class TestMapsPageScale(unittest.TestCase, MapsPageScale):
         self.assertEqual(result_measurement, 'METERS')
         self.test_failed = False
 
-    def test_12_edit_scale_change_params(self):
+    def _test_12_edit_scale_change_params(self):
         # SET CONFIGURATION
         self.__set_before_scale_db_configuration()
 
@@ -243,7 +243,7 @@ class TestMapsPageScale(unittest.TestCase, MapsPageScale):
         self.assertEqual(result_distance, expected_distance)
         self.test_failed = False
 
-    def test_13_case_new_feature_undo_click_in_edit_scale(self):
+    def _test_13_case_new_feature_undo_click_in_edit_scale(self):
         # SET CONFIGURATION
         self.__set_before_scale_db_configuration()
 
@@ -255,7 +255,7 @@ class TestMapsPageScale(unittest.TestCase, MapsPageScale):
 
         self.assertDictEqual(result[0], result[2])
 
-    def test_14_case_bug_undo_scale_line_disappeared(self):
+    def _test_14_case_bug_undo_scale_line_disappeared(self):
 
         # SET CONFIGURATION
         self.__set_before_scale_db_configuration()
@@ -273,7 +273,7 @@ class TestMapsPageScale(unittest.TestCase, MapsPageScale):
 
         self.assertDictEqual(result[0], result[2])
 
-    def test_15_case_bug_undo_scale_line_cannot_repeat_drawing(self):
+    def _test_15_case_bug_undo_scale_line_cannot_repeat_drawing(self):
 
         # SET CONFIGURATION
         self.__set_before_scale_db_configuration()

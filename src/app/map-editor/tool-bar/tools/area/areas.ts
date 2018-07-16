@@ -94,6 +94,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
       }
       this.toggleActivity();
     });
+    this.AddTestElements();
   }
 
   ngOnDestroy(): void {
@@ -177,7 +178,40 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
       this.currentAreaGroup.remove();
     }
   }
+  AddTestElements(): void{
 
+    // All elements [seletors] are created for testers
+    var appAreaDetails = document.querySelector('app-area-details');
+
+    var areaDialog = appAreaDetails.querySelector('.ui-dialog');
+        areaDialog.setAttribute('id', 'test-area-dialog');
+
+    var areaConfirmBtn = areaDialog.querySelector('#confirm-decision');
+        areaConfirmBtn.classList.add("test-add-area-confirm");
+
+    var areaRejectBtn = areaDialog.querySelector('#reject-decision');
+        areaRejectBtn.classList.add("test-add-area-reject");
+
+    var areaName = areaDialog.querySelector('#name');
+        areaName.classList.add("test-add-area-name");
+
+    var areaOnEnterOffset = areaDialog.querySelector('#offset-on_enter');
+        areaOnEnterOffset.classList.add("test-add-area-enter-offset");
+
+    var areaOnleaveOffset = areaDialog.querySelector('#offset-on_leave');
+        areaOnleaveOffset.classList.add("test-add-area-leave-offset");
+
+    var areaOnEnterMultiSelectLabel = areaDialog.querySelector('#on_enter')
+                                                .querySelector('.ui-multiselect-label');
+
+        areaOnEnterMultiSelectLabel.classList.add("test-add-area-enter-multiselect-label")
+
+    var areaOnLeaveMultiSelectLabel = areaDialog.querySelector('#on_leave')
+                                                .querySelector('.ui-multiselect-label');
+
+        areaOnLeaveMultiSelectLabel.classList.add("test-add-area-leave-multiselect-label")
+
+  }
   toggleActivity(): void {
     if (this.active) {
       this.toolbarService.emitToolChanged(null);
