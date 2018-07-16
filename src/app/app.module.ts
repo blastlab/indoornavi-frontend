@@ -81,6 +81,7 @@ import {DropdownModule} from 'primeng/components/dropdown/dropdown';
 import {DialogModule} from 'primeng/components/dialog/dialog';
 import {DataTableModule} from 'primeng/components/datatable/datatable';
 import {AppAutoFocusDirective} from './shared/directive/autofocus.directive';
+import {ProperNameDirective} from './shared/directive/propername.directive';
 import {DeviceComponent} from 'app/device/device';
 import {AcceptButtonsComponent} from 'app/shared/components/accept-buttons/accept-buttons';
 import {PermissionGroupComponent} from 'app/user/permissionGroup/permissionGroup';
@@ -144,6 +145,7 @@ export function HttpLoaderFactory(http: Http) {
     LongIdValidator,
     ShortIdValidator,
     AppAutoFocusDirective,
+    ProperNameDirective,
     ToolDetailsComponent,
     ToolDetailsComponent,
     DeviceComponent,
@@ -151,7 +153,6 @@ export function HttpLoaderFactory(http: Http) {
     MapComponent,
     AreasComponent,
     AreaDetailsComponent,
-    AppAutoFocusDirective,
     DevicesComponent,
     DevicesListComponent,
     AllFieldsFilter,
