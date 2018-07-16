@@ -112,12 +112,9 @@ export class ActionBarComponent implements OnInit, OnDestroy {
       this.ngZone.runOutsideAngular(() => {
         this.timer = new Timer(() => {
           this.configurationService.saveDraft().then(() => {
-            console.log('savedraftdone');
             this.ngZone.run(() => {
               this.afterSaveDraftDone();
             });
-          }, (error) => {
-            console.log(error);
           });
         }, ActionBarComponent.SAVE_DRAFT_TIMEOUT);
       });
@@ -199,6 +196,13 @@ export class ActionBarComponent implements OnInit, OnDestroy {
     this.saveButtonDisabled = true;
     this.messageService.success('configuration.saveDraft.success');
     this.cd.detectChanges();
+  }
+
+  private afterSaveDraftRejected(): void {
+    console.log('after save draft rejected');
+    // this.resetButtonDisabled = false;
+    // this.publishButtonDisabled = false;
+    // this.saveButtonDisabled = true;
   }
 
   private afterPublishDone(): void {

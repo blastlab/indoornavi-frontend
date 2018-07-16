@@ -25,6 +25,8 @@ export class ActionBarService {
   private reset = this.configurationResetEmitter.asObservable();
   private configurationHash: string | Int32Array;
 
+  private configurationHashes: (string | Int32Array)[] = [];
+
   private static findLatestConfiguration(configurations: Configuration[]): Configuration {
     return configurations.sort((a, b): number => {
       return b.savedDraftDate.getTime() - a.savedDraftDate.getTime();
@@ -98,14 +100,12 @@ export class ActionBarService {
   }
 
   saveDraft(): Promise<void> {
-    return new Promise<void>((resolve: Function, reject: Function): void => {
-      if (this.hashConfiguration() !== this.configurationHash) {
+    return new Promise<void>((resolve: Function): void => {
+      if (this.isCurrentHashDifferentThanLastOne()) {
         this.httpService.doPut(ActionBarService.URL, this.configuration).subscribe((): void => {
           this.configurationHash = this.hashConfiguration();
           resolve();
         });
-      } else {
-        reject();
       }
     });
   }
@@ -232,11 +232,24 @@ export class ActionBarService {
   }
 
   private hashConfiguration(): string | Int32Array {
+    const newHash: string | Int32Array = Md5.hashStr(JSON.stringify(this.configuration));
+    this.configurationHashes.push(newHash);
     return Md5.hashStr(JSON.stringify(this.configuration));
   }
 
+  private isCurrentHashDifferentThanLastOne(): boolean {
+    const hashesCount: number = this.configurationHashes.length;
+    if (hashesCount === 0) {
+      return false;
+    }
+    const lastHash: string | Int32Array = this.configurationHashes[hashesCount - 1];
+    const result = lastHash !== this.hashConfiguration();
+    console.log(result);
+    return result;
+  }
+
   private sendConfigurationChangedEvent(): void {
-    if (this.hashConfiguration() !== this.configurationHash) {
+    if (this.isCurrentHashDifferentThanLastOne()) {
       this.configurationChangedEmitter.next(this.configuration);
     }
   }
