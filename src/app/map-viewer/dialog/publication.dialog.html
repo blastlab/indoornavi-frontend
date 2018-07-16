@@ -13,7 +13,7 @@
           {{'publishedDialog.complex.required'|translate}}
         </div>
       </div>
-      <div class="ui-g-12 ui-md-2 ui-lg-2"><label for="complexes">{{'publishedList.complex'|translate}}</label></div>
+      <div class="ui-g-12 ui-md-2 ui-lg-2"><label for="complexes">{{'publishedList.complex'|translate}}&nbsp;*</label></div>
       <div class="ui-g-12 ui-md-6 ui-lg-6">
         <p-multiSelect #complexesSelect="ngModel" defaultLabel="{{'publishedList.complex.select'|translate}}" name="complexes" id="complexes" [options]="complexes"
                        [(ngModel)]="selectedComplexes"  [style]="{ width: '100%' }" dataKey="id" optionLabel="name"
@@ -31,7 +31,7 @@
           {{'publishedDialog.building.required'|translate}}
         </div>
       </div>
-      <div class="ui-g-12 ui-md-2 ui-lg-2"><label for="buildings">{{'publishedList.building'|translate}}</label></div>
+      <div class="ui-g-12 ui-md-2 ui-lg-2"><label for="buildings">{{'publishedList.building'|translate}}&nbsp;*</label></div>
       <div class="ui-g-12 ui-md-6 ui-lg-6">
         <p-multiSelect #buildingsSelect="ngModel" defaultLabel="{{'publishedList.building.select'|translate}}" name="buildings" id="buildings" [options]="buildings"
                        [(ngModel)]="selectedBuildings" [style]="{ width: '100%' }" dataKey="id" optionLabel="name"
@@ -52,10 +52,11 @@
           {{'publishedDialog.floor.required'|translate}}
         </div>
       </div>
-      <div class="ui-g-12 ui-md-2 ui-lg-2"><label for="floors">{{'publishedList.floor'|translate}}</label></div>
+      <div class="ui-g-12 ui-md-2 ui-lg-2"><label for="floors">{{'publishedList.floor'|translate}}&nbsp;*</label></div>
       <div class="ui-g-12 ui-md-6 ui-lg-6">
         <p-multiSelect #floorsSelect="ngModel" defaultLabel="{{'publishedList.floor.select'|translate}}" name="floors" id="floors" [options]="floors"
                        [(ngModel)]="selectedFloors" [style]="{ width: '100%' }"
+                       dataKey="id"
                        appMinSelected="1">
           <ng-template let-floor pTemplate="item">
             <b>{{floor.value.building.name}}: </b> {{floor.value.level}}
@@ -72,7 +73,7 @@
           {{'publishedDialog.tags.required'|translate}}
         </div>
       </div>
-      <div class="ui-g-12 ui-md-2 ui-lg-2"><label for="tags">{{'publishedList.tags'|translate}}</label></div>
+      <div class="ui-g-12 ui-md-2 ui-lg-2"><label for="tags">{{'publishedList.tags'|translate}}&nbsp;*</label></div>
       <div class="ui-g-12 ui-md-6 ui-lg-6">
         <p-multiSelect #tagsSelect="ngModel" defaultLabel="{{'publishedList.tags.select'|translate}}" name="tags" id="tags" [options]="tags"
                        [(ngModel)]="selectedTags" optionLabel="shortId" [style]="{ width: '100%' }" dataKey="id"
@@ -89,7 +90,7 @@
           {{'publishedDialog.users.required'|translate}}
         </div>
       </div>
-      <div class="ui-g-12 ui-md-2 ui-lg-2"><label for="users">{{'publishedList.users'|translate}}</label></div>
+      <div class="ui-g-12 ui-md-2 ui-lg-2"><label for="users">{{'publishedList.users'|translate}}&nbsp;*</label></div>
       <div class="ui-g-12 ui-md-6 ui-lg-6">
         <p-multiSelect #usersSelect="ngModel" defaultLabel="{{'publishedList.users.select'|translate}}" name="users" id="users" [options]="users"
                        [(ngModel)]="selectedUsers" optionLabel="username" [style]="{ width: '100%' }" dataKey="id"

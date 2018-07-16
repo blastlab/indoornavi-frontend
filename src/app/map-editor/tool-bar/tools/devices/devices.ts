@@ -335,7 +335,7 @@ export class DevicesComponent extends CommonDevice implements Tool, OnInit, OnDe
           scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
         };
       }
-    })
+    });
   }
 
   private captureWizardConfigurations(): void {
