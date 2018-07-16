@@ -37,7 +37,7 @@
             </div>
           </div>
           <div class="ui-g-2 inner">
-            <p-multiSelect defaultLabel="{{'area.on_enter.select'|translate}}" name="on_enter" id="on_enter" [options]="tags"
+            <p-multiSelect appMinSelected="1" defaultLabel="{{'area.on_enter.select'|translate}}" name="on_enter" id="on_enter" [options]="tags"
                            [(ngModel)]="areaConfigurationOnEnter.tags" optionLabel="shortId" [style]="{ width: '200px' }" dataKey="id"></p-multiSelect>
           </div>
         </div>
@@ -52,12 +52,12 @@
             </span>
           </div>
           <div class="ui-g-2 inner">
-            <p-multiSelect defaultLabel="{{'area.on_leave.select'|translate}}" name="on_leave" id="on_leave" [options]="tags"
+            <p-multiSelect appMinSelected="1" defaultLabel="{{'area.on_leave.select'|translate}}" name="on_leave" id="on_leave" [options]="tags"
                            [(ngModel)]="areaConfigurationOnLeave.tags" optionLabel="shortId" [style]="{ width: '200px' }" dataKey="id"></p-multiSelect>
           </div>
         </div>
       </div>
-      <div class="ui-g-1">
+      <div class="ui-g-2">
         <div class="ui-toolbar-group-right">
           <button id="reject-decision"
                   pButton class="ui-button-danger"

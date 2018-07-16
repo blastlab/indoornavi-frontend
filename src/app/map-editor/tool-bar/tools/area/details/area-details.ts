@@ -11,6 +11,7 @@ import {Point} from '../../../../map.type';
 import {AreasComponent} from '../areas';
 import {MessageServiceWrapper} from '../../../../../shared/services/message/message.service';
 import {Tag} from '../../../../../device/device.type';
+import {NgForm} from '@angular/forms';
 
 @Component({
   selector: 'app-area-details',
@@ -19,6 +20,7 @@ import {Tag} from '../../../../../device/device.type';
 })
 export class AreaDetailsComponent implements OnInit {
   @ViewChild('toolDetails') private toolDetails: ToolDetailsComponent;
+  @ViewChild('areaDetailsForm') private areaDetailsForm: NgForm;
 
   @Input() floor: Floor;
   area: Area;
@@ -128,6 +130,11 @@ export class AreaDetailsComponent implements OnInit {
   }
 
   private cleanUp(): void {
+    Object.keys(this.areaDetailsForm.controls).forEach((fieldName: string) => {
+      if (fieldName === 'on_enter' || fieldName === 'on_leave') {
+        this.areaDetailsForm.controls[fieldName].reset();
+      }
+    });
     this.areaConfigurationOnEnter = new AreaConfiguration(Mode.ON_ENTER, 0);
     this.areaConfigurationOnLeave = new AreaConfiguration(Mode.ON_LEAVE, 0);
     this.area = new Area(this.floor.id);

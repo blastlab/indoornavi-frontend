@@ -112,9 +112,12 @@ export class ActionBarComponent implements OnInit, OnDestroy {
       this.ngZone.runOutsideAngular(() => {
         this.timer = new Timer(() => {
           this.configurationService.saveDraft().then(() => {
+            console.log('savedraftdone');
             this.ngZone.run(() => {
               this.afterSaveDraftDone();
             });
+          }, (error) => {
+            console.log(error);
           });
         }, ActionBarComponent.SAVE_DRAFT_TIMEOUT);
       });

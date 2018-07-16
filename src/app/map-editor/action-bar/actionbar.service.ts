@@ -98,12 +98,14 @@ export class ActionBarService {
   }
 
   saveDraft(): Promise<void> {
-    return new Promise<void>((resolve: Function): void => {
+    return new Promise<void>((resolve: Function, reject: Function): void => {
       if (this.hashConfiguration() !== this.configurationHash) {
         this.httpService.doPut(ActionBarService.URL, this.configuration).subscribe((): void => {
           this.configurationHash = this.hashConfiguration();
           resolve();
         });
+      } else {
+        reject();
       }
     });
   }
