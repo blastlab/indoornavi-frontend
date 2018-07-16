@@ -32,7 +32,7 @@
 <p-dialog header="{{'permissionGroup.details'|translate}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
           [contentStyle]="{ overflow: 'visible' }"
           [width]="800"
-          dismissableMask="true">
+          dismissableMask="true" (onHide)="cancel()">
   <form #permissionGroupForm="ngForm" novalidate>
     <div *ngIf="permissionGroup">
       <div class="ui-g">
