@@ -48,6 +48,12 @@ class MapsPageArea(BasePage, MapsBaseAreaLocators):
     def area_reject_click(self):
         return self.click_element(self.AREA_ADD_REJECT)
 
+    def on_enter_multiselect_device_click(self):
+        return self.click_element(self.AREA_ADD_ENTER_MULTISELECT)
+
+    def on_leave_multiselect_device_click(self):
+        return self.click_element(self.AREA_ADD_LEAVE_MULTISELECT)
+
     # ELEMENTS APPEARANCE
     def is_area_button_displayed(self):
         return True if self.is_element_present(self.AREA_BUTTON) else False

@@ -1,5 +1,4 @@
 from selenium.webdriver.common.by import By
-import json
 from src.test_conf import *
 from services.service_data import get_toast_selector
 

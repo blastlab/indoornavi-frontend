@@ -24,6 +24,7 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         # Prepare environment
         self.maps_page_area.truncate_db()
         self.maps_page_area.create_maps_db_env()
+        self.maps_page_area.create_devices_db_env()
         # Login to app
         self.page.login_process(self.option, 1)
         self.__set_before_scale_db_configuration()
@@ -58,6 +59,8 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.maps_page_area.enter_on_enter_offset()
         self.maps_page_area.enter_on_leave_offset()
 
+        # TODO ON LEAVE/ON ENTER
+
         self.maps_page_area.area_confirm_click()
         self.maps_page_area.is_draft_saved_toast_displayed()
         # Check the points are the same
@@ -87,6 +90,8 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.maps_page_area.enter_on_enter_offset()
         self.maps_page_area.enter_on_leave_offset()
 
+        # TODO ON LEAVE/ON ENTER
+
         self.maps_page_area.area_confirm_click()
         self.maps_page_area.is_draft_saved_toast_displayed()
         # Check the points are the same
@@ -110,9 +115,10 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         first_step_points = self.maps_page_area.get_polygon_points('2')
         self.maps_page_area.is_area_dialog_displayed()
 
-        # Fill all inputs and confirm
         self.maps_page_area.enter_on_enter_offset()
         self.maps_page_area.enter_on_leave_offset()
+
+        # TODO ON LEAVE/ON ENTER
 
         self.maps_page_area.area_confirm_click()
         self.maps_page_area.is_draft_saved_toast_displayed()
@@ -128,15 +134,14 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.assertEqual(first_step_points, third_step_points[:32])
         self.test_failed = False
 
-    def test_04_add_new_area_correctly_with_move(self):
+    def test_04_add_new_area_square_correctly_with_move(self):
 
         test_offset = 100
         self.maps_page_area.is_area_button_displayed()
         self.maps_page_area.area_button_click()
 
         self.maps_page_area.draw_square()
-        start_x_location = self.maps_page_area.get_polygon_location('2')['x']
-        start_x_attr = self.maps_page_area.get_area_attribute('x', '3')
+        first_step_x_location = self.maps_page_area.get_polygon_location('2')['x']
 
         self.maps_page_area.is_area_dialog_displayed()
 
@@ -144,11 +149,22 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.maps_page_area.enter_area_name()
         self.maps_page_area.enter_on_enter_offset()
         self.maps_page_area.enter_on_leave_offset()
+        self.maps_page_area.on_enter_multiselect_device_click()
+        time.sleep(5)
+        # TODO ON LEAVE/ON ENTER
+
         self.maps_page_area.move_polygon(test_offset, 0, '2')
 
-        end_x_location = self.maps_page_area.get_polygon_location('2')['x']
-        end_x_attr = self.maps_page_area.get_area_attribute('x', '3')
+        second_step_x_location = self.maps_page_area.get_polygon_location('2')['x']
+        second_step_x_attr = self.maps_page_area.get_area_attribute('x', '3')
 
-        self.assertEqual(start_x_location + int(end_x_attr), end_x_location)
+        self.assertEqual(first_step_x_location + int(second_step_x_attr), second_step_x_location)
+        self.maps_page_area.area_confirm_click()
+        self.maps_page_area.is_draft_saved_toast_displayed()
+
+        self.webdriver.refresh()
+        self.maps_page_area.area_button_click()
+        last_step_x_location = self.maps_page_area.get_polygon_location('0')['x']
+        self.assertEqual(second_step_x_location, last_step_x_location)
 
         self.test_failed = False
