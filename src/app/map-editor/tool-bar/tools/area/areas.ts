@@ -73,26 +73,28 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
     });
 
     this.onDecisionMadeSubscription = this.areaDetailsService.onDecisionMade().subscribe((area: AreaBag): void => {
-      if (!area) { // rejected
-        this.currentAreaGroup.remove();
-        this.currentAreaGroup = null;
-      } else {
-        const index = this.findSelectedAreaBagIndex();
-        if (index === -1) { // accepted new
-          this.areas.push({
-            dto: area.dto,
-            editable: new Editable(this.currentAreaGroup, this.contextMenuService)
-          });
-          this.currentAreaGroup.getGroup().attr('id', 'area-' + this.areas.length);
-        } else { // accepted edit
-          this.areas[index] = area;
-        }
+      if (!!this.currentAreaGroup) {
+        if (!area) { // rejected
+          this.currentAreaGroup.remove();
+          this.currentAreaGroup = null;
+        } else {
+          const index = this.findSelectedAreaBagIndex();
+          if (index === -1) { // accepted new
+            this.areas.push({
+              dto: area.dto,
+              editable: new Editable(this.currentAreaGroup, this.contextMenuService)
+            });
+            this.currentAreaGroup.getGroup().attr('id', 'area-' + this.areas.length);
+          } else { // accepted edit
+            this.areas[index] = area;
+          }
 
-        this.actionBarService.setAreas(this.areas.map((areaBag: AreaBag): Area => {
-          return areaBag.dto;
-        }));
+          this.actionBarService.setAreas(this.areas.map((areaBag: AreaBag): Area => {
+            return areaBag.dto;
+          }));
+        }
+        this.toggleActivity();
       }
-      this.toggleActivity();
     });
   }
 
@@ -111,38 +113,40 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
   }
 
   setActive(): void {
-    this.active = true;
+    if (!this.active) {
+      this.active = true;
 
-    this.container.style('cursor', 'crosshair');
+      this.container.style('cursor', 'crosshair');
 
-    this.layer.on('click', (_, i: number, nodes: d3.selection[]): void => {
-      const coordinates: Point = this.zoomService.calculateTransition({x: d3.mouse(nodes[i])[0], y: d3.mouse(nodes[i])[1]});
-      this.handleMouseClick(coordinates);
-    });
-    this.layer.on('mousemove', (_, i: number, nodes: d3.selection[]): void => {
-      if (!!this.firstPointSelection) {
+      this.layer.on('click', (_, i: number, nodes: d3.selection[]): void => {
         const coordinates: Point = this.zoomService.calculateTransition({x: d3.mouse(nodes[i])[0], y: d3.mouse(nodes[i])[1]});
-        if (!!this.tempLine) {
-          this.moveTempLine(coordinates);
-        } else {
-          this.drawTempLine();
-        }
-      }
-    });
-    this.setView();
-
-    this.currentAreaGroup = this.createBuilder().createGroup();
-
-    this.container.on('contextmenu', (): void => {
-      d3.event.preventDefault();
-      this.cleanGroup();
-      this.firstPointSelection = null;
-      this.lastPoint = null;
-      this.tempLine = null;
-      this.areas.forEach((areaBag: AreaBag): void => {
-        this.applyRightMouseButtonClick(areaBag.editable);
+        this.handleMouseClick(coordinates);
       });
-    });
+      this.layer.on('mousemove', (_, i: number, nodes: d3.selection[]): void => {
+        if (!!this.firstPointSelection) {
+          const coordinates: Point = this.zoomService.calculateTransition({x: d3.mouse(nodes[i])[0], y: d3.mouse(nodes[i])[1]});
+          if (!!this.tempLine) {
+            this.moveTempLine(coordinates);
+          } else {
+            this.drawTempLine();
+          }
+        }
+      });
+      this.setView();
+
+      this.currentAreaGroup = this.createBuilder().createGroup();
+
+      this.container.on('contextmenu', (): void => {
+        d3.event.preventDefault();
+        this.cleanGroup();
+        this.firstPointSelection = null;
+        this.lastPoint = null;
+        this.tempLine = null;
+        this.areas.forEach((areaBag: AreaBag): void => {
+          this.applyRightMouseButtonClick(areaBag.editable);
+        });
+      });
+    }
   }
 
   setInactive(): void {
@@ -157,6 +161,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
     this.selectedEditable = null;
 
     this.cleanView();
+    this.areaDetailsService.reject();
 
     if (this.isCurrentAreaGroupNew()) {
       this.currentAreaGroup.remove();

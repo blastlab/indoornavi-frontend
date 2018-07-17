@@ -61,6 +61,11 @@ export class AreaDetailsComponent implements OnInit {
         }
       });
     });
+    this.areaDetailsService.onDecisionMade().subscribe((area: AreaBag) => {
+      if (!area) { // rejected
+        this.toolDetails.hide();
+      }
+    });
   }
 
   confirm(formIsValid: boolean): void {
@@ -115,7 +120,6 @@ export class AreaDetailsComponent implements OnInit {
 
   reject(): void {
     this.cleanUp();
-    this.toolDetails.hide();
     this.areaDetailsService.reject();
   }
 
