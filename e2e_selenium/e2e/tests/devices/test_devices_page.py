@@ -212,7 +212,7 @@ class TestDevicesPage(object):
 
         self.method_test_setUp('add',
                                'Test' + self.module + 'AddNegativeExistingLongId',
-                               '999',
+                               self.devices_page.negative_device_short_id,
                                self.devices_page.new_device_long_id)
 
         # Check the "Long Id must be unique" warning
@@ -236,7 +236,7 @@ class TestDevicesPage(object):
 
         """Test that device will be added with empty Long Id"""
 
-        self.method_test_setUp('add', 'Test' + self.module + 'AddNegativeEmptyLongId', '999', '')
+        self.method_test_setUp('add', 'Test' + self.module + 'AddNegativeEmptyLongId', self.devices_page.negative_device_short_id, '')
 
         # Check the "Short Id is required." warning
         self.assertEqual(self.devices_page.error_message_name(), 'Long Id is required.')
@@ -278,7 +278,7 @@ class TestDevicesPage(object):
 
         """Test editing device with empty long id input"""
 
-        self.method_test_setUp('edit', 'TestEdit'+self.module, '1234', '')
+        self.method_test_setUp('edit', 'TestEdit'+self.module, self.devices_page.negative_device_short_id, '')
 
         # Check the "Long Id is required." warning
         self.assertEqual(self.devices_page.error_message_name(), 'Long Id is required.')
@@ -328,18 +328,18 @@ class TestDevicesPage(object):
         self.test_failed = False
 
     def test_12_search_devices_not_verified(self):
-
+        self.test_01_devices_page_is_loaded_correctly()
         """Test searching device by short id in unverified list"""
 
         # Add 2 additional devices
         self.method_test_setUp('add',
                                'Test'+self.module+'ToSearch 123321',
-                               self.devices_page.new_device_short_id+'321',
+                               self.devices_page.new_device_short_id,
                                self.devices_page.new_device_long_id+'321')
-
+        time.sleep(10)
         self.method_test_setUp('add',
                                'Test'+self.module+'ToSearch 123999',
-                               self.devices_page.new_device_short_id+'999',
+                               self.devices_page.new_device_short_id,
                                self.devices_page.new_device_long_id+'999')
 
         self.method_test_search_setUp('not_verified')

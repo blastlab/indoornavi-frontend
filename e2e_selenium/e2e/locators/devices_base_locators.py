@@ -7,7 +7,8 @@ class DevicesBaseLocators(object):
         self.module = self.module_query.title()
         self.device_modal_title = 'Add new ' + self.module_query
         self.new_device_name = 'Test' + self.module_query
-        self.new_device_short_id = '123'
+        self.new_device_short_id = '123999' if self.module_query != 'tag' else '123'
+        self.negative_device_short_id = '999123' if self.module_query != 'tag' else '999'
         self.new_device_long_id = '1234'
         self.edit_device_name = 'TestEdit' + self.module
         self.illegal_name = '!@#^&$*()*&^@'

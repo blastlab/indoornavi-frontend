@@ -43,14 +43,14 @@
 <p-dialog header="{{'floor.details'|translate}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
           [contentStyle]="{ overflow: 'visible' }"
           [width]="800"
-          dismissableMask="true">
+          dismissableMask="true" (onHide)="cancel()">
   <form #floorForm="ngForm" novalidate *ngIf="floor">
     <div class="ui-g">
       <div class="ui-g-offset-12 ui-md-offset-4 ui-lg-offset-4 ui-g-12 ui-md-3 ui-lg-3">
         <label for="name">{{'floor.name'|translate}}</label>
       </div>
       <div class="ui-g-12 ui-md-5 ui-lg-5">
-        <input name="name" [appAutoFocus]="displayDialog" pInputText id="name" [(ngModel)]="floor.name" #nameInput="ngModel"/>
+        <input properNameValidator name="name" [appAutoFocus]="displayDialog" pInputText id="name" [(ngModel)]="floor.name" #nameInput="ngModel"/>
       </div>
     </div>
     <div class="ui-g">
@@ -59,6 +59,11 @@
              *ngIf="levelInput.errors?.required && levelInput.touched && levelInput.dirty">
           <i class="fa fa-warning"></i>
           {{'floor.level.required'|translate}}
+        </div>
+        <div class="ui-message ui-messages-error ui-corner-all"
+             *ngIf="nameInput.errors?.properName && nameInput.touched && nameInput.dirty">
+          <i class="fa fa-warning"></i>
+          {{nameInput.errors?.properName|translate}}
         </div>
       </div>
       <div class="ui-g-12 ui-md-3 ui-lg-3">
