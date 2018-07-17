@@ -405,14 +405,12 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
         if (this.isCurrentAreaGroupNew()) {
           this.currentAreaGroup.remove();
         }
-        if (this.isSelectedDifferentThanCurrent()) {
-          this.currentAreaGroup.getGroup().selectAll('circle').remove();
-          this.currentAreaGroup.getGroup().on('.drag', null);
-          this.currentAreaGroup = areaBag.editable.groupWrapper;
-          const points: Point[] = this.getCurrentAreaPoints(areaBag);
-          this.applyHover(points);
-          this.applyDrag();
-        }
+        this.currentAreaGroup.getGroup().selectAll('circle').remove();
+        this.currentAreaGroup.getGroup().on('.drag', null);
+        this.currentAreaGroup = areaBag.editable.groupWrapper;
+        const points: Point[] = this.getCurrentAreaPoints(areaBag);
+        this.applyHover(points);
+        this.applyDrag();
       },
       remove: (): void => {
         this.cleanGroup(this.selectedEditable.groupWrapper);
