@@ -451,10 +451,6 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
     return !!this.currentAreaGroup && this.currentAreaGroup.getGroup().attr('id') === AreasComponent.NEW_AREA_ID;
   }
 
-  private isSelectedDifferentThanCurrent(): boolean {
-    return this.currentAreaGroup.getGroup().attr('id') !== this.selectedEditable.groupWrapper.getGroup().attr('id');
-  }
-
   private cleanView() {
     this.areas.forEach((areaBag: AreaBag): void => {
       areaBag.editable.off();
