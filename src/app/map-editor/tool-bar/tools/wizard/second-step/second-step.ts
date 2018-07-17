@@ -3,8 +3,8 @@ import {Point} from '../../../../map.type';
 import {SelectItem} from 'primeng/primeng';
 import {AnchorDistance, SecondStepMessage, Step, WizardData, WizardStep} from '../wizard.type';
 import {Geometry} from '../../../../../shared/utils/helper/geometry';
-import {DrawConfiguration} from 'app/map-viewer/publication.type';
 import {ScaleCalculations} from '../../scale/scale.type';
+import {CommonDeviceConfiguration} from '../../../../../shared/utils/drawing/common/device.common';
 
 export class SecondStep implements WizardStep {
   private selectedItemId: number;
@@ -38,10 +38,10 @@ export class SecondStep implements WizardStep {
     }
   }
 
-  getDrawConfiguration (selectedItemID: number): DrawConfiguration {
+  getDrawConfiguration (selectedItemID: number): CommonDeviceConfiguration {
     return {
       id: `` + selectedItemID, clazz: 'wizard anchor', name: 'anchor' + selectedItemID,
-      color: 'green', display: 'true'
+      color: 'green', display: 'true', heightInMeters: 2 // TODO: change it to value taken from device (not now, since we don't know the future for wizard)
     };
   }
 

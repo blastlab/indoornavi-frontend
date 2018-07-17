@@ -1,17 +1,17 @@
 import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Rx';
-import {MapSvg} from '../../../map/map.type';
+import {Point} from '../../../map-editor/map.type';
 
 @Injectable()
 export class MapClickService {
-  private isClicked = new Subject<MapSvg>();
+  private isClicked = new Subject<Point>();
 
-  public clickInvoked(): Observable<MapSvg> {
+  public clickInvoked(): Observable<Point> {
     return this.isClicked.asObservable();
   }
 
-  public mapIsClicked(mapSvg: MapSvg) {
-    this.isClicked.next(mapSvg);
+  public mapIsClicked(point: Point) {
+    this.isClicked.next(point);
   }
 }

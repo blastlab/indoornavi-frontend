@@ -60,42 +60,53 @@ export class AreaDetailsComponent implements OnInit {
     });
   }
 
-  confirm(isValid: boolean): void {
-    if (isValid) {
-      this.area.points.length = 0;
-      const selector = `${!!this.editable ? '#' + this.editable.groupWrapper.getGroup().attr('id') : '#' + AreasComponent.NEW_AREA_ID}`;
-      const svgGroup = d3.select(selector);
-      const pointsSelection: d3.selection = svgGroup.selectAll('circle');
+  confirm(formIsValid: boolean): void {
+    if (formIsValid) {
+      let heightIsValid = true;
+      if (!this.area.heightMax || !this.area.heightMin) { // check if height values are set, if not or deleted than send null
+        this.area.heightMax = null;
+        this.area.heightMin = null;
+      } else {
+        heightIsValid = (this.area.heightMin < this.area.heightMax && this.area.heightMin  >= 0 && this.area.heightMax >= 1);
+      }
+      if (heightIsValid) {
+        this.area.points.length = 0;
+        const selector = `${!!this.editable ? '#' + this.editable.groupWrapper.getGroup().attr('id') : '#' + AreasComponent.NEW_AREA_ID}`;
+        const svgGroup = d3.select(selector);
+        const pointsSelection: d3.selection = svgGroup.selectAll('circle');
 
-      // we need to add shift since coordinates of points are within svg group and when user moves svg group we need to shift coordinates
-      this.shift = (<Point>{x: +svgGroup.attr('x'), y: +svgGroup.attr('y')});
-      let firstPoint: d3.selection;
-      pointsSelection.each((_, i, nodes) => {
-        const point: d3.selection = d3.select(nodes[i]);
-        if (i === 0) {
-          firstPoint = point;
+        // we need to add shift since coordinates of points are within svg group and when user moves svg group we need to shift coordinates
+        this.shift = (<Point>{x: +svgGroup.attr('x'), y: +svgGroup.attr('y')});
+        let firstPoint: d3.selection;
+        pointsSelection.each((_, i, nodes) => {
+          const point: d3.selection = d3.select(nodes[i]);
+          if (i === 0) {
+            firstPoint = point;
+          }
+          this.addPoint(point);
+        });
+        if (firstPoint) {
+          this.addPoint(firstPoint); // we need to add first point as last because of Spatial Geometry (mysql)
         }
-        this.addPoint(point);
-      });
-      if (firstPoint) {
-        this.addPoint(firstPoint); // we need to add first point as last because of Spatial Geometry (mysql)
-      }
 
-      // change to centimeters
-      this.areaConfigurationOnEnter.offset *= 100;
-      this.areaConfigurationOnLeave.offset *= 100;
+        // change to centimeters
+        this.areaConfigurationOnEnter.offset *= 100;
+        this.areaConfigurationOnLeave.offset *= 100;
 
-      if (!this.editable) {
-        this.area.configurations.push(
-          this.areaConfigurationOnEnter
-        );
-        this.area.configurations.push(
-          this.areaConfigurationOnLeave
-        );
+        if (!this.editable) {
+          this.area.configurations.push(
+            this.areaConfigurationOnEnter
+          );
+          this.area.configurations.push(
+            this.areaConfigurationOnLeave
+          );
+        }
+        this.areaDetailsService.accept(<AreaBag>{dto: this.area, editable: this.editable});
+        this.toolDetails.hide();
+        this.cleanUp();
+      } else {
+        this.messageService.failed('area.height.invalid');
       }
-      this.areaDetailsService.accept(<AreaBag>{dto: this.area, editable: this.editable});
-      this.toolDetails.hide();
-      this.cleanUp();
     } else {
       this.messageService.failed('area.form.invalid');
     }
@@ -122,4 +133,5 @@ export class AreaDetailsComponent implements OnInit {
     this.area = new Area(this.floor.id);
     this.editable = null;
   }
+
 }

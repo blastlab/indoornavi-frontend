@@ -54,7 +54,7 @@ export class FloorComponent implements OnInit, CrudComponent {
     });
   }
 
-  openDialog(floor: Floor): void {
+  openDialog(floor?: Floor): void {
     if (!!floor) {
       this.floor = {...floor};
     } else {
