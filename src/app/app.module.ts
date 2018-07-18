@@ -99,7 +99,6 @@ import {AreaDetailsService} from './map-editor/tool-bar/tools/area/details/area-
 import {ContextMenuService} from './shared/wrappers/editable/editable.service';
 import {PublishedComponent} from './map-viewer/views/publications/publication';
 import {AnalyticsComponent} from './map-viewer/views/analytics/analytics';
-import {DevicesComponent} from './map-editor/tool-bar/tools/devices/devices';
 import {DevicesListComponent} from './map-editor/tool-bar/tools/devices/list/devices-list';
 import {MapObjectService} from './shared/utils/drawing/map.object.service';
 import {MinSelectedValidator} from './shared/directive/minselected.directive';
@@ -112,6 +111,7 @@ import {MapClickService} from './shared/services/map-click/map-click.service';
 import {NotSupportedBrowserComponent} from './not-supported-browser/not-supported-browser';
 import {LongIdValidator} from './shared/directive/long-id.directive';
 import {ShortIdValidator} from './shared/directive/short-id.directive';
+import {DevicePlacerComponent} from './map-editor/tool-bar/tools/devices/device-placer/device-placer.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -153,7 +153,6 @@ export function HttpLoaderFactory(http: Http) {
     MapComponent,
     AreasComponent,
     AreaDetailsComponent,
-    DevicesComponent,
     DevicesListComponent,
     AllFieldsFilter,
     AreaDetailsComponent,
@@ -162,7 +161,8 @@ export function HttpLoaderFactory(http: Http) {
     TagVisibilityTogglerComponent,
     HeatMapControllerComponent,
     MousePositionViewerComponent,
-    NotSupportedBrowserComponent
+    NotSupportedBrowserComponent,
+    DevicePlacerComponent
   ],
   entryComponents: [
     PublicationDialogComponent,
