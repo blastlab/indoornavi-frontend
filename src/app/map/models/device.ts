@@ -10,43 +10,45 @@ export class DeviceInEditor {
   private plusUnicode: string = '\uf245';
   private colorOutOfScope: string = '#bababa';
   private colorInScope: string = '#000000';
-  private colorBackgroundActive: string = '#84f4ff';
+  private colorHover: string = '#ff3535';
+  private colorBackgroundHover: string = '#75ffde';
+  private colorBackgroundActive: string = '#1ed5ff';
   private colorBackgroundInactive: string = '#FFFFFF';
   private opacityBackgroundActive: number = 0.5;
   private opacityBackgroundInactive: number = 0;
+  private appearance: DeviceAppearance = DeviceAppearance.INSCOPE;
 
   constructor(protected coordinates: Point, protected container: d3.selection, protected drawConfiguration: DeviceInEditorConfiguration) {
     const deviceDescription = this.getDeviceDescription();
     const colorBackground: string = this.colorBackgroundInactive;
+
     this.svgGroupWrapper = new DrawBuilder(container, drawConfiguration).createGroup()
       .place(coordinates)
       .addIcon2({x: -12, y: -12}, this.plusUnicode)
       .addText({x: 5, y: -5}, deviceDescription)
       .addRectangle({x: -22, y: -33}, {x: 65, y: 65}, 0, colorBackground, true);
+
+    this.addReactionToHover();
+    this.setMovable();
   }
 
   setActive(): void {
-    const color: string = this.colorInScope;
-    const colorBackground: string = this.colorBackgroundActive;
-    const opacityBackground: number = this.opacityBackgroundActive;
-
-    this.setDeviceAppearance(color, colorBackground, opacityBackground)
+    this.setDeviceAppearance(this.colorInScope, this.colorBackgroundActive, this.opacityBackgroundActive);
+    this.appearance = DeviceAppearance.ACTIVE;
   }
 
   setInGroupScope(): void {
-    const color: string = this.colorInScope;
-    const colorBackground: string = this.colorBackgroundInactive;
-    const opacityBackground: number = this.opacityBackgroundInactive;
-
-    this.setDeviceAppearance(color, colorBackground, opacityBackground)
+    this.setDeviceAppearance(this.colorInScope, this.colorBackgroundInactive, this.opacityBackgroundInactive);
+    this.appearance = DeviceAppearance.INSCOPE;
   }
 
   setOutOfGroupScope(): void {
-    const color: string = this.colorOutOfScope;
-    const colorBackground: string = this.colorBackgroundInactive;
-    const opacityBackground: number = this.opacityBackgroundInactive;
+    this.setDeviceAppearance(this.colorOutOfScope, this.colorBackgroundInactive, this.opacityBackgroundInactive);
+    this.appearance = DeviceAppearance.OUTSCOPE;
+  }
 
-    this.setDeviceAppearance(color, colorBackground, opacityBackground)
+  private setHover(): void {
+    this.setDeviceAppearance(this.colorHover, this.colorBackgroundHover, this.opacityBackgroundActive);
   }
 
   private setDeviceAppearance(color, colorBackground, opacityBackground): void {
@@ -71,8 +73,56 @@ export class DeviceInEditor {
     return text;
   }
 
+  private addReactionToHover(): void {
+    this.svgGroupWrapper.getGroup()
+      .on('mouseover', (): void => {
+        this.setHover();
+      })
+      .on('mouseout', (): void => {
+        switch (this.appearance) {
+          case 0: this.setInGroupScope();
+            break;
+          case 1: this.setOutOfGroupScope();
+            break;
+          case 2: this.setActive();
+            break;
+        }
+      })
+      .on('click', () => {
+        console.log('click');
+      });
+  }
+
+  private setMovable(): void {
+    let element: d3.selection = this.svgGroupWrapper.getGroup();
+    element.call(
+      d3.drag()
+        .on('drag', (): void => {
+          const coordinates: Point = {
+            x: d3.event.dx + parseInt(this.svgGroupWrapper.getGroup().attr('x'), 10),
+            y: d3.event.dy + parseInt(this.svgGroupWrapper.getGroup().attr('y'), 10)
+          } ;
+          this.svgGroupWrapper.getGroup().attr('x', coordinates.x);
+          this.svgGroupWrapper.getGroup().attr('y', coordinates.y);
+          }
+        )
+        .on('start', (): void => {
+          element = d3.select(d3.event.sourceEvent.target);
+          d3.event.sourceEvent.stopPropagation();
+        })
+        .on('end', (): void => {
+          element = null;
+        })
+    );
+  }
+
+
 }
 
 export interface DeviceInEditorConfiguration extends DrawConfiguration {
   heightInMeters: number;
+}
+
+export enum DeviceAppearance {
+  INSCOPE, OUTSCOPE, ACTIVE
 }

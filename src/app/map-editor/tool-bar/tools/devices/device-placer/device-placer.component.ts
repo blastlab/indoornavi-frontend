@@ -90,13 +90,14 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
       this.floorId = configuration.floorId;
       if (!!configuration.data.sinks) {
         configuration.data.sinks.forEach((sink: Sink): void => {
+          console.log(sink);
           const sinkOnMapCoordinates: Point = Geometry.calculatePointPositionInPixels(
             this.scaleCalculations.scaleLengthInPixels,
             this.scaleCalculations.scaleInCentimeters,
             {x: sink.x, y: sink.y});
           const sinkDrawConfiguration: DeviceInEditorConfiguration = {
-            id: 'aaa',
-            clazz: 'aa',
+            id: `${sink.name}-${sink.id}`,
+            clazz: `${sink.name}`,
             heightInMeters: Geometry.calculateDistanceInPixels(this.scaleCalculations.scaleLengthInPixels, this.scaleCalculations.scaleInCentimeters, sink.z)
           };
           const sinkOnMap: SinkInEditor = new SinkInEditor(sinkOnMapCoordinates , this.map, sinkDrawConfiguration);
@@ -107,8 +108,8 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
               this.scaleCalculations.scaleInCentimeters,
               {x: anchor.x, y: anchor.y});
             const anchorDrawConfiguration: DeviceInEditorConfiguration = {
-              id: 'aaa',
-              clazz: 'aa',
+              id: `${anchor.name}-${anchor.id}`,
+              clazz: `${anchor.name}`,
               heightInMeters: Geometry.calculateDistanceInPixels(this.scaleCalculations.scaleLengthInPixels, this.scaleCalculations.scaleInCentimeters, anchor.z)
             };
             const anchorOnMap: AnchorInEditor = new AnchorInEditor(anchorOnMapCoordinates , this.map, anchorDrawConfiguration);
