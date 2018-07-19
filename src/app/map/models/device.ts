@@ -2,6 +2,8 @@ import {DrawConfiguration} from '../../map-viewer/publication.type';
 import {Point} from '../../map-editor/map.type';
 import {DrawBuilder, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.builder';
 import * as d3 from 'd3';
+import {DevicePlacerService} from '../../map-editor/tool-bar/tools/devices/device-placer.service';
+import {ContextMenuService} from '../../shared/wrappers/editable/editable.service';
 
 export class DeviceInEditor {
 
@@ -18,17 +20,15 @@ export class DeviceInEditor {
   private opacityBackgroundInactive: number = 0;
   private appearance: DeviceAppearance = DeviceAppearance.INSCOPE;
 
-  constructor(protected coordinates: Point, protected container: d3.selection, protected drawConfiguration: DeviceInEditorConfiguration) {
-    const deviceDescription = this.getDeviceDescription();
-    const colorBackground: string = this.colorBackgroundInactive;
-
-    this.svgGroupWrapper = new DrawBuilder(container, drawConfiguration).createGroup()
-      .place(coordinates)
-      .addIcon2({x: -12, y: -12}, this.plusUnicode)
-      .addText({x: 5, y: -5}, deviceDescription)
-      .addRectangle({x: -22, y: -33}, {x: 65, y: 65}, 0, colorBackground, true);
-
-    this.addReactionToHover();
+  constructor(
+    protected coordinates: Point,
+    protected container: d3.selection,
+    protected drawConfiguration: DeviceInEditorConfiguration,
+    protected devicePlacerService: DevicePlacerService,
+    protected contextMenuService: ContextMenuService
+  ) {
+    this.createDeviceOnMapGroup(coordinates, container, drawConfiguration);
+    this.addReactionToMouseEvents();
     this.setMovable();
   }
 
@@ -45,6 +45,37 @@ export class DeviceInEditor {
   setOutOfGroupScope(): void {
     this.setDeviceAppearance(this.colorOutOfScope, this.colorBackgroundInactive, this.opacityBackgroundInactive);
     this.appearance = DeviceAppearance.OUTSCOPE;
+  }
+
+  on(callbacks: DeviceCallbacks): d3.selection {
+    this.contextMenuService.setItems([
+      {
+        label: 'unset',
+        command: callbacks.unset
+      }
+    ]);
+    this.svgGroupWrapper.getGroup().on('contextmenu', (): void => {
+      d3.event.preventDefault();
+      this.contextMenuService.openContextMenu();
+      this.devicePlacerService.emitSelected(this);
+    });
+    return this;
+  }
+
+  off(): d3.selection {
+    this.svgGroupWrapper.getGroup().on('contextmenu', null);
+    return this;
+  }
+
+  private createDeviceOnMapGroup(coordinates: Point, container: d3.selection, drawConfiguration: DeviceInEditorConfiguration) {
+    const deviceDescription = this.getDeviceDescription();
+    const colorBackground: string = this.colorBackgroundInactive;
+
+    this.svgGroupWrapper = new DrawBuilder(container, drawConfiguration).createGroup()
+      .place(coordinates)
+      .addIcon2({x: -12, y: -12}, this.plusUnicode)
+      .addText({x: 5, y: -5}, deviceDescription)
+      .addRectangle({x: -22, y: -33}, {x: 65, y: 65}, 0, colorBackground, true);
   }
 
   private setHover(): void {
@@ -73,7 +104,7 @@ export class DeviceInEditor {
     return text;
   }
 
-  private addReactionToHover(): void {
+  private addReactionToMouseEvents(): void {
     this.svgGroupWrapper.getGroup()
       .on('mouseover', (): void => {
         this.setHover();
@@ -88,8 +119,8 @@ export class DeviceInEditor {
             break;
         }
       })
-      .on('click', () => {
-        console.log('click');
+      .on('click', (): void => {
+        this.devicePlacerService.emitActive(this.svgGroupWrapper.getGroup().attr('id'));
       });
   }
 
@@ -101,7 +132,7 @@ export class DeviceInEditor {
           const coordinates: Point = {
             x: d3.event.dx + parseInt(this.svgGroupWrapper.getGroup().attr('x'), 10),
             y: d3.event.dy + parseInt(this.svgGroupWrapper.getGroup().attr('y'), 10)
-          } ;
+          };
           this.svgGroupWrapper.getGroup().attr('x', coordinates.x);
           this.svgGroupWrapper.getGroup().attr('y', coordinates.y);
           }
@@ -125,4 +156,8 @@ export interface DeviceInEditorConfiguration extends DrawConfiguration {
 
 export enum DeviceAppearance {
   INSCOPE, OUTSCOPE, ACTIVE
+}
+
+export interface DeviceCallbacks {
+  unset: () => void;
 }
