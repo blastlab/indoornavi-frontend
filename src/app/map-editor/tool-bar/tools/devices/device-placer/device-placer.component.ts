@@ -100,6 +100,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
             heightInMeters: Geometry.calculateDistanceInPixels(this.scaleCalculations.scaleLengthInPixels, this.scaleCalculations.scaleInCentimeters, sink.z)
           };
           const sinkOnMap: SinkInEditor = new SinkInEditor(sinkOnMapCoordinates , this.map, sinkDrawConfiguration);
+          sinkOnMap.setActive();
           sink.anchors.forEach((anchor: Anchor): void => {
             const anchorOnMapCoordinates: Point = Geometry.calculatePointPositionInPixels(
               this.scaleCalculations.scaleLengthInPixels,
@@ -111,7 +112,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
               heightInMeters: Geometry.calculateDistanceInPixels(this.scaleCalculations.scaleLengthInPixels, this.scaleCalculations.scaleInCentimeters, anchor.z)
             };
             const anchorOnMap: AnchorInEditor = new AnchorInEditor(anchorOnMapCoordinates , this.map, anchorDrawConfiguration);
-            anchorOnMap.setActive()
+            anchorOnMap.setInGroupScope();
           });
         });
       }
