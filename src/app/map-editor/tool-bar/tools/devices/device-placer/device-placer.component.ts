@@ -49,7 +49,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     this.scaleChanged.unsubscribe();
   }
 
-  getHintMessage(): string{
+  getHintMessage(): string {
     return '';
   }
 
@@ -111,6 +111,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
               heightInMeters: Geometry.calculateDistanceInPixels(this.scaleCalculations.scaleLengthInPixels, this.scaleCalculations.scaleInCentimeters, anchor.z)
             };
             const anchorOnMap: AnchorInEditor = new AnchorInEditor(anchorOnMapCoordinates , this.map, anchorDrawConfiguration);
+            anchorOnMap.setActive()
           });
         });
       }

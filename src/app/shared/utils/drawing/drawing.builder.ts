@@ -73,6 +73,28 @@ export class SvgGroupWrapper {
     return this;
   }
 
+  addRectangle (coordinates: Point, size: Point, opacity?: number, color?: string, smoothCorners?: boolean): SvgGroupWrapper {
+    const opacityValue: number = !!opacity ? opacity : 0;
+    const colorValue: string = !!color ? color : '#FFFFFF';
+
+    const element: d3.selection = this.group
+      .append('rect')
+      .attr('x', coordinates.x)
+      .attr('y', coordinates.y)
+      .attr('width', size.x)
+      .attr('height', size.y)
+      .attr('fill', colorValue)
+      .attr('stroke', colorValue)
+      .attr('opacity', opacityValue);
+
+    if (smoothCorners) {
+      element
+        .attr('rx', 16)
+        .attr('ry', 16);
+    }
+    return this;
+  }
+
   place(coordinates: Point): SvgGroupWrapper {
     this.group
       .attr('x', coordinates.x)

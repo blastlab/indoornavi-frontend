@@ -7,14 +7,45 @@ export class DeviceInEditor {
 
   protected svgGroupWrapper: SvgGroupWrapper;
 
-  private plusUnicode = '\uf245';
+  private plusUnicode: string = '\uf245';
+  private colorOutOfScope: string = '#bababa';
+  private colorInScope: string = '#000000';
+  private colorBackgroundActive: string = '#84f4ff';
+  private opacityBackgroundActive: number = 0.5;
+  private opacityInScope: number = 1;
+  private opacityOutOfScope: number = 0.7;
 
   constructor(protected coordinates: Point, protected container: d3.selection, protected drawConfiguration: DeviceInEditorConfiguration) {
     const deviceDescription = this.getDeviceDescription();
     this.svgGroupWrapper = new DrawBuilder(container, drawConfiguration).createGroup()
       .place(coordinates)
       .addIcon2({x: -12, y: -12}, this.plusUnicode)
-      .addText({x: 5, y: -5}, deviceDescription);
+      .addText({x: 5, y: -5}, deviceDescription)
+      .addRectangle({x: -22, y: -33}, {x: 65, y: 65}, 0, '#FFFFFF', true);
+  }
+
+  setActive(): void {
+    const color: string = this.colorInScope;
+    const colorBackground: string = this.colorBackgroundActive;
+    const opacityBackgroundActive: number = this.opacityBackgroundActive;
+
+    this.svgGroupWrapper.getGroup()
+      .selectAll('text')
+      .attr('stroke', color)
+      .attr('fill', color);
+
+    this.svgGroupWrapper.getGroup()
+      .selectAll('rect')
+      .attr('fill', colorBackground)
+      .attr('opacity', opacityBackgroundActive);
+  }
+
+  setInScope(): void {
+    console.log(this.svgGroupWrapper);
+  }
+
+  setOutOfScope(): void {
+    console.log(this.svgGroupWrapper);
   }
 
   private getDeviceDescription(): string {
@@ -26,6 +57,7 @@ export class DeviceInEditor {
     }
     return text;
   }
+
 }
 
 export interface DeviceInEditorConfiguration extends DrawConfiguration {
