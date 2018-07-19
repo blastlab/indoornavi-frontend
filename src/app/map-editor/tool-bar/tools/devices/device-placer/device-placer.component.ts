@@ -11,7 +11,7 @@ import {ActionBarService} from '../../../../action-bar/actionbar.service';
 import {ScaleService} from '../../../../../shared/services/scale/scale.service';
 import {SinkInEditor} from '../../../../../map/models/sink';
 import {Anchor, Sink} from '../../../../../device/device.type';
-import {DeviceInEditorConfiguration} from '../../../../../map/models/device';
+import {DeviceInEditor, DeviceInEditorConfiguration} from '../../../../../map/models/device';
 import {Point} from '../../../../map.type';
 import {AnchorInEditor} from '../../../../../map/models/anchor';
 import {DevicePlacerService} from '../device-placer.service';
@@ -137,13 +137,13 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   }
 
   private listenToDevicesOnMapEvents(): void {
-    this.deviceActivation = this.devicePlacerService.onActive.subscribe((deviceId: number) => {
+    this.deviceActivation = this.devicePlacerService.onActive.subscribe((deviceId: DeviceInEditor) => {
       console.log(deviceId);
     });
   }
 
   private listenToContextMenu() {
-    this.contextMenuListener = this.devicePlacerService.onSelected.subscribe((device: SinkInEditor | AnchorInEditor): void => {
+    this.contextMenuListener = this.devicePlacerService.onSelected.subscribe((device: DeviceInEditor): void => {
       console.log(device);
     });
   }

@@ -120,7 +120,7 @@ export class DeviceInEditor {
         }
       })
       .on('click', (): void => {
-        this.devicePlacerService.emitActive(this.svgGroupWrapper.getGroup().attr('id'));
+        this.devicePlacerService.emitActive(this);
       });
   }
 
