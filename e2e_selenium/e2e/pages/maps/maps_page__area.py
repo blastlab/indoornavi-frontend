@@ -15,6 +15,12 @@ class MapsPageArea(BasePage, MapsBaseAreaLocators):
     def create_maps_db_env(self):
         return self.create_db_env(self.DB_MAPS_ENV_XML)
 
+    def insert_devices_to_db_from_csv(self):
+        return self.service_db().insert_to_db_from_csv(DEVICE_TABLE, DEVICE_COLUMNS, TEST_DEVICES_CSV_PATH)
+
+    def insert_tags_to_db_from_csv(self):
+        return self.service_db().insert_to_db_from_csv(TAG_TABLE, TAG_COLUMNS, TEST_TAGS_CSV_PATH)
+
     def set_image_to_floor(self):
         params = TEST_UPDATE_FLOOR_IMG_PARAMS
         return self.service_db().update_table(params)
@@ -28,7 +34,7 @@ class MapsPageArea(BasePage, MapsBaseAreaLocators):
 
     def insert_image_to_db(self):
 
-        with open('src/test_data_upload/correct_map.png', "rb") as f:
+        with open(TEST_IMAGE_PATH, "rb") as f:
           blob = f.read()
         _table = IMAGE_TABLE
         _columns = IMAGE_COLUMNS
@@ -51,9 +57,23 @@ class MapsPageArea(BasePage, MapsBaseAreaLocators):
     def on_enter_multiselect_device_click(self):
         return self.click_element(self.AREA_ADD_ENTER_MULTISELECT)
 
+    def on_enter_multiselect_device_close_click(self):
+        return self.click_element(self.AREA_ADD_ENTER_MULTISELECT_CLOSE)
+
+    def multiselect_item_click(self, option):
+        selectors = {"ON_ENTER_123": self.AREA_ADD_ENTER_MULTISELECT_ITEM_123,
+                     "ON_ENTER_456": self.AREA_ADD_ENTER_MULTISELECT_ITEM_456,
+                     "ON_LEAVE_123": self.AREA_ADD_LEAVE_MULTISELECT_ITEM_123,
+                     "ON_LEAVE_456": self.AREA_ADD_LEAVE_MULTISELECT_ITEM_456}
+        return self.click_element(selectors[option])
+
     def on_leave_multiselect_device_click(self):
         return self.click_element(self.AREA_ADD_LEAVE_MULTISELECT)
 
+    def on_leave_multiselect_device_close_click(self):
+        return self.click_element(self.AREA_ADD_LEAVE_MULTISELECT_CLOSE)
+
+    # def multiselect_item_on_enter_click(self):
     # ELEMENTS APPEARANCE
     def is_area_button_displayed(self):
         return True if self.is_element_present(self.AREA_BUTTON) else False

@@ -24,7 +24,8 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         # Prepare environment
         self.maps_page_area.truncate_db()
         self.maps_page_area.create_maps_db_env()
-        self.maps_page_area.create_devices_db_env()
+        self.maps_page_area.insert_tags_to_db_from_csv()
+        self.maps_page_area.insert_devices_to_db_from_csv()
         # Login to app
         self.page.login_process(self.option, 1)
         self.__set_before_scale_db_configuration()
@@ -43,6 +44,15 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
     def __navigate_to_maps_page(self):
         self.webdriver.get(self.MAPS_URL)
 
+    def __set_tags(self):
+        self.maps_page_area.on_enter_multiselect_device_click()
+        self.maps_page_area.multiselect_item_click("ON_ENTER_123")
+        self.maps_page_area.multiselect_item_click("ON_ENTER_456")
+        self.maps_page_area.on_leave_multiselect_device_click()
+        self.maps_page_area.multiselect_item_click("ON_LEAVE_123")
+        self.maps_page_area.multiselect_item_click("ON_LEAVE_456")
+        self.maps_page_area.on_leave_multiselect_device_close_click()
+
     # SCALE TESTS
     def test_01_add_new_area_correctly_triangle_with_all_params(self):
 
@@ -58,7 +68,7 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.maps_page_area.enter_area_name()
         self.maps_page_area.enter_on_enter_offset()
         self.maps_page_area.enter_on_leave_offset()
-
+        self.__set_tags()
         # TODO ON LEAVE/ON ENTER
 
         self.maps_page_area.area_confirm_click()
@@ -89,7 +99,7 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.maps_page_area.enter_area_name()
         self.maps_page_area.enter_on_enter_offset()
         self.maps_page_area.enter_on_leave_offset()
-
+        self.__set_tags()
         # TODO ON LEAVE/ON ENTER
 
         self.maps_page_area.area_confirm_click()
@@ -101,6 +111,10 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.webdriver.refresh()
         self.maps_page_area.area_button_click()
         third_step_points = self.maps_page_area.get_polygon_points('0')
+
+        print("FIRST STEP : " + str(first_step_points))
+        print("SECOND STEP : " + str(second_step_points[:32]))
+        print("THIRD STEP: " + str(third_step_points[:32]))
 
         self.assertEqual(first_step_points, second_step_points[:32])
         self.assertEqual(first_step_points, third_step_points[:32])
@@ -117,7 +131,7 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
 
         self.maps_page_area.enter_on_enter_offset()
         self.maps_page_area.enter_on_leave_offset()
-
+        self.__set_tags()
         # TODO ON LEAVE/ON ENTER
 
         self.maps_page_area.area_confirm_click()
@@ -135,7 +149,6 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.test_failed = False
 
     def test_04_add_new_area_square_correctly_with_move(self):
-
         test_offset = 100
         self.maps_page_area.is_area_button_displayed()
         self.maps_page_area.area_button_click()
@@ -149,9 +162,7 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.maps_page_area.enter_area_name()
         self.maps_page_area.enter_on_enter_offset()
         self.maps_page_area.enter_on_leave_offset()
-        self.maps_page_area.on_enter_multiselect_device_click()
-        time.sleep(5)
-        # TODO ON LEAVE/ON ENTER
+        self.__set_tags()
 
         self.maps_page_area.move_polygon(test_offset, 0, '2')
 

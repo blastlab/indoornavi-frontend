@@ -1,6 +1,6 @@
 import mysql.connector
 from pyquibase.pyquibase import Pyquibase
-
+from .service_data import get_csv_data
 
 class ServiceDb(object):
 
@@ -50,6 +50,19 @@ class ServiceDb(object):
               raise ValueError('Number of columns is not equal to number of values')
         else:
           raise ValueError('Set connection to db before executing insertion')
+
+    def insert_to_db_from_csv(self, table, columns, filepath):
+
+        if columns is not tuple and columns == 'id':
+            columns = tuple([columns])
+
+        _values_array = get_csv_data(filepath)
+
+        for row_values in _values_array:
+            values_tuple = tuple(row_values)
+            result_tuple = tuple(var if var != 'NULL' else None for var in values_tuple)
+
+            self.insert_to_db(table, columns, result_tuple)
 
     def update_table(self, update_params):
 

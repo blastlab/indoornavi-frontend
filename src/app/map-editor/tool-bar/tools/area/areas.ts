@@ -245,15 +245,53 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
     var areaOnleaveOffset = areaDialog.querySelector('#offset-on_leave');
         areaOnleaveOffset.classList.add("test-add-area-leave-offset");
 
-    var areaOnEnterMultiSelectLabel = areaDialog.querySelector('#on_enter')
-                                                .querySelector('.ui-multiselect-label');
+    var areaOnEnterMultiSelectLabel = areaDialog.querySelector('#on_enter').querySelector('.ui-multiselect-label');
+        areaOnEnterMultiSelectLabel.classList.add("test-add-area-enter-multiselect-label");
 
-        areaOnEnterMultiSelectLabel.classList.add("test-add-area-enter-multiselect-label")
+    var areaOnLeaveMultiSelectLabel = areaDialog.querySelector('#on_leave').querySelector('.ui-multiselect-label');
+        areaOnLeaveMultiSelectLabel.classList.add("test-add-area-leave-multiselect-label");
 
-    var areaOnLeaveMultiSelectLabel = areaDialog.querySelector('#on_leave')
-                                                .querySelector('.ui-multiselect-label');
+    var areaOnEnterMultiselectClose = areaDialog.querySelector('#on_enter').querySelector('.fa-close');
+        areaOnEnterMultiselectClose.classList.add("test-add-area-enter-multiselect-close");
 
-        areaOnLeaveMultiSelectLabel.classList.add("test-add-area-leave-multiselect-label")
+    var areaOnLeaveMultiselectClose = areaDialog.querySelector('#on_leave').querySelector('.fa-close');
+        areaOnLeaveMultiselectClose.classList.add("test-add-area-leave-multiselect-close");
+        
+    console.log(areaOnEnterMultiselectClose);
+    console.log(areaOnLeaveMultiselectClose);
+
+    var onEnterMultiselectsArray = waitForMultiselectsAndAddTestClasses("#on_enter");
+    var onLeaveMultiselectsArray = waitForMultiselectsAndAddTestClasses("#on_leave");
+
+    var multiselectItems;
+
+    function waitForMultiselectsAndAddTestClasses(selector) {
+        var interval = setInterval(function() {
+            multiselectItems = document.querySelector(selector).getElementsByClassName('ui-multiselect-item');
+
+            //if elements exist in DOM and are ready
+            if (multiselectItems && multiselectItems.length>0) {
+                clearInterval(interval);
+                console.log(selector);
+                var textEl = (selector == "#on_enter") ? "on-enter" : "on-leave";
+                console.log(textEl);
+                for(var i = 0; i < multiselectItems.length; i++)
+                {
+                      // multiselect single row
+                      var multiItem = multiselectItems[i];
+                      // its label
+                      var multiItemLabel = multiItem.querySelector('label');
+                      // label text
+                      var elLabelText = (multiItemLabel.innerText || multiItemLabel.textContent);
+                      // new class
+                      var newElClass = "test-multiselect-item-"+textEl+"-"+elLabelText;
+                          multiItem.classList.add(newElClass);
+                }
+            }
+        }, 100);  // 100 represents how often the script checks for existence of heading in ms
+    }
+
+
 
   }
   toggleActivity(): void {
