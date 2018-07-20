@@ -12,6 +12,7 @@ export class DeviceInEditor {
 
   protected svgGroupWrapper: SvgGroupWrapper;
 
+  private reactiveToEvents: boolean = false;
   private plusUnicode: string = '\uf245';
   private colorOutOfScope: string = '#bababa';
   private colorInScope: string = '#000000';
@@ -67,8 +68,17 @@ export class DeviceInEditor {
     return this;
   }
 
+  activate(): void {
+    this.reactiveToEvents = true;
+  }
+
+  deactivate(): void {
+    this.reactiveToEvents = false;
+  }
+
   off(): d3.selection {
     this.svgGroupWrapper.getGroup().on('contextmenu', null);
+    this.setOutOfGroupScope();
     return this;
   }
 
@@ -76,7 +86,7 @@ export class DeviceInEditor {
     this.svgGroupWrapper.getGroup().remove();
   }
 
-  protected setTranslation(value: string): void {
+  private setTranslation(value: string): void {
     this.translateService.setDefaultLang('en');
     this.translateService
       .get(value, {'browser': BrowserDetector.getBrowserName()})
@@ -141,31 +151,34 @@ export class DeviceInEditor {
       })
       .on('click', (): void => {
         d3.event.stopPropagation();
-        this.devicePlacerService.emitActive(this);
+        if (this.reactiveToEvents) {
+          this.devicePlacerService.emitActive(this);
+        }
       });
   }
 
   private setMovable(): void {
     let element: d3.selection = this.svgGroupWrapper.getGroup();
-    element.call(
-      d3.drag()
-        .on('drag', (): void => {
-          const coordinates: Point = {
-            x: d3.event.dx + parseInt(this.svgGroupWrapper.getGroup().attr('x'), 10),
-            y: d3.event.dy + parseInt(this.svgGroupWrapper.getGroup().attr('y'), 10)
-          };
-          this.svgGroupWrapper.getGroup().attr('x', coordinates.x);
-          this.svgGroupWrapper.getGroup().attr('y', coordinates.y);
+    const drag: d3.event = d3.drag()
+      .on('drag', (): void => {
+          if (this.reactiveToEvents) {
+            const coordinates: Point = {
+              x: d3.event.dx + parseInt(this.svgGroupWrapper.getGroup().attr('x'), 10),
+              y: d3.event.dy + parseInt(this.svgGroupWrapper.getGroup().attr('y'), 10)
+            };
+            this.svgGroupWrapper.getGroup().attr('x', coordinates.x);
+            this.svgGroupWrapper.getGroup().attr('y', coordinates.y);
           }
-        )
-        .on('start', (): void => {
-          element = d3.select(d3.event.sourceEvent.target);
-          d3.event.sourceEvent.stopPropagation();
-        })
-        .on('end', (): void => {
-          element = null;
-        })
-    );
+        }
+      )
+      .on('start', (): void => {
+        element = d3.select(d3.event.sourceEvent.target);
+        d3.event.sourceEvent.stopPropagation();
+      })
+      .on('end', (): void => {
+        element = null;
+      });
+    element.call(drag);
   }
 
 

@@ -23,27 +23,6 @@ export class SinkInEditor extends DeviceInEditor {
   ) {
     super(coordinates, container, drawConfiguration, devicePlacerService, contextMenuService, translateService);
     this.svgGroupWrapper = this.svgGroupWrapper.addIcon2({x: 5, y: 5}, this.sinkUnicode, 2);
-    this.setTranslation('remove.with.anchors');
-  }
-
-  on(callbacks: DeviceCallbacks): d3.selection {
-    this.contextMenuService.setItems([
-      {
-        label: this.unsetLabel,
-        command: callbacks.unset
-      }
-    ]);
-    this.svgGroupWrapper.getGroup().on('contextmenu', (): void => {
-      d3.event.preventDefault();
-      this.contextMenuService.openContextMenu();
-      this.devicePlacerService.emitSelected(this);
-    });
-    return this;
-  }
-
-  off(): d3.selection {
-    this.svgGroupWrapper.getGroup().on('contextmenu', null);
-    return this;
   }
 
   removeAllAnchors(): void {
@@ -80,5 +59,19 @@ export class SinkInEditor extends DeviceInEditor {
   hasAnchor(anchor: AnchorInEditor): boolean {
     const index: number = this.anchors.indexOf(anchor);
     return index > -1;
+  }
+
+  activateAnchors(contextMenu: DeviceCallbacks): void {
+    this.anchors.forEach((anchor: AnchorInEditor): void => {
+      anchor.on(contextMenu);
+      anchor.activate();
+    });
+  }
+
+  deactivateAnchors(): void {
+    this.anchors.forEach((anchor: AnchorInEditor): void => {
+      anchor.off();
+      anchor.deactivate();
+    });
   }
 }

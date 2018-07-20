@@ -11,7 +11,7 @@ import {ActionBarService} from '../../../../action-bar/actionbar.service';
 import {ScaleService} from '../../../../../shared/services/scale/scale.service';
 import {SinkInEditor} from '../../../../../map/models/sink';
 import {Anchor, Sink} from '../../../../../device/device.type';
-import {DeviceInEditorConfiguration, DeviceInEditorType} from '../../../../../map/models/device';
+import {DeviceCallbacks, DeviceInEditorConfiguration, DeviceInEditorType} from '../../../../../map/models/device';
 import {Point} from '../../../../map.type';
 import {AnchorInEditor} from '../../../../../map/models/anchor';
 import {DevicePlacerService} from '../device-placer.service';
@@ -36,6 +36,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   private scaleCalculations: ScaleCalculations;
   private activeDevice: SinkInEditor | AnchorInEditor;
   private sinks: SinkInEditor[] = [];
+  private contextMenu: DeviceCallbacks;
 
   constructor(
     private mapLoaderInformer: MapLoaderInformerService,
@@ -48,6 +49,11 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.contextMenu = {
+      unset: () => {
+        this.removeFromMap();
+      }
+    };
     this.bindMapSelection();
     this.captureScaleChanges();
     this.fetchConfiguredDevices();
@@ -56,6 +62,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.contextMenu = null;
     this.mapLoadedSubscription.unsubscribe();
     this.scaleChanged.unsubscribe();
     this.deviceActivation.unsubscribe();
@@ -79,14 +86,14 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     if (this.active) {
       this.setInactive();
     } else {
-      this.activateMapEvents();
+      this.activatePlacerEvents();
       this.devicePlacerService.emitListVisibility(true);
     }
     this.active = !this.active;
   }
 
   setInactive(): void {
-    this.deactivateMapEvents();
+    this.deactivatePlacerEvents();
     this.devicePlacerService.emitListVisibility(false);
   }
 
@@ -110,11 +117,6 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
 
   private fetchConfiguredDevices(): void {
     this.configurationService.configurationLoaded().first().subscribe((configuration: Configuration): void => {
-      const contextMenu = {
-        unset: () => {
-          this.removeFromMap();
-        }
-      };
       this.floorId = configuration.floorId;
       if (!!configuration.data.sinks) {
         configuration.data.sinks.forEach((sink: Sink): void => {
@@ -136,7 +138,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
             this.translateService
           );
           sinkOnMap.setOutOfGroupScope();
-          sinkOnMap.on(contextMenu);
+          sinkOnMap.off();
           this.addSink(sinkOnMap);
           sink.anchors.forEach((anchor: Anchor): void => {
             const anchorOnMapCoordinates: Point = Geometry.calculatePointPositionInPixels(
@@ -157,7 +159,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
               this.translateService
               );
             anchorOnMap.setOutOfGroupScope();
-            anchorOnMap.on(contextMenu);
+            anchorOnMap.off();
             this.addAnchorToSink(sinkOnMap, anchorOnMap);
           });
         });
@@ -252,7 +254,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     }
   }
 
-  private activateMapEvents(): void {
+  private activatePlacerEvents(): void {
     if (!!this.map) {
       this.map
         .on('click', (): void => {
@@ -264,12 +266,22 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
           d3.event.preventDefault();
         });
     }
+    this.sinks.forEach((sink: SinkInEditor): void => {
+      sink.on(this.contextMenu);
+      sink.activate();
+      sink.activateAnchors(this.contextMenu);
+    });
   }
 
-  private deactivateMapEvents(): void {
+  private deactivatePlacerEvents(): void {
     if (!!this.map) {
       this.map.on('click', null).on('contextmenu', null);
     }
+    this.sinks.forEach((sink: SinkInEditor): void => {
+      sink.off();
+      sink.deactivate();
+      sink.deactivateAnchors();
+    });
   }
 
 }
