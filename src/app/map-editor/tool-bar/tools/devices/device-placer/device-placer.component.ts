@@ -11,11 +11,12 @@ import {ActionBarService} from '../../../../action-bar/actionbar.service';
 import {ScaleService} from '../../../../../shared/services/scale/scale.service';
 import {SinkInEditor} from '../../../../../map/models/sink';
 import {Anchor, Sink} from '../../../../../device/device.type';
-import {DeviceInEditor, DeviceInEditorConfiguration, DeviceInEditorType} from '../../../../../map/models/device';
+import {DeviceInEditorConfiguration, DeviceInEditorType} from '../../../../../map/models/device';
 import {Point} from '../../../../map.type';
 import {AnchorInEditor} from '../../../../../map/models/anchor';
 import {DevicePlacerService} from '../device-placer.service';
 import {ContextMenuService} from '../../../../../shared/wrappers/editable/editable.service';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-device-placer',
@@ -33,7 +34,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   private scale: Scale;
   private floorId: number;
   private scaleCalculations: ScaleCalculations;
-  private activeDevice: DeviceInEditor;
+  private activeDevice: SinkInEditor | AnchorInEditor;
   private sinks: SinkInEditor[] = [];
 
   constructor(
@@ -41,8 +42,10 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     private configurationService: ActionBarService,
     private scaleService: ScaleService,
     private devicePlacerService: DevicePlacerService,
-    private contextMenuService: ContextMenuService
-  ) { }
+    private contextMenuService: ContextMenuService,
+    private translateService: TranslateService
+  ) {
+  }
 
   ngOnInit() {
     this.bindMapSelection();
@@ -57,7 +60,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     this.scaleChanged.unsubscribe();
     this.deviceActivation.unsubscribe();
     this.contextMenuListener.unsubscribe();
-  //  TODO: unset context menu for all devices
+    //  TODO: unset context menu for all devices
   }
 
   getHintMessage(): string {
@@ -71,9 +74,11 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   setDisabled(value: boolean): void {
     this.disabled = value;
   }
+
   setActive(): void {
     console.log(this.scale);
   }
+
   setInactive(): void {
 
   }
@@ -115,8 +120,15 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
             clazz: `sink`,
             heightInMeters: Geometry.calculateDistanceInPixels(this.scaleCalculations.scaleLengthInPixels, this.scaleCalculations.scaleInCentimeters, sink.z)
           };
-          const sinkOnMap: SinkInEditor = new SinkInEditor(sinkOnMapCoordinates , this.map, sinkDrawConfiguration, this.devicePlacerService, this.contextMenuService);
-          sinkOnMap.setActive();
+          const sinkOnMap: SinkInEditor = new SinkInEditor(
+            sinkOnMapCoordinates,
+            this.map,
+            sinkDrawConfiguration,
+            this.devicePlacerService,
+            this.contextMenuService,
+            this.translateService
+          );
+          sinkOnMap.setOutOfGroupScope();
           sinkOnMap.on(contextMenu);
           this.addSink(sinkOnMap);
           sink.anchors.forEach((anchor: Anchor): void => {
@@ -129,8 +141,15 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
               clazz: `anchor`,
               heightInMeters: Geometry.calculateDistanceInPixels(this.scaleCalculations.scaleLengthInPixels, this.scaleCalculations.scaleInCentimeters, anchor.z)
             };
-            const anchorOnMap: AnchorInEditor = new AnchorInEditor(anchorOnMapCoordinates , this.map, anchorDrawConfiguration, this.devicePlacerService, this.contextMenuService);
-            anchorOnMap.setInGroupScope();
+            const anchorOnMap: AnchorInEditor = new AnchorInEditor(
+              anchorOnMapCoordinates,
+              this.map,
+              anchorDrawConfiguration,
+              this.devicePlacerService,
+              this.contextMenuService,
+              this.translateService
+              );
+            anchorOnMap.setOutOfGroupScope();
             anchorOnMap.on(contextMenu);
             this.addAnchorToSink(sinkOnMap, anchorOnMap);
           });
@@ -157,14 +176,21 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   }
 
   private listenToContextMenu() {
-    this.contextMenuListener = this.devicePlacerService.onSelected.subscribe((device: DeviceInEditor): void => {
-      console.log(device);
+    this.contextMenuListener = this.devicePlacerService.onSelected.subscribe((device: AnchorInEditor | SinkInEditor): void => {
       this.activeDevice = device;
     });
   }
 
   private removeFromMap(): void {
-    console.log(`removing ${this.activeDevice}`);
+    if (this.activeDevice.type === DeviceInEditorType.SINK) {
+      this.removeSinkWithAnchors(<SinkInEditor>this.activeDevice);
+    } else {
+      const sinkWithAnchor: SinkInEditor = this.sinks.find((sink: SinkInEditor): boolean => {
+        return sink.hasAnchor(<AnchorInEditor>this.activeDevice)
+      });
+      this.removeAnchorFromSink(sinkWithAnchor, <AnchorInEditor>this.activeDevice)
+    }
+    console.log(this.sinks);
   }
 
   private addSink(sink: SinkInEditor): void {
@@ -181,11 +207,21 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   }
 
   private removeAnchorFromSink(sink: SinkInEditor, anchor: AnchorInEditor): void {
+    anchor.remove();
     const sinkToUpdate: SinkInEditor = this.sinks.find((sinkInEditor: SinkInEditor): boolean => {
       return sink === sinkInEditor;
     });
     if (!!sinkToUpdate) {
       sinkToUpdate.removeAnchor(anchor);
+    }
+  }
+
+  private removeSinkWithAnchors(sink: SinkInEditor): void {
+    sink.removeAllAnchors();
+    sink.remove();
+    const index = this.sinks.indexOf(sink);
+    if (index > -1) {
+      this.sinks.splice(index, 1);
     }
   }
 

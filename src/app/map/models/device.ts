@@ -4,8 +4,10 @@ import {DrawBuilder, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.b
 import * as d3 from 'd3';
 import {DevicePlacerService} from '../../map-editor/tool-bar/tools/devices/device-placer.service';
 import {ContextMenuService} from '../../shared/wrappers/editable/editable.service';
-import {SinkInEditor} from './sink';
-import {AnchorInEditor} from './anchor';
+import {BrowserDetector} from '../../shared/services/browser-detector/browser.detector';
+import {TranslateService} from '@ngx-translate/core';
+import {Subject} from 'rxjs/Subject';
+
 
 export class DeviceInEditor {
 
@@ -21,13 +23,15 @@ export class DeviceInEditor {
   private opacityBackgroundActive: number = 0.5;
   private opacityBackgroundInactive: number = 0;
   private appearance: DeviceAppearance = DeviceAppearance.INSCOPE;
+  protected unsetLabel: string;
 
   constructor(
     protected coordinates: Point,
     protected container: d3.selection,
     protected drawConfiguration: DeviceInEditorConfiguration,
     protected devicePlacerService: DevicePlacerService,
-    protected contextMenuService: ContextMenuService
+    protected contextMenuService: ContextMenuService,
+    protected translateService: TranslateService
   ) {
     this.createDeviceOnMapGroup(coordinates, container, drawConfiguration);
     this.addReactionToMouseEvents();
@@ -50,9 +54,10 @@ export class DeviceInEditor {
   }
 
   on(callbacks: DeviceCallbacks): d3.selection {
+    console.log(this.unsetLabel);
     this.contextMenuService.setItems([
       {
-        label: 'unset',
+        label: this.unsetLabel,
         command: callbacks.unset
       }
     ]);
@@ -67,6 +72,19 @@ export class DeviceInEditor {
   off(): d3.selection {
     this.svgGroupWrapper.getGroup().on('contextmenu', null);
     return this;
+  }
+
+  remove(): void {
+    this.svgGroupWrapper.getGroup().remove();
+  }
+
+  protected setTranslation(value: string): void {
+    this.translateService.setDefaultLang('en');
+    this.translateService
+      .get(value, {'browser': BrowserDetector.getBrowserName()})
+      .subscribe((translatedValue) => {
+        this.unsetLabel = translatedValue;
+      });
   }
 
   private createDeviceOnMapGroup(coordinates: Point, container: d3.selection, drawConfiguration: DeviceInEditorConfiguration) {

@@ -4,6 +4,7 @@ import * as d3 from 'd3';
 import {DevicePlacerService} from '../../map-editor/tool-bar/tools/devices/device-placer.service';
 import {ContextMenuService} from '../../shared/wrappers/editable/editable.service';
 import {AnchorInEditor} from './anchor';
+import {TranslateService} from '@ngx-translate/core';
 
 export class SinkInEditor extends DeviceInEditor {
 
@@ -17,10 +18,23 @@ export class SinkInEditor extends DeviceInEditor {
     protected container: d3.selection,
     protected drawConfiguration: DeviceInEditorConfiguration,
     protected devicePlacerService: DevicePlacerService,
-    protected contextMenuService: ContextMenuService
+    protected contextMenuService: ContextMenuService,
+    protected translateService: TranslateService
   ) {
-    super(coordinates, container, drawConfiguration, devicePlacerService, contextMenuService);
-    this.svgGroupWrapper = this.svgGroupWrapper.addIcon2({x: 5, y: 5}, this.sinkUnicode, 2)
+    super(coordinates, container, drawConfiguration, devicePlacerService, contextMenuService, translateService);
+    this.svgGroupWrapper = this.svgGroupWrapper.addIcon2({x: 5, y: 5}, this.sinkUnicode, 2);
+    this.setTranslation('remove.with.anchors');
+  }
+
+  get anchorsList(): AnchorInEditor[] {
+    return this.anchors;
+  }
+
+  removeAllAnchors(): void {
+    this.anchors.forEach((anchor: AnchorInEditor) => {
+      anchor.remove();
+    });
+    this.anchors = [];
   }
 
   addAnchor(anchor: AnchorInEditor): void {
@@ -28,6 +42,7 @@ export class SinkInEditor extends DeviceInEditor {
   }
 
   removeAnchor(anchor: AnchorInEditor): void {
+    anchor.remove();
     const index: number = this.anchors.indexOf(anchor);
     if (index !== -1) {
       this.anchors.splice(index, 1);
@@ -49,9 +64,5 @@ export class SinkInEditor extends DeviceInEditor {
   hasAnchor(anchor: AnchorInEditor): boolean {
     const index: number = this.anchors.indexOf(anchor);
     return index > -1;
-  }
-
-  get anchorsList(): AnchorInEditor[] {
-    return this.anchors;
   }
 }
