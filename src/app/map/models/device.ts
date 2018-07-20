@@ -61,7 +61,6 @@ export class DeviceInEditor {
       }
     ]);
     this.svgGroupWrapper.getGroup().on('contextmenu', (): void => {
-      d3.event.preventDefault();
       this.contextMenuService.openContextMenu();
       this.devicePlacerService.emitSelected(this);
     });
@@ -127,8 +126,10 @@ export class DeviceInEditor {
     this.svgGroupWrapper.getGroup()
       .on('mouseover', (): void => {
         this.setHover();
+        this.svgGroupWrapper.getGroup().style("cursor", "pointer");
       })
       .on('mouseout', (): void => {
+        this.svgGroupWrapper.getGroup().style("cursor", "default");
         switch (this.appearance) {
           case 0: this.setInGroupScope();
             break;
@@ -139,6 +140,7 @@ export class DeviceInEditor {
         }
       })
       .on('click', (): void => {
+        d3.event.stopPropagation();
         this.devicePlacerService.emitActive(this);
       });
   }

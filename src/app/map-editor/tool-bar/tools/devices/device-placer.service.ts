@@ -3,8 +3,7 @@ import {Subject} from 'rxjs/Subject';
 import {Point} from '../../../map.type';
 import {Device} from '../../../../device/device.type';
 import {DeviceInEditor} from '../../../../map/models/device';
-import {SinkInEditor} from '../../../../map/models/sink';
-import {AnchorInEditor} from '../../../../map/models/anchor';
+import {Observable} from 'rxjs/Observable';
 
 
 @Injectable()
@@ -14,12 +13,16 @@ export class DevicePlacerService {
   private droppedInside: Subject<Point> = new Subject();
   private active: Subject<DeviceInEditor> = new Subject();
   private selected: Subject<DeviceInEditor> = new Subject<DeviceInEditor>();
+  private removedFromMap: Subject<DeviceInEditor> = new Subject<DeviceInEditor>();
+  private listVisibility: Subject<boolean> = new Subject<boolean>();
 
-  onDragStarted = this.draggedStarted.asObservable();
-  onDroppedOutside = this.droppedOutside.asObservable();
-  onDroppedInside = this.droppedInside.asObservable();
-  onActive = this.active.asObservable();
-  onSelected = this.selected.asObservable();
+  onDragStarted: Observable<Device> = this.draggedStarted.asObservable();
+  onDroppedOutside: Observable<void> = this.droppedOutside.asObservable();
+  onDroppedInside: Observable<Point> = this.droppedInside.asObservable();
+  onActive: Observable<DeviceInEditor> = this.active.asObservable();
+  onSelected: Observable<DeviceInEditor> = this.selected.asObservable();
+  onRemovedFromMap: Observable<DeviceInEditor> = this.removedFromMap.asObservable();
+  onListVisibility: Observable<boolean> = this.listVisibility.asObservable();
 
   constructor() {
   }
@@ -43,5 +46,13 @@ export class DevicePlacerService {
   emitSelected(device: DeviceInEditor): void {
     this.selected.next(device);
   }
+
+  emitRemovedFromMap(device: DeviceInEditor): void {
+    this.removedFromMap.next(device);
+  }
+
+  emitListVisibility(visible: boolean): void {
+    this.listVisibility.next(visible);
+}
 
 }

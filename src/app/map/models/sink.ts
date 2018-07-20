@@ -26,10 +26,6 @@ export class SinkInEditor extends DeviceInEditor {
     this.setTranslation('remove.with.anchors');
   }
 
-  get anchorsList(): AnchorInEditor[] {
-    return this.anchors;
-  }
-
   on(callbacks: DeviceCallbacks): d3.selection {
     this.contextMenuService.setItems([
       {

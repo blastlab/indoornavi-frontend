@@ -76,11 +76,18 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   }
 
   setActive(): void {
-    console.log(this.scale);
+    if (this.active) {
+      this.setInactive();
+    } else {
+      this.activateMapEvents();
+      this.devicePlacerService.emitListVisibility(true);
+    }
+    this.active = !this.active;
   }
 
   setInactive(): void {
-
+    this.deactivateMapEvents();
+    this.devicePlacerService.emitListVisibility(false);
   }
 
   private bindMapSelection(): void {
@@ -190,7 +197,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
       });
       this.removeAnchorFromSink(sinkWithAnchor, <AnchorInEditor>this.activeDevice)
     }
-    console.log(this.sinks);
+    this.devicePlacerService.emitRemovedFromMap(this.activeDevice);
   }
 
   private addSink(sink: SinkInEditor): void {
@@ -242,6 +249,26 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     if (!!sinkToUpdate) {
       sinkToUpdate.setOutOfGroupScope();
       sinkToUpdate.setSinkGroupOutOfScope();
+    }
+  }
+
+  private activateMapEvents(): void {
+    if (!!this.map) {
+      this.map
+        .on('click', (): void => {
+        this.sinks.forEach((sink: SinkInEditor) => {
+          this.setSinkGroupInScope(sink);
+        })
+      })
+        .on('contextmenu', () => {
+          d3.event.preventDefault();
+        });
+    }
+  }
+
+  private deactivateMapEvents(): void {
+    if (!!this.map) {
+      this.map.on('click', null).on('contextmenu', null);
     }
   }
 
