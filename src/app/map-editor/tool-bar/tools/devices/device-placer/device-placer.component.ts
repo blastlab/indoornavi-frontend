@@ -11,7 +11,7 @@ import {ActionBarService} from '../../../../action-bar/actionbar.service';
 import {ScaleService} from '../../../../../shared/services/scale/scale.service';
 import {SinkInEditor} from '../../../../../map/models/sink';
 import {Anchor, Sink} from '../../../../../device/device.type';
-import {DeviceInEditor, DeviceInEditorConfiguration} from '../../../../../map/models/device';
+import {DeviceInEditor, DeviceInEditorConfiguration, DeviceInEditorType} from '../../../../../map/models/device';
 import {Point} from '../../../../map.type';
 import {AnchorInEditor} from '../../../../../map/models/anchor';
 import {DevicePlacerService} from '../device-placer.service';
@@ -33,6 +33,8 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   private scale: Scale;
   private floorId: number;
   private scaleCalculations: ScaleCalculations;
+  private activeDevice: DeviceInEditor;
+  private sinks: SinkInEditor[] = [];
 
   constructor(
     private mapLoaderInformer: MapLoaderInformerService,
@@ -55,7 +57,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     this.scaleChanged.unsubscribe();
     this.deviceActivation.unsubscribe();
     this.contextMenuListener.unsubscribe();
-  //  TODO: uset context menu for all devices
+  //  TODO: unset context menu for all devices
   }
 
   getHintMessage(): string {
@@ -104,7 +106,6 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
       this.floorId = configuration.floorId;
       if (!!configuration.data.sinks) {
         configuration.data.sinks.forEach((sink: Sink): void => {
-          console.log(sink);
           const sinkOnMapCoordinates: Point = Geometry.calculatePointPositionInPixels(
             this.scaleCalculations.scaleLengthInPixels,
             this.scaleCalculations.scaleInCentimeters,
@@ -117,6 +118,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
           const sinkOnMap: SinkInEditor = new SinkInEditor(sinkOnMapCoordinates , this.map, sinkDrawConfiguration, this.devicePlacerService, this.contextMenuService);
           sinkOnMap.setActive();
           sinkOnMap.on(contextMenu);
+          this.addSink(sinkOnMap);
           sink.anchors.forEach((anchor: Anchor): void => {
             const anchorOnMapCoordinates: Point = Geometry.calculatePointPositionInPixels(
               this.scaleCalculations.scaleLengthInPixels,
@@ -130,6 +132,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
             const anchorOnMap: AnchorInEditor = new AnchorInEditor(anchorOnMapCoordinates , this.map, anchorDrawConfiguration, this.devicePlacerService, this.contextMenuService);
             anchorOnMap.setInGroupScope();
             anchorOnMap.on(contextMenu);
+            this.addAnchorToSink(sinkOnMap, anchorOnMap);
           });
         });
       }
@@ -137,20 +140,73 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   }
 
   private listenToDevicesOnMapEvents(): void {
-    this.deviceActivation = this.devicePlacerService.onActive.subscribe((deviceId: DeviceInEditor) => {
-      console.log(deviceId);
+    this.deviceActivation = this.devicePlacerService.onActive.subscribe((device: AnchorInEditor | SinkInEditor) => {
+      this.sinks.forEach((sink: SinkInEditor): void => {
+        this.setSinkGroupOutOfScope(sink);
+      });
+      if (device.type === DeviceInEditorType.SINK) {
+        this.setSinkGroupInScope(<SinkInEditor>device);
+      } else {
+        const sinkWithAnchor: SinkInEditor = this.sinks.find((sink: SinkInEditor): boolean => {
+          return sink.hasAnchor(<AnchorInEditor>device);
+        });
+        this.setSinkGroupInScope(sinkWithAnchor);
+      }
+      device.setActive();
     });
   }
 
   private listenToContextMenu() {
     this.contextMenuListener = this.devicePlacerService.onSelected.subscribe((device: DeviceInEditor): void => {
       console.log(device);
+      this.activeDevice = device;
     });
   }
 
   private removeFromMap(): void {
-    console.log('removing');
+    console.log(`removing ${this.activeDevice}`);
   }
 
+  private addSink(sink: SinkInEditor): void {
+    this.sinks.push(sink);
+  }
+
+  private addAnchorToSink(sink: SinkInEditor, anchor: AnchorInEditor): void {
+    const sinkToUpdate: SinkInEditor = this.sinks.find((sinkInEditor: SinkInEditor): boolean => {
+      return sink === sinkInEditor;
+    });
+    if (!!sinkToUpdate) {
+      sinkToUpdate.addAnchor(anchor);
+    }
+  }
+
+  private removeAnchorFromSink(sink: SinkInEditor, anchor: AnchorInEditor): void {
+    const sinkToUpdate: SinkInEditor = this.sinks.find((sinkInEditor: SinkInEditor): boolean => {
+      return sink === sinkInEditor;
+    });
+    if (!!sinkToUpdate) {
+      sinkToUpdate.removeAnchor(anchor);
+    }
+  }
+
+  private setSinkGroupInScope(sink: SinkInEditor): void {
+    const sinkToUpdate: SinkInEditor = this.sinks.find((sinkInEditor: SinkInEditor): boolean => {
+      return sink === sinkInEditor;
+    });
+    if (!!sinkToUpdate) {
+      sinkToUpdate.setInGroupScope();
+      sinkToUpdate.setSinkGroupScope();
+    }
+  }
+
+  private setSinkGroupOutOfScope(sink: SinkInEditor): void {
+    const sinkToUpdate: SinkInEditor = this.sinks.find((sinkInEditor: SinkInEditor): boolean => {
+      return sink === sinkInEditor;
+    });
+    if (!!sinkToUpdate) {
+      sinkToUpdate.setOutOfGroupScope();
+      sinkToUpdate.setSinkGroupOutOfScope();
+    }
+  }
 
 }

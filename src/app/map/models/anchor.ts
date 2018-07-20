@@ -1,10 +1,12 @@
 import {Point} from '../../map-editor/map.type';
-import {DeviceInEditor, DeviceInEditorConfiguration} from './device';
+import {DeviceInEditor, DeviceInEditorConfiguration, DeviceInEditorType} from './device';
 import * as d3 from 'd3';
 import {DevicePlacerService} from '../../map-editor/tool-bar/tools/devices/device-placer.service';
 import {ContextMenuService} from '../../shared/wrappers/editable/editable.service';
 
 export class AnchorInEditor extends DeviceInEditor {
+
+  type: DeviceInEditorType = DeviceInEditorType.ANCHOR;
 
   protected anchorUnicode: string = '\uf2ce';
 

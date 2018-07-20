@@ -4,6 +4,8 @@ import {DrawBuilder, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.b
 import * as d3 from 'd3';
 import {DevicePlacerService} from '../../map-editor/tool-bar/tools/devices/device-placer.service';
 import {ContextMenuService} from '../../shared/wrappers/editable/editable.service';
+import {SinkInEditor} from './sink';
+import {AnchorInEditor} from './anchor';
 
 export class DeviceInEditor {
 
@@ -160,4 +162,8 @@ export enum DeviceAppearance {
 
 export interface DeviceCallbacks {
   unset: () => void;
+}
+
+export enum DeviceInEditorType {
+  ANCHOR, SINK
 }
