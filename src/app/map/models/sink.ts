@@ -1,4 +1,4 @@
-import {DeviceInEditor, DeviceInEditorConfiguration, DeviceInEditorType} from './device';
+import {DeviceCallbacks, DeviceInEditor, DeviceInEditorConfiguration, DeviceInEditorType} from './device';
 import {Point} from '../../map-editor/map.type';
 import * as d3 from 'd3';
 import {DevicePlacerService} from '../../map-editor/tool-bar/tools/devices/device-placer.service';
@@ -28,6 +28,26 @@ export class SinkInEditor extends DeviceInEditor {
 
   get anchorsList(): AnchorInEditor[] {
     return this.anchors;
+  }
+
+  on(callbacks: DeviceCallbacks): d3.selection {
+    this.contextMenuService.setItems([
+      {
+        label: this.unsetLabel,
+        command: callbacks.unset
+      }
+    ]);
+    this.svgGroupWrapper.getGroup().on('contextmenu', (): void => {
+      d3.event.preventDefault();
+      this.contextMenuService.openContextMenu();
+      this.devicePlacerService.emitSelected(this);
+    });
+    return this;
+  }
+
+  off(): d3.selection {
+    this.svgGroupWrapper.getGroup().on('contextmenu', null);
+    return this;
   }
 
   removeAllAnchors(): void {

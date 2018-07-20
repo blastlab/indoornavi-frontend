@@ -6,7 +6,6 @@ import {DevicePlacerService} from '../../map-editor/tool-bar/tools/devices/devic
 import {ContextMenuService} from '../../shared/wrappers/editable/editable.service';
 import {BrowserDetector} from '../../shared/services/browser-detector/browser.detector';
 import {TranslateService} from '@ngx-translate/core';
-import {Subject} from 'rxjs/Subject';
 
 
 export class DeviceInEditor {
@@ -36,6 +35,7 @@ export class DeviceInEditor {
     this.createDeviceOnMapGroup(coordinates, container, drawConfiguration);
     this.addReactionToMouseEvents();
     this.setMovable();
+    this.setTranslation('unset');
   }
 
   setActive(): void {
@@ -54,7 +54,6 @@ export class DeviceInEditor {
   }
 
   on(callbacks: DeviceCallbacks): d3.selection {
-    console.log(this.unsetLabel);
     this.contextMenuService.setItems([
       {
         label: this.unsetLabel,

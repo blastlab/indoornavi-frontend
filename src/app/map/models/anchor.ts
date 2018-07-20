@@ -21,6 +21,5 @@ export class AnchorInEditor extends DeviceInEditor {
     ) {
     super(coordinates, container, drawConfiguration, devicePlacerService, contextMenuService, translateService);
     this.svgGroupWrapper = this.svgGroupWrapper.addIcon2({x: 5, y: 5}, this.anchorUnicode, 2);
-    this.setTranslation('unset');
   }
 }
