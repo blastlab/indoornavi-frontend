@@ -4,7 +4,7 @@ RUN apt-get update
 
 RUN apt-get update && apt-get install -y \
 	libgconf2-4 \
-	libnss3-1d \
+	libnss3 \
 	libxss1 \
 	fonts-liberation \
 	libappindicator1 \
