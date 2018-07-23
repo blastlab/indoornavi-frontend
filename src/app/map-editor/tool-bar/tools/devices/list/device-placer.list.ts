@@ -21,7 +21,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   private deviceDroppingOutside: Subscription;
   private anchors: Array<Anchor> = [];
   private sinks: Array<Sink> = [];
-  private deviceDragged: Sink | Anchor;
+  private draggedDevice: Sink | Anchor;
 
   constructor(
     private devicePlacerService: DevicePlacerService,
@@ -59,13 +59,13 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
 
   private listenToDeviceDragAndDrop(): void {
     this.deviceDragging = this.devicePlacerService.onDragStarted.subscribe((device: Sink | Anchor): void => {
-      this.deviceDragged = device;
+      this.draggedDevice = device;
     });
     this.deviceDroppingOutside = this.devicePlacerService.onDroppedOutside.subscribe((): void => {
-      console.log('outside');
+      this.draggedDevice = null;
     });
     this.deviceDroppingInside = this.devicePlacerService.onDroppedInside.subscribe((): void => {
-      console.log('inside');
+      this.removeDraggedDevice();
     });
   }
 
@@ -86,6 +86,13 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
     });
     // TODO: check what devices needs to be set as displayed
     this.displayedDevices = this.sinks;
+  }
+
+  private removeDraggedDevice(): void {
+    if (!!this.draggedDevice) {
+      const index: number = this.displayedDevices.indexOf(this.draggedDevice);
+      this.displayedDevices.splice(index, 1);
+    }
   }
 
 }

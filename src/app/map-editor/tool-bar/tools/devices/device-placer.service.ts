@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
 import {Point} from '../../../map.type';
-import {Device} from '../../../../device/device.type';
+import {Anchor, Device, Sink} from '../../../../device/device.type';
 import {DeviceInEditor} from '../../../../map/models/device';
 import {Observable} from 'rxjs/Observable';
 
