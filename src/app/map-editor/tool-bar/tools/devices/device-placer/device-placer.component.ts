@@ -30,6 +30,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   private scaleChanged: Subscription;
   private deviceActivation: Subscription;
   private contextMenuListener: Subscription;
+  private deviceDragging: Subscription;
   private map: d3.selection;
   private scale: Scale;
   private floorId: number;
@@ -59,6 +60,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     this.fetchConfiguredDevices();
     this.listenToDevicesOnMapEvents();
     this.listenToContextMenu();
+    this.listenToDeviceDragAndDrop();
   }
 
   ngOnDestroy() {
@@ -67,6 +69,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     this.scaleChanged.unsubscribe();
     this.deviceActivation.unsubscribe();
     this.contextMenuListener.unsubscribe();
+    this.deviceDragging.unsubscribe();
     //  TODO: unset context menu for all devices
   }
 
@@ -181,6 +184,12 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
         this.setSinkGroupInScope(sinkWithAnchor);
       }
       device.setActive();
+    });
+  }
+
+  private listenToDeviceDragAndDrop(): void {
+    this.deviceDragging = this.devicePlacerService.onDragStarted.subscribe((device: Anchor | Sink): void => {
+      console.log(device);
     });
   }
 
