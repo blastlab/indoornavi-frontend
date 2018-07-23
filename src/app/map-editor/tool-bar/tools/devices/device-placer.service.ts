@@ -1,14 +1,14 @@
 import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
 import {Point} from '../../../map.type';
-import {Anchor, Device, Sink} from '../../../../device/device.type';
+import {Device} from '../../../../device/device.type';
 import {DeviceInEditor} from '../../../../map/models/device';
 import {Observable} from 'rxjs/Observable';
 
 
 @Injectable()
 export class DevicePlacerService {
-  private draggedStarted: Subject<Device> = new Subject();
+  private draggedStarted: Subject<DeviceDto> = new Subject();
   private droppedOutside: Subject<void> = new Subject();
   private droppedInside: Subject<Point> = new Subject();
   private active: Subject<DeviceInEditor> = new Subject();
@@ -16,7 +16,7 @@ export class DevicePlacerService {
   private removedFromMap: Subject<DeviceInEditor> = new Subject<DeviceInEditor>();
   private listVisibility: Subject<boolean> = new Subject<boolean>();
 
-  onDragStarted: Observable<Device> = this.draggedStarted.asObservable();
+  onDragStarted: Observable<DeviceDto> = this.draggedStarted.asObservable();
   onDroppedOutside: Observable<void> = this.droppedOutside.asObservable();
   onDroppedInside: Observable<Point> = this.droppedInside.asObservable();
   onActive: Observable<DeviceInEditor> = this.active.asObservable();
@@ -27,7 +27,7 @@ export class DevicePlacerService {
   constructor() {
   }
 
-  emitDragStarted(device: Device): void {
+  emitDragStarted(device: DeviceDto): void {
     this.draggedStarted.next(device);
   }
 
@@ -53,6 +53,15 @@ export class DevicePlacerService {
 
   emitListVisibility(visible: boolean): void {
     this.listVisibility.next(visible);
+  }
+
 }
 
+export interface DeviceDto {
+  device: Device,
+  type: DeviceType
+}
+
+export enum DeviceType {
+  ANCHOR, SINK
 }

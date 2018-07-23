@@ -14,7 +14,7 @@ export class DeviceInEditor {
 
   private reactiveToEvents: boolean = false;
   private plusUnicode: string = '\uf245';
-  private colorOutOfScope: string = '#bababa';
+  private colorOutOfScope: string = '#727272';
   private colorInScope: string = '#000000';
   private colorHover: string = '#ff3535';
   private colorBackgroundHover: string = '#75ffde';
@@ -68,7 +68,7 @@ export class DeviceInEditor {
     return this;
   }
 
-  activate(): void {
+  activateForMouseEvents(): void {
     this.reactiveToEvents = true;
   }
 
@@ -135,18 +135,22 @@ export class DeviceInEditor {
   private addReactionToMouseEvents(): void {
     this.svgGroupWrapper.getGroup()
       .on('mouseover', (): void => {
-        this.setHover();
-        this.svgGroupWrapper.getGroup().style('cursor', 'pointer');
+        if (this.reactiveToEvents) {
+          this.setHover();
+          this.svgGroupWrapper.getGroup().style('cursor', 'pointer');
+        }
       })
       .on('mouseout', (): void => {
-        this.svgGroupWrapper.getGroup().style('cursor', 'default');
-        switch (this.appearance) {
-          case 0: this.setInGroupScope();
-            break;
-          case 1: this.setOutOfGroupScope();
-            break;
-          case 2: this.setActive();
-            break;
+        if (this.reactiveToEvents) {
+          this.svgGroupWrapper.getGroup().style('cursor', 'default');
+          switch (this.appearance) {
+            case 0: this.setInGroupScope();
+              break;
+            case 1: this.setOutOfGroupScope();
+              break;
+            case 2: this.setActive();
+              break;
+          }
         }
       })
       .on('click', (): void => {
@@ -196,6 +200,3 @@ export interface DeviceCallbacks {
   unset: () => void;
 }
 
-export enum DeviceInEditorType {
-  ANCHOR, SINK
-}

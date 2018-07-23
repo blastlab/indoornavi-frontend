@@ -1,14 +1,14 @@
-import {DeviceCallbacks, DeviceInEditor, DeviceInEditorConfiguration, DeviceInEditorType} from './device';
+import {DeviceCallbacks, DeviceInEditor, DeviceInEditorConfiguration} from './device';
 import {Point} from '../../map-editor/map.type';
 import * as d3 from 'd3';
-import {DevicePlacerService} from '../../map-editor/tool-bar/tools/devices/device-placer.service';
+import {DevicePlacerService, DeviceType} from '../../map-editor/tool-bar/tools/devices/device-placer.service';
 import {ContextMenuService} from '../../shared/wrappers/editable/editable.service';
 import {AnchorInEditor} from './anchor';
 import {TranslateService} from '@ngx-translate/core';
 
 export class SinkInEditor extends DeviceInEditor {
 
-  type: DeviceInEditorType = DeviceInEditorType.SINK;
+  type: DeviceType = DeviceType.SINK;
 
   protected sinkUnicode: string = '\uf1e6';
   private anchors: AnchorInEditor[] = [];
@@ -64,7 +64,7 @@ export class SinkInEditor extends DeviceInEditor {
   activateAnchors(contextMenu: DeviceCallbacks): void {
     this.anchors.forEach((anchor: AnchorInEditor): void => {
       anchor.on(contextMenu);
-      anchor.activate();
+      anchor.activateForMouseEvents();
     });
   }
 

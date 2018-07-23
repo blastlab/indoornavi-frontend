@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Anchor, Sink} from '../../../../../device/device.type';
-import {DevicePlacerService} from '../device-placer.service';
+import {DeviceDto, DevicePlacerService, DeviceType} from '../device-placer.service';
 import {Subscription} from 'rxjs/Subscription';
 import {ToolDetailsComponent} from '../../../shared/details/tool-details';
 import {DeviceService} from '../../../../../device/device.service';
@@ -15,6 +15,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   public displayedDevices: Array<Anchor | Sink> = [];
   public queryString: string;
   public heightInMeters: number = 2;
+  private activeList: DeviceType;
   private activationSubscription: Subscription;
   private deviceDragging: Subscription;
   private deviceDroppingInside: Subscription;
@@ -44,7 +45,11 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   }
 
   deviceDragStarted(device: Anchor | Sink): void {
-    this.devicePlacerService.emitDragStarted(device);
+    const deviceDto: DeviceDto = {
+      device: device,
+      type: this.activeList
+    };
+    this.devicePlacerService.emitDragStarted(deviceDto);
   }
 
   deviceDragEnded(): void {
@@ -58,14 +63,18 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   }
 
   private listenToDeviceDragAndDrop(): void {
-    this.deviceDragging = this.devicePlacerService.onDragStarted.subscribe((device: Sink | Anchor): void => {
-      this.draggedDevice = device;
+    this.deviceDragging = this.devicePlacerService.onDragStarted.subscribe((deviceDto: DeviceDto): void => {
+      this.draggedDevice = deviceDto.device;
     });
     this.deviceDroppingOutside = this.devicePlacerService.onDroppedOutside.subscribe((): void => {
       this.draggedDevice = null;
     });
     this.deviceDroppingInside = this.devicePlacerService.onDroppedInside.subscribe((): void => {
       this.removeDraggedDevice();
+      if (this.activeList === DeviceType.SINK) {
+        this.activeList = DeviceType.ANCHOR;
+      }
+      this.setDisplayedDevices();
     });
   }
 
@@ -85,6 +94,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
       });
     });
     // TODO: check what devices needs to be set as displayed
+    this.activeList = DeviceType.SINK;
     this.displayedDevices = this.sinks;
   }
 
@@ -92,6 +102,14 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
     if (!!this.draggedDevice) {
       const index: number = this.displayedDevices.indexOf(this.draggedDevice);
       this.displayedDevices.splice(index, 1);
+    }
+  }
+
+  private setDisplayedDevices() {
+    if (this.activeList === DeviceType.ANCHOR) {
+      this.displayedDevices = this.anchors;
+    } else if (this.activeList === DeviceType.SINK) {
+      this.displayedDevices = this.sinks;
     }
   }
 
