@@ -297,9 +297,10 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     if (!!this.map) {
       this.map
         .on('click', (): void => {
-        this.sinks.forEach((sink: SinkInEditor) => {
-          this.setSinkGroupInScope(sink);
-        })
+          this.sinks.forEach((sink: SinkInEditor) => {
+            this.setSinkGroupInScope(sink);
+          });
+          this.devicePlacerService.emitMapClick();
       })
         .on('contextmenu', () => {
           d3.event.preventDefault();

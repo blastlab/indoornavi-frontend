@@ -15,6 +15,7 @@ export class DevicePlacerService {
   private selected: Subject<DeviceInEditor> = new Subject<DeviceInEditor>();
   private removedFromMap: Subject<DeviceInEditor> = new Subject<DeviceInEditor>();
   private listVisibility: Subject<boolean> = new Subject<boolean>();
+  private mapClick: Subject<void> = new Subject();
 
   onDragStarted: Observable<DeviceDto> = this.draggedStarted.asObservable();
   onDroppedOutside: Observable<void> = this.droppedOutside.asObservable();
@@ -23,6 +24,7 @@ export class DevicePlacerService {
   onSelected: Observable<DeviceInEditor> = this.selected.asObservable();
   onRemovedFromMap: Observable<DeviceInEditor> = this.removedFromMap.asObservable();
   onListVisibility: Observable<boolean> = this.listVisibility.asObservable();
+  onMapClick: Observable<void> = this.mapClick.asObservable();
 
   constructor() {
   }
@@ -53,6 +55,10 @@ export class DevicePlacerService {
 
   emitListVisibility(visible: boolean): void {
     this.listVisibility.next(visible);
+  }
+
+  emitMapClick(): void {
+    this.mapClick.next();
   }
 
 }

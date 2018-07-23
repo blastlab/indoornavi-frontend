@@ -20,6 +20,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   private deviceDragging: Subscription;
   private deviceDroppingInside: Subscription;
   private deviceDroppingOutside: Subscription;
+  private mapClickEvent: Subscription;
   private anchors: Array<Anchor> = [];
   private sinks: Array<Sink> = [];
   private draggedDevice: Sink | Anchor;
@@ -34,6 +35,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.listenToToolActivation();
     this.listenToDeviceDragAndDrop();
+    this.listenToMapClick();
     this.fetchAllDevices();
   }
 
@@ -42,6 +44,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
     this.deviceDragging.unsubscribe();
     this.deviceDroppingOutside.unsubscribe();
     this.deviceDroppingInside.unsubscribe();
+    this.mapClickEvent.unsubscribe();
   }
 
   deviceDragStarted(device: Anchor | Sink): void {
@@ -74,6 +77,13 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
       if (this.activeList === DeviceType.SINK) {
         this.activeList = DeviceType.ANCHOR;
       }
+      this.setDisplayedDevices();
+    });
+  }
+
+  private listenToMapClick(): void {
+    this.mapClickEvent = this.devicePlacerService.onMapClick.subscribe((): void => {
+      this.activeList = DeviceType.SINK;
       this.setDisplayedDevices();
     });
   }
