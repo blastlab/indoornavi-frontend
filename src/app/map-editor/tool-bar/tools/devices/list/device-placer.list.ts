@@ -25,6 +25,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   private deviceDroppingOutside: Subscription;
   private mapClickEvent: Subscription;
   private deviceActivation: Subscription;
+  private deviceRemoveInEditor: Subscription;
   private anchors: Array<Anchor> = [];
   private sinks: Array<Sink> = [];
   private draggedDevice: Sink | Anchor;
@@ -41,6 +42,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
     this.listenToDeviceDragAndDrop();
     this.listenToMapClick();
     this.listenToActiveDeviceInEditor();
+    this.listenToRemovedDeviceInEditor();
     this.fetchAllDevices();
   }
 
@@ -51,6 +53,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
     this.deviceDroppingInside.unsubscribe();
     this.mapClickEvent.unsubscribe();
     this.deviceActivation.unsubscribe();
+    this.deviceRemoveInEditor.unsubscribe();
   }
 
   deviceDragStarted(device: Anchor | Sink): void {
@@ -103,6 +106,17 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
       } else if (type === DeviceType.ANCHOR) {
         this.activeList = null;
         this.setDisplayedDevices();
+      }
+    });
+  }
+
+  private listenToRemovedDeviceInEditor(): void {
+    this.deviceRemoveInEditor = this.devicePlacerService.onRemovedFromMap.subscribe((device: DeviceInEditor): void => {
+      // TODO: change for device type SINK | ANCHOR
+      const type: DeviceType = (<SinkInEditor | AnchorInEditor>device).type;
+      if (type === DeviceType.SINK) {
+        const sink = <SinkInEditor>device;
+        console.log('removed device should to be added back to corresponding list and displayed');
       }
     });
   }
