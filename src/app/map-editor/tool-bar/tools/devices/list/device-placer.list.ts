@@ -4,6 +4,9 @@ import {DeviceDto, DevicePlacerService, DeviceType} from '../device-placer.servi
 import {Subscription} from 'rxjs/Subscription';
 import {ToolDetailsComponent} from '../../../shared/details/tool-details';
 import {DeviceService} from '../../../../../device/device.service';
+import {DeviceInEditor} from '../../../../../map/models/device';
+import {SinkInEditor} from '../../../../../map/models/sink';
+import {AnchorInEditor} from '../../../../../map/models/anchor';
 
 
 @Component({
@@ -21,6 +24,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   private deviceDroppingInside: Subscription;
   private deviceDroppingOutside: Subscription;
   private mapClickEvent: Subscription;
+  private deviceActivation: Subscription;
   private anchors: Array<Anchor> = [];
   private sinks: Array<Sink> = [];
   private draggedDevice: Sink | Anchor;
@@ -36,6 +40,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
     this.listenToToolActivation();
     this.listenToDeviceDragAndDrop();
     this.listenToMapClick();
+    this.listenToActiveDeviceInEditor();
     this.fetchAllDevices();
   }
 
@@ -45,6 +50,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
     this.deviceDroppingOutside.unsubscribe();
     this.deviceDroppingInside.unsubscribe();
     this.mapClickEvent.unsubscribe();
+    this.deviceActivation.unsubscribe();
   }
 
   deviceDragStarted(device: Anchor | Sink): void {
@@ -88,6 +94,19 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
     });
   }
 
+  private listenToActiveDeviceInEditor(): void {
+    this.deviceActivation = this.devicePlacerService.onActive.subscribe((device: DeviceInEditor): void => {
+      const type = (<AnchorInEditor | SinkInEditor>device).type;
+      if (type === DeviceType.SINK) {
+        this.activeList = DeviceType.ANCHOR;
+        this.setDisplayedDevices();
+      } else if (type === DeviceType.ANCHOR) {
+        this.activeList = null;
+        this.setDisplayedDevices();
+      }
+    });
+  }
+
   private fetchAllDevices(): void {
     this.sinks = [];
     this.anchors = [];
@@ -103,9 +122,8 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
         this.anchors.push(anchor);
       });
     });
-    // TODO: check what devices needs to be set as displayed
     this.activeList = DeviceType.SINK;
-    this.displayedDevices = this.sinks;
+    this.setDisplayedDevices();
   }
 
   private removeDraggedDevice(): void {
@@ -120,6 +138,8 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
       this.displayedDevices = this.anchors;
     } else if (this.activeList === DeviceType.SINK) {
       this.displayedDevices = this.sinks;
+    } else {
+      this.displayedDevices = [];
     }
   }
 
