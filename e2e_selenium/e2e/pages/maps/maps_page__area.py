@@ -2,7 +2,8 @@ from pages.base_page import BasePage
 from locators.maps_base__area_locators import MapsBaseAreaLocators
 from selenium.webdriver import ActionChains
 from src.test_conf.test_config import *
-
+from selenium.common.exceptions import NoSuchElementException
+import time
 
 class MapsPageArea(BasePage, MapsBaseAreaLocators):
 
@@ -25,11 +26,16 @@ class MapsPageArea(BasePage, MapsBaseAreaLocators):
         params = TEST_UPDATE_FLOOR_IMG_PARAMS
         return self.service_db().update_table(params)
 
-    def insert_configuration_to_db(self):
-
+    def insert_scale_configuration_to_db(self):
         _table = CONFIGURATION_TABLE
         _columns = CONFIGURATION_COLUMNS
-        values = ('1', TEST_DATE, TEST_CONF_DATA, '0', '2', TEST_DATE)
+        values = ('1', TEST_DATE, TEST_SCALE_CONF_DATA, '0', '2', TEST_DATE)
+        return self.insert_to_db(_table, _columns, values)
+
+    def insert_area_configuration_to_db(self):
+        _table = CONFIGURATION_TABLE
+        _columns = CONFIGURATION_COLUMNS
+        values = ('1', TEST_DATE, TEST_AREA_CONF_DATA, '0', '2', TEST_DATE)
         return self.insert_to_db(_table, _columns, values)
 
     def insert_image_to_db(self):
@@ -73,8 +79,26 @@ class MapsPageArea(BasePage, MapsBaseAreaLocators):
     def on_leave_multiselect_device_close_click(self):
         return self.click_element(self.AREA_ADD_LEAVE_MULTISELECT_CLOSE)
 
-    # def multiselect_item_on_enter_click(self):
+    def __right_click_on_area(self):
+        _area = self.wait_for_element_clickable(self.AREA_ZERO_POLYGON)
+        return self.__actions(self.__driver).context_click(_area).perform()
+
+    def edit_area_click(self):
+        self.__right_click_on_area()
+        self.click_element(self.AREA_CONTEXT_MENU_EDIT)
+
+    def remove_area_click(self):
+        self.__right_click_on_area()
+        self.click_element(self.AREA_CONTEXT_MENU_REMOVE)
+
+    def save_draft_click(self):
+        return self.click_element(self.SAVE_DRAFT_BTN)
+
+    def clear_area_name_input(self):
+        return self.clear_text_input(self.AREA_ADD_NAME)
+
     # ELEMENTS APPEARANCE
+
     def is_area_button_displayed(self):
         return True if self.is_element_present(self.AREA_BUTTON) else False
 
@@ -87,6 +111,18 @@ class MapsPageArea(BasePage, MapsBaseAreaLocators):
     def is_draft_saved_toast_displayed(self):
         return True if self.is_element_present(self.DRAFT_SAVED_TOAST) else False
 
+    def is_area_displayed(self):
+        for x in range(0, 4):
+            locator = self.__set_polygon_option(str(x))
+            try:
+                self.is_element_displayed(*locator)
+            except NoSuchElementException:
+                return False
+            return True
+
+    def is_area_disappeared(self):
+        return self.is_element_displayed(*self.AREA_ZERO_OBJECT)
+
     # ENTER DATA INTO INPUT
     def enter_area_name(self):
         return self.clear_and_fill_input(self.TEST_ADD_AREA_NAME, self.AREA_ADD_NAME)
@@ -96,6 +132,16 @@ class MapsPageArea(BasePage, MapsBaseAreaLocators):
 
     def enter_on_leave_offset(self):
         return self.clear_and_fill_input(self.TEST_ADD_AREA_LEAVE_OFFSET, self.AREA_ADD_LEAVE_OFF)
+
+    # EDIT AREA PROPERTIES
+    def edit_area_name(self):
+        return self.clear_and_fill_input(self.TEST_EDIT_AREA_NAME, self.AREA_ADD_NAME)
+
+    def edit_on_enter_offset(self):
+        return self.clear_and_fill_input(self.TEST_EDIT_AREA_ENTER_OFFSET, self.AREA_ADD_ENTER_OFF)
+
+    def edit_on_leave_offset(self):
+        return self.clear_and_fill_input(self.TEST_EDIT_AREA_LEAVE_OFFSET, self.AREA_ADD_LEAVE_OFF)
 
     # LOGIC
     def draw_triangle(self):
@@ -139,12 +185,29 @@ class MapsPageArea(BasePage, MapsBaseAreaLocators):
         area_attr = self.wait_for_element(self.__set_polygon_option(choose))
         return area_attr.get_attribute(attr)
 
+    def __get_area_property(self, selector, attr):
+        _selector_property = self.wait_for_element(selector).get_attribute(attr)
+        return _selector_property
+
+    def get_area_properties(self):
+        area_properties = {}
+        area_properties['name']          = self.__get_area_property(self.AREA_ADD_NAME, 'value')
+        area_properties['enter_offset']  = self.__get_area_property(self.AREA_ADD_ENTER_OFF, 'value')
+        area_properties['leave_offset']  = self.__get_area_property(self.AREA_ADD_LEAVE_OFF, 'value')
+        area_properties['height_min']    = self.__get_area_property(self.AREA_ADD_HEIGHT_MIN, 'value')
+        area_properties['height_max']    = self.__get_area_property(self.AREA_ADD_HEIGHT_MAX, 'value')
+        area_properties['on_enter_tags'] = self.get_text(self.AREA_ADD_ENTER_MULTISELECT)
+        area_properties['on_leave_tags'] = self.get_text(self.AREA_ADD_LEAVE_MULTISELECT)
+        # area_properties['points'] = self.get_polygon_points('0')
+        print(area_properties)
+        return area_properties
+
     def __set_polygon_option(self, choose):
         set_option = {
-            '3': self.AREA_NEW_AREA_OBJECT,
-            '2': self.AREA_NEW_AREA_POLYGON,
-            '1': self.AREA_NEW_AREA_ONE,
-            '0': self.AREA_NEW_AREA_ZERO
+            '3': self.AREA_NEW_OBJECT,
+            '2': self.AREA_NEW_POLYGON,
+            '1': self.AREA_ONE_POLYGON,
+            '0': self.AREA_ZERO_POLYGON
         }
         return set_option[choose]
 
@@ -154,194 +217,17 @@ class MapsPageArea(BasePage, MapsBaseAreaLocators):
         _x_offset = x_offset
         _y_offset = y_offset
         return _action.move_by_offset(_x_offset, _y_offset).click()
-    # def edit_scale_line(self, x_offset, y_offset, element):
-    #     """
-    #
-    #     :param x_offset: the number of pixels needed to drag point_b of scale on the x axis
-    #     :param y_offset: the number of pixels needed to drag point_b of scale on the y axis
-    #     :return: action which provide to draw scale line with changed coordinates {params}
-    #
-    #     """
-    #     _x_offset = x_offset
-    #     _y_offset = y_offset
-    #     scale_line = self.wait_for_element_clickable(element)
-    #
-    #     return self.__actions(self.__driver).drag_and_drop_by_offset(scale_line, _x_offset, _y_offset).release().perform()
-    #
-    # def undo_scale_line_drawing(self, x_offset, y_offset, element):
-    #     """
-    #
-    #     :param x_offset: the number of pixels needed to drag point_b of scale on the x axis
-    #     :param y_offset: the number of pixels needed to drag point_b of scale on the y axis
-    #     :return: array of dictionaries with actual scale line's point_b location - [dict_a, dict_b, dict_c]
-    #
-    #     """
-    #     __x_offset = x_offset
-    #     __y_offset = y_offset
-    #     __scale_line = self.wait_for_element_clickable(element)
-    #     start_location = self.get_location(__scale_line)
-    #
-    #     self.__actions(self.__driver).click_and_hold(__scale_line).move_by_offset(__x_offset, __y_offset).perform()
-    #     action_location = self.get_location(__scale_line)
-    #
-    #     self.__actions(self.__driver).send_keys(Keys.ESCAPE).perform()
-    #     end_scale_line = self.wait_for_element_clickable(element)
-    #     end_location = self.get_location(end_scale_line)
-    #
-    #     locations = [start_location, action_location, end_location]
-    #
-    #     return locations
-    #
-    # @staticmethod
-    # def get_coordinates(DOM_element, **kwargs):
-    #     coordinates = {}
-    #     for key, param in kwargs.items():
-    #         coordinates[param] = DOM_element.get_attribute(param)
-    #     return coordinates
-    #
-    # @staticmethod
-    # def abs_value(a, b):
-    #     return abs(float(b)-float(a))
-    #
-    # def get_scale_line_parameters(self):
-    #     """
-    #
-    #     :return: json -{} Dictionary information of scale line drawn on the map
-    #
-    #     """
-    #
-    #     # SCALE LINE PARTS
-    #     scale_line_dict = {}
-    #
-    #     point_a = self.wait_for_element(self.scale_line_point_a)
-    #     point_b = self.wait_for_element(self.scale_line_point_b)
-    #     scale_line = self.wait_for_element(self.scale_line)
-    #
-    #     point_a_params = self.get_coordinates(point_a, x="cx", y="cy")
-    #     point_b_params = self.get_coordinates(point_b, x="cx", y="cy")
-    #     scale_line_params = self.get_coordinates(scale_line, x1="x1", x2="x2", y1="y1", y2="y2")
-    #
-    #     scale_line_dict["scale_line"] = scale_line_params
-    #     scale_line_dict["point_a"] = point_a_params
-    #     scale_line_dict["point_b"] = point_b_params
-    #     # print(scale_line_dict)
-    #     return scale_line_dict
-    #
-    # def is_scale_line_drawn_correctly(self, x_offset, y_offset):
-    #
-    #     scale_line_params = self.get_scale_line_parameters()
-    #     expect_x = x_offset
-    #     expect_y = y_offset
-    #
-    #     # assert scale_line_params["point_a"][]
-    #     point_a_cx = scale_line_params["point_a"]['cx']
-    #     point_a_cy = scale_line_params["point_a"]['cy']
-    #     point_b_cx = scale_line_params["point_b"]['cx']
-    #     point_b_cy = scale_line_params["point_b"]['cy']
-    #     line_x1 = scale_line_params["scale_line"]['x1']
-    #     line_x2 = scale_line_params["scale_line"]['x2']
-    #     line_y1 = scale_line_params["scale_line"]['y1']
-    #     line_y2 = scale_line_params["scale_line"]['y2']
-    #     # offset x - difference
-    #     result_x = self.abs_value(point_a_cx, point_b_cx)
-    #     result_y = self.abs_value(point_a_cy, point_b_cy)
-    #     result_line_x = self.abs_value(line_x1, line_x2)
-    #     result_line_y = self.abs_value(line_y1, line_y2)
-    #
-    #     assert expect_x == result_x and expect_x == result_line_x, str(expect_x)+' is not equal '+str(result_x) + ' or '+ str(result_line_x)
-    #     assert expect_y == result_y and expect_y == result_line_y, str(expect_y)+' is not equal '+str(result_y) + ' or '+ str(result_line_y)
-    #     return True
-    #
-    # def is_scale_line_displayed(self):
-    #     element = self.is_element_appeared(self.scale_line)
-    #     return True if element else False
-    #
-    # def is_scale_line_disappear(self):
-    #     return True if self.is_element_disappear(self.scale_line) else False
-    #
-    # def is_scale_modal_window_displayed(self):
-    #     element = self.is_element_appeared(self.scale_modal_window)
-    #     return True if element else False
-    #
-    # def is_scale_modal_window_disappear(self):
-    #     return True if self.is_element_disappear(self.scale_modal_window) else False
-    #
-    # def enter_scale_distance(self, value):
-    #     return self.clear_and_fill_input(value, self.scale_distance_input)
-    #
-    # def set_scale_measurement(self, option):
-    #
-    #     self.click_element(self.scale_measurement)
-    #     set_measurement = {
-    #         'centimeters': self.scale_measurement_cent,
-    #         'meters': self.scale_measurement_meters
-    #     }
-    #     return self.click_element(set_measurement[option])
-    #
-    # def scale_ok_button_click(self):
-    #     ok_buttons = self.__driver.find_elements(*self.scale_ok_button)
-    #     return ok_buttons[1].click()
-    #
-    # def scale_cancel_button_click(self):
-    #     cancel_buttons = self.__driver.find_elements(*self.scale_cancel_button)
-    #     return cancel_buttons[1].click()
-    #
-    # def is_scale_set_toast_present(self):
-    #     return True if self.is_element_present(self.scale_set_toast) else False
-    #
-    # def is_scale_set_toast_disappear(self):
-    #     return True if self.is_element_disappear(self.scale_set_toast) else False
-    #
-    # def is_saving_draft_info_present(self):
-    #     return True if self.is_element_present(self.saving_draft_info) else False
-    #
-    # def is_saving_draft_info_disappear(self):
-    #     return True if self.is_element_disappear(self.saving_draft_info) else False
-    #
-    # def is_draft_saved_toast_present(self):
-    #     return True if self.is_element_present(self.draft_saved) else False
-    #
-    # def is_draft_saved_toast_disappear(self):
-    #     return True if self.is_element_disappear(self.draft_saved) else False
-    #
-    # def is_set_measurement_toast_present(self):
-    #     return True if self.is_element_present(self.set_measurement_toast) else False
-    #
-    # def is_set_measurement_toast_disappear(self):
-    #     return True if self.is_element_disappear(self.set_measurement_toast) else False
-    #
-    # def is_must_be_integer_toast_present(self):
-    #     return True if self.is_element_present(self.must_be_integer_toast) else False
-    #
-    # def is_must_be_integer_toast_disappear(self):
-    #     return True if self.is_element_disappear(self.must_be_integer_toast) else False
-    #
-    # def get_location(self, element):
-    #     __element_location = element.location
-    #     return __element_location
-    #
-    # def log_cursor_coordinates(self):
-    #     return self.__driver.execute_script('''
-    #     function findScreenCoords(mouseEvent)
-    #       {
-    #         var xpos;
-    #         var ypos;
-    #         if (mouseEvent)
-    #         {
-    #           //FireFo
-    #           xpos = mouseEvent.screenX;
-    #           ypos = mouseEvent.screenY;
-    #         }
-    #         else
-    #         {
-    #           //IE
-    #           xpos = window.event.screenX;
-    #           ypos = window.event.screenY;
-    #         }
-    #         console.log("LOG COORDINATES: "+ xpos + ", " + ypos);
-    #       }
-    #     document.getElementById("map").onmousemove = findScreenCoords;
-    #     ''')
-    #
-    # # EDIT SCALE
 
+    def edit_polygon_point(self, x_offset, y_offset, element):
+        """
+
+        :param x_offset: the number of pixels needed to drag point_b of scale on the x axis
+        :param y_offset: the number of pixels needed to drag point_b of scale on the y axis
+        :return: action which provide to draw scale line with changed coordinates {params}
+
+        """
+        _x_offset = x_offset
+        _y_offset = y_offset
+        scale_line = self.wait_for_element_clickable(element)
+
+        return self.__actions(self.__driver).drag_and_drop_by_offset(scale_line, _x_offset,_y_offset).release().perform()

@@ -20,11 +20,11 @@ class MapsPageScale(BasePage, MapsBaseScaleLocators):
         params = TEST_UPDATE_FLOOR_IMG_PARAMS
         return self.service_db().update_table(params)
 
-    def insert_configuration_to_db(self):
+    def insert_scale_configuration_to_db(self):
 
         _table = CONFIGURATION_TABLE
         _columns = CONFIGURATION_COLUMNS
-        values = ('1', TEST_DATE, TEST_CONF_DATA, '0', '2', TEST_DATE)
+        values = ('1', TEST_DATE, TEST_SCALE_CONF_DATA, '0', '2', TEST_DATE)
         return self.insert_to_db(_table, _columns, values)
 
     def insert_image_to_db(self):

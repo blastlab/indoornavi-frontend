@@ -33,7 +33,7 @@ class TestMapsPageScale(unittest.TestCase, MapsPageScale):
         self.webdriver.quit()
 
     def __set_before_scale_db_configuration(self):
-        self.maps_page.insert_configuration_to_db()
+        self.maps_page.insert_scale_configuration_to_db()
         self.maps_page.insert_image_to_db()
         self.maps_page.set_image_to_floor()
         self.webdriver.refresh()

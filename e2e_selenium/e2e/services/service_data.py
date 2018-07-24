@@ -5,8 +5,15 @@ from selenium.webdriver.common.by import By
 
 def get_test_translator_data():
     with open('src/test_conf/test_translator.json') as translator_data:
-        print(type(translator_data))
         data = json.load(translator_data)
+        return data
+
+
+def parse_json_to_string(path):
+    with open(path) as translator_data:
+        data = str(json.load(translator_data)).replace("'", '"')\
+                                              .replace("None", "null")\
+                                              .replace("True", "true")
         return data
 
 
