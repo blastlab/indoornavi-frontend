@@ -11,7 +11,7 @@ export class SinkInEditor extends DeviceInEditor {
   type: DeviceType = DeviceType.SINK;
 
   protected sinkUnicode: string = '\uf1e6';
-  private anchors: AnchorInEditor[] = [];
+  anchors: AnchorInEditor[] = [];
 
   constructor(
     protected coordinates: Point,
