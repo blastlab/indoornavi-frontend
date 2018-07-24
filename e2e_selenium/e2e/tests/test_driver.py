@@ -10,7 +10,7 @@ class TestDriver(object):
         self.url = page_url
         chrome_options = Options()
         chrome_options.add_argument('--disable-extensions')
-        chrome_options.add_argument("--headless")
+        # chrome_options.add_argument("--headless")
         chrome_options.add_argument('--disable-gpu')
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--window-size=1920x1080")
@@ -24,4 +24,4 @@ class TestDriver(object):
         if self.test_failed:
             datetime = time.strftime(' %H:%M:%S %d_%m_%Y')
             test_method_name = self._testMethodName + datetime
-            self.webdriver.save_screenshot("reports/bug-screenshots/%s.png" % test_method_name)
+            self.webdriver.save_screenshot("test-reports/bug-screenshots/%s.png" % test_method_name)

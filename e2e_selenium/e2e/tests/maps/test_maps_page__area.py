@@ -345,4 +345,56 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.maps_page_area.area_button_click()
         self.maps_page_area.remove_area_click()
         self.maps_page_area.is_area_disappeared()
+        self.test_failed = False
+
+    def test_bug_NAVI_228(self):
+        """
+        Test case for bug - "Error in the browser console while drawing the area"
+        1. Selecting a tool to draw areas on the map
+        2. Drawing the area (square) | Note: There is an error in the console
+        """
+        self.__set_before_scale_db_configuration('add')
+        self.maps_page_area.is_area_button_displayed()
+        self.maps_page_area.area_button_click()
+        self.maps_page_area.draw_square()
+        assert self.maps_page_area.get_browser_console_log() == []
+        self.test_failed = False
+
+    def test_bug_NAVI_295(self):
+        """
+        Test case for bug - The area can not be created
+        1. Drawing an area (square)
+        2. Drawing an area (triangle) overlapping slightly with the previous area | It is not possible to "close the area"
+        """
+        self.__set_before_scale_db_configuration('add')
+        self.maps_page_area.is_area_button_displayed()
+        self.maps_page_area.area_button_click()
+        self.maps_page_area.draw_square()
+
+        # DRAW TRIANGLE AND SET PROPERTIES
+        self.maps_page_area.enter_area_name()
+        self.maps_page_area.enter_on_enter_offset()
+        self.maps_page_area.enter_on_leave_offset()
+        self.__set_tags()
+        self.maps_page_area.area_confirm_click()
+        self.maps_page_area.is_draft_saved_toast_displayed()
+        self.maps_page_area.area_button_click()
+
+        # DRAW TRIANGLE AND SET PROPERTIES
+        self.maps_page_area.draw_triangle()
+        self.maps_page_area.enter_area_name()
+        self.maps_page_area.enter_on_enter_offset()
+        self.maps_page_area.enter_on_leave_offset()
+        self.__set_tags()
+        self.maps_page_area.area_confirm_click()
+        self.maps_page_area.is_draft_saved_toast_displayed()
+        self.maps_page_area.area_button_click()
+
+        square_displayed   = self.maps_page_area.is_specific_area_displayed(0)
+        triangle_displayed = self.maps_page_area.is_specific_area_displayed(1)
+
+        assert square_displayed == True
+        assert triangle_displayed == True
+        self.test_failed = False
+
 

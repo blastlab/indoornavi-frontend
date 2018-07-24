@@ -106,7 +106,7 @@ class MapsPageArea(BasePage, MapsBaseAreaLocators):
         return True if self.is_element_present(self.AREA_DIALOG) else False
 
     def is_area_dialog_disappeared(self):
-        return self.is_element_displayed(*self.AREA_DIALOG)
+        return self.is_element_disappear(self.AREA_DIALOG)
 
     def is_draft_saved_toast_displayed(self):
         return True if self.is_element_present(self.DRAFT_SAVED_TOAST) else False
@@ -119,6 +119,14 @@ class MapsPageArea(BasePage, MapsBaseAreaLocators):
             except NoSuchElementException:
                 return False
             return True
+
+    def is_specific_area_displayed(self, option):
+        locator = self.__set_polygon_option(str(option))
+        try:
+          self.is_element_displayed(*locator)
+        except NoSuchElementException:
+          return False
+        return True
 
     def is_area_disappeared(self):
         return self.is_element_displayed(*self.AREA_ZERO_OBJECT)
