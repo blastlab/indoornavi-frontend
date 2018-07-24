@@ -175,10 +175,12 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
         if (this.draggedDevice.type === DeviceType.SINK) {
           const sinkInMapEditor: SinkInEditor = this.placeSinkOnMap(<Sink>this.draggedDevice.device, coordinates);
           sinkInMapEditor.activateForMouseEvents();
+          sinkInMapEditor.on(this.contextMenu);
           this.devicePlacerService.emitActive(sinkInMapEditor);
         } else if (this.draggedDevice.type === DeviceType.ANCHOR && this.activeDevice.type === DeviceType.SINK) {
           const anchorInMapEditor: AnchorInEditor = this.placeAnchorOnMap(<SinkInEditor>this.activeDevice, <Anchor>this.draggedDevice.device, coordinates);
           anchorInMapEditor.activateForMouseEvents();
+          anchorInMapEditor.on(this.contextMenu);
           this.devicePlacerService.emitActive(anchorInMapEditor);
         }
       }
@@ -232,6 +234,8 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   }
 
   private removeFromMap(): void {
+    const deletedDevice: AnchorInEditor | SinkInEditor = Object.assign({}, this.activeDevice);
+    this.devicePlacerService.emitRemovedFromMap(deletedDevice);
     if (this.activeDevice.type === DeviceType.SINK) {
       this.removeSinkWithAnchors(<SinkInEditor>this.activeDevice);
     } else {
@@ -240,9 +244,6 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
       });
       this.removeAnchorFromSink(sinkWithAnchor, <AnchorInEditor>this.activeDevice)
     }
-    // TODO: change for device type SINK | ANCHOR to this.devicePlacerService.emitRemovedFromMap(this.activeDevice);
-    // as we need to have opportunity to iterate over sink anchors and set them all back.
-    this.devicePlacerService.emitRemovedFromMap(this.activeDevice);
   }
 
   private addSink(sink: SinkInEditor): void {

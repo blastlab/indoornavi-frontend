@@ -28,14 +28,14 @@
           </tr>
           </thead>
           <tbody class="ui-datatable-data ui-widget-content">
-          <tr *ngFor="let device of displayedDevices | allFieldsFilter: queryString; let i = index"
+          <tr *ngFor="let device of activeList | allFieldsFilter: queryString; let i = index"
               pDraggable="devices" (onDragStart)="deviceDragStarted(device)" (onDragEnd)="deviceDragEnded()"
               [ngClass]="{'ui-datatable-odd ui-widget-content': i % 2 === 1, 'ui-datatable-even ui-widget-content': i % 2 === 0}">
             <td>{{device.shortId}}</td>
             <td>{{device.longId}}</td>
             <td>{{device.name}}</td>
           </tr>
-          <tr *ngIf="(displayedDevices|allFieldsFilter: queryString).length === 0" class="ui-datatable-even ui-widget-content">
+          <tr *ngIf="(activeList|allFieldsFilter: queryString).length === 0" class="ui-datatable-even ui-widget-content">
             <td colspan="3">
               {{'device-list.noRemainingDevicesLeft'|translate}}
             </td>
