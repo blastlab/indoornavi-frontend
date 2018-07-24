@@ -115,14 +115,14 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
       const type: DeviceType = (<AnchorBag | SinkBag>device).deviceInEditor.type;
       if (type === DeviceType.SINK) {
         const sink: SinkBag = <SinkBag>device;
+        this.sinks.push(sink.deviceInList);
         sink.deviceInEditor.anchors.forEach((anchor: AnchorBag): void => {
-          console.log(anchor);
+          this.anchors.push(anchor.deviceInList);
         });
       } else if (type === DeviceType.ANCHOR) {
         const anchor: AnchorBag = <AnchorBag>(device);
-        console.log(anchor);
+        this.anchors.push(anchor.deviceInList);
       }
-      console.log('removed device should to be added back to corresponding list and displayed');
     });
   }
 
