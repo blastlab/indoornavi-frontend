@@ -1,5 +1,6 @@
-import {Component, EventEmitter, Output} from '@angular/core';
-import {animate, state, style, transition, trigger} from '@angular/animations';
+import {ChangeDetectorRef, Component, ElementRef, EventEmitter, Output, ViewChild} from '@angular/core';
+import {animate, AnimationEvent, state, style, transition, trigger} from '@angular/animations';
+import {contentContainerAnimation, minimizeContainerAnimation} from './animations/tool-details.animation';
 
 @Component({
   selector: 'app-tool-details',
@@ -15,36 +16,30 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
       })),
       transition('close <=> open', animate(300))
     ]),
-    trigger('toggleMinimizedTop', [
-      state('maximized', style({
-        transform: 'translateX(0)'
-      })),
-      state('minimized', style({
-        transform: 'translateX(-92%)'
-      })),
-      transition('maximized <=> minimized', animate(800))
-    ]),
-    trigger('toggleMinimizedBottom', [
-      state('maximized', style({
-        transform: 'translateY(0)'
-      })),
-      state('minimized', style({
-        transform: 'translateY(-180%)'
-      })),
-      transition('maximized <=> minimized', animate(800))
-    ])
+    contentContainerAnimation,
+    minimizeContainerAnimation
   ]
 })
 export class ToolDetailsComponent {
 
   state: string = 'close';
-  minimizedState: string = 'maximized';
+  contentContainerState: string = 'maximized';
+  minimizeContainerState: string = 'maximized';
   @Output() onHide: EventEmitter<any> = new EventEmitter();
+  @ViewChild('minimizeContainer') minimizeContainer: ElementRef;
+  @ViewChild('contentContainer') contentContainer: ElementRef;
+  width: number = 0;
+  height: number = 0;
 
-  constructor() {
+  private buttonWidthAndPadding = 40;
+
+  constructor(private cd: ChangeDetectorRef) {
   }
 
   show(): void {
+    this.width = this.minimizeContainer.nativeElement.getBoundingClientRect().width - this.buttonWidthAndPadding;
+    this.height = this.minimizeContainer.nativeElement.getBoundingClientRect().height + this.contentContainer.nativeElement.getBoundingClientRect().height;
+    this.cd.detectChanges();
     this.state = 'open';
   }
 
@@ -53,9 +48,23 @@ export class ToolDetailsComponent {
   }
 
   toggleMinimized(): void {
-    this.minimizedState = this.minimizedState === 'minimized' ? 'maximized' : 'minimized';
-    console.log('changing min state:');
-    console.log(this.minimizedState);
+    if (this.contentContainerState === 'maximized') {
+      this.contentContainerState = 'minimized';
+    } else {
+      this.minimizeContainerState = 'maximized';
+    }
+  }
+
+  contentContainerAnimationEnded(event: AnimationEvent): void {
+    if (event.fromState === 'maximized' && event.toState === 'minimized') {
+      this.minimizeContainerState = 'minimized';
+    }
+  }
+
+  minimizeContainerAnimationEnded(event: AnimationEvent): void {
+    if (event.fromState === 'minimized' && event.toState === 'maximized') {
+      this.contentContainerState = 'maximized';
+    }
   }
 
   emitOnHide(): void {
@@ -63,3 +72,6 @@ export class ToolDetailsComponent {
   }
 
 }
+
+
+

@@ -6,7 +6,7 @@
 
 .ui-dialog .ui-dialog-content {
   padding: 0 0 0 0 !important;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .ui-dialog-content:before, .ui-dialog-content:after {
@@ -25,6 +25,7 @@
   border: 1px solid #d4d4d4;
   overflow: hidden;
   background: #fafafa;
+  z-index: 100;
 }
 
 .ui-dialog-content .content-container {
