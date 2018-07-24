@@ -112,6 +112,8 @@ import {NotSupportedBrowserComponent} from './not-supported-browser/not-supporte
 import {LongIdValidator} from './shared/directive/long-id.directive';
 import {ShortIdValidator} from './shared/directive/short-id.directive';
 import {DevicePlacerComponent} from './map-editor/tool-bar/tools/devices/device-placer/device-placer.component';
+import {DevicePlacerService} from './map-editor/tool-bar/tools/devices/device-placer.service';
+import {DevicePlacerListComponent} from './map-editor/tool-bar/tools/devices/list/device-placer.list';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -162,7 +164,8 @@ export function HttpLoaderFactory(http: Http) {
     HeatMapControllerComponent,
     MousePositionViewerComponent,
     NotSupportedBrowserComponent,
-    DevicePlacerComponent
+    DevicePlacerComponent,
+    DevicePlacerListComponent
   ],
   entryComponents: [
     PublicationDialogComponent,
@@ -248,7 +251,8 @@ export function HttpLoaderFactory(http: Http) {
     MapObjectService,
     ContextMenuService,
     TagVisibilityTogglerService,
-    HeatMapControllerService
+    HeatMapControllerService,
+    DevicePlacerService
   ], bootstrap: [AppComponent]
 })
 

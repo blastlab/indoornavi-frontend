@@ -5,6 +5,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {ToolDetailsComponent} from '../../../shared/details/tool-details';
 import {Expandable} from '../../../../../shared/utils/drawing/drawables/expandable';
 import {Anchor, Sink} from '../../../../../device/device.type';
+import {DevicePlacerService} from '../device-placer.service';
 
 @Component({
   selector: 'app-devices-list',
@@ -29,7 +30,9 @@ export class DevicesListComponent implements OnInit, OnDestroy {
   private connectingState: Subscription;
 
   constructor(public translate: TranslateService,
-              private devicePlacerController: DevicePlacerController) {
+              private devicePlacerService: DevicePlacerService,
+              private devicePlacerController: DevicePlacerController
+  ) {
   }
 
   ngOnInit(): void {
@@ -41,7 +44,8 @@ export class DevicesListComponent implements OnInit, OnDestroy {
       this.removeDevice(device);
       this.populateDevicesList();
     });
-    this.listVisibility = this.devicePlacerController.listVisibility.subscribe((shown) => {
+    this.listVisibility = this.devicePlacerService.onListVisibility.subscribe((shown: boolean) => {
+      console.log(shown);
       shown ? this.devicesList.show() : this.devicesList.hide();
     });
     this.deselection = this.devicePlacerController.deselectedDevice.subscribe((device) => {

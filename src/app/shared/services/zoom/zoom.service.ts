@@ -30,4 +30,5 @@ export class ZoomService {
     point.y = (point.y < borderSouthEast.y + offset[1].y ? point.y : borderSouthEast.y + offset[1].y);
     return {x: point.x, y: point.y};
   }
+
 }
