@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Anchor, Sink} from '../../../../../device/device.type';
-import {DeviceDto, DevicePlacerService, DeviceType} from '../device-placer.service';
+import {AnchorBag, DeviceDto, DevicePlacerService, DeviceType, SinkBag} from '../device-placer.service';
 import {Subscription} from 'rxjs/Subscription';
 import {ToolDetailsComponent} from '../../../shared/details/tool-details';
 import {DeviceService} from '../../../../../device/device.service';
@@ -111,19 +111,18 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   }
 
   private listenToRemovedDeviceInEditor(): void {
-    this.deviceRemoveInEditor = this.devicePlacerService.onRemovedFromMap.subscribe((device: DeviceInEditor): void => {
-      const type: DeviceType = (<SinkInEditor | AnchorInEditor>device).type;
+    this.deviceRemoveInEditor = this.devicePlacerService.onRemovedFromMap.subscribe((device: AnchorBag | SinkBag): void => {
+      const type: DeviceType = (<AnchorBag | SinkBag>device).deviceInEditor.type;
       if (type === DeviceType.SINK) {
-        const sink: SinkInEditor = <SinkInEditor>device;
-        console.log(sink);
-        sink.anchors.forEach((anchor: AnchorInEditor): void => {
+        const sink: SinkBag = <SinkBag>device;
+        sink.deviceInEditor.anchors.forEach((anchor: AnchorBag): void => {
           console.log(anchor);
         });
-        console.log('removed device should to be added back to corresponding list and displayed');
       } else if (type === DeviceType.ANCHOR) {
-        const anchor: AnchorInEditor = <AnchorInEditor>(device);
+        const anchor: AnchorBag = <AnchorBag>(device);
         console.log(anchor);
       }
+      console.log('removed device should to be added back to corresponding list and displayed');
     });
   }
 
