@@ -100,11 +100,8 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   private listenToActiveDeviceInEditor(): void {
     this.deviceActivation = this.devicePlacerService.onActive.subscribe((device: DeviceInEditor): void => {
       const type = (<AnchorInEditor | SinkInEditor>device).type;
-      if (type === DeviceType.SINK) {
+      if (type === DeviceType.SINK || type === DeviceType.ANCHOR) {
         this.activeListType = DeviceType.ANCHOR;
-        this.setDisplayedDevices();
-      } else if (type === DeviceType.ANCHOR) {
-        this.activeListType = null;
         this.setDisplayedDevices();
       }
     });
@@ -157,8 +154,6 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
       this.activeList = this.anchors;
     } else if (this.activeListType === DeviceType.SINK) {
       this.activeList = this.sinks;
-    } else {
-      this.activeList = [];
     }
   }
 

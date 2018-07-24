@@ -177,7 +177,13 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
           sinkBag.deviceInEditor.activateForMouseEvents();
           sinkBag.deviceInEditor.on(this.contextMenu);
           this.devicePlacerService.emitActive(sinkBag.deviceInEditor);
-        } else if (this.draggedDevice.type === DeviceType.ANCHOR && this.activeDevice.deviceInEditor.type === DeviceType.SINK) {
+        } else if (this.draggedDevice.type === DeviceType.ANCHOR) {
+          if (this.activeDevice.deviceInEditor.type === DeviceType.ANCHOR) {
+            const index: number = this.sinks.findIndex((sink: SinkBag): boolean => {
+              return sink.deviceInEditor.hasAnchor(<AnchorBag>this.activeDevice);
+            });
+           this.activeDevice = this.sinks[index];
+          }
           const anchorBag: AnchorBag = this.placeAnchorOnMap(<SinkBag>this.activeDevice, <Anchor>this.draggedDevice.device, coordinates);
           anchorBag.deviceInEditor.activateForMouseEvents();
           anchorBag.deviceInEditor.on(this.contextMenu);
