@@ -58,7 +58,7 @@ export class DeviceInEditor {
     this.appearance = DeviceAppearance.OUTSCOPE;
   }
 
-  on(callbacks: DeviceCallbacks): d3.selection {
+  contextMenuOn(callbacks: DeviceCallbacks): d3.selection {
     this.contextMenuService.setItems([
       {
         label: this.unsetLabel,
@@ -80,7 +80,7 @@ export class DeviceInEditor {
     this.reactiveToEvents = false;
   }
 
-  off(): d3.selection {
+  contextMenuOff(): d3.selection {
     this.svgGroupWrapper.getGroup().on('contextmenu', null);
     this.setOutOfGroupScope();
     return this;

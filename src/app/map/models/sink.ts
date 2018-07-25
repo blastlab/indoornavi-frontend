@@ -63,14 +63,14 @@ export class SinkInEditor extends DeviceInEditor {
 
   activateAnchors(contextMenu: DeviceCallbacks): void {
     this.anchors.forEach((anchor: AnchorBag): void => {
-      anchor.deviceInEditor.on(contextMenu);
+      anchor.deviceInEditor.contextMenuOn(contextMenu);
       anchor.deviceInEditor.activateForMouseEvents();
     });
   }
 
   deactivateAnchors(): void {
     this.anchors.forEach((anchor: AnchorBag): void => {
-      anchor.deviceInEditor.off();
+      anchor.deviceInEditor.contextMenuOff();
       anchor.deviceInEditor.deactivate();
     });
   }

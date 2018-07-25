@@ -179,7 +179,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
         if (this.draggedDevice.type === DeviceType.SINK) {
           const sinkBag: SinkBag = this.placeSinkOnMap(<Sink>this.draggedDevice.device, dropTransitionCoordinates);
           sinkBag.deviceInEditor.activateForMouseEvents();
-          sinkBag.deviceInEditor.on(this.contextMenu);
+          sinkBag.deviceInEditor.contextMenuOn(this.contextMenu);
           this.devicePlacerService.emitActivated(sinkBag.deviceInEditor);
         } else if (this.draggedDevice.type === DeviceType.ANCHOR) {
           if (this.activeDevice.deviceInEditor.type === DeviceType.ANCHOR) {
@@ -190,7 +190,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
           }
           const anchorBag: AnchorBag = this.placeAnchorOnMap(<SinkBag>this.activeDevice, <Anchor>this.draggedDevice.device, dropTransitionCoordinates);
           anchorBag.deviceInEditor.activateForMouseEvents();
-          anchorBag.deviceInEditor.on(this.contextMenu);
+          anchorBag.deviceInEditor.contextMenuOn(this.contextMenu);
           this.devicePlacerService.emitActivated(anchorBag.deviceInEditor);
         }
       }
@@ -239,7 +239,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
       this.translateService
     );
     sinkOnMap.setOutOfGroupScope();
-    sinkOnMap.off();
+    sinkOnMap.contextMenuOff();
     const sinkBag: SinkBag = {
       deviceInList: sink,
       deviceInEditor: sinkOnMap
@@ -263,7 +263,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
       this.translateService
     );
     anchorInEditor.setOutOfGroupScope();
-    anchorInEditor.off();
+    anchorInEditor.contextMenuOff();
     const anchorBag: AnchorBag = {
       deviceInEditor: anchorInEditor,
       deviceInList: anchor
@@ -352,7 +352,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
         });
     }
     this.sinks.forEach((sink: SinkBag): void => {
-      sink.deviceInEditor.on(this.contextMenu);
+      sink.deviceInEditor.contextMenuOn(this.contextMenu);
       sink.deviceInEditor.activateForMouseEvents();
       sink.deviceInEditor.activateAnchors(this.contextMenu);
     });
@@ -363,7 +363,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
       this.map.on('click', null).on('contextmenu', null);
     }
     this.sinks.forEach((sink: SinkBag): void => {
-      sink.deviceInEditor.off();
+      sink.deviceInEditor.contextMenuOff();
       sink.deviceInEditor.deactivate();
       sink.deviceInEditor.deactivateAnchors();
     });
