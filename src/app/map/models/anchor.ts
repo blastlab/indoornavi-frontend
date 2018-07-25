@@ -1,9 +1,10 @@
 import {Point} from '../../map-editor/map.type';
 import {DeviceInEditor, DeviceInEditorConfiguration} from './device';
 import * as d3 from 'd3';
-import {DevicePlacerService, DeviceType} from '../../map-editor/tool-bar/tools/devices/device-placer.service';
+import {DevicePlacerService} from '../../map-editor/tool-bar/tools/devices/device-placer.service';
 import {ContextMenuService} from '../../shared/wrappers/editable/editable.service';
 import {TranslateService} from '@ngx-translate/core';
+import {DeviceType} from '../../map-editor/tool-bar/tools/devices/device-placer/device-placer.types';
 
 export class AnchorInEditor extends DeviceInEditor {
 
