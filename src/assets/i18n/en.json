@@ -56,6 +56,7 @@
   "DB_002": "Short Id must be unique.",
   "DB_003": "Long Id must be unique.",
   "DB_004": "Username must be unique.",
+  "device-list.label.height": "Height",
   "device-list.noRemainingDevicesLeft": "There are no more verified and not configured devices",
   "device-list.searchByAllFields": "Find by any field",
   "device.create.success": "Device has been created",

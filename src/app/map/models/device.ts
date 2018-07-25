@@ -156,7 +156,7 @@ export class DeviceInEditor {
       .on('click', (): void => {
         d3.event.stopPropagation();
         if (this.reactiveToEvents) {
-          this.devicePlacerService.emitActive(this);
+          this.devicePlacerService.emitActivated(this);
         }
       });
   }

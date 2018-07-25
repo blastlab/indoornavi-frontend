@@ -179,7 +179,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
           const sinkBag: SinkBag = this.placeSinkOnMap(<Sink>this.draggedDevice.device, dropTransitionCoordinates);
           sinkBag.deviceInEditor.activateForMouseEvents();
           sinkBag.deviceInEditor.on(this.contextMenu);
-          this.devicePlacerService.emitActive(sinkBag.deviceInEditor);
+          this.devicePlacerService.emitActivated(sinkBag.deviceInEditor);
         } else if (this.draggedDevice.type === DeviceType.ANCHOR) {
           if (this.activeDevice.deviceInEditor.type === DeviceType.ANCHOR) {
             const index: number = this.sinks.findIndex((sink: SinkBag): boolean => {
@@ -190,7 +190,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
           const anchorBag: AnchorBag = this.placeAnchorOnMap(<SinkBag>this.activeDevice, <Anchor>this.draggedDevice.device, dropTransitionCoordinates);
           anchorBag.deviceInEditor.activateForMouseEvents();
           anchorBag.deviceInEditor.on(this.contextMenu);
-          this.devicePlacerService.emitActive(anchorBag.deviceInEditor);
+          this.devicePlacerService.emitActivated(anchorBag.deviceInEditor);
         }
       }
     });
@@ -282,6 +282,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
       });
       this.removeAnchorFromSink(sinkWithAnchor, <AnchorBag>this.activeDevice)
     }
+    this.devicePlacerService.emitMapModeActivated();
   }
 
   private addSink(sinkBag: SinkBag): void {
@@ -340,10 +341,10 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     if (!!this.map) {
       this.map
         .on('click', (): void => {
-          this.sinks.forEach((sink: SinkBag) => {
-            this.setSinkGroupInScope(sink);
+          this.sinks.forEach((sink: SinkBag): void => {
+            this.setSinkGroupOutOfScope(sink);
           });
-          this.devicePlacerService.emitMapClick();
+          this.devicePlacerService.emitMapModeActivated();
       })
         .on('contextmenu', () => {
           d3.event.preventDefault();
