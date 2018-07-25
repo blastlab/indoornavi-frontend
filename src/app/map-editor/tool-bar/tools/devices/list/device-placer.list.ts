@@ -5,8 +5,6 @@ import {Subscription} from 'rxjs/Subscription';
 import {ToolDetailsComponent} from '../../../shared/details/tool-details';
 import {DeviceService} from '../../../../../device/device.service';
 import {DeviceInEditor} from '../../../../../map/models/device';
-import {SinkInEditor} from '../../../../../map/models/sink';
-import {AnchorInEditor} from '../../../../../map/models/anchor';
 
 
 @Component({
@@ -20,6 +18,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   public heightInMeters: number = 2;
   public activeListType: DeviceType;
   private activationSubscription: Subscription;
+  private tableRenderedSubscription: Subscription;
   private deviceDragging: Subscription;
   private deviceDroppingInside: Subscription;
   private deviceDroppingOutside: Subscription;
@@ -38,11 +37,12 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.listenToToolActivation();
-    this.listenToDeviceDragAndDrop();
-    this.listenToMapClick();
-    this.listenToActiveDeviceInEditor();
-    this.listenToUnsetDeviceInEditor();
+    this.listenOnToolActivation();
+    this.listenOnDeviceDragAndDrop();
+    this.listenOnMapClick();
+    this.listenOnActiveDeviceInEditor();
+    this.listenOnUnsetDeviceInEditor();
+    this.listenOnTableRendered();
     this.fetchAllDevices();
   }
 
@@ -54,7 +54,9 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
     this.mapClickEvent.unsubscribe();
     this.deviceActivation.unsubscribe();
     this.deviceRemoveInEditor.unsubscribe();
+    this.tableRenderedSubscription.unsubscribe();
   }
+
 
   deviceDragStarted(device: Anchor | Sink): void {
     const deviceDto: DeviceDto = {
@@ -68,13 +70,19 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
     this.devicePlacerService.emitDroppedOutside();
   }
 
-  private listenToToolActivation(): void {
+  private listenOnTableRendered(): void {
+    this.tableRenderedSubscription = this.devicePlacerService.onTableRendered.subscribe((): void => {
+      this.toolDetails.updateContainersShifts();
+    });
+  }
+
+  private listenOnToolActivation(): void {
     this.activationSubscription = this.devicePlacerService.onListVisibility.subscribe((visible: boolean): void => {
       visible ? this.toolDetails.show() : this.toolDetails.hide();
     });
   }
 
-  private listenToDeviceDragAndDrop(): void {
+  private listenOnDeviceDragAndDrop(): void {
     this.deviceDragging = this.devicePlacerService.onDragStarted.subscribe((deviceDto: DeviceDto): void => {
       this.draggedDevice = deviceDto.device;
     });
@@ -89,24 +97,21 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
     });
   }
 
-  private listenToMapClick(): void {
+  private listenOnMapClick(): void {
     this.mapClickEvent = this.devicePlacerService.onMapClick.subscribe((): void => {
       this.activeListType = DeviceType.SINK;
       this.setActiveDevices();
     });
   }
 
-  private listenToActiveDeviceInEditor(): void {
+  private listenOnActiveDeviceInEditor(): void {
     this.deviceActivation = this.devicePlacerService.onActive.subscribe((device: DeviceInEditor): void => {
-      const type = (<AnchorInEditor | SinkInEditor>device).type;
-      if (type === DeviceType.SINK || type === DeviceType.ANCHOR) {
-        this.activeListType = DeviceType.ANCHOR;
-        this.setActiveDevices();
-      }
+      this.activeListType = DeviceType.ANCHOR;
+      this.setActiveDevices();
     });
   }
 
-  private listenToUnsetDeviceInEditor(): void {
+  private listenOnUnsetDeviceInEditor(): void {
     this.deviceRemoveInEditor = this.devicePlacerService.onRemovedFromMap.subscribe((device: AnchorBag | SinkBag): void => {
       const type: DeviceType = (<AnchorBag | SinkBag>device).deviceInEditor.type;
       if (type === DeviceType.SINK) {
@@ -154,7 +159,6 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
     } else if (this.activeListType === DeviceType.SINK) {
       this.activeList = this.sinks;
     }
-    this.toolDetails.updateContainersShifts();
   }
 
 }

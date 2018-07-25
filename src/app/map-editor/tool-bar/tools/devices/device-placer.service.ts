@@ -18,6 +18,7 @@ export class DevicePlacerService {
   private removedFromMap: Subject<AnchorBag | SinkBag> = new Subject<AnchorBag | SinkBag>();
   private listVisibility: Subject<boolean> = new Subject<boolean>();
   private mapClick: Subject<void> = new Subject();
+  private tableRendered: Subject<void> = new Subject();
 
   onDragStarted: Observable<DeviceDto> = this.draggedStarted.asObservable();
   onDroppedOutside: Observable<void> = this.droppedOutside.asObservable();
@@ -27,6 +28,7 @@ export class DevicePlacerService {
   onRemovedFromMap: Observable<AnchorBag | SinkBag> = this.removedFromMap.asObservable();
   onListVisibility: Observable<boolean> = this.listVisibility.asObservable();
   onMapClick: Observable<void> = this.mapClick.asObservable();
+  onTableRendered: Observable<void> = this.tableRendered.asObservable();
 
   constructor() {
   }
@@ -43,7 +45,7 @@ export class DevicePlacerService {
     this.droppedInside.next(coordinates);
   }
 
-  emitActive(device: DeviceInEditor): void {
+  emitActivated(device: DeviceInEditor): void {
     this.active.next(device);
   }
 
@@ -59,8 +61,12 @@ export class DevicePlacerService {
     this.listVisibility.next(visible);
   }
 
-  emitMapModeActive(): void {
+  emitMapModeActivated(): void {
     this.mapClick.next();
+  }
+
+  emitTableRendered(): void {
+    this.tableRendered.next();
   }
 
 }

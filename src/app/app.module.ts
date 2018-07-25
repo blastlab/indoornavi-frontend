@@ -114,6 +114,7 @@ import {ShortIdValidator} from './shared/directive/short-id.directive';
 import {DevicePlacerComponent} from './map-editor/tool-bar/tools/devices/device-placer/device-placer.component';
 import {DevicePlacerService} from './map-editor/tool-bar/tools/devices/device-placer.service';
 import {DevicePlacerListComponent} from './map-editor/tool-bar/tools/devices/list/device-placer.list';
+import {DevicePlacerRowDirective} from './map-editor/tool-bar/tools/devices/list/device-placer.row';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -165,7 +166,8 @@ export function HttpLoaderFactory(http: Http) {
     MousePositionViewerComponent,
     NotSupportedBrowserComponent,
     DevicePlacerComponent,
-    DevicePlacerListComponent
+    DevicePlacerListComponent,
+    DevicePlacerRowDirective
   ],
   entryComponents: [
     PublicationDialogComponent,
