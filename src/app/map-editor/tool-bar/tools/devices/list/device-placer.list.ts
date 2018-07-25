@@ -59,6 +59,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
 
 
   deviceDragStarted(device: Anchor | Sink): void {
+    device.z = this.heightInMeters;
     const deviceDto: DeviceDto = {
       device: device,
       type: this.activeListType
