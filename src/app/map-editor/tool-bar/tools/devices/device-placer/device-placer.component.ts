@@ -11,14 +11,14 @@ import {ActionBarService} from '../../../../action-bar/actionbar.service';
 import {ScaleService} from '../../../../../shared/services/scale/scale.service';
 import {SinkInEditor} from '../../../../../map/models/sink';
 import {Anchor, Sink} from '../../../../../device/device.type';
-import {DeviceCallbacks, DeviceInEditor, DeviceInEditorConfiguration} from '../../../../../map/models/device';
+import {DeviceInEditor} from '../../../../../map/models/device';
 import {Point} from '../../../../map.type';
 import {AnchorInEditor} from '../../../../../map/models/anchor';
 import {DevicePlacerService} from '../device-placer.service';
 import {ContextMenuService} from '../../../../../shared/wrappers/editable/editable.service';
 import {TranslateService} from '@ngx-translate/core';
 import {ZoomService} from '../../../../../shared/services/zoom/zoom.service';
-import {AnchorBag, DeviceDto, DeviceType, SinkBag} from './device-placer.types';
+import {AnchorBag, DeviceCallbacks, DeviceDto, DeviceInEditorConfiguration, DeviceType, SinkBag} from './device-placer.types';
 
 @Component({
   selector: 'app-device-placer',

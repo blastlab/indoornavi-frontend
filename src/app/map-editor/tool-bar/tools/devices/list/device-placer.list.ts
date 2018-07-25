@@ -1,10 +1,9 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Anchor, Sink} from '../../../../../device/device.type';
-import {DevicePlacerService,} from '../device-placer.service';
+import {DevicePlacerService} from '../device-placer.service';
 import {Subscription} from 'rxjs/Subscription';
 import {ToolDetailsComponent} from '../../../shared/details/tool-details';
 import {DeviceService} from '../../../../../device/device.service';
-import {DeviceInEditor} from '../../../../../map/models/device';
 import {AnchorBag, DeviceDto, DeviceType, SinkBag} from '../device-placer/device-placer.types';
 
 
@@ -106,7 +105,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   }
 
   private listenOnActiveDeviceInEditor(): void {
-    this.deviceActivation = this.devicePlacerService.onActive.subscribe((device: DeviceInEditor): void => {
+    this.deviceActivation = this.devicePlacerService.onActive.subscribe((): void => {
       this.activeListType = DeviceType.ANCHOR;
       this.setActiveDevices();
     });

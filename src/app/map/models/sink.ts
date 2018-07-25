@@ -1,10 +1,10 @@
-import {DeviceCallbacks, DeviceInEditor, DeviceInEditorConfiguration} from './device';
+import {DeviceInEditor} from './device';
 import {Point} from '../../map-editor/map.type';
 import * as d3 from 'd3';
 import {DevicePlacerService} from '../../map-editor/tool-bar/tools/devices/device-placer.service';
 import {ContextMenuService} from '../../shared/wrappers/editable/editable.service';
 import {TranslateService} from '@ngx-translate/core';
-import {AnchorBag, DeviceType} from '../../map-editor/tool-bar/tools/devices/device-placer/device-placer.types';
+import {AnchorBag, DeviceCallbacks, DeviceInEditorConfiguration, DeviceType} from '../../map-editor/tool-bar/tools/devices/device-placer/device-placer.types';
 
 export class SinkInEditor extends DeviceInEditor {
 
