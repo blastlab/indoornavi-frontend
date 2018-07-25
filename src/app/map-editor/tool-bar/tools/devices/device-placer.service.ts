@@ -1,11 +1,9 @@
 import {Injectable} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
 import {Point} from '../../../map.type';
-import {Anchor, Device, Sink} from '../../../../device/device.type';
 import {DeviceInEditor} from '../../../../map/models/device';
 import {Observable} from 'rxjs/Observable';
-import {SinkInEditor} from '../../../../map/models/sink';
-import {AnchorInEditor} from '../../../../map/models/anchor';
+import {AnchorBag, DeviceDto, SinkBag} from './device-placer/device-placer.types';
 
 
 @Injectable()
@@ -69,23 +67,4 @@ export class DevicePlacerService {
     this.tableRendered.next();
   }
 
-}
-
-export interface DeviceDto {
-  device: Device,
-  type: DeviceType
-}
-
-export interface SinkBag {
-  deviceInList: Sink,
-  deviceInEditor: SinkInEditor
-}
-
-export interface AnchorBag {
-  deviceInList: Anchor,
-  deviceInEditor: AnchorInEditor
-}
-
-export enum DeviceType {
-  ANCHOR, SINK
 }
