@@ -59,7 +59,7 @@ export class DevicePlacerService {
     this.listVisibility.next(visible);
   }
 
-  emitMapClick(): void {
+  emitMapModeActive(): void {
     this.mapClick.next();
   }
 

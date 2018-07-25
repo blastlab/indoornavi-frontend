@@ -36,7 +36,7 @@ export class DevicesListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.addSubscription = this.devicePlacerController.addedDevice.subscribe((device) => {
+    this.addSubscription = this.devicePlacerController.addedDevice.subscribe((device): void => {
       this.addDevice(device);
       this.populateDevicesList();
     });

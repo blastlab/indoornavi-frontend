@@ -42,7 +42,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
     this.listenToDeviceDragAndDrop();
     this.listenToMapClick();
     this.listenToActiveDeviceInEditor();
-    this.listenToRemovedDeviceInEditor();
+    this.listenToUnsetDeviceInEditor();
     this.fetchAllDevices();
   }
 
@@ -86,14 +86,13 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
       if (this.activeListType === DeviceType.SINK) {
         this.activeListType = DeviceType.ANCHOR;
       }
-      this.setDisplayedDevices();
     });
   }
 
   private listenToMapClick(): void {
     this.mapClickEvent = this.devicePlacerService.onMapClick.subscribe((): void => {
       this.activeListType = DeviceType.SINK;
-      this.setDisplayedDevices();
+      this.setActiveDevices();
     });
   }
 
@@ -102,12 +101,12 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
       const type = (<AnchorInEditor | SinkInEditor>device).type;
       if (type === DeviceType.SINK || type === DeviceType.ANCHOR) {
         this.activeListType = DeviceType.ANCHOR;
-        this.setDisplayedDevices();
+        this.setActiveDevices();
       }
     });
   }
 
-  private listenToRemovedDeviceInEditor(): void {
+  private listenToUnsetDeviceInEditor(): void {
     this.deviceRemoveInEditor = this.devicePlacerService.onRemovedFromMap.subscribe((device: AnchorBag | SinkBag): void => {
       const type: DeviceType = (<AnchorBag | SinkBag>device).deviceInEditor.type;
       if (type === DeviceType.SINK) {
@@ -139,7 +138,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
       });
     });
     this.activeListType = DeviceType.SINK;
-    this.setDisplayedDevices();
+    this.setActiveDevices();
   }
 
   private removeDraggedDevice(): void {
@@ -149,12 +148,13 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
     }
   }
 
-  private setDisplayedDevices() {
+  private setActiveDevices() {
     if (this.activeListType === DeviceType.ANCHOR) {
       this.activeList = this.anchors;
     } else if (this.activeListType === DeviceType.SINK) {
       this.activeList = this.sinks;
     }
+    this.toolDetails.updateContainersShifts();
   }
 
 }

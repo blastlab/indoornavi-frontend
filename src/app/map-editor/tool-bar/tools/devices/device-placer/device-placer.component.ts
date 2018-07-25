@@ -282,6 +282,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
       });
       this.removeAnchorFromSink(sinkWithAnchor, <AnchorBag>this.activeDevice)
     }
+    this.devicePlacerService.emitMapModeActive();
   }
 
   private addSink(sinkBag: SinkBag): void {
@@ -340,10 +341,10 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     if (!!this.map) {
       this.map
         .on('click', (): void => {
-          this.sinks.forEach((sink: SinkBag) => {
-            this.setSinkGroupInScope(sink);
+          this.sinks.forEach((sink: SinkBag): void => {
+            this.setSinkGroupOutOfScope(sink);
           });
-          this.devicePlacerService.emitMapClick();
+          this.devicePlacerService.emitMapModeActive();
       })
         .on('contextmenu', () => {
           d3.event.preventDefault();

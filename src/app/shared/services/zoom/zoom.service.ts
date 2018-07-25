@@ -15,8 +15,8 @@ export class ZoomService {
   }
 
   calculateTransition (point: Point): Point {
-    // to understand zoom transformation think of it as on inflating a balloon,
-    // each point on the balloon surface has unique transformation vector
+    // to understand zoom transformation think of it as of points distributed on surface of the balloon where
+    // each point on the balloon surface has unique transformation vector when balloon is inflated.
     return {x: (point.x - this.transformation.x) / this.transformation.k, y: (point.y - this.transformation.y) / this.transformation.k};
   }
 
