@@ -17,6 +17,7 @@ import {AnchorInEditor} from '../../../../../map/models/anchor';
 import {AnchorBag, DeviceDto, DevicePlacerService, DeviceType, SinkBag} from '../device-placer.service';
 import {ContextMenuService} from '../../../../../shared/wrappers/editable/editable.service';
 import {TranslateService} from '@ngx-translate/core';
+import {ZoomService} from '../../../../../shared/services/zoom/zoom.service';
 
 @Component({
   selector: 'app-device-placer',
@@ -48,7 +49,8 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     private scaleService: ScaleService,
     private devicePlacerService: DevicePlacerService,
     private contextMenuService: ContextMenuService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private zoomService: ZoomService
   ) {
   }
 
@@ -171,9 +173,10 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
       this.draggedDevice = null;
     });
     this.deviceDroppingInside = this.devicePlacerService.onDroppedInside.subscribe((coordinates: Point): void => {
+      const dropTransitionCoordinates = this.zoomService.calculateTransition(coordinates);
       if (!!this.draggedDevice) {
         if (this.draggedDevice.type === DeviceType.SINK) {
-          const sinkBag: SinkBag = this.placeSinkOnMap(<Sink>this.draggedDevice.device, coordinates);
+          const sinkBag: SinkBag = this.placeSinkOnMap(<Sink>this.draggedDevice.device, dropTransitionCoordinates);
           sinkBag.deviceInEditor.activateForMouseEvents();
           sinkBag.deviceInEditor.on(this.contextMenu);
           this.devicePlacerService.emitActive(sinkBag.deviceInEditor);
@@ -184,7 +187,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
             });
            this.activeDevice = this.sinks[index];
           }
-          const anchorBag: AnchorBag = this.placeAnchorOnMap(<SinkBag>this.activeDevice, <Anchor>this.draggedDevice.device, coordinates);
+          const anchorBag: AnchorBag = this.placeAnchorOnMap(<SinkBag>this.activeDevice, <Anchor>this.draggedDevice.device, dropTransitionCoordinates);
           anchorBag.deviceInEditor.activateForMouseEvents();
           anchorBag.deviceInEditor.on(this.contextMenu);
           this.devicePlacerService.emitActive(anchorBag.deviceInEditor);
