@@ -1,9 +1,5 @@
 <app-tool-details #toolDetails>
   <div class="ui-g">
-    <div class="ui-g-12">
-      <h4 id="remaining-devices-heading">{{'device-list.listOfDevices'|translate}}</h4>
-    </div>
-
     <div class="ui-g-7">
       <div class="ui-inputgroup">
         <input pInputText autofocus autocomplete="off" type="text"
@@ -15,6 +11,10 @@
     <div class="ui-g-5">
       <div id="height-label">{{'device-list.label.height'|translate}} {{heightInMeters}}m</div>
       <p-slider [(ngModel)]="heightInMeters" [step]="1" [min]="0" [max]="15"></p-slider>
+    </div>
+    <div class="ui-g-12">
+      <h4 *ngIf="activeListType === 0">{{'anchors.header'|translate}}</h4>
+      <h4 *ngIf="activeListType === 1">{{'sinks.header'|translate}}</h4>
     </div>
 
     <div class="ui-datatable ui-widget ui-g-12">

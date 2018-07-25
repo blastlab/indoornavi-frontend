@@ -185,7 +185,6 @@ export class DeviceInEditor {
     element.call(drag);
   }
 
-
 }
 
 export interface DeviceInEditorConfiguration extends DrawConfiguration {

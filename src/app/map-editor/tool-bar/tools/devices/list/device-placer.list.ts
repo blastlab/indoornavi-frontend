@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Anchor, Sink} from '../../../../../device/device.type';
-import {DeviceDto, DevicePlacerService, DeviceType} from '../device-placer.service';
+import {AnchorBag, DeviceDto, DevicePlacerService, DeviceType, SinkBag} from '../device-placer.service';
 import {Subscription} from 'rxjs/Subscription';
 import {ToolDetailsComponent} from '../../../shared/details/tool-details';
 import {DeviceService} from '../../../../../device/device.service';
@@ -18,7 +18,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   public activeList: Array<Anchor | Sink> = [];
   public queryString: string;
   public heightInMeters: number = 2;
-  private activeListType: DeviceType;
+  public activeListType: DeviceType;
   private activationSubscription: Subscription;
   private deviceDragging: Subscription;
   private deviceDroppingInside: Subscription;
@@ -100,29 +100,25 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   private listenToActiveDeviceInEditor(): void {
     this.deviceActivation = this.devicePlacerService.onActive.subscribe((device: DeviceInEditor): void => {
       const type = (<AnchorInEditor | SinkInEditor>device).type;
-      if (type === DeviceType.SINK) {
+      if (type === DeviceType.SINK || type === DeviceType.ANCHOR) {
         this.activeListType = DeviceType.ANCHOR;
-        this.setDisplayedDevices();
-      } else if (type === DeviceType.ANCHOR) {
-        this.activeListType = null;
         this.setDisplayedDevices();
       }
     });
   }
 
   private listenToRemovedDeviceInEditor(): void {
-    this.deviceRemoveInEditor = this.devicePlacerService.onRemovedFromMap.subscribe((device: DeviceInEditor): void => {
-      const type: DeviceType = (<SinkInEditor | AnchorInEditor>device).type;
+    this.deviceRemoveInEditor = this.devicePlacerService.onRemovedFromMap.subscribe((device: AnchorBag | SinkBag): void => {
+      const type: DeviceType = (<AnchorBag | SinkBag>device).deviceInEditor.type;
       if (type === DeviceType.SINK) {
-        const sink: SinkInEditor = <SinkInEditor>device;
-        console.log(sink);
-        sink.anchors.forEach((anchor: AnchorInEditor): void => {
-          console.log(anchor);
+        const sink: SinkBag = <SinkBag>device;
+        this.sinks.push(sink.deviceInList);
+        sink.deviceInEditor.anchors.forEach((anchor: AnchorBag): void => {
+          this.anchors.push(anchor.deviceInList);
         });
-        console.log('removed device should to be added back to corresponding list and displayed');
       } else if (type === DeviceType.ANCHOR) {
-        const anchor: AnchorInEditor = <AnchorInEditor>(device);
-        console.log(anchor);
+        const anchor: AnchorBag = <AnchorBag>(device);
+        this.anchors.push(anchor.deviceInList);
       }
     });
   }
@@ -158,8 +154,6 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
       this.activeList = this.anchors;
     } else if (this.activeListType === DeviceType.SINK) {
       this.activeList = this.sinks;
-    } else {
-      this.activeList = [];
     }
   }
 

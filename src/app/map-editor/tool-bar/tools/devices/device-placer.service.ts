@@ -4,6 +4,8 @@ import {Point} from '../../../map.type';
 import {Anchor, Device, Sink} from '../../../../device/device.type';
 import {DeviceInEditor} from '../../../../map/models/device';
 import {Observable} from 'rxjs/Observable';
+import {SinkInEditor} from '../../../../map/models/sink';
+import {AnchorInEditor} from '../../../../map/models/anchor';
 
 
 @Injectable()
@@ -13,7 +15,7 @@ export class DevicePlacerService {
   private droppedInside: Subject<Point> = new Subject();
   private active: Subject<DeviceInEditor> = new Subject();
   private selected: Subject<DeviceInEditor> = new Subject<DeviceInEditor>();
-  private removedFromMap: Subject<DeviceInEditor> = new Subject<DeviceInEditor>();
+  private removedFromMap: Subject<AnchorBag | SinkBag> = new Subject<AnchorBag | SinkBag>();
   private listVisibility: Subject<boolean> = new Subject<boolean>();
   private mapClick: Subject<void> = new Subject();
 
@@ -22,7 +24,7 @@ export class DevicePlacerService {
   onDroppedInside: Observable<Point> = this.droppedInside.asObservable();
   onActive: Observable<DeviceInEditor> = this.active.asObservable();
   onSelected: Observable<DeviceInEditor> = this.selected.asObservable();
-  onRemovedFromMap: Observable<DeviceInEditor> = this.removedFromMap.asObservable();
+  onRemovedFromMap: Observable<AnchorBag | SinkBag> = this.removedFromMap.asObservable();
   onListVisibility: Observable<boolean> = this.listVisibility.asObservable();
   onMapClick: Observable<void> = this.mapClick.asObservable();
 
@@ -41,15 +43,15 @@ export class DevicePlacerService {
     this.droppedInside.next(coordinates);
   }
 
-  emitActive(deviceId: DeviceInEditor): void {
-    this.active.next(deviceId);
+  emitActive(device: DeviceInEditor): void {
+    this.active.next(device);
   }
 
   emitSelected(device: DeviceInEditor): void {
     this.selected.next(device);
   }
 
-  emitRemovedFromMap(device: DeviceInEditor): void {
+  emitRemovedFromMap(device: AnchorBag | SinkBag): void {
     this.removedFromMap.next(device);
   }
 
@@ -68,9 +70,14 @@ export interface DeviceDto {
   type: DeviceType
 }
 
-export interface DeviceBag {
-  deviceInList: Device,
-  deviceInEditor: DeviceInEditor
+export interface SinkBag {
+  deviceInList: Sink,
+  deviceInEditor: SinkInEditor
+}
+
+export interface AnchorBag {
+  deviceInList: Anchor,
+  deviceInEditor: AnchorInEditor
 }
 
 export enum DeviceType {
