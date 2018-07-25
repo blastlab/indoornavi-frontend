@@ -5,8 +5,8 @@ export const minimizeContainerAnimation = trigger('toggleMinimizedTop', [
     transform: 'translateX(0)'
   })),
   state('minimized', style({
-    transform: 'translateX(-{{ width }})'
-  }), { params: { width: '500px' } }),
+    transform: 'translateX({{ minimizeContainerShift }})'
+  }), { params: { minimizeContainerShift: '-500px' } }),
   transition('minimized <=> maximized', animate(250))
 ]);
 
@@ -16,8 +16,19 @@ export const contentContainerAnimation = trigger('toggleMinimizedBottom', [
     transform: 'translateY(0)'
   })),
   state('minimized', style({
-    transform: 'translateY(-{{ height }})'
-  }), { params: { height: '500px' } }),
+    transform: 'translateY({{ contentContainerShift }})'
+  }), { params: { contentContainerShift: '-500px' } }),
   transition('minimized <=> maximized', animate(250))
+]);
+
+
+export const openCloseAnimation = trigger('toggleDetails', [
+  state('open', style({
+    transform: 'translateY(0)'
+  })),
+  state('close', style({
+    transform: 'translateY(-100%)'
+  })),
+  transition('close <=> open', animate(300))
 ]);
 

@@ -26,6 +26,7 @@
   overflow: hidden;
   background: #fafafa;
   z-index: 100;
+  pointer-events: all;
 }
 
 .ui-dialog-content .content-container {
