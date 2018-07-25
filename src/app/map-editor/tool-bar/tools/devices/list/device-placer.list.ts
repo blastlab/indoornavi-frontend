@@ -18,7 +18,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   public activeList: Array<Anchor | Sink> = [];
   public queryString: string;
   public heightInMeters: number = 2;
-  private activeListType: DeviceType;
+  public activeListType: DeviceType;
   private activationSubscription: Subscription;
   private deviceDragging: Subscription;
   private deviceDroppingInside: Subscription;
