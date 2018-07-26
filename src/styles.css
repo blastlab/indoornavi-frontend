@@ -176,3 +176,7 @@ app-auth > div {
 .flex .h-center {
   justify-content: center;
 }
+
+svg {
+  position: relative;
+}
