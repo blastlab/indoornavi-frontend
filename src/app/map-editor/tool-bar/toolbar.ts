@@ -15,7 +15,7 @@ import {merge} from 'rxjs/observable/merge';
 export class ToolbarComponent implements OnInit, OnDestroy {
   @Input() floor: Floor;
   @ViewChildren('toolScaleDependent') scaleDependentTools: QueryList<Tool>;
-  @ViewChildren('toolWizardDependent') wizardDependentTools: QueryList<Tool>;
+  @ViewChildren('tool') tools: QueryList<Tool>;
 
   private activeTool: Tool;
   private toolChangedSubscription: Subscription;
@@ -43,7 +43,7 @@ export class ToolbarComponent implements OnInit, OnDestroy {
       }
     });
     this.toolChangedSubscription = this.toolbarService.onToolChanged().subscribe((tool: Tool) => {
-      const activate: boolean = (tool && this.activeTool !== tool);
+      const activate: boolean = (tool && this.activeTool !== tool)
       if (!!this.activeTool) {
         this.activeTool.setInactive();
         this.activeTool = undefined;
@@ -51,11 +51,6 @@ export class ToolbarComponent implements OnInit, OnDestroy {
       if (activate) {
         tool.setActive();
         this.activeTool = tool;
-        if (this.activeTool.getToolName() === ToolName.WIZARD) {
-          this.toggleWizardDependentToolsDisable(true);
-        }
-      } else if (this.scaleSet) {
-        this.toggleWizardDependentToolsDisable(false);
       }
     });
   }
@@ -71,12 +66,6 @@ export class ToolbarComponent implements OnInit, OnDestroy {
 
   private toggleScaleDependentToolsDisable(value: boolean): void {
     this.scaleDependentTools.forEach((item: Tool) => {
-      item.setDisabled(value);
-    });
-  }
-
-  private toggleWizardDependentToolsDisable(value: boolean): void {
-    this.wizardDependentTools.forEach((item: Tool) => {
       item.setDisabled(value);
     });
   }

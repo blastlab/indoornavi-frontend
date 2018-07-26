@@ -19,6 +19,7 @@ import {ContextMenuService} from '../../../../../shared/wrappers/editable/editab
 import {TranslateService} from '@ngx-translate/core';
 import {ZoomService} from '../../../../../shared/services/zoom/zoom.service';
 import {AnchorBag, DeviceCallbacks, DeviceDto, DeviceInEditorConfiguration, DeviceType, SinkBag} from './device-placer.types';
+import {ToolbarService} from '../../../toolbar.service';
 
 @Component({
   selector: 'app-device-placer',
@@ -26,7 +27,7 @@ import {AnchorBag, DeviceCallbacks, DeviceDto, DeviceInEditorConfiguration, Devi
 })
 export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   active: boolean = false;
-  disabled: boolean = false;
+  disabled: boolean = true;
 
   private mapLoadedSubscription: Subscription;
   private scaleChanged: Subscription;
@@ -45,6 +46,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   private contextMenu: DeviceCallbacks;
 
   constructor(
+    private toolbarService: ToolbarService,
     private mapLoaderInformer: MapLoaderInformerService,
     private configurationService: ActionBarService,
     private scaleService: ScaleService,
@@ -81,10 +83,6 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     //  TODO: unset context menu for all devices
   }
 
-  getHintMessage(): string {
-    return '';
-  }
-
   getToolName(): ToolName {
     return ToolName.DEVICES;
   }
@@ -93,21 +91,31 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     this.disabled = value;
   }
 
-  setActive(): void {
+  toggleActivity(): void {
     if (this.active) {
-      this.setInactive();
+      this.toolbarService.emitToolChanged(null);
     } else {
-      this.activatePlacerEvents();
-      this.devicePlacerService.emitListVisibility(true);
+      this.toolbarService.emitToolChanged(this);
     }
-    this.active = !this.active;
+  }
+
+  setActive(): void {
+    this.activatePlacerEvents();
+    this.devicePlacerService.emitListVisibility(true);
+    this.active = true;
   }
 
   setInactive(): void {
     this.deactivatePlacerEvents();
     this.devicePlacerService.emitListVisibility(false);
+    this.active = false;
   }
 
+  getHintMessage(): string {
+    return 'devices.hint.first';
+  }
+
+0
   private bindMapSelection(): void {
     this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapLoaded): void => {
       this.map = mapLoaded.container;
