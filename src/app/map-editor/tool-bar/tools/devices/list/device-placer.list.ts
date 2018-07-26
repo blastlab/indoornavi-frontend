@@ -173,6 +173,15 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
             return sink.shortId === s.shortId;
           }) < 0;
         });
+        this.anchors = this.anchors.filter((anchor: Anchor) => {
+          let isNotDuplicated = false;
+          configuration.data.sinks.forEach((sink: Sink) => {
+            isNotDuplicated = sink.anchors.findIndex((a: Anchor) => {
+              return anchor.shortId === a.shortId;
+            }) < 0;
+          });
+          return isNotDuplicated;
+        });
         resolve();
       });
     });
