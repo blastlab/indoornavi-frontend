@@ -38,8 +38,8 @@ export class ActionBarService {
     device.y = Math.round(device.y);
   }
 
-  private static compareFn(sink: Sink): string {
-    return '' + sink.shortId;
+  private static compareDeviceFn(sink: Sink): string {
+    return `${sink.shortId}`;
   }
 
   constructor(private httpService: HttpService) {
@@ -124,6 +124,63 @@ export class ActionBarService {
     this.sendConfigurationChangedEvent();
   }
 
+  addSink(sink: Sink): void {
+    this.configuration.data.sinks.push(Helper.deepCopy(sink));
+    this.sendConfigurationChangedEvent();
+  }
+
+  updateSink(sink: Sink): void {
+    const i = this.configuration.data.sinks.findIndex((s: Sink) => {
+      return s.shortId === sink.shortId;
+    });
+    this.configuration.data.sinks[i] = sink;
+    this.sendConfigurationChangedEvent();
+  }
+
+  addAnchor(sink: Sink, anchor: Anchor): void {
+    const i = this.configuration.data.sinks.findIndex((s: Sink) => {
+      return s.shortId === sink.shortId;
+    });
+    this.configuration.data.sinks[i].anchors.push(anchor);
+    this.sendConfigurationChangedEvent();
+  }
+
+  updateAnchor(anchor: Anchor): void {
+    const indexes = this.findIndexes(anchor);
+    this.configuration.data.sinks[indexes.sinkIndex].anchors[indexes.anchorIndex] = anchor;
+    this.sendConfigurationChangedEvent();
+  }
+
+  removeSink2(sink: Sink): void {
+    const i = this.configuration.data.sinks.findIndex((s: Sink) => {
+      return s.shortId === sink.shortId;
+    });
+    this.configuration.data.sinks.splice(i, 1);
+    this.sendConfigurationChangedEvent();
+  }
+
+  removeAnchor2(anchor: Anchor): void {
+    const indexes = this.findIndexes(anchor);
+
+    this.configuration.data.sinks[indexes.sinkIndex].anchors.splice(indexes.anchorIndex, 1);
+    this.sendConfigurationChangedEvent();
+  }
+
+  private findIndexes(anchor: Anchor): { sinkIndex: number, anchorIndex: number } {
+    const sinkIndex = this.configuration.data.sinks.findIndex((s: Sink) => {
+      return s.anchors.findIndex((a: Anchor) => {
+        return a.shortId === anchor.shortId;
+      }) >= 0;
+    });
+    const anchorIndex = this.configuration.data.sinks[sinkIndex].anchors.findIndex((a: Anchor) => {
+      return a.shortId === anchor.shortId;
+    });
+    return {
+      sinkIndex: sinkIndex,
+      anchorIndex: anchorIndex
+    }
+  }
+
   setSink(sink: Sink): void {
     const sinks: Collections.Set<Sink> = this.getConfigurationSinks();
     const sinkCopy: Sink = {...sink};
@@ -200,7 +257,7 @@ export class ActionBarService {
   }
 
   private getConfigurationAnchors(): Collections.Set<Anchor> {
-    const anchors: Collections.Set<Anchor> = new Collections.Set<Anchor>(ActionBarService.compareFn);
+    const anchors: Collections.Set<Anchor> = new Collections.Set<Anchor>(ActionBarService.compareDeviceFn);
     this.configuration.data.anchors.forEach((configurationAnchor: Anchor) => {
       anchors.add(configurationAnchor);
     });
@@ -208,7 +265,7 @@ export class ActionBarService {
   }
 
   private getConfigurationSinks(): Collections.Set<Sink> {
-    const sinks: Collections.Set<Sink> = new Collections.Set<Sink>(ActionBarService.compareFn);
+    const sinks: Collections.Set<Sink> = new Collections.Set<Sink>(ActionBarService.compareDeviceFn);
     this.configuration.data.sinks.forEach((configurationSink: Sink): void => {
       sinks.add(configurationSink);
     });
@@ -216,7 +273,7 @@ export class ActionBarService {
   }
 
   private getAnchorsInSink(sink: Sink): Collections.Set<Anchor> {
-    const anchorsInSink: Collections.Set<Anchor> = new Collections.Set<Anchor>(ActionBarService.compareFn);
+    const anchorsInSink: Collections.Set<Anchor> = new Collections.Set<Anchor>(ActionBarService.compareDeviceFn);
     sink.anchors.forEach((anchorInSink: Anchor): void => {
       anchorsInSink.add(anchorInSink);
     });

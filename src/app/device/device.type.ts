@@ -7,10 +7,13 @@ export class Device {
   x?: number;
   y?: number;
   z?: number;
+  xInPixels?: number;
+  yInPixels?: number;
   floorId?: number;
   firmwareVersion?: string;
 
-  constructor(shortId: number, longId: number, verified: boolean, id?: number, name?: string, x?: number, y?: number, z?: number, floorId?: number, firmwareVersion?: string) {
+  constructor(shortId: number, longId: number, verified: boolean, id?: number, name?: string, x?: number, y?: number, z?: number,
+              floorId?: number, firmwareVersion?: string, xInPixels?: number, yInPixels?: number) {
     this.id = id;
     this.name = name;
     this.shortId = shortId;
@@ -20,6 +23,8 @@ export class Device {
     this.y = y;
     this.floorId = floorId;
     this.firmwareVersion = firmwareVersion;
+    this.xInPixels = xInPixels;
+    this.yInPixels = yInPixels;
   }
 }
 

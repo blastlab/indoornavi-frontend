@@ -47,8 +47,8 @@ export class SvgGroupWrapper {
     // create drag area
     element = this.group
       .append('circle')
-      .attr('cx', coordinates.x + 12)
-      .attr('cy', coordinates.y + 12)
+      .attr('cx', coordinates.x + 9) // move it right half icon size
+      .attr('cy', coordinates.y)
       .attr('r', '10px')
       .classed('dragarea', true)
       .attr('fill', 'transparent');

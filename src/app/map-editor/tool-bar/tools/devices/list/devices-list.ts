@@ -44,7 +44,7 @@ export class DevicesListComponent implements OnInit, OnDestroy {
       this.removeDevice(device);
       this.populateDevicesList();
     });
-    this.listVisibility = this.devicePlacerService.onListVisibility.subscribe((shown: boolean) => {
+    this.listVisibility = this.devicePlacerService.onListVisibilityChanged.subscribe((shown: boolean) => {
       console.log(shown);
       shown ? this.devicesList.show() : this.devicesList.hide();
     });

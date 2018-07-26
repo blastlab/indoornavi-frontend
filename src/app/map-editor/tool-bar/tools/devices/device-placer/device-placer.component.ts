@@ -69,6 +69,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     this.listenToDevicesOnMapEvents();
     this.listenToContextMenu();
     this.listenToDeviceDragAndDrop();
+    this.listenOnPositionChanged();
   }
 
   ngOnDestroy() {
@@ -140,17 +141,9 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
       this.floorId = configuration.floorId;
       if (!!configuration.data.sinks) {
         configuration.data.sinks.forEach((sink: Sink): void => {
-          const sinkOnMapCoordinates: Point = Geometry.calculatePointPositionInPixels(
-            this.scaleCalculations.scaleLengthInPixels,
-            this.scaleCalculations.scaleInCentimeters,
-            {x: sink.x, y: sink.y});
-          const sinkBag: SinkBag = this.placeSinkOnMap(sink, sinkOnMapCoordinates);
+          const sinkBag: SinkBag = this.placeSinkOnMap(sink);
           sink.anchors.forEach((anchor: Anchor): void => {
-            const anchorOnMapCoordinates: Point = Geometry.calculatePointPositionInPixels(
-              this.scaleCalculations.scaleLengthInPixels,
-              this.scaleCalculations.scaleInCentimeters,
-              {x: anchor.x, y: anchor.y});
-            this.placeAnchorOnMap(sinkBag, anchor, anchorOnMapCoordinates);
+            this.placeAnchorOnMap(sinkBag, anchor);
           });
         });
       }
@@ -158,7 +151,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   }
 
   private listenToDevicesOnMapEvents(): void {
-    this.deviceActivation = this.devicePlacerService.onActive.subscribe((device: DeviceInEditor) => {
+    this.deviceActivation = this.devicePlacerService.onActivated.subscribe((device: DeviceInEditor) => {
       this.setActiveDevice(device);
       this.sinks.forEach((sinkBag: SinkBag): void => {
         this.setSinkGroupOutOfScope(sinkBag);
@@ -190,17 +183,20 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
           sinkBag.deviceInEditor.activateForMouseEvents();
           sinkBag.deviceInEditor.contextMenuOn(this.contextMenu);
           this.devicePlacerService.emitActivated(sinkBag.deviceInEditor);
+          this.configurationService.addSink(<Sink>this.updateDevicePosition(sinkBag));
         } else if (this.draggedDevice.type === DeviceType.ANCHOR) {
           if (this.activeDevice.deviceInEditor.type === DeviceType.ANCHOR) {
             const index: number = this.sinks.findIndex((sink: SinkBag): boolean => {
               return sink.deviceInEditor.hasAnchor(<AnchorBag>this.activeDevice);
             });
-           this.activeDevice = this.sinks[index];
+            this.activeDevice = this.sinks[index];
           }
-          const anchorBag: AnchorBag = this.placeAnchorOnMap(<SinkBag>this.activeDevice, <Anchor>this.draggedDevice.device, dropTransitionCoordinates);
+          const sinkBag: SinkBag = <SinkBag>this.activeDevice;
+          const anchorBag: AnchorBag = this.placeAnchorOnMap(sinkBag, <Anchor>this.draggedDevice.device, dropTransitionCoordinates);
           anchorBag.deviceInEditor.activateForMouseEvents();
           anchorBag.deviceInEditor.contextMenuOn(this.contextMenu);
           this.devicePlacerService.emitActivated(anchorBag.deviceInEditor);
+          this.configurationService.addAnchor(<Sink>sinkBag.deviceInList, <Anchor>this.updateDevicePosition(anchorBag));
         }
       }
     });
@@ -233,14 +229,27 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     }
   }
 
-  private placeSinkOnMap(sink: Sink, sinkOnMapCoordinates: Point): SinkBag {
+  private listenOnPositionChanged() {
+    this.devicePlacerService.onDevicePositionChanged.subscribe(() => {
+      if (!!this.activeDevice) {
+        const deviceCalculatedInCentimeters: Sink | Anchor = this.updateDevicePosition(this.activeDevice);
+        if (this.activeDevice.deviceInEditor.type === DeviceType.SINK) {
+          this.configurationService.updateSink(<Sink>deviceCalculatedInCentimeters);
+        } else {
+          this.configurationService.updateAnchor(<Anchor>deviceCalculatedInCentimeters);
+        }
+      }
+    });
+  }
+
+  private placeSinkOnMap(sink: Sink, coordinates?: Point): SinkBag {
     const sinkDrawConfiguration: DeviceInEditorConfiguration = {
-      id: `sink-${sink.shortId}`,
+      id: `${sink.shortId}`,
       clazz: `sink`,
-      heightInMeters: Geometry.calculateDistanceInPixels(this.scaleCalculations.scaleLengthInPixels, this.scaleCalculations.scaleInCentimeters, sink.z)
+      heightInMeters: sink.z
     };
     const sinkOnMap: SinkInEditor = new SinkInEditor(
-      sinkOnMapCoordinates,
+      !!coordinates ? coordinates : {x: sink.xInPixels, y: sink.yInPixels},
       this.map,
       sinkDrawConfiguration,
       this.devicePlacerService,
@@ -257,14 +266,14 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     return sinkBag;
   }
 
-  private placeAnchorOnMap(sinkBag: SinkBag, anchor: Anchor, anchorOnMapCoordinates: Point): AnchorBag {
+  private placeAnchorOnMap(sinkBag: SinkBag, anchor: Anchor, coordinates?: Point): AnchorBag {
     const anchorDrawConfiguration: DeviceInEditorConfiguration = {
       id: `anchor-${anchor.shortId}`,
       clazz: `anchor`,
-      heightInMeters: Geometry.calculateDistanceInPixels(this.scaleCalculations.scaleLengthInPixels, this.scaleCalculations.scaleInCentimeters, anchor.z)
+      heightInMeters: anchor.z
     };
     const anchorInEditor: AnchorInEditor = new AnchorInEditor(
-      anchorOnMapCoordinates,
+      !!coordinates ? coordinates : {x: anchor.xInPixels, y: anchor.yInPixels},
       this.map,
       anchorDrawConfiguration,
       this.devicePlacerService,
@@ -285,12 +294,16 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     const deletedDevice: AnchorBag | SinkBag = Object.assign({}, this.activeDevice);
     this.devicePlacerService.emitRemovedFromMap(deletedDevice);
     if (this.activeDevice.deviceInEditor.type === DeviceType.SINK) {
-      this.removeSinkWithAnchors(<SinkBag>this.activeDevice);
+      const sinkBag: SinkBag = <SinkBag>this.activeDevice;
+      this.removeSinkWithAnchors(sinkBag);
+      this.configurationService.removeSink2(sinkBag.deviceInList)
     } else {
+      const anchorBag: AnchorBag = <AnchorBag>this.activeDevice;
       const sinkWithAnchor: SinkBag = this.sinks.find((sink: SinkBag): boolean => {
-        return sink.deviceInEditor.hasAnchor(<AnchorBag>this.activeDevice)
+        return sink.deviceInEditor.hasAnchor(anchorBag);
       });
-      this.removeAnchorFromSink(sinkWithAnchor, <AnchorBag>this.activeDevice)
+      this.removeAnchorFromSink(sinkWithAnchor, anchorBag);
+      this.configurationService.removeAnchor2(anchorBag.deviceInList);
     }
     this.devicePlacerService.emitMapModeActivated();
   }
@@ -355,7 +368,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
             this.setSinkGroupOutOfScope(sink);
           });
           this.devicePlacerService.emitMapModeActivated();
-      })
+        })
         .on('contextmenu', () => {
           d3.event.preventDefault();
         });
@@ -378,4 +391,16 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     });
   }
 
+  private updateDevicePosition(deviceBag: SinkBag | AnchorBag): Sink | Anchor {
+    const positionInPixels: Point = deviceBag.deviceInEditor.getPosition();
+    const positionInCentimeters: Point = Geometry.calculatePointPositionInCentimeters(
+      this.scaleCalculations.scaleLengthInPixels,
+      this.scaleCalculations.scaleInCentimeters,
+      positionInPixels);
+    deviceBag.deviceInList.x = positionInCentimeters.x;
+    deviceBag.deviceInList.y = positionInCentimeters.y;
+    deviceBag.deviceInList.xInPixels = positionInPixels.x;
+    deviceBag.deviceInList.yInPixels = positionInPixels.y;
+    return deviceBag.deviceInList;
+  }
 }

@@ -28,7 +28,7 @@ export interface DeviceInEditorConfiguration extends DrawConfiguration {
 }
 
 export enum DeviceAppearance {
-  INSCOPE, OUTSCOPE, ACTIVE
+  IN_SCOPE, OUT_SCOPE, ACTIVE
 }
 
 export interface DeviceCallbacks {
