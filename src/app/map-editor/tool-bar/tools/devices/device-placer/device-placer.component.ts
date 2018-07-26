@@ -11,14 +11,15 @@ import {ActionBarService} from '../../../../action-bar/actionbar.service';
 import {ScaleService} from '../../../../../shared/services/scale/scale.service';
 import {SinkInEditor} from '../../../../../map/models/sink';
 import {Anchor, Sink} from '../../../../../device/device.type';
-import {DeviceCallbacks, DeviceInEditor, DeviceInEditorConfiguration} from '../../../../../map/models/device';
+import {DeviceInEditor} from '../../../../../map/models/device';
 import {Point} from '../../../../map.type';
 import {AnchorInEditor} from '../../../../../map/models/anchor';
 import {DevicePlacerService} from '../device-placer.service';
 import {ContextMenuService} from '../../../../../shared/wrappers/editable/editable.service';
 import {TranslateService} from '@ngx-translate/core';
 import {ZoomService} from '../../../../../shared/services/zoom/zoom.service';
-import {AnchorBag, DeviceDto, DeviceType, SinkBag} from './device-placer.types';
+import {AnchorBag, DeviceCallbacks, DeviceDto, DeviceInEditorConfiguration, DeviceType, SinkBag} from './device-placer.types';
+import {ToolbarService} from '../../../toolbar.service';
 
 @Component({
   selector: 'app-device-placer',
@@ -26,7 +27,7 @@ import {AnchorBag, DeviceDto, DeviceType, SinkBag} from './device-placer.types';
 })
 export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   active: boolean = false;
-  disabled: boolean = false;
+  disabled: boolean = true;
 
   private mapLoadedSubscription: Subscription;
   private scaleChanged: Subscription;
@@ -45,6 +46,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   private contextMenu: DeviceCallbacks;
 
   constructor(
+    private toolbarService: ToolbarService,
     private mapLoaderInformer: MapLoaderInformerService,
     private configurationService: ActionBarService,
     private scaleService: ScaleService,
@@ -81,10 +83,6 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     //  TODO: unset context menu for all devices
   }
 
-  getHintMessage(): string {
-    return '';
-  }
-
   getToolName(): ToolName {
     return ToolName.DEVICES;
   }
@@ -93,21 +91,31 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     this.disabled = value;
   }
 
-  setActive(): void {
+  toggleActivity(): void {
     if (this.active) {
-      this.setInactive();
+      this.toolbarService.emitToolChanged(null);
     } else {
-      this.activatePlacerEvents();
-      this.devicePlacerService.emitListVisibility(true);
+      this.toolbarService.emitToolChanged(this);
     }
-    this.active = !this.active;
+  }
+
+  setActive(): void {
+    this.activatePlacerEvents();
+    this.devicePlacerService.emitListVisibility(true);
+    this.active = true;
   }
 
   setInactive(): void {
     this.deactivatePlacerEvents();
     this.devicePlacerService.emitListVisibility(false);
+    this.active = false;
   }
 
+  getHintMessage(): string {
+    return 'devices.hint.first';
+  }
+
+0
   private bindMapSelection(): void {
     this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapLoaded): void => {
       this.map = mapLoaded.container;
@@ -179,7 +187,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
         if (this.draggedDevice.type === DeviceType.SINK) {
           const sinkBag: SinkBag = this.placeSinkOnMap(<Sink>this.draggedDevice.device, dropTransitionCoordinates);
           sinkBag.deviceInEditor.activateForMouseEvents();
-          sinkBag.deviceInEditor.on(this.contextMenu);
+          sinkBag.deviceInEditor.contextMenuOn(this.contextMenu);
           this.devicePlacerService.emitActivated(sinkBag.deviceInEditor);
         } else if (this.draggedDevice.type === DeviceType.ANCHOR) {
           if (this.activeDevice.deviceInEditor.type === DeviceType.ANCHOR) {
@@ -190,7 +198,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
           }
           const anchorBag: AnchorBag = this.placeAnchorOnMap(<SinkBag>this.activeDevice, <Anchor>this.draggedDevice.device, dropTransitionCoordinates);
           anchorBag.deviceInEditor.activateForMouseEvents();
-          anchorBag.deviceInEditor.on(this.contextMenu);
+          anchorBag.deviceInEditor.contextMenuOn(this.contextMenu);
           this.devicePlacerService.emitActivated(anchorBag.deviceInEditor);
         }
       }
@@ -239,7 +247,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
       this.translateService
     );
     sinkOnMap.setOutOfGroupScope();
-    sinkOnMap.off();
+    sinkOnMap.contextMenuOff();
     const sinkBag: SinkBag = {
       deviceInList: sink,
       deviceInEditor: sinkOnMap
@@ -263,7 +271,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
       this.translateService
     );
     anchorInEditor.setOutOfGroupScope();
-    anchorInEditor.off();
+    anchorInEditor.contextMenuOff();
     const anchorBag: AnchorBag = {
       deviceInEditor: anchorInEditor,
       deviceInList: anchor
@@ -352,7 +360,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
         });
     }
     this.sinks.forEach((sink: SinkBag): void => {
-      sink.deviceInEditor.on(this.contextMenu);
+      sink.deviceInEditor.contextMenuOn(this.contextMenu);
       sink.deviceInEditor.activateForMouseEvents();
       sink.deviceInEditor.activateAnchors(this.contextMenu);
     });
@@ -363,7 +371,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
       this.map.on('click', null).on('contextmenu', null);
     }
     this.sinks.forEach((sink: SinkBag): void => {
-      sink.deviceInEditor.off();
+      sink.deviceInEditor.contextMenuOff();
       sink.deviceInEditor.deactivate();
       sink.deviceInEditor.deactivateAnchors();
     });

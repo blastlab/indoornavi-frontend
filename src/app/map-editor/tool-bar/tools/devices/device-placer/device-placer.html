@@ -1,5 +1,6 @@
 <button pButton class="ui-button-secondary"
-        [ngClass]="{'active-tool' : active}" (click)="setActive()"
+        (click)="toggleActivity()"
+        [ngClass]="{'active-tool':active}"
         pTooltip="{{'devices'|translate}}"
         icon="fa-list-ul"
         [disabled]="disabled">

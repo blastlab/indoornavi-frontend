@@ -1,6 +1,7 @@
 import {Anchor, Device, Sink} from '../../../../../device/device.type';
 import {SinkInEditor} from '../../../../../map/models/sink';
 import {AnchorInEditor} from '../../../../../map/models/anchor';
+import {DrawConfiguration} from '../../../../../map-viewer/publication.type';
 
 export interface DeviceDto {
   device: Device,
@@ -20,3 +21,17 @@ export interface AnchorBag {
 export enum DeviceType {
   ANCHOR, SINK
 }
+
+
+export interface DeviceInEditorConfiguration extends DrawConfiguration {
+  heightInMeters: number;
+}
+
+export enum DeviceAppearance {
+  INSCOPE, OUTSCOPE, ACTIVE
+}
+
+export interface DeviceCallbacks {
+  unset: () => void;
+}
+

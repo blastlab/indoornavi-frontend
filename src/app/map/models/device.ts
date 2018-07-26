@@ -1,4 +1,3 @@
-import {DrawConfiguration} from '../../map-viewer/publication.type';
 import {Point} from '../../map-editor/map.type';
 import {DrawBuilder, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.builder';
 import * as d3 from 'd3';
@@ -6,11 +5,15 @@ import {DevicePlacerService} from '../../map-editor/tool-bar/tools/devices/devic
 import {ContextMenuService} from '../../shared/wrappers/editable/editable.service';
 import {BrowserDetector} from '../../shared/services/browser-detector/browser.detector';
 import {TranslateService} from '@ngx-translate/core';
+import {DeviceAppearance, DeviceCallbacks, DeviceInEditorConfiguration} from '../../map-editor/tool-bar/tools/devices/device-placer/device-placer.types';
+import {Geometry} from '../../shared/utils/helper/geometry';
+import {Box} from '../../shared/utils/drawing/drawing.types';
 
 
 export class DeviceInEditor {
 
   protected svgGroupWrapper: SvgGroupWrapper;
+  protected unsetLabel: string;
 
   private reactiveToEvents: boolean = false;
   private plusUnicode: string = '\uf245';
@@ -23,7 +26,7 @@ export class DeviceInEditor {
   private opacityBackgroundActive: number = 0.5;
   private opacityBackgroundInactive: number = 0;
   private appearance: DeviceAppearance = DeviceAppearance.INSCOPE;
-  protected unsetLabel: string;
+  private readonly containerBox: Box;
 
   constructor(
     protected coordinates: Point,
@@ -37,6 +40,7 @@ export class DeviceInEditor {
     this.addReactionToMouseEvents();
     this.setMovable();
     this.setTranslation('unset');
+    this.containerBox = this.container.node().getBBox();
   }
 
   setActive(): void {
@@ -54,7 +58,7 @@ export class DeviceInEditor {
     this.appearance = DeviceAppearance.OUTSCOPE;
   }
 
-  on(callbacks: DeviceCallbacks): d3.selection {
+  contextMenuOn(callbacks: DeviceCallbacks): d3.selection {
     this.contextMenuService.setItems([
       {
         label: this.unsetLabel,
@@ -76,7 +80,7 @@ export class DeviceInEditor {
     this.reactiveToEvents = false;
   }
 
-  off(): d3.selection {
+  contextMenuOff(): d3.selection {
     this.svgGroupWrapper.getGroup().on('contextmenu', null);
     this.setOutOfGroupScope();
     return this;
@@ -163,10 +167,12 @@ export class DeviceInEditor {
 
   private setMovable(): void {
     let element: d3.selection = this.svgGroupWrapper.getGroup();
+    let coordinatesBackUp: Point;
+    let coordinates: Point;
     const drag: d3.event = d3.drag()
-      .on('drag', (): void => {
-          if (this.reactiveToEvents) {
-            const coordinates: Point = {
+      .on('drag', (): void => {coordinatesBackUp = Object.assign({}, this.coordinates);
+        if (this.reactiveToEvents) {
+          coordinates = {
               x: d3.event.dx + parseInt(this.svgGroupWrapper.getGroup().attr('x'), 10),
               y: d3.event.dy + parseInt(this.svgGroupWrapper.getGroup().attr('y'), 10)
             };
@@ -180,22 +186,18 @@ export class DeviceInEditor {
         d3.event.sourceEvent.stopPropagation();
       })
       .on('end', (): void => {
+        const coordinatesInRange: boolean = Geometry.areCoordinatesInGivenRange(coordinates, this.containerBox);
+        if (!coordinatesInRange && !!coordinatesBackUp) {
+          this.svgGroupWrapper.getGroup().attr('x', coordinatesBackUp.x);
+          this.svgGroupWrapper.getGroup().attr('y', coordinatesBackUp.y);
+        }
+        this.coordinates = {
+          x: d3.event.dx + parseInt(this.svgGroupWrapper.getGroup().attr('x'), 10),
+          y: d3.event.dy + parseInt(this.svgGroupWrapper.getGroup().attr('y'), 10)
+        };
         element = null;
       });
     element.call(drag);
   }
 
 }
-
-export interface DeviceInEditorConfiguration extends DrawConfiguration {
-  heightInMeters: number;
-}
-
-export enum DeviceAppearance {
-  INSCOPE, OUTSCOPE, ACTIVE
-}
-
-export interface DeviceCallbacks {
-  unset: () => void;
-}
-

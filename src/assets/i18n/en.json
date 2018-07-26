@@ -83,6 +83,7 @@
   "devices.select.all": "Select All",
   "devices": "Devices",
   "devices.first.message": "To place a device on map find and drag it from list then drop on map.",
+  "devices.hint.first": "Drag and drop devices from the list to active map to add to active map configuration.",
   "devices.remove.sink.only": "Remove only sink",
   "devices.remove.with.anchors": "Remove whole group",
   "devices.warning.deletion.text": "Warning: You're about to remove sink which has connected anchors, how you want to do it?",
