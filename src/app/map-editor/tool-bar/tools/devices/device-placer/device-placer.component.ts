@@ -102,6 +102,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   setActive(): void {
     this.activatePlacerEvents();
     this.devicePlacerService.emitListVisibility(true);
+    this.devicePlacerService.emitMapModeActivated();
     this.active = true;
   }
 
