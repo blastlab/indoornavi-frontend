@@ -116,7 +116,6 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     return 'devices.hint.first';
   }
 
-0
   private bindMapSelection(): void {
     this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapLoaded): void => {
       this.map = mapLoaded.container;
