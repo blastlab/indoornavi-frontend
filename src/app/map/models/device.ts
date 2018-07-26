@@ -3,9 +3,12 @@ import {DrawBuilder, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.b
 import * as d3 from 'd3';
 import {DevicePlacerService} from '../../map-editor/tool-bar/tools/devices/device-placer.service';
 import {ContextMenuService} from '../../shared/wrappers/editable/editable.service';
-import {BrowserDetector} from '../../shared/services/browser-detector/browser.detector';
 import {TranslateService} from '@ngx-translate/core';
-import {DeviceAppearance, DeviceCallbacks, DeviceInEditorConfiguration} from '../../map-editor/tool-bar/tools/devices/device-placer/device-placer.types';
+import {
+  DeviceAppearance,
+  DeviceCallbacks,
+  DeviceInEditorConfiguration
+} from '../../map-editor/tool-bar/tools/devices/device-placer/device-placer.types';
 import {Geometry} from '../../shared/utils/helper/geometry';
 import {Box} from '../../shared/utils/drawing/drawing.types';
 
@@ -13,10 +16,9 @@ import {Box} from '../../shared/utils/drawing/drawing.types';
 export class DeviceInEditor {
 
   protected svgGroupWrapper: SvgGroupWrapper;
-  protected unsetLabel: string;
 
   private reactiveToEvents: boolean = false;
-  private plusUnicode: string = '\uf245';
+  private cursorIcon: string = '\uf245';
   private colorOutOfScope: string = '#727272';
   private colorInScope: string = '#000000';
   private colorHover: string = '#ff3535';
@@ -25,7 +27,8 @@ export class DeviceInEditor {
   private colorBackgroundInactive: string = '#FFFFFF';
   private opacityBackgroundActive: number = 0.5;
   private opacityBackgroundInactive: number = 0;
-  private appearance: DeviceAppearance = DeviceAppearance.INSCOPE;
+  private appearance: DeviceAppearance = DeviceAppearance.IN_SCOPE;
+  private unsetLabel: string;
   private readonly containerBox: Box;
 
   constructor(
@@ -39,8 +42,15 @@ export class DeviceInEditor {
     this.createDeviceOnMapGroup(coordinates, container, drawConfiguration);
     this.addReactionToMouseEvents();
     this.setMovable();
-    this.setTranslation('unset');
+    this.setTranslations();
     this.containerBox = this.container.node().getBBox();
+  }
+
+  getPosition(): Point {
+    return {
+      x: parseInt(this.svgGroupWrapper.getGroup().attr('x'), 10),
+      y: parseInt(this.svgGroupWrapper.getGroup().attr('y'), 10)
+    }
   }
 
   setActive(): void {
@@ -50,12 +60,12 @@ export class DeviceInEditor {
 
   setInGroupScope(): void {
     this.setDeviceAppearance(this.colorInScope, this.colorBackgroundInactive, this.opacityBackgroundInactive);
-    this.appearance = DeviceAppearance.INSCOPE;
+    this.appearance = DeviceAppearance.IN_SCOPE;
   }
 
   setOutOfGroupScope(): void {
     this.setDeviceAppearance(this.colorOutOfScope, this.colorBackgroundInactive, this.opacityBackgroundInactive);
-    this.appearance = DeviceAppearance.OUTSCOPE;
+    this.appearance = DeviceAppearance.OUT_SCOPE;
   }
 
   contextMenuOn(callbacks: DeviceCallbacks): d3.selection {
@@ -90,24 +100,14 @@ export class DeviceInEditor {
     this.svgGroupWrapper.getGroup().remove();
   }
 
-  private setTranslation(value: string): void {
-    this.translateService.setDefaultLang('en');
-    this.translateService
-      .get(value, {'browser': BrowserDetector.getBrowserName()})
-      .subscribe((translatedValue) => {
-        this.unsetLabel = translatedValue;
-      });
-  }
-
   private createDeviceOnMapGroup(coordinates: Point, container: d3.selection, drawConfiguration: DeviceInEditorConfiguration) {
     const deviceDescription = this.getDeviceDescription();
     const colorBackground: string = this.colorBackgroundInactive;
 
     this.svgGroupWrapper = new DrawBuilder(container, drawConfiguration).createGroup()
       .place(coordinates)
-      .addIcon2({x: -12, y: -12}, this.plusUnicode)
-      .addText({x: 5, y: -5}, deviceDescription)
-      .addRectangle({x: -22, y: -33}, {x: 65, y: 65}, 0, colorBackground, true);
+      .addIcon2({x: 0, y: 0}, this.cursorIcon)
+      .addText({x: 0, y: 40}, deviceDescription);
   }
 
   private setHover(): void {
@@ -142,26 +142,34 @@ export class DeviceInEditor {
         if (this.reactiveToEvents) {
           this.setHover();
           this.svgGroupWrapper.getGroup().style('cursor', 'pointer');
+          this.svgGroupWrapper.showTexts();
         }
       })
       .on('mouseout', (): void => {
         if (this.reactiveToEvents) {
           this.svgGroupWrapper.getGroup().style('cursor', 'default');
+          this.svgGroupWrapper.hideTexts();
           switch (this.appearance) {
-            case 0: this.setInGroupScope();
+            case 0:
+              this.setInGroupScope();
               break;
-            case 1: this.setOutOfGroupScope();
+            case 1:
+              this.setOutOfGroupScope();
               break;
-            case 2: this.setActive();
+            case 2:
+              this.setActive();
               break;
           }
         }
       })
-      .on('click', (): void => {
+      .on('mousedown', (): void => {
         d3.event.stopPropagation();
         if (this.reactiveToEvents) {
           this.devicePlacerService.emitActivated(this);
         }
+      })
+      .on('click', (): void => {
+        d3.event.stopPropagation();
       });
   }
 
@@ -196,8 +204,14 @@ export class DeviceInEditor {
           y: d3.event.dy + parseInt(this.svgGroupWrapper.getGroup().attr('y'), 10)
         };
         element = null;
+        this.devicePlacerService.emitDevicePositionChanged();
       });
     element.call(drag);
   }
 
+  private setTranslations() {
+    this.translateService.get('unset').subscribe((value: string) => {
+      this.unsetLabel = value;
+    });
+  }
 }

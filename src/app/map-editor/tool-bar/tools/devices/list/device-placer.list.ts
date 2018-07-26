@@ -5,6 +5,8 @@ import {Subscription} from 'rxjs/Subscription';
 import {ToolDetailsComponent} from '../../../shared/details/tool-details';
 import {DeviceService} from '../../../../../device/device.service';
 import {AnchorBag, DeviceDto, DeviceType, SinkBag} from '../device-placer/device-placer.types';
+import {ActionBarService} from '../../../../action-bar/actionbar.service';
+import {Configuration} from '../../../../action-bar/actionbar.type';
 
 
 @Component({
@@ -32,6 +34,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   constructor(
     private devicePlacerService: DevicePlacerService,
     private deviceService: DeviceService,
+    private configurationService: ActionBarService
   ) {
 
   }
@@ -57,7 +60,6 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
     this.tableRenderedSubscription.unsubscribe();
   }
 
-
   deviceDragStarted(device: Anchor | Sink): void {
     device.z = this.heightInMeters;
     const deviceDto: DeviceDto = {
@@ -78,7 +80,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   }
 
   private listenOnToolActivation(): void {
-    this.activationSubscription = this.devicePlacerService.onListVisibility.subscribe((visible: boolean): void => {
+    this.activationSubscription = this.devicePlacerService.onListVisibilityChanged.subscribe((visible: boolean): void => {
       visible ? this.toolDetails.show() : this.toolDetails.hide();
     });
   }
@@ -99,14 +101,14 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   }
 
   private listenOnMapClick(): void {
-    this.mapClickEvent = this.devicePlacerService.onMapClick.subscribe((): void => {
+    this.mapClickEvent = this.devicePlacerService.onMapClicked.subscribe((): void => {
       this.activeListType = DeviceType.SINK;
       this.setActiveDevices();
     });
   }
 
   private listenOnActiveDeviceInEditor(): void {
-    this.deviceActivation = this.devicePlacerService.onActive.subscribe((): void => {
+    this.deviceActivation = this.devicePlacerService.onActivated.subscribe((): void => {
       this.activeListType = DeviceType.ANCHOR;
       this.setActiveDevices();
     });
@@ -131,20 +133,49 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   private fetchAllDevices(): void {
     this.sinks = [];
     this.anchors = [];
-    this.deviceService.setUrl('sinks/');
-    this.deviceService.getAll().subscribe((sinks: Sink[]): void => {
-      sinks.forEach((sink: Sink): void => {
-        this.sinks.push(sink);
+    this.fetchDevicesFromBackend().then(() => {
+      this.filterDuplicatesFromConfiguration().then(() => {
+        this.activeListType = DeviceType.SINK;
+        this.setActiveDevices();
       });
     });
-    this.deviceService.setUrl('anchors/');
-    this.deviceService.getAll().subscribe((anchors: Anchor[]): void => {
-      anchors.forEach((anchor: Anchor): void => {
-        this.anchors.push(anchor);
+  }
+
+  private fetchDevicesFromBackend(): Promise<[{}, {}]> {
+    const sinksFetched = new Promise((resolve) => {
+      this.deviceService.setUrl('sinks/');
+      this.deviceService.getAll().subscribe((sinks: Sink[]): void => {
+        sinks.forEach((sink: Sink): void => {
+          this.sinks.push(sink);
+        });
+        resolve();
       });
     });
-    this.activeListType = DeviceType.SINK;
-    this.setActiveDevices();
+
+    const anchorsFetched = new Promise((resolve) => {
+      this.deviceService.setUrl('anchors/');
+      this.deviceService.getAll().subscribe((anchors: Anchor[]): void => {
+        anchors.forEach((anchor: Anchor): void => {
+          this.anchors.push(anchor);
+        });
+        resolve();
+      });
+    });
+
+    return Promise.all([sinksFetched, anchorsFetched]);
+  }
+
+  private filterDuplicatesFromConfiguration(): Promise<void> {
+    return new Promise((resolve) => {
+      this.configurationService.configurationLoaded().first().subscribe((configuration: Configuration) => {
+        this.sinks = this.sinks.filter((sink: Sink) => {
+          return configuration.data.sinks.findIndex((s: Sink) => {
+            return sink.shortId === s.shortId;
+          }) < 0;
+        });
+        resolve();
+      });
+    });
   }
 
   private removeDraggedDevice(): void {

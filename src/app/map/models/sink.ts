@@ -4,7 +4,12 @@ import * as d3 from 'd3';
 import {DevicePlacerService} from '../../map-editor/tool-bar/tools/devices/device-placer.service';
 import {ContextMenuService} from '../../shared/wrappers/editable/editable.service';
 import {TranslateService} from '@ngx-translate/core';
-import {AnchorBag, DeviceCallbacks, DeviceInEditorConfiguration, DeviceType} from '../../map-editor/tool-bar/tools/devices/device-placer/device-placer.types';
+import {
+  AnchorBag,
+  DeviceCallbacks,
+  DeviceInEditorConfiguration,
+  DeviceType
+} from '../../map-editor/tool-bar/tools/devices/device-placer/device-placer.types';
 
 export class SinkInEditor extends DeviceInEditor {
 
@@ -22,7 +27,7 @@ export class SinkInEditor extends DeviceInEditor {
     protected translateService: TranslateService
   ) {
     super(coordinates, container, drawConfiguration, devicePlacerService, contextMenuService, translateService);
-    this.svgGroupWrapper = this.svgGroupWrapper.addIcon2({x: 5, y: 5}, this.sinkUnicode, 2);
+    this.svgGroupWrapper = this.svgGroupWrapper.addIcon2({x: 18, y: 18}, this.sinkUnicode, 2);
   }
 
   addAnchor(anchor: AnchorBag): void {
