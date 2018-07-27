@@ -20,6 +20,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {ZoomService} from '../../../../../shared/services/zoom/zoom.service';
 import {AnchorBag, DeviceCallbacks, DeviceDto, DeviceInEditorConfiguration, DeviceType, SinkBag} from './device-placer.types';
 import {ToolbarService} from '../../../toolbar.service';
+import {Helper} from '../../../../../shared/utils/helper/helper';
 
 @Component({
   selector: 'app-device-placer',
@@ -140,9 +141,9 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
       this.floorId = configuration.floorId;
       if (!!configuration.data.sinks) {
         configuration.data.sinks.forEach((sink: Sink): void => {
-          const sinkBag: SinkBag = this.placeSinkOnMap(sink);
+          const sinkBag: SinkBag = this.placeSinkOnMap(Helper.deepCopy(sink));
           sink.anchors.forEach((anchor: Anchor): void => {
-            this.placeAnchorOnMap(sinkBag, anchor);
+            this.placeAnchorOnMap(sinkBag, Helper.deepCopy(anchor));
           });
         });
       }

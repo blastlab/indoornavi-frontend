@@ -21,7 +21,6 @@ export class DeviceInEditor {
   private cursorIcon: string = '\uf245';
   private colorOutOfScope: string = '#727272';
   private colorInScope: string = '#000000';
-  private colorHover: string = '#ff3535';
   private appearance: DeviceAppearance = DeviceAppearance.IN_SCOPE;
   private unsetLabel: string;
   private readonly containerBox: Box;
@@ -192,7 +191,9 @@ export class DeviceInEditor {
           y: d3.event.dy + parseInt(this.svgGroupWrapper.getGroup().attr('y'), 10)
         };
         element = null;
-        this.devicePlacerService.emitDevicePositionChanged();
+        if (!!coordinates) {
+          this.devicePlacerService.emitDevicePositionChanged();
+        }
       });
     element.call(drag);
   }
