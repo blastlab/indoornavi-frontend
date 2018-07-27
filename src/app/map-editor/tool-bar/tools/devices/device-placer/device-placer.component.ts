@@ -268,7 +268,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
 
   private placeAnchorOnMap(sinkBag: SinkBag, anchor: Anchor, coordinates?: Point): AnchorBag {
     const anchorDrawConfiguration: DeviceInEditorConfiguration = {
-      id: `anchor-${anchor.shortId}`,
+      id: `${anchor.shortId}`,
       clazz: `anchor`,
       heightInMeters: anchor.z
     };
@@ -292,6 +292,10 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
 
   private removeFromMap(): void {
     const deletedDevice: AnchorBag | SinkBag = Object.assign({}, this.activeDevice);
+    if (deletedDevice.deviceInEditor.type === DeviceType.SINK) {
+      const sink = <Sink>(deletedDevice.deviceInList);
+      sink.anchors = [];
+    }
     this.devicePlacerService.emitRemovedFromMap(deletedDevice);
     if (this.activeDevice.deviceInEditor.type === DeviceType.SINK) {
       const sinkBag: SinkBag = <SinkBag>this.activeDevice;
@@ -306,6 +310,9 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
       this.configurationService.removeAnchor2(anchorBag.deviceInList);
     }
     this.devicePlacerService.emitMapModeActivated();
+    this.sinks.forEach((sinkBag: SinkBag) => {
+      this.setSinkGroupOutOfScope(sinkBag);
+    });
   }
 
   private addSink(sinkBag: SinkBag): void {
