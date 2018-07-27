@@ -21,7 +21,6 @@ export class DeviceInEditor {
   private cursorIcon: string = '\uf245';
   private colorOutOfScope: string = '#727272';
   private colorInScope: string = '#000000';
-  private colorHover: string = '#ff3535';
   private appearance: DeviceAppearance = DeviceAppearance.IN_SCOPE;
   private unsetLabel: string;
   private readonly containerBox: Box;
