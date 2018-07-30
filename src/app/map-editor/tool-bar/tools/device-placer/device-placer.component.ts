@@ -22,6 +22,7 @@ import {AnchorBag, DeviceCallbacks, DeviceDto, DeviceInEditorConfiguration, Devi
 import {ToolbarService} from '../../toolbar.service';
 import {Helper} from '../../../../shared/utils/helper/helper';
 import {ConfirmationService} from 'primeng/primeng';
+import {Box} from '../../../../shared/utils/drawing/drawing.types';
 
 @Component({
   selector: 'app-device-placer',
@@ -48,6 +49,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   private draggedDevice: DeviceDto;
   private contextMenu: DeviceCallbacks;
   private confirmationBody: string;
+  private containerBox: Box;
 
   constructor(
     private toolbarService: ToolbarService,
@@ -127,6 +129,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   private bindMapSelection(): void {
     this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapLoaded): void => {
       this.map = mapLoaded.container;
+      this.containerBox = this.map.node().getBBox();
     });
   }
 
@@ -261,7 +264,8 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
       sinkDrawConfiguration,
       this.devicePlacerService,
       this.contextMenuService,
-      this.translateService
+      this.translateService,
+      this.containerBox
     );
     sinkOnMap.setOutOfGroupScope();
     sinkOnMap.contextMenuOff();
@@ -286,7 +290,8 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
       anchorDrawConfiguration,
       this.devicePlacerService,
       this.contextMenuService,
-      this.translateService
+      this.translateService,
+      this.containerBox,
     );
     anchorInEditor.setOutOfGroupScope();
     anchorInEditor.contextMenuOff();

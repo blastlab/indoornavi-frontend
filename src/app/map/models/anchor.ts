@@ -5,6 +5,7 @@ import {DevicePlacerService} from '../../map-editor/tool-bar/tools/device-placer
 import {ContextMenuService} from '../../shared/wrappers/editable/editable.service';
 import {TranslateService} from '@ngx-translate/core';
 import {DeviceInEditorConfiguration, DeviceType} from '../../map-editor/tool-bar/tools/device-placer/device-placer.types';
+import {Box} from '../../shared/utils/drawing/drawing.types';
 
 export class AnchorInEditor extends DeviceInEditor {
 
@@ -19,9 +20,10 @@ export class AnchorInEditor extends DeviceInEditor {
     protected drawConfiguration: DeviceInEditorConfiguration,
     protected devicePlacerService: DevicePlacerService,
     protected contextMenuService: ContextMenuService,
-    protected translateService: TranslateService
+    protected translateService: TranslateService,
+    protected containerBox: Box
     ) {
-    super(shortId, coordinates, container, drawConfiguration, devicePlacerService, contextMenuService, translateService);
+    super(shortId, coordinates, container, drawConfiguration, devicePlacerService, contextMenuService, translateService, containerBox);
     this.svgGroupWrapper = this.svgGroupWrapper.addIcon2({x: 18, y: 18}, this.anchorUnicode, 2);
   }
 }
