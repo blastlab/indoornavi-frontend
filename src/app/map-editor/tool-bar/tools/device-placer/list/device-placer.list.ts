@@ -7,7 +7,7 @@ import {DeviceService} from '../../../../../device/device.service';
 import {AnchorBag, DeviceDto, DeviceType, SinkBag} from '../device-placer.types';
 import {ActionBarService} from '../../../../action-bar/actionbar.service';
 import {Configuration} from '../../../../action-bar/actionbar.type';
-
+import * as Collections from 'typescript-collections';
 
 @Component({
   selector: 'app-device-placer-list',
@@ -174,15 +174,20 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
             return sink.shortId === s.shortId;
           }) < 0;
         });
-        this.anchors = this.anchors.filter((anchor: Anchor) => {
-          let isNotDuplicated = true;
-          configuration.data.sinks.forEach((sink: Sink) => {
-            isNotDuplicated = sink.anchors.findIndex((a: Anchor) => {
-              return anchor.shortId === a.shortId;
-            }) < 0;
-          });
-          return isNotDuplicated;
+        const anchorsSet: Collections.Set<Anchor> = new Collections.Set<Anchor>((a: Anchor) => {
+          return `${a.shortId}`;
         });
+        this.anchors.forEach((anchor: Anchor) => {
+          anchorsSet.add(anchor);
+          configuration.data.sinks.forEach((sink: Sink) => {
+            sink.anchors.forEach((sinkAnchor: Anchor) => {
+              if (anchorsSet.contains(sinkAnchor)) {
+                anchorsSet.remove(anchor);
+              }
+            });
+          });
+        });
+        this.anchors = anchorsSet.toArray();
         resolve();
       });
     });
