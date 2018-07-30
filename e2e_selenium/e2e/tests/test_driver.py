@@ -2,7 +2,6 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import time
 import os
-from mss import mss
 
 
 class TestDriver(object):
@@ -37,7 +36,7 @@ class TestDriver(object):
             test_method_name = self._testMethodName + datetime
             self.webdriver.save_screenshot("{0}/{1}.png".format(_reports_path, test_method_name))
             if _browser_log_content:
-                with open("{0}.log".format(test_method_name), "w") as text_file:
+                with open("{0}/{1}.log".format(_browser_log_path, test_method_name), "w") as text_file:
                   print("Test Browser console log saved in : "
                         "{0}/{1}.log file\n\n {2}".format(_browser_log_path, test_method_name, _browser_log_content),
                         file=text_file)
