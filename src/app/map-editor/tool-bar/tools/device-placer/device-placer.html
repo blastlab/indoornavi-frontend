@@ -6,4 +6,7 @@
         [disabled]="disabled">
 </button>
 
-<p-confirmDialog header="Confirmation" icon="fa fa-question-mark" width="425"></p-confirmDialog>
+<p-confirmDialog acceptLabel="{{'ok'|translate}}"
+                 rejectLabel="{{'cancel'|translate}}"
+                 header="{{'device-placer.confirmation.header'|translate}}"
+                 icon="fa fa-exclamation-triangle" width="425"></p-confirmDialog>
