@@ -347,9 +347,6 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     });
     if (sinkIndex >= 0) {
       this.sinks[sinkIndex].deviceInEditor.removeAnchor(anchor);
-      this.sinks[sinkIndex].deviceInList.anchors = this.sinks[sinkIndex].deviceInList.anchors.filter((a: Anchor) => {
-        return a.shortId !== anchor.deviceInList.shortId;
-      });
     }
   }
 
