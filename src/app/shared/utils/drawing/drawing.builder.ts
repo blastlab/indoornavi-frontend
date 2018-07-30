@@ -23,7 +23,7 @@ export class SvgGroupWrapper {
   container: d3.selection;
   private elements: Map<ElementType, d3.selection[]> = new Map();
   private textsHidden: boolean = true;
-  private groupDefaultColor: string;
+  private readonly groupDefaultColor: string;
 
   static throwErrorTypeNull(elementType: ElementType): void {
     throw new Error(`${elementType} is null or undefined`);

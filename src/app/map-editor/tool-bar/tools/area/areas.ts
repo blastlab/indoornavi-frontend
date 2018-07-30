@@ -191,7 +191,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
     this.draggingElement = null;
     this.selectedEditable = null;
 
-    this.cleanView();
+    this.cleanMapViewFromDrawnAreas();
     this.areaDetailsService.reject();
 
     if (this.isCurrentAreaGroupNew()) {
@@ -428,7 +428,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
     editable.on({
       edit: () => {
         const index = this.findSelectedAreaBagIndex();
-        this.cleanView();
+        this.cleanMapViewFromDrawnAreas();
         this.setView();
         this.areaDetailsService.hide();
         const areaBag: AreaBag = this.areas[index];
@@ -482,7 +482,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
     return !!this.currentAreaGroup && this.currentAreaGroup.getGroup().attr('id') === AreasComponent.NEW_AREA_ID;
   }
 
-  private cleanView() {
+  private cleanMapViewFromDrawnAreas(): void {
     this.areas.forEach((areaBag: AreaBag): void => {
       areaBag.editable.off();
       this.cleanGroup(areaBag.editable.groupWrapper);

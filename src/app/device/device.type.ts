@@ -23,18 +23,8 @@ export class Device {
   }
 }
 
-export class SelectTag  {
-  id?: number;
-  name?: string;
-  shortId: number;
-  longId?: number;
-  verified: boolean;
-  x?: number;
-  y?: number;
-  z?: number;
-  floorId?: number;
-  firmwareVersion?: string;
-  shortIdSelect: string
+export class SelectTag extends Device {
+  shortIdSelect: string;
 }
 
 export interface Anchor extends Device {

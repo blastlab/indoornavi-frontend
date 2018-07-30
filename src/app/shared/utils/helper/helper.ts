@@ -1,5 +1,5 @@
 import {Point} from '../../../map-editor/map.type';
-import {SelectTag, Tag} from '../../../device/device.type';
+import {Device, SelectTag, Tag} from '../../../device/device.type';
 import {AreaConfiguration, AreaConfigurationDto} from '../../../map-editor/tool-bar/tools/area/areas.type';
 
 export class Helper {
@@ -34,18 +34,8 @@ export class Helper {
       if (key === 'tags') {
         areaConfigurationDto[key] = [];
         configObject[key].forEach((tag: SelectTag): void => {
-          const tagDto: Tag = {
-            id: tag['id'],
-            name: tag['name'],
-            shortId: tag['shortId'],
-            longId: tag['longId'],
-            verified: tag['verified'],
-            // x: tag['x'],
-            // y: tag['y'],
-            // z: tag['z'],
-            floorId: tag['floorId'],
-            firmwareVersion: tag['firmwareVersion'],
-          };
+          const tagDto: Tag = <Tag>tag;
+          delete tagDto['shortIdSelect'];
           areaConfigurationDto[key].push(tagDto);
         });
       } else {
@@ -58,7 +48,7 @@ export class Helper {
   static transformToMultiSelectTagsConfigurationFormat(tags: Tag[]): Tag[] {
     const transformedTags = [];
     tags.forEach((tag: Tag): void => {
-      const selectTag: SelectTag = new SelectTag();
+      const selectTag: SelectTag = new SelectTag(tag.shortId, tag.longId, tag.verified);
       Object.keys(tag).forEach(key => selectTag[key] = tag[key]);
       selectTag.shortIdSelect = tag.shortId.toString();
       transformedTags.push(selectTag);
