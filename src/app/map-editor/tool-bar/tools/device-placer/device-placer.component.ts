@@ -47,6 +47,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   private activeDevice: SinkBag | AnchorBag;
   private draggedDevice: DeviceDto;
   private contextMenu: DeviceCallbacks;
+  private confirmationBody: string;
 
   constructor(
     private toolbarService: ToolbarService,
@@ -74,6 +75,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     this.listenToContextMenu();
     this.listenOnDeviceDragAndDrop();
     this.listenOnPositionChanged();
+    this.setTranslations();
   }
 
   ngOnDestroy() {
@@ -297,21 +299,20 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   }
 
   private removeFromMap(): void {
-    const deletedDevice: AnchorBag | SinkBag = Object.assign({}, this.activeDevice);
-    if (deletedDevice.deviceInEditor.type === DeviceType.SINK) {
-      const sink = <Sink>(deletedDevice.deviceInList);
-      sink.anchors = [];
-    }
-    this.devicePlacerService.emitRemovedFromMap(deletedDevice);
     if (this.activeDevice.deviceInEditor.type === DeviceType.SINK) {
-      this.confirmationService.confirm({
-        'message': 'Are you sure?',
-        accept: () => {
-          const sinkBag: SinkBag = <SinkBag>this.activeDevice;
-          this.removeSinkWithAnchors(sinkBag);
-          this.configurationService.removeSink(sinkBag.deviceInList);
-        }
-      });
+      const sinkBag: SinkBag = <SinkBag>this.activeDevice;
+      if (sinkBag.deviceInList.anchors.length > 0) {
+        this.confirmationService.confirm({
+          message: this.confirmationBody,
+          accept: () => {
+            this.removeSinkWithAnchors(sinkBag);
+            this.configurationService.removeSink(sinkBag.deviceInList);
+          }
+        });
+      } else {
+        this.removeSinkWithAnchors(sinkBag);
+        this.configurationService.removeSink(sinkBag.deviceInList);
+      }
     } else {
       const anchorBag: AnchorBag = <AnchorBag>this.activeDevice;
       const sinkWithAnchor: SinkBag = this.sinks.find((sink: SinkBag): boolean => {
@@ -359,6 +360,10 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     if (index > -1) {
       this.sinks.splice(index, 1);
     }
+    const deletedDevice: AnchorBag | SinkBag = Object.assign({}, this.activeDevice);
+    const sink = <Sink>(deletedDevice.deviceInList);
+    sink.anchors = [];
+    this.devicePlacerService.emitRemovedFromMap(deletedDevice);
   }
 
   private setSinkGroupInScope(sinkBag: SinkBag): void {
@@ -423,5 +428,12 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     deviceBag.deviceInList.xInPixels = positionInPixels.x;
     deviceBag.deviceInList.yInPixels = positionInPixels.y;
     return deviceBag.deviceInList;
+  }
+
+  private setTranslations() {
+    this.translateService.setDefaultLang('en');
+    this.translateService.get('device-placer.confirmation.body').subscribe((value: string) => {
+      this.confirmationBody = value;
+    });
   }
 }

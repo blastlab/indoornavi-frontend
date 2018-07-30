@@ -20,14 +20,14 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   public queryFields: string[] = ['shortId', 'longId', 'name'];
   public heightInMeters: number = 2;
   public activeListType: DeviceType;
-  private activationSubscription: Subscription;
-  private tableRenderedSubscription: Subscription;
-  private deviceDragging: Subscription;
-  private deviceDroppingInside: Subscription;
-  private deviceDroppingOutside: Subscription;
-  private mapClickEvent: Subscription;
-  private deviceActivation: Subscription;
-  private deviceRemoveInEditor: Subscription;
+  private listVisibilityChanged: Subscription;
+  private tableRendered: Subscription;
+  private dragStarted: Subscription;
+  private droppedInside: Subscription;
+  private droppedOutside: Subscription;
+  private mapClicked: Subscription;
+  private activated: Subscription;
+  private removedFromMap: Subscription;
   private anchors: Array<Anchor> = [];
   private sinks: Array<Sink> = [];
   private draggedDevice: Sink | Anchor;
@@ -41,24 +41,24 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.listenOnToolActivation();
+    this.listenOnVisibilityChanged();
     this.listenOnDeviceDragAndDrop();
     this.listenOnMapClick();
-    this.listenOnActiveDeviceInEditor();
-    this.listenOnUnsetDeviceInEditor();
+    this.listenOnDeviceActivated();
+    this.listenOnDeviceRemovedFromMap();
     this.listenOnTableRendered();
     this.fetchAllDevices();
   }
 
   ngOnDestroy() {
-    this.activationSubscription.unsubscribe();
-    this.deviceDragging.unsubscribe();
-    this.deviceDroppingOutside.unsubscribe();
-    this.deviceDroppingInside.unsubscribe();
-    this.mapClickEvent.unsubscribe();
-    this.deviceActivation.unsubscribe();
-    this.deviceRemoveInEditor.unsubscribe();
-    this.tableRenderedSubscription.unsubscribe();
+    this.listVisibilityChanged.unsubscribe();
+    this.dragStarted.unsubscribe();
+    this.droppedOutside.unsubscribe();
+    this.droppedInside.unsubscribe();
+    this.mapClicked.unsubscribe();
+    this.activated.unsubscribe();
+    this.removedFromMap.unsubscribe();
+    this.tableRendered.unsubscribe();
   }
 
   deviceDragStarted(device: Anchor | Sink): void {
@@ -75,25 +75,25 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   }
 
   private listenOnTableRendered(): void {
-    this.tableRenderedSubscription = this.devicePlacerService.onTableRendered.subscribe((): void => {
+    this.tableRendered = this.devicePlacerService.onTableRendered.subscribe((): void => {
       this.toolDetails.updateContainersShifts();
     });
   }
 
-  private listenOnToolActivation(): void {
-    this.activationSubscription = this.devicePlacerService.onListVisibilityChanged.subscribe((visible: boolean): void => {
+  private listenOnVisibilityChanged(): void {
+    this.listVisibilityChanged = this.devicePlacerService.onListVisibilityChanged.subscribe((visible: boolean): void => {
       visible ? this.toolDetails.show() : this.toolDetails.hide();
     });
   }
 
   private listenOnDeviceDragAndDrop(): void {
-    this.deviceDragging = this.devicePlacerService.onDragStarted.subscribe((deviceDto: DeviceDto): void => {
+    this.dragStarted = this.devicePlacerService.onDragStarted.subscribe((deviceDto: DeviceDto): void => {
       this.draggedDevice = deviceDto.device;
     });
-    this.deviceDroppingOutside = this.devicePlacerService.onDroppedOutside.subscribe((): void => {
+    this.droppedOutside = this.devicePlacerService.onDroppedOutside.subscribe((): void => {
       this.draggedDevice = null;
     });
-    this.deviceDroppingInside = this.devicePlacerService.onDroppedInside.subscribe((): void => {
+    this.droppedInside = this.devicePlacerService.onDroppedInside.subscribe((): void => {
       this.removeDraggedDevice();
       if (this.activeListType === DeviceType.SINK) {
         this.activeListType = DeviceType.ANCHOR;
@@ -102,21 +102,21 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   }
 
   private listenOnMapClick(): void {
-    this.mapClickEvent = this.devicePlacerService.onMapClicked.subscribe((): void => {
+    this.mapClicked = this.devicePlacerService.onMapClicked.subscribe((): void => {
       this.activeListType = DeviceType.SINK;
       this.setActiveDevices();
     });
   }
 
-  private listenOnActiveDeviceInEditor(): void {
-    this.deviceActivation = this.devicePlacerService.onActivated.subscribe((): void => {
+  private listenOnDeviceActivated(): void {
+    this.activated = this.devicePlacerService.onActivated.subscribe((): void => {
       this.activeListType = DeviceType.ANCHOR;
       this.setActiveDevices();
     });
   }
 
-  private listenOnUnsetDeviceInEditor(): void {
-    this.deviceRemoveInEditor = this.devicePlacerService.onRemovedFromMap.subscribe((device: AnchorBag | SinkBag): void => {
+  private listenOnDeviceRemovedFromMap(): void {
+    this.removedFromMap = this.devicePlacerService.onRemovedFromMap.subscribe((device: AnchorBag | SinkBag): void => {
       const type: DeviceType = (<AnchorBag | SinkBag>device).deviceInEditor.type;
       if (type === DeviceType.SINK) {
         const sink: SinkBag = <SinkBag>device;
