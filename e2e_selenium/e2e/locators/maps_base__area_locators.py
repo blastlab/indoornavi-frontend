@@ -7,7 +7,7 @@ from services.service_data import get_multiselect_selector
 class MapsBaseAreaLocators(object):
 
     DB_MAPS_ENV_XML = 'src/test-complexes.xml'
-    MAPS_URL        = 'localhost:4200/complexes/3/buildings/2/floors/2/map'
+    MAPS_URL        = 'http://localhost:4200/complexes/3/buildings/2/floors/2/map'
     TEST_ADD_AREA_NAME = 'TestAddArea'
     TEST_ADD_AREA_ENTER_OFFSET = '100'
     TEST_ADD_AREA_LEAVE_OFFSET = '200'
@@ -46,8 +46,8 @@ class MapsBaseAreaLocators(object):
     AREA_ONE_POLYGON  = (By.CSS_SELECTOR, '#area-1 > polygon')
     AREA_ZERO_POLYGON = (By.CSS_SELECTOR, '#area-0 > polygon')
 
-    AREA_CONTEXT_MENU_EDIT     = (By.XPATH, '//p-contextmenusub/ul/li[1]/a')
-    AREA_CONTEXT_MENU_REMOVE = (By.XPATH, '//p-contextmenusub/ul/li[2]/a')
+    AREA_CONTEXT_MENU_EDIT     = (By.XPATH, '/html/body/div/p-contextmenusub/ul/li[1]/a')
+    AREA_CONTEXT_MENU_REMOVE   = (By.XPATH, '/html/body/div/p-contextmenusub/ul/li[2]/a')
 
     def AREA_NEW_AREA_CIRCLE(self, choice):
         if choice < 2 and choice > 5:

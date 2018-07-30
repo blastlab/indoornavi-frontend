@@ -80,8 +80,8 @@ class MapsPageArea(BasePage, MapsBaseAreaLocators):
         return self.click_element(self.AREA_ADD_LEAVE_MULTISELECT_CLOSE)
 
     def __right_click_on_area(self):
-        _area = self.wait_for_element_clickable(self.AREA_ZERO_POLYGON)
-        return self.__actions(self.__driver).context_click(_area).perform()
+        _area = self.wait_for_element_clickable(self.AREA_ZERO_OBJECT)
+        return ActionChains(self.__driver).context_click(_area).perform()
 
     def edit_area_click(self):
         self.__right_click_on_area()
@@ -207,7 +207,6 @@ class MapsPageArea(BasePage, MapsBaseAreaLocators):
         area_properties['on_enter_tags'] = self.get_text(self.AREA_ADD_ENTER_MULTISELECT)
         area_properties['on_leave_tags'] = self.get_text(self.AREA_ADD_LEAVE_MULTISELECT)
         # area_properties['points'] = self.get_polygon_points('0')
-        print(area_properties)
         return area_properties
 
     def __set_polygon_option(self, choose):
