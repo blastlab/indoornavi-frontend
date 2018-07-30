@@ -341,6 +341,8 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   }
 
   private removeAnchorFromSink(sink: SinkBag, anchor: AnchorBag): void {
+    const deletedDevice: AnchorBag = Object.assign({}, anchor);
+    this.devicePlacerService.emitRemovedFromMap(deletedDevice);
     anchor.deviceInEditor.remove();
     const sinkIndex: number = this.sinks.findIndex((sinkBag: SinkBag): boolean => {
       return sink.deviceInList.shortId === sinkBag.deviceInList.shortId;
@@ -351,16 +353,15 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   }
 
   private removeSinkWithAnchors(sinkBag: SinkBag): void {
+    const deletedDevice: SinkBag = Object.assign({}, sinkBag);
+    this.devicePlacerService.emitRemovedFromMap(deletedDevice);
     sinkBag.deviceInEditor.removeAllAnchors();
     sinkBag.deviceInEditor.remove();
     const index = this.sinks.indexOf(sinkBag);
     if (index > -1) {
       this.sinks.splice(index, 1);
     }
-    const deletedDevice: AnchorBag | SinkBag = Object.assign({}, this.activeDevice);
-    const sink = <Sink>(deletedDevice.deviceInList);
-    sink.anchors = [];
-    this.devicePlacerService.emitRemovedFromMap(deletedDevice);
+    (<Sink>this.activeDevice.deviceInList).anchors = [];
   }
 
   private setSinkGroupInScope(sinkBag: SinkBag): void {
