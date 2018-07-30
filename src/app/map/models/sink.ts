@@ -20,9 +20,10 @@ export class SinkInEditor extends DeviceInEditor {
     protected drawConfiguration: DeviceInEditorConfiguration,
     protected devicePlacerService: DevicePlacerService,
     protected contextMenuService: ContextMenuService,
-    protected translateService: TranslateService
+    protected translateService: TranslateService,
+    protected containerBox
   ) {
-    super(shortId, coordinates, container, drawConfiguration, devicePlacerService, contextMenuService, translateService);
+    super(shortId, coordinates, container, drawConfiguration, devicePlacerService, contextMenuService, translateService, containerBox);
     this.svgGroupWrapper = this.svgGroupWrapper.addIcon2({x: 18, y: 18}, this.sinkUnicode, 2);
   }
 

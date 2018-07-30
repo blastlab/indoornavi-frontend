@@ -19,7 +19,6 @@ export class DeviceInEditor {
   private colorInScope: string = '#000000';
   private appearance: DeviceAppearance = DeviceAppearance.IN_SCOPE;
   private unsetLabel: string;
-  private readonly containerBox: Box;
 
   constructor(
     public shortId: number,
@@ -28,13 +27,13 @@ export class DeviceInEditor {
     protected drawConfiguration: DeviceInEditorConfiguration,
     protected devicePlacerService: DevicePlacerService,
     protected contextMenuService: ContextMenuService,
-    protected translateService: TranslateService
+    protected translateService: TranslateService,
+    protected containerBox: Box
   ) {
     this.createDeviceOnMapGroup(coordinates, container, drawConfiguration);
     this.addReactionToMouseEvents();
     this.setMovable();
     this.setTranslations();
-    this.containerBox = this.container.node().getBBox();
   }
 
   getPosition(): Point {
