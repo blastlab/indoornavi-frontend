@@ -3,7 +3,7 @@ import {Subject} from 'rxjs/Subject';
 import {Point} from '../../../map.type';
 import {DeviceInEditor} from '../../../../map/models/device';
 import {Observable} from 'rxjs/Observable';
-import {AnchorBag, DeviceDto, SinkBag} from './device-placer/device-placer.types';
+import {AnchorBag, DeviceDto, SinkBag} from './device-placer.types';
 
 
 @Injectable()
