@@ -17,6 +17,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   @ViewChild('toolDetails') private toolDetails: ToolDetailsComponent;
   public activeList: Array<Anchor | Sink> = [];
   public queryString: string;
+  public queryFields: string[] = ['shortId', 'longId', 'name'];
   public heightInMeters: number = 2;
   public activeListType: DeviceType;
   private activationSubscription: Subscription;

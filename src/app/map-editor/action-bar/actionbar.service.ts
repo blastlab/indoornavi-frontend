@@ -136,6 +136,7 @@ export class ActionBarService {
 
   updateAnchor(anchor: Anchor): void {
     const indexes = this.findAnchorAndSinkIndexes(anchor);
+    console.log(indexes);
     this.configuration.data.sinks[indexes.sinkIndex].anchors[indexes.anchorIndex] = anchor;
     this.sendConfigurationChangedEvent();
   }
