@@ -4,7 +4,7 @@ import {DevicePlacerService} from '../device-placer.service';
 import {Subscription} from 'rxjs/Subscription';
 import {ToolDetailsComponent} from '../../../shared/details/tool-details';
 import {DeviceService} from '../../../../../device/device.service';
-import {AnchorBag, DeviceDto, DeviceType, SinkBag} from '../device-placer/device-placer.types';
+import {AnchorBag, DeviceDto, DeviceType, SinkBag} from '../device-placer.types';
 import {ActionBarService} from '../../../../action-bar/actionbar.service';
 import {Configuration} from '../../../../action-bar/actionbar.type';
 
