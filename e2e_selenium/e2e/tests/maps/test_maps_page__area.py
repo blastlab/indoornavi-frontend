@@ -361,7 +361,11 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.maps_page_area.is_area_button_displayed()
         self.maps_page_area.area_button_click()
         self.maps_page_area.draw_square()
-        assert self.maps_page_area.get_browser_console_log() == [],
+
+        browser_log = self.maps_page_area.get_browser_console_log()
+        test_array = []
+        result = True if test_array == browser_log and len(browser_log) == 0 else False
+        assert True == result, browser_log
         self.test_failed = False
 
     def test_bug_NAVI_295(self):
