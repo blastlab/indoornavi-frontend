@@ -21,6 +21,7 @@ export class MessageServiceWrapper implements OnInit {
 
   success(key: string): void {
     this.translateService.get(key).subscribe((value: string) => {
+      this.messageService.clear();
       this.messageService.add({
         severity: 'success',
         summary: this.successSummary,
@@ -31,6 +32,7 @@ export class MessageServiceWrapper implements OnInit {
 
   failed(key: string, params?: object): void {
     this.translateService.get(key, params).subscribe((value: string) => {
+      this.messageService.clear();
       this.messageService.add({
         severity: 'error',
         summary: this.failedSummary,

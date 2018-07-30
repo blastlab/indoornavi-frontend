@@ -56,7 +56,7 @@ export class MapComponent implements OnInit {
       .on('mousedown', () => {
         mouseDown = true;
          const position: Array<number> = d3.mouse(mapSvg.container.node());
-        timer =setTimeout(() => {
+        timer = setTimeout(() => {
           if (mouseDown && !mouseMove) {
             this.mapClick.mapIsClicked({x: Math.round(position[0]), y: Math.round(position[1])});
           }
