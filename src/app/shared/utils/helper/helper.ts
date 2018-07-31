@@ -1,6 +1,4 @@
 import {Point} from '../../../map-editor/map.type';
-import {Tag} from '../../../device/device.type';
-import {AreaConfiguration, AreaConfigurationDto} from '../../../map-editor/tool-bar/tools/area/areas.type';
 
 export class Helper {
 

@@ -1,12 +1,11 @@
 import {Point} from '../../../map.type';
 import {Editable} from '../../../../shared/wrappers/editable/editable';
 import {Tag} from '../../../../device/device.type';
-import {SelectItem} from 'primeng/primeng';
 
 export class Area {
   id: number;
   name: string;
-  configurations: AreaConfigurationDto[] = [];
+  configurations: AreaConfiguration[] = [];
   points: Point[] = [];
   buffer: Point[];
   heightMin: number;
@@ -27,19 +26,13 @@ export class Area {
 
 export class AreaConfiguration {
   offset: number;
-  tags: SelectItem[];
+  tags: Tag[];
   mode: Mode;
 
   constructor(mode: Mode, offset: number) {
     this.mode = mode;
     this.offset = offset;
   }
-}
-
-export class AreaConfigurationDto {
-  offset: number;
-  tags: Tag[];
-  mode: Mode;
 }
 
 

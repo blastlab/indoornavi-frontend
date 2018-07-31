@@ -1,7 +1,7 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {ToolDetailsComponent} from '../../../shared/details/tool-details';
 import {AreaDetailsService} from './area-details.service';
-import {Area, AreaBag, AreaConfiguration, AreaConfigurationDto, Mode} from '../areas.type';
+import {Area, AreaBag, AreaConfiguration, Mode} from '../areas.type';
 import {DeviceService} from '../../../../../device/device.service';
 import {Floor} from '../../../../../floor/floor.type';
 import * as d3 from 'd3';
@@ -25,41 +25,15 @@ export class AreaDetailsComponent implements OnInit {
 
   @Input() floor: Floor;
   area: Area;
-  areaConfigurationOnEnter: SelectItem[] = [];
-  areaConfigurationOnLeave: SelectItem[] = [];
   tags: Tag[] = [];
+  tagsOnEnter: number[] = [];
+  tagsOnLeave: number[] = [];
+  tagsSelect: SelectItem[] = [];
 
+  private areaConfigurationOnEnter: AreaConfiguration = new AreaConfiguration(Mode.ON_ENTER, 0);
+  private areaConfigurationOnLeave: AreaConfiguration = new AreaConfiguration(Mode.ON_LEAVE, 0);
   private editable: Editable;
   private shift: Point;
-
-  // static transformToMultiSelectTagsConfigurationFormat(tags: Tag[]): Tag[] {
-  //   const transformedTags = [];
-  //   tags.forEach((tag: Tag): void => {
-  //     const selectTag: SelectItem = {
-  //       value: tag.shortId,
-  //       label: `${tag.shortId}`
-  //     };
-  //     transformedTags.push(selectTag);
-  //   });
-  //   return transformedTags;
-  // }
-  // static transformToAreaDtoFormat(configObject: AreaConfiguration): AreaConfigurationDto {
-  //   const areaConfigurationDto: AreaConfigurationDto = new AreaConfigurationDto();
-  //   Object.keys(configObject).forEach((key: any): void => {
-  //     if (key === 'tags') {
-  //       areaConfigurationDto[key] = [];
-  //       configObject[key].forEach((tag: SelectTag): void => {
-  //         const tagDto: Tag = <Tag>tag;
-  //         delete tagDto['shortIdSelect'];
-  //         areaConfigurationDto[key].push(tagDto);
-  //       });
-  //     } else {
-  //       areaConfigurationDto[key] = configObject[key]
-  //     }
-  //   });
-  //   return areaConfigurationDto;
-  // }
-
 
   constructor(private areaDetailsService: AreaDetailsService,
               private tagService: DeviceService,
@@ -72,6 +46,11 @@ export class AreaDetailsComponent implements OnInit {
     this.tagService.getAll().subscribe((tags: Tag[]): void => {
       tags.forEach((tag: Tag): void => {
         this.tags.push(tag);
+        const selectTag: SelectItem = {
+          value: tag.shortId,
+          label: `${tag.shortId}`
+        };
+        this.tagsSelect.push(selectTag);
       });
     });
     this.areaDetailsService.onVisibilityChange().subscribe((value: boolean): void => {
@@ -82,7 +61,7 @@ export class AreaDetailsComponent implements OnInit {
     this.areaDetailsService.onSet().subscribe((area: AreaBag): void => {
       this.area = Helper.deepCopy(area.dto);
       this.editable = area.editable;
-      this.area.configurations.forEach((areaConfiguration: AreaConfiguration) => {
+      this.area.configurations.forEach((areaConfiguration: AreaConfiguration): void => {
         if (areaConfiguration.mode.toString() === Mode[Mode.ON_LEAVE] || areaConfiguration.mode === Mode.ON_LEAVE) {
           this.areaConfigurationOnLeave = areaConfiguration;
           this.areaConfigurationOnLeave.offset /= 100;
@@ -98,6 +77,7 @@ export class AreaDetailsComponent implements OnInit {
       }
     });
     this.multiSelectOnEnter.resetFilterOnHide = true;
+    this.multiSelectOnLeave.resetFilterOnHide = true;
   }
 
   confirm(formIsValid: boolean): void {
@@ -127,15 +107,33 @@ export class AreaDetailsComponent implements OnInit {
         });
         this.areaConfigurationOnEnter.offset *= 100;
         this.areaConfigurationOnLeave.offset *= 100;
+        this.areaConfigurationOnEnter.tags = [];
+        this.areaConfigurationOnLeave.tags = [];
+        this.tagsOnEnter.forEach((tagId: number): void => {
+          const foundTag: Tag = this.tags.find((tag: Tag): boolean => {
+            return tag.shortId === tagId;
+          });
+          if (!!foundTag) {
+            this.areaConfigurationOnEnter.tags.push(foundTag);
+          }
+        });
+        this.tagsOnLeave.forEach((tagId: number): void => {
+          const foundTag: Tag = this.tags.find((tag: Tag): boolean => {
+            return tag.shortId === tagId;
+          });
+          if (!!foundTag) {
+            this.areaConfigurationOnLeave.tags.push(foundTag);
+          }
+        });
+        this.tagsOnEnter = [];
+        this.tagsOnLeave = [];
 
-        const areaConfigurationOnEnterDto: AreaConfigurationDto = AreaDetailsComponent.transformToAreaDtoFormat(this.areaConfigurationOnEnter);
-        const areaConfigurationOnLeaveDto: AreaConfigurationDto = AreaDetailsComponent.transformToAreaDtoFormat(this.areaConfigurationOnLeave);
         if (!this.editable) {
           this.area.configurations.push(
-            areaConfigurationOnEnterDto
+            this.areaConfigurationOnEnter
           );
           this.area.configurations.push(
-            areaConfigurationOnLeaveDto
+            this.areaConfigurationOnLeave
           );
         }
         this.areaDetailsService.accept(<AreaBag>{dto: this.area, editable: this.editable});
