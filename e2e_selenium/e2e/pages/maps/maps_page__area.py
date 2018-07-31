@@ -5,13 +5,13 @@ from src.test_conf.test_config import *
 from selenium.common.exceptions import NoSuchElementException
 import time
 
+
 class MapsPageArea(BasePage, MapsBaseAreaLocators):
 
     def __init__(self, driver):
         self.__driver = driver
         self.__actions = ActionChains
-        BasePage.__init__(self, self.__driver)
-        MapsBaseAreaLocators.__init__(self)
+        super(MapsPageArea, self).__init__(self.__driver)
 
     def create_maps_db_env(self):
         return self.create_db_env(self.DB_MAPS_ENV_XML)
@@ -27,25 +27,25 @@ class MapsPageArea(BasePage, MapsBaseAreaLocators):
         return self.service_db().update_table(params)
 
     def insert_scale_configuration_to_db(self):
-        _table = CONFIGURATION_TABLE
-        _columns = CONFIGURATION_COLUMNS
+        table = CONFIGURATION_TABLE
+        columns = CONFIGURATION_COLUMNS
         values = ('1', TEST_DATE, TEST_SCALE_CONF_DATA, '0', '2', TEST_DATE)
-        return self.insert_to_db(_table, _columns, values)
+        return self.insert_to_db(table, columns, values)
 
     def insert_area_configuration_to_db(self):
-        _table = CONFIGURATION_TABLE
-        _columns = CONFIGURATION_COLUMNS
+        table = CONFIGURATION_TABLE
+        columns = CONFIGURATION_COLUMNS
         values = ('1', TEST_DATE, TEST_AREA_CONF_DATA, '0', '2', TEST_DATE)
-        return self.insert_to_db(_table, _columns, values)
+        return self.insert_to_db(table, columns, values)
 
     def insert_image_to_db(self):
 
         with open(TEST_IMAGE_PATH, "rb") as f:
           blob = f.read()
-        _table = IMAGE_TABLE
-        _columns = IMAGE_COLUMNS
+        table = IMAGE_TABLE
+        columns = IMAGE_COLUMNS
         values = ('1', TEST_DATE, TEST_DATE, blob, '840', '1614')
-        return self.insert_to_db(_table, _columns, values)
+        return self.insert_to_db(table, columns, values)
 
     # CLICK TRIGGERS
     def floor_update_button_click(self):
@@ -80,8 +80,8 @@ class MapsPageArea(BasePage, MapsBaseAreaLocators):
         return self.click_element(self.AREA_ADD_LEAVE_MULTISELECT_CLOSE)
 
     def __right_click_on_area(self):
-        _area = self.wait_for_element_clickable(self.AREA_ZERO_OBJECT)
-        return ActionChains(self.__driver).context_click(_area).perform()
+        area = self.wait_for_element_clickable(self.AREA_ZERO_OBJECT)
+        return ActionChains(self.__driver).context_click(area).perform()
 
     def edit_area_click(self):
         self.__right_click_on_area()
@@ -194,8 +194,8 @@ class MapsPageArea(BasePage, MapsBaseAreaLocators):
         return area_attr.get_attribute(attr)
 
     def __get_area_property(self, selector, attr):
-        _selector_property = self.wait_for_element(selector).get_attribute(attr)
-        return _selector_property
+        selector_property = self.wait_for_element(selector).get_attribute(attr)
+        return selector_property
 
     def get_area_properties(self):
         area_properties = {}
@@ -220,10 +220,7 @@ class MapsPageArea(BasePage, MapsBaseAreaLocators):
 
     @staticmethod
     def draw_line(action_session, x_offset, y_offset):
-        _action = action_session
-        _x_offset = x_offset
-        _y_offset = y_offset
-        return _action.move_by_offset(_x_offset, _y_offset).click()
+        return action_session.move_by_offset(x_offset, y_offset).click()
 
     def edit_polygon_point(self, x_offset, y_offset, element):
         """
@@ -233,8 +230,6 @@ class MapsPageArea(BasePage, MapsBaseAreaLocators):
         :return: action which provide to draw scale line with changed coordinates {params}
 
         """
-        _x_offset = x_offset
-        _y_offset = y_offset
         scale_line = self.wait_for_element_clickable(element)
 
-        return self.__actions(self.__driver).drag_and_drop_by_offset(scale_line, _x_offset,_y_offset).release().perform()
+        return self.__actions(self.__driver).drag_and_drop_by_offset(scale_line, x_offset, y_offset).release().perform()
