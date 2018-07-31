@@ -23,10 +23,6 @@ export class Device {
   }
 }
 
-export class SelectTag extends Device {
-  shortIdSelect: string;
-}
-
 export interface Anchor extends Device {
 }
 

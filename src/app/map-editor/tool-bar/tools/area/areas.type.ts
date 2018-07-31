@@ -1,6 +1,7 @@
 import {Point} from '../../../map.type';
 import {Editable} from '../../../../shared/wrappers/editable/editable';
-import {SelectTag, Tag} from '../../../../device/device.type';
+import {Tag} from '../../../../device/device.type';
+import {SelectItem} from 'primeng/primeng';
 
 export class Area {
   id: number;
@@ -26,7 +27,7 @@ export class Area {
 
 export class AreaConfiguration {
   offset: number;
-  tags: SelectTag[];
+  tags: SelectItem[];
   mode: Mode;
 
   constructor(mode: Mode, offset: number) {

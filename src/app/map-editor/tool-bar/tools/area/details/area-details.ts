@@ -11,7 +11,7 @@ import {Point} from '../../../../map.type';
 import {AreasComponent} from '../areas';
 import {MessageServiceWrapper} from '../../../../../shared/services/message/message.service';
 import {Tag} from '../../../../../device/device.type';
-import {MultiSelect} from 'primeng/primeng';
+import {MultiSelect, SelectItem} from 'primeng/primeng';
 
 @Component({
   selector: 'app-area-details',
@@ -25,12 +25,41 @@ export class AreaDetailsComponent implements OnInit {
 
   @Input() floor: Floor;
   area: Area;
-  areaConfigurationOnEnter: AreaConfiguration = new AreaConfiguration(Mode.ON_ENTER, 0);
-  areaConfigurationOnLeave: AreaConfiguration = new AreaConfiguration(Mode.ON_LEAVE, 0);
+  areaConfigurationOnEnter: SelectItem[] = [];
+  areaConfigurationOnLeave: SelectItem[] = [];
   tags: Tag[] = [];
 
   private editable: Editable;
   private shift: Point;
+
+  // static transformToMultiSelectTagsConfigurationFormat(tags: Tag[]): Tag[] {
+  //   const transformedTags = [];
+  //   tags.forEach((tag: Tag): void => {
+  //     const selectTag: SelectItem = {
+  //       value: tag.shortId,
+  //       label: `${tag.shortId}`
+  //     };
+  //     transformedTags.push(selectTag);
+  //   });
+  //   return transformedTags;
+  // }
+  // static transformToAreaDtoFormat(configObject: AreaConfiguration): AreaConfigurationDto {
+  //   const areaConfigurationDto: AreaConfigurationDto = new AreaConfigurationDto();
+  //   Object.keys(configObject).forEach((key: any): void => {
+  //     if (key === 'tags') {
+  //       areaConfigurationDto[key] = [];
+  //       configObject[key].forEach((tag: SelectTag): void => {
+  //         const tagDto: Tag = <Tag>tag;
+  //         delete tagDto['shortIdSelect'];
+  //         areaConfigurationDto[key].push(tagDto);
+  //       });
+  //     } else {
+  //       areaConfigurationDto[key] = configObject[key]
+  //     }
+  //   });
+  //   return areaConfigurationDto;
+  // }
+
 
   constructor(private areaDetailsService: AreaDetailsService,
               private tagService: DeviceService,
@@ -41,7 +70,9 @@ export class AreaDetailsComponent implements OnInit {
     this.tagService.setUrl('tags/');
     this.area = new Area(this.floor.id);
     this.tagService.getAll().subscribe((tags: Tag[]): void => {
-      this.tags = Helper.transformToMultiSelectTagsConfigurationFormat(tags);
+      tags.forEach((tag: Tag): void => {
+        this.tags.push(tag);
+      });
     });
     this.areaDetailsService.onVisibilityChange().subscribe((value: boolean): void => {
       if (value) {
@@ -97,8 +128,8 @@ export class AreaDetailsComponent implements OnInit {
         this.areaConfigurationOnEnter.offset *= 100;
         this.areaConfigurationOnLeave.offset *= 100;
 
-        const areaConfigurationOnEnterDto: AreaConfigurationDto = Helper.transformToAreaDtoFormat(this.areaConfigurationOnEnter);
-        const areaConfigurationOnLeaveDto: AreaConfigurationDto = Helper.transformToAreaDtoFormat(this.areaConfigurationOnLeave);
+        const areaConfigurationOnEnterDto: AreaConfigurationDto = AreaDetailsComponent.transformToAreaDtoFormat(this.areaConfigurationOnEnter);
+        const areaConfigurationOnLeaveDto: AreaConfigurationDto = AreaDetailsComponent.transformToAreaDtoFormat(this.areaConfigurationOnLeave);
         if (!this.editable) {
           this.area.configurations.push(
             areaConfigurationOnEnterDto

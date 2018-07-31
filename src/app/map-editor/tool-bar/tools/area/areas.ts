@@ -22,6 +22,8 @@ import {Geometry} from '../../../../shared/utils/helper/geometry';
 import {Scale, ScaleCalculations, ScaleDto} from '../scale/scale.type';
 import {ScaleService} from '../../../../shared/services/scale/scale.service';
 import {Helper} from '../../../../shared/utils/helper/helper';
+import {SelectItem} from 'primeng/primeng';
+import {Tag} from '../../../../device/device.type';
 
 @Component({
   selector: 'app-area',
