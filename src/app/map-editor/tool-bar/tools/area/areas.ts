@@ -74,11 +74,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
           configurationCopy.data.areas.forEach((area: Area): void => {
             const pointsInPixels: Point[] = [];
             area.points.forEach((point: Point): void => {
-              pointsInPixels.push(
-                Geometry.calculatePointPositionInPixels(
-                  this.scaleCalculations.scaleLengthInPixels, this.scaleCalculations.scaleInCentimeters, point
-                )
-              )
+              pointsInPixels.push(point);
             });
             area.points = pointsInPixels;
             this.areas.push({

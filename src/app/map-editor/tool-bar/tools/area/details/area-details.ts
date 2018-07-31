@@ -99,8 +99,6 @@ export class AreaDetailsComponent implements OnInit {
 
         const areaConfigurationOnEnterDto: AreaConfigurationDto = Helper.transformToAreaDtoFormat(this.areaConfigurationOnEnter);
         const areaConfigurationOnLeaveDto: AreaConfigurationDto = Helper.transformToAreaDtoFormat(this.areaConfigurationOnLeave);
-        console.log(areaConfigurationOnEnterDto, areaConfigurationOnLeaveDto);
-
         if (!this.editable) {
           this.area.configurations.push(
             areaConfigurationOnEnterDto
