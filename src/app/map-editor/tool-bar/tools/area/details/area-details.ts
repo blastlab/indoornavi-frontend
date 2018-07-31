@@ -76,8 +76,6 @@ export class AreaDetailsComponent implements OnInit {
         this.toolDetails.hide();
       }
     });
-    this.multiSelectOnEnter.resetFilterOnHide = true;
-    this.multiSelectOnLeave.resetFilterOnHide = true;
   }
 
   confirm(formIsValid: boolean): void {
