@@ -145,6 +145,8 @@ export class ActionBarComponent implements OnInit, OnDestroy {
     if (!!this.cd) {
       this.cd.detach();
     }
+
+    this.configurationService.clear();
   }
 
   public saveDraft(): void {
