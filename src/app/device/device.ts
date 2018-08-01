@@ -149,7 +149,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   onItemMoved(movedDevices: Device[]): void {
     movedDevices.forEach((device: Device) => {
       device.verified = !device.verified;
-      this.deviceService.update(device).subscribe((savedDevice: Device) => {
+      this.deviceService.update(device).subscribe(() => {
         this.messageService.success('device.save.success');
       });
     });

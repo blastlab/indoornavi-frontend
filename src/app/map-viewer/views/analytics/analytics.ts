@@ -11,7 +11,6 @@ import {MapLoaderInformerService} from '../../../shared/services/map-loader-info
 import {CoordinatesSocketData} from '../../publication.type';
 import {HexagonalHeatMap} from './hexagonal.heatmap.service';
 import * as d3 from 'd3';
-import {Movable} from '../../../shared/wrappers/movable/movable';
 import {MapSvg} from '../../../map/map.type';
 import {FloorService} from '../../../floor/floor.service';
 import {TagVisibilityTogglerService} from '../../../shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
@@ -21,7 +20,8 @@ import {HeatMapControllerService} from '../../../shared/components/heat-map-cont
 import {TagToggle} from '../../../shared/components/tag-visibility-toggler/tag-toggle.type';
 import {PixelHeatMap} from './pixel.heatmap.service';
 import {HeatMapType} from '../../../shared/components/heat-map-controller/heat-map-controller/heat-map-controller.component';
-import {MapClickService} from "../../../shared/services/map-click/map-click.service";
+import {MapClickService} from '../../../shared/services/map-click/map-click.service';
+import {TagOnMap} from '../../../map/models/tag';
 
 @Component({
   templateUrl: './analytics.html'
@@ -123,7 +123,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
     this.whenTransitionEnded().subscribe((tagShortId: number): void => {
       const timeStepBuffer = this.timeStepBuffer.get(tagShortId);
       if (!!timeStepBuffer && timeStepBuffer.length > 0 && !document.hidden) {
-        const timeWhenTransitionIsFinished: number = Date.now() - Movable.TRANSITION_DURATION;
+        const timeWhenTransitionIsFinished: number = Date.now() - TagOnMap.TRANSITION_DURATION;
         for (let index = 0; index < timeStepBuffer.length; index ++) {
           if (timeStepBuffer[index].timeOfDataStep < timeWhenTransitionIsFinished) {
             if (this.playingAnimation) {

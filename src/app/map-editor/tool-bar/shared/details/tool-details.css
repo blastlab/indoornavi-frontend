@@ -5,15 +5,41 @@
 }
 
 .ui-dialog .ui-dialog-content {
-  padding: 8px 0 0 0 !important;
+  padding: 0 0 0 0 !important;
   overflow: visible;
 }
 
 .ui-dialog-content:before, .ui-dialog-content:after {
   content: "";
-  display: table
+  display: table;
 }
 
 .ui-dialog-content:after {
   clear: both;
+}
+
+.ui-dialog-content .minimize-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  border: 1px solid #d4d4d4;
+  overflow: hidden;
+  background: #fafafa;
+  z-index: 100;
+  pointer-events: all;
+}
+
+.ui-dialog-content .content-container {
+  background: #fafafa;
+  border: 1px solid #d4d4d4;
+  border-top-width: 0;
+}
+
+.ui-dialog-content .minimize-button {
+  font-size: 75%;
+}
+
+.ui-widget-content {
+  background: none;
+  border: none;
 }

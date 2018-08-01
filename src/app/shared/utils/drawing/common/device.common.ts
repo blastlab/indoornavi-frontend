@@ -8,6 +8,8 @@ import {Point} from '../../../../map-editor/map.type';
 
 export class CommonDevice {
 
+  // TODO: remove this
+
   static createConnectableDevice(droppedDevice: SvgGroupWrapper): Expandable {
     return <Expandable>{
       groupCreated: droppedDevice,
@@ -21,7 +23,7 @@ export class CommonDevice {
   }
 
   protected drawEditorDevice(drawBuilder: DrawBuilder, drawConfiguration: CommonDeviceConfiguration,
-                   coordinates: Point): SvgGroupWrapper {
+                             coordinates: Point): SvgGroupWrapper {
     let text = (!drawConfiguration.name)
       ? `${drawConfiguration.name}-${drawConfiguration.id}`
       : `${drawConfiguration.clazz}-${drawConfiguration.id}`;
