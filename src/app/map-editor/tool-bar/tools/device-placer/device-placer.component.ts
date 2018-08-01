@@ -77,6 +77,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     this.listenOnDeviceDragAndDrop();
     this.listenOnPositionChanged();
     this.setTranslations();
+    this.listenOnUndo();
   }
 
   ngOnDestroy() {
@@ -248,6 +249,15 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
         }
       });
     }
+  }
+
+  private listenOnUndo () {
+    this.configurationService.configurationReset().first().subscribe((configuration: Configuration) => {
+      console.log(configuration);
+      this.sinks.forEach((sink: SinkBag) => {
+        this.removeFromMap();
+      });
+    })
   }
 
   private placeSinkOnMap(sink: Sink, coordinates?: Point): SinkBag {
