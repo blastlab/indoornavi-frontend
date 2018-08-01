@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ToolDetailsComponent} from '../../../shared/details/tool-details';
 import {AreaDetailsService} from './area-details.service';
 import {Area, AreaBag, AreaConfiguration, Mode} from '../areas.type';
@@ -12,13 +12,14 @@ import {AreasComponent} from '../areas';
 import {MessageServiceWrapper} from '../../../../../shared/services/message/message.service';
 import {Tag} from '../../../../../device/device.type';
 import {MultiSelect, SelectItem} from 'primeng/primeng';
+import {Subject} from 'rxjs/Subject';
 
 @Component({
   selector: 'app-area-details',
   templateUrl: './area-details.html',
   styleUrls: ['./area-details.css']
 })
-export class AreaDetailsComponent implements OnInit {
+export class AreaDetailsComponent implements OnInit, OnDestroy {
   @ViewChild('toolDetails') private toolDetails: ToolDetailsComponent;
   @ViewChild('multiSelectOnEnter') private multiSelectOnEnter: MultiSelect;
   @ViewChild('multiSelectOnLeave') private multiSelectOnLeave: MultiSelect;
@@ -34,6 +35,7 @@ export class AreaDetailsComponent implements OnInit {
   private areaConfigurationOnLeave: AreaConfiguration = new AreaConfiguration(Mode.ON_LEAVE, 0);
   private editable: Editable;
   private shift: Point;
+  private subscriptionDestroyer: Subject<void> = new Subject<void>();
 
   constructor(private areaDetailsService: AreaDetailsService,
               private tagService: DeviceService,
@@ -43,7 +45,7 @@ export class AreaDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.tagService.setUrl('tags/');
     this.area = new Area(this.floor.id);
-    this.tagService.getAll().subscribe((tags: Tag[]): void => {
+    this.tagService.getAll().takeUntil(this.subscriptionDestroyer).subscribe((tags: Tag[]): void => {
       tags.forEach((tag: Tag): void => {
         this.tags.push(tag);
         const selectTag: SelectItem = {
@@ -53,7 +55,7 @@ export class AreaDetailsComponent implements OnInit {
         this.tagsSelect.push(selectTag);
       });
     });
-    this.areaDetailsService.onVisibilityChange().subscribe((value: boolean): void => {
+    this.areaDetailsService.onVisibilityChange().takeUntil(this.subscriptionDestroyer).subscribe((value: boolean): void => {
       if (value) {
         this.toolDetails.show();
       }
@@ -71,11 +73,16 @@ export class AreaDetailsComponent implements OnInit {
         }
       });
     });
-    this.areaDetailsService.onDecisionMade().subscribe((area: AreaBag) => {
+    this.areaDetailsService.onDecisionMade().takeUntil(this.subscriptionDestroyer).subscribe((area: AreaBag) => {
       if (!area) { // rejected
         this.toolDetails.hide();
       }
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptionDestroyer.next();
+    this.subscriptionDestroyer.unsubscribe();
   }
 
   confirm(formIsValid: boolean): void {
