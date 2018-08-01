@@ -10,8 +10,7 @@ class MapsPageScale(BasePage, MapsBaseScaleLocators):
     def __init__(self, driver):
         self.__driver = driver
         self.__actions = ActionChains
-        BasePage.__init__(self, self.__driver)
-        MapsBaseScaleLocators.__init__(self)
+        super(MapsPageScale, self).__init__(self.__driver)
 
     def create_maps_db_env(self):
         return self.create_db_env(self.db_maps_env_xml)
