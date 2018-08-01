@@ -67,7 +67,9 @@ export class ToolDetailsComponent {
   updateContainersShifts(): void {
     this.minimizeContainerShift = `-${(this.minimizeContainer.nativeElement.getBoundingClientRect().width - this.buttonWidthAndPadding)}px`;
     this.contentContainerShift = `-${(this.minimizeContainer.nativeElement.getBoundingClientRect().height + this.contentContainer.nativeElement.getBoundingClientRect().height)}px`;
-    this.cd.detectChanges();
+    if (!this.cd['destroyed']) {
+      this.cd.detectChanges();
+    }
   }
 
 }
