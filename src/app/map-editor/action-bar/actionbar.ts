@@ -200,13 +200,6 @@ export class ActionBarComponent implements OnInit, OnDestroy {
     this.cd.detectChanges();
   }
 
-  private afterSaveDraftRejected(): void {
-    console.log('after save draft rejected');
-    // this.resetButtonDisabled = false;
-    // this.publishButtonDisabled = false;
-    // this.saveButtonDisabled = true;
-  }
-
   private afterPublishDone(): void {
     this.publishButtonDisabled = true;
     this.resetButtonDisabled = true;
