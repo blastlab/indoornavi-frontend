@@ -168,8 +168,11 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   onClick(): void {
-    // TODO: resolve bug with hint bur message
-    this.toolbarService.emitToolChanged(this);
+    if (this.active) {
+      this.toolbarService.emitToolChanged(null);
+    } else {
+      this.toolbarService.emitToolChanged(this);
+    }
   }
 
   private rejectChanges(scale: Scale) {
