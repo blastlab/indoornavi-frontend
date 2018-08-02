@@ -131,7 +131,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   }
 
   private listenOnDeviceInActiveConfiguration(): void {
-    this.devicePlacerService.onDviceInActiveConfiguration.takeUntil(this.subscriptionDestroyer).subscribe((device: Sink | Anchor) => {
+    this.devicePlacerService.onDeviceInActiveConfiguration.takeUntil(this.subscriptionDestroyer).subscribe((device: Sink | Anchor) => {
       if (!!(<Sink>device).anchors) {
         const index: number = this.sinks.findIndex((sink: Sink): boolean => {
           return device.shortId === sink.shortId;
