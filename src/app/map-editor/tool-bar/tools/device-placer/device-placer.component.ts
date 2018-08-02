@@ -22,6 +22,7 @@ import {AnchorBag, DeviceCallbacks, DeviceDto, DeviceInEditorConfiguration, Devi
 import {ToolbarService} from '../../toolbar.service';
 import {ConfirmationService} from 'primeng/primeng';
 import {Box} from '../../../../shared/utils/drawing/drawing.types';
+import {log} from 'util';
 
 @Component({
   selector: 'app-device-placer',
@@ -77,6 +78,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     this.listenOnDeviceDragAndDrop();
     this.listenOnPositionChanged();
     this.setTranslations();
+    this.listenOnConfigurationReset();
   }
 
   ngOnDestroy() {
@@ -147,15 +149,19 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   private fetchConfiguredDevices(): void {
     this.configurationService.configurationLoaded().first().subscribe((configuration: Configuration): void => {
       this.floorId = configuration.floorId;
-      if (!!configuration.data.sinks) {
-        configuration.data.sinks.forEach((sink: Sink): void => {
-          const sinkBag: SinkBag = this.placeSinkOnMap(sink);
-          sink.anchors.forEach((anchor: Anchor): void => {
-            this.placeAnchorOnMap(sinkBag, anchor);
-          });
-        });
-      }
+      this.drawFromConfiguration(configuration);
     });
+  }
+
+  private drawFromConfiguration(configuration: Configuration): void {
+    if (!!configuration.data.sinks) {
+      configuration.data.sinks.forEach((sink: Sink): void => {
+        const sinkBag: SinkBag = this.placeSinkOnMap(sink);
+        sink.anchors.forEach((anchor: Anchor): void => {
+          this.placeAnchorOnMap(sinkBag, anchor);
+        });
+      });
+    }
   }
 
   private listenOnDeviceActivated(): void {
@@ -250,6 +256,43 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     }
   }
 
+  private listenOnConfigurationReset(): void {
+    this.configurationService.configurationReset().subscribe((configuration: Configuration) => {
+      const sinks: SinkBag[] = [...this.sinks];
+      sinks.forEach((sink: SinkBag) => {
+        const sinkIndexInConfiguration: number = configuration.data.sinks.findIndex((sinkFromConfiguration: Sink): boolean => {
+          return sinkFromConfiguration.shortId === sink.deviceInList.shortId;
+        });
+        if (sinkIndexInConfiguration === -1) {
+          const deletedSink: SinkBag = Object.assign({}, sink);
+          this.devicePlacerService.emitRemovedFromMap(deletedSink)
+        } else {
+          const sinkIndexLocal: number = sinks.findIndex((sinkBag: SinkBag): boolean => {
+            return sinkBag.deviceInList.shortId === configuration.data.sinks[sinkIndexInConfiguration].shortId;
+          });
+          if (sinkIndexLocal > -1) {
+            sinks[sinkIndexLocal].deviceInList.anchors.forEach((anchor: Anchor): void => {
+              const anchorIndexInConfiguration: number = configuration.data.sinks[sinkIndexInConfiguration]
+                .anchors.findIndex((anchorConfiguration: Anchor): boolean => {
+                return anchor.shortId === anchorConfiguration.shortId;
+              });
+              if (anchorIndexInConfiguration === -1) {
+                const anchorBag: AnchorBag = sinks[sinkIndexLocal].deviceInEditor.anchors.find((anchorLocalBag: AnchorBag): boolean => {
+                  return anchorLocalBag.deviceInList.shortId === anchor.shortId;
+                });
+                const deletedAnchor: AnchorBag = Object.assign({}, anchorBag);
+                this.devicePlacerService.emitRemovedFromMap(deletedAnchor);
+              }
+            });
+          }
+        }
+        this.removeSinkWithAnchors(sink);
+      });
+      this.drawFromConfiguration(configuration);
+      this.toggleActivity();
+    })
+  }
+
   private placeSinkOnMap(sink: Sink, coordinates?: Point): SinkBag {
     const sinkDrawConfiguration: DeviceInEditorConfiguration = {
       id: `${sink.shortId}`,
@@ -309,11 +352,15 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
         this.confirmationService.confirm({
           message: this.confirmationBody,
           accept: () => {
+            const deletedDevice: SinkBag = Object.assign({}, sinkBag);
+            this.devicePlacerService.emitRemovedFromMap(deletedDevice);
             this.removeSinkWithAnchors(sinkBag);
             this.configurationService.removeSink(sinkBag.deviceInList);
           }
         });
       } else {
+        const deletedDevice: SinkBag = Object.assign({}, sinkBag);
+        this.devicePlacerService.emitRemovedFromMap(deletedDevice);
         this.removeSinkWithAnchors(sinkBag);
         this.configurationService.removeSink(sinkBag.deviceInList);
       }
@@ -357,8 +404,6 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   }
 
   private removeSinkWithAnchors(sinkBag: SinkBag): void {
-    const deletedDevice: SinkBag = Object.assign({}, sinkBag);
-    this.devicePlacerService.emitRemovedFromMap(deletedDevice);
     sinkBag.deviceInEditor.removeAllAnchors();
     sinkBag.deviceInEditor.remove();
     const index = this.sinks.indexOf(sinkBag);

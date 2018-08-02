@@ -29,7 +29,6 @@ export class DevicePlacerService {
   onMapClicked: Observable<void> = this.mapClicked.asObservable();
   onTableRendered: Observable<void> = this.tableRendered.asObservable();
   onDevicePositionChanged: Observable<void> = this.devicePositionChanged.asObservable();
-
   constructor() {
   }
 
