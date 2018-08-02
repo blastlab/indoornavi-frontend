@@ -1,8 +1,12 @@
 import mysql.connector
 from pyquibase.pyquibase import Pyquibase
 from .service_data import get_csv_data
+import logging
+import time
+from .service_logger import ServiceLogger
 
-class ServiceDb(object):
+
+class ServiceDb:
 
     __db_hostname = 'localhost'
     __db_tables_array = ['complex', 'building', 'floor',
@@ -12,15 +16,33 @@ class ServiceDb(object):
                         'permissiongroup_permission', ]
 
     def __init__(self):
+        self.ServiceLogger = ServiceLogger(self.__class__.__name__)
+        self.ServiceLogger.logger.info("Init service Db")
+
         self.db_connect = mysql.connector.connect(user='root', password='', host=self.__db_hostname, database='Navi')
+        self.ServiceLogger.logger.info("Connect to Db")
+
         self.db_cursor = self.db_connect.cursor()
+        self.ServiceLogger.logger.info(" Start cursor")
+
         self.db_cursor.execute('SET FOREIGN_KEY_CHECKS=0;')
+        self.ServiceLogger.logger.info("SET FOREIGN_KEY_CHECKS=0;")
 
     def __del__(self):
+        self.ServiceLogger.logger.info("Destroy service Db")
+
         self.db_cursor.execute('SET FOREIGN_KEY_CHECKS=1;')
+
+        self.ServiceLogger.logger.info("SET SET FOREIGN_KEY_CHECKS=1;")
+
         self.db_cursor.close()
+        self.ServiceLogger.logger.info("Close cursor")
+
         self.db_connect.commit()
+        self.ServiceLogger.logger.info("Commit changes to Db")
+
         self.db_connect.close()
+        self.ServiceLogger.logger.info("Close connect")
 
     # Select from db
     def if_exist_in_db(self, query):
@@ -28,6 +50,9 @@ class ServiceDb(object):
         last_construction_name = '';
         for (name) in self.db_cursor:
             last_construction_name = name[0]
+            self.ServiceLogger.logger.info("Select from db - query: {0}\n "
+                         "Result - {1}".format(query, last_construction_name))
+
         return last_construction_name
 
     def insert_to_db(self, table, columns, values):
@@ -44,8 +69,9 @@ class ServiceDb(object):
                                      )
               try:
                 self.db_cursor.execute(command_composition, values)
+                self.ServiceLogger.logger.info("Insert to db {0} values {1}".format(command_composition, values))
               except ValueError as error:
-                print(error)
+                self.ServiceLogger.logger.info(error)
            else:
               raise ValueError('Number of columns is not equal to number of values')
         else:
@@ -79,7 +105,7 @@ class ServiceDb(object):
                  self.db_cursor.execute("UPDATE {} SET `{}`='{}' WHERE `{}`='{}';"
                                         .format(update_table, set_column, set_value, where_column, where_value))
               except ValueError as error:
-                print(error)
+                self.ServiceLogger.logger.info(error)
            else:
              raise ValueError('Number of parameters is not enough to make update.')
         else:
@@ -87,14 +113,17 @@ class ServiceDb(object):
 
     def truncate_single_table(self, table):
         self.db_cursor.execute("TRUNCATE TABLE {}".format(table))
+        self.ServiceLogger.logger.info("Truncate table : {}".format(table))
 
     def truncate_db(self):
         for table in self.__db_tables_array[0:9]:
             self.db_cursor.execute("TRUNCATE TABLE {}".format(table))
+            self.ServiceLogger.logger.info("Truncate table : {}".format(table))
 
     def truncate_db_permissions(self):
         for table in self.__db_tables_array[0:12]:
             self.db_cursor.execute("TRUNCATE TABLE {}".format(table))
+            self.ServiceLogger.logger.info("Truncate table : {}".format(table))
 
     def create_db_env(self, file_path):
         pyquibase = Pyquibase.mysql(
