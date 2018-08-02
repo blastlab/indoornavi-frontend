@@ -6,7 +6,6 @@ import {SelectItem} from 'primeng/primeng';
 import {Geometry} from '../../../../../shared/utils/helper/geometry';
 import {Sink} from '../../../../../device/device.type';
 import {ScaleCalculations} from '../../scale/scale.type';
-import {CommonDeviceConfiguration} from '../../../../../shared/utils/drawing/common/device.common';
 
 export class FirstStep implements WizardStep {
   private selectedItemId: number;
@@ -30,7 +29,7 @@ export class FirstStep implements WizardStep {
     return [...items];
   }
 
-  getDrawConfiguration(selectedItemID: number): CommonDeviceConfiguration {
+  getDrawConfiguration(selectedItemID: number): any {
     return {
       id: `` + selectedItemID, clazz: 'wizard sink anchor', name: 'sink' + selectedItemID,
       color: 'blue', display: 'true', heightInMeters: 2 // TODO: change it to value taken from device (not now, since we don't know the future for wizard)
