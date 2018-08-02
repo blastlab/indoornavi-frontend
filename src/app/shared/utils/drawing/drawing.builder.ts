@@ -1,9 +1,6 @@
 import * as d3 from 'd3';
 import {Point} from '../../../map-editor/map.type';
 import {DrawConfiguration} from '../../../map-viewer/publication.type';
-import {Helper} from '../helper/helper';
-import {Anchor, Sink} from '../../../device/device.type';
-import {CommonDeviceConfiguration} from './common/device.common';
 
 export enum ElementType {
   ICON,
@@ -234,59 +231,6 @@ export class SvgGroupWrapper {
     this.group.remove();
   }
 
-  addBorderBox(scale: number, defineColor?: string): void {
-    const boxColor: string = (defineColor) ? defineColor : this.groupDefaultColor;
-    const parentElement: SVGElement = this.group.node();
-    const domRect: DOMRectInit = parentElement.getBoundingClientRect();
-    const boxWidth = 2;
-    const padding: Point = Helper.getChildrenExtremeValues(parentElement);
-    const paddingX: number = padding.x * 1 + boxWidth * 1;
-    let paddingY: number = padding.y - boxWidth - 6;
-    if (this.textsHidden) {
-      paddingY += 10;
-    }
-    this.group
-      .append('rect')
-      .classed('group-border-box', true)
-      .attr('x', paddingX)
-      .attr('y', paddingY)
-      .attr('width', (domRect.width * (1 / scale) + boxWidth * 2))
-      .attr('height', (domRect.height * (1 / scale) + boxWidth * 2))
-      .attr('stroke', boxColor)
-      .attr('stroke-width', boxWidth)
-      .attr('opacity', '0.5')
-      .attr('stroke-linecap', 'round')
-      .attr('stroke-dasharray', '20,10,5,5,5,10')
-      .attr('fill', 'none');
-  }
-
-  removeBorderBox(): void {
-    this.group.select('rect.group-border-box').remove();
-  }
-
-  // TODO: Refactor this method to be more specific - remember about usages
-  changeColor(newColor): void {
-    const parentElement: SVGElement = this.group.node();
-    const childrenCount: number = parentElement.childElementCount;
-    const children: NodeList = parentElement.childNodes;
-    for (let i = 0; i < childrenCount; i++) {
-      const classed: Attr = children[i]['attributes']['class'];
-      if (!classed || (!!classed && classed.value !== 'pointer' && classed.value !== 'dragarea' && classed.value !== 'group-border-box')) {
-        const child: d3.selection = d3.select(children[i]);
-        if (child.attr('stroke') !== null) {
-          child.attr('stroke', newColor)
-        }
-        if (child.attr('fill') !== null) {
-          child.attr('fill', newColor);
-        }
-      }
-    }
-  }
-
-  resetColor(): void {
-    this.changeColor(this.groupDefaultColor);
-  }
-
   getGroup(): d3.selection {
     return this.group;
   }
@@ -338,41 +282,6 @@ export class SvgGroupWrapper {
 
 export class DrawBuilder {
   protected group: d3.selection;
-
-
-  // TODO: remove this or move to proper class
-  static buildAnchorDrawConfiguration(anchor: Anchor): CommonDeviceConfiguration {
-    return {
-      id: `${anchor.shortId}`,
-      clazz: `anchor`,
-      name: `${anchor.name}`,
-      cursor: `pointer`,
-      color: `green`,
-      display: `none`,
-      heightInMeters: anchor.z / 100
-    };
-  }
-
-  static buildSinkDrawConfiguration(sink: Sink): CommonDeviceConfiguration {
-    return {
-      id: `${sink.shortId}`,
-      clazz: `sink anchor`,
-      name: `${sink.name}`,
-      cursor: `pointer`,
-      color: `orange`,
-      display: `none`,
-      heightInMeters: sink.z / 100
-    };
-  }
-
-  static buildConnectingLineConfiguration(id: string | number): DrawConfiguration {
-    return {
-      id: `line${id}`,
-      clazz: `connection`,
-      cursor: `inherit`,
-      color: `orange`
-    };
-  }
 
   constructor(protected appendable: d3.selection,
               protected configuration: DrawConfiguration) {
