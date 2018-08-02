@@ -4,6 +4,7 @@ import {Point} from '../../../map.type';
 import {DeviceInEditor} from '../../../../map/models/device';
 import {Observable} from 'rxjs/Observable';
 import {AnchorBag, DeviceDto, SinkBag} from './device-placer.types';
+import {Anchor, Sink} from '../../../../device/device.type';
 
 
 @Injectable()
@@ -18,6 +19,7 @@ export class DevicePlacerService {
   private mapClicked: Subject<void> = new Subject();
   private tableRendered: Subject<void> = new Subject();
   private devicePositionChanged: Subject<void> = new Subject<void>();
+  private dviceInActiveConfiguration: Subject<Sink | Anchor> = new Subject<Sink | Anchor>();
 
   onDragStarted: Observable<DeviceDto> = this.draggedStarted.asObservable();
   onDroppedOutside: Observable<void> = this.droppedOutside.asObservable();
@@ -29,6 +31,7 @@ export class DevicePlacerService {
   onMapClicked: Observable<void> = this.mapClicked.asObservable();
   onTableRendered: Observable<void> = this.tableRendered.asObservable();
   onDevicePositionChanged: Observable<void> = this.devicePositionChanged.asObservable();
+  onDviceInActiveConfiguration: Observable<Sink | Anchor> = this.dviceInActiveConfiguration.asObservable();
   constructor() {
   }
 
@@ -70,5 +73,9 @@ export class DevicePlacerService {
 
   emitDevicePositionChanged(): void {
     this.devicePositionChanged.next();
+  }
+
+  emitDeviceInActiveConfiguration(device: Sink | Anchor): void {
+    this.dviceInActiveConfiguration.next(device);
   }
 }

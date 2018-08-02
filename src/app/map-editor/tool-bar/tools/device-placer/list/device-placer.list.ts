@@ -41,6 +41,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
     this.listenOnDeviceRemovedFromMap();
     this.listenOnTableRendered();
     this.fetchAllDevices();
+    this.listenOnDeviceInActiveConfiguration();
   }
 
   ngOnDestroy() {
@@ -126,6 +127,26 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
         this.activeListType = DeviceType.SINK;
         this.setActiveDevices();
       });
+    });
+  }
+
+  private listenOnDeviceInActiveConfiguration(): void {
+    this.devicePlacerService.onDviceInActiveConfiguration.takeUntil(this.subscriptionDestroyer).subscribe((device: Sink | Anchor) => {
+      if (!!(<Sink>device).anchors) {
+        const index: number = this.sinks.findIndex((sink: Sink): boolean => {
+          return device.shortId === sink.shortId;
+        });
+        if (index > -1) {
+          this.sinks.splice(index, 1)
+        }
+      } else {
+        const index: number = this.anchors.findIndex((anchors: Anchor): boolean => {
+          return device.shortId === anchors.shortId;
+        });
+        if (index > -1) {
+          this.anchors.splice(index, 1)
+        }
+      }
     });
   }
 
