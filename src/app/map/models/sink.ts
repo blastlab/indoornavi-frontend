@@ -10,7 +10,7 @@ export class SinkInEditor extends DeviceInEditor {
 
   type: DeviceType = DeviceType.SINK;
 
-  protected sinkUnicode: string = '\uf1e6';
+  protected sinkUnicode: string = '\uf1e6'; // fa-plug
   anchors: AnchorBag[] = [];
 
   constructor(
