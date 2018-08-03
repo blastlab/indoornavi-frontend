@@ -43,6 +43,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   private tempLine: d3.selection;
   private firstPoint: Point;
   private lastPoint: Point;
+  private callback: PathContextCallback;
 
   static isSamePoint(firstPoint: Point, lastPoint: Point): boolean {
     return Math.floor(firstPoint.x) === Math.floor(lastPoint.x) && Math.floor(firstPoint.y) === Math.floor(lastPoint.y);
@@ -55,7 +56,8 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
               private contextMenuService: ContextMenuService,
               private actionBarService: ActionBarService,
               private hintBarService: HintBarService,
-              private scaleService: ScaleService) {
+              private scaleService: ScaleService
+  ) {
   }
 
   ngOnInit() {
@@ -72,6 +74,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
         };
       }
     });
+    this.addRightClickToMapComponent();
   }
 
   ngOnDestroy() {
@@ -121,10 +124,32 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
         }
       }
     });
+
+    this.container.on('contextmenu', (): void => {
+      d3.event.preventDefault();
+      this.contextMenuService.openContextMenu();
+    });
   }
 
   setInactive(): void {
     this.active = false;
+  }
+
+  private addRightClickToMapComponent(): void {
+    // this.container.on('contextmenu', () => {
+    //
+    // });
+    // this.callback = {
+    //   remove: () => {
+    //     console.log('remove');
+    //   }
+    // };
+    // this.contextMenuService.setItems([
+    //   {
+    //     label: 'Remove',
+    //     command: this.callback.remove
+    //   }
+    // ]);
   }
 
   private createBuilder(index?: number): DrawBuilder {
@@ -235,4 +260,8 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
     this.lastPoint = Object.assign({}, point);
   }
 
+}
+
+export interface PathContextCallback {
+  remove: () => void;
 }
