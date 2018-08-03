@@ -112,6 +112,7 @@ import {MapClickService} from './shared/services/map-click/map-click.service';
 import {NotSupportedBrowserComponent} from './not-supported-browser/not-supported-browser';
 import {LongIdValidator} from './shared/directive/long-id.directive';
 import {ShortIdValidator} from './shared/directive/short-id.directive';
+import {PathComponent} from './map-editor/tool-bar/tools/path/path';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -162,7 +163,8 @@ export function HttpLoaderFactory(http: Http) {
     TagVisibilityTogglerComponent,
     HeatMapControllerComponent,
     MousePositionViewerComponent,
-    NotSupportedBrowserComponent
+    NotSupportedBrowserComponent,
+    PathComponent
   ],
   entryComponents: [
     PublicationDialogComponent,
