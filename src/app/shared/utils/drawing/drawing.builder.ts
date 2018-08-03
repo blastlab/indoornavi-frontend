@@ -1,9 +1,6 @@
 import * as d3 from 'd3';
 import {Point} from '../../../map-editor/map.type';
 import {DrawConfiguration} from '../../../map-viewer/publication.type';
-import {Helper} from '../helper/helper';
-import {Anchor, Sink} from '../../../device/device.type';
-import {CommonDeviceConfiguration} from './common/device.common';
 
 export enum ElementType {
   ICON,
@@ -11,7 +8,7 @@ export enum ElementType {
   POLYGON,
   CIRCLE,
   LINE,
-  DRAGAREA,
+  DRAG_AREA,
   IMAGE
 }
 
@@ -23,7 +20,7 @@ export class SvgGroupWrapper {
   container: d3.selection;
   private elements: Map<ElementType, d3.selection[]> = new Map();
   private textsHidden: boolean = true;
-  private groupDefaultColor: string;
+  private readonly groupDefaultColor: string;
 
   static throwErrorTypeNull(elementType: ElementType): void {
     throw new Error(`${elementType} is null or undefined`);
@@ -37,6 +34,42 @@ export class SvgGroupWrapper {
     this.groupDefaultColor = (colored) ? colored : 'black';
   }
 
+  addIcon2(coordinates: Point, iconCode: string, iconSizeMultiplier?: number): SvgGroupWrapper {
+    if (!!iconSizeMultiplier && iconSizeMultiplier < 2 || iconSizeMultiplier > 5) {
+      throw new Error('Icon size multiplier must be in range <2, 5>');
+    }
+
+    let element: d3.selection;
+
+    // create drag area
+    element = this.group
+      .append('circle')
+      .attr('cx', coordinates.x + 9) // move it right half icon size
+      .attr('cy', coordinates.y)
+      .attr('r', '10px')
+      .classed('dragarea', true)
+      .attr('fill', 'transparent');
+
+    this.addElement(ElementType.DRAG_AREA, element);
+
+    // create icon
+    element = this.group
+      .append('text')
+      .attr('x', coordinates.x)
+      .attr('y', coordinates.y)
+      .attr('font-family', 'FontAwesome')
+      .text(iconCode);
+
+    // set icon size
+    if (!!iconSizeMultiplier) {
+      element.attr('font-size', `${iconSizeMultiplier}em`);
+    }
+
+    this.addElement(ElementType.ICON, element);
+
+    return this;
+  }
+
   place(coordinates: Point): SvgGroupWrapper {
     this.group
       .attr('x', coordinates.x)
@@ -44,6 +77,7 @@ export class SvgGroupWrapper {
     return this;
   }
 
+  // TODO: remove if no more uses
   addIcon(coordinates: Point, icon: string): SvgGroupWrapper {
     let element: d3.selection;
     element = this.group
@@ -53,7 +87,7 @@ export class SvgGroupWrapper {
       .attr('r', '10px')
       .classed('dragarea', true)
       .attr('fill', 'transparent');
-    this.addElement(ElementType.DRAGAREA, element);
+    this.addElement(ElementType.DRAG_AREA, element);
     element = this.group
       .append('svg')
       .attr('x', coordinates.x)
@@ -65,6 +99,7 @@ export class SvgGroupWrapper {
     return this;
   }
 
+  // TODO: this should be part of MarkerOnMap class
   addCustomIcon(coordinates: Point, image: string): SvgGroupWrapper {
     const element: d3.selection = this.group
       .append('svg:image')
@@ -95,7 +130,7 @@ export class SvgGroupWrapper {
       .attr('r', '7px')
       .classed('dragarea', true)
       .attr('fill', 'transparent');
-    this.addElement(ElementType.DRAGAREA, element);
+    this.addElement(ElementType.DRAG_AREA, element);
     element = this.group
       .append('svg')
       .attr('x', coordinates.x)
@@ -196,59 +231,6 @@ export class SvgGroupWrapper {
     this.group.remove();
   }
 
-  addBorderBox(scale: number, defineColor?: string): void {
-    const boxColor: string = (defineColor) ? defineColor : this.groupDefaultColor;
-    const parentElement: SVGElement = this.group.node();
-    const domRect: DOMRectInit = parentElement.getBoundingClientRect();
-    const boxWidth = 2;
-    const padding: Point = Helper.getChildrenExtremeValues(parentElement);
-    const paddingX: number = padding.x * 1 + boxWidth * 1;
-    let paddingY: number = padding.y - boxWidth - 6;
-    if (this.textsHidden) {
-      paddingY += 10;
-    }
-    this.group
-      .append('rect')
-      .classed('group-border-box', true)
-      .attr('x', paddingX)
-      .attr('y', paddingY)
-      .attr('width', (domRect.width * (1 / scale) + boxWidth * 2))
-      .attr('height', (domRect.height * (1 / scale) + boxWidth * 2))
-      .attr('stroke', boxColor)
-      .attr('stroke-width', boxWidth)
-      .attr('opacity', '0.5')
-      .attr('stroke-linecap', 'round')
-      .attr('stroke-dasharray', '20,10,5,5,5,10')
-      .attr('fill', 'none');
-  }
-
-  removeBorderBox(): void {
-    this.group.select('rect.group-border-box').remove();
-  }
-
-  // TODO: Refactor this method to be more specific - remember about usages
-  changeColor(newColor): void {
-    const parentElement: SVGElement = this.group.node();
-    const childrenCount: number = parentElement.childElementCount;
-    const children: NodeList = parentElement.childNodes;
-    for (let i = 0; i < childrenCount; i++) {
-      const classed: Attr = children[i]['attributes']['class'];
-      if (!classed || (!!classed && classed.value !== 'pointer' && classed.value !== 'dragarea' && classed.value !== 'group-border-box' )) {
-        const child: d3.selection = d3.select(children[i]);
-        if (child.attr('stroke') !== null) {
-          child.attr('stroke', newColor)
-        }
-        if (child.attr('fill') !== null) {
-          child.attr('fill', newColor);
-        }
-      }
-    }
-  }
-
-  resetColor(): void {
-    this.changeColor(this.groupDefaultColor);
-  }
-
   getGroup(): d3.selection {
     return this.group;
   }
@@ -299,51 +281,13 @@ export class SvgGroupWrapper {
 }
 
 export class DrawBuilder {
-    protected group: d3.selection;
-
-  static buildAnchorDrawConfiguration(anchor: Anchor): CommonDeviceConfiguration {
-    return {
-      id: `${anchor.shortId}`,
-      clazz: `anchor`,
-      name: `${anchor.name}`,
-      cursor: `pointer`,
-      color: `green`,
-      display: `none`,
-      heightInMeters: anchor.z / 100
-    };
-  }
-
-  static buildSinkDrawConfiguration(sink: Sink): CommonDeviceConfiguration {
-    return {
-      id: `${sink.shortId}`,
-      clazz: `sink anchor`,
-      name: `${sink.name}`,
-      cursor: `pointer`,
-      color: `orange`,
-      display: `none`,
-      heightInMeters: sink.z / 100
-    };
-  }
-
-  static buildConnectingLineConfiguration(id: string | number): DrawConfiguration {
-    return {
-      id: `line${id}`,
-      clazz: `connection`,
-      cursor: `inherit`,
-      color: `orange`
-    };
-  }
+  protected group: d3.selection;
 
   constructor(protected appendable: d3.selection,
               protected configuration: DrawConfiguration) {
   }
 
   createGroup(): SvgGroupWrapper {
-    this.appendSvgToGroup();
-    return new SvgGroupWrapper(this.group, this.appendable, this.configuration.color);
-  }
-
-  protected appendSvgToGroup() {
     this.group = this.appendable
       .append('svg')
       .attr('id', this.configuration.id)
@@ -351,6 +295,7 @@ export class DrawBuilder {
       .attr('overflow', 'visible')
       .attr('x', 0)
       .attr('y', 0);
+
     if (this.configuration.cursor) {
       this.group.style('cursor', this.configuration.cursor);
     }
@@ -360,6 +305,10 @@ export class DrawBuilder {
     return (this.configuration.color)
       ? new SvgGroupWrapper(this.group, this.appendable, this.configuration.color)
       : new SvgGroupWrapper(this.group, this.appendable);
+  }
+
+  getConfiguration(): DrawConfiguration {
+    return this.configuration;
   }
 }
 

@@ -4,9 +4,9 @@ import {MapLoaderInformerService} from '../shared/services/map-loader-informer/m
 import {Floor} from '../floor/floor.type';
 import {MapSvg} from './map.type';
 import {ActivatedRoute, Data} from '@angular/router';
-import {DevicePlacerController} from '../map-editor/tool-bar/tools/devices/device-placer.controller';
 import {MapClickService} from '../shared/services/map-click/map-click.service';
 import * as d3 from 'd3';
+import {DevicePlacerService} from '../map-editor/tool-bar/tools/device-placer/device-placer.service';
 
 @Component({
   selector: 'app-map',
@@ -20,7 +20,7 @@ export class MapComponent implements OnInit {
 
   constructor(private mapLoaderInformer: MapLoaderInformerService,
               private mapEditorService: MapEditorService,
-              private devicePlacerController: DevicePlacerController,
+              private devicePlacerService: DevicePlacerService,
               private mapClick: MapClickService,
               protected route: ActivatedRoute) {
   }
@@ -43,7 +43,7 @@ export class MapComponent implements OnInit {
   droppedObject(event) {
     const pDragType = event.dataTransfer.getData('text');
     if (pDragType === 'devices') {
-      this.devicePlacerController.sendCoordinatesChanged({x: event.offsetX, y: event.offsetY});
+      this.devicePlacerService.emitDroppedInside({x: event.offsetX, y: event.offsetY});
     }
   }
 
@@ -56,7 +56,7 @@ export class MapComponent implements OnInit {
       .on('mousedown', () => {
         mouseDown = true;
          const position: Array<number> = d3.mouse(mapSvg.container.node());
-        timer =setTimeout(() => {
+        timer = setTimeout(() => {
           if (mouseDown && !mouseMove) {
             this.mapClick.mapIsClicked({x: Math.round(position[0]), y: Math.round(position[1])});
           }

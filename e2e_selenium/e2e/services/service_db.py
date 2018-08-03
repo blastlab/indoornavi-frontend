@@ -69,7 +69,9 @@ class ServiceDb:
                                      )
               try:
                 self.db_cursor.execute(command_composition, values)
-                self.ServiceLogger.logger.info("Insert to db {0} values {1}".format(command_composition, values))
+                # values_str = ''.join(values)
+                # print(values) if len(values) < 255 else print('Cannot print too long string')
+                self.ServiceLogger.logger.info("Insert to db {0} ".format(table))
               except ValueError as error:
                 self.ServiceLogger.logger.info(error)
            else:

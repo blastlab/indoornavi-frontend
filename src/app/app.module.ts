@@ -33,7 +33,6 @@ import {ActionBarService} from './map-editor/action-bar/actionbar.service';
 import {ScaleService} from './shared/services/scale/scale.service';
 import {PublishedListComponent} from './map-viewer/list/publication-list';
 import {AllFieldsFilter} from './shared/utils/filters/allFieldsFilter';
-import {DevicePlacerController} from './map-editor/tool-bar/tools/devices/device-placer.controller';
 import {appRoutes} from './app.routes';
 import {PublishedService} from './map-viewer/publication.service';
 import {PublicationDialogComponent} from './map-viewer/dialog/publication.dialog';
@@ -99,8 +98,6 @@ import {AreaDetailsService} from './map-editor/tool-bar/tools/area/details/area-
 import {ContextMenuService} from './shared/wrappers/editable/editable.service';
 import {PublishedComponent} from './map-viewer/views/publications/publication';
 import {AnalyticsComponent} from './map-viewer/views/analytics/analytics';
-import {DevicesComponent} from './map-editor/tool-bar/tools/devices/devices';
-import {DevicesListComponent} from './map-editor/tool-bar/tools/devices/list/devices-list';
 import {MapObjectService} from './shared/utils/drawing/map.object.service';
 import {MinSelectedValidator} from './shared/directive/minselected.directive';
 import {TagVisibilityTogglerComponent} from './shared/components/tag-visibility-toggler/tag-visibility-toggler';
@@ -112,6 +109,10 @@ import {MapClickService} from './shared/services/map-click/map-click.service';
 import {NotSupportedBrowserComponent} from './not-supported-browser/not-supported-browser';
 import {LongIdValidator} from './shared/directive/long-id.directive';
 import {ShortIdValidator} from './shared/directive/short-id.directive';
+import {DevicePlacerComponent} from './map-editor/tool-bar/tools/device-placer/device-placer.component';
+import {DevicePlacerService} from './map-editor/tool-bar/tools/device-placer/device-placer.service';
+import {DevicePlacerListComponent} from './map-editor/tool-bar/tools/device-placer/list/device-placer.list';
+import {DevicePlacerRowDirective} from './map-editor/tool-bar/tools/device-placer/list/device-placer.row';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -153,8 +154,6 @@ export function HttpLoaderFactory(http: Http) {
     MapComponent,
     AreasComponent,
     AreaDetailsComponent,
-    DevicesComponent,
-    DevicesListComponent,
     AllFieldsFilter,
     AreaDetailsComponent,
     AnalyticsComponent,
@@ -162,7 +161,10 @@ export function HttpLoaderFactory(http: Http) {
     TagVisibilityTogglerComponent,
     HeatMapControllerComponent,
     MousePositionViewerComponent,
-    NotSupportedBrowserComponent
+    NotSupportedBrowserComponent,
+    DevicePlacerComponent,
+    DevicePlacerListComponent,
+    DevicePlacerRowDirective
   ],
   entryComponents: [
     PublicationDialogComponent,
@@ -228,7 +230,6 @@ export function HttpLoaderFactory(http: Http) {
     AuthGuard,
     ActionBarService,
     PermissionGroupService,
-    DevicePlacerController,
     ScaleService,
     PublishedService,
     MapEditorService,
@@ -248,7 +249,8 @@ export function HttpLoaderFactory(http: Http) {
     MapObjectService,
     ContextMenuService,
     TagVisibilityTogglerService,
-    HeatMapControllerService
+    HeatMapControllerService,
+    DevicePlacerService
   ], bootstrap: [AppComponent]
 })
 

@@ -1,0 +1,12 @@
+<button pButton class="ui-button-secondary"
+        (click)="toggleActivity()"
+        [ngClass]="{'active-tool':active}"
+        pTooltip="{{'devices'|translate}}"
+        icon="fa-list-ul"
+        [disabled]="disabled">
+</button>
+
+<p-confirmDialog acceptLabel="{{'ok'|translate}}"
+                 rejectLabel="{{'cancel'|translate}}"
+                 header="{{'device-placer.confirmation.header'|translate}}"
+                 icon="fa fa-exclamation-triangle" width="425"></p-confirmDialog>

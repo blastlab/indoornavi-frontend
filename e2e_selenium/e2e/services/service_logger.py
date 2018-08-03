@@ -20,10 +20,12 @@ class ServiceLogger(object):
 
     def __save_log(self):
         reports_path = 'test-reports/logs'
-        datetime = time.strftime('%H:%M:%S_%d_%m_%Y')
+        datetime = time.strftime('%H:%M:%S:_%d_%m_%Y')
 
         try:
           os.makedirs(reports_path)
         except OSError:
           pass
-        logging.basicConfig(filename='{0}/{1}_{2}.log'.format(reports_path, datetime, self.__module))
+
+        FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        logging.basicConfig(format=FORMAT, filename='{0}/{1}_{2}.log'.format(reports_path, datetime, self.__module))

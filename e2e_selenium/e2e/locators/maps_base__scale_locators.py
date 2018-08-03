@@ -23,7 +23,7 @@ class MapsBaseScaleLocators(object):
         scale_line_point_b = (By.CSS_SELECTOR, ('#scaleGroup > circle:last-of-type'))
         scale_modal_window = (By.CLASS_NAME, 'ui-dialog')
 
-        scale_measurement = (By.CSS_SELECTOR, '#map-container > app-scale-input > app-tool-details > div > div > form > div.ui-g-5 > p-dropdown > div > label')
+        scale_measurement = (By.CSS_SELECTOR, '#map-container > app-scale-input > app-tool-details > div > div > div > div.ui-g-12.content-container.ng-trigger.ng-trigger-toggleMinimizedBottom > form > div.ui-g-5 > p-dropdown > div > label')
         scale_measurement_cent = (By.XPATH, "//p-dropdown/div/div[4]/div/ul/li[1]/span")
         scale_measurement_meters = (By.XPATH, "//p-dropdown/div/div[4]/div/ul/li[2]/span")
         scale_distance_input = (By.CSS_SELECTOR, 'input#distance')
