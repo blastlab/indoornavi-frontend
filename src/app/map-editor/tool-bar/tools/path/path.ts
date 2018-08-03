@@ -40,6 +40,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   private scaleCalculations: ScaleCalculations;
   private currentLineGroup: SvgGroupWrapper;
   private firstPointSelection: d3.selection;
+  private tempLine: d3.selection;
   private firstPoint: Point;
   private lastPoint: Point;
 
@@ -107,7 +108,19 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
       const coordinates: Point = this.zoomService.calculateTransition({x: d3.mouse(nodes[i])[0], y: d3.mouse(nodes[i])[1]});
       this.handleMouseClick(coordinates);
     });
+
     this.currentLineGroup = this.createBuilder().createGroup();
+
+    this.layer.on('mousemove', (_, i: number, nodes: d3.selection[]): void => {
+      if (!!this.firstPointSelection) {
+        const coordinates: Point = this.zoomService.calculateTransition({x: d3.mouse(nodes[i])[0], y: d3.mouse(nodes[i])[1]});
+        if (!!this.tempLine) {
+          this.moveTempLine(coordinates);
+        } else {
+          this.drawTempLine();
+        }
+      }
+    });
   }
 
   setInactive(): void {
@@ -146,7 +159,56 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
       endPoint: point
     };
     this.lines.push(line);
-    console.log(this.lines);
+  }
+
+  private drawTempLine(): void {
+    this.tempLine = this.currentLineGroup
+      .addLine(this.lastPoint, this.lastPoint)
+      .getLastElement(ElementType.LINE)
+      .style('pointer-events', 'none')
+      .attr('stroke-dasharray', '5,5')
+      .classed('tempLine', true);
+  }
+
+  private moveTempLine(coordinates: Point): void {
+    const event: KeyboardEvent = <KeyboardEvent>window.event;
+    if (event.shiftKey && this.getCurrentLinePoints().length > 0) {
+      const endPoint: Point = this.handleShiftKeyEvent(coordinates);
+      this.tempLine.attr('x2', endPoint.x).attr('y2', endPoint.y);
+    }
+    this.tempLine.attr('x2', coordinates.x).attr('y2', coordinates.y);
+  }
+
+  private getCurrentLinePoints(line?: Line): Point[] {
+    let points: Point[];
+    const circles: d3.selection[] = this.currentLineGroup.getElements(ElementType.CIRCLE);
+    if (!line && !!circles) {
+      points = circles.map((point: d3.selection) => {
+        return (<Point>{
+          x: Math.round(parseFloat(point.attr('cx'))),
+          y: Math.round(parseFloat(point.attr('cy')))
+        });
+      });
+    } else {
+      points = [line.startPoint, line.endPoint];
+    }
+    return points;
+  }
+
+  private handleShiftKeyEvent(coordinates: Point): Point {
+    const secondPoint: Point = this.getCurrentLinePoints()[this.getCurrentLinePoints().length - 1];
+    const deltaY = Geometry.getDeltaY(coordinates, secondPoint);
+    if (!!deltaY) {
+      coordinates.y = secondPoint.y - deltaY;
+    } else {
+      coordinates.x = secondPoint.x;
+    }
+    return coordinates;
+  }
+
+  private cleanTempLine(): void {
+    this.tempLine = null;
+    this.currentLineGroup.removeLastElement(ElementType.LINE);
   }
 
   private handleMouseClick(point: Point): void {
@@ -154,6 +216,10 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
       this.firstPointSelection = this.drawPoint(point);
       this.firstPoint = Object.assign({}, point);
     } else {
+      const event: KeyboardEvent = <KeyboardEvent>window.event;
+      if (event.shiftKey && this.getCurrentLinePoints().length > 0) {
+        point = this.handleShiftKeyEvent(point);
+      }
       if (PathComponent.isSamePoint(point, this.firstPoint)) {
         this.firstPointSelection.remove();
       }
@@ -162,6 +228,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
         this.lastPoint = null;
         return;
       }
+      this.cleanTempLine();
       this.drawPoint(point);
       this.drawLine(point);
     }
