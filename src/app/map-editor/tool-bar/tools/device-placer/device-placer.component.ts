@@ -1,7 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Tool} from '../tool';
 import {ToolName} from '../tools.enum';
-import {Subscription} from 'rxjs/Subscription';
 import * as d3 from 'd3';
 import {MapLoaderInformerService} from '../../../../shared/services/map-loader-informer/map-loader-informer.service';
 import {Scale, ScaleCalculations, ScaleDto} from '../scale/scale.type';
@@ -22,7 +21,7 @@ import {AnchorBag, DeviceCallbacks, DeviceDto, DeviceInEditorConfiguration, Devi
 import {ToolbarService} from '../../toolbar.service';
 import {ConfirmationService} from 'primeng/primeng';
 import {Box} from '../../../../shared/utils/drawing/drawing.types';
-import {log} from 'util';
+import {Subject} from 'rxjs/Subject';
 
 @Component({
   selector: 'app-device-placer',
@@ -31,15 +30,7 @@ import {log} from 'util';
 export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   active: boolean = false;
   disabled: boolean = true;
-
-  private mapLoadedSubscription: Subscription;
-  private scaleChanged: Subscription;
-  private deviceActivation: Subscription;
-  private contextMenuListener: Subscription;
-  private deviceDragging: Subscription;
-  private deviceDroppingOutside: Subscription;
-  private deviceDroppingInside: Subscription;
-  private deviceChangedPosition: Subscription;
+  private subscriptionDestroyer: Subject<void> = new Subject<void>();
   private map: d3.selection;
   private scale: Scale;
   private floorId: number;
@@ -83,15 +74,8 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.contextMenu = null;
-    this.mapLoadedSubscription.unsubscribe();
-    this.scaleChanged.unsubscribe();
-    this.deviceActivation.unsubscribe();
-    this.contextMenuListener.unsubscribe();
-    this.deviceDragging.unsubscribe();
-    this.deviceDroppingOutside.unsubscribe();
-    this.deviceDroppingInside.unsubscribe();
-    this.deviceChangedPosition.unsubscribe();
-    //  TODO: unset context menu for all devices
+    this.subscriptionDestroyer.next();
+    this.subscriptionDestroyer.unsubscribe();
   }
 
   getToolName(): ToolName {
@@ -128,14 +112,14 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   }
 
   private bindMapSelection(): void {
-    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapLoaded): void => {
+    this.mapLoaderInformer.loadCompleted().takeUntil(this.subscriptionDestroyer).subscribe((mapLoaded): void => {
       this.map = mapLoaded.container;
       this.containerBox = this.map.node().getBBox();
     });
   }
 
   private captureScaleChanges(): void {
-    this.scaleChanged = this.scaleService.scaleChanged.subscribe((scale: ScaleDto): void => {
+    this.scaleService.scaleChanged.takeUntil(this.subscriptionDestroyer).subscribe((scale: ScaleDto): void => {
       this.scale = new Scale(scale);
       if (this.scale.isReady()) {
         this.scaleCalculations = {
@@ -165,7 +149,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   }
 
   private listenOnDeviceActivated(): void {
-    this.deviceActivation = this.devicePlacerService.onActivated.subscribe((device: DeviceInEditor) => {
+    this.devicePlacerService.onActivated.takeUntil(this.subscriptionDestroyer).subscribe((device: DeviceInEditor) => {
       this.setActiveDevice(device);
       this.sinks.forEach((sinkBag: SinkBag): void => {
         this.setSinkGroupOutOfScope(sinkBag);
@@ -183,13 +167,13 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   }
 
   private listenOnDeviceDragAndDrop(): void {
-    this.deviceDragging = this.devicePlacerService.onDragStarted.subscribe((deviceDto: DeviceDto): void => {
+    this.devicePlacerService.onDragStarted.takeUntil(this.subscriptionDestroyer).subscribe((deviceDto: DeviceDto): void => {
       this.draggedDevice = deviceDto;
     });
-    this.deviceDroppingOutside = this.devicePlacerService.onDroppedOutside.subscribe((): void => {
+    this.devicePlacerService.onDroppedOutside.takeUntil(this.subscriptionDestroyer).subscribe((): void => {
       this.draggedDevice = null;
     });
-    this.deviceDroppingInside = this.devicePlacerService.onDroppedInside.subscribe((coordinates: Point): void => {
+    this.devicePlacerService.onDroppedInside.takeUntil(this.subscriptionDestroyer).subscribe((coordinates: Point): void => {
       const dropTransitionCoordinates = this.zoomService.calculateTransition(coordinates);
       if (!!this.draggedDevice) {
         if (this.draggedDevice.type === DeviceType.SINK) {
@@ -217,13 +201,13 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   }
 
   private listenToContextMenu(): void {
-    this.contextMenuListener = this.devicePlacerService.onSelected.subscribe((device: DeviceInEditor): void => {
+    this.devicePlacerService.onSelected.takeUntil(this.subscriptionDestroyer).subscribe((device: DeviceInEditor): void => {
       this.setActiveDevice(device);
     });
   }
 
   private listenOnPositionChanged() {
-    this.deviceChangedPosition = this.devicePlacerService.onDevicePositionChanged.subscribe(() => {
+    this.devicePlacerService.onDevicePositionChanged.takeUntil(this.subscriptionDestroyer).subscribe(() => {
       if (!!this.activeDevice) {
         const deviceCalculatedInCentimeters: Sink | Anchor = this.updateDevicePosition(this.activeDevice);
         if (this.activeDevice.deviceInEditor.type === DeviceType.SINK) {
@@ -257,14 +241,15 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   }
 
   private listenOnConfigurationReset(): void {
-    this.configurationService.configurationReset().subscribe((configuration: Configuration) => {
+    this.configurationService.configurationReset().takeUntil(this.subscriptionDestroyer).subscribe((configuration: Configuration) => {
       const sinks: SinkBag[] = [...this.sinks];
       sinks.forEach((sink: SinkBag) => {
         this.removeSinkWithAnchors(sink);
       });
       this.drawFromConfiguration(configuration);
       this.informListOfItemsInConfiguration(configuration);
-      this.toggleActivity();
+      this.toolbarService.emitToolChanged(null);
+      this.setInactive();
     });
   }
 
@@ -394,7 +379,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     if (index > -1) {
       this.sinks.splice(index, 1);
     }
-    (<Sink>this.activeDevice.deviceInList).anchors = [];
+    sinkBag.deviceInList.anchors = [];
   }
 
   private setSinkGroupInScope(sinkBag: SinkBag): void {
