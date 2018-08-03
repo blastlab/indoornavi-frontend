@@ -17,6 +17,7 @@ import * as d3 from 'd3';
 import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../../../shared/utils/drawing/drawing.builder';
 import {Line, Point} from '../../../map.type';
 import {isNumber} from 'util';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-path',
@@ -24,7 +25,6 @@ import {isNumber} from 'util';
   styleUrls: ['./path.css']
 })
 export class PathComponent implements Tool, OnInit, OnDestroy {
-  public static NEW_PATH_ID = 'path-new';
   private static CIRCLE_R: number = 5;
 
   @Input() floor: Floor;
@@ -33,7 +33,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   disabled: boolean = true;
 
   private subscriptionDestroyer: Subject<void> = new Subject<void>();
-  private lines: Line[] = [];
+  private lines: LineBag[] = [];
   private scale: Scale;
   private container: d3.selection;
   private layer: d3.selection;
@@ -43,7 +43,10 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   private tempLine: d3.selection;
   private firstPoint: Point;
   private lastPoint: Point;
-  private callback: PathContextCallback;
+  private callbacks: PathContextCallback;
+  private labels: PathContextMenuLabels = {
+    removeAll: '',
+  };
 
   static isSamePoint(firstPoint: Point, lastPoint: Point): boolean {
     return Math.floor(firstPoint.x) === Math.floor(lastPoint.x) && Math.floor(firstPoint.y) === Math.floor(lastPoint.y);
@@ -56,7 +59,8 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
               private contextMenuService: ContextMenuService,
               private actionBarService: ActionBarService,
               private hintBarService: HintBarService,
-              private scaleService: ScaleService
+              private scaleService: ScaleService,
+              private translateService: TranslateService
   ) {
   }
 
@@ -74,7 +78,23 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
         };
       }
     });
-    this.addRightClickToMapComponent();
+    this.translateService.setDefaultLang('en');
+    this.translateService
+      .get('remove.all.lines')
+      .subscribe((translatedValue) => {
+        this.labels.removeAll = translatedValue;
+      });
+    this.callbacks = {
+      remove: () => {
+        this.lines.forEach((line: LineBag): void => {
+          line.lineInEditor.remove();
+        });
+        this.lines = [];
+        this.firstPointSelection = null;
+        this.lastPoint = null;
+        this.currentLineGroup = this.createBuilder().createGroup();
+      }
+    }
   }
 
   ngOnDestroy() {
@@ -127,29 +147,30 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
 
     this.container.on('contextmenu', (): void => {
       d3.event.preventDefault();
+      this.contextMenuService.setItems([
+        {
+          label: 'Remove all lines',
+          command: this.callbacks.remove
+        }
+      ]);
       this.contextMenuService.openContextMenu();
     });
   }
 
   setInactive(): void {
     this.active = false;
-  }
-
-  private addRightClickToMapComponent(): void {
-    // this.container.on('contextmenu', () => {
-    //
-    // });
-    // this.callback = {
-    //   remove: () => {
-    //     console.log('remove');
-    //   }
-    // };
-    // this.contextMenuService.setItems([
-    //   {
-    //     label: 'Remove',
-    //     command: this.callback.remove
-    //   }
-    // ]);
+    this.container.style('cursor', 'move');
+    this.layer.on('click', null);
+    this.layer.on('mousemove', null);
+    this.container.on('contextmenu', null);
+    this.firstPointSelection = null;
+    this.lastPoint = null;
+    if (!!this.tempLine) {
+      this.cleanTempLine();
+    }
+    if (this.lines.length === 0) {
+      this.currentLineGroup.removeElements(ElementType.CIRCLE);
+    }
   }
 
   private createBuilder(index?: number): DrawBuilder {
@@ -183,7 +204,11 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
       startPoint: this.lastPoint,
       endPoint: point
     };
-    this.lines.push(line);
+    const lineBag: LineBag = {
+      lineInEditor: this.currentLineGroup,
+      lineDto: line
+    };
+    this.lines.push(lineBag);
   }
 
   private drawTempLine(): void {
@@ -264,4 +289,13 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
 
 export interface PathContextCallback {
   remove: () => void;
+}
+
+export interface LineBag {
+  lineInEditor: d3.selection;
+  lineDto: Line;
+}
+
+export interface PathContextMenuLabels {
+  removeAll: string;
 }
