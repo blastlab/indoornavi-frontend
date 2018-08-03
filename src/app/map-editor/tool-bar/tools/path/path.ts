@@ -24,7 +24,7 @@ import {isNumber} from 'util';
   styleUrls: ['./path.css']
 })
 export class PathComponent implements Tool, OnInit, OnDestroy {
-  public static NEW_PATH_ID = 'area-new';
+  public static NEW_PATH_ID = 'path-new';
   private static CIRCLE_R: number = 5;
 
   @Input() floor: Floor;
@@ -40,8 +40,12 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   private scaleCalculations: ScaleCalculations;
   private currentLineGroup: SvgGroupWrapper;
   private firstPointSelection: d3.selection;
-  private lastPointSelection: d3.selection;
-  lastPoint: Point;
+  private firstPoint: Point;
+  private lastPoint: Point;
+
+  static isSamePoint(firstPoint: Point, lastPoint: Point): boolean {
+    return Math.floor(firstPoint.x) === Math.floor(lastPoint.x) && Math.floor(firstPoint.y) === Math.floor(lastPoint.y);
+  }
 
 
   constructor(private toolbarService: ToolbarService,
@@ -50,7 +54,8 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
               private contextMenuService: ContextMenuService,
               private actionBarService: ActionBarService,
               private hintBarService: HintBarService,
-              private scaleService: ScaleService) { }
+              private scaleService: ScaleService) {
+  }
 
   ngOnInit() {
     this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg): void => {
@@ -92,6 +97,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   getToolName(): ToolName {
     return ToolName.PATH;
   }
+
   setActive(): void {
     this.active = true;
 
@@ -103,6 +109,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
     });
     this.currentLineGroup = this.createBuilder().createGroup();
   }
+
   setInactive(): void {
     this.active = false;
   }
@@ -137,18 +144,28 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
     const line: Line = {
       startPoint: this.lastPoint,
       endPoint: point
-    }
+    };
     this.lines.push(line);
+    console.log(this.lines);
   }
 
   private handleMouseClick(point: Point): void {
     if (!this.firstPointSelection) {
       this.firstPointSelection = this.drawPoint(point);
+      this.firstPoint = Object.assign({}, point);
     } else {
-      this.lastPointSelection = this.drawPoint(point);
+      if (PathComponent.isSamePoint(point, this.firstPoint)) {
+        this.firstPointSelection.remove();
+      }
+      if (PathComponent.isSamePoint(point, this.lastPoint)) {
+        this.firstPointSelection = null;
+        this.lastPoint = null;
+        return;
+      }
+      this.drawPoint(point);
       this.drawLine(point);
     }
-    this.lastPoint = point;
+    this.lastPoint = Object.assign({}, point);
   }
 
 }
