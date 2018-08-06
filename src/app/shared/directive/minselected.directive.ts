@@ -3,13 +3,13 @@ import {AbstractControl, NG_VALIDATORS, ValidationErrors, Validator} from '@angu
 
 @Directive({
   selector: '[appMinSelected]',
-  providers: [{provide: NG_VALIDATORS, useExisting: MinSelectedValidator, multi: true}]
+  providers: [{provide: NG_VALIDATORS, useExisting: MinSelectedValidatorDirective, multi: true}]
 })
-export class MinSelectedValidator implements Validator {
+export class MinSelectedValidatorDirective implements Validator {
 
   @Input() appMinSelected: number;
 
   validate(control: AbstractControl): ValidationErrors {
-    return !!control.value && control.value.length < this.appMinSelected ? {'minSelected': {value: control.value}} : null;
+    return !control.value || control.value.length < this.appMinSelected ? {'minSelected': {value: control.value}} : null;
   }
 }

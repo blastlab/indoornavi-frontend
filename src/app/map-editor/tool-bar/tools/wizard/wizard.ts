@@ -21,9 +21,8 @@ import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
 import {ScaleService} from '../../../../shared/services/scale/scale.service';
 import {Scale, ScaleCalculations, ScaleDto} from '../scale/scale.type';
 import {Geometry} from '../../../../shared/utils/helper/geometry';
-import {Anchor, Sink} from '../../../../device/device.type';
+import {Anchor} from '../../../../device/device.type';
 import {MapLoaderInformerService} from '../../../../shared/services/map-loader-informer/map-loader-informer.service';
-import {DevicePlacerController} from '../devices/device-placer.controller';
 import {IconService} from '../../../../shared/services/drawing/icon.service';
 import {DrawBuilder} from '../../../../shared/utils/drawing/drawing.builder';
 import {CommonDevice, CommonDeviceConfiguration} from '../../../../shared/utils/drawing/common/device.common';
@@ -69,7 +68,6 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
               private hintBarService: HintBarService,
               private actionBarService: ActionBarService,
               private zoomService: ZoomService,
-              private placerController: DevicePlacerController,
               private scaleService: ScaleService) {
     super(iconService);
   }
@@ -208,13 +206,13 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
       x: this.wizardData.secondAnchorPosition.x,
       y: this.wizardData.secondAnchorPosition.y
     });
-    this.actionBarService.setSink(<Sink>{
-      shortId: this.wizardData.sinkShortId,
-      x: this.wizardData.sinkPosition.x,
-      y: this.wizardData.sinkPosition.y,
-      anchors: anchors
-    });
-    this.placerController.emitWizardSaveConfiguration(this.drawnDevices);
+    // this.actionBarService.setSink(<Sink>{
+    //   shortId: this.wizardData.sinkShortId,
+    //   x: this.wizardData.sinkPosition.x,
+    //   y: this.wizardData.sinkPosition.y,
+    //   anchors: anchors
+    // });
+    // this.placerController.emitWizardSaveConfiguration(this.drawnDevices);
   }
 
   private isFinalStep(): boolean {
