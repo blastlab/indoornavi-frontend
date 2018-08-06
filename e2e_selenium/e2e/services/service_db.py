@@ -15,6 +15,9 @@ class ServiceDb:
                         'permission', 'permissiongroup',
                         'permissiongroup_permission', ]
 
+    TABLE_TRUNCATE_SIZE = 9
+    TABLE_TRUNCATE_PERMISSIONS_SIZE = 12
+
     def __init__(self):
         self.ServiceLogger = ServiceLogger(self.__class__.__name__)
         self.ServiceLogger.logger.info("Init service Db")
@@ -118,12 +121,12 @@ class ServiceDb:
         self.ServiceLogger.logger.info("Truncate table : {}".format(table))
 
     def truncate_db(self):
-        for table in self.__db_tables_array[0:9]:
+        for table in self.__db_tables_array[0:self.TABLE_TRUNCATE_SIZE]:
             self.db_cursor.execute("TRUNCATE TABLE {}".format(table))
             self.ServiceLogger.logger.info("Truncate table : {}".format(table))
 
     def truncate_db_permissions(self):
-        for table in self.__db_tables_array[0:12]:
+        for table in self.__db_tables_array[0:self.TABLE_TRUNCATE_PERMISSIONS_SIZE]:
             self.db_cursor.execute("TRUNCATE TABLE {}".format(table))
             self.ServiceLogger.logger.info("Truncate table : {}".format(table))
 

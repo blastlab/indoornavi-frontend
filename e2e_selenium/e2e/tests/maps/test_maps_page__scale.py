@@ -1,6 +1,7 @@
 import unittest
 from selenium import webdriver
 from tests.test_driver import TestDriver
+from tests.test_login_page import TestLoginPage
 from pages.maps.maps_page__scale import MapsPageScale
 from pages.base_page import BasePage
 from pages.login_page import LoginPage
@@ -16,6 +17,7 @@ class TestMapsPageScale(unittest.TestCase, MapsPageScale):
         self.webdriver = webdriver
         self.login_page_url = LoginPage.login_url
         TestDriver.setUp(self, self.login_page_url)
+        self.login_test = TestLoginPage
         self.page = LoginPage(self.webdriver)
         self.actions = ActionChains(self.webdriver)
         self.floors_page = FloorsPage(self.webdriver, 'floors')
@@ -25,7 +27,8 @@ class TestMapsPageScale(unittest.TestCase, MapsPageScale):
         self.maps_page.truncate_db()
         self.maps_page.create_maps_db_env()
         # Login to app
-        self.page.login_process(self.option, 1)
+        # self.page.login_process(self.option, 1)
+        self.login_test.test_login_valid_credentials(self)
         self.__get_maps_page()
 
     def tearDown(self):

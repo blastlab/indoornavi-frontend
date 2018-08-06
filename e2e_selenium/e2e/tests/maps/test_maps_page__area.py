@@ -1,6 +1,7 @@
 import unittest
 from selenium import webdriver
 from tests.test_driver import TestDriver
+from tests.test_login_page import TestLoginPage
 from pages.maps.maps_page__area import MapsPageArea
 from pages.base_page import BasePage
 from pages.login_page import LoginPage
@@ -16,6 +17,7 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.webdriver = webdriver
         self.login_page_url = LoginPage.login_url
         TestDriver.setUp(self, self.login_page_url)
+        self.login_test = TestLoginPage
         self.page = LoginPage(self.webdriver)
         self.actions = ActionChains(self.webdriver)
         self.floors_page = FloorsPage(self.webdriver, 'floors')
@@ -27,7 +29,8 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.maps_page_area.insert_tags_to_db_from_csv()
         self.maps_page_area.insert_devices_to_db_from_csv()
         # Login to app
-        self.page.login_process(self.option, 1)
+        self.login_test.test_login_valid_credentials(self)
+        # self.page.login_process(self.option, 1)
 
     def tearDown(self):
         TestDriver.tearDown(self)
