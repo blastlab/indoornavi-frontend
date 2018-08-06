@@ -119,7 +119,7 @@ export class ActionBarService {
   }
 
   addSink(sink: Sink): void {
-    this.configuration.data.sinks.push(Helper.deepCopy(sink));
+    this.configuration.data.sinks.push(sink);
     this.sendConfigurationChangedEvent();
   }
 
@@ -127,7 +127,7 @@ export class ActionBarService {
     const i = this.configuration.data.sinks.findIndex((s: Sink) => {
       return s.shortId === sink.shortId;
     });
-    this.configuration.data.sinks[i] = Helper.deepCopy(sink);
+    this.configuration.data.sinks[i] = sink;
     this.sendConfigurationChangedEvent();
   }
 
@@ -135,13 +135,13 @@ export class ActionBarService {
     const i = this.configuration.data.sinks.findIndex((s: Sink) => {
       return s.shortId === sink.shortId;
     });
-    this.configuration.data.sinks[i].anchors.push(Helper.deepCopy(anchor));
+    this.configuration.data.sinks[i].anchors.push(anchor);
     this.sendConfigurationChangedEvent();
   }
 
   updateAnchor(anchor: Anchor): void {
     const indexes = this.findAnchorAndSinkIndexes(anchor);
-    this.configuration.data.sinks[indexes.sinkIndex].anchors[indexes.anchorIndex] = Helper.deepCopy(anchor);
+    this.configuration.data.sinks[indexes.sinkIndex].anchors[indexes.anchorIndex] = anchor;
     this.sendConfigurationChangedEvent();
   }
 

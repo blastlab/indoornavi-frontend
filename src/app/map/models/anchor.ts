@@ -11,7 +11,7 @@ export class AnchorInEditor extends DeviceInEditor {
 
   type: DeviceType = DeviceType.ANCHOR;
 
-  protected anchorUnicode: string = '\uf2ce';
+  protected anchorUnicode: string = '\uf2ce'; // fa-podcast
 
   constructor(
     public shortId: number,
