@@ -1,13 +1,16 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
-import {LineBag} from '../../../map.type';
 
 @Injectable()
 export class PathDetailsService {
 
   private visibilityChanged: Subject<boolean> = new Subject<boolean>();
-  private decisionMade: Subject<LineBag> = new Subject<LineBag>();
+  private decisionMade: Subject<boolean> = new Subject<boolean>();
+
+  onDecisionMade(): Observable<boolean> {
+    return this.decisionMade.asObservable();
+  }
 
   show(): void {
     this.visibilityChanged.next(true);
@@ -17,19 +20,12 @@ export class PathDetailsService {
     this.visibilityChanged.next(false);
   }
 
-  reject(): void {
-    this.decisionMade.next(null);
-  }
-
-  accept(lines: LineBag): void {
-    this.decisionMade.next(lines);
+  emitDecision(value: boolean): void {
+    this.decisionMade.next(value);
   }
 
   onVisibilityChange(): Observable<boolean> {
     return this.visibilityChanged.asObservable();
   }
 
-  onDecisionMade(): Observable<LineBag> {
-    return this.decisionMade.asObservable();
-  }
 }

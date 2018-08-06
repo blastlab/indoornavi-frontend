@@ -80,6 +80,12 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
         };
       }
     });
+    this.pathDetailsService.onDecisionMade().takeUntil(this.subscriptionDestroyer).subscribe((value): void => {
+      if (value) {
+        this.calculateIntersection();
+      }
+      this.toggleActivity();
+    });
     this.translateService.setDefaultLang('en');
     this.translateService
       .get('remove.all.lines')
@@ -171,6 +177,12 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
     }
     this.clearDrawnPath();
     this.currentLineGroup.removeElements(ElementType.CIRCLE);
+  }
+
+  private calculateIntersection(): void {
+    this.lines.forEach((lineBag: LineBag): void => {
+      console.log(lineBag.lineDto.startPoint, lineBag.lineDto.endPoint);
+    });
   }
 
   private drawLinesFromConfiguration(): void {
