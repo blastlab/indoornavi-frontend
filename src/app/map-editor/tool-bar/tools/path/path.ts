@@ -92,6 +92,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
         this.lines = [];
         this.firstPointSelection = null;
         this.lastPoint = null;
+        this.tempLine = null;
         this.currentLineGroup = this.createBuilder().createGroup();
       }
     }
