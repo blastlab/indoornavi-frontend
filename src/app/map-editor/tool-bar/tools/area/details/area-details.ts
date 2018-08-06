@@ -12,6 +12,9 @@ import {AreasComponent} from '../areas';
 import {MessageServiceWrapper} from '../../../../../shared/services/message/message.service';
 import {Tag} from '../../../../../device/device.type';
 import {NgForm} from '@angular/forms';
+import {SelectItem} from 'primeng/primeng';
+import {Subject} from 'rxjs/Subject';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-area-details',
@@ -28,6 +31,8 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
   tagsOnEnter: number[] = [];
   tagsOnLeave: number[] = [];
   tagsSelect: SelectItem[] = [];
+  onEnterLabel: string;
+  onLeaveLabel: string;
 
   private areaConfigurationOnEnter: AreaConfiguration = new AreaConfiguration(Mode.ON_ENTER, 0);
   private areaConfigurationOnLeave: AreaConfiguration = new AreaConfiguration(Mode.ON_LEAVE, 0);
@@ -37,7 +42,8 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
 
   constructor(private areaDetailsService: AreaDetailsService,
               private tagService: DeviceService,
-              private messageService: MessageServiceWrapper) {
+              private messageService: MessageServiceWrapper,
+              private translateService: TranslateService) {
   }
 
   ngOnInit(): void {
@@ -76,6 +82,7 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
         this.toolDetails.hide();
       }
     });
+    this.setTranslations();
   }
 
   ngOnDestroy() {
@@ -176,4 +183,13 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
     this.editable = null;
   }
 
+  private setTranslations() {
+    this.translateService.setDefaultLang('en');
+    this.translateService.get('area.on_enter.select').subscribe((value: string) => {
+      this.onEnterLabel = value;
+    });
+    this.translateService.get('area.on_leave.select').subscribe((value: string) => {
+      this.onLeaveLabel = value;
+    });
+  }
 }
