@@ -182,6 +182,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   private calculateIntersection(): void {
     this.lines.forEach((lineBag: LineBag): void => {
       console.log(lineBag.lineDto.startPoint, lineBag.lineDto.endPoint);
+      console.log(lineBag.lineInEditor);
     });
   }
 
@@ -192,6 +193,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
         this.drawPoint(this.lastPoint);
         this.drawPoint(line.lineDto.endPoint);
         this.drawLine(line.lineDto.endPoint);
+        line.lineInEditor = this.currentLineGroup;
       });
     }
   }
@@ -199,6 +201,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   private clearDrawnPath(): void {
     this.lines.forEach((line: LineBag): void => {
       line.lineInEditor.remove();
+      line.lineInEditor = null;
     });
     this.firstPointSelection = null;
     this.lastPoint = null;
@@ -233,15 +236,6 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
       .addLine(this.lastPoint, point)
       .getLastElement(ElementType.LINE)
       .style('pointer-events', 'none');
-    const line: Line = {
-      startPoint: this.lastPoint,
-      endPoint: point
-    };
-    const lineBag: LineBag = {
-      lineInEditor: this.currentLineGroup,
-      lineDto: line
-    };
-    this.lines.push(lineBag);
   }
 
   private drawTempLine(): void {
@@ -314,6 +308,15 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
       this.cleanTempLine();
       this.drawPoint(point);
       this.drawLine(point);
+      const line: Line = {
+        startPoint: this.lastPoint,
+        endPoint: point
+      };
+      const lineBag: LineBag = {
+        lineInEditor: this.currentLineGroup,
+        lineDto: line
+      };
+      this.lines.push(lineBag);
     }
     this.lastPoint = Object.assign({}, point);
   }
