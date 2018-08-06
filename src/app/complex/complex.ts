@@ -87,7 +87,7 @@ export class ComplexComponent implements OnInit, CrudComponent {
   remove(index: number): void {
     this.confirmationService.confirm({
       message: this.confirmBody,
-      accept: () => {
+      accept: (): void => {
         const complexId: number = this.complexes[index].id;
         this.complexService.removeComplex(complexId).subscribe(() => {
           this.complexes = <Complex[]>CrudHelper.remove(index, this.complexes);

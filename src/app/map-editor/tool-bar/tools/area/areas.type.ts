@@ -35,6 +35,7 @@ export class AreaConfiguration {
   }
 }
 
+
 export enum Mode {
   ON_ENTER,
   ON_LEAVE
