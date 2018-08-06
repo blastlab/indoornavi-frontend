@@ -15,7 +15,7 @@ import {Tool} from '../tool';
 import {ToolName} from '../tools.enum';
 import * as d3 from 'd3';
 import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../../../shared/utils/drawing/drawing.builder';
-import {Line, Point} from '../../../map.type';
+import {Line, LineBag, PathContextCallback, PathContextMenuLabels, Point} from '../../../map.type';
 import {isNumber} from 'util';
 import {TranslateService} from '@ngx-translate/core';
 import {PathDetailsService} from './path-details.service';
@@ -88,14 +88,8 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
       });
     this.callbacks = {
       remove: () => {
-        this.lines.forEach((line: LineBag): void => {
-          line.lineInEditor.remove();
-        });
+        this.clearDrawnPath();
         this.lines = [];
-        this.firstPointSelection = null;
-        this.lastPoint = null;
-        this.tempLine = null;
-        this.currentLineGroup = this.createBuilder().createGroup();
       }
     }
   }
@@ -127,6 +121,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   }
 
   setActive(): void {
+    this.drawLinesFromConfiguration();
     this.pathDetailsService.show();
     this.active = true;
 
@@ -134,7 +129,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
 
     this.layer.on('click', (_, i: number, nodes: d3.selection[]): void => {
       const coordinates: Point = this.zoomService.calculateTransition({x: d3.mouse(nodes[i])[0], y: d3.mouse(nodes[i])[1]});
-      this.handleMouseClick(coordinates);
+      this.draw(coordinates);
     });
 
     this.currentLineGroup = this.createBuilder().createGroup();
@@ -174,9 +169,29 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
     if (!!this.tempLine) {
       this.cleanTempLine();
     }
-    if (this.lines.length === 0) {
-      this.currentLineGroup.removeElements(ElementType.CIRCLE);
+    this.clearDrawnPath();
+    this.currentLineGroup.removeElements(ElementType.CIRCLE);
+  }
+
+  private drawLinesFromConfiguration(): void {
+    if (this.lines.length > 0) {
+      this.lines.forEach((line: LineBag): void => {
+        this.lastPoint = line.lineDto.startPoint;
+        this.drawPoint(this.lastPoint);
+        this.drawPoint(line.lineDto.endPoint);
+        this.drawLine(line.lineDto.endPoint);
+      });
     }
+  }
+
+  private clearDrawnPath(): void {
+    this.lines.forEach((line: LineBag): void => {
+      line.lineInEditor.remove();
+    });
+    this.firstPointSelection = null;
+    this.lastPoint = null;
+    this.tempLine = null;
+    this.currentLineGroup = this.createBuilder().createGroup();
   }
 
   private createBuilder(index?: number): DrawBuilder {
@@ -267,7 +282,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
     this.currentLineGroup.removeLastElement(ElementType.LINE);
   }
 
-  private handleMouseClick(point: Point): void {
+  private draw(point: Point): void {
     if (!this.firstPointSelection) {
       this.firstPointSelection = this.drawPoint(point);
       this.firstPoint = Object.assign({}, point);
@@ -293,15 +308,3 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
 
 }
 
-export interface PathContextCallback {
-  remove: () => void;
-}
-
-export interface LineBag {
-  lineInEditor: d3.selection;
-  lineDto: Line;
-}
-
-export interface PathContextMenuLabels {
-  removeAll: string;
-}

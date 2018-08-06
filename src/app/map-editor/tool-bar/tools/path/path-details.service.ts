@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
-import {LineBag} from './path';
+import {LineBag} from '../../../map.type';
 
 @Injectable()
 export class PathDetailsService {
