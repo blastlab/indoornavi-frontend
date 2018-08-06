@@ -15,8 +15,8 @@ export class Helper {
       if (!!children[i]['attributes']['class'] && children[i]['attributes']['class'].value !== 'dragarea') {
         const childX: number = children[i]['attributes']['x'].value;
         const childY: number = children[i]['attributes']['y'].value;
-        extremeLeftX = ( childX < extremeLeftX) ? childX : extremeLeftX;
-        extremeTopY = ( childY < extremeTopY) ? childY : extremeTopY;
+        extremeLeftX = (childX < extremeLeftX) ? childX : extremeLeftX;
+        extremeTopY = (childY < extremeTopY) ? childY : extremeTopY;
       }
     }
     return {x: extremeLeftX, y: extremeTopY};
@@ -25,4 +25,5 @@ export class Helper {
   static respondToOrigin(event: number, id: number, originMessageEvent: MessageEvent): void {
     originMessageEvent.source.postMessage({type: `${event.toString(10)}-${id.toString(10)}`, objectId: id}, originMessageEvent.origin);
   }
+
 }
