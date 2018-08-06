@@ -143,6 +143,7 @@
   "opacity": "Opacity",
   "open": "Open",
   "path": "Path",
+  "path.details.info": "Calculate intersections",
   "path.hint.first": "Click on the map to start drawing path or right mouse click on already created path to edit or remove",
   "path.length": "Heat on map life span",
   "permissionGroup.create.success": "Permission group has been created.",

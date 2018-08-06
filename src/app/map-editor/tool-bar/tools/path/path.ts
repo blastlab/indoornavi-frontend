@@ -18,6 +18,7 @@ import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../../../shared/util
 import {Line, Point} from '../../../map.type';
 import {isNumber} from 'util';
 import {TranslateService} from '@ngx-translate/core';
+import {PathDetailsService} from './path-details.service';
 
 @Component({
   selector: 'app-path',
@@ -60,7 +61,8 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
               private actionBarService: ActionBarService,
               private hintBarService: HintBarService,
               private scaleService: ScaleService,
-              private translateService: TranslateService
+              private translateService: TranslateService,
+              private pathDetailsService: PathDetailsService
   ) {
   }
 
@@ -107,6 +109,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
     if (this.active) {
       this.toolbarService.emitToolChanged(null);
     } else {
+      this.pathDetailsService.show();
       this.toolbarService.emitToolChanged(this);
     }
   }
@@ -124,6 +127,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   }
 
   setActive(): void {
+    this.pathDetailsService.show();
     this.active = true;
 
     this.container.style('cursor', 'crosshair');
@@ -159,6 +163,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   }
 
   setInactive(): void {
+    this.pathDetailsService.hide();
     this.active = false;
     this.container.style('cursor', 'move');
     this.layer.on('click', null);
