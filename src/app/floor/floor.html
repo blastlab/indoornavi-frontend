@@ -40,10 +40,13 @@
   </p-column>
 </p-dataTable>
 
-<p-dialog header="{{'floor.details'|translate}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
+<p-dialog [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
           [contentStyle]="{ overflow: 'visible' }"
           [width]="800"
           dismissableMask="true" (onHide)="cancel()">
+  <p-header>
+    {{ dialogTitle | translate }}
+  </p-header>
   <form #floorForm="ngForm" novalidate *ngIf="floor">
     <div class="ui-g">
       <div class="ui-g-offset-12 ui-md-offset-4 ui-lg-offset-4 ui-g-12 ui-md-3 ui-lg-3">
