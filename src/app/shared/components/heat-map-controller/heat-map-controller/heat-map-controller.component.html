@@ -22,14 +22,16 @@
   <div class="ui-lg-11">
     <span>{{'heat.gap'|translate}}: {{heatTimeWait}} [s]</span>
     <p-slider
-      (ngModelChange) = "setHeatTimeWait($event)"
+      [disabled]="playingAnimation"
+      [(ngModel)]="heatTimeWait"
       [min]="5" [max]="2000"
     ></p-slider>
   </div>
   <div class="ui-lg-11">
     <span>{{'path.length'|translate}}: {{pathLength}} [s]</span>
     <p-slider
-      (ngModelChange) = "setPathLength($event)"
+      [disabled]="playingAnimation"
+      [(ngModel)]="pathLength"
       [min]="25" [max]="2500"
     ></p-slider>
   </div>

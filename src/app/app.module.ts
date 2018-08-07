@@ -99,7 +99,7 @@ import {ContextMenuService} from './shared/wrappers/editable/editable.service';
 import {PublishedComponent} from './map-viewer/views/publications/publication';
 import {AnalyticsComponent} from './map-viewer/views/analytics/analytics';
 import {MapObjectService} from './shared/utils/drawing/map.object.service';
-import {MinSelectedValidator} from './shared/directive/minselected.directive';
+import {MinSelectedValidatorDirective} from './shared/directive/minselected.directive';
 import {TagVisibilityTogglerComponent} from './shared/components/tag-visibility-toggler/tag-visibility-toggler';
 import {TagVisibilityTogglerService} from './shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
 import {HeatMapControllerComponent} from './shared/components/heat-map-controller/heat-map-controller/heat-map-controller.component';
@@ -157,7 +157,7 @@ export function HttpLoaderFactory(http: Http) {
     AllFieldsFilter,
     AreaDetailsComponent,
     AnalyticsComponent,
-    MinSelectedValidator,
+    MinSelectedValidatorDirective,
     TagVisibilityTogglerComponent,
     HeatMapControllerComponent,
     MousePositionViewerComponent,

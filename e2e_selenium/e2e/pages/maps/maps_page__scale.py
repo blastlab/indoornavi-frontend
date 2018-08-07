@@ -1,19 +1,16 @@
 from pages.base_page import BasePage
-from locators.maps_base_locators import MapsBaseLocators
+from locators.maps_base__scale_locators import MapsBaseScaleLocators
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
 from src.test_conf.test_config import *
-import json
-import time
 
 
-class MapsPage(BasePage, MapsBaseLocators):
+class MapsPageScale(BasePage, MapsBaseScaleLocators):
 
     def __init__(self, driver):
         self.__driver = driver
         self.__actions = ActionChains
-        BasePage.__init__(self, self.__driver)
-        MapsBaseLocators.__init__(self)
+        super(MapsPageScale, self).__init__(self.__driver)
 
     def create_maps_db_env(self):
         return self.create_db_env(self.db_maps_env_xml)
@@ -24,70 +21,22 @@ class MapsPage(BasePage, MapsBaseLocators):
 
     def insert_scale_configuration_to_db(self):
 
-        table = CONFIGURATION_TABLE
-        columns = CONFIGURATION_COLUMNS
+        _table = CONFIGURATION_TABLE
+        _columns = CONFIGURATION_COLUMNS
         values = ('1', TEST_DATE, TEST_SCALE_CONF_DATA, '0', '2', TEST_DATE)
-        return self.insert_to_db(table, columns, values)
+        return self.insert_to_db(_table, _columns, values)
 
     def insert_image_to_db(self):
 
         with open('src/test_data_upload/correct_map.png', "rb") as f:
-            blob = f.read()
-        table = IMAGE_TABLE
-        columns = IMAGE_COLUMNS
+          blob = f.read()
+        _table = IMAGE_TABLE
+        _columns = IMAGE_COLUMNS
         values = ('1', TEST_DATE, TEST_DATE, blob, '840', '1614')
-        return self.insert_to_db(table, columns, values)
+        return self.insert_to_db(_table, _columns, values)
 
     def floor_update_button_click(self):
         return self.click_element(self.floor_update_button)
-
-    def upload_button_click(self):
-        return self.click_element(self.upload_image_btn)
-
-    def warning_cancel_click(self):
-        return self.click_element(self.warning_close_btn)
-
-    def is_choose_image_title_displayed(self):
-        element_text = self.get_text(self.choose_image_title)
-        return True if element_text == self.choose_image_string else False
-
-    def is_choose_image_button_displayed(self):
-        return self.is_element_appeared(self.choose_image_btn)
-
-    def is_upload_area_displayed(self):
-        return True if self.is_element_present(self.upload_area) else False
-
-    def choose_image(self, path, extension='.png'):
-        btn = self.choose_image_btn
-        path = path+extension
-        return self.choose_file(btn, path)
-
-    def is_invalid_size_warning_present(self):
-        return True if self.is_element_present(self.warning_invalid_size) else False
-
-    def is_invalid_size_warning_disappear(self):
-        return True if self.is_element_disappear(self.warning_invalid_size) else False
-
-    def is_invalid_format_warning_present(self, extension):
-        exception_msg = 'Warning that "File with extension: '+extension+' is incorrect" has not been appeared.'
-        return True if self.is_element_present(self.warning_invalid_format, msg=exception_msg) else False
-
-    def is_image_preview_displayed(self):
-
-        path = self.correct_map_path
-        service = self.service_upload(path)
-        filename = service.get_filename()
-        filesize = service.get_file_size()
-
-        self.check_title_is_correct(filename, *self.preview_thumb)
-        self.is_element_present(self.preview_close_btn)
-        self.is_element_present(self.preview_thumb)
-        self.check_title_is_correct(str(filesize), *self.preview_filesize)
-
-    def is_image_uploaded(self):
-        self.is_element_present(self.uploaded_image)
-        self.is_element_present(self.hint_bar)
-        # self.is_element_present(self.hint_bar_scale)
 
     # SCALE
     def is_scale_button_displayed(self):
@@ -95,9 +44,6 @@ class MapsPage(BasePage, MapsBaseLocators):
 
     def scale_button_click(self):
         return self.click_element(self.scale_button)
-
-    def is_hint_bar_prompt_displayed(self):
-        return True if self.is_element_present(self.hint_bar_scale_prompt) else False
 
     def draw_scale_line(self, x_offset, y_offset):
         """
@@ -138,11 +84,11 @@ class MapsPage(BasePage, MapsBaseLocators):
         """
         __x_offset = x_offset
         __y_offset = y_offset
-        scale_line = self.wait_for_element_clickable(element)
-        start_location = self.get_location(scale_line)
+        __scale_line = self.wait_for_element_clickable(element)
+        start_location = self.get_location(__scale_line)
 
-        self.__actions(self.__driver).click_and_hold(scale_line).move_by_offset(__x_offset, __y_offset).perform()
-        action_location = self.get_location(scale_line)
+        self.__actions(self.__driver).click_and_hold(__scale_line).move_by_offset(__x_offset, __y_offset).perform()
+        action_location = self.get_location(__scale_line)
 
         self.__actions(self.__driver).send_keys(Keys.ESCAPE).perform()
         end_scale_line = self.wait_for_element_clickable(element)

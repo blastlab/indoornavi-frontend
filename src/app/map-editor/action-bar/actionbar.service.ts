@@ -22,7 +22,7 @@ export class ActionBarService {
   private loaded = this.configurationLoadedEmitter.asObservable();
   private changed = this.configurationChangedEmitter.asObservable();
   private reset = this.configurationResetEmitter.asObservable();
-  private configurationHash: string | Int32Array;
+  private configurationHashes: (string | Int32Array)[] = [];
 
   private static findLatestConfiguration(configurations: Configuration[]): Configuration {
     return configurations.sort((a, b): number => {
@@ -55,6 +55,10 @@ export class ActionBarService {
     return this.httpService.doPost(ActionBarService.URL + this.configuration.floorId, {});
   }
 
+  clear(): void {
+    this.configurationHashes.length = 0;
+  }
+
   loadConfiguration(floor: Floor): void {
     this.httpService.doGet(ActionBarService.URL + floor.id).subscribe((configurations: Configuration[]): void => {
       if (configurations.length === 0) {
@@ -81,16 +85,16 @@ export class ActionBarService {
         }
         this.latestConfiguration = configurations[configurations.length - 1];
       }
-      this.configurationHash = this.hashConfiguration();
+      this.configurationHashes.push(this.hashConfiguration());
       this.configurationLoadedEmitter.next(this.configuration);
     });
   }
 
   saveDraft(): Promise<void> {
     return new Promise<void>((resolve: Function): void => {
-      if (this.hashConfiguration() !== this.configurationHash) {
+      if (!this.isCurrentConfigurationEqualToPreviousOne()) {
         this.httpService.doPut(ActionBarService.URL, this.configuration).subscribe((): void => {
-          this.configurationHash = this.hashConfiguration();
+          this.configurationHashes.push(this.hashConfiguration());
           resolve();
         });
       }
@@ -101,7 +105,8 @@ export class ActionBarService {
     return new Promise<Configuration>((resolve: Function): void => {
       this.httpService.doDelete(ActionBarService.URL + this.configuration.floorId).subscribe((configuration: Configuration): void => {
         this.configuration = configuration;
-        this.configurationHash = this.hashConfiguration();
+        this.clear();
+        this.configurationHashes.push(this.hashConfiguration());
         this.sendConfigurationResetEvent();
         resolve(configuration);
       });
@@ -180,9 +185,26 @@ export class ActionBarService {
   }
 
   private sendConfigurationChangedEvent(): void {
-    if (this.hashConfiguration() !== this.configurationHash) {
+    this.configurationHashes.push(this.hashConfiguration());
+
+    if (!this.isCurrentConfigurationEqualToPreviousOne()) {
       this.configurationChangedEmitter.next(this.configuration);
     }
+  }
+
+  private isCurrentConfigurationEqualToPreviousOne(): boolean {
+    const current: string | Int32Array = this.hashConfiguration();
+    let previous: string | Int32Array;
+    if (this.configurationHashes.length > 1) {
+      previous = this.configurationHashes[this.configurationHashes.length - 2];
+    }
+    if (!previous) {
+      return true;
+    }
+    if (this.configurationHashes.length > 3) {
+      this.configurationHashes.shift();
+    }
+    return current === previous;
   }
 
   private sendConfigurationResetEvent(): void {

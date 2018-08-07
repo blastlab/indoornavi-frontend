@@ -17,22 +17,12 @@ export class HeatMapControllerComponent {
 
   constructor(private heatMapControllerService: HeatMapControllerService) { }
 
-  setPathLength (event: number): void {
-    this.pathLength = event;
-    // calculate time to [ms] before passing as observable
-    this.heatMapControllerService.setHeatMapWaterfallDisplayTime(this.pathLength * 1000);
-  }
-
-  setHeatTimeWait (event: number): void {
-    this.heatTimeWait = event;
-    // calculate time to [ms] before passing as observable
-    this.heatMapControllerService.setHeatTimeGapChange(this.heatTimeWait * 1000);
-  }
-
   toggleHeatAnimation(): void {
     this.playingAnimation = !this.playingAnimation;
     this.heatMapControllerService.setHeatMapType(parseInt(this.heatMapType, 10));
     this.heatMapControllerService.togglePlayingAnimation(this.playingAnimation);
+    this.heatMapControllerService.setHeatMapWaterfallDisplayTime(this.pathLength * 1000);
+    this.heatMapControllerService.setHeatTimeGapChange(this.heatTimeWait * 1000);
   }
 
 }

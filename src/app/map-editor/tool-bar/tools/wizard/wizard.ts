@@ -284,7 +284,6 @@ export class WizardComponent implements Tool, OnInit, OnDestroy {
       this.socketSubscription = stream.subscribe((message: any) => {
         this.ngZone.run(() => {
           this.options = this.activeStep.load(this.options, message, this.scaleCalculations);
-          console.log(this.options);
           this.isLoading = !this.options.length;
         });
       });

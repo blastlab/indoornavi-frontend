@@ -23,6 +23,7 @@ import {Scale, ScaleCalculations, ScaleDto} from '../scale/scale.type';
 import {ScaleService} from '../../../../shared/services/scale/scale.service';
 import {Helper} from '../../../../shared/utils/helper/helper';
 
+
 @Component({
   selector: 'app-area',
   templateUrl: './areas.html'
@@ -74,11 +75,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
           configurationCopy.data.areas.forEach((area: Area): void => {
             const pointsInPixels: Point[] = [];
             area.points.forEach((point: Point): void => {
-              pointsInPixels.push(
-                Geometry.calculatePointPositionInPixels(
-                  this.scaleCalculations.scaleLengthInPixels, this.scaleCalculations.scaleInCentimeters, point
-                )
-              )
+              pointsInPixels.push(point);
             });
             area.points = pointsInPixels;
             this.areas.push({
@@ -101,39 +98,28 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
     });
 
     this.onDecisionMadeSubscription = this.areaDetailsService.onDecisionMade().subscribe((area: AreaBag): void => {
-      if (!area) { // rejected
-        this.currentAreaGroup.remove();
-        this.currentAreaGroup = null;
-      } else {
-        const index = this.findSelectedAreaBagIndex();
-        if (index === -1) { // accepted new
-          this.areas.push({
-            dto: area.dto,
-            editable: new Editable(this.currentAreaGroup, this.contextMenuService)
-          });
-          this.currentAreaGroup.getGroup().attr('id', 'area-' + this.areas.length);
-        } else { // accepted edit
-          this.areas[index] = area;
+      if (!!this.currentAreaGroup) {
+        if (!area) { // rejected
+          this.currentAreaGroup.remove();
+          this.currentAreaGroup = null;
+        } else {
+          const index = this.findSelectedAreaBagIndex();
+          if (index === -1) { // accepted new
+            this.areas.push({
+              dto: area.dto,
+              editable: new Editable(this.currentAreaGroup, this.contextMenuService)
+            });
+            this.currentAreaGroup.getGroup().attr('id', 'area-' + this.areas.length);
+          } else { // accepted edit
+            this.areas[index] = area;
+          }
+
+          this.actionBarService.setAreas(this.areas.map((areaBag: AreaBag): Area => {
+            return areaBag.dto;
+          }));
         }
-
-        const calculatedAreas = Helper.deepCopy(this.areas.map((areaBag: AreaBag): Area => {
-          return areaBag.dto;
-        }));
-
-        calculatedAreas.forEach((areaDto: Area): void => {
-          const pointsInCentimeters: Point[] = [];
-          areaDto.points.forEach((point: Point): void => {
-            pointsInCentimeters.push(
-              Geometry.calculatePointPositionInCentimeters(
-                this.scaleCalculations.scaleLengthInPixels, this.scaleCalculations.scaleInCentimeters, point
-              )
-            )
-          });
-          areaDto.points = pointsInCentimeters;
-        });
-        this.actionBarService.setAreas(calculatedAreas);
+        this.toggleActivity();
       }
-      this.toggleActivity();
     });
   }
 
@@ -155,49 +141,40 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
   }
 
   setActive(): void {
-    this.active = true;
+    if (!this.active) {
+      this.active = true;
 
-    this.container.style('cursor', 'crosshair');
+      this.container.style('cursor', 'crosshair');
 
-    this.layer.on('click', (_, i: number, nodes: d3.selection[]): void => {
-      const coordinates: Point = this.zoomService.calculateTransition({x: d3.mouse(nodes[i])[0], y: d3.mouse(nodes[i])[1]});
-      this.handleMouseClick(coordinates);
-    });
-
-    this.layer.on('mousemove', (_, i: number, nodes: d3.selection[]): void => {
-      if (!!this.firstPointSelection) {
+      this.layer.on('click', (_, i: number, nodes: d3.selection[]): void => {
         const coordinates: Point = this.zoomService.calculateTransition({x: d3.mouse(nodes[i])[0], y: d3.mouse(nodes[i])[1]});
-        if (!!this.tempLine) {
-          this.moveTempLine(coordinates);
-        } else {
-          this.drawTempLine();
+        this.handleMouseClick(coordinates);
+      });
+      this.layer.on('mousemove', (_, i: number, nodes: d3.selection[]): void => {
+        if (!!this.firstPointSelection) {
+          const coordinates: Point = this.zoomService.calculateTransition({x: d3.mouse(nodes[i])[0], y: d3.mouse(nodes[i])[1]});
+          if (!!this.tempLine) {
+            this.moveTempLine(coordinates);
+          } else {
+            this.drawTempLine();
+          }
         }
-      }
-    });
-
-    let index = 0;
-    this.areas.forEach((areaBag: AreaBag): void => {
-      areaBag.editable = new Editable(this.createBuilder(index).createGroup(), this.contextMenuService);
-      this.applyRightMouseButtonClick(areaBag.editable);
-      areaBag.editable.onSelected().subscribe((selected: Editable) => {
-        this.selectedEditable = selected;
       });
-      this.drawPolygon(areaBag.dto.points, areaBag.editable.groupWrapper);
-      index++;
-    });
+      this.setView();
 
-    this.currentAreaGroup = this.createBuilder().createGroup();
+      this.currentAreaGroup = this.createBuilder().createGroup();
 
-    this.container.on('contextmenu', (): void => {
-      d3.event.preventDefault();
-      this.cleanGroup();
-      this.firstPointSelection = null;
-      this.lastPoint = null;
-      this.tempLine = null;
-      this.areas.forEach((areaBag: AreaBag): void => {
-        this.applyRightMouseButtonClick(areaBag.editable);
+      this.container.on('contextmenu', (): void => {
+        d3.event.preventDefault();
+        this.cleanGroup();
+        this.firstPointSelection = null;
+        this.lastPoint = null;
+        this.tempLine = null;
+        this.areas.forEach((areaBag: AreaBag): void => {
+          this.applyRightMouseButtonClick(areaBag.editable);
+        });
       });
-    });
+    }
   }
 
   setInactive(): void {
@@ -211,11 +188,8 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
     this.draggingElement = null;
     this.selectedEditable = null;
 
-    this.areas.forEach((areaBag: AreaBag): void => {
-      areaBag.editable.off();
-      this.cleanGroup(areaBag.editable.groupWrapper);
-      areaBag.editable.groupWrapper.remove();
-    });
+    this.cleanMapViewFromDrawnAreas();
+    this.areaDetailsService.reject();
 
     if (this.isCurrentAreaGroupNew()) {
       this.currentAreaGroup.remove();
@@ -330,7 +304,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
   private getCurrentAreaPoints(areaBag?: AreaBag): Point[] {
     let points: Point[];
     const circles: d3.selection[] = this.currentAreaGroup.getElements(ElementType.CIRCLE);
-    if (!areaBag || !!circles) {
+    if (!areaBag && !!circles) {
       points = circles.map((point: d3.selection) => {
         return (<Point>{
           x: Math.round(parseFloat(point.attr('cx'))),
@@ -386,14 +360,14 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
 
   private isFirstPoint(): boolean {
     return d3.event.target.nodeName === 'circle' &&
-      this.firstPointSelection.attr('cx') === d3.event.target.cx.baseVal.valueAsString &&
-      this.firstPointSelection.attr('cy') === d3.event.target.cy.baseVal.valueAsString;
+      parseInt(this.firstPointSelection.attr('cx'), 10) === parseInt(d3.event.target.cx.baseVal.valueAsString, 10) &&
+      parseInt(this.firstPointSelection.attr('cy'), 10) === parseInt(d3.event.target.cy.baseVal.valueAsString, 10);
   }
 
   private isLastPoint(): boolean {
     return d3.event.target.nodeName === 'circle' &&
-      this.lastPointSelection.attr('cx') === d3.event.target.cx.baseVal.valueAsString &&
-      this.lastPointSelection.attr('cy') === d3.event.target.cy.baseVal.valueAsString;
+      parseInt(this.lastPointSelection.attr('cx'), 10) === parseInt(d3.event.target.cx.baseVal.valueAsString, 10) &&
+      parseInt(this.lastPointSelection.attr('cy'), 10) === parseInt(d3.event.target.cy.baseVal.valueAsString, 10);
   }
 
   private handleCircleDrag(): void {
@@ -450,10 +424,13 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
   private applyRightMouseButtonClick(editable: Editable): void {
     editable.on({
       edit: () => {
-        this.areaDetailsService.show();
         const index = this.findSelectedAreaBagIndex();
+        this.cleanMapViewFromDrawnAreas();
+        this.setView();
+        this.areaDetailsService.hide();
         const areaBag: AreaBag = this.areas[index];
         this.areaDetailsService.set(areaBag);
+        this.areaDetailsService.show();
         this.container.style('cursor', 'move');
         this.container.on('contextmenu', null);
         this.layer.on('click', null);
@@ -461,14 +438,12 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
         if (this.isCurrentAreaGroupNew()) {
           this.currentAreaGroup.remove();
         }
-        if (this.isSelectedDifferentThanCurrent()) {
-          this.currentAreaGroup.getGroup().selectAll('circle').remove();
-          this.currentAreaGroup.getGroup().on('.drag', null);
-          this.currentAreaGroup = areaBag.editable.groupWrapper;
-          const points: Point[] = this.getCurrentAreaPoints(areaBag);
-          this.applyHover(points);
-          this.applyDrag();
-        }
+        this.currentAreaGroup.getGroup().selectAll('circle').remove();
+        this.currentAreaGroup.getGroup().on('.drag', null);
+        this.currentAreaGroup = areaBag.editable.groupWrapper;
+        const points: Point[] = this.getCurrentAreaPoints(areaBag);
+        this.applyHover(points);
+        this.applyDrag();
       },
       remove: (): void => {
         this.cleanGroup(this.selectedEditable.groupWrapper);
@@ -504,7 +479,24 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
     return !!this.currentAreaGroup && this.currentAreaGroup.getGroup().attr('id') === AreasComponent.NEW_AREA_ID;
   }
 
-  private isSelectedDifferentThanCurrent(): boolean {
-    return this.currentAreaGroup.getGroup().attr('id') !== this.selectedEditable.groupWrapper.getGroup().attr('id');
+  private cleanMapViewFromDrawnAreas(): void {
+    this.areas.forEach((areaBag: AreaBag): void => {
+      areaBag.editable.off();
+      this.cleanGroup(areaBag.editable.groupWrapper);
+      areaBag.editable.groupWrapper.remove();
+    });
+  }
+
+  private setView() {
+    let index = 0;
+    this.areas.forEach((areaBag: AreaBag): void => {
+      areaBag.editable = new Editable(this.createBuilder(index).createGroup(), this.contextMenuService);
+      this.applyRightMouseButtonClick(areaBag.editable);
+      areaBag.editable.onSelected().subscribe((selected: Editable) => {
+        this.selectedEditable = selected;
+      });
+      this.drawPolygon(areaBag.dto.points, areaBag.editable.groupWrapper);
+      index++;
+    });
   }
 }
