@@ -14,6 +14,8 @@ import {BreadcrumbService} from '../../shared/services/breadcrumbs/breadcrumb.se
 export class PermissionGroupComponent implements OnInit, CrudComponent {
   loading: boolean = true;
   permissionGroups: PermissionGroup[] = [];
+  dialogTitle: string;
+
   displayDialog: boolean = false;
   @ViewChild('permissionGroupForm') permissionGroupForm: NgForm;
   public permissionGroup: PermissionGroup;
@@ -36,8 +38,10 @@ export class PermissionGroupComponent implements OnInit, CrudComponent {
   openDialog(permissionGroup?: PermissionGroup) {
     if (!!permissionGroup) {
       this.permissionGroup = {...permissionGroup};
+      this.dialogTitle = 'permissionGroup.details.edit';
     } else {
       this.permissionGroup = new PermissionGroup();
+      this.dialogTitle = 'permissionGroup.details.add';
     }
     this.displayDialog = true;
   }
@@ -68,7 +72,12 @@ export class PermissionGroupComponent implements OnInit, CrudComponent {
   }
 
   remove(index: number) {
+    this.translateService.get('permissionGroup.details.remove').subscribe((value: string) => {
+      this.dialogTitle = value;
+    });
+
     this.confirmationService.confirm({
+      header: this.dialogTitle,
       message: this.confirmBody,
       accept: () => {
         this.permissionGroupService.remove(this.permissionGroups[index].id).first().subscribe(() => {

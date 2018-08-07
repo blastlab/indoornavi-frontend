@@ -29,10 +29,13 @@
   </p-column>
 </p-dataTable>
 
-<p-dialog header="{{'permissionGroup.details'|translate}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
+<p-dialog [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
           [contentStyle]="{ overflow: 'visible' }"
           [width]="800"
           dismissableMask="true" (onHide)="cancel()">
+  <p-header>
+    {{ dialogTitle | translate }}
+  </p-header>
   <form #permissionGroupForm="ngForm" novalidate>
     <div *ngIf="permissionGroup">
       <div class="ui-g">
