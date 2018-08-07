@@ -167,7 +167,7 @@ export function HttpLoaderFactory(http: Http) {
     NotSupportedBrowserComponent,
     DevicePlacerComponent,
     DevicePlacerListComponent,
-    DevicePlacerRowDirective
+    DevicePlacerRowDirective,
     NotSupportedBrowserComponent,
     PathComponent,
     PathDetailsComponent
@@ -256,7 +256,7 @@ export function HttpLoaderFactory(http: Http) {
     ContextMenuService,
     TagVisibilityTogglerService,
     HeatMapControllerService,
-    DevicePlacerService
+    DevicePlacerService,
     HeatMapControllerService,
     PathDetailsService
   ], bootstrap: [AppComponent]

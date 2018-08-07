@@ -96,6 +96,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
       remove: () => {
         this.clearDrawnPath();
         this.lines = [];
+        this.hintBarService.sendHintMessage('path.hint.first');
       }
     }
   }
@@ -133,12 +134,13 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
 
     this.container.style('cursor', 'crosshair');
 
+    this.currentLineGroup = this.createBuilder().createGroup();
+
     this.layer.on('click', (_, i: number, nodes: d3.selection[]): void => {
       const coordinates: Point = this.zoomService.calculateTransition({x: d3.mouse(nodes[i])[0], y: d3.mouse(nodes[i])[1]});
       this.draw(coordinates);
+      this.hintBarService.sendHintMessage('path.hint.second');
     });
-
-    this.currentLineGroup = this.createBuilder().createGroup();
 
     this.layer.on('mousemove', (_, i: number, nodes: d3.selection[]): void => {
       if (!!this.firstPointSelection) {
