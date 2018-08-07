@@ -2,6 +2,7 @@ from pages.base_page import BasePage
 from locators.maps_base_locators import MapsBaseLocators
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
+from src.test_conf.test_config import *
 import json
 import time
 
@@ -16,6 +17,26 @@ class MapsPage(BasePage, MapsBaseLocators):
 
     def create_maps_db_env(self):
         return self.create_db_env(self.db_maps_env_xml)
+
+    def set_image_to_floor(self):
+        params = TEST_UPDATE_FLOOR_IMG_PARAMS
+        return self.service_db().update_table(params)
+
+    def insert_scale_configuration_to_db(self):
+
+        table = CONFIGURATION_TABLE
+        columns = CONFIGURATION_COLUMNS
+        values = ('1', TEST_DATE, TEST_SCALE_CONF_DATA, '0', '2', TEST_DATE)
+        return self.insert_to_db(table, columns, values)
+
+    def insert_image_to_db(self):
+
+        with open('src/test_data_upload/correct_map.png', "rb") as f:
+            blob = f.read()
+        table = IMAGE_TABLE
+        columns = IMAGE_COLUMNS
+        values = ('1', TEST_DATE, TEST_DATE, blob, '840', '1614')
+        return self.insert_to_db(table, columns, values)
 
     def floor_update_button_click(self):
         return self.click_element(self.floor_update_button)
@@ -37,9 +58,9 @@ class MapsPage(BasePage, MapsBaseLocators):
         return True if self.is_element_present(self.upload_area) else False
 
     def choose_image(self, path, extension='.png'):
-        __btn = self.choose_image_btn
-        __path = path+extension
-        return self.choose_file(__btn, __path)
+        btn = self.choose_image_btn
+        path = path+extension
+        return self.choose_file(btn, path)
 
     def is_invalid_size_warning_present(self):
         return True if self.is_element_present(self.warning_invalid_size) else False
@@ -48,20 +69,20 @@ class MapsPage(BasePage, MapsBaseLocators):
         return True if self.is_element_disappear(self.warning_invalid_size) else False
 
     def is_invalid_format_warning_present(self, extension):
-        __exception_msg = 'Warning that "File with extension: '+extension+' is incorrect" has not been appeared.'
-        return True if self.is_element_present(self.warning_invalid_format, msg=__exception_msg) else False
+        exception_msg = 'Warning that "File with extension: '+extension+' is incorrect" has not been appeared.'
+        return True if self.is_element_present(self.warning_invalid_format, msg=exception_msg) else False
 
     def is_image_preview_displayed(self):
 
-        __path = self.correct_map_path
-        __service = self.service_upload(__path)
-        __filename = __service.get_filename()
-        __filesize = __service.get_file_size()
+        path = self.correct_map_path
+        service = self.service_upload(path)
+        filename = service.get_filename()
+        filesize = service.get_file_size()
 
-        self.check_title_is_correct(__filename, *self.preview_thumb)
+        self.check_title_is_correct(filename, *self.preview_thumb)
         self.is_element_present(self.preview_close_btn)
         self.is_element_present(self.preview_thumb)
-        self.check_title_is_correct(str(__filesize), *self.preview_filesize)
+        self.check_title_is_correct(str(filesize), *self.preview_filesize)
 
     def is_image_uploaded(self):
         self.is_element_present(self.uploaded_image)
@@ -117,11 +138,11 @@ class MapsPage(BasePage, MapsBaseLocators):
         """
         __x_offset = x_offset
         __y_offset = y_offset
-        __scale_line = self.wait_for_element_clickable(element)
-        start_location = self.get_location(__scale_line)
+        scale_line = self.wait_for_element_clickable(element)
+        start_location = self.get_location(scale_line)
 
-        self.__actions(self.__driver).click_and_hold(__scale_line).move_by_offset(__x_offset, __y_offset).perform()
-        action_location = self.get_location(__scale_line)
+        self.__actions(self.__driver).click_and_hold(scale_line).move_by_offset(__x_offset, __y_offset).perform()
+        action_location = self.get_location(scale_line)
 
         self.__actions(self.__driver).send_keys(Keys.ESCAPE).perform()
         end_scale_line = self.wait_for_element_clickable(element)

@@ -11,8 +11,10 @@ import {Point} from '../../../../map.type';
 import {AreasComponent} from '../areas';
 import {MessageServiceWrapper} from '../../../../../shared/services/message/message.service';
 import {Tag} from '../../../../../device/device.type';
-import {MultiSelect, SelectItem} from 'primeng/primeng';
+import {NgForm} from '@angular/forms';
+import {SelectItem} from 'primeng/primeng';
 import {Subject} from 'rxjs/Subject';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-area-details',
@@ -21,8 +23,7 @@ import {Subject} from 'rxjs/Subject';
 })
 export class AreaDetailsComponent implements OnInit, OnDestroy {
   @ViewChild('toolDetails') private toolDetails: ToolDetailsComponent;
-  @ViewChild('multiSelectOnEnter') private multiSelectOnEnter: MultiSelect;
-  @ViewChild('multiSelectOnLeave') private multiSelectOnLeave: MultiSelect;
+  @ViewChild('areaDetailsForm') private areaDetailsForm: NgForm;
 
   @Input() floor: Floor;
   area: Area;
@@ -30,6 +31,8 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
   tagsOnEnter: number[] = [];
   tagsOnLeave: number[] = [];
   tagsSelect: SelectItem[] = [];
+  onEnterLabel: string;
+  onLeaveLabel: string;
 
   private areaConfigurationOnEnter: AreaConfiguration = new AreaConfiguration(Mode.ON_ENTER, 0);
   private areaConfigurationOnLeave: AreaConfiguration = new AreaConfiguration(Mode.ON_LEAVE, 0);
@@ -39,7 +42,8 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
 
   constructor(private areaDetailsService: AreaDetailsService,
               private tagService: DeviceService,
-              private messageService: MessageServiceWrapper) {
+              private messageService: MessageServiceWrapper,
+              private translateService: TranslateService) {
   }
 
   ngOnInit(): void {
@@ -78,6 +82,7 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
         this.toolDetails.hide();
       }
     });
+    this.setTranslations();
   }
 
   ngOnDestroy() {
@@ -167,10 +172,24 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
   }
 
   private cleanUp(): void {
+    Object.keys(this.areaDetailsForm.controls).forEach((fieldName: string) => {
+      if (fieldName === 'on_enter' || fieldName === 'on_leave') {
+        this.areaDetailsForm.controls[fieldName].reset();
+      }
+    });
     this.areaConfigurationOnEnter = new AreaConfiguration(Mode.ON_ENTER, 0);
     this.areaConfigurationOnLeave = new AreaConfiguration(Mode.ON_LEAVE, 0);
     this.area = new Area(this.floor.id);
     this.editable = null;
   }
 
+  private setTranslations() {
+    this.translateService.setDefaultLang('en');
+    this.translateService.get('area.on_enter.select').subscribe((value: string) => {
+      this.onEnterLabel = value;
+    });
+    this.translateService.get('area.on_leave.select').subscribe((value: string) => {
+      this.onLeaveLabel = value;
+    });
+  }
 }

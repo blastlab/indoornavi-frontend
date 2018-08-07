@@ -10,6 +10,7 @@ class MapsBaseLocators(object):
         self.large_map_path = 'src/test_data_upload/large_size'
         self.incorrect_image = 'src/test_data_upload/image_formats/incorrect_map'
         self.db_maps_env_xml = 'src/test-complexes.xml'
+        self.db_scale_env_xml = 'src/test-scale.xml'
         # LOCATORS
         self.choose_image_string = 'Choose an image from disk or drag&drop it below. It will be used as a background for the floor.'
         self.choose_image_title = (By.CSS_SELECTOR, "div app-map-uploader h4")

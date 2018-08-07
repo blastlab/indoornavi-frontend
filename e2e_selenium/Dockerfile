@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y \
 	libgtk-3-0 \
     	default-jre \
 	libappindicator3-1
-	
+
 
 # install chromedriver and google-chrome
 

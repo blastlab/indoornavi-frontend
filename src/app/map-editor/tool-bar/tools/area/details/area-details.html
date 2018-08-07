@@ -37,8 +37,12 @@
             </div>
           </div>
           <div class="ui-g-2 inner">
-            <p-multiSelect defaultLabel="{{'area.on_enter.select'|translate}}" name="on_enter" id="on_enter" [options]="tagsSelect" #multiSelectOnEnter
-                           [(ngModel)]="tagsOnEnter" [style]="{ width: '200px' }"></p-multiSelect>
+            <!-- this ngIf is a dirty hack to https://github.com/primefaces/primeng/issues/725 -->
+            <p-multiSelect *ngIf="onEnterLabel" appMinSelected="1"
+                           [defaultLabel]="onEnterLabel" name="on_enter" id="on_enter"
+                           [options]="tagsSelect" #multiSelectOnEnter
+                           [(ngModel)]="tagsOnEnter" [style]="{ width: '200px' }">
+            </p-multiSelect>
           </div>
         </div>
       </div>
@@ -52,12 +56,15 @@
             </span>
           </div>
           <div class="ui-g-2 inner">
-            <p-multiSelect defaultLabel="{{'area.on_leave.select'|translate}}" name="on_leave" id="on_leave" [options]="tagsSelect" #multiSelectOnLeave
-                           [(ngModel)]="tagsOnLeave" [style]="{ width: '200px' }"></p-multiSelect>
+            <p-multiSelect *ngIf="onLeaveLabel" appMinSelected="1"
+                           [defaultLabel]="onLeaveLabel" name="on_leave" id="on_leave"
+                           [options]="tagsSelect" #multiSelectOnLeave
+                           [(ngModel)]="tagsOnLeave" [style]="{ width: '200px' }">
+            </p-multiSelect>
           </div>
         </div>
       </div>
-      <div class="ui-g-1">
+      <div class="ui-g-1 ui-g-offset-1">
         <div class="ui-toolbar-group-right">
           <button id="reject-decision"
                   pButton class="ui-button-danger"

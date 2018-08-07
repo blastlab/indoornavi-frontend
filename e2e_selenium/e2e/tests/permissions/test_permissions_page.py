@@ -26,6 +26,9 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
         self.create_permissions_db_env()
         self.webdriver.refresh()
 
+    def tearDown(self):
+        TestDriver.tearDown(self)
+
     @classmethod
     def tearDownClass(cls):
         cls.webdriver.quit()
@@ -45,6 +48,7 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
         self.assertEqual(self.webdriver.current_url[-16:], 'permissionGroups', 'Page url has not been correct.')
         self.assertTrue(self.is_groups_list_displayed(), 'Permission Groups has not been displayed.')
         self.assertTrue(self.is_permissions_title_correct(), 'Page title has not been correct.')
+        self.test_failed = False
 
     def test_02_multi_select_in_add_permission_group(self):
 
@@ -97,6 +101,8 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
         self.assertTrue(True if permissions_result == permissions[0]
                         or permissions[1] else False)
 
+        self.test_failed = False
+
     def test_03_test_searching_in_add_permission_group(self):
 
         """Test that searching works correctly in add permission group"""
@@ -126,6 +132,8 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
         self.close_modal_click()
         self.assertTrue(self.is_modal_window_disappeared(), 'Element has not been disappeared')
 
+        self.test_failed = False
+
     def test_04_test_add_permission_group_correctly_without_assigned_permission(self):
 
         """Test that permission group will be added without any chosen permission"""
@@ -146,6 +154,8 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
         self.assertTrue(self.is_toast_disappear(self.added_toast))
 
         self.assertTrue(self.is_new_permission_present())
+
+        self.test_failed = False
 
     def test_05_test_add_permission_group_correctly_with_all_permissions(self):
 
@@ -172,6 +182,8 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
 
         self.assertEqual(self.all_permissions, self.get_new_permission_text())
 
+        self.test_failed = False
+
     def test_06_test_adding_permission_group_incorrectly_with_empty_input_name(self):
 
         """Test that add permission group correctly will be added with all permissions"""
@@ -183,6 +195,8 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
         self.assertTrue(self.is_modal_window_displayed(), 'Modal window has not been displayed.')
         self.save_permission_button_click()
         self.assertEqual(self.error_message_name(), 'Name is required.')
+
+        self.test_failed = False
 
     def test_07_test_cancel_adding_permission_group_by_hash_button_click(self):
 
@@ -196,6 +210,8 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
         self.close_modal_click()
         self.assertTrue(self.is_modal_window_disappeared(), 'Modal window has not been disappeared.')
 
+        self.test_failed = False
+
     def test_08_test_cancel_adding_permission_group_by_cancel_button_click(self):
 
         """Test that add permission group modal window will be closed by cancel button click"""
@@ -207,6 +223,8 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
         self.assertTrue(self.is_modal_window_displayed(), 'Modal window has not been displayed.')
         self.cancel_modal_click()
         self.assertTrue(self.is_modal_window_disappeared(), 'Modal window has not been disappeared.')
+
+        self.test_failed = False
 
     def test_09_test_edit_permission_group_correctly_with_new_permissions(self):
 
@@ -231,6 +249,8 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
         self.assertTrue(self.is_toast_present(self.edited_toast))
         self.assertTrue(True if self.get_new_permission_text() == permissions[0]
                         or permissions[1] else False)
+
+        self.test_failed = False
 
     def test_10_test_edit_permission_group_correctly_with_new_name_and_permissions(self):
 
@@ -259,6 +279,8 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
 
         self.assertTrue(self.is_edited_permission_present())
 
+        self.test_failed = False
+
     def test_11_test_cancel_edit_permission_group_by_hash_button_click(self):
 
         """Test that cancel edit permission group by hash button click"""
@@ -270,6 +292,8 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
         self.assertTrue(self.is_modal_window_displayed(), 'Modal window has not been displayed.')
         self.close_modal_click()
         self.assertTrue(self.is_modal_window_disappeared(), 'Modal window has not been disappeared.')
+
+        self.test_failed = False
 
     def test_12_test_cancel_edit_permission_group_by_cancel_button_click(self):
 
@@ -283,6 +307,8 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
         self.cancel_modal_click()
         self.assertTrue(self.is_modal_window_disappeared(), 'Modal window has not been disappeared.')
 
+        self.test_failed = False
+
     def test_13_edit_permission_with_empty_input(self):
 
         """Test that warning will appear after save edit permission group with empty input"""
@@ -293,6 +319,8 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
         self.edit_permission_button_click()
         self.clear_text_input(self.modal_new_name)
         self.assertEqual(self.error_message_name(), 'Name is required.')
+
+        self.test_failed = False
 
     # # TODO
     # def _test_14_edit_permission_with_space_inserted_into_name_input(self):
@@ -316,6 +344,8 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
         self.assertTrue(self.is_removed_permission_disappeared())
         self.assertEqual(self.if_exist_in_db(self.select_permission_group), 'Guest')
 
+        self.test_failed = False
+
     def test_16_cancel_delete_permission_group_with_no_button_click(self):
 
         """Test that cancel delete permission group modal window will be closed by cancel button click"""
@@ -329,6 +359,8 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
         self.no_button_click()
         self.assertTrue(self.is_confirm_window_disappeared(), 'Modal window has not been disappeared.')
 
+        self.test_failed = False
+
     def test_17_cancel_delete_permission_group_with_hash_button_click(self):
 
         """Test that cancel delete permission group modal window will be closed by hash button click"""
@@ -341,3 +373,5 @@ class TestPermissionsPage(unittest.TestCase, PermissionsPage):
         self.assertTrue(self.is_confirm_window_displayed(), 'Modal window has not been displayed.')
         self.close_confirm_modal_click()
         self.assertTrue(self.is_confirm_window_disappeared(), 'Modal window has not been disappeared.')
+
+        self.test_failed = False

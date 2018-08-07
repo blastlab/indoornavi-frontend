@@ -8,7 +8,7 @@ export class TagOnMap {
 
   protected svgGroupWrapper: SvgGroupWrapper;
 
-  private tagUnicode = '\uf183';
+  private tagUnicode = '\uf183'; // fa-male
   private transitionEnded: boolean = true;
   private shortId: number;
 
