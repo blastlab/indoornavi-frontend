@@ -21,6 +21,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   public verified: Device[] = [];
   public notVerified: Device[] = [];
   public deviceType: string;
+  public dialogTitle: string;
   public createPermission: string;
   public deletePermission: string;
   public editPermission: string;
@@ -126,14 +127,21 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   openDialog(device?: Device): void {
     if (!!device) {
       this.device = {...device};
+      this.dialogTitle = `device.details.${this.deviceType}.edit`;
     } else {
       this.device = new Device(null, null, false);
+      this.dialogTitle = `device.details.${this.deviceType}.add`;
     }
     this.displayDialog = true;
   }
 
   remove(device: Device): void {
+    this.translate.get(`device.details.${this.deviceType}.remove`).subscribe((value: string) => {
+      this.dialogTitle = value;
+    });
+
     this.confirmationService.confirm({
+      header: this.dialogTitle,
       message: this.confirmBody,
       accept: () => {
         this.deviceService.remove(device.id).subscribe(() => {

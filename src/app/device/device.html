@@ -97,10 +97,13 @@
   </ng-template>
 </p-pickList>
 
-<p-dialog header="{{'device.details'|translate}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
+<p-dialog [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
           [contentStyle]="{ overflow: 'visible' }"
           [width]="800"
           dismissableMask="true" (onHide)="cancel()">
+  <p-header>
+    {{ dialogTitle | translate }}
+  </p-header>
   <form #deviceForm="ngForm" novalidate>
     <div *ngIf="device">
       <div class="ui-g">
