@@ -15,6 +15,7 @@ import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.servi
 export class ComplexComponent implements OnInit, CrudComponent {
   complex: Complex;
   complexes: Complex[] = [];
+  dialogTitle: string;
 
   loading: boolean = true;
   displayDialog: boolean = false;
@@ -49,8 +50,10 @@ export class ComplexComponent implements OnInit, CrudComponent {
   openDialog(complex?: Complex): void {
     if (!!complex) {
       this.complex = {...complex};
+      this.dialogTitle = 'complex.details.edit';
     } else {
       this.complex = new Complex('', []);
+      this.dialogTitle = 'complex.details.add';
     }
     this.displayDialog = true;
   }
@@ -85,7 +88,12 @@ export class ComplexComponent implements OnInit, CrudComponent {
   }
 
   remove(index: number): void {
+    this.translate.get('complex.details.remove').subscribe((value: string) => {
+      this.dialogTitle = value;
+    });
+
     this.confirmationService.confirm({
+      header: this.dialogTitle,
       message: this.confirmBody,
       accept: (): void => {
         const complexId: number = this.complexes[index].id;
