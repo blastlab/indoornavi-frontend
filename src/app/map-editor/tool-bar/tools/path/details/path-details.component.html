@@ -1,0 +1,19 @@
+<app-tool-details #toolDetails>
+    <div class="ui-g">
+      <h4 class="ui-g-8">{{'path.details.info'|translate}}</h4>
+      <div class="ui-g-4">
+        <button id="reject-decision"
+                pButton class="ui-button-danger"
+                (click)="reject()"
+                icon="fa-close"
+                pTooltip="{{'cancel'|translate}}">
+        </button>
+        <button id="confirm-decision"
+                pButton class="ui-button-success"
+                (click)="confirm()"
+                pTooltip="{{'ok'|translate}}"
+                icon="fa-check">
+        </button>
+      </div>
+    </div>
+</app-tool-details>
