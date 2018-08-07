@@ -19,6 +19,7 @@ import {Line, LineBag, PathContextCallback, PathContextMenuLabels, Point} from '
 import {isNumber} from 'util';
 import {TranslateService} from '@ngx-translate/core';
 import {PathDetailsService} from './path-details.service';
+import {Configuration} from '../../../action-bar/actionbar.type';
 
 @Component({
   selector: 'app-path',
@@ -67,38 +68,12 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg): void => {
-      this.container = mapSvg.container;
-      this.layer = mapSvg.layer;
-    });
-    this.scaleService.scaleChanged.subscribe((scale: ScaleDto) => {
-      this.scale = new Scale(scale);
-      if (this.scale.isReady()) {
-        this.scaleCalculations = {
-          scaleLengthInPixels: Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
-          scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
-        };
-      }
-    });
-    this.pathDetailsService.onDecisionMade().takeUntil(this.subscriptionDestroyer).subscribe((value): void => {
-      if (value) {
-        this.calculateIntersection();
-      }
-      this.toggleActivity();
-    });
-    this.translateService.setDefaultLang('en');
-    this.translateService
-      .get('remove.all.lines')
-      .subscribe((translatedValue) => {
-        this.labels.removeAll = translatedValue;
-      });
-    this.callbacks = {
-      remove: () => {
-        this.clearDrawnPath();
-        this.lines = [];
-        this.hintBarService.sendHintMessage('path.hint.first');
-      }
-    }
+    this.listenOnMapLoad();
+    this.listenOnScaleChange();
+    this.listenOnDecisionMade();
+    this.fetchPathFromConfiguration();
+    this.setTranslationsDependencies();
+    this.setContextMenuCallbacks();
   }
 
   ngOnDestroy() {
@@ -128,18 +103,17 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   }
 
   setActive(): void {
+    this.currentLineGroup = this.createBuilder().createGroup();
     this.drawLinesFromConfiguration();
     this.pathDetailsService.show();
+
     this.active = true;
 
     this.container.style('cursor', 'crosshair');
 
-    this.currentLineGroup = this.createBuilder().createGroup();
-
     this.layer.on('click', (_, i: number, nodes: d3.selection[]): void => {
       const coordinates: Point = this.zoomService.calculateTransition({x: d3.mouse(nodes[i])[0], y: d3.mouse(nodes[i])[1]});
       this.draw(coordinates);
-      this.hintBarService.sendHintMessage('path.hint.second');
     });
 
     this.layer.on('mousemove', (_, i: number, nodes: d3.selection[]): void => {
@@ -179,25 +153,94 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
     }
     this.clearDrawnPath();
     this.currentLineGroup.removeElements(ElementType.CIRCLE);
+    this.sendPathDtoToConfiguration();
+  }
+
+  private listenOnMapLoad(): void {
+    this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg): void => {
+      this.container = mapSvg.container;
+      this.layer = mapSvg.layer;
+    });
+  }
+
+  private listenOnScaleChange(): void {
+    this.scaleService.scaleChanged.subscribe((scale: ScaleDto) => {
+      this.scale = new Scale(scale);
+      if (this.scale.isReady()) {
+        this.scaleCalculations = {
+          scaleLengthInPixels: Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
+          scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
+        };
+      }
+    });
+  }
+
+  private listenOnDecisionMade(): void {
+    this.pathDetailsService.onDecisionMade().takeUntil(this.subscriptionDestroyer).subscribe((value): void => {
+      if (value) {
+        // TODO: in next task develop intersection algorithm
+        // this.calculateIntersection();
+      }
+      this.toggleActivity();
+      this.sendPathDtoToConfiguration();
+    });
+  }
+
+  private fetchPathFromConfiguration(): void {
+    this.actionBarService.configurationLoaded().first().subscribe((configuration: Configuration): void => {
+       configuration.data.paths.forEach((line: Line) => {
+          this.lines.push({
+            lineDto: line,
+            lineInEditor: null
+          });
+        });
+    });
+  }
+
+  private setTranslationsDependencies(): void {
+    this.translateService.setDefaultLang('en');
+    this.translateService
+      .get('remove.all.lines')
+      .subscribe((translatedValue) => {
+        this.labels.removeAll = translatedValue;
+      });
+  }
+
+  private setContextMenuCallbacks(): void {
+    this.callbacks = {
+      remove: () => {
+        this.clearDrawnPath();
+        this.lines = [];
+        this.actionBarService.clearPath();
+        this.sendPathDtoToConfiguration();
+        this.hintBarService.sendHintMessage('path.hint.first');
+      }
+    }
   }
 
   private calculateIntersection(): void {
     this.lines.forEach((lineBag: LineBag): void => {
+      // TODO: intersection algorithm should to be invoked there but algorithm alone should be static method in geometry service
       console.log(lineBag.lineDto.startPoint, lineBag.lineDto.endPoint);
-      console.log(lineBag.lineInEditor);
     });
   }
 
   private drawLinesFromConfiguration(): void {
-    if (this.lines.length > 0) {
-      this.lines.forEach((line: LineBag): void => {
-        this.lastPoint = line.lineDto.startPoint;
-        this.drawPoint(this.lastPoint);
-        this.drawPoint(line.lineDto.endPoint);
-        this.drawLine(line.lineDto.endPoint);
-        line.lineInEditor = this.currentLineGroup;
-      });
-    }
+    this.lines.forEach((line: LineBag): void => {
+      this.lastPoint = line.lineDto.startPoint;
+      this.drawPoint(this.lastPoint);
+      this.drawPoint(line.lineDto.endPoint);
+      this.drawLine(line.lineDto.endPoint);
+      line.lineInEditor = this.currentLineGroup;
+    });
+  }
+
+  private sendPathDtoToConfiguration(): void {
+    const pathDto: Line[] = [];
+    this.lines.forEach((line: LineBag): void => {
+      pathDto.push(line.lineDto);
+    });
+    this.actionBarService.addPath(pathDto);
   }
 
   private clearDrawnPath(): void {
@@ -292,6 +335,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
 
   private draw(point: Point): void {
     if (!this.firstPointSelection) {
+      this.hintBarService.sendHintMessage('path.hint.second');
       this.firstPointSelection = this.drawPoint(point);
       this.firstPoint = Object.assign({}, point);
     } else {
@@ -300,11 +344,14 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
         point = this.handleShiftKeyEvent(point);
       }
       if (PathComponent.isSamePoint(point, this.firstPoint)) {
+        this.hintBarService.sendHintMessage('path.hint.first');
         this.firstPointSelection.remove();
       }
       if (PathComponent.isSamePoint(point, this.lastPoint)) {
+        this.hintBarService.sendHintMessage('path.hint.first');
         this.firstPointSelection = null;
         this.lastPoint = null;
+        this.sendPathDtoToConfiguration();
         return;
       }
       this.cleanTempLine();
