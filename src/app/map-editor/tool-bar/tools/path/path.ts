@@ -20,6 +20,7 @@ import {isNumber} from 'util';
 import {TranslateService} from '@ngx-translate/core';
 import {PathDetailsService} from './path-details.service';
 import {Configuration} from '../../../action-bar/actionbar.type';
+import {SinkBag} from '../device-placer/device-placer.types';
 
 @Component({
   selector: 'app-path',
@@ -74,6 +75,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
     this.fetchPathFromConfiguration();
     this.setTranslationsDependencies();
     this.setContextMenuCallbacks();
+    this.listenOnConfigurationReset();
   }
 
   ngOnDestroy() {
@@ -184,6 +186,19 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
       this.toggleActivity();
       this.sendPathDtoToConfiguration();
     });
+  }
+
+  private listenOnConfigurationReset(): void {
+      this.actionBarService.configurationReset().takeUntil(this.subscriptionDestroyer).subscribe((configuration: Configuration) => {
+        this.toolbarService.emitToolChanged(null);
+        this.lines = [];
+        configuration.data.paths.forEach((line: Line) => {
+          this.lines.push({
+            lineDto: line,
+            lineInEditor: null
+          });
+        });
+      });
   }
 
   private fetchPathFromConfiguration(): void {
