@@ -65,7 +65,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     this.captureScaleChanges();
     this.fetchConfiguredDevices();
     this.listenOnDeviceActivated();
-    this.listenToContextMenu();
+    this.listenOnContextMenuEvent();
     this.listenOnDeviceDragAndDrop();
     this.listenOnPositionChanged();
     this.setTranslations();
@@ -200,7 +200,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     });
   }
 
-  private listenToContextMenu(): void {
+  private listenOnContextMenuEvent(): void {
     this.devicePlacerService.onSelected.takeUntil(this.subscriptionDestroyer).subscribe((device: DeviceInEditor): void => {
       this.setActiveDevice(device);
     });
