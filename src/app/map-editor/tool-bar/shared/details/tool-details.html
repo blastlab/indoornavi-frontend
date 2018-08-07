@@ -1,7 +1,18 @@
-<div class="ui-dialog ui-widget ui-widget-content" [@toggleDetails]="state" (onHide)="emitOnHide()">
+<div #parentContainer class="ui-dialog ui-widget ui-widget-content" [@toggleDetails]="state" (onHide)="emitOnHide()">
   <div class="ui-dialog-content">
-    <ng-content>
-      <!--contents placed between app-tool-details goes here-->
-    </ng-content>
+    <div class="ui-g">
+      <div #minimizeContainer class="ui-g-12 minimize-container"
+           [@toggleMinimizedTop]="{ value: minimizeContainerState, params: { minimizeContainerShift: minimizeContainerShift } }"
+           (@toggleMinimizedTop.done)="minimizeContainerAnimationEnded($event)">
+        <button class="minimize-button" pButton icon="fa-window-minimize" type="button" (click)="toggleMinimized()"></button>
+      </div>
+      <div #contentContainer class="ui-g-12 content-container"
+           [@toggleMinimizedBottom]="{ value: contentContainerState, params: { contentContainerShift: contentContainerShift } }"
+           (@toggleMinimizedBottom.done)="contentContainerAnimationEnded($event)">
+        <ng-content>
+          <!--contents placed between app-tool-details goes here-->
+        </ng-content>
+      </div>
+    </div>
   </div>
 </div>

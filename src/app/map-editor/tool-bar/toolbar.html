@@ -1,10 +1,12 @@
 <p-toolbar id="map-toolbar">
   <div class="ui-toolbar-group-left">
-    <app-scale #toolWizardDependent ></app-scale>
+    <app-scale #tool ></app-scale>
     <!--<app-wizard #toolScaleDependent #toolWizardDependent [floor]="floor"></app-wizard>-->
     <app-area #toolScaleDependent #toolWizardDependent [floor]="floor"></app-area>
     <app-devices #toolScaleDependent #toolWizardDependent></app-devices>
     <app-path #toolScaleDependent #toolWizardDependent></app-path>
+    <app-area #toolScaleDependent #tool [floor]="floor"></app-area>
+    <app-device-placer #toolScaleDependent #tool></app-device-placer>
   </div>
   <div class="ui-toolbar-group-right">
     <app-actionbar [floor]="floor"></app-actionbar>

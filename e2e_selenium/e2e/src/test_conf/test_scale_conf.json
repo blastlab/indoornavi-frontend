@@ -1,0 +1,16 @@
+{
+  "sinks": [],
+  "scale": {
+    "start": {
+      "x": 807,
+      "y": 419
+    },
+    "stop": {
+      "x": 1207,
+      "y": 419
+    },
+    "realDistance": 725,
+    "measure": "CENTIMETERS"
+  },
+  "areas": []
+}

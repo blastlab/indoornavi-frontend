@@ -23,6 +23,7 @@ import {Scale, ScaleCalculations, ScaleDto} from '../scale/scale.type';
 import {ScaleService} from '../../../../shared/services/scale/scale.service';
 import {Helper} from '../../../../shared/utils/helper/helper';
 
+
 @Component({
   selector: 'app-area',
   templateUrl: './areas.html'

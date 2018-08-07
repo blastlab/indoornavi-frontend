@@ -1,4 +1,5 @@
 import {Line, Point} from '../../../map-editor/map.type';
+import {Box} from '../drawing/drawing.types';
 
 export class Geometry {
 
@@ -64,6 +65,13 @@ export class Geometry {
       x: Geometry.calculateDistanceInCentimeters(lengthInPixels, lengthInCentimeters, point.x),
       y: Geometry.calculateDistanceInCentimeters(lengthInPixels, lengthInCentimeters, point.y)
     };
+  }
+
+  static areCoordinatesInGivenRange(coordinates: Point, range: Box): boolean {
+    if (!!coordinates) {
+      return !(coordinates.x < range.x || coordinates.y < range.y || coordinates.x > range.width || coordinates.y > range.height);
+    }
+    return false;
   }
 
 }
