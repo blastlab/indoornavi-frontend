@@ -113,8 +113,8 @@ import {NotSupportedBrowserComponent} from './not-supported-browser/not-supporte
 import {LongIdValidator} from './shared/directive/long-id.directive';
 import {ShortIdValidator} from './shared/directive/short-id.directive';
 import {PathComponent} from './map-editor/tool-bar/tools/path/path';
-import {PathDetailsComponent} from './map-editor/tool-bar/tools/path/details/path-details.component';
 import {PathDetailsService} from './map-editor/tool-bar/tools/path/path-details.service';
+import {PathDetailsComponent} from './map-editor/tool-bar/tools/path/details/path-details.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
