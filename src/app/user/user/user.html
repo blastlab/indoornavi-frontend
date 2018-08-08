@@ -35,10 +35,13 @@
   </p-column>
 </p-dataTable>
 
-<p-dialog header="{{'user.details'|translate}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
+<p-dialog [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
           [contentStyle]="{ overflow: 'visible' }"
           [width]="800"
           dismissableMask="true" (onHide)="cancel()">
+  <p-header>
+    {{dialogTitle|translate}}
+  </p-header>
   <div *ngIf="user">
     <form #userForm="ngForm" novalidate>
       <div class="ui-g">
