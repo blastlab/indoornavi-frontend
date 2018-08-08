@@ -27,6 +27,8 @@ import {Configuration} from '../../../action-bar/actionbar.type';
 })
 export class PathComponent implements Tool, OnInit, OnDestroy {
   private static CIRCLE_R: number = 5;
+  private static HOVER_COLOR: string = '#FF0000';
+  private static STANDARD_COLOR: string = '#000000';
 
   @Input() floor: Floor;
 
@@ -44,6 +46,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   private tempLine: d3.selection;
   private firstPoint: Point;
   private lastPoint: Point;
+  private attractionPoint: Point;
   private callbacks: PathContextCallback;
   private labels: PathContextMenuLabels = {
     removeAll: '',
@@ -260,10 +263,15 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
 
     pointSelection
       .on('mouseover', (): void => {
-        pointSelection.style('fill', 'red');
+        this.attractionPoint = {
+          x: Math.floor(pointSelection.attr('cx')),
+          y: Math.floor(pointSelection.attr('cy'))
+        };
+        pointSelection.style('fill', PathComponent.HOVER_COLOR);
       })
       .on('mouseout', (): void => {
-        pointSelection.style('fill', 'black');
+        this.attractionPoint = null;
+        pointSelection.style('fill', PathComponent.STANDARD_COLOR);
       });
     return pointSelection;
   }
@@ -326,6 +334,9 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   }
 
   private draw(point: Point): void {
+    if (!!this.attractionPoint) {
+      point = this.attractionPoint;
+    }
     if (!this.firstPointSelection) {
       this.hintBarService.sendHintMessage('path.hint.second');
       this.firstPointSelection = this.drawPoint(point);
@@ -336,6 +347,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
         point = this.handleShiftKeyEvent(point);
       }
       if (PathComponent.isSamePoint(point, this.firstPoint)) {
+        this.attractionPoint = null;
         this.hintBarService.sendHintMessage('path.hint.first');
         this.firstPointSelection.remove();
       }
