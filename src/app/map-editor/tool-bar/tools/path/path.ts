@@ -380,9 +380,9 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
           //     startPoint: lineNested.lineDto.startPoint,
           //     endPoint: intersections.
           //   }
-          });
+          // });
         });
-        this.drawLinesFromConfiguration();
+        // this.drawLinesFromConfiguration();
       } else {
         this.cleanTempLine();
         this.drawPoint(point);
