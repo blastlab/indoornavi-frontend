@@ -52,11 +52,6 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
     removeAll: '',
   };
 
-  static isSamePoint(firstPoint: Point, lastPoint: Point): boolean {
-    return Math.floor(firstPoint.x) === Math.floor(lastPoint.x) && Math.floor(firstPoint.y) === Math.floor(lastPoint.y);
-  }
-
-
   constructor(private toolbarService: ToolbarService,
               private mapLoaderInformer: MapLoaderInformerService,
               private zoomService: ZoomService,
@@ -346,21 +341,18 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
       if (event.shiftKey && this.getCurrentLinePoints().length > 0) {
         point = this.handleShiftKeyEvent(point);
       }
-      if (PathComponent.isSamePoint(point, this.firstPoint)) {
+      if (Geometry.isSamePoint(point, this.firstPoint)) {
         this.attractionPoint = null;
         this.hintBarService.sendHintMessage('path.hint.first');
         this.firstPointSelection.remove();
       }
-      if (PathComponent.isSamePoint(point, this.lastPoint)) {
+      if (Geometry.isSamePoint(point, this.lastPoint)) {
         this.hintBarService.sendHintMessage('path.hint.first');
         this.firstPointSelection = null;
         this.lastPoint = null;
         this.sendPathDtoToConfiguration();
         return;
       }
-      this.cleanTempLine();
-      this.drawPoint(point);
-      this.drawLine(point);
       const line: Line = {
         startPoint: this.lastPoint,
         endPoint: point
@@ -369,6 +361,15 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
         lineInEditor: this.currentLineGroup,
         lineDto: line
       };
+      this.lines.forEach((linePath: LineBag): void => {
+        const intersectionPoint: Point = Geometry.intersection(linePath.lineDto, line);
+        if (!!intersectionPoint && !Geometry.isSamePoint(intersectionPoint, this.lastPoint)) {
+          console.log(intersectionPoint);
+        }
+      });
+      this.cleanTempLine();
+      this.drawPoint(point);
+      this.drawLine(point);
       this.lines.push(lineBag);
     }
     this.lastPoint = Object.assign({}, point);
