@@ -18,7 +18,6 @@ import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../../../shared/util
 import {Line, LineBag, PathContextCallback, PathContextMenuLabels, Point} from '../../../map.type';
 import {isNumber} from 'util';
 import {TranslateService} from '@ngx-translate/core';
-import {PathDetailsService} from './path-details.service';
 import {Configuration} from '../../../action-bar/actionbar.type';
 
 @Component({
@@ -62,15 +61,13 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
               private actionBarService: ActionBarService,
               private hintBarService: HintBarService,
               private scaleService: ScaleService,
-              private translateService: TranslateService,
-              private pathDetailsService: PathDetailsService
+              private translateService: TranslateService
   ) {
   }
 
   ngOnInit() {
     this.listenOnMapLoad();
     this.listenOnScaleChange();
-    this.listenOnDecisionMade();
     this.fetchPathFromConfiguration();
     this.setTranslationsDependencies();
     this.setContextMenuCallbacks();
@@ -86,7 +83,6 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
     if (this.active) {
       this.toolbarService.emitToolChanged(null);
     } else {
-      this.pathDetailsService.show();
       this.toolbarService.emitToolChanged(this);
     }
   }
@@ -106,7 +102,6 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   setActive(): void {
     this.currentLineGroup = this.createBuilder().createGroup();
     this.drawLinesFromConfiguration();
-    this.pathDetailsService.show();
 
     this.active = true;
 
@@ -141,7 +136,6 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   }
 
   setInactive(): void {
-    this.pathDetailsService.hide();
     this.active = false;
     this.container.style('cursor', 'move');
     this.layer.on('click', null);
@@ -173,17 +167,6 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
           scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
         };
       }
-    });
-  }
-
-  private listenOnDecisionMade(): void {
-    this.pathDetailsService.onDecisionMade().takeUntil(this.subscriptionDestroyer).subscribe((value): void => {
-      if (value) {
-        // TODO: in next task develop intersection algorithm
-        // this.calculateIntersection();
-      }
-      this.toggleActivity();
-      this.sendPathDtoToConfiguration();
     });
   }
 
@@ -232,13 +215,6 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
         this.hintBarService.sendHintMessage('path.hint.first');
       }
     }
-  }
-
-  private calculateIntersection(): void {
-    this.lines.forEach((lineBag: LineBag): void => {
-      // TODO: intersection algorithm should to be invoked there but algorithm alone should be static method in geometry service
-      console.log(lineBag.lineDto.startPoint, lineBag.lineDto.endPoint);
-    });
   }
 
   private drawLinesFromConfiguration(): void {
