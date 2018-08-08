@@ -20,7 +20,6 @@ import {isNumber} from 'util';
 import {TranslateService} from '@ngx-translate/core';
 import {PathDetailsService} from './path-details.service';
 import {Configuration} from '../../../action-bar/actionbar.type';
-import {SinkBag} from '../device-placer/device-placer.types';
 
 @Component({
   selector: 'app-path',
@@ -203,12 +202,14 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
 
   private fetchPathFromConfiguration(): void {
     this.actionBarService.configurationLoaded().first().subscribe((configuration: Configuration): void => {
-       configuration.data.paths.forEach((line: Line) => {
+      if (!!configuration.data.paths) {
+        configuration.data.paths.forEach((line: Line) => {
           this.lines.push({
             lineDto: line,
             lineInEditor: null
           });
         });
+      }
     });
   }
 
