@@ -3,10 +3,8 @@ from selenium import webdriver
 from tests.test_driver import TestDriver
 from tests.test_login_page import TestLoginPage
 from pages.maps.maps_page__area import MapsPageArea
-from pages.base_page import BasePage
 from pages.login_page import LoginPage
 from pages.constructions.floors_page import FloorsPage
-import time
 from selenium.webdriver import ActionChains
 
 
@@ -37,8 +35,8 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.webdriver.quit()
 
     def __set_before_scale_db_configuration(self, choose):
-        option = {'add': self.maps_page_area.insert_scale_configuration_to_db,
-                  'edit': self.maps_page_area.insert_area_configuration_to_db}
+        option = {'add': self.maps_page_area.insert_conf_to_database('scale'),
+                  'edit': self.maps_page_area.insert_conf_to_database('area')}
         option[choose]()
         self.maps_page_area.insert_image_to_db()
         self.maps_page_area.set_image_to_floor()

@@ -1,51 +1,15 @@
 from pages.base_page import BasePage
-from locators.maps_base__area_locators import MapsBaseAreaLocators
+from pages.maps.maps_page__utils import MapsPageUtils
 from selenium.webdriver import ActionChains
-from src.test_conf.test_config import *
 from selenium.common.exceptions import NoSuchElementException
-import time
 
 
-class MapsPageArea(BasePage, MapsBaseAreaLocators):
+class MapsPageArea(BasePage, MapsPageUtils):
 
     def __init__(self, driver):
         self.__driver = driver
         self.__actions = ActionChains
         super(MapsPageArea, self).__init__(self.__driver)
-
-    def create_maps_db_env(self):
-        return self.create_db_env(self.DB_MAPS_ENV_XML)
-
-    def insert_devices_to_db_from_csv(self):
-        return self.service_db().insert_to_db_from_csv(DEVICE_TABLE, DEVICE_COLUMNS, TEST_DEVICES_CSV_PATH)
-
-    def insert_tags_to_db_from_csv(self):
-        return self.service_db().insert_to_db_from_csv(TAG_TABLE, TAG_COLUMNS, TEST_TAGS_CSV_PATH)
-
-    def set_image_to_floor(self):
-        params = TEST_UPDATE_FLOOR_IMG_PARAMS
-        return self.service_db().update_table(params)
-
-    def insert_scale_configuration_to_db(self):
-        table = CONFIGURATION_TABLE
-        columns = CONFIGURATION_COLUMNS
-        values = ('1', TEST_DATE, TEST_SCALE_CONF_DATA, '0', '2', TEST_DATE)
-        return self.insert_to_db(table, columns, values)
-
-    def insert_area_configuration_to_db(self):
-        table = CONFIGURATION_TABLE
-        columns = CONFIGURATION_COLUMNS
-        values = ('1', TEST_DATE, TEST_AREA_CONF_DATA, '0', '2', TEST_DATE)
-        return self.insert_to_db(table, columns, values)
-
-    def insert_image_to_db(self):
-
-        with open(TEST_IMAGE_PATH, "rb") as f:
-          blob = f.read()
-        table = IMAGE_TABLE
-        columns = IMAGE_COLUMNS
-        values = ('1', TEST_DATE, TEST_DATE, blob, '840', '1614')
-        return self.insert_to_db(table, columns, values)
 
     # CLICK TRIGGERS
     def floor_update_button_click(self):
