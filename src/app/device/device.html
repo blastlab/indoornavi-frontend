@@ -102,7 +102,7 @@
           [width]="800"
           dismissableMask="true" (onHide)="cancel()">
   <p-header>
-    {{ dialogTitle | translate }}
+    {{dialogTitle|translate}}
   </p-header>
   <form #deviceForm="ngForm" novalidate>
     <div *ngIf="device">

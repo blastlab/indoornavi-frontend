@@ -33,7 +33,7 @@
           [width]="800"
           dismissableMask="true" (onHide)="cancel()">
   <p-header>
-    {{ dialogTitle | translate }}
+    {{dialogTitle|translate}}
   </p-header>
   <form #complexForm="ngForm" novalidate>
     <div class="ui-g" *ngIf="complex">

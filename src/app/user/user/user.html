@@ -40,7 +40,7 @@
           [width]="800"
           dismissableMask="true" (onHide)="cancel()">
   <p-header>
-    {{ dialogTitle | translate }}
+    {{dialogTitle|translate}}
   </p-header>
   <div *ngIf="user">
     <form #userForm="ngForm" novalidate>
