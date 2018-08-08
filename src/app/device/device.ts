@@ -22,6 +22,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   public notVerified: Device[] = [];
   public deviceType: string;
   public dialogTitle: string;
+  public removeDialogTitle: string;
   public createPermission: string;
   public deletePermission: string;
   public editPermission: string;
@@ -68,6 +69,9 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       this.breadcrumbService.publishIsReady([
         {label: value, disabled: true}
       ]);
+    });
+    this.translate.get(`device.details.${this.deviceType}.remove`).subscribe((value: string) => {
+      this.removeDialogTitle = value;
     });
 
     this.ngZone.runOutsideAngular(() => {
@@ -136,12 +140,8 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   remove(device: Device): void {
-    this.translate.get(`device.details.${this.deviceType}.remove`).subscribe((value: string) => {
-      this.dialogTitle = value;
-    });
-
     this.confirmationService.confirm({
-      header: this.dialogTitle,
+      header: this.removeDialogTitle,
       message: this.confirmBody,
       accept: () => {
         this.deviceService.remove(device.id).subscribe(() => {

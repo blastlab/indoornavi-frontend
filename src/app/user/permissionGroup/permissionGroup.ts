@@ -15,6 +15,7 @@ export class PermissionGroupComponent implements OnInit, CrudComponent {
   loading: boolean = true;
   permissionGroups: PermissionGroup[] = [];
   dialogTitle: string;
+  removeDialogTitle: string;
 
   displayDialog: boolean = false;
   @ViewChild('permissionGroupForm') permissionGroupForm: NgForm;
@@ -33,6 +34,9 @@ export class PermissionGroupComponent implements OnInit, CrudComponent {
   ngOnInit(): void {
     this.setTranslations();
     this.loadData();
+    this.translateService.get('permissionGroup.details.remove').subscribe((value: string) => {
+      this.removeDialogTitle = value;
+    });
   }
 
   openDialog(permissionGroup?: PermissionGroup) {
@@ -72,12 +76,8 @@ export class PermissionGroupComponent implements OnInit, CrudComponent {
   }
 
   remove(index: number) {
-    this.translateService.get('permissionGroup.details.remove').subscribe((value: string) => {
-      this.dialogTitle = value;
-    });
-
     this.confirmationService.confirm({
-      header: this.dialogTitle,
+      header: this.removeDialogTitle,
       message: this.confirmBody,
       accept: () => {
         this.permissionGroupService.remove(this.permissionGroups[index].id).first().subscribe(() => {
@@ -103,6 +103,7 @@ export class PermissionGroupComponent implements OnInit, CrudComponent {
         {label: value, disabled: true}
       ]);
     });
+
   }
 
   private loadData() {

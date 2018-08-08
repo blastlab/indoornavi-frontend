@@ -16,6 +16,7 @@ export class ComplexComponent implements OnInit, CrudComponent {
   complex: Complex;
   complexes: Complex[] = [];
   dialogTitle: string;
+  removeDialogTitle: string;
 
   loading: boolean = true;
   displayDialog: boolean = false;
@@ -44,6 +45,9 @@ export class ComplexComponent implements OnInit, CrudComponent {
     });
     this.translate.get('confirm.body').subscribe((value: string) => {
       this.confirmBody = value;
+    });
+    this.translate.get('complex.details.remove').subscribe((value: string) => {
+      this.removeDialogTitle = value;
     });
   }
 
@@ -88,12 +92,8 @@ export class ComplexComponent implements OnInit, CrudComponent {
   }
 
   remove(index: number): void {
-    this.translate.get('complex.details.remove').subscribe((value: string) => {
-      this.dialogTitle = value;
-    });
-
     this.confirmationService.confirm({
-      header: this.dialogTitle,
+      header: this.removeDialogTitle,
       message: this.confirmBody,
       accept: (): void => {
         const complexId: number = this.complexes[index].id;

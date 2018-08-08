@@ -17,6 +17,7 @@ export class BuildingComponent implements OnInit, CrudComponent {
   complex: Complex = new Complex();
   building: Building;
   dialogTitle: string;
+  removeDialogTitle: string;
 
   loading: boolean = true;
   displayDialog: boolean = false;
@@ -47,6 +48,9 @@ export class BuildingComponent implements OnInit, CrudComponent {
     this.translate.setDefaultLang('en');
     this.translate.get('confirm.body').subscribe((value: string) => {
       this.confirmBody = value;
+    });
+    this.translate.get('building.details.remove').subscribe((value: string) => {
+      this.removeDialogTitle = value;
     });
   }
 
@@ -91,12 +95,8 @@ export class BuildingComponent implements OnInit, CrudComponent {
   }
 
   remove(index: number): void {
-    this.translate.get('building.details.remove').subscribe((value: string) => {
-      this.dialogTitle = value;
-    });
-
     this.confirmationService.confirm({
-      header: this.dialogTitle,
+      header: this.removeDialogTitle,
       message: this.confirmBody,
       accept: () => {
         const buildingId: number = this.complex.buildings[index].id;

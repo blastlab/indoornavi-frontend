@@ -16,6 +16,7 @@ export class UserComponent implements OnInit, CrudComponent {
   users: User[] = [];
   permissionGroups: PermissionGroup[] = [];
   dialogTitle: string;
+  removeDialogTitle: string;
 
   loading: boolean = true;
   displayDialog: boolean = false;
@@ -51,6 +52,10 @@ export class UserComponent implements OnInit, CrudComponent {
 
     this.translateService.get('confirm.body').subscribe((value: string) => {
       this.confirmBody = value;
+    });
+
+    this.translateService.get('user.details.remove').subscribe((value: string) => {
+      this.removeDialogTitle = value;
     });
   }
 
@@ -95,12 +100,8 @@ export class UserComponent implements OnInit, CrudComponent {
   }
 
   remove(index: number): void {
-    this.translateService.get('user.details.remove').subscribe((value: string) => {
-      this.dialogTitle = value;
-    });
-
     this.confirmationService.confirm({
-      header: this.dialogTitle,
+      header: this.removeDialogTitle,
       message: this.confirmBody,
       accept: () => {
         this.userService.remove(this.users[index].id).subscribe(() => {
