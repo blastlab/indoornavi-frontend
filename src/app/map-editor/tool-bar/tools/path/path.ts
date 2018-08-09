@@ -147,7 +147,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
     }
     this.clearDrawnPath();
     this.currentLineGroup.removeElements(ElementType.CIRCLE);
-    this.sendPathDtoToConfiguration();
+    this.sendPathToConfiguration();
   }
 
   private listenOnMapLoad(): void {
@@ -204,7 +204,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
         this.clearDrawnPath();
         this.lines = [];
         this.actionBarService.clearPath();
-        this.sendPathDtoToConfiguration();
+        this.sendPathToConfiguration();
         this.hintBarService.sendHintMessage('path.hint.first');
       }
     }
@@ -219,12 +219,8 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
     });
   }
 
-  private sendPathDtoToConfiguration(): void {
-    const pathDto: Line[] = [];
-    this.lines.forEach((line: Line): void => {
-      pathDto.push(line);
-    });
-    this.actionBarService.addPath(pathDto);
+  private sendPathToConfiguration(): void {
+    this.actionBarService.addPath(this.lines);
   }
 
   private clearDrawnPath(): void {
@@ -344,7 +340,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
         this.hintBarService.sendHintMessage('path.hint.first');
         this.firstPointSelection = null;
         this.lastPoint = null;
-        this.sendPathDtoToConfiguration();
+        this.sendPathToConfiguration();
         return;
       }
       this.cleanTempLine();
@@ -384,9 +380,6 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
     });
     this.intersectCurrent(point, intersections).forEach((lineIntersected: Line): void => {
       this.lines.push(lineIntersected);
-    });
-    this.lines.forEach((lineBagNested: Line): void => {
-        lineBagNested = null;
     });
     this.currentLineGroup.getGroup().remove();
     this.currentLineGroup = this.createBuilder().createGroup();
