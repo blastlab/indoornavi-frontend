@@ -36,13 +36,16 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
   floors: SelectItem[] = [];
   selectedFloors: Floor[] = [];
   tags: Tag[] = [];
-  selectedTags: Tag[] = [];
+  tagsToSelect: SelectItem[] = [];
+  selectedTags: number[] = [];
   users: User[] = [];
   selectedUsers: User[] = [];
   publication: Publication;
   validationError: string;
   dialogClosed: Subject<Publication> = new Subject<Publication>();
   @ViewChild('publishedMapForm') publishedMapForm: NgForm;
+
+  tagsLabel: string;
 
   constructor(private deviceService: DeviceService,
               private userService: UserService,
@@ -59,6 +62,12 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
     this.deviceService.setUrl('tags');
     this.deviceService.getAll().subscribe((tags: Tag[]) => {
       this.tags = tags;
+      this.tagsToSelect = tags.map((tag: Tag) => {
+        return {
+          label: `${tag.shortId}`,
+          value: tag.shortId
+        };
+      });
     });
     this.userService.getUsers().subscribe((users: User[]) => {
       this.users = users;
@@ -67,6 +76,9 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
       this.complexes = complexes;
     });
     this.translateService.setDefaultLang('en');
+    this.translateService.get('publishedList.tags.select').subscribe((value: string) => {
+      this.tagsLabel = value;
+    });
   }
 
   open(publishedMap?: Publication): Observable<Publication> {
@@ -126,7 +138,9 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
       });
       this.buildingChanged();
       this.selectedFloors = map.floors;
-      this.selectedTags = map.tags;
+      this.selectedTags = map.tags.map((tag: Tag) => {
+        return tag.shortId;
+      });
       this.selectedUsers = map.users;
       this.publication = map;
     } else {
@@ -166,7 +180,7 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
         this.publishedMapService.save({
           id: this.publication ? this.publication.id : null,
           floors: this.selectedFloors,
-          tags: this.selectedTags,
+          tags: this.mapToTags(this.selectedTags),
           users: this.selectedUsers,
         }).subscribe((savedMap: Publication) => {
           this.displayDialog = false;
@@ -179,6 +193,15 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
       }
     });
   }
+
+  private mapToTags(tagsShortIds: number[]): Tag[] {
+    return tagsShortIds.map((shortId: number) => {
+      return this.tags.find((tag: Tag) => {
+        return tag.shortId === shortId;
+      });
+    });
+  }
+
 
   private checkScaleAndImage(): Promise<ValidationResult> {
     return new Promise((resolve) => {
