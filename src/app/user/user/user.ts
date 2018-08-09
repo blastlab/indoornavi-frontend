@@ -15,6 +15,9 @@ import {PermissionGroupService} from 'app/user/permissionGroup/permissionGroup.s
 export class UserComponent implements OnInit, CrudComponent {
   users: User[] = [];
   permissionGroups: PermissionGroup[] = [];
+  dialogTitle: string;
+  removeDialogTitle: string;
+
   loading: boolean = true;
   displayDialog: boolean = false;
   user: User;
@@ -49,6 +52,10 @@ export class UserComponent implements OnInit, CrudComponent {
 
     this.translateService.get('confirm.body').subscribe((value: string) => {
       this.confirmBody = value;
+    });
+
+    this.translateService.get('user.details.remove').subscribe((value: string) => {
+      this.removeDialogTitle = value;
     });
   }
 
@@ -85,13 +92,16 @@ export class UserComponent implements OnInit, CrudComponent {
     this.displayDialog = true;
     if (!!user) {
       this.user = {...user};
+      this.dialogTitle = 'user.details.edit';
     } else {
       this.user = new User();
+      this.dialogTitle = 'user.details.add';
     }
   }
 
   remove(index: number): void {
     this.confirmationService.confirm({
+      header: this.removeDialogTitle,
       message: this.confirmBody,
       accept: () => {
         this.userService.remove(this.users[index].id).subscribe(() => {
