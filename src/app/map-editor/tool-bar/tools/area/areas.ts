@@ -234,7 +234,9 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
       if (this.getCurrentAreaPoints().length === 2) {
         this.hintBarService.sendHintMessage('area.hint.second');
       }
-      this.cleanTempLine();
+      if (!!this.tempLine) {
+        this.cleanTempLine();
+      }
       this.drawLine(point);
       if (this.isFirstPoint() || (this.isLastPoint() && this.getCurrentAreaPoints().length > 2)) {
         this.createArea();
