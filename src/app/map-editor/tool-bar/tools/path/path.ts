@@ -310,6 +310,8 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
     } else {
       coordinates.x = secondPoint.x;
     }
+    coordinates.x = Math.floor(coordinates.x);
+    coordinates.y = Math.floor(coordinates.y);
     return coordinates;
   }
 
@@ -340,10 +342,13 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
         this.hintBarService.sendHintMessage('path.hint.first');
         this.firstPointSelection = null;
         this.lastPoint = null;
+        this.tempLine = null;
         this.sendPathToConfiguration();
         return;
       }
-      this.cleanTempLine();
+      if (!!this.tempLine) {
+        this.cleanTempLine();
+      }
       const line: Line = {
         startPoint: this.lastPoint,
         endPoint: point
