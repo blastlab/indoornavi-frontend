@@ -1,6 +1,6 @@
 import {Point} from '../../../map.type';
 
-export interface Intersection {
+export interface IntersectionIdentifier {
   index: number;
   point: Point
 }

@@ -1,4 +1,4 @@
-import {LineBag, Point} from '../../../map-editor/map.type';
+import {Point} from '../../../map-editor/map.type';
 
 export class Helper {
 

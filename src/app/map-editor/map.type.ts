@@ -20,11 +20,6 @@ export interface PathContextCallback {
   remove: () => void;
 }
 
-export interface LineBag {
-  lineInEditor: d3.selection;
-  lineDto: Line;
-}
-
 export interface PathContextMenuLabels {
   removeAll: string;
 }

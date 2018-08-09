@@ -15,11 +15,11 @@ import {Tool} from '../tool';
 import {ToolName} from '../tools.enum';
 import * as d3 from 'd3';
 import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../../../shared/utils/drawing/drawing.builder';
-import {Line, LineBag, PathContextCallback, PathContextMenuLabels, Point} from '../../../map.type';
+import {Line, PathContextCallback, PathContextMenuLabels, Point} from '../../../map.type';
 import {isNumber} from 'util';
 import {TranslateService} from '@ngx-translate/core';
 import {Configuration} from '../../../action-bar/actionbar.type';
-import {Intersection} from './path.type';
+import {IntersectionIdentifier} from './path.type';
 
 @Component({
   selector: 'app-path',
@@ -37,7 +37,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   disabled: boolean = true;
 
   private subscriptionDestroyer: Subject<void> = new Subject<void>();
-  private lines: LineBag[] = [];
+  private lines: Line[] = [];
   private scale: Scale;
   private container: d3.selection;
   private layer: d3.selection;
@@ -174,10 +174,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
       this.toolbarService.emitToolChanged(null);
       this.lines = [];
       configuration.data.paths.forEach((line: Line) => {
-        this.lines.push({
-          lineDto: line,
-          lineInEditor: null
-        });
+        this.lines.push(line);
       });
     });
   }
@@ -186,10 +183,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
     this.actionBarService.configurationLoaded().first().subscribe((configuration: Configuration): void => {
       if (!!configuration.data.paths) {
         configuration.data.paths.forEach((line: Line) => {
-          this.lines.push({
-            lineDto: line,
-            lineInEditor: null
-          });
+          this.lines.push(line);
         });
       }
     });
@@ -217,28 +211,24 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   }
 
   private drawLinesFromConfiguration(): void {
-    this.lines.forEach((line: LineBag): void => {
-      this.lastPoint = line.lineDto.startPoint;
+    this.lines.forEach((line: Line): void => {
+      this.lastPoint = line.startPoint;
       this.drawPoint(this.lastPoint);
-      this.drawPoint(line.lineDto.endPoint);
-      this.drawLine(line.lineDto.endPoint);
-      line.lineInEditor = this.currentLineGroup;
+      this.drawPoint(line.endPoint);
+      this.drawLine(line.endPoint);
     });
   }
 
   private sendPathDtoToConfiguration(): void {
     const pathDto: Line[] = [];
-    this.lines.forEach((line: LineBag): void => {
-      pathDto.push(line.lineDto);
+    this.lines.forEach((line: Line): void => {
+      pathDto.push(line);
     });
     this.actionBarService.addPath(pathDto);
   }
 
   private clearDrawnPath(): void {
     this.currentLineGroup.getGroup().remove();
-    this.lines.forEach((line: LineBag): void => {
-      line.lineInEditor = null;
-    });
     this.firstPointSelection = null;
     this.lastPoint = null;
     if (!!this.tempLine) {
@@ -362,22 +352,22 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
         startPoint: this.lastPoint,
         endPoint: point
       };
-      const intersections: Intersection[] = this.getIntersections(line);
+      const intersections: IntersectionIdentifier[] = this.getIntersections(line);
       intersections.length > 0 ? this.drawPathIntersected(point, intersections) : this.drawPathNotIntersected(point, line);
     }
     this.lastPoint = Object.assign({}, point);
   }
 
-  private getIntersections(line: Line): Intersection[] {
-    const intersections: Intersection[] = [];
-    this.lines.forEach((linePath: LineBag): void => {
-      const intersectionPoint: Point = Geometry.intersection(linePath.lineDto, line);
+  private getIntersections(line: Line): IntersectionIdentifier[] {
+    const intersections: IntersectionIdentifier[] = [];
+    this.lines.forEach((linePath: Line): void => {
+      const intersectionPoint: Point = Geometry.intersection(linePath, line);
       if (!!intersectionPoint && !Geometry.isSamePoint(intersectionPoint, this.lastPoint)) {
-        const index: number = this.lines.findIndex((linePathNested: LineBag): boolean => {
-          return (linePathNested.lineDto.endPoint.x === linePath.lineDto.endPoint.x &&
-            linePathNested.lineDto.endPoint.y === linePath.lineDto.endPoint.y &&
-            linePathNested.lineDto.startPoint.x === linePath.lineDto.startPoint.x &&
-            linePathNested.lineDto.startPoint.y === linePath.lineDto.startPoint.y)
+        const index: number = this.lines.findIndex((linePathNested: Line): boolean => {
+          return (linePathNested.endPoint.x === linePath.endPoint.x &&
+            linePathNested.endPoint.y === linePath.endPoint.y &&
+            linePathNested.startPoint.x === linePath.startPoint.x &&
+            linePathNested.startPoint.y === linePath.startPoint.y)
         });
         intersections.push({
           index: index,
@@ -388,15 +378,15 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
     return intersections;
   }
 
-  private drawPathIntersected(point: Point, intersections: Intersection[]): void {
-    this.intersectCrossed(intersections).forEach((lineIntersected: LineBag) => {
+  private drawPathIntersected(point: Point, intersections: IntersectionIdentifier[]): void {
+    this.intersectCrossed(intersections).forEach((lineIntersected: Line) => {
       this.lines.push(lineIntersected);
     });
-    this.intersectCurrent(point, intersections).forEach((lineIntersected: LineBag): void => {
+    this.intersectCurrent(point, intersections).forEach((lineIntersected: Line): void => {
       this.lines.push(lineIntersected);
     });
-    this.lines.forEach((lineBagNested: LineBag): void => {
-        lineBagNested.lineInEditor = null;
+    this.lines.forEach((lineBagNested: Line): void => {
+        lineBagNested = null;
     });
     this.currentLineGroup.getGroup().remove();
     this.currentLineGroup = this.createBuilder().createGroup();
@@ -404,62 +394,46 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   }
 
   private drawPathNotIntersected(point: Point, line: Line): void {
-    const lineBag: LineBag = {
-      lineInEditor: this.currentLineGroup,
-      lineDto: line
-    };
     this.drawPoint(point);
     this.drawLine(point);
-    this.lines.push(lineBag);
+    this.lines.push(line);
   }
 
-  private intersectCrossed(intersections: Intersection[]): LineBag[] {
-    const lines: LineBag[] = [];
-    intersections.sort((a: Intersection, b: Intersection): number => {
+  private intersectCrossed(intersections: IntersectionIdentifier[]): Line[] {
+    const lines: Line[] = [];
+    intersections.sort((a: IntersectionIdentifier, b: IntersectionIdentifier): number => {
       return b.index - a.index;
     });
-    intersections.forEach((intersection: Intersection): void => {
-      const lineToIntersect: LineBag = this.lines.splice(intersection.index, 1)[0];
-      const intersectedLeft: LineBag = {
-        lineDto: {
-          startPoint: lineToIntersect.lineDto.startPoint,
+    intersections.forEach((intersection: IntersectionIdentifier): void => {
+      const lineToIntersect: Line = this.lines.splice(intersection.index, 1)[0];
+      const intersectedLeft: Line = {
+          startPoint: lineToIntersect.startPoint,
           endPoint: intersection.point
-        },
-        lineInEditor: null
-      };
-      const intersectedRight: LineBag = {
-        lineDto: {
+        };
+      const intersectedRight: Line = {
           startPoint: intersection.point,
-          endPoint: lineToIntersect.lineDto.endPoint
-        },
-        lineInEditor: null
-      };
+          endPoint: lineToIntersect.endPoint
+        };
       lines.push(intersectedLeft);
       lines.push(intersectedRight);
     });
     return lines;
   }
 
-  private intersectCurrent(point: Point, intersections: Intersection[]): LineBag[] {
-    const lines: LineBag[] = [];
+  private intersectCurrent(point: Point, intersections: IntersectionIdentifier[]): Line[] {
+    const lines: Line[] = [];
     let first: Point = this.lastPoint;
-    intersections.forEach((intersection: Intersection): void => {
+    intersections.forEach((intersection: IntersectionIdentifier): void => {
       lines.push({
-        lineDto: {
           startPoint: first,
           endPoint: intersection.point
-        },
-        lineInEditor: null
-      });
+        });
       first = intersection.point
     });
     lines.push({
-      lineDto: {
         startPoint: first,
         endPoint: point
-      },
-      lineInEditor: null
-    });
+      });
     return lines;
   }
 
