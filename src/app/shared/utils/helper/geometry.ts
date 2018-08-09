@@ -79,11 +79,6 @@ export class Geometry {
   }
 
   static intersection(firstSection: Line, secondSection: Line): Point {
-    const firstSlope: number = Geometry.getSlope(firstSection.startPoint, firstSection.endPoint);
-    const secondSlope: number = Geometry.getSlope(secondSection.startPoint, secondSection.endPoint);
-    if (firstSlope === secondSlope) {
-      return null;
-    }
     const precision = 0.01;
     const isBetween = (first: number, middle: number, last: number): boolean => {
       return first - precision <= middle && middle <= last + precision;

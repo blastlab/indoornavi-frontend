@@ -26,15 +26,4 @@ export class Helper {
     originMessageEvent.source.postMessage({type: `${event.toString(10)}-${id.toString(10)}`, objectId: id}, originMessageEvent.origin);
   }
 
-  static multisplice(list_to_splice: any[], indexes: number[]): any[] {
-    const args_spliced: any[] = [];
-    indexes.sort((a: any, b: any): number => {
-      return a - b;
-    });
-    indexes.forEach((index: number): void => {
-      args_spliced.push(list_to_splice.splice(index, 1));
-    });
-    return args_spliced;
-  }
-
 }

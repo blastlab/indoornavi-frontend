@@ -50,7 +50,7 @@ export class MapComponent implements OnInit {
   applyOnClickListener(mapSvg: MapSvg) {
     let mouseMove = false;
     let mouseDown = false;
-    let timer = 0;
+    let timer;
 
     mapSvg.container
       .on('mousedown', () => {
@@ -77,7 +77,7 @@ export class MapComponent implements OnInit {
   applyOnTouchesListener(mapSvg: MapSvg) {
     let touchMove = false;
     let touchStart = false;
-    let timer = 0;
+    let timer;
 
     mapSvg.container
       .on('touchstart', () => {

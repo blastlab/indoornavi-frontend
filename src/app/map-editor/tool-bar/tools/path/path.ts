@@ -19,7 +19,7 @@ import {Line, LineBag, PathContextCallback, PathContextMenuLabels, Point} from '
 import {isNumber} from 'util';
 import {TranslateService} from '@ngx-translate/core';
 import {Configuration} from '../../../action-bar/actionbar.type';
-import {Helper} from '../../../../shared/utils/helper/helper';
+import {Intersection} from './path.type';
 
 @Component({
   selector: 'app-path',
@@ -170,16 +170,16 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   }
 
   private listenOnConfigurationReset(): void {
-      this.actionBarService.configurationReset().takeUntil(this.subscriptionDestroyer).subscribe((configuration: Configuration) => {
-        this.toolbarService.emitToolChanged(null);
-        this.lines = [];
-        configuration.data.paths.forEach((line: Line) => {
-          this.lines.push({
-            lineDto: line,
-            lineInEditor: null
-          });
+    this.actionBarService.configurationReset().takeUntil(this.subscriptionDestroyer).subscribe((configuration: Configuration) => {
+      this.toolbarService.emitToolChanged(null);
+      this.lines = [];
+      configuration.data.paths.forEach((line: Line) => {
+        this.lines.push({
+          lineDto: line,
+          lineInEditor: null
         });
       });
+    });
   }
 
   private fetchPathFromConfiguration(): void {
@@ -235,13 +235,16 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   }
 
   private clearDrawnPath(): void {
+    this.currentLineGroup.getGroup().remove();
     this.lines.forEach((line: LineBag): void => {
-      line.lineInEditor.remove();
       line.lineInEditor = null;
     });
     this.firstPointSelection = null;
     this.lastPoint = null;
-    this.tempLine = null;
+    if (!!this.tempLine) {
+      this.tempLine.remove();
+      this.tempLine = null;
+    }
     this.currentLineGroup = this.createBuilder().createGroup();
   }
 
@@ -354,41 +357,13 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
         this.sendPathDtoToConfiguration();
         return;
       }
+      this.cleanTempLine();
       const line: Line = {
         startPoint: this.lastPoint,
         endPoint: point
       };
-      const lineBag: LineBag = {
-        lineInEditor: this.currentLineGroup,
-        lineDto: line
-      };
       const intersections: Intersection[] = this.getIntersections(line);
-      const indexes: number[] = intersections.map((intersection: Intersection): number => {
-        return intersection.index;
-      });
-      console.log(intersections);
-      if (intersections.length > 0) {
-        this.currentLineGroup.remove();
-        this.lines.forEach((lineBagNested: LineBag): void => {
-          lineBagNested.lineInEditor = null;
-        });
-        const splicedLines: LineBag[] = Helper.multisplice(this.lines, indexes); // TODO: calculate in multisplice move multisplice to PathComposent
-        splicedLines.forEach((lineNested: LineBag) => {
-          // this.lines.push({
-          //   lineInEditor: null,
-          //   lineDto: {
-          //     startPoint: lineNested.lineDto.startPoint,
-          //     endPoint: intersections.
-          //   }
-          // });
-        });
-        // this.drawLinesFromConfiguration();
-      } else {
-        this.cleanTempLine();
-        this.drawPoint(point);
-        this.drawLine(point);
-        this.lines.push(lineBag);
-      }
+      intersections.length > 0 ? this.drawPathIntersected(point, intersections) : this.drawPathNotIntersected(point, line);
     }
     this.lastPoint = Object.assign({}, point);
   }
@@ -399,10 +374,10 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
       const intersectionPoint: Point = Geometry.intersection(linePath.lineDto, line);
       if (!!intersectionPoint && !Geometry.isSamePoint(intersectionPoint, this.lastPoint)) {
         const index: number = this.lines.findIndex((linePathNested: LineBag): boolean => {
-          return (linePathNested.lineDto.endPoint.x ===  linePath.lineDto.endPoint.x &&
-            linePathNested.lineDto.endPoint.y ===  linePath.lineDto.endPoint.y &&
-            linePathNested.lineDto.startPoint.x ===  linePath.lineDto.startPoint.x &&
-            linePathNested.lineDto.startPoint.y ===  linePath.lineDto.startPoint.y)
+          return (linePathNested.lineDto.endPoint.x === linePath.lineDto.endPoint.x &&
+            linePathNested.lineDto.endPoint.y === linePath.lineDto.endPoint.y &&
+            linePathNested.lineDto.startPoint.x === linePath.lineDto.startPoint.x &&
+            linePathNested.lineDto.startPoint.y === linePath.lineDto.startPoint.y)
         });
         intersections.push({
           index: index,
@@ -413,10 +388,79 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
     return intersections;
   }
 
-}
+  private drawPathIntersected(point: Point, intersections: Intersection[]): void {
+    this.intersectCrossed(intersections).forEach((lineIntersected: LineBag) => {
+      this.lines.push(lineIntersected);
+    });
+    this.intersectCurrent(point, intersections).forEach((lineIntersected: LineBag): void => {
+      this.lines.push(lineIntersected);
+    });
+    this.lines.forEach((lineBagNested: LineBag): void => {
+        lineBagNested.lineInEditor = null;
+    });
+    this.currentLineGroup.getGroup().remove();
+    this.currentLineGroup = this.createBuilder().createGroup();
+    this.drawLinesFromConfiguration();
+  }
 
+  private drawPathNotIntersected(point: Point, line: Line): void {
+    const lineBag: LineBag = {
+      lineInEditor: this.currentLineGroup,
+      lineDto: line
+    };
+    this.drawPoint(point);
+    this.drawLine(point);
+    this.lines.push(lineBag);
+  }
 
-export interface Intersection {
-  index: number;
-  point: Point
+  private intersectCrossed(intersections: Intersection[]): LineBag[] {
+    const lines: LineBag[] = [];
+    intersections.sort((a: Intersection, b: Intersection): number => {
+      return b.index - a.index;
+    });
+    intersections.forEach((intersection: Intersection): void => {
+      const lineToIntersect: LineBag = this.lines.splice(intersection.index, 1)[0];
+      const intersectedLeft: LineBag = {
+        lineDto: {
+          startPoint: lineToIntersect.lineDto.startPoint,
+          endPoint: intersection.point
+        },
+        lineInEditor: null
+      };
+      const intersectedRight: LineBag = {
+        lineDto: {
+          startPoint: intersection.point,
+          endPoint: lineToIntersect.lineDto.endPoint
+        },
+        lineInEditor: null
+      };
+      lines.push(intersectedLeft);
+      lines.push(intersectedRight);
+    });
+    return lines;
+  }
+
+  private intersectCurrent(point: Point, intersections: Intersection[]): LineBag[] {
+    const lines: LineBag[] = [];
+    let first: Point = this.lastPoint;
+    intersections.forEach((intersection: Intersection): void => {
+      lines.push({
+        lineDto: {
+          startPoint: first,
+          endPoint: intersection.point
+        },
+        lineInEditor: null
+      });
+      first = intersection.point
+    });
+    lines.push({
+      lineDto: {
+        startPoint: first,
+        endPoint: point
+      },
+      lineInEditor: null
+    });
+    return lines;
+  }
+
 }
