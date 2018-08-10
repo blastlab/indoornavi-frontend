@@ -30,6 +30,7 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
   displayDialog: boolean = false;
   complexes: Complex[] = [];
   dialogTitle: string;
+  
   selectedComplexes: Complex[] = [];
   activeComplexes: Complex[] = [];
   buildings: Building[] = [];
@@ -139,7 +140,6 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
 
   setMap(map: Publication) {
     if (!!map) {
-      console.log(map);
       this.dialogTitle = 'publishedMap.details.edit';
       this.activeComplexes = this.selectedComplexes = map.floors.map(floor => {
         return floor.building.complex;
