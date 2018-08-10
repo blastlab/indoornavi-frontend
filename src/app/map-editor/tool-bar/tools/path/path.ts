@@ -330,6 +330,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
       this.firstPoint = Object.assign({}, point);
     } else {
       const event: KeyboardEvent = <KeyboardEvent>window.event;
+      let shouldSaveConfiguration = true;
       if (event.shiftKey && this.getCurrentLinePoints().length > 0) {
         point = this.handleShiftKeyEvent(point);
       }
@@ -337,13 +338,16 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
         this.attractionPoint = null;
         this.hintBarService.sendHintMessage('path.hint.first');
         this.firstPointSelection.remove();
+        shouldSaveConfiguration = false;
       }
       if (Geometry.isSamePoint(point, this.lastPoint)) {
         this.hintBarService.sendHintMessage('path.hint.first');
         this.firstPointSelection = null;
         this.lastPoint = null;
         this.tempLine = null;
-        this.sendPathToConfiguration();
+        if (shouldSaveConfiguration) {
+          this.sendPathToConfiguration();
+        }
         return;
       }
       if (!!this.tempLine) {
