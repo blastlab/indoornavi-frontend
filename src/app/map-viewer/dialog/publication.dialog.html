@@ -80,6 +80,7 @@
         <p-multiSelect *ngIf="tagsLabel" appMinSelected="1"
                        [defaultLabel]="tagsLabel" name="tags" id="tags"
                        [options]="tagsToSelect" #tagsSelect="ngModel"
+                       [resetFilterOnHide]="true"
                        [(ngModel)]="selectedTags" [style]="{ width: '100%' }">
         </p-multiSelect>
       </div>
