@@ -30,8 +30,6 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
   displayDialog: boolean = false;
   complexes: Complex[] = [];
   dialogTitle: string;
-  chooseBuildingsLabel: string;
-  chooseFloorLabel: string;
   selectedComplexes: Complex[] = [];
   activeComplexes: Complex[] = [];
   buildings: Building[] = [];
