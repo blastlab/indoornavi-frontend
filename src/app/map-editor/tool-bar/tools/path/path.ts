@@ -350,7 +350,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
         }
         return;
       }
-      if (!!this.tempLine) {
+      if (!!this.tempLine) { // do not clean if last line wasn't tempLine
         this.cleanTempLine();
       }
       const line: Line = {
