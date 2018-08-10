@@ -35,9 +35,11 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.webdriver.quit()
 
     def __set_before_scale_db_configuration(self, choose):
-        option = {'add': self.maps_page_area.insert_conf_to_database('scale'),
-                  'edit': self.maps_page_area.insert_conf_to_database('area')}
-        option[choose]()
+
+        if choose == 'add':
+            self.maps_page_area.insert_conf_to_database('scale')
+        else:
+            self.maps_page_area.insert_conf_to_database('area')
         self.maps_page_area.insert_image_to_db()
         self.maps_page_area.set_image_to_floor()
         self.webdriver.refresh()
@@ -54,7 +56,7 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
 
     # SCALE TESTS
     def test_01_add_new_area_correctly_triangle_with_all_params(self):
-
+        print('CLAROSA')
         self.__set_before_scale_db_configuration('add')
 
         self.maps_page_area.is_area_button_displayed()
@@ -65,25 +67,27 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         first_step_points = self.maps_page_area.get_polygon_points('2')
         self.maps_page_area.is_area_dialog_displayed()
 
-        # Fill all inputs and confirm
+        #Fill all inputs and confirm
         self.maps_page_area.enter_area_name()
         self.maps_page_area.enter_on_enter_offset()
         self.maps_page_area.enter_on_leave_offset()
+        #
         self.__set_tags()
-
+        #
         self.maps_page_area.area_confirm_click()
         self.maps_page_area.is_draft_saved_toast_displayed()
-        # Check the points are the same
-        self.maps_page_area.area_button_click()
+        # # Check the points are the same
+        self.maps_page_area.area_button_click(),
+        #
         second_step_points = self.maps_page_area.get_polygon_points('0')
-        # Refresh page and check it again
+        # # Refresh page and check it again
         self.webdriver.refresh()
         self.maps_page_area.area_button_click()
         third_step_points = self.maps_page_area.get_polygon_points('0')
-
+        #
         self.assertEqual(first_step_points, second_step_points[:24])
-        # TODO
-        # self.assertEqual(first_step_points, third_step_points[:24])
+        # # TODO
+        # # self.assertEqual(first_step_points, third_step_points[:24])
         self.test_failed = False
 
     def test_02_add_new_area_correctly_square_with_all_params(self):
@@ -304,7 +308,7 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         # self.assertDictEqual(expected_data, result_data, "Edited area properties have not been correct")
 
         self.test_failed = False
-
+    #
     def test_10_edit_area_without_area_name(self):
 
         self.__set_before_scale_db_configuration('edit')
@@ -405,5 +409,6 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         assert square_displayed == True
         assert triangle_displayed == True
         self.test_failed = False
+
 
 

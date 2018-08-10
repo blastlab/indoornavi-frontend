@@ -19,7 +19,7 @@ class MapsPageUtils(MapsBaseLocators, MapsBaseScaleLocators, MapsBaseAreaLocator
     def insert_conf_to_database(self, module):
         table = CONFIGURATION_TABLE
         columns = CONFIGURATION_COLUMNS
-        data = TEST_SCALE_CONF_DATA if module=='scale' else TEST_SCALE_CONF_DATA
+        data = TEST_SCALE_CONF_DATA if module=='scale' else TEST_AREA_CONF_DATA
         values = ('1', TEST_DATE, data, '0', '2', TEST_DATE)
         return self.insert_to_db(table, columns, values)
 
