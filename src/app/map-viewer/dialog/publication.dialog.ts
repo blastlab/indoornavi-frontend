@@ -29,6 +29,8 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
   displayDialog: boolean = false;
   complexes: Complex[] = [];
   dialogTitle: string;
+  chooseBuildingsLabel: string;
+  chooseFloorLabel: string;
 
   selectedComplexes: Complex[] = [];
   buildings: Building[] = [];
@@ -67,6 +69,12 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
       this.complexes = complexes;
     });
     this.translateService.setDefaultLang('en');
+    this.translateService.get('publishedList.building.select').subscribe((value: string) => {
+      this.chooseBuildingsLabel = value;
+    });
+    this.translateService.get('publishedList.floor.select').subscribe((value: string) => {
+      this.chooseFloorLabel = value;
+    });
   }
 
   open(publishedMap?: Publication): Observable<Publication> {
@@ -116,6 +124,7 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
 
   setMap(map: Publication) {
     if (!!map) {
+      console.log(map);
       this.dialogTitle = 'publishedMap.details.edit';
       this.selectedComplexes = map.floors.map(floor => {
         return floor.building.complex;
