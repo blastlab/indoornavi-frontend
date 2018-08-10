@@ -20,6 +20,7 @@
         <p-multiSelect #complexesSelect="ngModel" defaultLabel="{{'publishedList.complex.select'|translate}}" name="complexes" id="complexes" [options]="complexes"
                        [(ngModel)]="selectedComplexes"  [style]="{ width: '100%' }" dataKey="id" optionLabel="name"
                        (onChange)="complexChanged()"
+                       [resetFilterOnHide]="true"
                         appMinSelected="1">
         </p-multiSelect>
       </div>
@@ -38,6 +39,7 @@
         <p-multiSelect #buildingsSelect="ngModel" defaultLabel="{{'publishedList.building.select'|translate}}" name="buildings" id="buildings" [options]="buildings"
                        [(ngModel)]="selectedBuildings" [style]="{ width: '100%' }" dataKey="id" optionLabel="name"
                        (onChange)="buildingChanged()"
+                       [resetFilterOnHide]="true"
                        appMinSelected="1">
           <ng-template let-building pTemplate="item">
             <b>{{building.value.complex.name}}: </b> {{building.value.name}}
@@ -59,6 +61,7 @@
         <p-multiSelect #floorsSelect="ngModel" defaultLabel="{{'publishedList.floor.select'|translate}}" name="floors" id="floors" [options]="floors"
                        [(ngModel)]="selectedFloors" [style]="{ width: '100%' }"
                        dataKey="id"
+                       [resetFilterOnHide]="true"
                        appMinSelected="1">
           <ng-template let-floor pTemplate="item">
             <b>{{floor.value.building.name}}: </b> {{floor.value.level}}
@@ -98,6 +101,7 @@
       <div class="ui-g-12 ui-md-6 ui-lg-6">
         <p-multiSelect #usersSelect="ngModel" defaultLabel="{{'publishedList.users.select'|translate}}" name="users" id="users" [options]="users"
                        [(ngModel)]="selectedUsers" optionLabel="username" [style]="{ width: '100%' }" dataKey="id"
+                       [resetFilterOnHide]="true"
                         appMinSelected="1">
         </p-multiSelect>
       </div>
