@@ -25,7 +25,7 @@
       </div>
     </div>
 
-    <div *ngIf="selectedComplexes.length > 0 && chooseBuildingsLabel" class="ui-g">
+    <div *ngIf="selectedComplexes.length > 0" class="ui-g">
       <div class="ui-g-12 ui-md-4 ui-lg-4">
         <div class="ui-message ui-messages-error ui-corner-all"
              *ngIf="buildingsSelect.invalid && buildingsSelect.touched && buildingsSelect.dirty && buildingsSelect.errors['minSelected']">
@@ -35,7 +35,7 @@
       </div>
       <div class="ui-g-12 ui-md-2 ui-lg-2"><label for="buildings">{{'publishedList.building'|translate}}&nbsp;*</label></div>
       <div class="ui-g-12 ui-md-6 ui-lg-6">
-        <p-multiSelect #buildingsSelect="ngModel" [defaultLabel]="chooseBuildingsLabel" name="buildings" id="buildings" [options]="buildings"
+        <p-multiSelect #buildingsSelect="ngModel" defaultLabel="{{'publishedList.building.select'|translate}}" name="buildings" id="buildings" [options]="buildings"
                        [(ngModel)]="selectedBuildings" [style]="{ width: '100%' }" dataKey="id" optionLabel="name"
                        (onChange)="buildingChanged()"
                        appMinSelected="1">
@@ -46,7 +46,7 @@
       </div>
     </div>
 
-    <div *ngIf="selectedBuildings.length > 0 && chooseFloorLabel" class="ui-g">
+    <div *ngIf="selectedBuildings.length > 0" class="ui-g">
       <div class="ui-g-12 ui-md-4 ui-lg-4">
         <div class="ui-message ui-messages-error ui-corner-all"
              *ngIf="floorsSelect.invalid && floorsSelect.touched && floorsSelect.dirty && floorsSelect.errors['minSelected']">
@@ -56,7 +56,7 @@
       </div>
       <div class="ui-g-12 ui-md-2 ui-lg-2"><label for="floors">{{'publishedList.floor'|translate}}&nbsp;*</label></div>
       <div class="ui-g-12 ui-md-6 ui-lg-6">
-        <p-multiSelect #floorsSelect="ngModel" [defaultLabel]="chooseFloorLabel" name="floors" id="floors" [options]="floors"
+        <p-multiSelect #floorsSelect="ngModel" defaultLabel="{{'publishedList.floor.select'|translate}}" name="floors" id="floors" [options]="floors"
                        [(ngModel)]="selectedFloors" [style]="{ width: '100%' }"
                        dataKey="id"
                        appMinSelected="1">
