@@ -28,6 +28,8 @@ import {Tag} from '../../device/device.type';
 export class PublicationDialogComponent implements OnInit, CrudComponentForm {
   displayDialog: boolean = false;
   complexes: Complex[] = [];
+  dialogTitle: string;
+
   selectedComplexes: Complex[] = [];
   buildings: Building[] = [];
   selectedBuildings: Building[] = [];
@@ -114,6 +116,7 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
 
   setMap(map: Publication) {
     if (!!map) {
+      this.dialogTitle = 'publishedMap.details.edit';
       this.selectedComplexes = map.floors.map(floor => {
         return floor.building.complex;
       });
@@ -126,6 +129,8 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
       this.selectedTags = map.tags;
       this.selectedUsers = map.users;
       this.publication = map;
+    } else {
+      this.dialogTitle = 'publishedMap.details.add';
     }
   }
 
