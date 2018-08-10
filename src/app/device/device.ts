@@ -11,6 +11,7 @@ import {Checkbox, ConfirmationService} from 'primeng/primeng';
 import {MessageServiceWrapper} from '../shared/services/message/message.service';
 import {SocketService} from '../shared/services/socket/socket.service';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
+import {Md5} from 'ts-md5/dist/md5';
 
 @Component({
   templateUrl: './device.html',
@@ -46,6 +47,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   private uploadBodyTranslate: Subscription;
   private confirmBody: string;
   private devicesWaitingForNewFirmwareVersion: DeviceStatus[] = [];
+  private deviceHash: string | Int32Array;
 
   constructor(public translate: TranslateService,
               private socketService: SocketService,
@@ -100,7 +102,9 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   save(isValid: boolean): void {
     if (isValid) {
       const isNew = !(!!this.device.id);
-      if (!isNew) { // if it's an update then we need to remove it first so updated version will show up on the list when websocket get it
+      if (!isNew && Md5.hashStr(JSON.stringify(this.device)) !== this.deviceHash) {
+        // if it's an edit mode then we need to remove it from list first, so that updated version will show up on the list when it arrives through websocket
+        // checking hash to ensure that any change has been done, otherwise backend will not send it through websocket (NAVI-196)
         this.removeFromList(this.device);
       }
       (!!this.device.id ?
@@ -136,6 +140,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       this.device = new Device(null, null, false);
       this.dialogTitle = `device.details.${this.deviceType}.add`;
     }
+    this.deviceHash = Md5.hashStr(JSON.stringify(this.device));
     this.displayDialog = true;
   }
 
