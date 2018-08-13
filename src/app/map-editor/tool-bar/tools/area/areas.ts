@@ -52,7 +52,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
 
   private scaleChangedSubscription: Subscription;
   private scale: Scale;
-  // private scaleCalculations: ScaleCalculations;
+  private scaleCalculations: ScaleCalculations;
 
   constructor(private toolbarService: ToolbarService,
               private mapLoaderInformer: MapLoaderInformerService,
@@ -90,10 +90,10 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
     this.scaleChangedSubscription = this.scaleService.scaleChanged.subscribe((scale: ScaleDto) => {
       this.scale = new Scale(scale);
       if (this.scale.isReady()) {
-        // this.scaleCalculations = {
-        //   scaleLengthInPixels: Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
-        //   scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
-        // };
+        this.scaleCalculations = {
+          scaleLengthInPixels: Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
+          scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
+        };
       }
     });
 

@@ -15,16 +15,15 @@ import {Tool} from '../tool';
 import {ToolName} from '../tools.enum';
 import * as d3 from 'd3';
 import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../../../shared/utils/drawing/drawing.builder';
-import {Line, PathContextCallback, PathContextMenuLabels, Point} from '../../../map.type';
+import {Line, Point} from '../../../map.type';
 import {isNumber} from 'util';
 import {TranslateService} from '@ngx-translate/core';
 import {Configuration} from '../../../action-bar/actionbar.type';
-import {IntersectionIdentifier} from './path.type';
+import {IntersectionIdentifier, PathContextCallback, PathContextMenuLabels} from './path.type';
 
 @Component({
   selector: 'app-path',
-  templateUrl: './path.html',
-  styleUrls: ['./path.css']
+  templateUrl: './path.html'
 })
 export class PathComponent implements Tool, OnInit, OnDestroy {
   private static CIRCLE_R: number = 5;
@@ -65,7 +64,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.listenOnMapLoad();
+    this.listenOnMapLoaded();
     this.listenOnScaleChange();
     this.fetchPathFromConfiguration();
     this.setTranslationsDependencies();
@@ -127,7 +126,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
       this.contextMenuService.setItems([
         {
           label: 'Remove all lines',
-          command: this.callbacks.remove
+          command: this.callbacks.removeAll
         }
       ]);
       this.contextMenuService.openContextMenu();
@@ -150,7 +149,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
     this.sendPathToConfiguration();
   }
 
-  private listenOnMapLoad(): void {
+  private listenOnMapLoaded(): void {
     this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg): void => {
       this.container = mapSvg.container;
       this.layer = mapSvg.layer;
@@ -158,7 +157,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   }
 
   private listenOnScaleChange(): void {
-    this.scaleService.scaleChanged.subscribe((scale: ScaleDto) => {
+    this.scaleService.scaleChanged.takeUntil(this.subscriptionDestroyer).subscribe((scale: ScaleDto) => {
       this.scale = new Scale(scale);
       if (this.scale.isReady()) {
         this.scaleCalculations = {
@@ -192,15 +191,15 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   private setTranslationsDependencies(): void {
     this.translateService.setDefaultLang('en');
     this.translateService
-      .get('remove.all.lines')
-      .subscribe((translatedValue) => {
+      .get('path.contextMenu.removeAllLines')
+      .subscribe((translatedValue: string): void => {
         this.labels.removeAll = translatedValue;
       });
   }
 
   private setContextMenuCallbacks(): void {
     this.callbacks = {
-      remove: () => {
+      removeAll: () => {
         this.clearDrawnPath();
         this.lines = [];
         this.actionBarService.clearPath();
@@ -366,7 +365,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   private getIntersections(line: Line): IntersectionIdentifier[] {
     const intersections: IntersectionIdentifier[] = [];
     this.lines.forEach((linePath: Line): void => {
-      const intersectionPoint: Point = Geometry.intersection(linePath, line);
+      const intersectionPoint: Point = Geometry.findIntersection(linePath, line);
       if (!!intersectionPoint && !Geometry.isSamePoint(intersectionPoint, this.lastPoint)) {
         const index: number = this.lines.findIndex((linePathNested: Line): boolean => {
           return (linePathNested.endPoint.x === linePath.endPoint.x &&

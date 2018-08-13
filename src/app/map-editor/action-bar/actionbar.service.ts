@@ -172,7 +172,7 @@ export class ActionBarService {
   }
 
   clearPath(): void {
-    this.configuration.data.paths = null;
+    this.configuration.data.paths = [];
     this.sendConfigurationChangedEvent();
   }
 

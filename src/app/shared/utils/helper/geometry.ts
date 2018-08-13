@@ -78,7 +78,7 @@ export class Geometry {
     return Math.floor(firstPoint.x) === Math.floor(lastPoint.x) && Math.floor(firstPoint.y) === Math.floor(lastPoint.y);
   }
 
-  static intersection(firstSection: Line, secondSection: Line): Point {
+  static findIntersection(firstSection: Line, secondSection: Line): Point {
     const precision = 0.01;
     const isBetween = (first: number, middle: number, last: number): boolean => {
       return first - precision <= middle && middle <= last + precision;

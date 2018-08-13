@@ -88,39 +88,37 @@ describe('Geometry', () => {
   });
 
   it('should return true for the same coordinates', () => {
-    // then
     expect(Geometry.isSamePoint({x: 10, y: 10}, {x: 10, y: 10})).toBeTruthy();
     expect(Geometry.isSamePoint({x: 0, y: 0}, {x: 0, y: 0})).toBeTruthy();
   });
 
   it('should return false for different coordinates', () => {
-    // then
     expect(Geometry.isSamePoint({x: 10, y: 0}, {x: 10, y: 10})).toBeFalsy();
     expect(Geometry.isSamePoint({x: 0, y: 10}, {x: 10, y: 10})).toBeFalsy();
     expect(Geometry.isSamePoint({x: 10, y: 10}, {x: 0, y: 0})).toBeFalsy();
   });
 
-  it('should return intersection point', () => {
-    const point0: Point = Geometry.intersection({startPoint: {x: 0, y: 0}, endPoint: {x: 10, y: 10}}, {startPoint: {x: 10, y: 0}, endPoint: {x: 0, y: 10}});
+  it('should return findIntersection point', () => {
+    const point0: Point = Geometry.findIntersection({startPoint: {x: 0, y: 0}, endPoint: {x: 10, y: 10}}, {startPoint: {x: 10, y: 0}, endPoint: {x: 0, y: 10}});
     expect(point0.x).toEqual(5);
     expect(point0.y).toEqual(5);
-    const point1: Point = Geometry.intersection({startPoint: {x: 0, y: 0}, endPoint: {x: 10, y: 10}}, {startPoint: {x: 0, y: 10}, endPoint: {x: 10, y: 0}});
+    const point1: Point = Geometry.findIntersection({startPoint: {x: 0, y: 0}, endPoint: {x: 10, y: 10}}, {startPoint: {x: 0, y: 10}, endPoint: {x: 10, y: 0}});
     expect(point1.x).toEqual(5);
     expect(point1.y).toEqual(5);
-    const point2: Point = Geometry.intersection({startPoint: {x: 0, y: 0}, endPoint: {x: 100, y: 100}}, {startPoint: {x: 70, y: 10}, endPoint: {x: 10, y: 66}});
+    const point2: Point = Geometry.findIntersection({startPoint: {x: 0, y: 0}, endPoint: {x: 100, y: 100}}, {startPoint: {x: 70, y: 10}, endPoint: {x: 10, y: 66}});
     expect(point2.x).toEqual(38);
     expect(point2.y).toEqual(38);
-    const point3: Point = Geometry.intersection({startPoint: {x: 0, y: 0}, endPoint: {x: 100, y: 100}}, {startPoint: {x: 10, y: 66}, endPoint: {x: 70, y: 10}});
+    const point3: Point = Geometry.findIntersection({startPoint: {x: 0, y: 0}, endPoint: {x: 100, y: 100}}, {startPoint: {x: 10, y: 66}, endPoint: {x: 70, y: 10}});
     expect(point3.x).toEqual(38);
     expect(point3.y).toEqual(38);
   });
 
-  it('should not return intersection point but null', () => {
-    const point0: Point = Geometry.intersection({startPoint: {x: 0, y: 0}, endPoint: {x: 10, y: 10}}, {startPoint: {x: 20, y: 20}, endPoint: {x: 30, y: 30}});
+  it('should not return findIntersection point but null', () => {
+    const point0: Point = Geometry.findIntersection({startPoint: {x: 0, y: 0}, endPoint: {x: 10, y: 10}}, {startPoint: {x: 20, y: 20}, endPoint: {x: 30, y: 30}});
     expect(point0).toBeNull();
-    const point1: Point = Geometry.intersection({startPoint: {x: 0, y: 0}, endPoint: {x: 10, y: 10}}, {startPoint: {x: 0, y: 0}, endPoint: {x: 30, y: 30}});
+    const point1: Point = Geometry.findIntersection({startPoint: {x: 0, y: 0}, endPoint: {x: 10, y: 10}}, {startPoint: {x: 0, y: 0}, endPoint: {x: 30, y: 30}});
     expect(point1).toBeNull();
-    const point2: Point = Geometry.intersection({startPoint: {x: 0, y: 0}, endPoint: {x: 100, y: 100}}, {startPoint: {x: 0, y: 70}, endPoint: {x: 40, y: 60}});
+    const point2: Point = Geometry.findIntersection({startPoint: {x: 0, y: 0}, endPoint: {x: 100, y: 100}}, {startPoint: {x: 0, y: 70}, endPoint: {x: 40, y: 60}});
     expect(point2).toBeNull();
   });
 
