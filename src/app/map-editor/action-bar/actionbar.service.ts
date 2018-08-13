@@ -9,6 +9,7 @@ import {Md5} from 'ts-md5/dist/md5';
 import {Helper} from '../../shared/utils/helper/helper';
 import {Area} from '../tool-bar/tools/area/areas.type';
 import {Anchor, Sink} from '../../device/device.type';
+import {Line} from '../map.type';
 
 @Injectable()
 export class ActionBarService {
@@ -162,6 +163,16 @@ export class ActionBarService {
 
   setAreas(areas: Area[]): void {
     this.configuration.data.areas = areas;
+    this.sendConfigurationChangedEvent();
+  }
+
+  addPath(path: Line[]): void {
+    this.configuration.data.paths = path;
+    this.sendConfigurationChangedEvent();
+  }
+
+  clearPath(): void {
+    this.configuration.data.paths = [];
     this.sendConfigurationChangedEvent();
   }
 
