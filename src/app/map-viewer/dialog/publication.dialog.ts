@@ -92,16 +92,6 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
     this.clean();
   }
 
-  private isDataSelected(data): boolean {
-    return !!data.length;
-  }
-
-  private isChooseSameData(selectedArrData: Array<Complex | Building>, currentArrData: Array<Complex | Building>): boolean {
-    return currentArrData.some((currData: Complex | Building): boolean => {
-      return selectedArrData.every((selData: Complex | Building): boolean => currData.id === selData.id)
-    });
-  }
-
   complexChanged() {
     this.buildings.length = 0;
 
@@ -231,6 +221,16 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
           });
         }
       );
+    });
+  }
+
+  private isDataSelected(data): boolean {
+    return !!data.length;
+  }
+
+  private isChooseSameData(selectedArrData: Array<Complex | Building>, currentArrData: Array<Complex | Building>): boolean {
+    return currentArrData.some((currData: Complex | Building): boolean => {
+      return selectedArrData.every((selData: Complex | Building): boolean => currData.id === selData.id)
     });
   }
 }
