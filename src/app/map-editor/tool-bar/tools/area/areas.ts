@@ -151,7 +151,10 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
 
       this.layer.on('click', (_, i: number, nodes: d3.selection[]): void => {
         const coordinates: Point = this.zoomService.calculateTransition({x: d3.mouse(nodes[i])[0], y: d3.mouse(nodes[i])[1]});
-        this.handleMouseClick(coordinates);
+        const coordinatesInRange: boolean = Geometry.areCoordinatesInGivenRange(coordinates, this.containerBox);
+        if (coordinatesInRange) {
+          this.handleMouseClick(coordinates);
+        }
       });
       this.layer.on('mousemove', (_, i: number, nodes: d3.selection[]): void => {
         if (!!this.firstPointSelection) {
@@ -214,7 +217,6 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
 
   private handleShiftKeyEvent(coordinates: Point): Point {
     const secondPoint: Point = this.getCurrentAreaPoints()[this.getCurrentAreaPoints().length - 1];
-    const coordinatesInRange: boolean = Geometry.areCoordinatesInGivenRange(coordinates, this.containerBox);
     const coordinatesBackup = Object.assign({}, coordinates);
     const deltaY = Geometry.getDeltaY(coordinates, secondPoint);
     if (!!deltaY) {
@@ -222,6 +224,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
     } else {
       coordinates.x = secondPoint.x;
     }
+    const coordinatesInRange: boolean = Geometry.areCoordinatesInGivenRange(coordinates, this.containerBox);
     if (!coordinatesInRange) {
       coordinates = coordinatesBackup;
     }
