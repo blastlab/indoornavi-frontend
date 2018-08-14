@@ -70,7 +70,7 @@
       </div>
     </div>
 
-    <div class="ui-g">
+    <div *ngIf="tagsLabel" class="ui-g">
       <div class="ui-g-12 ui-md-4 ui-lg-4">
         <div class="ui-message ui-messages-error ui-corner-all"
              *ngIf="tagsSelect && tagsSelect.invalid && tagsSelect.touched && tagsSelect.dirty && tagsSelect.errors['minSelected']">
@@ -80,7 +80,7 @@
       </div>
       <div class="ui-g-12 ui-md-2 ui-lg-2"><label for="tags">{{'publishedList.tags'|translate}}&nbsp;*</label></div>
       <div class="ui-g-12 ui-md-6 ui-lg-6">
-        <p-multiSelect *ngIf="tagsLabel" appMinSelected="1"
+        <p-multiSelect appMinSelected="1"
                        [defaultLabel]="tagsLabel" name="tags" id="tags"
                        [options]="tagsToSelect" #tagsSelect="ngModel"
                        [resetFilterOnHide]="true"
