@@ -22,6 +22,7 @@ import {Geometry} from '../../../../shared/utils/helper/geometry';
 import {Scale, ScaleCalculations, ScaleDto} from '../scale/scale.type';
 import {ScaleService} from '../../../../shared/services/scale/scale.service';
 import {Helper} from '../../../../shared/utils/helper/helper';
+import {Box} from '../../../../shared/utils/drawing/drawing.types';
 
 
 @Component({
@@ -53,6 +54,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
   private scaleChangedSubscription: Subscription;
   private scale: Scale;
   private scaleCalculations: ScaleCalculations;
+  private containerBox: Box;
 
   constructor(private toolbarService: ToolbarService,
               private mapLoaderInformer: MapLoaderInformerService,
@@ -68,6 +70,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
     this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg): void => {
       this.container = mapSvg.container;
       this.layer = mapSvg.layer;
+      this.containerBox = mapSvg.container.node().getBBox();
 
       this.actionBarService.configurationLoaded().first().subscribe((configuration: Configuration): void => {
         if (!!configuration.data.areas) {
@@ -211,11 +214,16 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
 
   private handleShiftKeyEvent(coordinates: Point): Point {
     const secondPoint: Point = this.getCurrentAreaPoints()[this.getCurrentAreaPoints().length - 1];
+    const coordinatesInRange: boolean = Geometry.areCoordinatesInGivenRange(coordinates, this.containerBox);
+    const coordinatesBackup = Object.assign({}, coordinates);
     const deltaY = Geometry.getDeltaY(coordinates, secondPoint);
     if (!!deltaY) {
       coordinates.y = secondPoint.y - deltaY;
     } else {
       coordinates.x = secondPoint.x;
+    }
+    if (!coordinatesInRange) {
+      coordinates = coordinatesBackup;
     }
     return coordinates;
   }
