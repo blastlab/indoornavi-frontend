@@ -107,8 +107,9 @@ import {HeatMapControllerService} from './shared/components/heat-map-controller/
 import {MousePositionViewerComponent} from './map-editor/mouse-position-viewer/mouse-position-viewer.component';
 import {MapClickService} from './shared/services/map-click/map-click.service';
 import {NotSupportedBrowserComponent} from './not-supported-browser/not-supported-browser';
-import {LongIdValidator} from './shared/directive/long-id.directive';
-import {ShortIdValidator} from './shared/directive/short-id.directive';
+import {LongIdValidatorDirective} from './shared/directive/long-id.directive';
+import {ShortIdValidatorDirective} from './shared/directive/short-id.directive';
+import {PathComponent} from './map-editor/tool-bar/tools/path/path';
 import {DevicePlacerComponent} from './map-editor/tool-bar/tools/device-placer/device-placer.component';
 import {DevicePlacerService} from './map-editor/tool-bar/tools/device-placer/device-placer.service';
 import {DevicePlacerListComponent} from './map-editor/tool-bar/tools/device-placer/list/device-placer.list';
@@ -143,8 +144,8 @@ export function HttpLoaderFactory(http: Http) {
     PublishedListComponent,
     PublicationDialogComponent,
     DeviceComponent,
-    LongIdValidator,
-    ShortIdValidator,
+    LongIdValidatorDirective,
+    ShortIdValidatorDirective,
     AppAutoFocusDirective,
     ProperNameDirective,
     ToolDetailsComponent,
@@ -164,7 +165,9 @@ export function HttpLoaderFactory(http: Http) {
     NotSupportedBrowserComponent,
     DevicePlacerComponent,
     DevicePlacerListComponent,
-    DevicePlacerRowDirective
+    DevicePlacerRowDirective,
+    NotSupportedBrowserComponent,
+    PathComponent
   ],
   entryComponents: [
     PublicationDialogComponent,
@@ -250,7 +253,8 @@ export function HttpLoaderFactory(http: Http) {
     ContextMenuService,
     TagVisibilityTogglerService,
     HeatMapControllerService,
-    DevicePlacerService
+    DevicePlacerService,
+    HeatMapControllerService
   ], bootstrap: [AppComponent]
 })
 

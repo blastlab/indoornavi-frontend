@@ -4,6 +4,7 @@
             id="open-dialog" [appHasPermission]="createPermission"
             (click)="openDialog()"
             label="{{'add'|translate}}"
+            [disabled]="updateMode"
             icon="fa-plus" iconPos="left">
     </button>
   </div>
@@ -82,10 +83,12 @@
         <div class="ui-g-3 ui-md-3 ui-lg-3">
           <button
             [appHasPermission]="editPermission"
+            [disabled]="updateMode"
             pTooltip="{{'edit'|translate}}" type="button" pButton (click)="openDialog(device)" icon="fa-edit" class="ui-button-info">
           </button>
           <button
             [appHasPermission]="deletePermission"
+            [disabled]="updateMode"
             pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(device)" icon="fa-trash" class="ui-button-danger">
           </button>
           <p-checkbox #updateCheckbox *ngIf="updateMode && devicesUpdating.length === 0" name="deviceToUpdate" id="{{device.shortId}}" [value]="device" (onChange)="checkAllSelected()"
@@ -123,7 +126,7 @@
           <label for="shortId">{{'device.shortId'|translate}} *</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input name="shortId" [properShortId]="deviceType" required [appAutoFocus]="displayDialog" pInputText id="shortId" [(ngModel)]="device.shortId" #shortIdInput="ngModel"/>
+          <input name="shortId" [appProperShortId]="deviceType" required [appAutoFocus]="displayDialog" pInputText id="shortId" [(ngModel)]="device.shortId" #shortIdInput="ngModel"/>
         </div>
       </div>
       <div class="ui-g">
@@ -143,7 +146,7 @@
           <label for="longId">{{'device.longId'|translate}} *</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input properLongId name="longId" required pInputText id="longId" [(ngModel)]="device.longId" #longIdInput="ngModel"/>
+          <input appProperLongId name="longId" required pInputText id="longId" [(ngModel)]="device.longId" #longIdInput="ngModel"/>
         </div>
       </div>
       <div class="ui-g">
@@ -158,7 +161,7 @@
           <label for="name">{{'device.name'|translate}}</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input properNameValidator name="name" pInputText id="name" [(ngModel)]="device.name" #nameInput="ngModel"/>
+          <input appProperNameValidator name="name" pInputText id="name" [(ngModel)]="device.name" #nameInput="ngModel"/>
         </div>
       </div>
       <p-footer>

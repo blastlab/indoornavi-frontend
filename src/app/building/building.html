@@ -51,7 +51,7 @@
         <label for="name">{{'building.name'|translate}}&nbsp;*</label>
       </div>
       <div class="ui-g-12 ui-md-5 ui-lg-5">
-        <input properNameValidator required name="name" [appAutoFocus]="displayDialog" pInputText id="name" [(ngModel)]="building.name" #nameInput="ngModel"/>
+        <input appProperNameValidator required name="name" [appAutoFocus]="displayDialog" pInputText id="name" [(ngModel)]="building.name" #nameInput="ngModel"/>
       </div>
     </div>
     <p-footer>

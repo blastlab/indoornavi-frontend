@@ -20,6 +20,7 @@
         <p-multiSelect #complexesSelect="ngModel" defaultLabel="{{'publishedList.complex.select'|translate}}" name="complexes" id="complexes" [options]="complexes"
                        [(ngModel)]="selectedComplexes"  [style]="{ width: '100%' }" dataKey="id" optionLabel="name"
                        (onChange)="complexChanged()"
+                       [resetFilterOnHide]="true"
                         appMinSelected="1">
         </p-multiSelect>
       </div>
@@ -38,6 +39,7 @@
         <p-multiSelect #buildingsSelect="ngModel" defaultLabel="{{'publishedList.building.select'|translate}}" name="buildings" id="buildings" [options]="buildings"
                        [(ngModel)]="selectedBuildings" [style]="{ width: '100%' }" dataKey="id" optionLabel="name"
                        (onChange)="buildingChanged()"
+                       [resetFilterOnHide]="true"
                        appMinSelected="1">
           <ng-template let-building pTemplate="item">
             <b>{{building.value.complex.name}}: </b> {{building.value.name}}
@@ -59,6 +61,7 @@
         <p-multiSelect #floorsSelect="ngModel" defaultLabel="{{'publishedList.floor.select'|translate}}" name="floors" id="floors" [options]="floors"
                        [(ngModel)]="selectedFloors" [style]="{ width: '100%' }"
                        dataKey="id"
+                       [resetFilterOnHide]="true"
                        appMinSelected="1">
           <ng-template let-floor pTemplate="item">
             <b>{{floor.value.building.name}}: </b> {{floor.value.level}}
@@ -67,19 +70,21 @@
       </div>
     </div>
 
-    <div class="ui-g">
+    <div *ngIf="tagsLabel" class="ui-g">
       <div class="ui-g-12 ui-md-4 ui-lg-4">
         <div class="ui-message ui-messages-error ui-corner-all"
-             *ngIf="tagsSelect.invalid && tagsSelect.touched && tagsSelect.dirty && tagsSelect.errors['minSelected']">
+             *ngIf="tagsSelect && tagsSelect.invalid && tagsSelect.touched && tagsSelect.dirty && tagsSelect.errors['minSelected']">
           <i class="fa fa-warning"></i>
           {{'publishedDialog.tags.required'|translate}}
         </div>
       </div>
       <div class="ui-g-12 ui-md-2 ui-lg-2"><label for="tags">{{'publishedList.tags'|translate}}&nbsp;*</label></div>
       <div class="ui-g-12 ui-md-6 ui-lg-6">
-        <p-multiSelect #tagsSelect="ngModel" defaultLabel="{{'publishedList.tags.select'|translate}}" name="tags" id="tags" [options]="tags"
-                       [(ngModel)]="selectedTags" optionLabel="shortId" [style]="{ width: '100%' }" dataKey="id"
-                        appMinSelected="1">
+        <p-multiSelect appMinSelected="1"
+                       [defaultLabel]="tagsLabel" name="tags" id="tags"
+                       [options]="tagsToSelect" #tagsSelect="ngModel"
+                       [resetFilterOnHide]="true"
+                       [(ngModel)]="selectedTags" [style]="{ width: '100%' }">
         </p-multiSelect>
       </div>
     </div>
@@ -96,6 +101,7 @@
       <div class="ui-g-12 ui-md-6 ui-lg-6">
         <p-multiSelect #usersSelect="ngModel" defaultLabel="{{'publishedList.users.select'|translate}}" name="users" id="users" [options]="users"
                        [(ngModel)]="selectedUsers" optionLabel="username" [style]="{ width: '100%' }" dataKey="id"
+                       [resetFilterOnHide]="true"
                         appMinSelected="1">
         </p-multiSelect>
       </div>

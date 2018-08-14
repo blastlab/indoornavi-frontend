@@ -59,7 +59,7 @@
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
           <p-multiSelect name="permissions" id="permissions" [options]="permissions" [(ngModel)]="permissionGroup.permissions" optionLabel="name"
-                         [style]="{ 'width': '100%' }" dataKey="id" [defaultLabel]="selectPermissionLabel">
+                         [style]="{ 'width': '100%' }" dataKey="id" [defaultLabel]="selectPermissionLabel" [resetFilterOnHide]="true">
           </p-multiSelect>
         </div>
       </div>

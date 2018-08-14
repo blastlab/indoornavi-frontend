@@ -7,7 +7,7 @@ import {IconService, NaviIcons} from '../../services/drawing/icon.service';
 import {Scale} from '../../../map-editor/tool-bar/tools/scale/scale.type';
 import {InfoWindowGroupWrapper} from './info.window';
 import {CoordinatesArray, DefaultIcon, Fill, InfoWindow, MapObject, MapObjectMetadata, Marker, Opacity, Stroke} from './drawing.types';
-import {Helper} from "../helper/helper";
+import {Helper} from '../helper/helper';
 
 @Injectable()
 export class MapObjectService {

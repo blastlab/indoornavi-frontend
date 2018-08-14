@@ -98,7 +98,7 @@
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
           <p-multiSelect name="permissionGroups" id="permissionGroups" [options]="permissionGroups" [(ngModel)]="user.permissionGroups"
-                         optionLabel="name"
+                         optionLabel="name" [resetFilterOnHide]="true"
                          [style]="{ width: '100%' }" dataKey="id">
           </p-multiSelect>
         </div>

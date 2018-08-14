@@ -33,9 +33,9 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
   tagsSelect: SelectItem[] = [];
   onEnterLabel: string;
   onLeaveLabel: string;
+  areaConfigurationOnEnter: AreaConfiguration = new AreaConfiguration(Mode.ON_ENTER, 0);
+  areaConfigurationOnLeave: AreaConfiguration = new AreaConfiguration(Mode.ON_LEAVE, 0);
 
-  private areaConfigurationOnEnter: AreaConfiguration = new AreaConfiguration(Mode.ON_ENTER, 0);
-  private areaConfigurationOnLeave: AreaConfiguration = new AreaConfiguration(Mode.ON_LEAVE, 0);
   private editable: Editable;
   private shift: Point;
   private subscriptionDestroyer: Subject<void> = new Subject<void>();
@@ -97,7 +97,7 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
         this.area.heightMax = null;
         this.area.heightMin = null;
       } else {
-        heightIsValid = (this.area.heightMin < this.area.heightMax && this.area.heightMin  >= 0 && this.area.heightMax >= 1);
+        heightIsValid = (this.area.heightMin < this.area.heightMax && this.area.heightMin >= 0 && this.area.heightMax >= 1);
       }
       if (heightIsValid) {
         this.area.points.length = 0;

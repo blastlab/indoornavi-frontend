@@ -41,6 +41,7 @@
             <p-multiSelect *ngIf="onEnterLabel" appMinSelected="1"
                            [defaultLabel]="onEnterLabel" name="on_enter" id="on_enter"
                            [options]="tagsSelect" #multiSelectOnEnter
+                           [resetFilterOnHide]="true"
                            [(ngModel)]="tagsOnEnter" [style]="{ width: '200px' }">
             </p-multiSelect>
           </div>
@@ -59,6 +60,7 @@
             <p-multiSelect *ngIf="onLeaveLabel" appMinSelected="1"
                            [defaultLabel]="onLeaveLabel" name="on_leave" id="on_leave"
                            [options]="tagsSelect" #multiSelectOnLeave
+                           [resetFilterOnHide]="true"
                            [(ngModel)]="tagsOnLeave" [style]="{ width: '200px' }">
             </p-multiSelect>
           </div>
