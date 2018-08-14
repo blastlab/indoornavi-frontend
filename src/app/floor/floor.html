@@ -53,7 +53,7 @@
         <label for="name">{{'floor.name'|translate}}</label>
       </div>
       <div class="ui-g-12 ui-md-5 ui-lg-5">
-        <input properNameValidator name="name" [appAutoFocus]="displayDialog" pInputText id="name" [(ngModel)]="floor.name" #nameInput="ngModel"/>
+        <input appProperNameValidator name="name" [appAutoFocus]="displayDialog" pInputText id="name" [(ngModel)]="floor.name" #nameInput="ngModel"/>
       </div>
     </div>
     <div class="ui-g">

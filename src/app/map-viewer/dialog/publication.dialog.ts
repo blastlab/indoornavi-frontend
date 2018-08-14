@@ -44,7 +44,6 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
   validationError: string;
   dialogClosed: Subject<Publication> = new Subject<Publication>();
   @ViewChild('publishedMapForm') publishedMapForm: NgForm;
-
   tagsLabel: string;
 
   constructor(private deviceService: DeviceService,
