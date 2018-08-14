@@ -8,7 +8,7 @@ import {Point} from '../../../map.type';
 import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../../../shared/utils/drawing/drawing.builder';
 import {MapSvg} from '../../../../map/map.type';
 import {AreaDetailsService} from './details/area-details.service';
-import {Area, AreaBag} from './areas.type';
+import {Area, AreaBag} from './area.type';
 import {Editable} from '../../../../shared/wrappers/editable/editable';
 import {ContextMenuService} from '../../../../shared/wrappers/editable/editable.service';
 import {ActionBarService} from '../../../action-bar/actionbar.service';
@@ -26,9 +26,9 @@ import {Helper} from '../../../../shared/utils/helper/helper';
 
 @Component({
   selector: 'app-area',
-  templateUrl: './areas.html'
+  templateUrl: './area.html'
 })
-export class AreasComponent implements Tool, OnInit, OnDestroy {
+export class AreaComponent implements Tool, OnInit, OnDestroy {
   public static NEW_AREA_ID = 'area-new';
   private static CIRCLE_R: number = 5;
 
@@ -118,6 +118,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
             return areaBag.dto;
           }));
         }
+
         this.toggleActivity();
       }
     });
@@ -208,7 +209,6 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
     this.disabled = value;
   }
 
-
   private handleShiftKeyEvent(coordinates: Point): Point {
     const secondPoint: Point = this.getCurrentAreaPoints()[this.getCurrentAreaPoints().length - 1];
     const deltaY = Geometry.getDeltaY(coordinates, secondPoint);
@@ -249,7 +249,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
 
   private drawPoint(point: Point): d3.selection {
     const pointSelection: d3.selection = this.currentAreaGroup
-      .addCircle(point, AreasComponent.CIRCLE_R)
+      .addCircle(point, AreaComponent.CIRCLE_R)
       .getLastElement(ElementType.CIRCLE);
 
     pointSelection
@@ -478,7 +478,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
   }
 
   private isCurrentAreaGroupNew(): boolean {
-    return !!this.currentAreaGroup && this.currentAreaGroup.getGroup().attr('id') === AreasComponent.NEW_AREA_ID;
+    return !!this.currentAreaGroup && this.currentAreaGroup.getGroup().attr('id') === AreaComponent.NEW_AREA_ID;
   }
 
   private cleanMapViewFromDrawnAreas(): void {

@@ -16,7 +16,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {Config} from '../../../config';
 import {MapLoaderInformerService} from '../../shared/services/map-loader-informer/map-loader-informer.service';
 import {MapSvg} from '../../map/map.type';
-import {Area} from '../../map-editor/tool-bar/tools/area/areas.type';
+import {Area} from '../../map-editor/tool-bar/tools/area/area.type';
 import {Scale, ScaleCalculations} from '../../map-editor/tool-bar/tools/scale/scale.type';
 import {MapObjectService} from '../../shared/utils/drawing/map.object.service';
 import {FloorService} from '../../floor/floor.service';
