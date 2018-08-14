@@ -55,6 +55,8 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
   private scale: Scale;
   private scaleCalculations: ScaleCalculations;
   private containerBox: Box;
+  private currentAreaInContainerBox: boolean;
+  private pointBackup: Point;
 
   constructor(private toolbarService: ToolbarService,
               private mapLoaderInformer: MapLoaderInformerService,
@@ -264,6 +266,13 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
       .getLastElement(ElementType.CIRCLE);
 
     pointSelection
+      .on('mousedown', (): void => {
+        this.pointBackup = Object.assign({}, {
+          x: pointSelection.attr('cx'),
+          y: pointSelection.attr('cy')
+        });
+        console.log(this.pointBackup);
+      })
       .on('mouseover', (): void => {
         pointSelection.style('fill', 'red');
       })
@@ -348,6 +357,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
   }
 
   private createArea(): void {
+    this.currentAreaInContainerBox = true;
     this.areaDetailsService.show();
     this.hintBarService.sendHintMessage('area.hint.third');
 
@@ -384,7 +394,6 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
   }
 
   private handleCircleDrag(): void {
-    this.drawPolygon(this.getCurrentAreaPoints());
     this.removePolygon();
     this.draggingElement
       .attr('cx', d3.event.dx + parseInt(this.draggingElement.attr('cx'), 10))
@@ -414,6 +423,20 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
           d3.event.sourceEvent.stopPropagation();
         })
         .on('end', (): void => {
+          const point: Point = {
+            x: this.draggingElement.attr('cx'),
+            y: this.draggingElement.attr('cy')
+          };
+          if (Geometry.areCoordinatesInGivenRange(point, this.containerBox)) {
+            this.draggingElement.attr('cx', point.x);
+            this.draggingElement.attr('cy', point.y);
+          } else {
+            // TODO: when moving polygon backup needs to be updated properly
+            this.draggingElement.attr('cx', this.pointBackup.x);
+            this.draggingElement.attr('cy', this.pointBackup.y);
+            this.removePolygon();
+            this.drawPolygon(this.getCurrentAreaPoints());
+          }
           this.draggingElement = null;
         })
     );
