@@ -4,6 +4,7 @@
             id="open-dialog" [appHasPermission]="createPermission"
             (click)="openDialog()"
             label="{{'add'|translate}}"
+            [disabled]="updateMode"
             icon="fa-plus" iconPos="left">
     </button>
   </div>
@@ -82,10 +83,12 @@
         <div class="ui-g-3 ui-md-3 ui-lg-3">
           <button
             [appHasPermission]="editPermission"
+            [disabled]="updateMode"
             pTooltip="{{'edit'|translate}}" type="button" pButton (click)="openDialog(device)" icon="fa-edit" class="ui-button-info">
           </button>
           <button
             [appHasPermission]="deletePermission"
+            [disabled]="updateMode"
             pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(device)" icon="fa-trash" class="ui-button-danger">
           </button>
           <p-checkbox #updateCheckbox *ngIf="updateMode && devicesUpdating.length === 0" name="deviceToUpdate" id="{{device.shortId}}" [value]="device" (onChange)="checkAllSelected()"
