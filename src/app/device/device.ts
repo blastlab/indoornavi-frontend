@@ -34,6 +34,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   public devicesUpdating: Device[] = [];
   public allSelected: boolean = false;
   public displayInfoDialog: boolean = false;
+  public sourceFilterPlaceholder: string;
   @ViewChildren('updateCheckbox') public deviceCheckboxes: Checkbox[];
   @ViewChild('firmwareInput') public firmwareInput: ElementRef;
   @ViewChild('firmwareButton') public firmwareButton: ElementRef;
@@ -75,10 +76,10 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     this.translate.get(`device.details.${this.deviceType}.remove`).subscribe((value: string) => {
       this.removeDialogTitle = value;
     });
-
     this.ngZone.runOutsideAngular(() => {
       this.connectToRegistrationSocket();
     });
+    this.translateSearchPlaceholder();
   }
 
   ngOnDestroy() {
@@ -251,6 +252,35 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     }
   }
 
+  isDeviceBluetooth(): boolean {
+    return this.deviceType === 'bluetooth';
+  }
+
+  filterByData() {
+    switch (this.deviceType) {
+      case 'bluetooth':
+          return 'id';
+      case 'sinks':
+      case 'anchors':
+      case 'tags':
+        return 'shortId';
+      default:
+        return 'shortId';
+    }
+  }
+
+  private translateSearchPlaceholder(): void {
+    if (this.isDeviceBluetooth()) {
+      this.translate.get(`device.searchById`).subscribe((value: string) => {
+        this.sourceFilterPlaceholder = value;
+      });
+    } else {
+      this.translate.get(`device.searchByShortId`).subscribe((value: string) => {
+        this.sourceFilterPlaceholder = value;
+      });
+    }
+  }
+
   private updateFirmwareVersion(deviceStatus: DeviceStatus) {
     let deviceToChangeFirmware: Device;
     const index = this.devicesWaitingForNewFirmwareVersion.findIndex((ds: DeviceStatus) => {
@@ -335,7 +365,21 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
 
   private connectToRegistrationSocket() {
     const stream = this.socketService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.deviceType}`);
-
+    let test = [
+      { id: 121, major: 20, macAddress: '123.212.123.121', powerTransmition: 48483, verified: false, shortId: 7457, name: 'Bluetooth 1' },
+      { id: 140, major: 30, macAddress: '130.212.123.120', powerTransmition: 53452, verified: false, shortId: 5675, name: 'Bluetooth 2'  },
+      { id: 122, major: 40, macAddress: '130.212.123.122', powerTransmition: 34544, verified: false, shortId: 4756, name: 'Bluetooth 3'  }
+    ];
+    test.forEach((device: Device) => {
+      if (this.isAlreadyOnAnyList(device)) {
+        return;
+      }
+      if (device.verified) {
+        this.verified.push(device);
+      } else {
+        this.notVerified.push(device);
+      }
+    });
     this.socketSubscription = stream.subscribe((devices: Array<Device>): void => {
       this.ngZone.run((): void => {
         devices.forEach((device: Device) => {

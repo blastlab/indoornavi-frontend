@@ -54,16 +54,28 @@
 
 <p-pickList class="device-list" [source]="notVerified" [target]="verified" dragdrop="true" [responsive]="true"
             sourceHeader="{{'device.notVerified'|translate}}" targetHeader="{{'device.verified'|translate}}"
-            [showSourceControls]="false" [showTargetControls]="false" filterBy="shortId"
-            sourceFilterPlaceholder="{{'device.searchByShortId'|translate}}" targetFilterPlaceholder="{{'device.searchByShortId'|translate}}"
+            [showSourceControls]="false" [showTargetControls]="false" [filterBy]="filterByData()"
+            [sourceFilterPlaceholder]="sourceFilterPlaceholder" [targetFilterPlaceholder]="sourceFilterPlaceholder"
             (onMoveToTarget)="onItemMoved($event.items)" (onMoveToSource)="onItemMoved($event.items)">
   <ng-template let-device pTemplate="item">
     <div class="ui-helper-clearfix">
       <div class="ui-g">
         <div [ngClass]="{'ui-g-9 ui-md-9 ui-lg-9': !device.floorId, 'ui-g-5 ui-md-5 ui-lg-5': device.floorId}" class="device-details">
-          <div><b>{{'device.shortId'|translate}}:</b> {{device['shortId']}}</div>
-          <div><b>{{'device.longId'|translate}}:</b> {{device['longId']}}</div>
+
+          <ng-container *ngIf="isDeviceBluetooth(); else otherDevicesDescription">
+            <div><b>{{'device.id'|translate}}:</b> {{device['id']}}</div>
+            <div><b>{{'device.major'|translate}}:</b> {{device['major']}}</div>
+            <div><b>{{'device.macAddress'|translate}}:</b> {{device['macAddress']}}</div>
+            <div><b>{{'device.powerTransmition'|translate}}:</b> {{device['powerTransmition']}}</div>
+          </ng-container>
+
+          <ng-template #otherDevicesDescription>
+            <div><b>{{'device.shortId'|translate}}:</b> {{device['shortId']}}</div>
+            <div><b>{{'device.longId'|translate}}:</b> {{device['longId']}}</div>
+          </ng-template>
+
           <div><b>{{'device.name'|translate}}:</b> {{device['name']}}</div>
+
           <div *ngIf="device.firmwareVersion && devicesUpdating.indexOf(device) < 0">
             <b>{{'device.firmware.version'|translate}}:</b>
             <span [innerHtml]="device.firmwareVersion"></span>
@@ -108,62 +120,140 @@
     {{dialogTitle|translate}}
   </p-header>
   <form #deviceForm="ngForm" novalidate>
-    <div *ngIf="device">
-      <div class="ui-g">
-        <div class="ui-g-12 ui-md-4 ui-lg-4">
-          <div class="ui-message ui-messages-error ui-corner-all"
-               *ngIf="shortIdInput.errors?.required && shortIdInput.touched && shortIdInput.dirty">
-            <i class="fa fa-warning"></i>
-            {{'device.shortId.required'|translate}}
+
+     <div *ngIf="device">
+       <!-- form field for Bluetooth -->
+       <div *ngIf="isDeviceBluetooth(); else otherDevices">
+         <div class="ui-g">
+           <div class="ui-g-12 ui-md-4 ui-lg-4">
+             <div class="ui-message ui-messages-error ui-corner-all"
+                  *ngIf="deviceId.errors?.required && deviceId.touched && deviceId.dirty">
+               <i class="fa fa-warning"></i>
+               {{'device.id.required'|translate}}
+             </div>
+             <div class="ui-message ui-messages-error ui-corner-all"
+                  *ngIf="deviceId.errors?.properShortId && deviceId.touched && deviceId.dirty && !deviceId.errors?.required">
+               <i class="fa fa-warning"></i>
+               {{deviceId.errors?.properShortId|translate}}
+             </div>
+           </div>
+           <div class="ui-g-12 ui-md-2 ui-lg-2">
+             <label for="deviceId">{{'device.id'|translate}} *</label>
+           </div>
+           <div class="ui-g-12 ui-md-6 ui-lg-6">
+             <input [appProperShortId]="deviceType" name="deviceId" required [appAutoFocus]="displayDialog" pInputText id="deviceId" [(ngModel)]="device.id" #deviceId="ngModel" />
+           </div>
+         </div>
+
+         <div class="ui-g">
+           <div class="ui-g-12 ui-md-4 ui-lg-4">
+             <div class="ui-message ui-messages-error ui-corner-all"
+                  *ngIf="deviceId.errors?.required && deviceId.touched && deviceId.dirty">
+               <i class="fa fa-warning"></i>
+               {{'device.major.required'|translate}}
+             </div>
+           </div>
+           <div class="ui-g-12 ui-md-2 ui-lg-2">
+             <label for="major">{{'device.major'|translate}} *</label>
+           </div>
+           <div class="ui-g-12 ui-md-6 ui-lg-6">
+             <input appProperMajor name="major" required pInputText id="major" [(ngModel)]="device.major" #major="ngModel"/>
+           </div>
+         </div>
+
+         <div class="ui-g">
+           <div class="ui-g-12 ui-md-4 ui-lg-4">
+           </div>
+           <div class="ui-g-12 ui-md-2 ui-lg-2">
+             <label for="major">{{'device.macAddress'|translate}}</label>
+           </div>
+           <div class="ui-g-12 ui-md-6 ui-lg-6">
+             <input appProperMajor name="macAddress" pInputText id="macAddress" [(ngModel)]="device.macAddress" #macAddress="ngModel"/>
+           </div>
+         </div>
+
+         <div class="ui-g">
+           <div class="ui-g-12 ui-md-4 ui-lg-4">
+           </div>
+           <div class="ui-g-12 ui-md-2 ui-lg-2">
+             <label for="major">{{'device.powerTransmition'|translate}}</label>
+           </div>
+           <div class="ui-g-12 ui-md-6 ui-lg-6">
+             <input appProperMajor name="powerTransmition" pInputText id="powerTransmition" [(ngModel)]="device.powerTransmition" #powerTransmition="ngModel"/>
+           </div>
+         </div>
+
+         <div class="ui-g">
+           <div class="ui-g-12 ui-md-4 ui-lg-4">
+           </div>
+           <div class="ui-g-12 ui-md-2 ui-lg-2">
+             <label for="major">{{'device.name'|translate}}</label>
+           </div>
+           <div class="ui-g-12 ui-md-6 ui-lg-6">
+             <input appProperMajor name="name" pInputText id="deviceName" [(ngModel)]="device.name" #nameInput="ngModel"/>
+           </div>
+         </div>
+       </div><!-- / form field for Bluetooth -->
+
+       <!-- form field for other devices -->
+       <ng-template #otherDevices>
+        <div class="ui-g">
+          <div class="ui-g-12 ui-md-4 ui-lg-4">
+            <div class="ui-message ui-messages-error ui-corner-all"
+                 *ngIf="shortIdInput.errors?.required && shortIdInput.touched && shortIdInput.dirty">
+              <i class="fa fa-warning"></i>
+              {{'device.shortId.required'|translate}}
+            </div>
+            <div class="ui-message ui-messages-error ui-corner-all"
+                 *ngIf="shortIdInput.errors?.properShortId && shortIdInput.touched && shortIdInput.dirty && !shortIdInput.errors?.required">
+              <i class="fa fa-warning"></i>
+              {{shortIdInput.errors?.properShortId|translate}}
+            </div>
           </div>
-          <div class="ui-message ui-messages-error ui-corner-all"
-               *ngIf="shortIdInput.errors?.properShortId && shortIdInput.touched && shortIdInput.dirty && !shortIdInput.errors?.required">
-            <i class="fa fa-warning"></i>
-            {{shortIdInput.errors?.properShortId|translate}}
+          <div class="ui-g-12 ui-md-2 ui-lg-2">
+            <label for="shortId">{{'device.shortId'|translate}} *</label>
+          </div>
+          <div class="ui-g-12 ui-md-6 ui-lg-6">
+            <input name="shortId" [appProperShortId]="deviceType" required [appAutoFocus]="displayDialog" pInputText id="shortId" [(ngModel)]="device.shortId" #shortIdInput="ngModel"/>
           </div>
         </div>
-        <div class="ui-g-12 ui-md-2 ui-lg-2">
-          <label for="shortId">{{'device.shortId'|translate}} *</label>
-        </div>
-        <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input name="shortId" [appProperShortId]="deviceType" required [appAutoFocus]="displayDialog" pInputText id="shortId" [(ngModel)]="device.shortId" #shortIdInput="ngModel"/>
-        </div>
-      </div>
-      <div class="ui-g">
-        <div class="ui-g-12 ui-md-4 ui-lg-4">
-          <div class="ui-message ui-messages-error ui-corner-all"
-               *ngIf="longIdInput.errors?.required && longIdInput.touched && longIdInput.dirty">
-            <i class="fa fa-warning"></i>
-            {{'device.longId.required'|translate}}
+        <div class="ui-g">
+          <div class="ui-g-12 ui-md-4 ui-lg-4">
+            <div class="ui-message ui-messages-error ui-corner-all"
+                 *ngIf="longIdInput.errors?.required && longIdInput.touched && longIdInput.dirty">
+              <i class="fa fa-warning"></i>
+              {{'device.longId.required'|translate}}
+            </div>
+            <div class="ui-message ui-messages-error ui-corner-all"
+                 *ngIf="longIdInput.errors?.properLongId && longIdInput.touched && longIdInput.dirty && !longIdInput.errors?.required">
+              <i class="fa fa-warning"></i>
+              {{longIdInput.errors?.properLongId|translate}}
+            </div>
           </div>
-          <div class="ui-message ui-messages-error ui-corner-all"
-               *ngIf="longIdInput.errors?.properLongId && longIdInput.touched && longIdInput.dirty && !longIdInput.errors?.required">
-            <i class="fa fa-warning"></i>
-            {{longIdInput.errors?.properLongId|translate}}
+          <div class="ui-g-12 ui-md-2 ui-lg-2">
+            <label for="longId">{{'device.longId'|translate}} *</label>
           </div>
-        </div>
-        <div class="ui-g-12 ui-md-2 ui-lg-2">
-          <label for="longId">{{'device.longId'|translate}} *</label>
-        </div>
-        <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input appProperLongId name="longId" required pInputText id="longId" [(ngModel)]="device.longId" #longIdInput="ngModel"/>
-        </div>
-      </div>
-      <div class="ui-g">
-        <div class="ui-g-12 ui-md-4 ui-lg-4">
-          <div class="ui-message ui-messages-error ui-corner-all"
-               *ngIf="nameInput.errors?.properName && nameInput.touched && nameInput.dirty">
-            <i class="fa fa-warning"></i>
-            {{nameInput.errors?.properName|translate}}
+          <div class="ui-g-12 ui-md-6 ui-lg-6">
+            <input appProperLongId name="longId" required pInputText id="longId" [(ngModel)]="device.longId" #longIdInput="ngModel"/>
           </div>
         </div>
-        <div class="ui-g-12 ui-md-2 ui-lg-2">
-          <label for="name">{{'device.name'|translate}}</label>
+        <div class="ui-g">
+          <div class="ui-g-12 ui-md-4 ui-lg-4">
+            <div class="ui-message ui-messages-error ui-corner-all"
+                 *ngIf="nameInput.errors?.properName && nameInput.touched && nameInput.dirty">
+              <i class="fa fa-warning"></i>
+              {{nameInput.errors?.properName|translate}}
+            </div>
+          </div>
+          <div class="ui-g-12 ui-md-2 ui-lg-2">
+            <label for="name">{{'device.name'|translate}}</label>
+          </div>
+          <div class="ui-g-12 ui-md-6 ui-lg-6">
+            <input appProperNameValidator name="name" pInputText id="name" [(ngModel)]="device.name" #nameInput="ngModel"/>
+          </div>
         </div>
-        <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input appProperNameValidator name="name" pInputText id="name" [(ngModel)]="device.name" #nameInput="ngModel"/>
-        </div>
-      </div>
+      </ng-template><!-- / form field for other devices -->
+
       <p-footer>
         <div class="ui-dialog-buttonpane ui-helper-clearfix">
           <button type="button" pButton icon="fa-close" (click)="cancel()"
