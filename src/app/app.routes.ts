@@ -24,6 +24,7 @@ export const appRoutes: Routes = [
   {path: 'anchors', component: DeviceComponent, canActivate: [CanRead], data: {permission: 'ANCHOR'}},
   {path: 'tags', component: DeviceComponent, canActivate: [CanRead], data: {permission: 'TAG'}},
   {path: 'sinks', component: DeviceComponent, canActivate: [CanRead], data: {permission: 'SINK'}},
+  {path: 'bluetooth', component: DeviceComponent, canActivate: [CanRead], data: {permission: 'BLUETOOTH'}},
   {path: 'publications', component: PublishedListComponent, canActivate: [CanRead], data: {permission: 'PUBLICATION'}},
   {path: 'publications/:id', component: PublishedComponent, canActivate: [CanRead], data: {permission: 'PUBLICATION'}},
   {path: 'embedded/:id', component: PublishedComponent, data: {isPublic: true}},

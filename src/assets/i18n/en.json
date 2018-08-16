@@ -18,6 +18,7 @@
   "ask.to.confirm.placement": "Please confirm device placement:",
   "auth.invalid.credentials": "Invalid username and/or password",
   "blur": "Blur",
+  "bluetooth.header": "Bluetooth",
   "building": "Building",
   "building.create.success": "Building has been created.",
   "building.details": "Building details",
