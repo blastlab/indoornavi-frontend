@@ -439,9 +439,10 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
             }
           });
           if (!isInRange) {
+            const idBackUp: string = this.selectedEditable.groupWrapper.getGroup().attr('id');
             this.currentAreaGroup.remove();
-            this.currentAreaGroup = null;
             this.currentAreaGroup = this.createBuilder().createGroup();
+            this.currentAreaGroup.getGroup().attr('id', idBackUp);
             this.drawPolygon(this.backupPoints);
             this.applyHover(this.backupPoints);
             this.applyDrag();
@@ -545,6 +546,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
       areaBag.editable.onSelected().subscribe((selected: Editable) => {
         this.selectedEditable = selected;
       });
+      this.drawPolygon(areaBag.dto.points, areaBag.editable.groupWrapper);
       index++;
     });
   }
