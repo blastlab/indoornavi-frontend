@@ -56,7 +56,6 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
   private scaleCalculations: ScaleCalculations;
   private containerBox: Box;
   private currentAreaInContainerBox: boolean;
-  private pointBackup: Point;
 
   constructor(private toolbarService: ToolbarService,
               private mapLoaderInformer: MapLoaderInformerService,
@@ -266,13 +265,6 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
       .getLastElement(ElementType.CIRCLE);
 
     pointSelection
-      .on('mousedown', (): void => {
-        this.pointBackup = Object.assign({}, {
-          x: pointSelection.attr('cx'),
-          y: pointSelection.attr('cy')
-        });
-        console.log(this.pointBackup);
-      })
       .on('mouseover', (): void => {
         pointSelection.style('fill', 'red');
       })
@@ -421,23 +413,21 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
         .on('start', (): void => {
           this.draggingElement = d3.select(d3.event.sourceEvent.target);
           d3.event.sourceEvent.stopPropagation();
+          console.log(this.draggingElement.attr('points'));
+          console.log(this.draggingElement.attr('cx'));
+          const selector = `${!!this.selectedEditable ? '#' + this.selectedEditable.groupWrapper.getGroup().attr('id') : '#' + AreasComponent.NEW_AREA_ID}`;
+          const svgGroup = d3.select(selector);
+          // we need to add shift since coordinates of points are within svg group and when user moves svg group we need to shift coordinates
+          const shift: Point = (<Point>{x: +svgGroup.attr('x'), y: +svgGroup.attr('y')});
+          console.log(shift);
         })
         .on('end', (): void => {
-          const point: Point = {
-            x: this.draggingElement.attr('cx'),
-            y: this.draggingElement.attr('cy')
-          };
-          if (Geometry.areCoordinatesInGivenRange(point, this.containerBox)) {
-            this.draggingElement.attr('cx', point.x);
-            this.draggingElement.attr('cy', point.y);
-          } else {
-            // TODO: when moving polygon backup needs to be updated properly
-            this.draggingElement.attr('cx', this.pointBackup.x);
-            this.draggingElement.attr('cy', this.pointBackup.y);
-            this.removePolygon();
-            this.drawPolygon(this.getCurrentAreaPoints());
-          }
-          this.draggingElement = null;
+          // const point: Point = {
+          //   x: this.draggingElement.attr('cx'),
+          //   y: this.draggingElement.attr('cy')
+          // };
+          // this.draggingElement.attr('cx', point.x);
+          // this.draggingElement.attr('cy', point.y);
         })
     );
   }
@@ -531,7 +521,6 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
       areaBag.editable.onSelected().subscribe((selected: Editable) => {
         this.selectedEditable = selected;
       });
-      this.drawPolygon(areaBag.dto.points, areaBag.editable.groupWrapper);
       index++;
     });
   }
