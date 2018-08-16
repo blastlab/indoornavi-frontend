@@ -14,7 +14,7 @@ import {ContextMenuService} from '../../../../shared/wrappers/editable/editable.
 import {ActionBarService} from '../../../action-bar/actionbar.service';
 import {Floor} from '../../../../floor/floor.type';
 import {Configuration} from '../../../action-bar/actionbar.type';
-import {isNumber, log} from 'util';
+import {isNumber} from 'util';
 import {Subscription} from 'rxjs/Subscription';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
 import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
@@ -425,6 +425,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
         })
         .on('end', (): void => {
           const shift: Point = this.calculateShift();
+          let isInRange = true;
           let currentPointsCoordinates: Point[];
           if (this.draggingElement.node().nodeName === 'circle') {
             const currentPolygon: d3.selection = d3.select(this.draggingElement.node().parentNode).select('polygon');
@@ -434,15 +435,17 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
           }
           currentPointsCoordinates.forEach((point: Point): void => {
             if (!Geometry.areCoordinatesInGivenRange(point, this.containerBox)) {
-              console.log(point);
+              isInRange = false;
             }
           });
-          // const point: Point = {
-          //   x: this.draggingElement.attr('cx'),
-          //   y: this.draggingElement.attr('cy')
-          // };
-          // this.draggingElement.attr('cx', point.x);
-          // this.draggingElement.attr('cy', point.y);
+          if (!isInRange) {
+            this.currentAreaGroup.remove();
+            this.currentAreaGroup = null;
+            this.currentAreaGroup = this.createBuilder().createGroup();
+            this.drawPolygon(this.backupPoints);
+            this.applyHover(this.backupPoints);
+            this.applyDrag();
+          }
         })
     );
   }
