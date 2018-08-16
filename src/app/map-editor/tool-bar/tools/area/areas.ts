@@ -439,10 +439,12 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
             }
           });
           if (!isInRange) {
-            const idBackUp: string = this.selectedEditable.groupWrapper.getGroup().attr('id');
             this.currentAreaGroup.remove();
             this.currentAreaGroup = this.createBuilder().createGroup();
-            this.currentAreaGroup.getGroup().attr('id', idBackUp);
+            if (!!this.selectedEditable) {
+              const idBackUp = this.selectedEditable.groupWrapper.getGroup().attr('id');
+              this.currentAreaGroup.getGroup().attr('id', idBackUp);
+            }
             this.drawPolygon(this.backupPoints);
             this.applyHover(this.backupPoints);
             this.applyDrag();
