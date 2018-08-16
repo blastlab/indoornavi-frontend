@@ -14,7 +14,7 @@ import {ContextMenuService} from '../../../../shared/wrappers/editable/editable.
 import {ActionBarService} from '../../../action-bar/actionbar.service';
 import {Floor} from '../../../../floor/floor.type';
 import {Configuration} from '../../../action-bar/actionbar.type';
-import {isNumber} from 'util';
+import {isNumber, log} from 'util';
 import {Subscription} from 'rxjs/Subscription';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
 import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
@@ -56,6 +56,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
   private scaleCalculations: ScaleCalculations;
   private containerBox: Box;
   private currentAreaInContainerBox: boolean;
+  private backupPoints: Point[] = [];
 
   constructor(private toolbarService: ToolbarService,
               private mapLoaderInformer: MapLoaderInformerService,
@@ -413,15 +414,29 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
         .on('start', (): void => {
           this.draggingElement = d3.select(d3.event.sourceEvent.target);
           d3.event.sourceEvent.stopPropagation();
-          console.log(this.draggingElement.attr('points'));
-          console.log(this.draggingElement.attr('cx'));
-          const selector = `${!!this.selectedEditable ? '#' + this.selectedEditable.groupWrapper.getGroup().attr('id') : '#' + AreasComponent.NEW_AREA_ID}`;
-          const svgGroup = d3.select(selector);
-          // we need to add shift since coordinates of points are within svg group and when user moves svg group we need to shift coordinates
-          const shift: Point = (<Point>{x: +svgGroup.attr('x'), y: +svgGroup.attr('y')});
-          console.log(shift);
+          const shift: Point = this.calculateShift();
+          if (this.draggingElement.node().nodeName === 'circle') {
+            const currentPolygon: d3.selection = d3.select(this.draggingElement.node().parentNode).select('polygon');
+            this.backupPoints = Geometry.calculatePolygonPointsRealPosition(currentPolygon, shift);
+          } else {
+            this.backupPoints = Geometry.calculatePolygonPointsRealPosition(this.draggingElement, shift);
+          }
+
         })
         .on('end', (): void => {
+          const shift: Point = this.calculateShift();
+          let currentPointsCoordinates: Point[];
+          if (this.draggingElement.node().nodeName === 'circle') {
+            const currentPolygon: d3.selection = d3.select(this.draggingElement.node().parentNode).select('polygon');
+            currentPointsCoordinates = Geometry.calculatePolygonPointsRealPosition(currentPolygon, shift);
+          } else {
+            currentPointsCoordinates = Geometry.calculatePolygonPointsRealPosition(this.draggingElement, shift);
+          }
+          currentPointsCoordinates.forEach((point: Point): void => {
+            if (!Geometry.areCoordinatesInGivenRange(point, this.containerBox)) {
+              console.log(point);
+            }
+          });
           // const point: Point = {
           //   x: this.draggingElement.attr('cx'),
           //   y: this.draggingElement.attr('cy')
@@ -431,6 +446,12 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
         })
     );
   }
+
+  private calculateShift(): Point {
+    const selector = `${!!this.selectedEditable ? '#' + this.selectedEditable.groupWrapper.getGroup().attr('id') : '#' + AreasComponent.NEW_AREA_ID}`;
+    const svgGroup = d3.select(selector);
+    return (<Point>{x: +svgGroup.attr('x'), y: +svgGroup.attr('y')});
+}
 
   private applyHover(points: Point[]): void {
     points.forEach((point: Point) => {
