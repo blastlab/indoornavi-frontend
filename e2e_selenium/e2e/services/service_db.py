@@ -4,6 +4,7 @@ from .service_data import get_csv_data
 import logging
 import time
 from .service_logger import ServiceLogger
+import threading
 
 
 class ServiceDb:
@@ -19,8 +20,9 @@ class ServiceDb:
     TABLE_TRUNCATE_PERMISSIONS_SIZE = 12
 
     def __init__(self):
+        self.ServiceDbId = threading.current_thread()
         self.ServiceLogger = ServiceLogger(self.__class__.__name__)
-        self.ServiceLogger.logger.info("Init service Db")
+        self.ServiceLogger.logger.info("Init service Db" + str(self.ServiceDbId))
 
         self.db_connect = mysql.connector.connect(user='root', password='', host=self.__db_hostname, database='Navi')
         self.ServiceLogger.logger.info("Connect to Db")
