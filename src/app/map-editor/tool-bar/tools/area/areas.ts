@@ -39,6 +39,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
   disabled: boolean = true;
   private firstPointSelection: d3.selection;
   private lastPointSelection: d3.selection;
+  private firstPoint: Point;
   private lastPoint: Point;
   private tempLine: d3.selection;
   private currentAreaGroup: SvgGroupWrapper;
@@ -240,6 +241,9 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
         areaBag.editable.off();
       });
     } else {
+      if (this.getCurrentAreaPoints().length < 2 && this.isFirstPoint()) {
+        return;
+      }
       const event: KeyboardEvent = <KeyboardEvent>window.event;
       if (event.shiftKey && this.getCurrentAreaPoints().length > 0) {
         point = this.handleShiftKeyEvent(point);

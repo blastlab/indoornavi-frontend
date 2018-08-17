@@ -20,6 +20,7 @@ import {Subject} from 'rxjs/Subject';
 import {MessageServiceWrapper} from '../../shared/services/message/message.service';
 import {SelectItem} from 'primeng/primeng';
 import {Tag} from '../../device/device.type';
+import {Helper} from '../../shared/utils/helper/helper';
 
 @Component({
   selector: 'app-publication-dialog',
@@ -31,8 +32,10 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
   dialogTitle: string;
 
   selectedComplexes: Complex[] = [];
+  activeComplexes: Complex[] = [];
   buildings: Building[] = [];
   selectedBuildings: Building[] = [];
+  activeBuildings: Building[] = [];
   floors: SelectItem[] = [];
   selectedFloors: Floor[] = [];
   tags: Tag[] = [];
@@ -102,6 +105,12 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
 
   complexChanged() {
     this.buildings.length = 0;
+
+    if (!this.isDataSelected(this.selectedComplexes) || !this.isChooseSameData(this.activeComplexes, this.selectedComplexes)) {
+      this.selectedBuildings.length = 0;
+      this.selectedFloors.length = 0;
+    }
+
     this.selectedComplexes.forEach((complex: Complex) => {
       this.buildingService.getComplexWithBuildings(complex.id).subscribe((complexFromDb: Complex) => {
         this.buildings = this.buildings.concat(complexFromDb.buildings);
@@ -111,6 +120,11 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
 
   buildingChanged() {
     this.floors.length = 0;
+
+    if (!this.isDataSelected(this.selectedBuildings) || !this.isChooseSameData(this.activeBuildings, this.selectedBuildings)) {
+      this.selectedFloors.length = 0;
+    }
+
     this.selectedBuildings.forEach((building: Building) => {
       this.floorService.getBuildingWithFloors(building.id).subscribe((buildingFromDb: Building) => {
         this.floors = this.floors.concat(
@@ -128,15 +142,15 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
   setMap(map: Publication) {
     if (!!map) {
       this.dialogTitle = 'publishedMap.details.edit';
-      this.selectedComplexes = map.floors.map(floor => {
+      this.activeComplexes = this.selectedComplexes = map.floors.map(floor => {
         return floor.building.complex;
       });
       this.complexChanged();
-      this.selectedBuildings = map.floors.map(floor => {
+      this.activeBuildings = this.selectedBuildings = map.floors.map(floor => {
         return floor.building;
       });
       this.buildingChanged();
-      this.selectedFloors = map.floors;
+      this.selectedFloors = Helper.deepCopy(map.floors);
       this.selectedTags = map.tags.map((tag: Tag) => {
         return tag.shortId;
       });
@@ -229,6 +243,16 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
           });
         }
       );
+    });
+  }
+
+  private isDataSelected(data): boolean {
+    return !!data.length;
+  }
+
+  private isChooseSameData(selectedArrData: Array<Complex | Building>, currentArrData: Array<Complex | Building>): boolean {
+    return currentArrData.some((currData: Complex | Building): boolean => {
+      return selectedArrData.every((selData: Complex | Building): boolean => currData.id === selData.id)
     });
   }
 }
