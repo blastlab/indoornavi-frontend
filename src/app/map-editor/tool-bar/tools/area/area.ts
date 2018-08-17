@@ -455,7 +455,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
   }
 
   private calculateShift(): Point {
-    const selector = `${!!this.selectedEditable ? '#' + this.selectedEditable.groupWrapper.getGroup().attr('id') : '#' + AreasComponent.NEW_AREA_ID}`;
+    const selector = `${!!this.selectedEditable ? '#' + this.selectedEditable.groupWrapper.getGroup().attr('id') : '#' + AreaComponent.NEW_AREA_ID}`;
     const svgGroup = d3.select(selector);
     return (<Point>{x: +svgGroup.attr('x'), y: +svgGroup.attr('y')});
 }
