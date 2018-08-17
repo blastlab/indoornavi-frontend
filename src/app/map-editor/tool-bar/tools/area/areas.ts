@@ -57,7 +57,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
   private scaleCalculations: ScaleCalculations;
   private containerBox: Box;
   private currentAreaInContainerBox: boolean;
-  private backupPoints: Point[] = [];
+  private backupPolygonPoints: Point[] = [];
 
   constructor(private toolbarService: ToolbarService,
               private mapLoaderInformer: MapLoaderInformerService,
@@ -418,26 +418,12 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
         .on('start', (): void => {
           this.draggingElement = d3.select(d3.event.sourceEvent.target);
           d3.event.sourceEvent.stopPropagation();
-          const shift: Point = this.calculateShift();
-          if (this.draggingElement.node().nodeName === 'circle') {
-            const currentPolygon: d3.selection = d3.select(this.draggingElement.node().parentNode).select('polygon');
-            this.backupPoints = Geometry.calculatePolygonPointsRealPosition(currentPolygon, shift);
-          } else {
-            this.backupPoints = Geometry.calculatePolygonPointsRealPosition(this.draggingElement, shift);
-          }
-
+          this.backupPolygonPoints = this.applyShiftToPolygon();
         })
         .on('end', (): void => {
-          const shift: Point = this.calculateShift();
           let isInRange = true;
-          let currentPointsCoordinates: Point[];
-          if (this.draggingElement.node().nodeName === 'circle') {
-            const currentPolygon: d3.selection = d3.select(this.draggingElement.node().parentNode).select('polygon');
-            currentPointsCoordinates = Geometry.calculatePolygonPointsRealPosition(currentPolygon, shift);
-          } else {
-            currentPointsCoordinates = Geometry.calculatePolygonPointsRealPosition(this.draggingElement, shift);
-          }
-          currentPointsCoordinates.forEach((point: Point): void => {
+          const currentPolygonPoints: Point[] = this.applyShiftToPolygon();
+          currentPolygonPoints.forEach((point: Point): void => {
             if (!Geometry.areCoordinatesInGivenRange(point, this.containerBox)) {
               isInRange = false;
             }
@@ -449,12 +435,24 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
               const idBackUp = this.selectedEditable.groupWrapper.getGroup().attr('id');
               this.currentAreaGroup.getGroup().attr('id', idBackUp);
             }
-            this.drawPolygon(this.backupPoints);
-            this.applyHover(this.backupPoints);
+            this.drawPolygon(this.backupPolygonPoints);
+            this.applyHover(this.backupPolygonPoints);
             this.applyDrag();
           }
         })
     );
+  }
+
+  private applyShiftToPolygon(): Point[] {
+    const shift: Point = this.calculateShift();
+    let points: Point[];
+    if (this.draggingElement.node().nodeName === 'circle') {
+      const currentPolygon: d3.selection = d3.select(this.draggingElement.node().parentNode).select('polygon');
+      points = Geometry.calculatePolygonPointsRealPosition(currentPolygon, shift);
+    } else {
+      points = Geometry.calculatePolygonPointsRealPosition(this.draggingElement, shift);
+    }
+    return points;
   }
 
   private calculateShift(): Point {
