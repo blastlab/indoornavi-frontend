@@ -39,7 +39,6 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
   disabled: boolean = true;
   private firstPointSelection: d3.selection;
   private lastPointSelection: d3.selection;
-  private firstPoint: Point;
   private lastPoint: Point;
   private tempLine: d3.selection;
   private currentAreaGroup: SvgGroupWrapper;
