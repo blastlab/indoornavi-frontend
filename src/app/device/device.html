@@ -64,7 +64,7 @@
 
           <ng-container *ngIf="isDeviceBluetooth(); else otherDevicesDescription">
             <div><b>{{'device.id'|translate}}:</b> {{device['id']}}</div>
-            <div><b>{{'device.major'|translate}}:</b> {{device['major']}}</div>
+            <div><b>{{'device.minor'|translate}}:</b> {{device['major']}}</div>
             <div><b>{{'device.macAddress'|translate}}:</b> {{device['macAddress']}}</div>
             <div><b>{{'device.powerTransmition'|translate}}:</b> {{device['powerTransmition']}}</div>
           </ng-container>
@@ -190,7 +190,7 @@
         <div class="ui-dialog-buttonpane ui-helper-clearfix">
           <button type="button" pButton icon="fa-close" (click)="cancel()"
                   label="{{'cancel'|translate}}"></button>
-          <button type="submit" pButton icon="fa-check" (click)="save(deviceForm.valid)" label="{{'save'|translate}}"></button>
+          <button type="submit" pButton icon="fa-check" (click)="save(deviceForm.valid)" [disabled]="!deviceForm.form.valid" label="{{'save'|translate}}"></button>
         </div>
       </p-footer>
     </div>

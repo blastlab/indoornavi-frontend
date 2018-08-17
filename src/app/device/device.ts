@@ -367,9 +367,9 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   private connectToRegistrationSocket() {
     const stream = this.socketService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.deviceType}`);
     let test = [
-      { id: 121, major: 20, macAddress: '123.212.123.121', powerTransmition: 48483, verified: false, shortId: 7457, name: 'Bluetooth 1' },
-      { id: 140, major: 30, macAddress: '130.212.123.120', powerTransmition: 53452, verified: false, shortId: 5675, name: 'Bluetooth 2'  },
-      { id: 122, major: 40, macAddress: '130.212.123.122', powerTransmition: 34544, verified: false, shortId: 4756, name: 'Bluetooth 3'  }
+      { id: 121, major: 20, macAddress: '123.212.123.121', powerTransmition: -10, verified: false, shortId: 7457, name: 'Bluetooth 1' },
+      { id: 140, major: 30, macAddress: '130.212.123.120', powerTransmition: 0, verified: false, shortId: 5675, name: 'Bluetooth 2'  },
+      { id: 122, major: 40, macAddress: '130.212.123.122', powerTransmition: -20, verified: false, shortId: 4756, name: 'Bluetooth 3'  }
     ];
     test.forEach((device: Device) => {
       if (this.isAlreadyOnAnyList(device)) {

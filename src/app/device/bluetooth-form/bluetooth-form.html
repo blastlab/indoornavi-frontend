@@ -53,7 +53,12 @@
     <label for="powerTransmition">{{'device.powerTransmition'|translate}}</label>
   </div>
   <div class="ui-g-12 ui-md-6 ui-lg-6">
-    <input name="powerTransmition" pInputText id="powerTransmition" [(ngModel)]="device.powerTransmition" #powerTransmition="ngModel"/>
+    <p-dropdown [options]="power"
+                [(ngModel)]="device.powerTransmition"
+                [style]="{ width: '100%' }"
+                id="powerTransmition"
+                placeholder="{{'device.selectPower'|translate}}"
+                #powerTransmition="ngModel"></p-dropdown>
   </div>
 </div>
 

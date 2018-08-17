@@ -106,6 +106,7 @@
   "device.save.success": "Device has been saved",
   "device.searchById": "Search by id",
   "device.searchByShortId": "Search by short id",
+  "device.selectPower": "Select Power",
   "device.shortId": "Short Id",
   "device.shortId.mustBeNumber": "Short Id must be a number.",
   "device.shortId.required": "Short Id is required.",
