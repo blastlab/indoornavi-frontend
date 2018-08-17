@@ -148,16 +148,16 @@
          <div class="ui-g">
            <div class="ui-g-12 ui-md-4 ui-lg-4">
              <div class="ui-message ui-messages-error ui-corner-all"
-                  *ngIf="deviceId.errors?.required && deviceId.touched && deviceId.dirty">
+                  *ngIf="minor.errors?.required && minor.touched && minor.dirty">
                <i class="fa fa-warning"></i>
-               {{'device.major.required'|translate}}
+               {{'device.minor.required'|translate}}
              </div>
            </div>
            <div class="ui-g-12 ui-md-2 ui-lg-2">
-             <label for="major">{{'device.major'|translate}} *</label>
+             <label for="minor">{{'device.minor'|translate}} *</label>
            </div>
            <div class="ui-g-12 ui-md-6 ui-lg-6">
-             <input appProperMajor name="major" required pInputText id="major" [(ngModel)]="device.major" #major="ngModel"/>
+             <input name="minor" required pInputText id="minor" [(ngModel)]="device.minor" #minor="ngModel"/>
            </div>
          </div>
 
@@ -165,10 +165,10 @@
            <div class="ui-g-12 ui-md-4 ui-lg-4">
            </div>
            <div class="ui-g-12 ui-md-2 ui-lg-2">
-             <label for="major">{{'device.macAddress'|translate}}</label>
+             <label for="macAddress">{{'device.macAddress'|translate}}</label>
            </div>
            <div class="ui-g-12 ui-md-6 ui-lg-6">
-             <input appProperMajor name="macAddress" pInputText id="macAddress" [(ngModel)]="device.macAddress" #macAddress="ngModel"/>
+             <input name="macAddress" pInputText id="macAddress" [(ngModel)]="device.macAddress" #macAddress="ngModel"/>
            </div>
          </div>
 
@@ -176,21 +176,26 @@
            <div class="ui-g-12 ui-md-4 ui-lg-4">
            </div>
            <div class="ui-g-12 ui-md-2 ui-lg-2">
-             <label for="major">{{'device.powerTransmition'|translate}}</label>
+             <label for="powerTransmition">{{'device.powerTransmition'|translate}}</label>
            </div>
            <div class="ui-g-12 ui-md-6 ui-lg-6">
-             <input appProperMajor name="powerTransmition" pInputText id="powerTransmition" [(ngModel)]="device.powerTransmition" #powerTransmition="ngModel"/>
+             <input name="powerTransmition" pInputText id="powerTransmition" [(ngModel)]="device.powerTransmition" #powerTransmition="ngModel"/>
            </div>
          </div>
 
          <div class="ui-g">
            <div class="ui-g-12 ui-md-4 ui-lg-4">
+             <div class="ui-message ui-messages-error ui-corner-all"
+                  *ngIf="nameInput.errors?.properName && nameInput.touched && nameInput.dirty">
+               <i class="fa fa-warning"></i>
+               {{nameInput.errors?.properName|translate}}
+             </div>
            </div>
            <div class="ui-g-12 ui-md-2 ui-lg-2">
-             <label for="major">{{'device.name'|translate}}</label>
+             <label for="deviceName">{{'device.name'|translate}}</label>
            </div>
            <div class="ui-g-12 ui-md-6 ui-lg-6">
-             <input appProperMajor name="name" pInputText id="deviceName" [(ngModel)]="device.name" #nameInput="ngModel"/>
+             <input appProperNameValidator name="name" pInputText id="deviceName" [(ngModel)]="device.name" #nameInput="ngModel"/>
            </div>
          </div>
        </div><!-- / form field for Bluetooth -->

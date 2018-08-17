@@ -141,6 +141,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       this.device = new Device(null, null, false);
       this.dialogTitle = `device.details.${this.deviceType}.add`;
     }
+
     this.deviceHash = Md5.hashStr(JSON.stringify(this.device));
     this.displayDialog = true;
   }
