@@ -83,7 +83,7 @@ export class Geometry {
 
   static isBetween(first: number, middle: number, last: number): boolean {
     const precision = 0.01;
-    return first - precision <= middle && middle <= last + precision;
+    return first < last ? first - precision <= middle && middle <= last + precision : last - precision <= middle && middle <= first + precision;
   };
 
   static findLineToLineIntersection(firstSection: Line, secondSection: Line): Point {
@@ -179,12 +179,56 @@ export class Geometry {
     }
     if (Geometry.isBetween(line.startPoint.x, point.x, line.endPoint.x) && Geometry.isBetween(line.startPoint.y, point.y, line.endPoint.y)) {
       point = {
-        x: Math.round(point.x),
-        y: Math.round(point.y)
+        x: point.x,
+        y: point.y
       };
       return point;
     }
     return null;
   }
 
+  static findPointOnPathInGivenRange(path: Line[], givenPoint: Point, range: number = Infinity): Point {
+    let coordinatesOnPath: Point = null;
+    let distance: number = range;
+    path.forEach((line: Line): void => {
+      const nearest: NearestPoint = Geometry.pickNearestPoint(line, givenPoint);
+      if (nearest.distance < distance) {
+        distance = nearest.distance;
+        coordinatesOnPath = nearest.coordinates;
+      }
+    });
+    return {x: Math.round(coordinatesOnPath.x), y: Math.round(coordinatesOnPath.y)};
+  }
+
+  static pickNearestPoint(line: Line, comparedPoint: Point): NearestPoint {
+    let nearest: NearestPoint = null;
+    const locationOnLine: Point = Geometry.findClosestPointOnLine(line, comparedPoint);
+    if (!!locationOnLine) {
+      return nearest = {
+        coordinates: locationOnLine,
+        distance: Geometry.getDistanceBetweenTwoPoints(locationOnLine, comparedPoint)
+      }
+    }
+    const points: Point[] = [line.startPoint, line.endPoint];
+    let distance = Infinity;
+    points.forEach((point: Point): void => {
+      const distanceToPoint: number = Geometry.getDistanceBetweenTwoPoints(point, comparedPoint);
+      if (distanceToPoint < distance) {
+        distance = distanceToPoint;
+        nearest = {
+          coordinates: point,
+          distance: distance
+        }
+      }
+    });
+    return nearest;
+  }
+
+
+}
+
+
+export interface NearestPoint {
+  coordinates: Point;
+  distance: number;
 }
