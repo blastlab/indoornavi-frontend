@@ -289,6 +289,7 @@
   "validator.input.min": "Must be at least 4 characters!",
   "validator.input.max": "Must be less then 100 characters!",
   "validator.input.shortIdOutOfRange": "Short Id out of range.",
+  "validator.input.incorrectMacAddress": "Mac Address is incorrect. Enter address in format: fa:09:91:d5:e4:5a.",
   "wizard.click.place.anchor": "Click on the map to place the anchor.",
   "wizard.click.place.sink": "Click on the map to place the sink.",
   "wizard.configuration.complete": "Basic configuration completed.",

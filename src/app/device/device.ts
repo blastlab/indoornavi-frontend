@@ -7,7 +7,7 @@ import {DeviceService} from './device.service';
 import {CrudComponent, CrudHelper} from '../shared/components/crud/crud.component';
 import {Device, DeviceStatus, Status, UpdateRequest} from './device.type';
 import {NgForm} from '@angular/forms';
-import {Checkbox, ConfirmationService} from 'primeng/primeng';
+import {Checkbox, ConfirmationService, SelectItem} from 'primeng/primeng';
 import {MessageServiceWrapper} from '../shared/services/message/message.service';
 import {SocketService} from '../shared/services/socket/socket.service';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
@@ -35,6 +35,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   public allSelected: boolean = false;
   public displayInfoDialog: boolean = false;
   public sourceFilterPlaceholder: string;
+  public power: SelectItem[];
   @ViewChildren('updateCheckbox') public deviceCheckboxes: Checkbox[];
   @ViewChild('firmwareInput') public firmwareInput: ElementRef;
   @ViewChild('firmwareButton') public firmwareButton: ElementRef;
@@ -80,6 +81,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       this.connectToRegistrationSocket();
     });
     this.translateSearchPlaceholder();
+    this.power = this.getPower();
   }
 
   ngOnDestroy() {
@@ -367,9 +369,9 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   private connectToRegistrationSocket() {
     const stream = this.socketService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.deviceType}`);
     let test = [
-      { id: 121, major: 20, macAddress: '123.212.123.121', powerTransmition: -10, verified: false, shortId: 7457, name: 'Bluetooth 1' },
-      { id: 140, major: 30, macAddress: '130.212.123.120', powerTransmition: 0, verified: false, shortId: 5675, name: 'Bluetooth 2'  },
-      { id: 122, major: 40, macAddress: '130.212.123.122', powerTransmition: -20, verified: false, shortId: 4756, name: 'Bluetooth 3'  }
+      { id: 121, minor: 20, macAddress: 'f1:09:d2:b6:05:d4', powerTransmition: -10, verified: false, shortId: 7457, name: 'Bluetooth 1' },
+      { id: 140, minor: 30, macAddress: '130.212.123.120', powerTransmition: 0, verified: false, shortId: 5675, name: 'Bluetooth 2'  },
+      { id: 122, minor: 40, macAddress: '130.212.123.122', powerTransmition: -20, verified: false, shortId: 4756, name: 'Bluetooth 3'  }
     ];
     test.forEach((device: Device) => {
       if (this.isAlreadyOnAnyList(device)) {
@@ -397,4 +399,17 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     });
   }
 
+  private getPower(): SelectItem[] {
+    return [
+      { label: '-40', value: -40 },
+      { label: '-20', value: -20 },
+      { label: '-16', value: -16 },
+      { label: '-12', value: -12 },
+      { label: '-8', value: -8 },
+      { label: '-4', value: -4 },
+      { label: '0', value: 0 },
+      { label: '3', value: 3 },
+      { label: '4', value: 4 }
+    ];
+  }
 }

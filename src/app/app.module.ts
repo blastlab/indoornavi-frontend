@@ -109,12 +109,12 @@ import {MapClickService} from './shared/services/map-click/map-click.service';
 import {NotSupportedBrowserComponent} from './not-supported-browser/not-supported-browser';
 import {LongIdValidatorDirective} from './shared/directive/long-id.directive';
 import {ShortIdValidatorDirective} from './shared/directive/short-id.directive';
+import {MacAddressDirective} from './shared/directive/mac-address.directive';
 import {PathComponent} from './map-editor/tool-bar/tools/path/path';
 import {DevicePlacerComponent} from './map-editor/tool-bar/tools/device-placer/device-placer.component';
 import {DevicePlacerService} from './map-editor/tool-bar/tools/device-placer/device-placer.service';
 import {DevicePlacerListComponent} from './map-editor/tool-bar/tools/device-placer/list/device-placer.list';
 import {DevicePlacerRowDirective} from './map-editor/tool-bar/tools/device-placer/list/device-placer.row';
-import {BluetoothFormComponent} from './device/bluetooth-form/bluetooth-form';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -149,10 +149,12 @@ export function HttpLoaderFactory(http: Http) {
     ShortIdValidatorDirective,
     AppAutoFocusDirective,
     ProperNameDirective,
+    MacAddressDirective,
     ToolDetailsComponent,
     ToolDetailsComponent,
     DeviceComponent,
     SocketConnectorComponent,
+    MapComponent,
     MapComponent,
     AreaComponent,
     AreaDetailsComponent,
@@ -168,8 +170,7 @@ export function HttpLoaderFactory(http: Http) {
     DevicePlacerListComponent,
     DevicePlacerRowDirective,
     NotSupportedBrowserComponent,
-    PathComponent,
-    BluetoothFormComponent
+    PathComponent
   ],
   entryComponents: [
     PublicationDialogComponent,
