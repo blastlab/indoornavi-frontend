@@ -1,14 +1,14 @@
 import {Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ToolDetailsComponent} from '../../../shared/details/tool-details';
 import {AreaDetailsService} from './area-details.service';
-import {Area, AreaBag, AreaConfiguration, Mode} from '../areas.type';
+import {Area, AreaBag, AreaConfiguration, Mode} from '../area.type';
 import {DeviceService} from '../../../../../device/device.service';
 import {Floor} from '../../../../../floor/floor.type';
 import * as d3 from 'd3';
 import {Helper} from '../../../../../shared/utils/helper/helper';
 import {Editable} from '../../../../../shared/wrappers/editable/editable';
 import {Point} from '../../../../map.type';
-import {AreasComponent} from '../areas';
+import {AreaComponent} from '../area';
 import {MessageServiceWrapper} from '../../../../../shared/services/message/message.service';
 import {Tag} from '../../../../../device/device.type';
 import {NgForm} from '@angular/forms';
@@ -71,9 +71,11 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
         if (areaConfiguration.mode.toString() === Mode[Mode.ON_LEAVE] || areaConfiguration.mode === Mode.ON_LEAVE) {
           this.areaConfigurationOnLeave = areaConfiguration;
           this.areaConfigurationOnLeave.offset /= 100;
+          this.tagsOnLeave = areaConfiguration.tags.map((tag: Tag) => { return tag.shortId; });
         } else {
           this.areaConfigurationOnEnter = areaConfiguration;
           this.areaConfigurationOnEnter.offset /= 100;
+          this.tagsOnEnter = areaConfiguration.tags.map((tag: Tag) => { return tag.shortId; });
         }
       });
     });
@@ -101,7 +103,7 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
       }
       if (heightIsValid) {
         this.area.points.length = 0;
-        const selector = `${!!this.editable ? '#' + this.editable.groupWrapper.getGroup().attr('id') : '#' + AreasComponent.NEW_AREA_ID}`;
+        const selector = `${!!this.editable ? '#' + this.editable.groupWrapper.getGroup().attr('id') : '#' + AreaComponent.NEW_AREA_ID}`;
         const svgGroup = d3.select(selector);
         const pointsSelection: d3.selection = svgGroup.selectAll('circle');
 
@@ -135,8 +137,6 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
             this.areaConfigurationOnLeave.tags.push(foundTag);
           }
         });
-        this.tagsOnEnter = [];
-        this.tagsOnLeave = [];
 
         if (!this.editable) {
           this.area.configurations.push(

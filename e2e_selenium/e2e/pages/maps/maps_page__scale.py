@@ -1,39 +1,15 @@
 from pages.base_page import BasePage
-from locators.maps_base__scale_locators import MapsBaseScaleLocators
+from pages.maps.maps_page__utils import MapsPageUtils
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
-from src.test_conf.test_config import *
 
 
-class MapsPageScale(BasePage, MapsBaseScaleLocators):
+class MapsPageScale(BasePage, MapsPageUtils):
 
     def __init__(self, driver):
         self.__driver = driver
         self.__actions = ActionChains
         super(MapsPageScale, self).__init__(self.__driver)
-
-    def create_maps_db_env(self):
-        return self.create_db_env(self.db_maps_env_xml)
-
-    def set_image_to_floor(self):
-        params = TEST_UPDATE_FLOOR_IMG_PARAMS
-        return self.service_db().update_table(params)
-
-    def insert_scale_configuration_to_db(self):
-
-        _table = CONFIGURATION_TABLE
-        _columns = CONFIGURATION_COLUMNS
-        values = ('1', TEST_DATE, TEST_SCALE_CONF_DATA, '0', '2', TEST_DATE)
-        return self.insert_to_db(_table, _columns, values)
-
-    def insert_image_to_db(self):
-
-        with open('src/test_data_upload/correct_map.png', "rb") as f:
-          blob = f.read()
-        _table = IMAGE_TABLE
-        _columns = IMAGE_COLUMNS
-        values = ('1', TEST_DATE, TEST_DATE, blob, '840', '1614')
-        return self.insert_to_db(_table, _columns, values)
 
     def floor_update_button_click(self):
         return self.click_element(self.floor_update_button)
@@ -225,29 +201,3 @@ class MapsPageScale(BasePage, MapsBaseScaleLocators):
     def get_location(self, element):
         __element_location = element.location
         return __element_location
-
-    def log_cursor_coordinates(self):
-        return self.__driver.execute_script('''
-        function findScreenCoords(mouseEvent)
-          {
-            var xpos;
-            var ypos;
-            if (mouseEvent)
-            {
-              //FireFo
-              xpos = mouseEvent.screenX;
-              ypos = mouseEvent.screenY;
-            }
-            else
-            {
-              //IE
-              xpos = window.event.screenX;
-              ypos = window.event.screenY;
-            }
-            console.log("LOG COORDINATES: "+ xpos + ", " + ypos);
-          }
-        document.getElementById("map").onmousemove = findScreenCoords;
-        ''')
-
-    # EDIT SCALE
-

@@ -8,7 +8,7 @@ import {Point} from '../../../map.type';
 import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../../../shared/utils/drawing/drawing.builder';
 import {MapSvg} from '../../../../map/map.type';
 import {AreaDetailsService} from './details/area-details.service';
-import {Area, AreaBag} from './areas.type';
+import {Area, AreaBag} from './area.type';
 import {Editable} from '../../../../shared/wrappers/editable/editable';
 import {ContextMenuService} from '../../../../shared/wrappers/editable/editable.service';
 import {ActionBarService} from '../../../action-bar/actionbar.service';
@@ -22,13 +22,14 @@ import {Geometry} from '../../../../shared/utils/helper/geometry';
 import {Scale, ScaleCalculations, ScaleDto} from '../scale/scale.type';
 import {ScaleService} from '../../../../shared/services/scale/scale.service';
 import {Helper} from '../../../../shared/utils/helper/helper';
+import {Box} from '../../../../shared/utils/drawing/drawing.types';
 
 
 @Component({
   selector: 'app-area',
-  templateUrl: './areas.html'
+  templateUrl: './area.html'
 })
-export class AreasComponent implements Tool, OnInit, OnDestroy {
+export class AreaComponent implements Tool, OnInit, OnDestroy {
   public static NEW_AREA_ID = 'area-new';
   private static CIRCLE_R: number = 5;
 
@@ -53,6 +54,9 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
   private scaleChangedSubscription: Subscription;
   private scale: Scale;
   private scaleCalculations: ScaleCalculations;
+  private containerBox: Box;
+  private currentAreaInContainerBox: boolean;
+  private backupPolygonPoints: Point[] = [];
 
   constructor(private toolbarService: ToolbarService,
               private mapLoaderInformer: MapLoaderInformerService,
@@ -68,6 +72,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
     this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg): void => {
       this.container = mapSvg.container;
       this.layer = mapSvg.layer;
+      this.containerBox = mapSvg.container.node().getBBox();
 
       this.actionBarService.configurationLoaded().first().subscribe((configuration: Configuration): void => {
         if (!!configuration.data.areas) {
@@ -118,6 +123,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
             return areaBag.dto;
           }));
         }
+
         this.toggleActivity();
       }
     });
@@ -148,7 +154,10 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
 
       this.layer.on('click', (_, i: number, nodes: d3.selection[]): void => {
         const coordinates: Point = this.zoomService.calculateTransition({x: d3.mouse(nodes[i])[0], y: d3.mouse(nodes[i])[1]});
-        this.handleMouseClick(coordinates);
+        const coordinatesInRange: boolean = Geometry.areCoordinatesInGivenRange(coordinates, this.containerBox);
+        if (coordinatesInRange) {
+          this.handleMouseClick(coordinates);
+        }
       });
       this.layer.on('mousemove', (_, i: number, nodes: d3.selection[]): void => {
         if (!!this.firstPointSelection) {
@@ -208,14 +217,18 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
     this.disabled = value;
   }
 
-
   private handleShiftKeyEvent(coordinates: Point): Point {
     const secondPoint: Point = this.getCurrentAreaPoints()[this.getCurrentAreaPoints().length - 1];
+    const coordinatesBackup = Object.assign({}, coordinates);
     const deltaY = Geometry.getDeltaY(coordinates, secondPoint);
     if (!!deltaY) {
       coordinates.y = secondPoint.y - deltaY;
     } else {
       coordinates.x = secondPoint.x;
+    }
+    const coordinatesInRange: boolean = Geometry.areCoordinatesInGivenRange(coordinates, this.containerBox);
+    if (!coordinatesInRange) {
+      coordinates = coordinatesBackup;
     }
     return coordinates;
   }
@@ -227,6 +240,9 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
         areaBag.editable.off();
       });
     } else {
+      if (this.getCurrentAreaPoints().length < 2 && this.isFirstPoint()) {
+        return;
+      }
       const event: KeyboardEvent = <KeyboardEvent>window.event;
       if (event.shiftKey && this.getCurrentAreaPoints().length > 0) {
         point = this.handleShiftKeyEvent(point);
@@ -249,7 +265,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
 
   private drawPoint(point: Point): d3.selection {
     const pointSelection: d3.selection = this.currentAreaGroup
-      .addCircle(point, AreasComponent.CIRCLE_R)
+      .addCircle(point, AreaComponent.CIRCLE_R)
       .getLastElement(ElementType.CIRCLE);
 
     pointSelection
@@ -337,6 +353,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
   }
 
   private createArea(): void {
+    this.currentAreaInContainerBox = true;
     this.areaDetailsService.show();
     this.hintBarService.sendHintMessage('area.hint.third');
 
@@ -373,7 +390,6 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
   }
 
   private handleCircleDrag(): void {
-    this.drawPolygon(this.getCurrentAreaPoints());
     this.removePolygon();
     this.draggingElement
       .attr('cx', d3.event.dx + parseInt(this.draggingElement.attr('cx'), 10))
@@ -401,12 +417,48 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
         .on('start', (): void => {
           this.draggingElement = d3.select(d3.event.sourceEvent.target);
           d3.event.sourceEvent.stopPropagation();
+          this.backupPolygonPoints = this.applyShiftToPolygon();
         })
         .on('end', (): void => {
-          this.draggingElement = null;
+          let isInRange = true;
+          const currentPolygonPoints: Point[] = this.applyShiftToPolygon();
+          currentPolygonPoints.forEach((point: Point): void => {
+            if (!Geometry.areCoordinatesInGivenRange(point, this.containerBox)) {
+              isInRange = false;
+            }
+          });
+          if (!isInRange) {
+            this.currentAreaGroup.remove();
+            this.currentAreaGroup = this.createBuilder().createGroup();
+            if (!!this.selectedEditable) {
+              const idBackUp = this.selectedEditable.groupWrapper.getGroup().attr('id');
+              this.currentAreaGroup.getGroup().attr('id', idBackUp);
+            }
+            this.drawPolygon(this.backupPolygonPoints);
+            this.applyHover(this.backupPolygonPoints);
+            this.applyDrag();
+          }
         })
     );
   }
+
+  private applyShiftToPolygon(): Point[] {
+    const shift: Point = this.calculateShift();
+    let points: Point[];
+    if (this.draggingElement.node().nodeName === 'circle') {
+      const currentPolygon: d3.selection = d3.select(this.draggingElement.node().parentNode).select('polygon');
+      points = Geometry.calculatePolygonPointsRealPosition(currentPolygon, shift);
+    } else {
+      points = Geometry.calculatePolygonPointsRealPosition(this.draggingElement, shift);
+    }
+    return points;
+  }
+
+  private calculateShift(): Point {
+    const selector = `${!!this.selectedEditable ? '#' + this.selectedEditable.groupWrapper.getGroup().attr('id') : '#' + AreaComponent.NEW_AREA_ID}`;
+    const svgGroup = d3.select(selector);
+    return (<Point>{x: +svgGroup.attr('x'), y: +svgGroup.attr('y')});
+}
 
   private applyHover(points: Point[]): void {
     points.forEach((point: Point) => {
@@ -478,7 +530,7 @@ export class AreasComponent implements Tool, OnInit, OnDestroy {
   }
 
   private isCurrentAreaGroupNew(): boolean {
-    return !!this.currentAreaGroup && this.currentAreaGroup.getGroup().attr('id') === AreasComponent.NEW_AREA_ID;
+    return !!this.currentAreaGroup && this.currentAreaGroup.getGroup().attr('id') === AreaComponent.NEW_AREA_ID;
   }
 
   private cleanMapViewFromDrawnAreas(): void {
