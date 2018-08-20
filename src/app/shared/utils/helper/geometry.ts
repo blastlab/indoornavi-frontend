@@ -1,5 +1,6 @@
 import {Line, Point} from '../../../map-editor/map.type';
 import {Box} from '../drawing/drawing.types';
+import * as d3 from 'd3';
 
 export class Geometry {
 
@@ -138,6 +139,20 @@ export class Geometry {
     }
     return {x: Math.floor(x_section), y: Math.floor(y_section)};
 
+  }
+
+  static calculatePolygonPointsRealPosition(draggingPolygon: d3.selection, shiftPoint: Point): Point[] {
+    const points: Point[] = [];
+    draggingPolygon.attr('points').split(' ').forEach((stringData: string): void => {
+      if (stringData.length > 0) {
+        const strArray: string[] = stringData.split(',');
+        points.push({
+          x: parseInt(strArray[0], 10) + shiftPoint.x,
+          y: parseInt(strArray[1], 10) + shiftPoint.y
+        })
+      }
+    });
+    return points;
   }
 
 }
