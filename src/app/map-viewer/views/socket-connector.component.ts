@@ -92,7 +92,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.translateService.setDefaultLang('en');
     this.subscribeToMapParametersChange();
-    this.init();;
+    this.init();
   }
 
   private subscribeToMapParametersChange() {
@@ -315,15 +315,14 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private getPointOnPath(event: MessageEvent, floorId) {
-    let path: Line[] = [];
-    this.pathService.getPathByFloorId(floorId).first().subscribe((pathFromConfiguration: Line[]): void => {
-      if (!!pathFromConfiguration) {
-        path = pathFromConfiguration;
+  private getPointOnPath(event: MessageEvent) {
+    this.pathService.getPathByFloorId(this.floor.id).first().subscribe((pathFromConfiguration: Line[]): void => {
+      let calculatedPosition: Point = null;
+      if (!!pathFromConfiguration && pathFromConfiguration.length > 0) {
+        calculatedPosition = Geometry.findPointOnPathInGivenRange(pathFromConfiguration, event.data['args'].point, event.data['args'].accurac);
       }
+      event.source.postMessage({type: 'getPointOnPath', mapObjectId: 'map', calculatedPosition: calculatedPosition}, event.origin);
     });
-    // const calculatedPosition: Point =  Geometry.findPointOnPathInGivenRange();
-    event.source.postMessage({type: 'getPointOnPath', mapObjectId: 'map', calculatedPosition: calculatedPosition}, event.origin);
   }
 
   private handleCommands(event: MessageEvent): void {

@@ -187,9 +187,9 @@ export class Geometry {
     return null;
   }
 
-  static findPointOnPathInGivenRange(path: Line[], givenPoint: Point, range: number = Infinity): Point {
+  static findPointOnPathInGivenRange(path: Line[], givenPoint: Point, accuracy: number = Infinity): Point {
     let coordinatesOnPath: Point = null;
-    let distance: number = range;
+    let distance: number = accuracy;
     path.forEach((line: Line): void => {
       const nearest: NearestPoint = Geometry.pickNearestPoint(line, givenPoint);
       if (nearest.distance < distance) {
@@ -197,7 +197,10 @@ export class Geometry {
         coordinatesOnPath = nearest.coordinates;
       }
     });
-    return {x: Math.round(coordinatesOnPath.x), y: Math.round(coordinatesOnPath.y)};
+    if (!!coordinatesOnPath) {
+      return {x: Math.round(coordinatesOnPath.x), y: Math.round(coordinatesOnPath.y)};
+    }
+    return coordinatesOnPath;
   }
 
   static pickNearestPoint(line: Line, comparedPoint: Point): NearestPoint {
