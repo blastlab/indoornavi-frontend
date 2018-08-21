@@ -54,7 +54,8 @@ import {
   SidebarModule,
   SliderModule,
   ToolbarModule,
-  TooltipModule
+  TooltipModule,
+  InputMaskModule
 } from 'primeng/primeng';
 import {HintBarService} from './map-editor/hint-bar/hintbar.service';
 import {ToolbarService} from './map-editor/tool-bar/toolbar.service';
@@ -212,7 +213,8 @@ export function HttpLoaderFactory(http: Http) {
     OverlayPanelModule,
     ContextMenuModule,
     FileUploadModule,
-    RadioButtonModule
+    RadioButtonModule,
+    InputMaskModule
   ],
   providers: [
     BuildingService,

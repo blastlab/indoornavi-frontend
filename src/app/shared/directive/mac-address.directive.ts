@@ -8,7 +8,7 @@ const NAME_VALIDATOR: ExistingProvider = {
   multi: true
 };
 
-const PATTERN_MAC_ADDRESS = /^(([A-Fa-f0-9]{2}[:-]){5}[A-Fa-f0-9]{2}[,]?)+$/;
+const PATTERN_MAC_ADDRESS = /^(([A-Fa-f0-9]{2}[:]){5}[A-Fa-f0-9]{2}[,]?)+$/;
 
 @Directive({
   selector: '[appProperMacAddress]',

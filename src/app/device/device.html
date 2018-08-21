@@ -173,7 +173,14 @@
              <label for="macAddress">{{'device.macAddress'|translate}}</label>
            </div>
            <div class="ui-g-12 ui-md-6 ui-lg-6">
-             <input appProperMacAddress name="macAddress" pInputText id="macAddress" [(ngModel)]="device.macAddress" #macAddress="ngModel"/>
+             <p-inputMask
+               appProperMacAddress
+               [autoClear]="false"
+               mask="**:**:**:**:**:**"
+               name="macAddress"
+               id="macAddress"
+               [(ngModel)]="device.macAddress" 
+               #macAddress="ngModel"></p-inputMask>
            </div>
          </div>
 
