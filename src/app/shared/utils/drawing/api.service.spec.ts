@@ -1,6 +1,8 @@
 import * as d3 from 'd3';
 import {InfoWindowGroupWrapper} from './info.window';
-import {Box, Position} from './drawing.types';
+import {Box} from './drawing.builder';
+import {APIObject} from './api.types';
+import Position = APIObject.Position;
 
 // when
 const svgElement = d3.select().append('svg');
@@ -12,7 +14,7 @@ const DrawConfigurationMock = {
 
 const infoWindowGroupWrapper = new InfoWindowGroupWrapper(svgElement, DrawConfigurationMock);
 
-// mocking MapObject
+// mocking APIObject
 class MapObject {
   constructor(private x: number, private y: number, private width: number, private height: number) {
 

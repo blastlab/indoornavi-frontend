@@ -1,12 +1,11 @@
 import {Point} from '../../map-editor/map.type';
-import {DrawBuilder, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.builder';
+import {Box, DrawBuilder, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.builder';
 import * as d3 from 'd3';
 import {DevicePlacerService} from '../../map-editor/tool-bar/tools/device-placer/device-placer.service';
 import {ContextMenuService} from '../../shared/wrappers/editable/editable.service';
 import {TranslateService} from '@ngx-translate/core';
 import {DeviceAppearance, DeviceCallbacks, DeviceInEditorConfiguration} from '../../map-editor/tool-bar/tools/device-placer/device-placer.types';
 import {Geometry} from '../../shared/utils/helper/geometry';
-import {Box} from '../../shared/utils/drawing/drawing.types';
 
 
 export class DeviceInEditor {

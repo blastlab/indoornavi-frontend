@@ -52,6 +52,11 @@ export enum CommandType {
   TOGGLE_TAG
 }
 
+export interface CustomMessageEvent {
+  args: any;
+  command: string;
+}
+
 export interface DrawConfiguration {
   id: string;
   clazz: string;
