@@ -6,17 +6,21 @@ import re
 from selenium.webdriver import ActionChains
 from services.service_db import ServiceDb
 from services.service_upload import ServiceUpload
+from services.service_http import ServiceHttp
 
 
 class BasePage(object):
 
     base_url = 'http://localhost:4200/'
+    login_http_url = 'http://localhost:90/rest/v1/auth'
+    login_payload = "{\"username\": \"admin\", \"plainPassword\": \"admin\"}"
     db_hostname = 'localhost'
 
     def __init__(self, driver):
         self.__driver = driver
         self.service_db = ServiceDb
         self.service_upload = ServiceUpload
+        self.service_http = ServiceHttp
 
     def if_exist_in_db(self, query):
         return self.service_db().if_exist_in_db(query)
@@ -37,6 +41,9 @@ class BasePage(object):
 
     def refresh_page(self):
         return self.__driver.refresh()
+
+    def login_request(self):
+        return self.service_http().http_login(self.login_http_url, self.login_payload)
 
     # Front
     def identify_element(self, *locator):
@@ -89,6 +96,11 @@ class BasePage(object):
 
     def open_page(self, page_url):
         return self.__driver.get(page_url)
+
+    def is_input_empty(self, locator):
+        input = self.wait_for_element_clickable(locator)
+        length = len(input.get_attribute('value'))
+        return True if length==0 else False
 
     def clear_input(self, input_locator):
         input_element = self.wait_for_element_clickable(input_locator)

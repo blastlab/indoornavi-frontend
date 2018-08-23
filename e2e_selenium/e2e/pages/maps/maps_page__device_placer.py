@@ -1,0 +1,142 @@
+from pages.base_page import BasePage
+from pages.maps.maps_page__utils import MapsPageUtils
+from selenium.webdriver import ActionChains
+
+
+class MapsPageDevicePlacer(BasePage, MapsPageUtils):
+
+    def __init__(self, driver):
+        self.__driver = driver
+        self.__actions = ActionChains
+        super(MapsPageDevicePlacer, self).__init__(self.__driver)
+
+    def prepare_devices_in_db(self):
+        self.insert_sinks_to_db_from_csv()
+        self.insert_anchors_to_db_from_csv()
+        self.insert_devices_to_db_from_csv()
+
+    def click_on_map(self):
+        element = self.wait_for_element_clickable(self.DEVICE_PLACER_MAP_LAYER)
+        actions = ActionChains(self.__driver)
+        actions.click(element)
+        actions.perform()
+
+    def click_device_placer_button(self):
+        return self.click_element(self.DEVICE_PLACER_BUTTON)
+
+    def is_device_placer_list_displayed(self):
+        return True if self.is_element_present(self.DEVICE_PLACER_LIST) else False
+
+    def is_device_placer_list_disappeared(self):
+        return True if self.is_element_disappear(self.DEVICE_PLACER_LIST) else False
+
+    def is_device_placer_list_title_displayed(self):
+        print('is_device_placer_list_title_displayed')
+
+    def set_device_on_map(self):
+        # print('set_device_on_map')
+        self.simulate_drag_and_drop_jquery(self.JQUERY_DEVICE_LIST_EVEN, self.JQUERY_MAP_LAYER)
+
+    def check_device_placer_list_title(self, device_name):
+        selectors = {"sinks": self.DEVICE_PLACER_SINKS_TITLE,
+                     "anchors": self.DEVICE_PLACER_ANCHORS_TITLE}
+        return self.wait_for_element(selectors[device_name])
+
+    def __select_device_helper(self, device_id):
+        selector_by_device_id = {
+            "map111111"  : self.MAP_SINK_111111,
+            "map222222"  : self.MAP_SINK_222222,
+            "map33333"   : self.MAP_ANCHOR_33333,
+            "map44444"   : self.MAP_ANCHOR_44444,
+            "list111111" : self.DEVICE_PLACER_SINK_111111,
+            "list222222" : self.DEVICE_PLACER_SINK_222222,
+            "list33333"  : self.DEVICE_PLACER_ANCHOR_33333,
+            "list44444"  : self.DEVICE_PLACER_ANCHOR_44444
+        }
+        return selector_by_device_id[device_id]
+
+    def __presence_device_helper(self, option, devices):
+        select_fun = {
+          "appeared": self.is_element_appeared,
+          "disappear": self.is_element_disappear,
+        }
+        presence_arr = []
+        for i in devices:
+            presence = select_fun[option](self.__select_device_helper(i))
+            presence_arr.append(presence)
+        return False if False in presence_arr else True
+
+    def is_device_appeared(self, *devices):
+        return self.__presence_device_helper('appeared', devices)
+
+    def click_on_device(self, device_id):
+        device = self.wait_for_element_clickable(self.__select_device_helper(device_id))
+        return ActionChains(self.__driver).click(device).perform()
+
+    def unset_device_click(self, device_id):
+        device = self.wait_for_element_clickable(self.__select_device_helper(device_id))
+        ActionChains(self.__driver).move_to_element(device).context_click(device).perform()
+        return self.click_element(self.CONTEXTMENU_UNSET_DEVICE_BTN)
+
+    def unset_warning_ok_click(self):
+        return self.click_element(self.UNSET_SINK_WARNING_OK)
+
+    def unset_warning_cancel_click(self):
+        return self.click_element(self.UNSET_SINK_WARNING_CANCEL)
+
+    def is_device_disappeared_from_map(self, *devices):
+        return self.__presence_device_helper('disappear', devices)
+
+    def set_device_position_on_map(self, device_id, x, y):
+        web_element = self.wait_for_element(self.__select_device_helper(device_id))
+        return self.__driver.execute_script('var sink = arguments[0];'
+                                            'sink.setAttribute("x", arguments[1]);'
+                                            'sink.setAttribute("y", arguments[2]);'
+                                            'console.log(sink);', web_element, x, y)
+
+    def get_device_color(self, device_id):
+
+        web_element = self.wait_for_element(self.__select_device_helper(device_id))
+        return self.__driver.execute_script('var sink = arguments[0];'
+                                            'var sinkText = sink.getElementsByTagName("text")[0];'
+                                            'console.log(sinkText);', web_element)
+
+    def move_device_on_map(self, device_id):
+        web_element = self.wait_for_element(self.__select_device_helper(device_id))
+        ActionChains(self.__driver).drag_and_drop_by_offset(web_element, 100, 0).perform()
+
+    def simulate_drag_and_drop_jquery(self, source, target):
+        # print('simulate_drag_and_drop_jquery')
+        driver = self.__driver
+        # init jQuery url variable;
+        jquery_url = "http://code.jquery.com/jquery-1.11.2.min.js"
+
+        # load jQuery helper
+        with open("src/jquery_load_helper.js") as f:
+            load_jquery_js = f.read()
+
+        # load drag and drop helper
+        with open("src/drag_and_drop_helper.js") as f:
+            drag_and_drop_js = f.read()
+
+        # load jQuery
+        driver.execute_async_script(load_jquery_js, jquery_url)
+
+        # perform drag&drop
+        driver.execute_script(drag_and_drop_js + """var source = arguments[0];
+                                                    var target = arguments[1]
+                                                    $(source).first().simulateDragDrop({ dropTarget: target});""", source, target)
+
+    def insert_into_device_placer_list_searchbox(self, text):
+        return self.clear_and_fill_input(text, self.DEVICE_PLACER_LIST_SEARCHBOX)
+
+    def clear_device_placer_list_searchbox(self):
+        return self.clear_text_input(self.DEVICE_PLACER_LIST_SEARCHBOX)
+
+    def is_device_placer_list_searchbox_empty(self):
+        return self.is_input_empty(self.DEVICE_PLACER_LIST_SEARCHBOX)
+
+
+
+
+

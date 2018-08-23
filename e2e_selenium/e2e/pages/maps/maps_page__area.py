@@ -55,8 +55,8 @@ class MapsPageArea(BasePage, MapsPageUtils):
         self.__right_click_on_area()
         self.click_element(self.AREA_CONTEXT_MENU_REMOVE)
 
-    def save_draft_click(self):
-        return self.click_element(self.SAVE_DRAFT_BTN)
+    # def save_draft_click(self):
+    #     return self.click_element(self.SAVE_DRAFT_BTN)
 
     def clear_area_name_input(self):
         return self.clear_text_input(self.AREA_ADD_NAME)
