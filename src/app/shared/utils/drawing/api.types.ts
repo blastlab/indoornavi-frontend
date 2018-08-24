@@ -6,11 +6,11 @@ export namespace APIObject {
   }
 
   export interface Polyline extends Base {
-    stroke: string;
+    color: string;
   }
 
   export interface Area extends Base {
-    fill: string;
+    color: string;
     opacity: number;
   }
 

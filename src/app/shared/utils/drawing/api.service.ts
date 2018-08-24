@@ -72,7 +72,7 @@ export class ApiService {
         break;
       case 'MARKER':
         this.addToMapContainer(objectMetadata, container);
-        this.placeMarkerOnMap(objectMetadata, this.getCalculatedPoints(objectMetadata.object['points'], scale)[0], originMessageEvent);
+        this.placeMarkerOnMap(objectMetadata, this.getCalculatedPoints(objectMetadata.object['position'], scale)[0], originMessageEvent);
         break;
       case 'CIRCLE':
         this.addToMapContainer(objectMetadata, container);
@@ -130,11 +130,12 @@ export class ApiService {
     const area: Area = <Area>objectMetadata.object;
     const areaSelection: d3.selection = this.objects.get(area.id).getGroup();
     this.objects.get(area.id).addPolygon(points);
-    if (!!area.fill) {
-      ApiHelper.setFillColor(areaSelection, area.fill);
+    if (!!area.color) {
+      ApiHelper.setFillColor(areaSelection, area.color);
     }
     if (!!area.opacity) {
       ApiHelper.setStrokeOpacity(areaSelection, area.opacity);
+      ApiHelper.setFillOpacity(areaSelection, area.opacity);
     }
   }
 
@@ -142,8 +143,8 @@ export class ApiService {
     const polyline: Polyline = <Polyline>objectMetadata.object;
     const polylineSelection: d3.selection = this.objects.get(polyline.id).getGroup();
     this.objects.get(polyline.id).addPolyline(points, this.pointRadius);
-    if (!!polyline.stroke) {
-      ApiHelper.setStrokeColor(polylineSelection, polyline.stroke);
+    if (!!polyline.color) {
+      ApiHelper.setStrokeColor(polylineSelection, polyline.color);
     }
   }
 
