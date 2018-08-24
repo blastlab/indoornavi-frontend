@@ -73,6 +73,22 @@ class MapsPageDevicePlacer(BasePage, MapsPageUtils):
         device = self.wait_for_element_clickable(self.__select_device_helper(device_id))
         return ActionChains(self.__driver).click(device).perform()
 
+    def is_device_placer_list_minimized(self):
+        self.click_element(self.DEVICE_PLACER_LIST_MINIMIZE_BTN)
+        is_minimized = self.wait_for_element_has_changed_value(self.DEVICE_PLACER_LIST_MINIMIZE_CONTAINER,
+                                                               "style",
+                                                               "transform: translateX(-863px);",
+                                                               msg="Device Placer list has not been minimized")
+        return is_minimized
+
+    def is_device_placer_list_maximized(self):
+        self.click_element(self.DEVICE_PLACER_LIST_MINIMIZE_BTN)
+        is_maximized = self.wait_for_element_has_changed_value(self.DEVICE_PLACER_LIST_MINIMIZE_CONTAINER,
+                                                               "style",
+                                                               "transform: translateX(0px);",
+                                                               msg="Device Placer list has not been minimized")
+        return is_maximized
+
     def unset_device_click(self, device_id):
         device = self.wait_for_element_clickable(self.__select_device_helper(device_id))
         ActionChains(self.__driver).move_to_element(device).context_click(device).perform()

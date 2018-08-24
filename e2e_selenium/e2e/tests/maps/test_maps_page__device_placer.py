@@ -543,6 +543,17 @@ class TestMapsPageDevicePlacer(unittest.TestCase, MapsPageDevicePlacer):
 
         self.test_failed = False
 
+    def test_12_minimize_and_maximized_window_device_placer_list(self):
+        log_tc12 = logging.getLogger(' TEST_12 ')
+
+        log_tc12.info('Step 1 : Click device placer button')
+        self.device_placer_page.click_device_placer_button()
+
+        log_tc12.info('Step 2 : Check the device placer list is minimized')
+        assert self.device_placer_page.is_device_placer_list_minimized()
+
+        log_tc12.info('Step 3 : Check the device placer list is maximized')
+        assert self.device_placer_page.is_device_placer_list_maximized()
 
 
 

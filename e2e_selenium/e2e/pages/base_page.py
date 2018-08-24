@@ -1,4 +1,5 @@
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import StaleElementReferenceException
 import selenium.webdriver.support.ui as ui
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
@@ -92,6 +93,10 @@ class BasePage(object):
 
     def wait_for_element_disappear(self, locator, msg='Element has not disappeared yet.'):
         element = ui.WebDriverWait(self.__driver, 10).until_not(EC.visibility_of_element_located(locator), msg)
+        return element
+
+    def wait_for_element_has_changed_value(self, locator, attribute, value, msg="Element has not changed value."):
+        element = ui.WebDriverWait(self.__driver, 10).until(wait_for_the_attribute_value(locator, attribute, value), msg)
         return element
 
     def open_page(self, page_url):
@@ -201,3 +206,17 @@ class BasePage(object):
         except Exception as e:
             print("Exception when reading Browser Console log")
             print(str(e))
+
+
+class wait_for_the_attribute_value(object):
+    def __init__(self, locator, attribute, value):
+        self.locator = locator
+        self.attribute = attribute
+        self.value = value
+
+    def __call__(self, driver):
+        try:
+            element_attribute = EC._find_element(driver, self.locator).get_attribute(self.attribute)
+            return element_attribute == self.value
+        except StaleElementReferenceException:
+            return False

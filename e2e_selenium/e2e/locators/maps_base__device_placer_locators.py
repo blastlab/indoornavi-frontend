@@ -10,6 +10,8 @@ class MapsBaseDevicePlacerLocators(object):
     DEVICE_PLACER_BUTTON = (By.CSS_SELECTOR, 'app-device-placer button')
     DEVICE_PLACER_LIST = (By.CSS_SELECTOR, 'app-device-placer-list div.ui-dialog')
     DEVICE_PLACER_LIST_SEARCHBOX = (By.ID, 'deviceNameFilter')
+    DEVICE_PLACER_LIST_MINIMIZE_CONTAINER = (By.CSS_SELECTOR, 'app-device-placer-list div.minimize-container')
+    DEVICE_PLACER_LIST_MINIMIZE_BTN = (By.CSS_SELECTOR, 'app-device-placer-list button.minimize-button')
     DEVICE_PLACER_SINKS_TITLE  = (By.XPATH, '//h4[contains(text(), "Sinks")]')
     DEVICE_PLACER_ANCHORS_TITLE  = (By.XPATH, '//h4[contains(text(), "Anchors")]')
     DEVICE_PLACER_MAP_LAYER = (By.ID, 'map')
