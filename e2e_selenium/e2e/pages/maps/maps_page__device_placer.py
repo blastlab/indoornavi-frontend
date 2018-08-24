@@ -136,6 +136,39 @@ class MapsPageDevicePlacer(BasePage, MapsPageUtils):
     def is_device_placer_list_searchbox_empty(self):
         return self.is_input_empty(self.DEVICE_PLACER_LIST_SEARCHBOX)
 
+    def change_height_by_slider(self, set_meters):
+
+        """
+        Default value of device height is 2m
+        User by slider set/change height of device.
+
+        :param
+        string - set_meters user define height of device
+
+        :returns
+        height_label - string - height of device displayed in label - e.g. "Height 2m"
+        """
+
+        start = 2
+        step_in_px = 24
+        setter = set_meters - start
+        pixels_x_to_move = step_in_px*setter
+        pixels_y_to_move = 0
+
+        slider = self.wait_for_element_clickable(self.DEVICE_PLACER_HEIGHT_SLIDER)
+        ActionChains(self.__driver).drag_and_drop_by_offset(slider, pixels_x_to_move, pixels_y_to_move).perform()
+        height_label = self.get_text(self.DEVICE_PLACER_HEIGHT_LABEL)
+        return height_label
+
+    def get_data_device_on_hover(self, device_id, set_device):
+        element = self.wait_for_element(self.__select_device_helper(device_id))
+        ActionChains(self.__driver).move_to_element(element).perform()
+        set_selector = {
+          'sink': self.DEVICE_PLACER_SINK_HOVER_SELECTOR,
+          'anchor': self.DEVICE_PLACER_ANCHOR_HOVER_SELECTOR
+        }
+        return self.get_text(set_selector[set_device])
+
 
 
 

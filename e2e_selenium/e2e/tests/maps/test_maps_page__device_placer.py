@@ -458,7 +458,7 @@ class TestMapsPageDevicePlacer(unittest.TestCase, MapsPageDevicePlacer):
         assert self.device_placer_page.is_device_disappeared_from_map('list111111')
         self.test_failed = False
 
-    #TODO BUG YOUTRACK VERIFY
+    # TODO BUG YOUTRACK VERIFY
     def _test_10_bug_searchbox_is_empty_after_reopen_tool(self):
 
         log_tc10 = logging.getLogger(' TEST_10 ')
@@ -476,6 +476,71 @@ class TestMapsPageDevicePlacer(unittest.TestCase, MapsPageDevicePlacer):
         log_tc10.info('Step 3 : Check the device placer searchbox is empty')
         assert self.device_placer_page.is_device_placer_list_searchbox_empty(), \
                "Device placer searchbox has not been cleared"
+        self.test_failed = False
+
+    def test_11_height_slider(self):
+
+        log_tc10 = logging.getLogger(' TEST_11 ')
+
+        log_tc10.info('Step 1 : Click device placer button')
+        self.device_placer_page.click_device_placer_button()
+
+        log_tc10.info('Step 2 : Check the device placer list title is "Sinks" ')
+        self.device_placer_page.check_device_placer_list_title('sinks')
+
+        log_tc10.info('Step 3 : Set height slider on 5m and check label has been changed')
+        height_label = self.device_placer_page.change_height_by_slider(5)
+        assert height_label == "Height 5m"
+
+        log_tc10.info('Step 4 : Set sink on map')
+        self.device_placer_page.set_device_on_map()
+
+        log_tc10.info('Step 5 : Set position of sink')
+        self.device_placer_page.set_device_position_on_map('map111111', 600, 500)
+
+        log_tc10.info('Step 6 : Move Device On Map')
+        self.device_placer_page.move_device_on_map('map111111')
+
+        log_tc10.info('Step 7 : Save draft')
+        self.device_placer_page.save_draft_click()
+
+        log_tc10.info('Step 8 : Click on device displayed on map')
+        self.device_placer_page.click_on_device('map111111')
+
+        # TODO AFTER SOLVE BUG WITH DEVICES IDS PLACED ON MAP
+        log_tc10.info('Step 9 : Get information of device from map & assert information is correctly displayed')
+        device_inf = self.device_placer_page.get_data_device_on_hover('map111111', 'sink')
+        assert device_inf == "sink-111111 (5m)"
+
+        log_tc10.info('Step 10 : Refresh page')
+        self.device_placer_page.refresh_page()
+
+        log_tc10.info('Step 11 : Click device placer button')
+        self.device_placer_page.click_device_placer_button()
+
+        log_tc10.info('Step 12 : Click on device displayed on map')
+        self.device_placer_page.click_on_device('map111111')
+
+        log_tc10.info('Step 13 : Set height slider on 3m and check label has been changed')
+        height_label = self.device_placer_page.change_height_by_slider(3)
+        assert height_label == "Height 3m", "Incorrect height displayed : " + height_label
+
+        log_tc10.info('Step 14 : Set anchor [33333] on map')
+        self.device_placer_page.set_device_on_map()
+
+        log_tc10.info('Step 15 : Set position of anchor [33333]')
+        self.device_placer_page.set_device_position_on_map('map33333', 600, 600)
+
+        log_tc10.info('Step 16 : Move Device On Map')
+        self.device_placer_page.move_device_on_map('map33333')
+
+        log_tc10.info('Step 16 : Click on device displayed on map')
+        self.device_placer_page.click_on_device('map33333')
+
+        log_tc10.info('Step 17 : Get information of device from map & assert information is correctly displayed')
+        device_inf = self.device_placer_page.get_data_device_on_hover('map33333', 'anchor')
+        assert device_inf == "anchor-33333 (3m)"
+
         self.test_failed = False
 
 

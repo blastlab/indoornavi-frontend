@@ -17,6 +17,11 @@ class MapsBaseDevicePlacerLocators(object):
     DEVICE_PLACER_SINK_222222 = (By.XPATH, '//td[contains(text(), "TestSink222222")]')
     DEVICE_PLACER_ANCHOR_33333 = (By.XPATH, '//td[contains(text(), "TestAnchor33333")]')
     DEVICE_PLACER_ANCHOR_44444 = (By.XPATH, '//td[contains(text(), "TestAnchor44444")]')
+    #TODO CHANGE SINK HOVER SELECTOR
+    DEVICE_PLACER_SINK_HOVER_SELECTOR = (By.CSS_SELECTOR, 'svg.sink text:nth-child(3)')
+    DEVICE_PLACER_ANCHOR_HOVER_SELECTOR = (By.CSS_SELECTOR, 'svg.anchor text:nth-child(3)')
+    DEVICE_PLACER_HEIGHT_SLIDER = (By.CLASS_NAME, 'ui-slider-handle')
+    DEVICE_PLACER_HEIGHT_LABEL =  (By.ID, 'height-label')
     JQUERY_DEVICE_LIST_EVEN = 'app-device-placer-list tr.ui-datatable-even'
     JQUERY_DEVICE_LIST_ODD = 'app-device-placer-list tr.ui-datatable-odd'
     JQUERY_MAP_LAYER = '#map-upper-layer'
