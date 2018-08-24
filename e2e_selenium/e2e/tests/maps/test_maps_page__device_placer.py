@@ -490,7 +490,7 @@ class TestMapsPageDevicePlacer(unittest.TestCase, MapsPageDevicePlacer):
 
         log_tc10.info('Step 3 : Set height slider on 5m and check label has been changed')
         height_label = self.device_placer_page.change_height_by_slider(5)
-        assert height_label == "Height 5m"
+        assert height_label == "Height 5m", "Incorrect height displayed : " + height_label
 
         log_tc10.info('Step 4 : Set sink on map')
         self.device_placer_page.set_device_on_map()
