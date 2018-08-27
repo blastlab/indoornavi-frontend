@@ -75,9 +75,12 @@ class MapsPageDevicePlacer(BasePage, MapsPageUtils):
 
     def is_device_placer_list_minimized(self):
         self.click_element(self.DEVICE_PLACER_LIST_MINIMIZE_BTN)
+        self.wait_for_element(self.DEVICE_PLACER_LIST_MINIMIZE_CONTAINER).get_attribute("style")
+        headless_transform = '-1848px'
+        normal_transform = '-1793px'
         is_minimized = self.wait_for_element_has_changed_value(self.DEVICE_PLACER_LIST_MINIMIZE_CONTAINER,
                                                                "style",
-                                                               "transform: translateX(-863px);",
+                                                               "transform: translateX({0});".format(headless_transform),
                                                                msg="Device Placer list has not been minimized")
         return is_minimized
 
@@ -166,7 +169,7 @@ class MapsPageDevicePlacer(BasePage, MapsPageUtils):
         """
 
         start = 2
-        step_in_px = 24
+        step_in_px = 52
         setter = set_meters - start
         pixels_x_to_move = step_in_px*setter
         pixels_y_to_move = 0

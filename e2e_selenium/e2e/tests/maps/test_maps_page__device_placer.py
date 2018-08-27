@@ -481,7 +481,8 @@ class TestMapsPageDevicePlacer(unittest.TestCase, MapsPageDevicePlacer):
     def test_11_height_slider(self):
 
         log_tc10 = logging.getLogger(' TEST_11 ')
-
+        size_widow = self.webdriver.get_window_size()
+        log_tc10.info("SIZE OF SCREEN: {0}".format(size_widow))
         log_tc10.info('Step 1 : Click device placer button')
         self.device_placer_page.click_device_placer_button()
 
@@ -549,11 +550,13 @@ class TestMapsPageDevicePlacer(unittest.TestCase, MapsPageDevicePlacer):
         log_tc12.info('Step 1 : Click device placer button')
         self.device_placer_page.click_device_placer_button()
 
-        log_tc12.info('Step 2 : Check the device placer list is minimized')
+        log_tc12.info(' Step 2 : Check the device placer list is minimized')
         assert self.device_placer_page.is_device_placer_list_minimized()
 
         log_tc12.info('Step 3 : Check the device placer list is maximized')
         assert self.device_placer_page.is_device_placer_list_maximized()
+
+        self.test_failed = False
 
 
 
