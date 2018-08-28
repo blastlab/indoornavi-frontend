@@ -4,7 +4,7 @@ import {AnchorInEditor} from '../../../../map/models/anchor';
 import {DrawConfiguration} from '../../../../map-viewer/publication.type';
 
 export interface DeviceDto {
-  device: Device,
+  device: Anchor,
   type: DeviceType
 }
 

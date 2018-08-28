@@ -5,9 +5,9 @@ import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute} from '@angular/router';
 import {DeviceService} from './device.service';
 import {CrudComponent, CrudHelper} from '../shared/components/crud/crud.component';
-import {Device, DeviceStatus, Status, UpdateRequest} from './device.type';
+import {Device, Anchor, DeviceStatus, Status, UpdateRequest} from './device.type';
 import {NgForm} from '@angular/forms';
-import {Checkbox, ConfirmationService, SelectItem} from 'primeng/primeng';
+import {Checkbox, ConfirmationService} from 'primeng/primeng';
 import {MessageServiceWrapper} from '../shared/services/message/message.service';
 import {SocketService} from '../shared/services/socket/socket.service';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
@@ -19,8 +19,8 @@ import {Md5} from 'ts-md5/dist/md5';
   encapsulation: ViewEncapsulation.None
 })
 export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
-  public verified: Device[] = [];
-  public notVerified: Device[] = [];
+  public verified: Anchor[] = [];
+  public notVerified: Anchor[] = [];
   public deviceType: string;
   public dialogTitle: string;
   public removeDialogTitle: string;
@@ -28,14 +28,13 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   public deletePermission: string;
   public editPermission: string;
   public displayDialog: boolean = false;
-  public device: Device;
+  public device: Anchor;
   public updateMode: boolean = false;
-  public devicesToUpdate: Device[] = [];
-  public devicesUpdating: Device[] = [];
+  public devicesToUpdate: Anchor[] = [];
+  public devicesUpdating: Anchor[] = [];
   public allSelected: boolean = false;
   public displayInfoDialog: boolean = false;
   public sourceFilterPlaceholder: string;
-  public power: SelectItem[];
   @ViewChildren('updateCheckbox') public deviceCheckboxes: Checkbox[];
   @ViewChild('firmwareInput') public firmwareInput: ElementRef;
   @ViewChild('firmwareButton') public firmwareButton: ElementRef;
@@ -81,7 +80,6 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       this.connectToRegistrationSocket();
     });
     this.translateSearchPlaceholder();
-    this.power = this.getPower();
   }
 
   ngOnDestroy() {
@@ -135,12 +133,12 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     this.deviceForm.resetForm();
   }
 
-  openDialog(device?: Device): void {
+  openDialog(device?: Anchor): void {
     if (!!device) {
       this.device = {...device};
       this.dialogTitle = `device.details.${this.deviceType}.edit`;
     } else {
-      this.device = new Device(null, null, false);
+      this.device = new Anchor(false, null, null, null);
       this.dialogTitle = `device.details.${this.deviceType}.add`;
     }
 
@@ -148,7 +146,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     this.displayDialog = true;
   }
 
-  remove(device: Device): void {
+  remove(device: Anchor): void {
     this.confirmationService.confirm({
       header: this.removeDialogTitle,
       message: this.confirmBody,
@@ -163,8 +161,8 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     });
   }
 
-  onItemMoved(movedDevices: Device[]): void {
-    movedDevices.forEach((device: Device) => {
+  onItemMoved(movedDevices: Anchor[]): void {
+    movedDevices.forEach((device: Anchor) => {
       device.verified = !device.verified;
       this.deviceService.update(device).subscribe(() => {
         this.messageService.success('device.save.success');
@@ -175,12 +173,12 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   selectAllToUpload(): void {
     this.devicesToUpdate = [];
     if (this.allSelected) {
-      this.verified.forEach((device: Device) => {
+      this.verified.forEach((device: Anchor) => {
         if (!this.getCheckboxById(device.shortId).disabled) {
           this.devicesToUpdate.push(device);
         }
       });
-      this.notVerified.forEach((device: Device) => {
+      this.notVerified.forEach((device: Anchor) => {
         if (!this.getCheckboxById(device.shortId).disabled) {
           this.devicesToUpdate.push(device);
         }
@@ -212,7 +210,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     this.devicesUpdating = this.devicesToUpdate;
 
     this.getBase64(files[0]).then((base64: string): void => {
-      this.socketService.send(new UpdateRequest(this.devicesToUpdate.map((device: Device): number => device.shortId), base64));
+      this.socketService.send(new UpdateRequest(this.devicesToUpdate.map((device: Anchor): number => device.shortId), base64));
       this.messageService.success('uploading.firmware.message');
     });
   }
@@ -226,13 +224,13 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
         if (message.type === 'INFO') {
           (<DeviceStatus[]>message.devices).forEach((deviceStatus: DeviceStatus) => {
             if (deviceStatus.status.toString() === Status[Status.ONLINE] || deviceStatus.status.toString() === Status[Status.OFFLINE]) {
-              const checkbox: Checkbox = this.getCheckboxById(deviceStatus.device.shortId);
+              const checkbox: Checkbox = this.getCheckboxById(deviceStatus.anchor.shortId);
               if (!!checkbox) {
                 checkbox.setDisabledState(deviceStatus.status.toString() === Status[Status.OFFLINE]);
               }
               this.updateFirmwareVersion(deviceStatus);
             } else if (deviceStatus.status.toString() === Status[Status.UPDATING]) {
-              this.devicesUpdating.push(deviceStatus.device);
+              this.devicesUpdating.push(deviceStatus.anchor);
             } else if (deviceStatus.status.toString() === Status[Status.UPDATED]) {
               this.devicesWaitingForNewFirmwareVersion.push(deviceStatus)
             }
@@ -285,28 +283,28 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   private updateFirmwareVersion(deviceStatus: DeviceStatus) {
-    let deviceToChangeFirmware: Device;
+    let deviceToChangeFirmware: Anchor;
     const index = this.devicesWaitingForNewFirmwareVersion.findIndex((ds: DeviceStatus) => {
-      return ds.device.shortId === deviceStatus.device.shortId;
+      return ds.anchor.shortId === deviceStatus.anchor.shortId;
     });
     if (index >= 0) {
       this.removeFromUpdating(deviceStatus);
       this.removeFromToUpdate(deviceStatus);
       this.checkAllSelected();
 
-      deviceToChangeFirmware = this.verified.find((device: Device) => {
-        return device.shortId === deviceStatus.device.shortId;
+      deviceToChangeFirmware = this.verified.find((device: Anchor) => {
+        return device.shortId === deviceStatus.anchor.shortId;
       });
       if (!!deviceToChangeFirmware) {
-        deviceToChangeFirmware.firmwareVersion = deviceStatus.device.firmwareVersion;
+        deviceToChangeFirmware.firmwareVersion = deviceStatus.anchor.firmwareVersion;
         this.devicesWaitingForNewFirmwareVersion.splice(index, 1);
         return;
       }
-      deviceToChangeFirmware = this.notVerified.find((device: Device) => {
-        return device.shortId === deviceStatus.device.shortId;
+      deviceToChangeFirmware = this.notVerified.find((device: Anchor) => {
+        return device.shortId === deviceStatus.anchor.shortId;
       });
       if (!!deviceToChangeFirmware) {
-        deviceToChangeFirmware.firmwareVersion = deviceStatus.device.firmwareVersion;
+        deviceToChangeFirmware.firmwareVersion = deviceStatus.anchor.firmwareVersion;
         this.devicesWaitingForNewFirmwareVersion.splice(index, 1);
         return;
       }
@@ -314,14 +312,14 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   private removeFromUpdating(deviceStatus: DeviceStatus) {
-    this.devicesUpdating = this.devicesUpdating.filter((device: Device) => {
-      return device.shortId !== deviceStatus.device.shortId;
+    this.devicesUpdating = this.devicesUpdating.filter((device: Anchor) => {
+      return device.shortId !== deviceStatus.anchor.shortId;
     });
   }
 
   private removeFromToUpdate(deviceStatus: DeviceStatus) {
-    this.devicesToUpdate = this.devicesToUpdate.filter((device: Device) => {
-      return device.shortId !== deviceStatus.device.shortId;
+    this.devicesToUpdate = this.devicesToUpdate.filter((device: Anchor) => {
+      return device.shortId !== deviceStatus.anchor.shortId;
     });
   }
 
@@ -356,11 +354,11 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       }) >= 0;
   }
 
-  private removeFromList(device: Device): void {
-    const deviceList = (this.verified.findIndex((d: Device) => {
+  private removeFromList(device: Anchor): void {
+    const deviceList = (this.verified.findIndex((d: Anchor) => {
       return d.id === device.id;
     }) >= 0) ? this.verified : this.notVerified;
-    const deviceIndex = deviceList.findIndex((d: Device) => {
+    const deviceIndex = deviceList.findIndex((d: Anchor) => {
       return d.id === device.id;
     });
     CrudHelper.remove(deviceIndex, deviceList);
@@ -368,9 +366,9 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
 
   private connectToRegistrationSocket() {
     const stream = this.socketService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.deviceType}`);
-    this.socketSubscription = stream.subscribe((devices: Array<Device>): void => {
+    this.socketSubscription = stream.subscribe((devices: Array<Anchor>): void => {
       this.ngZone.run((): void => {
-        devices.forEach((device: Device) => {
+        devices.forEach((device: Anchor) => {
           if (this.isAlreadyOnAnyList(device)) {
             return;
           }
@@ -384,17 +382,4 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     });
   }
 
-  private getPower(): SelectItem[] {
-    return [
-      { label: '-40', value: -40 },
-      { label: '-20', value: -20 },
-      { label: '-16', value: -16 },
-      { label: '-12', value: -12 },
-      { label: '-8', value: -8 },
-      { label: '-4', value: -4 },
-      { label: '0', value: 0 },
-      { label: '3', value: 3 },
-      { label: '4', value: 4 }
-    ];
-  }
 }
