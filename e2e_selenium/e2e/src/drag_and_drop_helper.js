@@ -1,7 +1,10 @@
 (function( $ ) {
+        // console.log(arguments);
         $.fn.simulateDragDrop = function(options) {
+                console.log(this);
                 return this.each(function() {
                         new $.simulateDragDrop(this, options);
+                        // console.log(this);
                 });
         };
         $.simulateDragDrop = function(elem, options) {
@@ -18,6 +21,9 @@
                         /*Simulating drop*/
                         type = 'drop';
                         var dropEvent = this.createEvent(type, {});
+                        /* Set to dropEvent offsetX & offsetY */
+                        dropEvent.offsetX = $(options.dragOffsetX)[0];
+                        dropEvent.offsetY = $(options.dragOffsetY)[0];
                         dropEvent.dataTransfer = event.dataTransfer;
                         this.dispatchEvent($(options.dropTarget)[0], type, dropEvent);
 

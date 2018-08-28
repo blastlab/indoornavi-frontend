@@ -33,9 +33,8 @@ class MapsPageDevicePlacer(BasePage, MapsPageUtils):
     def is_device_placer_list_title_displayed(self):
         print('is_device_placer_list_title_displayed')
 
-    def set_device_on_map(self):
-        # print('set_device_on_map')
-        self.simulate_drag_and_drop_jquery(self.JQUERY_DEVICE_LIST_EVEN, self.JQUERY_MAP_LAYER)
+    def set_device_on_map(self, offset_x, offset_y):
+        self.simulate_drag_and_drop_jquery(self.JQUERY_DEVICE_LIST_EVEN, self.JQUERY_MAP_LAYER, offset_x, offset_y)
 
     def check_device_placer_list_title(self, device_name):
         selectors = {"sinks": self.DEVICE_PLACER_SINKS_TITLE,
@@ -106,12 +105,6 @@ class MapsPageDevicePlacer(BasePage, MapsPageUtils):
     def is_device_disappeared_from_map(self, *devices):
         return self.__presence_device_helper('disappear', devices)
 
-    def set_device_position_on_map(self, device_id, x, y):
-        web_element = self.wait_for_element(self.__select_device_helper(device_id))
-        return self.__driver.execute_script('var sink = arguments[0];'
-                                            'sink.setAttribute("x", arguments[1]);'
-                                            'sink.setAttribute("y", arguments[2]);'
-                                            'console.log(sink);', web_element, x, y)
 
     def get_device_color(self, device_id):
 
@@ -124,8 +117,15 @@ class MapsPageDevicePlacer(BasePage, MapsPageUtils):
         web_element = self.wait_for_element(self.__select_device_helper(device_id))
         ActionChains(self.__driver).drag_and_drop_by_offset(web_element, 100, 0).perform()
 
-    def simulate_drag_and_drop_jquery(self, source, target):
-        # print('simulate_drag_and_drop_jquery')
+    def simulate_drag_and_drop_jquery(self, source, target, offsetX, offsetY):
+        """
+        Helper to simulate drag and drop
+        :param source: drag webelement
+        :param target: drop webeleemtn
+        :param offsetX: passed to Jquery script to can simulate drag and drop by offset X {as dropEvent.offsetX}
+        :param offsetY: passed to Jquery script to can simulate drag and drop by offset Y {as dropEvent.offsetY}
+        :return:
+        """
         driver = self.__driver
         # init jQuery url variable;
         jquery_url = "http://code.jquery.com/jquery-1.11.2.min.js"
@@ -141,10 +141,16 @@ class MapsPageDevicePlacer(BasePage, MapsPageUtils):
         # load jQuery
         driver.execute_async_script(load_jquery_js, jquery_url)
 
-        # perform drag&drop
         driver.execute_script(drag_and_drop_js + """var source = arguments[0];
-                                                    var target = arguments[1]
-                                                    $(source).first().simulateDragDrop({ dropTarget: target});""", source, target)
+                                                    var target = arguments[1];
+                                                    var offsetX = arguments[2];
+                                                    var offsetY = arguments[3];
+                                                    $(source).first().simulateDragDrop({ 
+                                                      dropTarget: target,
+                                                      dragOffsetX: offsetX,
+                                                      dragOffsetY: offsetY 
+                                                      });
+                                                    console.log("WHICH_MOMENT");""", source, target, offsetX, offsetY)
 
     def insert_into_device_placer_list_searchbox(self, text):
         return self.clear_and_fill_input(text, self.DEVICE_PLACER_LIST_SEARCHBOX)
