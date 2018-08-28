@@ -24,7 +24,6 @@ import {ScaleService} from '../../../../shared/services/scale/scale.service';
 import {Helper} from '../../../../shared/utils/helper/helper';
 import {Box} from '../../../../shared/utils/drawing/drawing.types';
 
-
 @Component({
   selector: 'app-area',
   templateUrl: './area.html'
@@ -179,11 +178,64 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
         this.firstPointSelection = null;
         this.lastPoint = null;
         this.tempLine = null;
-        this.areas.forEach((areaBag: AreaBag): void => {
-          this.applyRightMouseButtonClick(areaBag.editable);
-        });
+
+        if (this.areas.length > 1) {
+          this.applyContextMenuAreas();
+        } else {
+          this.areas.forEach((areaBag: AreaBag): void => {
+            this.applyRightMouseButtonClick(areaBag.editable);
+          });
+        }
       });
     }
+  }
+
+  isPointWithinArea(clickedPoint, area) {
+    const areaPoints = area.dto.points;
+    const point = {
+      x: clickedPoint[0],
+      y: clickedPoint[1]
+    };
+    let inside = false;
+    let intersect = false;
+    let xi, yi, xj, yj = null;
+    if (areaPoints === null) {
+      throw new Error('points of the object are null');
+    }
+    for (let i = 0, j = areaPoints.length - 1; i < areaPoints.length; j = i++) {
+      xi = areaPoints[i].x;
+      yi = areaPoints[i].y;
+      xj = areaPoints[j].x;
+      yj = areaPoints[j].y;
+      intersect = ((yi > point.y) !== (yj > point.y)) && (point.x < (xj - xi) * (point.y - yi) / (yj - yi) + xi);
+      if (intersect) {
+        inside = !inside;
+      }
+    }
+    return inside;
+  }
+
+  private onClickGetAreas(areas: AreaBag[]) {
+    const mouseClickPosition: Array<number> = d3.mouse(this.container.node());
+    return areas.filter((area) => {
+      return this.isPointWithinArea(mouseClickPosition, area);
+    });
+  }
+
+  private applyContextMenuAreas() {
+    const areas = this.onClickGetAreas(this.areas);
+    const label = areas.map((area: AreaBag) => {
+        return {
+          label: area.dto.name
+        }
+    });
+
+    this.contextMenuService.setItems(label);
+
+    this.container.on('contextmenu', (): void => {
+      d3.event.preventDefault();
+      this.contextMenuService.openContextMenu();
+    });
   }
 
   setInactive(): void {
