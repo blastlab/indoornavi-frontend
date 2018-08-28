@@ -83,6 +83,7 @@ import {DataTableModule} from 'primeng/components/datatable/datatable';
 import {AppAutoFocusDirective} from './shared/directive/autofocus.directive';
 import {ProperNameDirective} from './shared/directive/propername.directive';
 import {DeviceComponent} from 'app/device/device';
+import {BluetoothComponent} from 'app/bluetooth/bluetooth';
 import {AcceptButtonsComponent} from 'app/shared/components/accept-buttons/accept-buttons';
 import {PermissionGroupComponent} from 'app/user/permissionGroup/permissionGroup';
 import {UnauthorizedComponent} from 'app/unauthorized/unauthorized';
@@ -154,6 +155,7 @@ export function HttpLoaderFactory(http: Http) {
     ToolDetailsComponent,
     ToolDetailsComponent,
     DeviceComponent,
+    BluetoothComponent,
     SocketConnectorComponent,
     MapComponent,
     MapComponent,

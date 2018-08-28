@@ -1,0 +1,179 @@
+<p-toolbar>
+  <div class="left">
+    <button pButton class="ui-button-secondary"
+            id="open-dialog" [appHasPermission]="createPermission"
+            (click)="openDialog()"
+            label="{{'add'|translate}}"
+            [disabled]="updateMode"
+            icon="fa-plus" iconPos="left">
+    </button>
+  </div>
+</p-toolbar>
+
+<p-pickList class="device-list" [source]="notVerified" [target]="verified" dragdrop="true" [responsive]="true"
+            sourceHeader="{{'device.notVerified'|translate}}" targetHeader="{{'device.verified'|translate}}"
+            [showSourceControls]="false" [showTargetControls]="false" filterBy="major"
+            sourceFilterPlaceholder="{{'device.searchByMajor'|translate}}" targetFilterPlaceholder="{{'device.searchByMajor'|translate}}"
+            (onMoveToTarget)="onItemMoved($event.items)" (onMoveToSource)="onItemMoved($event.items)">
+  <ng-template let-device pTemplate="item">
+    <div class="ui-helper-clearfix">
+      <div class="ui-g">
+        <div [ngClass]="{'ui-g-9 ui-md-9 ui-lg-9': !device.floorId, 'ui-g-5 ui-md-5 ui-lg-5': device.floorId}" class="device-details">
+
+          <div><b>{{'device.major'|translate}}:</b> {{device['major']}}</div>
+          <div><b>{{'device.minor'|translate}}:</b> {{device['minor']}}</div>
+          <div><b>{{'device.macAddress'|translate}}:</b> {{device['macAddress']}}</div>
+          <div><b>{{'device.powerTransmition'|translate}}:</b> {{device['powerTransmition']}}</div>
+          <div><b>{{'device.name'|translate}}:</b> {{device['name']}}</div>
+
+        </div>
+        <div *ngIf="device.floorId" class="ui-g-4 ui-md-4 ui-lg-4 device-published-details">
+          <div><b>{{'device.publishedOnFloorWithId'|translate}}:</b> {{device.floorId}}</div>
+        </div>
+        <div class="ui-g-3 ui-md-3 ui-lg-3">
+          <button
+            [appHasPermission]="editPermission"
+            [disabled]="updateMode"
+            pTooltip="{{'edit'|translate}}" type="button" pButton (click)="openDialog(device)" icon="fa-edit" class="ui-button-info">
+          </button>
+          <button
+            [appHasPermission]="deletePermission"
+            [disabled]="updateMode"
+            pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(device)" icon="fa-trash" class="ui-button-danger">
+          </button>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</p-pickList>
+
+<p-dialog [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
+          [contentStyle]="{ overflow: 'visible' }"
+          [width]="800"
+          dismissableMask="true" (onHide)="cancel()">
+  <p-header>
+    {{dialogTitle|translate}}
+  </p-header>
+  <form #bluetoothForm="ngForm" novalidate>
+
+    <div *ngIf="device">
+
+      <div class="ui-g">
+        <div class="ui-g-12 ui-md-4 ui-lg-4">
+          <div class="ui-message ui-messages-error ui-corner-all"
+               *ngIf="major.errors?.required && major.touched && major.dirty">
+            <i class="fa fa-warning"></i>
+            {{'device.major.required'|translate}}
+          </div>
+          <div class="ui-message ui-messages-error ui-corner-all"
+               *ngIf="major.errors?.properShortId && major.touched && major.dirty && !major.errors?.required">
+            <i class="fa fa-warning"></i>
+            {{major.errors?.properShortId|translate}}
+          </div>
+        </div>
+        <div class="ui-g-12 ui-md-2 ui-lg-2">
+          <label for="deviceId">{{'device.major'|translate}} *</label>
+        </div>
+        <div class="ui-g-12 ui-md-6 ui-lg-6">
+          <input [appProperShortId]="deviceType + 'major'" name="major" required [appAutoFocus]="displayDialog" pInputText id="deviceId" [(ngModel)]="device.major" #major="ngModel" />
+        </div>
+      </div>
+
+      <div class="ui-g">
+        <div class="ui-g-12 ui-md-4 ui-lg-4">
+          <div class="ui-message ui-messages-error ui-corner-all"
+               *ngIf="minor.errors?.required && minor.touched && minor.dirty">
+            <i class="fa fa-warning"></i>
+            {{'device.minor.required'|translate}}
+          </div>
+          <div class="ui-message ui-messages-error ui-corner-all"
+               *ngIf="minor.errors?.properShortId && minor.touched && minor.dirty && !minor.errors?.required">
+            <i class="fa fa-warning"></i>
+            {{minor.errors?.properShortId|translate}}
+          </div>
+        </div>
+        <div class="ui-g-12 ui-md-2 ui-lg-2">
+          <label for="minor">{{'device.minor'|translate}} *</label>
+        </div>
+        <div class="ui-g-12 ui-md-6 ui-lg-6">
+          <input [appProperShortId]="deviceType" name="minor" required pInputText id="minor" [(ngModel)]="device.minor" #minor="ngModel"/>
+        </div>
+      </div>
+
+      <div class="ui-g">
+        <div class="ui-g-12 ui-md-4 ui-lg-4">
+          <div class="ui-message ui-messages-error ui-corner-all"
+               *ngIf="macAddress.errors?.properMacAddress && macAddress.touched && macAddress.dirty">
+            <i class="fa fa-warning"></i>
+            {{macAddress.errors?.properMacAddress|translate}}
+          </div>
+        </div>
+        <div class="ui-g-12 ui-md-2 ui-lg-2">
+          <label for="macAddress">{{'device.macAddress'|translate}}</label>
+        </div>
+        <div class="ui-g-12 ui-md-6 ui-lg-6">
+          <p-inputMask
+            appProperMacAddress
+            [autoClear]="false"
+            mask="**:**:**:**:**:**"
+            name="macAddress"
+            id="macAddress"
+            [(ngModel)]="device.macAddress"
+            #macAddress="ngModel"></p-inputMask>
+        </div>
+      </div>
+
+      <div class="ui-g">
+        <div class="ui-g-12 ui-md-4 ui-lg-4">
+        </div>
+        <div class="ui-g-12 ui-md-2 ui-lg-2">
+          <label for="powerTransmition">{{'device.powerTransmition'|translate}}</label>
+        </div>
+        <div class="ui-g-12 ui-md-6 ui-lg-6">
+          <p-dropdown [options]="power"
+                      [(ngModel)]="device.powerTransmition"
+                      [style]="{ width: '100%' }"
+                      id="powerTransmition"
+                      placeholder="{{'device.selectPower'|translate}}"
+                      name="powerTransmition"
+                      #powerTransmition="ngModel">
+          </p-dropdown>
+        </div>
+      </div>
+
+      <div class="ui-g">
+        <div class="ui-g-12 ui-md-4 ui-lg-4">
+          <div class="ui-message ui-messages-error ui-corner-all"
+               *ngIf="nameInput.errors?.properName && nameInput.touched && nameInput.dirty">
+            <i class="fa fa-warning"></i>
+            {{nameInput.errors?.properName|translate}}
+          </div>
+        </div>
+        <div class="ui-g-12 ui-md-2 ui-lg-2">
+          <label for="deviceName">{{'device.name'|translate}}</label>
+        </div>
+        <div class="ui-g-12 ui-md-6 ui-lg-6">
+          <input appProperNameValidator name="name" pInputText id="deviceName" [(ngModel)]="device.name" #nameInput="ngModel"/>
+        </div>
+      </div>
+
+      <p-footer>
+        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+          <button type="button" pButton icon="fa-close" (click)="cancel()"
+                  label="{{'cancel'|translate}}"></button>
+          <button type="submit" pButton icon="fa-check" (click)="save(bluetoothForm.valid)" label="{{'save'|translate}}"></button>
+        </div>
+      </p-footer>
+    </div>
+  </form>
+</p-dialog>
+
+<p-confirmDialog icon="fa fa-question-circle" width="425"></p-confirmDialog>
+
+<p-dialog header="{{'information.important'|translate}}" [(visible)]="displayInfoDialog" modal="modal" [responsive]="true" [width]="350"
+          [minWidth]="200">
+  <div>{{'device.update.hint'|translate}}</div>
+  <p-footer>
+    <button type="button" pButton icon="fa-check" (click)="displayInfoDialog=false" label="{{'ok'|translate}}"></button>
+  </p-footer>
+</p-dialog>

@@ -12,6 +12,7 @@ import {UnauthorizedComponent} from './unauthorized/unauthorized';
 import {PublishedListComponent} from './map-viewer/list/publication-list';
 import {PublishedComponent} from './map-viewer/views/publications/publication';
 import {DeviceComponent} from './device/device';
+import {BluetoothComponent} from './bluetooth/bluetooth';
 import {AnalyticsComponent} from './map-viewer/views/analytics/analytics';
 import {NotSupportedBrowserComponent} from './not-supported-browser/not-supported-browser';
 
@@ -24,7 +25,7 @@ export const appRoutes: Routes = [
   {path: 'anchors', component: DeviceComponent, canActivate: [CanRead], data: {permission: 'ANCHOR'}},
   {path: 'tags', component: DeviceComponent, canActivate: [CanRead], data: {permission: 'TAG'}},
   {path: 'sinks', component: DeviceComponent, canActivate: [CanRead], data: {permission: 'SINK'}},
-  {path: 'bluetooth', component: DeviceComponent, canActivate: [CanRead], data: {permission: 'BLUETOOTH'}},
+  {path: 'bluetooth', component: BluetoothComponent, canActivate: [CanRead], data: {permission: 'BLUETOOTH'}},
   {path: 'publications', component: PublishedListComponent, canActivate: [CanRead], data: {permission: 'PUBLICATION'}},
   {path: 'publications/:id', component: PublishedComponent, canActivate: [CanRead], data: {permission: 'PUBLICATION'}},
   {path: 'embedded/:id', component: PublishedComponent, data: {isPublic: true}},
