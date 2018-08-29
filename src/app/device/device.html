@@ -132,21 +132,22 @@
       <div class="ui-g">
         <div class="ui-g-12 ui-md-4 ui-lg-4">
           <div class="ui-message ui-messages-error ui-corner-all"
-               *ngIf="macAddress.errors?.required && macAddress.touched && macAddress.dirty">
-            <i class="fa fa-warning"></i>
-            {{'device.macAddress.required'|translate}}
-          </div>
-          <div class="ui-message ui-messages-error ui-corner-all"
                *ngIf="macAddress.errors?.properMacAddress && macAddress.touched && macAddress.dirty && !macAddress.errors?.required">
             <i class="fa fa-warning"></i>
             {{macAddress.errors?.properMacAddress|translate}}
           </div>
         </div>
         <div class="ui-g-12 ui-md-2 ui-lg-2">
-          <label for="macAddress">{{'device.macAddress'|translate}} *</label>
+          <label for="macAddress">{{'device.macAddress'|translate}}</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input appProperMacAddress name="macAddress" required pInputText id="macAddress" [(ngModel)]="device.macAddress" #macAddress="ngModel"/>
+          <p-inputMask appProperMacAddress
+                 [autoClear]="false"
+                 mask="**:**:**:**:**:**"
+                 name="macAddress"
+                 id="macAddress"
+                 [(ngModel)]="device.macAddress"
+                 #macAddress="ngModel"></p-inputMask>
         </div>
       </div>
       <div class="ui-g">
