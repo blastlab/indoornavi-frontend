@@ -62,7 +62,7 @@
       <div class="ui-g">
         <div [ngClass]="{'ui-g-9 ui-md-9 ui-lg-9': !device.floorId, 'ui-g-5 ui-md-5 ui-lg-5': device.floorId}" class="device-details">
           <div><b>{{'device.shortId'|translate}}:</b> {{device['shortId']}}</div>
-          <div><b>{{'device.longId'|translate}}:</b> {{device['longId']}}</div>
+          <div><b>{{'device.macAddress'|translate}}:</b> {{device['macAddress']}}</div>
           <div><b>{{'device.name'|translate}}:</b> {{device['name']}}</div>
           <div *ngIf="device.firmwareVersion && devicesUpdating.indexOf(device) < 0">
             <b>{{'device.firmware.version'|translate}}:</b>
@@ -132,21 +132,21 @@
       <div class="ui-g">
         <div class="ui-g-12 ui-md-4 ui-lg-4">
           <div class="ui-message ui-messages-error ui-corner-all"
-               *ngIf="longIdInput.errors?.required && longIdInput.touched && longIdInput.dirty">
+               *ngIf="macAddress.errors?.required && macAddress.touched && macAddress.dirty">
             <i class="fa fa-warning"></i>
-            {{'device.longId.required'|translate}}
+            {{'device.macAddress.required'|translate}}
           </div>
           <div class="ui-message ui-messages-error ui-corner-all"
-               *ngIf="longIdInput.errors?.properLongId && longIdInput.touched && longIdInput.dirty && !longIdInput.errors?.required">
+               *ngIf="macAddress.errors?.properMacAddress && macAddress.touched && macAddress.dirty && !macAddress.errors?.required">
             <i class="fa fa-warning"></i>
-            {{longIdInput.errors?.properLongId|translate}}
+            {{macAddress.errors?.properMacAddress|translate}}
           </div>
         </div>
         <div class="ui-g-12 ui-md-2 ui-lg-2">
-          <label for="longId">{{'device.longId'|translate}} *</label>
+          <label for="macAddress">{{'device.macAddress'|translate}} *</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input appProperLongId name="longId" required pInputText id="longId" [(ngModel)]="device.longId" #longIdInput="ngModel"/>
+          <input appProperMacAddress name="macAddress" required pInputText id="macAddress" [(ngModel)]="device.macAddress" #macAddress="ngModel"/>
         </div>
       </div>
       <div class="ui-g">
