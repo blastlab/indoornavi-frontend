@@ -126,7 +126,7 @@
           <label for="shortId">{{'device.shortId'|translate}} *</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input name="shortId" [appProperShortId]="deviceType" required [appAutoFocus]="displayDialog" pInputText id="shortId" [(ngModel)]="device.shortId" #shortIdInput="ngModel"/>
+          <input name="shortId" [appProperShortId]="deviceType" [translateKey]="'device.shortId'" required [appAutoFocus]="displayDialog" pInputText id="shortId" [(ngModel)]="device.shortId" #shortIdInput="ngModel"/>
         </div>
       </div>
       <div class="ui-g">

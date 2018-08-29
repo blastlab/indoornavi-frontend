@@ -71,7 +71,7 @@
           <label for="major">{{'bluetooth.major'|translate}} *</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input [appProperShortId]="deviceType + 'major'" name="major" required [appAutoFocus]="displayDialog" pInputText id="major" [(ngModel)]="bluetooth.major" #major="ngModel" />
+          <input [appProperShortId]="deviceType" [translateKey]="'bluetooth.major'" name="major" required [appAutoFocus]="displayDialog" pInputText id="major" [(ngModel)]="bluetooth.major" #major="ngModel" />
         </div>
       </div>
 
@@ -92,7 +92,7 @@
           <label for="minor">{{'bluetooth.minor'|translate}} *</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input [appProperShortId]="deviceType" name="minor" required pInputText id="minor" [(ngModel)]="bluetooth.minor" #minor="ngModel"/>
+          <input [appProperShortId]="deviceType" [translateKey]="'bluetooth.minor'" name="minor" required pInputText id="minor" [(ngModel)]="bluetooth.minor" #minor="ngModel"/>
         </div>
       </div>
 
