@@ -97,7 +97,7 @@ class TestMapsPageDevicePlacer(unittest.TestCase, MapsPageDevicePlacer):
 
         self.test_failed = False
 
-    def test_02_set_2_sinks_without_anchors(self):
+    def _test_02_set_2_sinks_without_anchors(self):
 
         log_tc02 = logging.getLogger(' TEST_02 ')
         # log_tc02.info('START')
@@ -143,7 +143,7 @@ class TestMapsPageDevicePlacer(unittest.TestCase, MapsPageDevicePlacer):
 
         self.test_failed = False
 
-    def test_03_set_one_sink_with_2_anchors(self):
+    def _test_03_set_one_sink_with_2_anchors(self):
 
         log_tc03 = logging.getLogger(' TEST_03 ')
 
@@ -185,7 +185,7 @@ class TestMapsPageDevicePlacer(unittest.TestCase, MapsPageDevicePlacer):
 
         self.test_failed = False
 
-    def test_04_set_2_sinks_with_1_anchor_for_each(self):
+    def _test_04_set_2_sinks_with_1_anchor_for_each(self):
 
         log_tc04 = logging.getLogger(' TEST_04 ')
 
@@ -237,7 +237,7 @@ class TestMapsPageDevicePlacer(unittest.TestCase, MapsPageDevicePlacer):
 
         self.test_failed = False
 
-    def test_05_unset_single_sink(self):
+    def _test_05_unset_single_sink(self):
 
         log_tc05 = logging.getLogger(' TEST_05 ')
         # log_tc02.info('START')
@@ -280,7 +280,7 @@ class TestMapsPageDevicePlacer(unittest.TestCase, MapsPageDevicePlacer):
 
         self.test_failed = False
 
-    def test_06_unset_single_anchor(self):
+    def _test_06_unset_single_anchor(self):
 
         log_tc06 = logging.getLogger(' TEST_06 ')
         # log_tc02.info('START')
@@ -341,7 +341,7 @@ class TestMapsPageDevicePlacer(unittest.TestCase, MapsPageDevicePlacer):
 
         self.test_failed = False
 
-    def test_07_unset_all_anchors_from_sink(self):
+    def _test_07_unset_all_anchors_from_sink(self):
 
         log_tc07 = logging.getLogger(' TEST_07 ')
 
@@ -386,7 +386,7 @@ class TestMapsPageDevicePlacer(unittest.TestCase, MapsPageDevicePlacer):
 
         self.test_failed = False
 
-    def test_08_unset_sink_with_all_anchors(self):
+    def _test_08_unset_sink_with_all_anchors(self):
 
         log_tc08 = logging.getLogger(' TEST_08 ')
 
@@ -439,7 +439,7 @@ class TestMapsPageDevicePlacer(unittest.TestCase, MapsPageDevicePlacer):
 
         self.test_failed = False
 
-    def test_09_searchbox_in_device_placer_list(self):
+    def _test_09_searchbox_in_device_placer_list(self):
 
         log_tc09 = logging.getLogger(' TEST_09 ')
 
@@ -542,7 +542,7 @@ class TestMapsPageDevicePlacer(unittest.TestCase, MapsPageDevicePlacer):
 
         self.test_failed = False
 
-    def test_12_minimize_and_maximized_window_device_placer_list(self):
+    def _test_12_minimize_and_maximized_window_device_placer_list(self):
         log_tc12 = logging.getLogger(' TEST_12 ')
 
         log_tc12.info('Step 1 : Click device placer button')
