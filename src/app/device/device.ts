@@ -34,7 +34,6 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   public devicesUpdating: Anchor[] = [];
   public allSelected: boolean = false;
   public displayInfoDialog: boolean = false;
-  public sourceFilterPlaceholder: string;
   @ViewChildren('updateCheckbox') public deviceCheckboxes: Checkbox[];
   @ViewChild('firmwareInput') public firmwareInput: ElementRef;
   @ViewChild('firmwareButton') public firmwareButton: ElementRef;
@@ -79,7 +78,6 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     this.ngZone.runOutsideAngular(() => {
       this.connectToRegistrationSocket();
     });
-    this.translateSearchPlaceholder();
   }
 
   ngOnDestroy() {
@@ -252,36 +250,6 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       this.connectToRegistrationSocket();
     }
   }
-
-  isDeviceBluetooth(): boolean {
-    return this.deviceType === 'bluetooth';
-  }
-
-  filterByData() {
-    switch (this.deviceType) {
-      case 'bluetooth':
-          return 'id';
-      case 'sinks':
-      case 'anchors':
-      case 'tags':
-        return 'shortId';
-      default:
-        return 'shortId';
-    }
-  }
-
-  private translateSearchPlaceholder(): void {
-    if (this.isDeviceBluetooth()) {
-      this.translate.get(`device.searchById`).subscribe((value: string) => {
-        this.sourceFilterPlaceholder = value;
-      });
-    } else {
-      this.translate.get(`device.searchByShortId`).subscribe((value: string) => {
-        this.sourceFilterPlaceholder = value;
-      });
-    }
-  }
-
   private updateFirmwareVersion(deviceStatus: DeviceStatus) {
     let deviceToChangeFirmware: Anchor;
     const index = this.devicesWaitingForNewFirmwareVersion.findIndex((ds: DeviceStatus) => {

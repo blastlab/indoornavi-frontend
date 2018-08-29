@@ -54,8 +54,8 @@
 
 <p-pickList class="device-list" [source]="notVerified" [target]="verified" dragdrop="true" [responsive]="true"
             sourceHeader="{{'device.notVerified'|translate}}" targetHeader="{{'device.verified'|translate}}"
-            [showSourceControls]="false" [showTargetControls]="false" [filterBy]="filterByData()"
-            [sourceFilterPlaceholder]="sourceFilterPlaceholder" [targetFilterPlaceholder]="sourceFilterPlaceholder"
+            [showSourceControls]="false" [showTargetControls]="false" filterBy="shortId"
+            sourceFilterPlaceholder="{{'device.searchByShortId'|translate}}" targetFilterPlaceholder="{{'device.searchByShortId'|translate}}"
             (onMoveToTarget)="onItemMoved($event.items)" (onMoveToSource)="onItemMoved($event.items)">
   <ng-template let-device pTemplate="item">
     <div class="ui-helper-clearfix">
