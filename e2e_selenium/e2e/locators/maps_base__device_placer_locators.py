@@ -22,6 +22,7 @@ class MapsBaseDevicePlacerLocators(object):
     #TODO CHANGE SINK HOVER SELECTOR
     DEVICE_PLACER_SINK_HOVER_SELECTOR = (By.CSS_SELECTOR, 'svg.sink text:nth-child(3)')
     DEVICE_PLACER_ANCHOR_HOVER_SELECTOR = (By.CSS_SELECTOR, 'svg.anchor text:nth-child(3)')
+    DEVICE_PLACER_HEIGHT_SLIDER_CONTENT = (By.CSS_SELECTOR, 'p-slider div.ui-slider')
     DEVICE_PLACER_HEIGHT_SLIDER = (By.CLASS_NAME, 'ui-slider-handle')
     DEVICE_PLACER_HEIGHT_LABEL =  (By.ID, 'height-label')
     JQUERY_DEVICE_LIST_EVEN = 'app-device-placer-list tr.ui-datatable-even'
@@ -29,9 +30,9 @@ class MapsBaseDevicePlacerLocators(object):
     JQUERY_MAP_LAYER = '#map-upper-layer'
     # MAP_SINK_111111 = (By.CSS_SELECTOR, 'svg.sink')
     # MAP_SINK_222222 = (By.CSS_SELECTOR, 'svg.sink:nth-child(2)')
-    MAP_SINK_111111  = (By.ID, 'sink-111111')
-    MAP_SINK_222222  = (By.ID, 'sink-222222')
-    MAP_ANCHOR_33333 = (By.ID, 'anchor-33333')
-    MAP_ANCHOR_44444 = (By.ID, 'anchor-44444')
+    MAP_SINK_111111  = (By.ID, '111111')
+    MAP_SINK_222222  = (By.ID, '222222')
+    MAP_ANCHOR_33333 = (By.ID, '33333')
+    MAP_ANCHOR_44444 = (By.ID, '44444')
     UNSET_SINK_WARNING_OK = (By.CSS_SELECTOR, 'app-device-placer button[ng-reflect-label="Ok"]')
     UNSET_SINK_WARNING_CANCEL = (By.CSS_SELECTOR, 'app-device-placer button[ng-reflect-label="Cancel"]')
