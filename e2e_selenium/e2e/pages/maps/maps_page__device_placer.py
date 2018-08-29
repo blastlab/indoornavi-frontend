@@ -173,9 +173,11 @@ class MapsPageDevicePlacer(BasePage, MapsPageUtils):
         :returns
         height_label - string - height of device displayed in label - e.g. "Height 2m"
         """
+        slider_content = self.wait_for_element(self.DEVICE_PLACER_HEIGHT_SLIDER_CONTENT)
+        slider_width = slider_content.size["width"]
 
         start = 2
-        step_in_px = 52
+        step_in_px = slider_width/100*7
         setter = set_meters - start
         pixels_x_to_move = step_in_px*setter
         pixels_y_to_move = 0
@@ -192,7 +194,8 @@ class MapsPageDevicePlacer(BasePage, MapsPageUtils):
           'sink': self.DEVICE_PLACER_SINK_HOVER_SELECTOR,
           'anchor': self.DEVICE_PLACER_ANCHOR_HOVER_SELECTOR
         }
-        return self.get_text(set_selector[set_device])
+        info =self.get_text(set_selector[set_device])
+        return info
 
 
 
