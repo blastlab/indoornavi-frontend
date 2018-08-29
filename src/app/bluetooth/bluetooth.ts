@@ -5,8 +5,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute} from '@angular/router';
 import {DeviceService} from '../device/device.service';
 import {CrudComponent, CrudHelper} from '../shared/components/crud/crud.component';
-// import {Device} from '../device/device.type';
-import {Bluetooth} from './bluetooth.type';
+import {Bluetooth} from '../device/device.type';
 import {NgForm} from '@angular/forms';
 import {Checkbox, ConfirmationService, SelectItem} from 'primeng/primeng';
 import {MessageServiceWrapper} from '../shared/services/message/message.service';
@@ -117,8 +116,7 @@ export class BluetoothComponent implements OnInit, OnDestroy, CrudComponent {
       }, (err: string) => {
         this.messageService.failed(err);
       });
-      this.displayDialog = false;
-      this.bluetoothForm.resetForm();
+      this.cancel();
     } else {
       CrudHelper.validateAllFields(this.bluetoothForm);
     }
@@ -134,7 +132,7 @@ export class BluetoothComponent implements OnInit, OnDestroy, CrudComponent {
       this.device = {...bluetooth};
       this.dialogTitle = `device.details.bluetooth.edit`;
     } else {
-      this.device = new Bluetooth(null, null, false);
+      this.device = new Bluetooth(false, null, null);
       this.dialogTitle = `device.details.bluetooth.add`;
     }
 
