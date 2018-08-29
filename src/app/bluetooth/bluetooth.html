@@ -12,33 +12,30 @@
 <p-pickList class="device-list" [source]="notVerified" [target]="verified" dragdrop="true" [responsive]="true"
             sourceHeader="{{'device.notVerified'|translate}}" targetHeader="{{'device.verified'|translate}}"
             [showSourceControls]="false" [showTargetControls]="false" filterBy="major"
-            sourceFilterPlaceholder="{{'device.searchByMajor'|translate}}" targetFilterPlaceholder="{{'device.searchByMajor'|translate}}"
+            sourceFilterPlaceholder="{{'bluetooth.searchByMajor'|translate}}" targetFilterPlaceholder="{{'bluetooth.searchByMajor'|translate}}"
             (onMoveToTarget)="onItemMoved($event.items)" (onMoveToSource)="onItemMoved($event.items)">
-  <ng-template let-device pTemplate="item">
+  <ng-template let-bluetooth pTemplate="item">
     <div class="ui-helper-clearfix">
       <div class="ui-g">
-        <div [ngClass]="{'ui-g-9 ui-md-9 ui-lg-9': !device.floorId, 'ui-g-5 ui-md-5 ui-lg-5': device.floorId}" class="device-details">
-
-          <div><b>{{'device.major'|translate}}:</b> {{device['major']}}</div>
-          <div><b>{{'device.minor'|translate}}:</b> {{device['minor']}}</div>
-          <div><b>{{'device.macAddress'|translate}}:</b> {{device['macAddress']}}</div>
-          <div><b>{{'device.powerTransmition'|translate}}:</b> {{device['powerTransmition']}}</div>
-          <div><b>{{'device.name'|translate}}:</b> {{device['name']}}</div>
+        <div [ngClass]="{'ui-g-9 ui-md-9 ui-lg-9': !bluetooth.floorId, 'ui-g-5 ui-md-5 ui-lg-5': bluetooth.floorId}" class="device-details">
+          <div><b>{{'bluetooth.major'|translate}}:</b> {{bluetooth['major']}}</div>
+          <div><b>{{'bluetooth.minor'|translate}}:</b> {{bluetooth['minor']}}</div>
+          <div><b>{{'device.macAddress'|translate}}:</b> {{bluetooth['macAddress']}}</div>
+          <div><b>{{'bluetooth.powerTransmition'|translate}}:</b> {{bluetooth['powerTransmition']}}</div>
+          <div><b>{{'bluetooth.name'|translate}}:</b> {{bluetooth['name']}}</div>
 
         </div>
-        <div *ngIf="device.floorId" class="ui-g-4 ui-md-4 ui-lg-4 device-published-details">
-          <div><b>{{'device.publishedOnFloorWithId'|translate}}:</b> {{device.floorId}}</div>
+        <div *ngIf="bluetooth.floorId" class="ui-g-4 ui-md-4 ui-lg-4 device-published-details">
+          <div><b>{{'device.publishedOnFloorWithId'|translate}}:</b> {{bluetooth.floorId}}</div>
         </div>
         <div class="ui-g-3 ui-md-3 ui-lg-3">
           <button
             [appHasPermission]="editPermission"
-            [disabled]="updateMode"
-            pTooltip="{{'edit'|translate}}" type="button" pButton (click)="openDialog(device)" icon="fa-edit" class="ui-button-info">
+            pTooltip="{{'edit'|translate}}" type="button" pButton (click)="openDialog(bluetooth)" icon="fa-edit" class="ui-button-info">
           </button>
           <button
             [appHasPermission]="deletePermission"
-            [disabled]="updateMode"
-            pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(device)" icon="fa-trash" class="ui-button-danger">
+            pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(bluetooth)" icon="fa-trash" class="ui-button-danger">
           </button>
         </div>
       </div>
@@ -55,14 +52,14 @@
   </p-header>
   <form #bluetoothForm="ngForm" novalidate>
 
-    <div *ngIf="device">
+    <div *ngIf="bluetooth">
 
       <div class="ui-g">
         <div class="ui-g-12 ui-md-4 ui-lg-4">
           <div class="ui-message ui-messages-error ui-corner-all"
                *ngIf="major.errors?.required && major.touched && major.dirty">
             <i class="fa fa-warning"></i>
-            {{'device.major.required'|translate}}
+            {{'bluetooth.major.required'|translate}}
           </div>
           <div class="ui-message ui-messages-error ui-corner-all"
                *ngIf="major.errors?.properShortId && major.touched && major.dirty && !major.errors?.required">
@@ -71,10 +68,10 @@
           </div>
         </div>
         <div class="ui-g-12 ui-md-2 ui-lg-2">
-          <label for="deviceId">{{'device.major'|translate}} *</label>
+          <label for="major">{{'bluetooth.major'|translate}} *</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input [appProperShortId]="deviceType + 'major'" name="major" required [appAutoFocus]="displayDialog" pInputText id="deviceId" [(ngModel)]="device.major" #major="ngModel" />
+          <input [appProperShortId]="deviceType + 'major'" name="major" required [appAutoFocus]="displayDialog" pInputText id="major" [(ngModel)]="bluetooth.major" #major="ngModel" />
         </div>
       </div>
 
@@ -83,7 +80,7 @@
           <div class="ui-message ui-messages-error ui-corner-all"
                *ngIf="minor.errors?.required && minor.touched && minor.dirty">
             <i class="fa fa-warning"></i>
-            {{'device.minor.required'|translate}}
+            {{'bluetooth.minor.required'|translate}}
           </div>
           <div class="ui-message ui-messages-error ui-corner-all"
                *ngIf="minor.errors?.properShortId && minor.touched && minor.dirty && !minor.errors?.required">
@@ -92,10 +89,10 @@
           </div>
         </div>
         <div class="ui-g-12 ui-md-2 ui-lg-2">
-          <label for="minor">{{'device.minor'|translate}} *</label>
+          <label for="minor">{{'bluetooth.minor'|translate}} *</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input [appProperShortId]="deviceType" name="minor" required pInputText id="minor" [(ngModel)]="device.minor" #minor="ngModel"/>
+          <input [appProperShortId]="deviceType" name="minor" required pInputText id="minor" [(ngModel)]="bluetooth.minor" #minor="ngModel"/>
         </div>
       </div>
 
@@ -117,7 +114,7 @@
             mask="**:**:**:**:**:**"
             name="macAddress"
             id="macAddress"
-            [(ngModel)]="device.macAddress"
+            [(ngModel)]="bluetooth.macAddress"
             #macAddress="ngModel"></p-inputMask>
         </div>
       </div>
@@ -126,14 +123,14 @@
         <div class="ui-g-12 ui-md-4 ui-lg-4">
         </div>
         <div class="ui-g-12 ui-md-2 ui-lg-2">
-          <label for="powerTransmition">{{'device.powerTransmition'|translate}}</label>
+          <label for="powerTransmition">{{'bluetooth.powerTransmition'|translate}}</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
           <p-dropdown [options]="power"
-                      [(ngModel)]="device.powerTransmition"
+                      [(ngModel)]="bluetooth.powerTransmition"
                       [style]="{ width: '100%' }"
                       id="powerTransmition"
-                      placeholder="{{'device.selectPower'|translate}}"
+                      placeholder="{{'bluetooth.selectPower'|translate}}"
                       name="powerTransmition"
                       #powerTransmition="ngModel">
           </p-dropdown>
@@ -152,7 +149,7 @@
           <label for="deviceName">{{'device.name'|translate}}</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input appProperNameValidator name="name" pInputText id="deviceName" [(ngModel)]="device.name" #nameInput="ngModel"/>
+          <input appProperNameValidator name="name" pInputText id="deviceName" [(ngModel)]="bluetooth.name" #nameInput="ngModel"/>
         </div>
       </div>
 

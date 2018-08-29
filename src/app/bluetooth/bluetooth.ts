@@ -28,7 +28,7 @@ export class BluetoothComponent implements OnInit, OnDestroy, CrudComponent {
   public deletePermission: string;
   public editPermission: string;
   public displayDialog: boolean = false;
-  public device: Bluetooth;
+  public bluetooth: Bluetooth;
   public displayInfoDialog: boolean = false;
   public power: SelectItem[];
   @ViewChildren('updateCheckbox') public deviceCheckboxes: Checkbox[];
@@ -42,7 +42,7 @@ export class BluetoothComponent implements OnInit, OnDestroy, CrudComponent {
   private firmwareSocketSubscription: Subscription;
   private confirmBodyTranslate: Subscription;
   private uploadBodyTranslate: Subscription;
-  private confirmBody: string;;
+  private confirmBody: string;
   private deviceHash: string | Int32Array;
 
   constructor(public translate: TranslateService,
@@ -97,16 +97,16 @@ export class BluetoothComponent implements OnInit, OnDestroy, CrudComponent {
 
   save(isValid: boolean): void {
     if (isValid) {
-      const isNew = !(!!this.device.id);
-      if (!isNew && Md5.hashStr(JSON.stringify(this.device)) !== this.deviceHash) {
+      const isNew = !(!!this.bluetooth.id);
+      if (!isNew && Md5.hashStr(JSON.stringify(this.bluetooth)) !== this.deviceHash) {
         // if it's an edit mode then we need to remove it from list first, so that updated version will show up on the list when it arrives through websocket
         // checking hash to ensure that any change has been done, otherwise backend will not send it through websocket (NAVI-196)
-        this.removeFromList(this.device);
+        this.removeFromList(this.bluetooth);
       }
-      (!!this.device.id ?
-          this.deviceService.update(this.device)
+      (!!this.bluetooth.id ?
+          this.deviceService.update(this.bluetooth)
           :
-          this.deviceService.create(this.device)
+          this.deviceService.create(this.bluetooth)
       ).subscribe(() => {
         if (isNew) {
           this.messageService.success('device.create.success');
@@ -129,14 +129,14 @@ export class BluetoothComponent implements OnInit, OnDestroy, CrudComponent {
 
   openDialog(bluetooth?: Bluetooth): void {
     if (!!bluetooth) {
-      this.device = {...bluetooth};
+      this.bluetooth = {...bluetooth};
       this.dialogTitle = `device.details.bluetooth.edit`;
     } else {
-      this.device = new Bluetooth(false, null, null);
+      this.bluetooth = new Bluetooth(false, null, null);
       this.dialogTitle = `device.details.bluetooth.add`;
     }
 
-    this.deviceHash = Md5.hashStr(JSON.stringify(this.device));
+    this.deviceHash = Md5.hashStr(JSON.stringify(this.bluetooth));
     this.displayDialog = true;
   }
 
