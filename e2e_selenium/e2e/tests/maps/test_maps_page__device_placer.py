@@ -82,6 +82,21 @@ class TestMapsPageDevicePlacer(unittest.TestCase, MapsPageDevicePlacer):
         is_device_displayed = self.device_placer_page.is_device_appeared('map111111')
         assert is_device_displayed
 
+        import time
+        import os
+        _reports_path = 'test-reports/bug-screenshots'
+        _browser_log_path = 'test-reports/browser-console'
+        try:
+            os.makedirs(_reports_path)
+            os.makedirs(_browser_log_path)
+        except OSError:
+            pass
+
+        datetime = time.strftime(' %H:%M:%S %d_%m_%Y')
+        test_method_name = self._testMethodName + datetime
+        log_tc01.info('Step 5.1 : SCREENSHOT - AFTER STEP 5')
+        self.webdriver.save_screenshot("{0}/{1}_SS_AFTER_STEP_05.png".format(_reports_path, test_method_name))
+
         log_tc01.info('Step 6 : Save draft click')
         self.device_placer_page.save_draft_click()
 
@@ -91,9 +106,14 @@ class TestMapsPageDevicePlacer(unittest.TestCase, MapsPageDevicePlacer):
         log_tc01.info('Step 8 : Refresh page')
         self.device_placer_page.refresh_page()
 
+        log_tc01.info('Step 8.1 : SCREENSHOT - AFTER STEP 8')
+        self.webdriver.save_screenshot("{0}/{1}_SS_AFTER_STEP_08.png".format(_reports_path, test_method_name))
+
         log_tc01.info('Step 9 : ASSERT - Is sink still on the map')
         is_device_still_displayed = self.device_placer_page.is_device_appeared('map111111')
         assert is_device_still_displayed
+        log_tc01.info('Step 9.1 : SCREENSHOT - AFTER STEP 9')
+        self.webdriver.save_screenshot("{0}/{1}_SS_AFTER_STEP_09.png".format(_reports_path, test_method_name))
 
         self.test_failed = False
 
