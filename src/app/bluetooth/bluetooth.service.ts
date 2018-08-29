@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpService} from '../shared/services/http/http.service';
 import {Observable} from 'rxjs/Rx';
-import {Bluetooth} from './bluetooth.type';
+import {Bluetooth} from '../device/device.type';
 
 @Injectable()
 export class BluetoothService {
@@ -15,12 +15,12 @@ export class BluetoothService {
     this.url = url;
   }
 
-  create(device: Bluetooth): Observable<Bluetooth> {
-    return this.httpService.doPost(this.url, device);
+  create(bluetooth: Bluetooth): Observable<Bluetooth> {
+    return this.httpService.doPost(this.url, bluetooth);
   }
 
-  update(device: Bluetooth): Observable<Bluetooth> {
-    return this.httpService.doPut(this.url + device.id, device);
+  update(bluetooth: Bluetooth): Observable<Bluetooth> {
+    return this.httpService.doPut(this.url + bluetooth.id, bluetooth);
   }
 
   remove(id: number): Observable<any> {

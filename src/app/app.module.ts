@@ -117,6 +117,7 @@ import {DevicePlacerComponent} from './map-editor/tool-bar/tools/device-placer/d
 import {DevicePlacerService} from './map-editor/tool-bar/tools/device-placer/device-placer.service';
 import {DevicePlacerListComponent} from './map-editor/tool-bar/tools/device-placer/list/device-placer.list';
 import {DevicePlacerRowDirective} from './map-editor/tool-bar/tools/device-placer/list/device-placer.row';
+import {BluetoothService} from './bluetooth/bluetooth.service';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -226,6 +227,7 @@ export function HttpLoaderFactory(http: Http) {
     WebSocketService,
     SocketService,
     DeviceService,
+    BluetoothService,
     MapService,
     AcceptButtonsService,
     IconService,

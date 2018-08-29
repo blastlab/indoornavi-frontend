@@ -1,13 +1,13 @@
-import {Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild, ViewChildren, ViewEncapsulation} from '@angular/core';
+import {Component, NgZone, OnDestroy, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {Subscription} from 'rxjs/Rx';
 import {Config} from '../../config';
 import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute} from '@angular/router';
-import {DeviceService} from '../device/device.service';
+import {BluetoothService} from './bluetooth.service';
 import {CrudComponent, CrudHelper} from '../shared/components/crud/crud.component';
 import {Bluetooth} from '../device/device.type';
 import {NgForm} from '@angular/forms';
-import {Checkbox, ConfirmationService, SelectItem} from 'primeng/primeng';
+import {ConfirmationService, SelectItem} from 'primeng/primeng';
 import {MessageServiceWrapper} from '../shared/services/message/message.service';
 import {SocketService} from '../shared/services/socket/socket.service';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
@@ -31,9 +31,6 @@ export class BluetoothComponent implements OnInit, OnDestroy, CrudComponent {
   public bluetooth: Bluetooth;
   public displayInfoDialog: boolean = false;
   public power: SelectItem[];
-  @ViewChildren('updateCheckbox') public deviceCheckboxes: Checkbox[];
-  @ViewChild('firmwareInput') public firmwareInput: ElementRef;
-  @ViewChild('firmwareButton') public firmwareButton: ElementRef;
 
   @ViewChild('bluetoothForm') bluetoothForm: NgForm;
 
@@ -50,7 +47,7 @@ export class BluetoothComponent implements OnInit, OnDestroy, CrudComponent {
               private messageService: MessageServiceWrapper,
               private ngZone: NgZone,
               private route: ActivatedRoute,
-              private deviceService: DeviceService,
+              private bluetoothService: BluetoothService,
               private confirmationService: ConfirmationService,
               private breadcrumbService: BreadcrumbService) {
   }
@@ -59,7 +56,7 @@ export class BluetoothComponent implements OnInit, OnDestroy, CrudComponent {
     this.deviceType = this.route.snapshot.routeConfig.path;
     this.setPermissions();
     this.translate.setDefaultLang('en');
-    this.deviceService.setUrl(this.deviceType + '/');
+    this.bluetoothService.setUrl(this.deviceType + '/');
     this.confirmBodyTranslate = this.translate.get('confirm.body').subscribe((value: string): void => {
       this.confirmBody = value;
     });
@@ -104,9 +101,9 @@ export class BluetoothComponent implements OnInit, OnDestroy, CrudComponent {
         this.removeFromList(this.bluetooth);
       }
       (!!this.bluetooth.id ?
-          this.deviceService.update(this.bluetooth)
+          this.bluetoothService.update(this.bluetooth)
           :
-          this.deviceService.create(this.bluetooth)
+          this.bluetoothService.create(this.bluetooth)
       ).subscribe(() => {
         if (isNew) {
           this.messageService.success('device.create.success');
@@ -145,7 +142,7 @@ export class BluetoothComponent implements OnInit, OnDestroy, CrudComponent {
       header: this.removeDialogTitle,
       message: this.confirmBody,
       accept: () => {
-        this.deviceService.remove(bluetooth.id).subscribe(() => {
+        this.bluetoothService.remove(bluetooth.id).subscribe(() => {
           this.removeFromList(bluetooth);
           this.messageService.success('bluetooth.remove.success');
         }, (msg: string) => {
@@ -158,17 +155,16 @@ export class BluetoothComponent implements OnInit, OnDestroy, CrudComponent {
   onItemMoved(movedBluetoothList: Bluetooth[]): void {
     movedBluetoothList.forEach((bluetooth: Bluetooth) => {
       bluetooth.verified = !bluetooth.verified;
-      this.deviceService.update(bluetooth).subscribe(() => {
+      this.bluetoothService.update(bluetooth).subscribe(() => {
         this.messageService.success('bluetooth.save.success');
       });
     });
   }
 
   private setPermissions(): void {
-    const prefix: string = DeviceService.getDevicePermissionPrefix(this.deviceType);
-    this.createPermission = `${prefix}_CREATE`;
-    this.editPermission = `${prefix}_UPDATE`;
-    this.deletePermission = `${prefix}_DELETE`;
+    this.createPermission = `BLUETOOTH_CREATE`;
+    this.editPermission = `BLUETOOTH_UPDATE`;
+    this.deletePermission = `BLUETOOTH_DELETE`;
   }
 
   private isAlreadyOnAnyList(bluetooth: Bluetooth): boolean {
@@ -193,9 +189,9 @@ export class BluetoothComponent implements OnInit, OnDestroy, CrudComponent {
   private connectToRegistrationSocket() {
     const stream = this.socketService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.deviceType}`);
     const bluetoothList = [
-      { id: 121, major: 88, minor: 20, macAddress: 'f1:09:d2:b6:05:d4', powerTransmition: -10, verified: false, shortId: 7457, name: 'Bluetooth 1' },
-      { id: 140, major: 54, minor: 30, macAddress: '130.212.123.120', powerTransmition: 0, verified: true, shortId: 5675, name: 'Bluetooth 2'  },
-      { id: 122, major: 87, minor: 40, macAddress: '130.212.123.122', powerTransmition: -20, verified: false, shortId: 4756, name: 'Bluetooth 3'  }
+      { id: 121, major: 88, minor: 20, macAddress: 'f1:09:d2:b6:05:d4', powerTransmition: -10, verified: false, name: 'Bluetooth 1' },
+      { id: 140, major: 54, minor: 30, macAddress: '130.212.123.120', powerTransmition: 0, verified: true, name: 'Bluetooth 2'  },
+      { id: 122, major: 87, minor: 40, macAddress: '130.212.123.122', powerTransmition: -20, verified: false, name: 'Bluetooth 3'  }
     ];
 
     bluetoothList.forEach((bluetooth: Bluetooth) => {

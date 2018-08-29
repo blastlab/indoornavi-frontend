@@ -76,7 +76,6 @@ export class Bluetooth extends Device {
 
   constructor(
     verified: boolean,
-    shortId: number,
     major: number,
     id?: number,
     name?: string,
