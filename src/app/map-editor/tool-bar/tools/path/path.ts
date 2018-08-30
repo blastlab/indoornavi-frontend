@@ -20,6 +20,7 @@ import {isNumber} from 'util';
 import {TranslateService} from '@ngx-translate/core';
 import {Configuration} from '../../../action-bar/actionbar.type';
 import {IntersectionIdentifier, PathContextCallback, PathContextMenuLabels} from './path.type';
+import {Box} from '../../../../shared/utils/drawing/drawing.types';
 
 @Component({
   selector: 'app-path',
@@ -51,6 +52,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   private labels: PathContextMenuLabels = {
     removeAll: '',
   };
+  private containerBox: Box;
 
   constructor(private toolbarService: ToolbarService,
               private mapLoaderInformer: MapLoaderInformerService,
@@ -107,7 +109,10 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
 
     this.layer.on('click', (_, i: number, nodes: d3.selection[]): void => {
       const coordinates: Point = this.zoomService.calculateTransition({x: d3.mouse(nodes[i])[0], y: d3.mouse(nodes[i])[1]});
-      this.draw(coordinates);
+      const coordinatesInRange: boolean = Geometry.areCoordinatesInGivenRange(coordinates, this.containerBox);
+      if (coordinatesInRange) {
+        this.draw(coordinates);
+      }
     });
 
     this.layer.on('mousemove', (_, i: number, nodes: d3.selection[]): void => {
@@ -153,6 +158,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
     this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg): void => {
       this.container = mapSvg.container;
       this.layer = mapSvg.layer;
+      this.containerBox = mapSvg.container.node().getBBox();
     });
   }
 
@@ -304,6 +310,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   private handleShiftKeyEvent(coordinates: Point): Point {
     const secondPoint: Point = this.getCurrentLinePoints()[this.getCurrentLinePoints().length - 1];
     const deltaY = Geometry.getDeltaY(coordinates, secondPoint);
+    const coordinatesBackup = Object.assign({}, coordinates);
     if (!!deltaY) {
       coordinates.y = secondPoint.y - deltaY;
     } else {
@@ -311,6 +318,10 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
     }
     coordinates.x = Math.floor(coordinates.x);
     coordinates.y = Math.floor(coordinates.y);
+    const coordinatesInRange: boolean = Geometry.areCoordinatesInGivenRange(coordinates, this.containerBox);
+    if (!coordinatesInRange) {
+      coordinates = coordinatesBackup;
+    }
     return coordinates;
   }
 
