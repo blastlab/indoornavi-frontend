@@ -105,7 +105,6 @@ class MapsPageDevicePlacer(BasePage, MapsPageUtils):
     def is_device_disappeared_from_map(self, *devices):
         return self.__presence_device_helper('disappear', devices)
 
-
     def get_device_color(self, device_id):
 
         web_element = self.wait_for_element(self.__select_device_helper(device_id))
@@ -161,32 +160,26 @@ class MapsPageDevicePlacer(BasePage, MapsPageUtils):
     def is_device_placer_list_searchbox_empty(self):
         return self.is_input_empty(self.DEVICE_PLACER_LIST_SEARCHBOX)
 
-    def change_height_by_slider(self, set_meters):
+    def is_text_displayed_after_change_height(self, text):
 
         """
-        Default value of device height is 2m
+        Default value of device height is 2m.
         User by slider set/change height of device.
-
+        Function check the Height label will be changed correctly after move slider.
         :param
-        string - set_meters user define height of device
-
+        text - string - passed to helper function which should be result of action
+        :var
+        slide - webelement needed for move
+        h_label_locator - selector of height text
+        is_displayed - bool to verify element displayed
         :returns
-        height_label - string - height of device displayed in label - e.g. "Height 2m"
+        is_displayed {boolean} - True or False
         """
-        slider_content = self.wait_for_element(self.DEVICE_PLACER_HEIGHT_SLIDER_CONTENT)
-        slider_width = slider_content.size["width"]
-        print("slider width:"+str(slider_width))
-        start = 2
-        step_in_px = slider_width/100*7
-        setter = set_meters - start
-        pixels_x_to_move = step_in_px*setter
-        pixels_y_to_move = 0
 
         slider = self.wait_for_element_clickable(self.DEVICE_PLACER_HEIGHT_SLIDER)
-        print("pixels to move: "+str(pixels_x_to_move))
-        ActionChains(self.__driver).drag_and_drop_by_offset(slider, pixels_x_to_move, pixels_y_to_move).perform()
-        height_label = self.get_text(self.DEVICE_PLACER_HEIGHT_LABEL)
-        return height_label
+        h_label_locator = self.DEVICE_PLACER_HEIGHT_LABEL
+        is_displayed = self.wait_for_text_has_changed_after_drag(slider, text, h_label_locator)
+        return is_displayed
 
     def get_data_device_on_hover(self, device_id, set_device):
         element = self.wait_for_element(self.__select_device_helper(device_id))

@@ -514,8 +514,8 @@ class TestMapsPageDevicePlacer(unittest.TestCase, MapsPageDevicePlacer):
         self.device_placer_page.check_device_placer_list_title('sinks')
 
         log_tc10.info('Step 3 : Set height slider on 5m and check label has been changed')
-        height_label = self.device_placer_page.change_height_by_slider(5)
-        assert height_label == "Height 5m", "Incorrect height displayed : " + height_label
+        is_displayed = self.device_placer_page.is_text_displayed_after_change_height("Height 5m")
+        assert is_displayed == True, "Incorrect height displayed"
 
         log_tc10.info('Step 4 : Set sink on map')
         self.device_placer_page.set_device_on_map(600, 500)
@@ -544,8 +544,8 @@ class TestMapsPageDevicePlacer(unittest.TestCase, MapsPageDevicePlacer):
         self.device_placer_page.click_on_device('map111111')
 
         log_tc10.info('Step 12 : Set height slider on 3m and check label has been changed')
-        height_label = self.device_placer_page.change_height_by_slider(3)
-        assert height_label == "Height 3m", "Incorrect height displayed : " + height_label
+        is_displayed = self.device_placer_page.is_text_displayed_after_change_height("Height 3m")
+        assert is_displayed == True, "Incorrect height displayed"
 
         log_tc10.info('Step 13 : Set anchor [33333] on map')
         self.device_placer_page.set_device_on_map(600, 600)

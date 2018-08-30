@@ -99,6 +99,10 @@ class BasePage(object):
         element = ui.WebDriverWait(self.__driver, 10).until(wait_for_the_attribute_value(locator, attribute, value), msg)
         return element
 
+    def wait_for_text_has_changed_after_drag(self, slider, text, locator,  msg="Displayed text has not been correct after drag."):
+        is_changed = ui.WebDriverWait(self.__driver, 10).until(wait_for_the_specific_text_after_drag(slider, text, locator),msg)
+        return is_changed
+
     def open_page(self, page_url):
         return self.__driver.get(page_url)
 
@@ -218,5 +222,32 @@ class wait_for_the_attribute_value(object):
         try:
             element_attribute = EC._find_element(driver, self.locator).get_attribute(self.attribute)
             return element_attribute == self.value
+        except StaleElementReferenceException:
+            return False
+
+
+class wait_for_the_specific_text_after_drag(object):
+    """
+    Helper class drag element until there will be appear specific text
+    This method drag element by 10px if will not appear choosen text trying with increment.
+    :param - slider - element which will be dragable
+    :param - element_text - element which will be checked
+    :param - expected_text - text which should be result to pass the condition
+    """
+    def __init__(self, slider, expected_text, locator):
+        self.slider = slider
+        self.locator = locator
+        self.expected_text = expected_text
+
+    pixels_y = 0
+    pixels_to_move = 0
+    step = 10
+
+    def __call__(self, driver):
+        self.pixels_to_move += self.step
+        ActionChains(driver).drag_and_drop_by_offset(self.slider, self.pixels_to_move, self.pixels_y).perform()
+        try:
+            element_text = EC._find_element(driver, self.locator).text
+            return element_text == self.expected_text
         except StaleElementReferenceException:
             return False
