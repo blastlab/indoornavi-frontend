@@ -56,7 +56,7 @@ export class BluetoothComponent implements OnInit, OnDestroy, CrudComponent {
     this.deviceType = this.route.snapshot.routeConfig.path;
     this.setPermissions();
     this.translate.setDefaultLang('en');
-    this.bluetoothService.setUrl(this.deviceType + '/');
+    this.bluetoothService.setUrl('bluetooths/');
     this.confirmBodyTranslate = this.translate.get('confirm.body').subscribe((value: string): void => {
       this.confirmBody = value;
     });
@@ -187,36 +187,20 @@ export class BluetoothComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   private connectToRegistrationSocket() {
-    const stream = this.socketService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.deviceType}`);
-    const bluetoothList = [
-      { id: 121, major: 88, minor: 20, macAddress: 'f1:09:d2:b6:05:d4', powerTransmition: -10, verified: false, name: 'Bluetooth 1' },
-      { id: 140, major: 54, minor: 30, macAddress: '130.212.123.120', powerTransmition: 0, verified: true, name: 'Bluetooth 2'  },
-      { id: 122, major: 87, minor: 40, macAddress: '130.212.123.122', powerTransmition: -20, verified: false, name: 'Bluetooth 3'  }
-    ];
+    const stream = this.socketService.connect(Config.WEB_SOCKET_URL + `devices/registration?bluetooths`);
 
-    bluetoothList.forEach((bluetooth: Bluetooth) => {
-      if (this.isAlreadyOnAnyList(bluetooth)) {
-        return;
-      }
-      if (bluetooth.verified) {
-        this.verified.push(bluetooth);
-      } else {
-        this.notVerified.push(bluetooth);
-      }
-    });
-
-    this.socketSubscription = stream.subscribe((devices: Array<Bluetooth>): void => {
+    this.socketSubscription = stream.subscribe((bluetoothList: Array<Bluetooth>): void => {
       this.ngZone.run((): void => {
-        // devices.forEach((device: Device) => {
-        //   if (this.isAlreadyOnAnyList(device)) {
-        //     return;
-        //   }
-        //   if (device.verified) {
-        //     this.verified.push(device);
-        //   } else {
-        //     this.notVerified.push(device);
-        //   }
-        // });
+        bluetoothList.forEach((bluetooth: Bluetooth) => {
+          if (this.isAlreadyOnAnyList(bluetooth)) {
+            return;
+          }
+          if (bluetooth.verified) {
+            this.verified.push(bluetooth);
+          } else {
+            this.notVerified.push(bluetooth);
+          }
+        });
       });
     });
   }

@@ -28,7 +28,7 @@
   "bluetooth.minor.required": "Minor is required.",
   "bluetooth.minor.shortIdOutOfRange": "Minor is out of range.",
   "bluetooth.name": "Bluetooth Name",
-  "bluetooth.powerTransmition": "Power",
+  "bluetooth.powerTransmission": "Power",
   "bluetooth.remove.success": "Bluetooth has been removed",
   "bluetooth.save.success": "Bluetooth has been saved",
   "bluetooth.searchByMajor": "Search by major",

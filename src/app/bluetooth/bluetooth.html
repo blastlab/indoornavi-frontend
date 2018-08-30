@@ -21,7 +21,7 @@
           <div><b>{{'bluetooth.major'|translate}}:</b> {{bluetooth['major']}}</div>
           <div><b>{{'bluetooth.minor'|translate}}:</b> {{bluetooth['minor']}}</div>
           <div><b>{{'device.macAddress'|translate}}:</b> {{bluetooth['macAddress']}}</div>
-          <div><b>{{'bluetooth.powerTransmition'|translate}}:</b> {{bluetooth['powerTransmition']}}</div>
+          <div><b>{{'bluetooth.powerTransmission'|translate}}:</b> {{bluetooth['powerTransmission']}}</div>
           <div><b>{{'bluetooth.name'|translate}}:</b> {{bluetooth['name']}}</div>
 
         </div>
@@ -123,16 +123,16 @@
         <div class="ui-g-12 ui-md-4 ui-lg-4">
         </div>
         <div class="ui-g-12 ui-md-2 ui-lg-2">
-          <label for="powerTransmition">{{'bluetooth.powerTransmition'|translate}}</label>
+          <label for="powerTransmission">{{'bluetooth.powerTransmission'|translate}}</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
           <p-dropdown [options]="power"
-                      [(ngModel)]="bluetooth.powerTransmition"
+                      [(ngModel)]="bluetooth.powerTransmission"
                       [style]="{ width: '100%' }"
-                      id="powerTransmition"
+                      id="powerTransmission"
                       placeholder="{{'bluetooth.selectPower'|translate}}"
-                      name="powerTransmition"
-                      #powerTransmition="ngModel">
+                      name="powerTransmission"
+                      #powerTransmission="ngModel">
           </p-dropdown>
         </div>
       </div>
