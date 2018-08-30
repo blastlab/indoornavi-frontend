@@ -175,7 +175,7 @@ class MapsPageDevicePlacer(BasePage, MapsPageUtils):
         """
         slider_content = self.wait_for_element(self.DEVICE_PLACER_HEIGHT_SLIDER_CONTENT)
         slider_width = slider_content.size["width"]
-
+        print("slider width:"+str(slider_width))
         start = 2
         step_in_px = slider_width/100*7
         setter = set_meters - start
@@ -183,6 +183,7 @@ class MapsPageDevicePlacer(BasePage, MapsPageUtils):
         pixels_y_to_move = 0
 
         slider = self.wait_for_element_clickable(self.DEVICE_PLACER_HEIGHT_SLIDER)
+        print("pixels to move: "+str(pixels_x_to_move))
         ActionChains(self.__driver).drag_and_drop_by_offset(slider, pixels_x_to_move, pixels_y_to_move).perform()
         height_label = self.get_text(self.DEVICE_PLACER_HEIGHT_LABEL)
         return height_label
