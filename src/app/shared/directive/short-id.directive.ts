@@ -12,7 +12,7 @@ export class ShortIdValidatorDirective implements Validator {
   private message: ValidationErrors = null;
 
   static checkIsNumber(value: string, translateKey: string): ValidationErrors {
-    return /[0-9]/.test(value) ? null : {properShortId: `${translateKey}.mustBeNumber`}
+    return /^\d+$/.test(value) ? null : {properShortId: `${translateKey}.mustBeNumber`}
   }
 
   static checkIsInRange(deviceType: string, value: string, translateKey: string): ValidationErrors {
