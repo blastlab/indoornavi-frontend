@@ -141,10 +141,12 @@ export class ApiService {
 
   private drawPolyline(objectMetadata: Metadata, points: Point[]) {
     const polyline: Polyline = <Polyline>objectMetadata.object;
-    const polylineSelection: d3.selection = this.objects.get(polyline.id).getGroup();
     this.objects.get(polyline.id).addPolyline(points, this.pointRadius);
+    const lines: d3.selection[] = this.objects.get(polyline.id).getElements(ElementType.LINE);
     if (!!polyline.color) {
-      ApiHelper.setStrokeColor(polylineSelection, polyline.color);
+      lines.forEach((line: d3.selection) => {
+        ApiHelper.setStrokeColor(line, polyline.color);
+      });
     }
   }
 

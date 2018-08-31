@@ -332,7 +332,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
 
   private handleCommands(event: MessageEvent): void {
     const data = <CustomMessageEvent>event.data;
-    console.log(data)
     if ('command' in data) {
       switch (data.command) {
         case 'toggleTagVisibility':
