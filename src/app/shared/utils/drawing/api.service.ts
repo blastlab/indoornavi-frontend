@@ -143,9 +143,13 @@ export class ApiService {
     const polyline: Polyline = <Polyline>objectMetadata.object;
     this.objects.get(polyline.id).addPolyline(points, this.pointRadius);
     const lines: d3.selection[] = this.objects.get(polyline.id).getElements(ElementType.LINE);
+    const circles: d3.selection[] = this.objects.get(polyline.id).getElements(ElementType.CIRCLE);
     if (!!polyline.color) {
       lines.forEach((line: d3.selection) => {
         ApiHelper.setStrokeColor(line, polyline.color);
+      });
+      circles.forEach((circle: d3.selection) => {
+        ApiHelper.setFillColor(circle, polyline.color);
       });
     }
   }
