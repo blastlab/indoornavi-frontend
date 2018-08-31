@@ -19,6 +19,7 @@
   "auth.invalid.credentials": "Invalid username and/or password",
   "blur": "Blur",
   "bluetooth.header": "Bluetooth",
+  "bluetooth.create.success": "Bluetooth has been created",
   "bluetooth.major": "Major",
   "bluetooth.major.mustBeNumber": "Major must be a number.",
   "bluetooth.major.shortIdOutOfRange": "Major is out of range.",
