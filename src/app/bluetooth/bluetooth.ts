@@ -106,9 +106,9 @@ export class BluetoothComponent implements OnInit, OnDestroy, CrudComponent {
           this.bluetoothService.create(this.bluetooth)
       ).subscribe(() => {
         if (isNew) {
-          this.messageService.success('device.create.success');
+          this.messageService.success('bluetooth.create.success');
         } else {
-          this.messageService.success('device.save.success');
+          this.messageService.success('bluetooth.save.success');
         }
       }, (err: string) => {
         this.messageService.failed(err);
@@ -129,7 +129,7 @@ export class BluetoothComponent implements OnInit, OnDestroy, CrudComponent {
       this.bluetooth = {...bluetooth};
       this.dialogTitle = `device.details.bluetooth.edit`;
     } else {
-      this.bluetooth = new Bluetooth(false, null, null);
+      this.bluetooth = new Bluetooth(true, null, null);
       this.dialogTitle = `device.details.bluetooth.add`;
     }
 
