@@ -1,7 +1,7 @@
 from services.service_data import parse_json_to_string
 
 ANCHOR_TABLE = 'anchor'
-ANCHOR_COLUMNS = ('id', 'x', 'y', 'sink_id')
+ANCHOR_COLUMNS = ('id', 'x', 'y', 'sink_id', 'z')
 CONFIGURATION_TABLE = 'configuration'
 CONFIGURATION_COLUMNS = ('id', 'creationDate', 'data', 'version', 'floor_id', 'saveDraftDate')
 DEVICE_TABLE = 'device'
@@ -11,6 +11,7 @@ IMAGE_COLUMNS = ('id', 'creationDate', 'modificationDate', 'bitmap', 'bitmapHeig
 TAG_TABLE = 'tag'
 TAG_COLUMNS = 'id'
 TEST_ANCHORS_CSV_PATH = 'src/test_data/anchor.csv'
+TC07_DEVICE_PLACER_CONF = parse_json_to_string('src/test_conf/tc07_device_placer_conf.json')
 TEST_SCALE_CONF_DATA = parse_json_to_string('src/test_conf/test_scale_conf.json')
 TEST_AREA_CONF_DATA = parse_json_to_string('src/test_conf/test_area_conf.json')
 TEST_DATE = '2018-07-23 12:00:00'
