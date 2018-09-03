@@ -12,12 +12,12 @@ class ServiceDb:
     __db_hostname = 'localhost'
     __db_tables_array = ['complex', 'building', 'floor',
                         'sink', 'anchor', 'tag', 'device',
-                        'configuration', 'image',
+                        'configuration', 'image', 'uwb',
                         'permission', 'permissiongroup',
                         'permissiongroup_permission', ]
 
-    TABLE_TRUNCATE_SIZE = 9
-    TABLE_TRUNCATE_PERMISSIONS_SIZE = 12
+    TABLE_TRUNCATE_SIZE = 10
+    TABLE_TRUNCATE_PERMISSIONS_SIZE = 13
 
     def __init__(self):
         self.ServiceDbId = threading.current_thread()

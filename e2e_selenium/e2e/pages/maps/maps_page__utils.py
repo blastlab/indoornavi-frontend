@@ -59,6 +59,9 @@ class MapsPageUtils(MapsBaseLocators,
     def insert_devices_to_db_from_csv(self):
         return self.service_db().insert_to_db_from_csv(DEVICE_TABLE, DEVICE_COLUMNS, TEST_DEVICES_CSV_PATH)
 
+    def insert_uwb_to_db_from_csv(self):
+        return self.service_db().insert_to_db_from_csv(UWB_TABLE, UWB_COLUMNS, TEST_UWB_CSV_PATH)
+
     def insert_sinks_to_db_from_csv(self):
         return self.service_db().insert_to_db_from_csv(SINK_TABLE, SINK_COLUMNS, TEST_SINKS_CSV_PATH)
 

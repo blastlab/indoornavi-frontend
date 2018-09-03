@@ -26,6 +26,7 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.maps_page_area.create_maps_db_env()
         self.maps_page_area.insert_tags_to_db_from_csv()
         self.maps_page_area.insert_devices_to_db_from_csv()
+        self.maps_page_area.insert_uwb_to_db_from_csv()
         # Login to app
         self.login_test.test_login_valid_credentials(self)
         # self.page.login_process(self.option, 1)
