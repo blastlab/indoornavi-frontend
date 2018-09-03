@@ -321,7 +321,12 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       if (!!pathFromConfiguration && pathFromConfiguration.length > 0) {
         calculatedPosition = Geometry.findPointOnPathInGivenRange(pathFromConfiguration, event.data['args'].point, event.data['args'].accurac);
       }
-      event.source.postMessage({type: 'getPointOnPath', mapObjectId: 'map', calculatedPosition: calculatedPosition}, event.origin);
+      event.source.postMessage({
+          type: 'getPointOnPath',
+        mapObjectId: 'map',
+        calculatedPosition:
+        calculatedPosition
+      }, event.origin);
     });
   }
 

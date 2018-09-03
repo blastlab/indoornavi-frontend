@@ -75,8 +75,6 @@ export class Geometry {
     return false;
   }
 
-
-
   static isSamePoint(firstPoint: Point, lastPoint: Point): boolean {
     return Math.floor(firstPoint.x) === Math.floor(lastPoint.x) && Math.floor(firstPoint.y) === Math.floor(lastPoint.y);
   }
@@ -159,15 +157,23 @@ export class Geometry {
   }
 
   static findClosestPointOnLine(line: Line, givenPoint: Point): Point {
+    // given line equation: y = a1 * x + b1
+    // line that We are looking for equation: y = a2 * x + b2
     const a1: number = Geometry.getSlope(line.startPoint, line.endPoint);
     const b1: number = line.startPoint.y - a1 * line.startPoint.x;
     let a2: number;
     let b2: number;
     let point: Point;
     if (a1 === 0) {
-      point = {x: givenPoint.x, y: line.endPoint.y}
+      point = {
+        x: givenPoint.x,
+        y: line.endPoint.y
+      };
     } else if (Math.abs(a1) === Infinity) {
-      point = {x: line.endPoint.x, y: givenPoint.y}
+      point = {
+        x: line.endPoint.x,
+        y: givenPoint.y
+      };
     } else {
       a2 = -1 / a1;
       b2 = givenPoint.y - a2 * givenPoint.x;
@@ -175,7 +181,7 @@ export class Geometry {
       point = {
         x: x,
         y: a1 * x + b1
-      }
+      };
     }
     if (Geometry.isBetween(line.startPoint.x, point.x, line.endPoint.x) && Geometry.isBetween(line.startPoint.y, point.y, line.endPoint.y)) {
       point = {
@@ -221,15 +227,12 @@ export class Geometry {
         nearest = {
           coordinates: point,
           distance: distance
-        }
+        };
       }
     });
     return nearest;
   }
-
-
 }
-
 
 export interface NearestPoint {
   coordinates: Point;

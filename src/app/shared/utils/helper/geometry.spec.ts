@@ -186,7 +186,7 @@ describe('Geometry', () => {
 
   });
 
-  it('should to return start point of section', () => {
+  it('should to return start point of section when closest point is outside section and distance is 3', () => {
     // when
     const point2: Point = {x: 8, y: 4};
     const section2: Line = {startPoint: {x: 6, y: 6}, endPoint: {x: 0, y: 0}};
@@ -199,7 +199,7 @@ describe('Geometry', () => {
 
   });
 
-  it('should to return start point of section', () => {
+  it('should to return start point of section when closest point is outside section and distance is 4', () => {
     // when
     const point3: Point = {x: 9, y: 9};
     const section3: Line = {startPoint: {x: 6, y: 6}, endPoint: {x: 0, y: 0}};
