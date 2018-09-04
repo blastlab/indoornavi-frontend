@@ -6,7 +6,7 @@ from pages.maps.maps_page__area import MapsPageArea
 from pages.login_page import LoginPage
 from pages.constructions.floors_page import FloorsPage
 from selenium.webdriver import ActionChains
-
+import time
 
 class TestMapsPageArea(unittest.TestCase, MapsPageArea):
 
@@ -304,7 +304,6 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.maps_page_area.save_draft_click()
         self.webdriver.refresh()
         self.maps_page_area.is_area_button_displayed()
-        import time
         time.sleep(1)
         self.maps_page_area.area_button_click()
         # self.maps_page_area.edit_area_click()
@@ -333,7 +332,6 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.maps_page_area.save_draft_click()
         self.webdriver.refresh()
         self.maps_page_area.is_area_button_displayed()
-        import time
         time.sleep(1)
         self.maps_page_area.area_button_click()
         # self.maps_page_area.edit_area_click()
