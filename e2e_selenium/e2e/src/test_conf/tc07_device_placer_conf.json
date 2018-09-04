@@ -3,7 +3,7 @@
       {
          "id":3,
          "shortId":111111,
-         "longId":111111,
+         "macAddress":"f6:a1:c4:d2:e4:b3",
          "name":"TestSink111111",
          "floorId":null,
          "verified":true,
@@ -15,7 +15,7 @@
             {
                "id":5,
                "shortId":33333,
-               "longId":33333,
+               "macAddress":"12:b3:a4:d2:e4:a1",
                "name":"TestAnchor33333",
                "floorId":null,
                "verified":true,
@@ -31,7 +31,7 @@
             {
                "id":6,
                "shortId":44444,
-               "longId":44444,
+               "macAddress":"f6:b5:c4:a2:e4:a6",
                "name":"TestAnchor44444",
                "floorId":null,
                "verified":true,

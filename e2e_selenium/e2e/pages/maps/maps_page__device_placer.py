@@ -14,6 +14,7 @@ class MapsPageDevicePlacer(BasePage, MapsPageUtils):
         self.insert_sinks_to_db_from_csv()
         self.insert_anchors_to_db_from_csv()
         self.insert_devices_to_db_from_csv()
+        self.insert_uwb_to_db_from_csv()
 
     def click_on_map(self):
         element = self.wait_for_element_clickable(self.DEVICE_PLACER_MAP_LAYER)
