@@ -91,14 +91,9 @@ class TestMapsPageDevicePlacer(unittest.TestCase, MapsPageDevicePlacer):
         log_tc01.info('Step 8 : Refresh page')
         self.device_placer_page.refresh_page()
 
-        log_tc01.info('Step 8.1 : SCREENSHOT - AFTER STEP 8')
-        self.webdriver.save_screenshot("{0}/{1}_SS_AFTER_STEP_08.png".format(_reports_path, test_method_name))
-
         log_tc01.info('Step 9 : ASSERT - Is sink still on the map')
         is_device_still_displayed = self.device_placer_page.is_device_appeared('map111111')
         assert is_device_still_displayed
-        log_tc01.info('Step 9.1 : SCREENSHOT - AFTER STEP 9')
-        self.webdriver.save_screenshot("{0}/{1}_SS_AFTER_STEP_09.png".format(_reports_path, test_method_name))
 
         self.test_failed = False
 
