@@ -196,7 +196,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     }
   }
 
-  private onClickGetAreas(areas: AreaBag[]) {
+  private onClickGetAreas(areas: AreaBag[]): AreaBag[] {
     const mouseClickPosition: Array<number> = d3.mouse(this.container.node());
     return areas.filter((area) => {
       return Geometry.isPointWithinArea(mouseClickPosition, area);
@@ -206,20 +206,21 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
   private applyContextMenuAreas() {
     const areas = this.onClickGetAreas(this.areas);
     const labels = areas.map((area: AreaBag) => {
-        this.applyRightMouseButtonClick(area.editable);
-        return {
+      return {
           label: area.dto.name,
           items: [
             {
               label: 'Edit',
               command: () => {
-                console.log('edit');
+                this.selectedEditable = area.editable;
+                this.setEditableToItemContextMenu();
               }
             },
             {
               label: 'Remove',
               command: () => {
-                console.log('remove');
+                this.selectedEditable = area.editable;
+                this.setRemoveToItemContextMenu();
               }
             }
           ]
@@ -522,38 +523,47 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     });
   }
 
+
+  private setEditableToItemContextMenu(): void {
+    const index = this.findSelectedAreaBagIndex();
+    this.cleanMapViewFromDrawnAreas();
+    this.setView();
+    this.areaDetailsService.hide();
+    const areaBag: AreaBag = this.areas[index];
+    this.areaDetailsService.set(areaBag);
+    this.areaDetailsService.show();
+    this.container.style('cursor', 'move');
+    this.container.on('contextmenu', null);
+    this.layer.on('click', null);
+    this.layer.on('mousemove', null);
+    if (this.isCurrentAreaGroupNew()) {
+      this.currentAreaGroup.remove();
+    }
+    this.currentAreaGroup.getGroup().selectAll('circle').remove();
+    this.currentAreaGroup.getGroup().on('.drag', null);
+    this.currentAreaGroup = areaBag.editable.groupWrapper;
+    const points: Point[] = this.getCurrentAreaPoints(areaBag);
+    this.applyHover(points);
+    this.applyDrag();
+  }
+
+  private setRemoveToItemContextMenu(): void {
+    const index = this.findSelectedAreaBagIndex();
+    this.cleanGroup(this.selectedEditable.groupWrapper);
+    this.areas.splice(index, 1);
+    this.actionBarService.setAreas(this.areas.map((areaBag: AreaBag): Area => {
+      return areaBag.dto;
+    }));
+  }
+
+
   private applyRightMouseButtonClick(editable: Editable): void {
     editable.on({
       edit: () => {
-        const index = this.findSelectedAreaBagIndex();
-        this.cleanMapViewFromDrawnAreas();
-        this.setView();
-        this.areaDetailsService.hide();
-        const areaBag: AreaBag = this.areas[index];
-        this.areaDetailsService.set(areaBag);
-        this.areaDetailsService.show();
-        this.container.style('cursor', 'move');
-        this.container.on('contextmenu', null);
-        this.layer.on('click', null);
-        this.layer.on('mousemove', null);
-        if (this.isCurrentAreaGroupNew()) {
-          this.currentAreaGroup.remove();
-        }
-        this.currentAreaGroup.getGroup().selectAll('circle').remove();
-        this.currentAreaGroup.getGroup().on('.drag', null);
-        this.currentAreaGroup = areaBag.editable.groupWrapper;
-        const points: Point[] = this.getCurrentAreaPoints(areaBag);
-        this.applyHover(points);
-        this.applyDrag();
+        this.setEditableToItemContextMenu();
       },
       remove: (): void => {
-        this.cleanGroup(this.selectedEditable.groupWrapper);
-        const index = this.findSelectedAreaBagIndex();
-        console.log(index);
-        this.areas.splice(index, 1);
-        this.actionBarService.setAreas(this.areas.map((areaBag: AreaBag): Area => {
-          return areaBag.dto;
-        }));
+        this.setRemoveToItemContextMenu();
       }
     });
   }
