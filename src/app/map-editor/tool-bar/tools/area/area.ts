@@ -179,7 +179,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
         this.lastPoint = null;
         this.tempLine = null;
 
-        if (this.areas.length > 1) {
+        if (this.onClickGetAreas(this.areas).length > 1) {
           this.applyContextMenuAreas();
         } else {
           this.areas.forEach((areaBag: AreaBag): void => {
@@ -224,15 +224,29 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
 
   private applyContextMenuAreas() {
     const areas = this.onClickGetAreas(this.areas);
-    const label = areas.map((area: AreaBag) => {
+    const labels = areas.map((area: AreaBag) => {
+        this.applyRightMouseButtonClick(area.editable);
         return {
-          label: area.dto.name
+          label: area.dto.name,
+          items: [
+            {
+              label: 'Edit',
+              command: () => {
+                console.log('edit');
+              }
+            },
+            {
+              label: 'Remove',
+              command: () => {
+                console.log('remove');
+              }
+            }
+          ]
         }
     });
 
-    this.contextMenuService.setItems(label);
-
-    this.container.on('contextmenu', (): void => {
+    this.contextMenuService.setItems(labels);
+    this.selectedEditable.groupWrapper.getGroup().on('contextmenu', (): void => {
       d3.event.preventDefault();
       this.contextMenuService.openContextMenu();
     });
@@ -554,6 +568,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
       remove: (): void => {
         this.cleanGroup(this.selectedEditable.groupWrapper);
         const index = this.findSelectedAreaBagIndex();
+        console.log(index);
         this.areas.splice(index, 1);
         this.actionBarService.setAreas(this.areas.map((areaBag: AreaBag): Area => {
           return areaBag.dto;
