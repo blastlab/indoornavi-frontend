@@ -155,4 +155,29 @@ export class Geometry {
     return points;
   }
 
+  static isPointWithinArea(clickedPoint, area) {
+    const areaPoints = area.dto.points;
+    const point = {
+      x: clickedPoint[0],
+      y: clickedPoint[1]
+    };
+    let inside = false;
+    let intersect = false;
+    let xi, yi, xj, yj = null;
+    if (areaPoints === null) {
+      throw new Error('points of the object are null');
+    }
+    for (let i = 0, j = areaPoints.length - 1; i < areaPoints.length; j = i++) {
+      xi = areaPoints[i].x;
+      yi = areaPoints[i].y;
+      xj = areaPoints[j].x;
+      yj = areaPoints[j].y;
+      intersect = ((yi > point.y) !== (yj > point.y)) && (point.x < (xj - xi) * (point.y - yi) / (yj - yi) + xi);
+      if (intersect) {
+        inside = !inside;
+      }
+    }
+    return inside;
+  }
+
 }

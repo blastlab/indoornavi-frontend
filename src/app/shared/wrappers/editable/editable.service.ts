@@ -20,6 +20,10 @@ export class ContextMenuService {
     this.menuToggled.next();
   }
 
+  closeContextMenu() {
+    this.menuToggled.next();
+  }
+
   onToggle(): Observable<void> {
     return this.menuToggled.asObservable();
   }
