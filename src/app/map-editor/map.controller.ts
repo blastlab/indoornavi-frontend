@@ -47,7 +47,6 @@ export class MapControllerComponent implements OnInit, AfterViewInit {
       });
 
     this.contextMenuService.onItemsSet().subscribe((items: MenuItem[]) => {
-      console.log(items);
       this.contextMenuItems = items;
     });
   }
