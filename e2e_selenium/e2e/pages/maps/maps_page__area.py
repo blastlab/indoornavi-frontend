@@ -45,7 +45,7 @@ class MapsPageArea(BasePage, MapsPageUtils):
 
     def __right_click_on_area(self):
         area = self.wait_for_element_clickable(self.AREA_ZERO_OBJECT)
-        return ActionChains(self.__driver).context_click(area).perform()
+        return ActionChains(self.__driver).move_to_element(area).context_click(area).perform()
 
     def edit_area_click(self):
         self.__right_click_on_area()
@@ -55,8 +55,8 @@ class MapsPageArea(BasePage, MapsPageUtils):
         self.__right_click_on_area()
         self.click_element(self.AREA_CONTEXT_MENU_REMOVE)
 
-    def save_draft_click(self):
-        return self.click_element(self.SAVE_DRAFT_BTN)
+    # def save_draft_click(self):
+    #     return self.click_element(self.SAVE_DRAFT_BTN)
 
     def clear_area_name_input(self):
         return self.clear_text_input(self.AREA_ADD_NAME)
@@ -73,7 +73,7 @@ class MapsPageArea(BasePage, MapsPageUtils):
         return self.is_element_disappear(self.AREA_DIALOG)
 
     def is_draft_saved_toast_displayed(self):
-        return True if self.is_element_present(self.DRAFT_SAVED_TOAST) else False
+        return True if self.is_element_appeared(self.DRAFT_SAVED_TOAST) else False
 
     def is_area_displayed(self):
         for x in range(0, 4):

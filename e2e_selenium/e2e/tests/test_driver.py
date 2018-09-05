@@ -2,7 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import time
 import os
-
+import logging
 
 class TestDriver(object):
 
@@ -11,17 +11,21 @@ class TestDriver(object):
         self.url = page_url
         chrome_options = Options()
         chrome_options.add_argument('--disable-extensions')
+        chrome_options.add_argument("--window-size=1920x1080")
         chrome_options.add_argument("--headless")
         chrome_options.add_argument('--disable-gpu')
         chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--window-size=1920x1080")
 
         self.webdriver = webdriver.Chrome(options=chrome_options)
         self.webdriver.set_page_load_timeout(30)
+        # self.webdriver.set_window_size(1920, 1080)
         self.webdriver.get(self.url)
 
     # Take screenshot on TestCase failure
     def tearDown(self):
+        browser_log_content = self.webdriver.get_log('browser')
+        log_teardown = logging.getLogger("TEARDOWN: ")
+        log_teardown.info("BROWSER CONSOLE LOGS:\n{0}".format(browser_log_content))
         if self.test_failed:
             _reports_path = 'test-reports/bug-screenshots'
             _browser_log_path = 'test-reports/browser-console'

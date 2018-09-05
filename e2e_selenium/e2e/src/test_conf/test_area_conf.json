@@ -47,20 +47,18 @@
                "tags":[
                   {
                      "id":1,
-                     "shortId":123,
-                     "longId":321,
                      "name":"TestTag123",
-                     "floorId":null,
                      "verified":true,
+                     "macAddress": "a1:b3:c4:d2:e4:f6",
+                     "shortId":123,
                      "firmwareVersion":null
                   },
                   {
                      "id":2,
-                     "shortId":456,
-                     "longId":654,
                      "name":"TestTag456",
-                     "floorId":null,
                      "verified":true,
+                     "macAddress": "f6:b3:c4:d2:e4:a1",
+                     "shortId":456,
                      "firmwareVersion":null
                   }
                ],
@@ -72,20 +70,18 @@
                "tags":[
                   {
                      "id":1,
-                     "shortId":123,
-                     "longId":321,
                      "name":"TestTag123",
-                     "floorId":null,
                      "verified":true,
+                     "macAddress": "a1:b3:c4:d2:e4:f6",
+                     "shortId":123,
                      "firmwareVersion":null
                   },
                   {
                      "id":2,
-                     "shortId":456,
-                     "longId":654,
                      "name":"TestTag456",
-                     "floorId":null,
                      "verified":true,
+                     "macAddress": "f6:b3:c4:d2:e4:a1",
+                     "shortId":456,
                      "firmwareVersion":null
                   }
                ],
