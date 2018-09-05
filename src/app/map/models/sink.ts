@@ -5,6 +5,7 @@ import {DevicePlacerService} from '../../map-editor/tool-bar/tools/device-placer
 import {ContextMenuService} from '../../shared/wrappers/editable/editable.service';
 import {TranslateService} from '@ngx-translate/core';
 import {AnchorBag, DeviceCallbacks, DeviceInEditorConfiguration, DeviceType} from '../../map-editor/tool-bar/tools/device-placer/device-placer.types';
+import {Box} from '../../shared/utils/drawing/drawing.builder';
 
 export class SinkInEditor extends DeviceInEditor {
 
@@ -21,7 +22,7 @@ export class SinkInEditor extends DeviceInEditor {
     protected devicePlacerService: DevicePlacerService,
     protected contextMenuService: ContextMenuService,
     protected translateService: TranslateService,
-    protected containerBox
+    protected containerBox: Box
   ) {
     super(shortId, coordinates, container, drawConfiguration, devicePlacerService, contextMenuService, translateService, containerBox);
     this.svgGroupWrapper = this.svgGroupWrapper.addIcon2({x: 18, y: 18}, this.sinkUnicode, 2);

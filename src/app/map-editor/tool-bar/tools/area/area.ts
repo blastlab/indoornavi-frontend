@@ -5,7 +5,7 @@ import {ToolbarService} from '../../toolbar.service';
 import {MapLoaderInformerService} from '../../../../shared/services/map-loader-informer/map-loader-informer.service';
 import * as d3 from 'd3';
 import {Point} from '../../../map.type';
-import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../../../shared/utils/drawing/drawing.builder';
+import {Box, DrawBuilder, ElementType, SvgGroupWrapper} from '../../../../shared/utils/drawing/drawing.builder';
 import {MapSvg} from '../../../../map/map.type';
 import {AreaDetailsService} from './details/area-details.service';
 import {Area, AreaBag} from './area.type';
@@ -22,7 +22,6 @@ import {Geometry} from '../../../../shared/utils/helper/geometry';
 import {Scale, ScaleCalculations, ScaleDto} from '../scale/scale.type';
 import {ScaleService} from '../../../../shared/services/scale/scale.service';
 import {Helper} from '../../../../shared/utils/helper/helper';
-import {Box} from '../../../../shared/utils/drawing/drawing.types';
 
 
 @Component({

@@ -197,7 +197,7 @@ export class SvgGroupWrapper {
       .attr('r', r)
       .attr('cx', coordinates.x)
       .attr('cy', coordinates.y)
-      .style('fill', 'black');
+      .attr('fill', 'black');
     this.addElement(ElementType.CIRCLE, element);
     return this;
   }
@@ -315,4 +315,9 @@ export class DrawBuilder {
 export interface BoxSize {
   width: number;
   height: number;
+}
+
+export interface Box extends BoxSize {
+  x: number;
+  y: number;
 }
