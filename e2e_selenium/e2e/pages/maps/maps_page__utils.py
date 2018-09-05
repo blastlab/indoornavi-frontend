@@ -10,14 +10,14 @@ class MapsPageUtils(MapsBaseLocators,
                     MapsBaseAreaLocators,
                     MapsBaseDevicePlacerLocators):
 
-    def __init__(self):
-        super().__init__()
-
     __available_conf = {
         "scale": TEST_SCALE_CONF_DATA,
         "area": TEST_AREA_CONF_DATA,
         "tc_07_device_placer": TC07_DEVICE_PLACER_CONF
     }
+
+    def __init__(self):
+        super().__init__()
 
     def create_maps_db_env(self):
         return self.create_db_env(self.db_maps_env_xml)

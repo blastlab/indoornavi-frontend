@@ -11,11 +11,9 @@ from services.service_http import ServiceHttp
 
 
 class BasePage(object):
-
+    __login_http_url = 'http://localhost:90/rest/v1/auth'
+    __login_payload = "{\"username\": \"admin\", \"plainPassword\": \"admin\"}"
     base_url = 'http://localhost:4200/'
-    login_http_url = 'http://localhost:90/rest/v1/auth'
-    login_payload = "{\"username\": \"admin\", \"plainPassword\": \"admin\"}"
-    db_hostname = 'localhost'
 
     def __init__(self, driver):
         self.__driver = driver
@@ -44,7 +42,7 @@ class BasePage(object):
         return self.__driver.refresh()
 
     def login_request(self):
-        return self.service_http().http_login(self.login_http_url, self.login_payload)
+        return self.service_http().http_login(self.__login_http_url, self.__login_payload)
 
     # Front
     def identify_element(self, *locator):
@@ -80,7 +78,7 @@ class BasePage(object):
         return True
 
     def wait_for_element(self, locator, msg='Element has not presented yet.'):
-        element = ui.WebDriverWait(self.__driver, 10).until(EC.presence_of_element_located(locator),msg)
+        element = ui.WebDriverWait(self.__driver, 10).until(EC.presence_of_element_located(locator), msg)
         return element
 
     def wait_for_element_clickable(self, locator, msg='Element has not been ready to be clicked.'):
@@ -96,11 +94,14 @@ class BasePage(object):
         return element
 
     def wait_for_element_has_changed_value(self, locator, attribute, value, msg="Element has not changed value."):
-        element = ui.WebDriverWait(self.__driver, 10).until(wait_for_the_attribute_value(locator, attribute, value), msg)
+        element = ui.WebDriverWait(self.__driver, 10).until(wait_for_the_attribute_value(locator, attribute, value),
+                                                            msg)
         return element
 
-    def wait_for_text_has_changed_after_drag(self, slider, text, locator,  msg="Displayed text has not been correct after drag."):
-        is_changed = ui.WebDriverWait(self.__driver, 10).until(wait_for_the_specific_text_after_drag(slider, text, locator),msg)
+    def wait_for_text_has_changed_after_drag(self, slider, text, locator,
+                                             msg="Displayed text has not been correct after drag."):
+        is_changed = ui.WebDriverWait(self.__driver, 10).until(
+            wait_for_the_specific_text_after_drag(slider, text, locator), msg)
         return is_changed
 
     def open_page(self, page_url):
@@ -109,7 +110,7 @@ class BasePage(object):
     def is_input_empty(self, locator):
         input = self.wait_for_element_clickable(locator)
         length = len(input.get_attribute('value'))
-        return True if length==0 else False
+        return True if length == 0 else False
 
     def clear_input(self, input_locator):
         input_element = self.wait_for_element_clickable(input_locator)
@@ -212,6 +213,13 @@ class BasePage(object):
             print(str(e))
 
 
+"""
+Created analogically to classes in expected_conditions.py
+https://seleniumhq.github.io/selenium/docs/api/py/webdriver_support/selenium.webdriver.support.expected_conditions.html
+Ignore: "Class names should use CamelCase convention PEP8"
+"""
+
+
 class wait_for_the_attribute_value(object):
     def __init__(self, locator, attribute, value):
         self.locator = locator
@@ -234,14 +242,15 @@ class wait_for_the_specific_text_after_drag(object):
     :param - element_text - element which will be checked
     :param - expected_text - text which should be result to pass the condition
     """
-    def __init__(self, slider, expected_text, locator):
-        self.slider = slider
-        self.locator = locator
-        self.expected_text = expected_text
 
     pixels_y = 0
     pixels_to_move = 0
     step = 10
+
+    def __init__(self, slider, expected_text, locator):
+        self.slider = slider
+        self.locator = locator
+        self.expected_text = expected_text
 
     def __call__(self, driver):
         self.pixels_to_move += self.step
