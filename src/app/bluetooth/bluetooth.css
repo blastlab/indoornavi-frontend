@@ -19,14 +19,6 @@
   font-size: 0.8em;
 }
 
-.left {
-  float: left;
-}
-
-.right {
-  float: right;
-}
-
 #update-panel div {
   display: inline-block;
   vertical-align: middle;
