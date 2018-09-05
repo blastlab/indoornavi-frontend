@@ -18,11 +18,11 @@
     <div class="ui-helper-clearfix">
       <div class="ui-g">
         <div [ngClass]="{'ui-g-9 ui-md-9 ui-lg-9': !bluetooth.floorId, 'ui-g-5 ui-md-5 ui-lg-5': bluetooth.floorId}" class="device-details">
-          <div><b>{{'bluetooth.major'|translate}}:</b> {{bluetooth['major']}}</div>
-          <div><b>{{'bluetooth.minor'|translate}}:</b> {{bluetooth['minor']}}</div>
-          <div><b>{{'device.macAddress'|translate}}:</b> {{bluetooth['macAddress']}}</div>
-          <div><b>{{'bluetooth.powerTransmission'|translate}}:</b> {{bluetooth['powerTransmission']}}</div>
-          <div><b>{{'bluetooth.name'|translate}}:</b> {{bluetooth['name']}}</div>
+          <div><b>{{'bluetooth.major'|translate}}:</b> {{bluetooth.major}}</div>
+          <div><b>{{'bluetooth.minor'|translate}}:</b> {{bluetooth.minor}}</div>
+          <div><b>{{'device.macAddress'|translate}}:</b> {{bluetooth.macAddress}}</div>
+          <div><b>{{'bluetooth.powerTransmission'|translate}}:</b> {{bluetooth.powerTransmission}}</div>
+          <div><b>{{'bluetooth.name'|translate}}:</b> {{bluetooth.name}}</div>
 
         </div>
         <div *ngIf="bluetooth.floorId" class="ui-g-4 ui-md-4 ui-lg-4 device-published-details">
