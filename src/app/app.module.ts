@@ -54,7 +54,8 @@ import {
   SidebarModule,
   SliderModule,
   ToolbarModule,
-  TooltipModule
+  TooltipModule,
+  InputMaskModule
 } from 'primeng/primeng';
 import {HintBarService} from './map-editor/hint-bar/hintbar.service';
 import {ToolbarService} from './map-editor/tool-bar/toolbar.service';
@@ -82,6 +83,7 @@ import {DataTableModule} from 'primeng/components/datatable/datatable';
 import {AppAutoFocusDirective} from './shared/directive/autofocus.directive';
 import {ProperNameDirective} from './shared/directive/propername.directive';
 import {DeviceComponent} from 'app/device/device';
+import {BluetoothComponent} from 'app/bluetooth/bluetooth';
 import {AcceptButtonsComponent} from 'app/shared/components/accept-buttons/accept-buttons';
 import {PermissionGroupComponent} from 'app/user/permissionGroup/permissionGroup';
 import {UnauthorizedComponent} from 'app/unauthorized/unauthorized';
@@ -98,7 +100,7 @@ import {AreaDetailsService} from './map-editor/tool-bar/tools/area/details/area-
 import {ContextMenuService} from './shared/wrappers/editable/editable.service';
 import {PublishedComponent} from './map-viewer/views/publications/publication';
 import {AnalyticsComponent} from './map-viewer/views/analytics/analytics';
-import {MapObjectService} from './shared/utils/drawing/map.object.service';
+import {ApiService} from './shared/utils/drawing/api.service';
 import {MinSelectedValidatorDirective} from './shared/directive/minselected.directive';
 import {TagVisibilityTogglerComponent} from './shared/components/tag-visibility-toggler/tag-visibility-toggler';
 import {TagVisibilityTogglerService} from './shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
@@ -108,12 +110,14 @@ import {MousePositionViewerComponent} from './map-editor/mouse-position-viewer/m
 import {MapClickService} from './shared/services/map-click/map-click.service';
 import {NotSupportedBrowserComponent} from './not-supported-browser/not-supported-browser';
 import {LongIdValidatorDirective} from './shared/directive/long-id.directive';
-import {ShortIdValidatorDirective} from './shared/directive/short-id.directive';
+import {NumberInRangeValidatorDirective} from './shared/directive/number-in-range.directive';
+import {MacAddressDirective} from './shared/directive/mac-address.directive';
 import {PathComponent} from './map-editor/tool-bar/tools/path/path';
 import {DevicePlacerComponent} from './map-editor/tool-bar/tools/device-placer/device-placer.component';
 import {DevicePlacerService} from './map-editor/tool-bar/tools/device-placer/device-placer.service';
 import {DevicePlacerListComponent} from './map-editor/tool-bar/tools/device-placer/list/device-placer.list';
 import {DevicePlacerRowDirective} from './map-editor/tool-bar/tools/device-placer/list/device-placer.row';
+import {BluetoothService} from './bluetooth/bluetooth.service';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -145,13 +149,16 @@ export function HttpLoaderFactory(http: Http) {
     PublicationDialogComponent,
     DeviceComponent,
     LongIdValidatorDirective,
-    ShortIdValidatorDirective,
+    NumberInRangeValidatorDirective,
     AppAutoFocusDirective,
     ProperNameDirective,
+    MacAddressDirective,
     ToolDetailsComponent,
     ToolDetailsComponent,
     DeviceComponent,
+    BluetoothComponent,
     SocketConnectorComponent,
+    MapComponent,
     MapComponent,
     AreaComponent,
     AreaDetailsComponent,
@@ -209,7 +216,8 @@ export function HttpLoaderFactory(http: Http) {
     OverlayPanelModule,
     ContextMenuModule,
     FileUploadModule,
-    RadioButtonModule
+    RadioButtonModule,
+    InputMaskModule
   ],
   providers: [
     BuildingService,
@@ -219,6 +227,7 @@ export function HttpLoaderFactory(http: Http) {
     WebSocketService,
     SocketService,
     DeviceService,
+    BluetoothService,
     MapService,
     AcceptButtonsService,
     IconService,
@@ -249,7 +258,7 @@ export function HttpLoaderFactory(http: Http) {
     ZoomService,
     AreaDetailsService,
     ContextMenuService,
-    MapObjectService,
+    ApiService,
     ContextMenuService,
     TagVisibilityTogglerService,
     HeatMapControllerService,

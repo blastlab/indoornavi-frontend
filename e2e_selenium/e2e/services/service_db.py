@@ -12,42 +12,42 @@ class ServiceDb:
     __db_hostname = 'localhost'
     __db_tables_array = ['complex', 'building', 'floor',
                         'sink', 'anchor', 'tag', 'device',
-                        'configuration', 'image',
+                        'configuration', 'image', 'uwb',
                         'permission', 'permissiongroup',
                         'permissiongroup_permission', ]
 
-    TABLE_TRUNCATE_SIZE = 9
-    TABLE_TRUNCATE_PERMISSIONS_SIZE = 12
+    TABLE_TRUNCATE_SIZE = 10
+    TABLE_TRUNCATE_PERMISSIONS_SIZE = 13
 
     def __init__(self):
         self.ServiceDbId = threading.current_thread()
-        self.ServiceLogger = ServiceLogger(self.__class__.__name__)
-        self.ServiceLogger.logger.info("Init service Db" + str(self.ServiceDbId))
+        # #self.ServiceLogger = ServiceLogger(self.__class__.__name__)
+        # #self.ServiceLogger.logger.info("Init service Db" + str(self.ServiceDbId))
 
         self.db_connect = mysql.connector.connect(user='root', password='', host=self.__db_hostname, database='Navi')
-        self.ServiceLogger.logger.info("Connect to Db")
+        # #self.ServiceLogger.logger.info("Connect to Db")
 
         self.db_cursor = self.db_connect.cursor()
-        self.ServiceLogger.logger.info(" Start cursor")
+        #self.ServiceLogger.logger.info(" Start cursor")
 
         self.db_cursor.execute('SET FOREIGN_KEY_CHECKS=0;')
-        self.ServiceLogger.logger.info("SET FOREIGN_KEY_CHECKS=0;")
+        #self.ServiceLogger.logger.info("SET FOREIGN_KEY_CHECKS=0;")
 
     def __del__(self):
-        self.ServiceLogger.logger.info("Destroy service Db")
+        #self.ServiceLogger.logger.info("Destroy service Db")
 
         self.db_cursor.execute('SET FOREIGN_KEY_CHECKS=1;')
 
-        self.ServiceLogger.logger.info("SET SET FOREIGN_KEY_CHECKS=1;")
+        #self.ServiceLogger.logger.info("SET SET FOREIGN_KEY_CHECKS=1;")
 
         self.db_cursor.close()
-        self.ServiceLogger.logger.info("Close cursor")
+        #self.ServiceLogger.logger.info("Close cursor")
 
         self.db_connect.commit()
-        self.ServiceLogger.logger.info("Commit changes to Db")
+        #self.ServiceLogger.logger.info("Commit changes to Db")
 
         self.db_connect.close()
-        self.ServiceLogger.logger.info("Close connect")
+        #self.ServiceLogger.logger.info("Close connect")
 
     # Select from db
     def if_exist_in_db(self, query):
@@ -55,8 +55,8 @@ class ServiceDb:
         last_construction_name = '';
         for (name) in self.db_cursor:
             last_construction_name = name[0]
-            self.ServiceLogger.logger.info("Select from db - query: {0}\n "
-                         "Result - {1}".format(query, last_construction_name))
+            #self.ServiceLogger.logger.info("Select from db - query: {0}\n "
+                         #"Result - {1}".format(query, last_construction_name))
 
         return last_construction_name
 
@@ -76,9 +76,10 @@ class ServiceDb:
                 self.db_cursor.execute(command_composition, values)
                 # values_str = ''.join(values)
                 # print(values) if len(values) < 255 else print('Cannot print too long string')
-                self.ServiceLogger.logger.info("Insert to db {0} ".format(table))
+                #self.ServiceLogger.logger.info("Insert to db {0} ".format(table))
               except ValueError as error:
-                self.ServiceLogger.logger.info(error)
+                print(error)
+                #self.ServiceLogger.logger.info(error)
            else:
               raise ValueError('Number of columns is not equal to number of values')
         else:
@@ -112,7 +113,8 @@ class ServiceDb:
                  self.db_cursor.execute("UPDATE {} SET `{}`='{}' WHERE `{}`='{}';"
                                         .format(update_table, set_column, set_value, where_column, where_value))
               except ValueError as error:
-                self.ServiceLogger.logger.info(error)
+                print(error)
+                #self.ServiceLogger.logger.info(error)
            else:
              raise ValueError('Number of parameters is not enough to make update.')
         else:
@@ -120,17 +122,17 @@ class ServiceDb:
 
     def truncate_single_table(self, table):
         self.db_cursor.execute("TRUNCATE TABLE {}".format(table))
-        self.ServiceLogger.logger.info("Truncate table : {}".format(table))
+        #self.ServiceLogger.logger.info("Truncate table : {}".format(table))
 
     def truncate_db(self):
         for table in self.__db_tables_array[0:self.TABLE_TRUNCATE_SIZE]:
             self.db_cursor.execute("TRUNCATE TABLE {}".format(table))
-            self.ServiceLogger.logger.info("Truncate table : {}".format(table))
+            #self.ServiceLogger.logger.info("Truncate table : {}".format(table))
 
     def truncate_db_permissions(self):
         for table in self.__db_tables_array[0:self.TABLE_TRUNCATE_PERMISSIONS_SIZE]:
             self.db_cursor.execute("TRUNCATE TABLE {}".format(table))
-            self.ServiceLogger.logger.info("Truncate table : {}".format(table))
+            #self.ServiceLogger.logger.info("Truncate table : {}".format(table))
 
     def create_db_env(self, file_path):
         pyquibase = Pyquibase.mysql(

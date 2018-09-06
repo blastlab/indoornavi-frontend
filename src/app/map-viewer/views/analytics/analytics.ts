@@ -14,7 +14,7 @@ import * as d3 from 'd3';
 import {MapSvg} from '../../../map/map.type';
 import {FloorService} from '../../../floor/floor.service';
 import {TagVisibilityTogglerService} from '../../../shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
-import {MapObjectService} from '../../../shared/utils/drawing/map.object.service';
+import {ApiService} from '../../../shared/utils/drawing/api.service';
 import {BreadcrumbService} from '../../../shared/services/breadcrumbs/breadcrumb.service';
 import {HeatMapControllerService} from '../../../shared/components/heat-map-controller/heat-map-controller/heat-map-controller.service';
 import {TagToggle} from '../../../shared/components/tag-visibility-toggler/tag-toggle.type';
@@ -58,7 +58,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
               areaService: AreaService,
               translateService: TranslateService,
               iconService: IconService,
-              mapObjectService: MapObjectService,
+              mapObjectService: ApiService,
               floorService: FloorService,
               tagTogglerService: TagVisibilityTogglerService,
               breadcrumbService: BreadcrumbService,

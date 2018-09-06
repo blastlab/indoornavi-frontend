@@ -7,9 +7,11 @@ class DevicesBaseLocators(object):
         self.module = self.module_query.title()
         self.device_modal_title = 'Add new ' + self.module_query
         self.new_device_name = 'Test' + self.module_query
-        self.new_device_short_id = '123999' if self.module_query != 'tag' else '123'
-        self.negative_device_short_id = '999123' if self.module_query != 'tag' else '999'
-        self.new_device_long_id = '1234'
+        self.new_device_short_id = '123999'
+        self.negative_device_short_id = '999123'
+        # self.new_device_long_id = '1234'
+        self.new_device_mac_address = "fa:09:91:d5:e4:5a"
+        self.another_mac_address = "f3:a9:1e:1e:e4:da"
         self.edit_device_name = 'TestEdit' + self.module
         self.illegal_name = '!@#^&$*()*&^@'
         self.xml_filename = 'src/test-devices.xml'
@@ -28,7 +30,8 @@ class DevicesBaseLocators(object):
         # Input
         self.input = (By.CSS_SELECTOR, 'form div div input#name')
         self.short_id_input = (By.CSS_SELECTOR, 'form div div input#shortId')
-        self.long_id_input = (By.CSS_SELECTOR, 'form div div input#longId')
+        # self.long_id_input = (By.CSS_SELECTOR, 'form div div input#longId')
+        self.mac_address_input = (By.CSS_SELECTOR, '#macAddress input')
         # Adding method - Locators
 
         self.save_button = (By.XPATH, '//button[@ng-reflect-label="Save"]')
@@ -47,7 +50,7 @@ class DevicesBaseLocators(object):
         self.verified_table = (By.CSS_SELECTOR, 'ul.ui-picklist-target')
 
         self.last_row_short_id = (By.CSS_SELECTOR, 'p-picklist[ng-reflect-source-header="Not verified"] li.ui-picklist-item *:last-child div.device-details *:nth-child(1)')
-        self.last_row_long_id = (By.CSS_SELECTOR, 'p-picklist[ng-reflect-source-header="Not verified"] li.ui-picklist-item *:last-child div.device-details *:nth-child(2)')
+        self.last_mac_adress = (By.CSS_SELECTOR, 'p-picklist[ng-reflect-source-header="Not verified"] li.ui-picklist-item *:last-child div.device-details *:nth-child(2)')
         self.last_row_device_name = (By.CSS_SELECTOR, 'p-picklist[ng-reflect-source-header="Not verified"] li.ui-picklist-item *:last-child div.device-details *:nth-child(3)')
         # self.last_row_not_verifed = (By.CSS_SELECTOR, 'li.ui-picklist-item:last-of-type')
 
@@ -64,7 +67,8 @@ class DevicesBaseLocators(object):
         self.name_warning = (By.CSS_SELECTOR, 'div.ui-messages-error')
         # Toasts
         self.unique_short_id_toast = (By.XPATH, "//p[contains(text(),'Short Id must be unique.')]")
-        self.unique_long_id_toast = (By.XPATH, "//p[contains(text(),'Long Id must be unique.')]")
+        self.unique_mac_address_toast = (By.XPATH, "//p[contains(text(),'Mac address must be unique.')]")
+        # self.unique_long_id_toast = (By.XPATH, "//p[contains(text(),'Long Id must be unique.')]")
 
         # Delete method - Locators
         self.remove_ask = (By.XPATH, "//span[contains(text(),'Are you sure you want to perform this action?')]")

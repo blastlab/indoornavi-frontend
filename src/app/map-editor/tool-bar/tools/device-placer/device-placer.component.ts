@@ -20,8 +20,8 @@ import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
 import {AnchorBag, DeviceCallbacks, DeviceDto, DeviceInEditorConfiguration, DeviceType, SinkBag} from './device-placer.types';
 import {ToolbarService} from '../../toolbar.service';
 import {ConfirmationService} from 'primeng/primeng';
-import {Box} from '../../../../shared/utils/drawing/drawing.types';
 import {Subject} from 'rxjs/Subject';
+import {Box} from '../../../../shared/utils/drawing/drawing.builder';
 
 @Component({
   selector: 'app-device-placer',

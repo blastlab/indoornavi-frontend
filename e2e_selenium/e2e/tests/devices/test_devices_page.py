@@ -11,7 +11,7 @@ import inspect
 
 class TestDevicesPage(object):
 
-    def method_test_setUp(self, test_method, name, shortId, longId):
+    def method_test_setUp(self, test_method, name, shortId, mac_adress):
 
         """ Setup method before test adding / editing sink"""
 
@@ -40,10 +40,10 @@ class TestDevicesPage(object):
         else:
             self.devices_page.enter_short_id(shortId)
 
-        if longId == '':
-            self.devices_page.clear_long_id_input()
+        if mac_adress == '':
+            self.devices_page.clear_mac_address_input()
         else:
-            self.devices_page.enter_long_id(longId)
+            self.devices_page.enter_mac_address(mac_adress)
 
         self.devices_page.save_add_device_click()
 
@@ -180,7 +180,7 @@ class TestDevicesPage(object):
         self.method_test_setUp('add',
                                'Test'+self.module,
                                self.devices_page.new_device_short_id,
-                               self.devices_page.new_device_long_id)
+                               self.devices_page.new_device_mac_address)
 
         # Check the add toast is displayed
         self.assertTrue(self.devices_page.is_toast_present(self.devices_page.added_toast))
@@ -191,7 +191,7 @@ class TestDevicesPage(object):
         # Check the new device saved in db
         self.assertEqual(self.devices_page.if_saved_in_db(), self.devices_page.new_device_name)
         self.test_failed = False
-    #
+
     def test_03_add_new_device_negative_existing_short_id(self):
 
         """Test that device will be added with existing Short Id"""
@@ -199,32 +199,33 @@ class TestDevicesPage(object):
         self.method_test_setUp('add',
                                'Test' + self.module + 'AddNegativeExistingShortId',
                                self.devices_page.new_device_short_id,
-                               '999')
+                               self.devices_page.another_mac_address)
 
         # Check the "Short Id must be unique"
         self.assertTrue(self.devices_page.is_toast_present(self.devices_page.unique_short_id_toast))
         self.assertTrue(self.devices_page.is_toast_disappear(self.devices_page.unique_short_id_toast))
         self.test_failed = False
 
-    def test_04_add_new_device_negative_existing_long_id(self):
+    def test_04_add_new_device_negative_existing_mac_address(self):
 
-        """Test that device will be added with existing Long Id"""
+        """Test that device will be added with existing Mac Address"""
 
         self.method_test_setUp('add',
-                               'Test' + self.module + 'AddNegativeExistingLongId',
+                               'Test' + self.module + 'AddNegativeExistingMacAddress',
                                self.devices_page.negative_device_short_id,
-                               self.devices_page.new_device_long_id)
+                               self.devices_page.new_device_mac_address)
 
-        # Check the "Long Id must be unique" warning
-        self.assertTrue(self.devices_page.is_toast_present(self.devices_page.unique_long_id_toast))
-        self.assertTrue(self.devices_page.is_toast_disappear(self.devices_page.unique_long_id_toast))
+        # TODO CHECK MAC ADDRESS UNIQUE TOAST IS APPEAR
+        # Check the "Mac Address must be unique" warning
+        # self.assertTrue(self.devices_page.is_toast_present(self.devices_page.unique_long_id_toast))
+        # self.assertTrue(self.devices_page.is_toast_disappear(self.devices_page.unique_long_id_toast))
         self.test_failed = False
 
     def test_05_add_new_device_negative_empty_short_id(self):
 
         """Test that device will be added with empty Short Id"""
 
-        self.method_test_setUp('add', 'Test' + self.module + 'AddNegativeEmptyShortId', '', '999')
+        self.method_test_setUp('add', 'Test' + self.module + 'AddNegativeEmptyShortId', '', self.devices_page.another_mac_address)
 
         # Check the "Short Id is required." warning
         self.assertEqual(self.devices_page.error_message_name(), 'Short Id is required.')
@@ -232,20 +233,7 @@ class TestDevicesPage(object):
         self.devices_page.cancel_add_new_device_click()
         self.test_failed = False
 
-    def test_06_add_new_device_negative_empty_long_id(self):
-
-        """Test that device will be added with empty Long Id"""
-
-        self.method_test_setUp('add', 'Test' + self.module + 'AddNegativeEmptyLongId', self.devices_page.negative_device_short_id, '')
-
-        # Check the "Short Id is required." warning
-        self.assertEqual(self.devices_page.error_message_name(), 'Long Id is required.')
-        # Cancel Action
-        self.devices_page.cancel_add_new_device_click()
-        self.test_failed = False
-    #
-    #     # TODO - Test od czasu do czasu nie przechodzi, wpisujac nie pelnego stringa np. "TstSink"
-
+    #IGNORE
     def _test_07_edit_last_device_correctly(self):
 
         """Test editing device correctly"""
@@ -266,22 +254,11 @@ class TestDevicesPage(object):
 
         """Test editing device with empty short id input"""
 
-        self.method_test_setUp('edit', 'TestEdit'+self.module, '', '12345')
+        self.method_test_setUp('edit', 'TestEdit'+self.module, '', self.devices_page.another_mac_address)
 
         # Check the "Short Id is required." warning
         self.assertEqual(self.devices_page.error_message_name(), 'Short Id is required.')
-        # Cancel action
-        self.devices_page.cancel_add_new_device_click()
-        self.test_failed = False
 
-    def test_09_edit_device_negative_empty_long_id(self):
-
-        """Test editing device with empty long id input"""
-
-        self.method_test_setUp('edit', 'TestEdit'+self.module, self.devices_page.negative_device_short_id, '')
-
-        # Check the "Long Id is required." warning
-        self.assertEqual(self.devices_page.error_message_name(), 'Long Id is required.')
         # Cancel action
         self.devices_page.cancel_add_new_device_click()
         self.test_failed = False
@@ -319,7 +296,9 @@ class TestDevicesPage(object):
         self.assertTrue(self.devices_page.is_yes_delete_button_clickable())
         self.assertTrue(self.devices_page.is_no_delete_button_clickable())
         # Click confirm deleting
+        time.sleep(1)
         self.devices_page.click_yes_button()
+        time.sleep(1)
         # Check toast & db
         self.assertTrue(self.devices_page.is_remove_device_toast_present())
         self.assertTrue(self.devices_page.is_remove_device_toast_disappeared())
@@ -335,12 +314,12 @@ class TestDevicesPage(object):
         self.method_test_setUp('add',
                                'Test'+self.module+'ToSearch 123321',
                                self.devices_page.new_device_short_id,
-                               self.devices_page.new_device_long_id+'321')
+                               self.devices_page.new_device_mac_address+'22')
         time.sleep(10)
         self.method_test_setUp('add',
                                'Test'+self.module+'ToSearch 123999',
                                self.devices_page.new_device_short_id,
-                               self.devices_page.new_device_long_id+'999')
+                               self.devices_page.new_device_mac_address+'33')
 
         self.method_test_search_setUp('not_verified')
 
