@@ -1,4 +1,5 @@
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import StaleElementReferenceException
 import selenium.webdriver.support.ui as ui
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
@@ -6,17 +7,21 @@ import re
 from selenium.webdriver import ActionChains
 from services.service_db import ServiceDb
 from services.service_upload import ServiceUpload
+from services.service_http import ServiceHttp
 
 
 class BasePage(object):
 
     base_url = 'http://localhost:4200/'
+    login_http_url = 'http://localhost:90/rest/v1/auth'
+    login_payload = "{\"username\": \"admin\", \"plainPassword\": \"admin\"}"
     db_hostname = 'localhost'
 
     def __init__(self, driver):
         self.__driver = driver
         self.service_db = ServiceDb
         self.service_upload = ServiceUpload
+        self.service_http = ServiceHttp
 
     def if_exist_in_db(self, query):
         return self.service_db().if_exist_in_db(query)
@@ -37,6 +42,9 @@ class BasePage(object):
 
     def refresh_page(self):
         return self.__driver.refresh()
+
+    def login_request(self):
+        return self.service_http().http_login(self.login_http_url, self.login_payload)
 
     # Front
     def identify_element(self, *locator):
@@ -87,8 +95,21 @@ class BasePage(object):
         element = ui.WebDriverWait(self.__driver, 10).until_not(EC.visibility_of_element_located(locator), msg)
         return element
 
+    def wait_for_element_has_changed_value(self, locator, attribute, value, msg="Element has not changed value."):
+        element = ui.WebDriverWait(self.__driver, 10).until(wait_for_the_attribute_value(locator, attribute, value), msg)
+        return element
+
+    def wait_for_text_has_changed_after_drag(self, slider, text, locator,  msg="Displayed text has not been correct after drag."):
+        is_changed = ui.WebDriverWait(self.__driver, 10).until(wait_for_the_specific_text_after_drag(slider, text, locator),msg)
+        return is_changed
+
     def open_page(self, page_url):
         return self.__driver.get(page_url)
+
+    def is_input_empty(self, locator):
+        input = self.wait_for_element_clickable(locator)
+        length = len(input.get_attribute('value'))
+        return True if length==0 else False
 
     def clear_input(self, input_locator):
         input_element = self.wait_for_element_clickable(input_locator)
@@ -189,3 +210,44 @@ class BasePage(object):
         except Exception as e:
             print("Exception when reading Browser Console log")
             print(str(e))
+
+
+class wait_for_the_attribute_value(object):
+    def __init__(self, locator, attribute, value):
+        self.locator = locator
+        self.attribute = attribute
+        self.value = value
+
+    def __call__(self, driver):
+        try:
+            element_attribute = EC._find_element(driver, self.locator).get_attribute(self.attribute)
+            return element_attribute == self.value
+        except StaleElementReferenceException:
+            return False
+
+
+class wait_for_the_specific_text_after_drag(object):
+    """
+    Helper class drag element until there will be appear specific text
+    This method drag element by 10px if will not appear choosen text trying with increment.
+    :param - slider - element which will be dragable
+    :param - element_text - element which will be checked
+    :param - expected_text - text which should be result to pass the condition
+    """
+    def __init__(self, slider, expected_text, locator):
+        self.slider = slider
+        self.locator = locator
+        self.expected_text = expected_text
+
+    pixels_y = 0
+    pixels_to_move = 0
+    step = 10
+
+    def __call__(self, driver):
+        self.pixels_to_move += self.step
+        ActionChains(driver).drag_and_drop_by_offset(self.slider, self.pixels_to_move, self.pixels_y).perform()
+        try:
+            element_text = EC._find_element(driver, self.locator).text
+            return element_text == self.expected_text
+        except StaleElementReferenceException:
+            return False
