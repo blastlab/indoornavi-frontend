@@ -180,3 +180,12 @@ app-auth > div {
 svg {
   position: relative;
 }
+
+
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
+}
