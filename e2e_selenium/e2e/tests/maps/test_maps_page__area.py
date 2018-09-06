@@ -6,7 +6,7 @@ from pages.maps.maps_page__area import MapsPageArea
 from pages.login_page import LoginPage
 from pages.constructions.floors_page import FloorsPage
 from selenium.webdriver import ActionChains
-
+import time
 
 class TestMapsPageArea(unittest.TestCase, MapsPageArea):
 
@@ -56,7 +56,7 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
 
     # SCALE TESTS
     def test_01_add_new_area_correctly_triangle_with_all_params(self):
-        print('CLAROSA')
+
         self.__set_before_scale_db_configuration('add')
 
         self.maps_page_area.is_area_button_displayed()
@@ -71,23 +71,23 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.maps_page_area.enter_area_name()
         self.maps_page_area.enter_on_enter_offset()
         self.maps_page_area.enter_on_leave_offset()
-        #
+
         self.__set_tags()
-        #
+
         self.maps_page_area.area_confirm_click()
-        self.maps_page_area.is_draft_saved_toast_displayed()
-        # # Check the points are the same
-        self.maps_page_area.area_button_click(),
-        #
+        self.maps_page_area.save_draft_click()
+        # Check the points are the same
+        self.maps_page_area.area_button_click()
+
         second_step_points = self.maps_page_area.get_polygon_points('0')
         # # Refresh page and check it again
         self.webdriver.refresh()
         self.maps_page_area.area_button_click()
         third_step_points = self.maps_page_area.get_polygon_points('0')
-        #
+
         self.assertEqual(first_step_points, second_step_points[:24])
-        # # TODO
-        # # self.assertEqual(first_step_points, third_step_points[:24])
+        # TODO
+        # self.assertEqual(first_step_points, third_step_points[:24])
         self.test_failed = False
 
     def test_02_add_new_area_correctly_square_with_all_params(self):
@@ -108,7 +108,7 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.__set_tags()
 
         self.maps_page_area.area_confirm_click()
-        self.maps_page_area.is_draft_saved_toast_displayed()
+        self.maps_page_area.save_draft_click()
         # Check the points are the same
         self.maps_page_area.area_button_click()
         second_step_points = self.maps_page_area.get_polygon_points('0')
@@ -138,7 +138,7 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.__set_tags()
 
         self.maps_page_area.area_confirm_click()
-        self.maps_page_area.is_draft_saved_toast_displayed()
+        self.maps_page_area.save_draft_click()
         # Check the points are the same
         self.maps_page_area.area_button_click()
         second_step_points = self.maps_page_area.get_polygon_points('0')
@@ -178,7 +178,7 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
 
         self.assertEqual(first_step_x_location + int(second_step_x_attr), second_step_x_location)
         self.maps_page_area.area_confirm_click()
-        self.maps_page_area.is_draft_saved_toast_displayed()
+        self.maps_page_area.save_draft_click()
 
         self.webdriver.refresh()
         self.maps_page_area.area_button_click()
@@ -212,7 +212,7 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.assertNotEqual(first_loc, second_loc)
 
         self.maps_page_area.area_confirm_click()
-        self.maps_page_area.is_draft_saved_toast_displayed()
+        self.maps_page_area.save_draft_click()
         self.webdriver.refresh()
         self.maps_page_area.area_button_click()
 
@@ -283,6 +283,7 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
 
         self.test_failed = False
 
+    #TODO step with edit_area_click {context_menu}
     def test_09_edit_area_with_all_parameters(self):
 
         self.__set_before_scale_db_configuration('edit')
@@ -293,22 +294,25 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.maps_page_area.edit_area_name()
         self.maps_page_area.edit_on_enter_offset()
         self.maps_page_area.edit_on_leave_offset()
+
+        self.__set_tags()
         self.__set_tags()
         self.maps_page_area.edit_polygon_point(200, 0, self.maps_page_area.AREA_EDIT_CIRCLE(5))
 
         expected_data = self.maps_page_area.get_area_properties()
         self.maps_page_area.area_confirm_click()
-        self.maps_page_area.is_draft_saved_toast_displayed()
+        self.maps_page_area.save_draft_click()
         self.webdriver.refresh()
         self.maps_page_area.is_area_button_displayed()
-
-        # self.maps_page_area.area_button_click()
+        time.sleep(1)
+        self.maps_page_area.area_button_click()
         # self.maps_page_area.edit_area_click()
         # result_data = self.maps_page_area.get_area_properties()
         # self.assertDictEqual(expected_data, result_data, "Edited area properties have not been correct")
 
         self.test_failed = False
-    #
+
+    # TODO step with edit_area_click {context_menu}
     def test_10_edit_area_without_area_name(self):
 
         self.__set_before_scale_db_configuration('edit')
@@ -319,15 +323,17 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.maps_page_area.clear_area_name_input()
         self.maps_page_area.edit_on_enter_offset()
         self.maps_page_area.edit_on_leave_offset()
+
+        self.__set_tags()
         self.__set_tags()
         self.maps_page_area.edit_polygon_point(200, 0, self.maps_page_area.AREA_EDIT_CIRCLE(5))
         expected_data = self.maps_page_area.get_area_properties()
         self.maps_page_area.area_confirm_click()
-        self.maps_page_area.is_draft_saved_toast_displayed()
+        self.maps_page_area.save_draft_click()
         self.webdriver.refresh()
         self.maps_page_area.is_area_button_displayed()
-
-        # self.maps_page_area.area_button_click()
+        time.sleep(1)
+        self.maps_page_area.area_button_click()
         # self.maps_page_area.edit_area_click()
         # result_data = self.maps_page_area.get_area_properties()
         # self.assertDictEqual(expected_data, result_data, "Edited area properties have not been correct")
@@ -390,7 +396,7 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.maps_page_area.enter_on_leave_offset()
         self.__set_tags()
         self.maps_page_area.area_confirm_click()
-        self.maps_page_area.is_draft_saved_toast_displayed()
+        self.maps_page_area.save_draft_click()
         self.maps_page_area.area_button_click()
 
         # DRAW TRIANGLE AND SET PROPERTIES
@@ -400,7 +406,7 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.maps_page_area.enter_on_leave_offset()
         self.__set_tags()
         self.maps_page_area.area_confirm_click()
-        self.maps_page_area.is_draft_saved_toast_displayed()
+        self.maps_page_area.save_draft_click()
         self.maps_page_area.area_button_click()
 
         square_displayed   = self.maps_page_area.is_specific_area_displayed(0)
