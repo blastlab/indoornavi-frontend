@@ -63,7 +63,7 @@ import {AppComponent} from './app.component';
 import {MessageServiceWrapper} from './shared/services/message/message.service';
 import {MessageService} from 'primeng/components/common/messageservice';
 import {BreadcrumbService} from './shared/services/breadcrumbs/breadcrumb.service';
-import {AreaService} from './shared/services/area/area.service';
+import {AreaService} from './map-viewer/services/area/area.service';
 import {MapEditorService} from './map-editor/map.editor.service';
 import {PermissionGroupService} from './user/permissionGroup/permissionGroup.service';
 import {MapLoaderInformerService} from './shared/services/map-loader-informer/map-loader-informer.service';
@@ -117,6 +117,7 @@ import {DevicePlacerComponent} from './map-editor/tool-bar/tools/device-placer/d
 import {DevicePlacerService} from './map-editor/tool-bar/tools/device-placer/device-placer.service';
 import {DevicePlacerListComponent} from './map-editor/tool-bar/tools/device-placer/list/device-placer.list';
 import {DevicePlacerRowDirective} from './map-editor/tool-bar/tools/device-placer/list/device-placer.row';
+import {PathService} from './map-viewer/services/path/path.service';
 import {BluetoothService} from './bluetooth/bluetooth.service';
 
 export function HttpLoaderFactory(http: Http) {
@@ -263,7 +264,8 @@ export function HttpLoaderFactory(http: Http) {
     TagVisibilityTogglerService,
     HeatMapControllerService,
     DevicePlacerService,
-    HeatMapControllerService
+    HeatMapControllerService,
+    PathService
   ], bootstrap: [AppComponent]
 })
 

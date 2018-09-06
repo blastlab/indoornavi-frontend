@@ -79,11 +79,12 @@ export class Geometry {
     return Math.floor(firstPoint.x) === Math.floor(lastPoint.x) && Math.floor(firstPoint.y) === Math.floor(lastPoint.y);
   }
 
-  static findIntersection(firstSection: Line, secondSection: Line): Point {
+  static isBetween(first: number, middle: number, last: number): boolean {
     const precision = 0.01;
-    const isBetween = (first: number, middle: number, last: number): boolean => {
-      return first - precision <= middle && middle <= last + precision;
-    };
+    return first < last ? first - precision <= middle && middle <= last + precision : last - precision <= middle && middle <= first + precision;
+  };
+
+  static findLineToLineIntersection(firstSection: Line, secondSection: Line): Point {
     const x1: number = firstSection.startPoint.x;
     const y1: number = firstSection.startPoint.y;
     const x2: number = firstSection.endPoint.x;
@@ -101,38 +102,38 @@ export class Geometry {
       return null;
     } else {
       if (x1 >= x2) {
-        if (!isBetween(x2, x_section, x1)) {
+        if (!Geometry.isBetween(x2, x_section, x1)) {
           return null;
         }
       } else {
-        if (!isBetween(x1, x_section, x2)) {
+        if (!Geometry.isBetween(x1, x_section, x2)) {
           return null;
         }
       }
       if (y1 >= y2) {
-        if (!isBetween(y2, y_section, y1)) {
+        if (!Geometry.isBetween(y2, y_section, y1)) {
           return null;
         }
       } else {
-        if (!isBetween(y1, y_section, y2)) {
+        if (!Geometry.isBetween(y1, y_section, y2)) {
           return null;
         }
       }
       if (x3 >= x4) {
-        if (!isBetween(x4, x_section, x3)) {
+        if (!Geometry.isBetween(x4, x_section, x3)) {
           return null;
         }
       } else {
-        if (!isBetween(x3, x_section, x4)) {
+        if (!Geometry.isBetween(x3, x_section, x4)) {
           return null;
         }
       }
       if (y3 >= y4) {
-        if (!isBetween(y4, y_section, y3)) {
+        if (!Geometry.isBetween(y4, y_section, y3)) {
           return null;
         }
       } else {
-        if (!isBetween(y3, y_section, y4)) {
+        if (!Geometry.isBetween(y3, y_section, y4)) {
           return null;
         }
       }
@@ -155,4 +156,85 @@ export class Geometry {
     return points;
   }
 
+  static findClosestPointOnLine(line: Line, givenPoint: Point): Point {
+    // given line equation: y = a1 * x + b1
+    // line that We are looking for equation: y = a2 * x + b2
+    const a1: number = Geometry.getSlope(line.startPoint, line.endPoint);
+    const b1: number = line.startPoint.y - a1 * line.startPoint.x;
+    let a2: number;
+    let b2: number;
+    let point: Point;
+    if (a1 === 0) {
+      point = {
+        x: givenPoint.x,
+        y: line.endPoint.y
+      };
+    } else if (Math.abs(a1) === Infinity) {
+      point = {
+        x: line.endPoint.x,
+        y: givenPoint.y
+      };
+    } else {
+      a2 = -1 / a1;
+      b2 = givenPoint.y - a2 * givenPoint.x;
+      const x: number = (b2 - b1) / (a1 - a2);
+      point = {
+        x: x,
+        y: a1 * x + b1
+      };
+    }
+    if (Geometry.isBetween(line.startPoint.x, point.x, line.endPoint.x) && Geometry.isBetween(line.startPoint.y, point.y, line.endPoint.y)) {
+      point = {
+        x: point.x,
+        y: point.y
+      };
+      return point;
+    }
+    return null;
+  }
+
+  static findPointOnPathInGivenRange(path: Line[], givenPoint: Point, accuracy: number = Infinity): Point {
+    let coordinatesOnPath: Point = null;
+    let distance: number = accuracy;
+    path.forEach((line: Line): void => {
+      const nearest: NearestPoint = Geometry.pickNearestPoint(line, givenPoint);
+      if (nearest.distance < distance) {
+        distance = nearest.distance;
+        coordinatesOnPath = nearest.coordinates;
+      }
+    });
+    if (!!coordinatesOnPath) {
+      return {x: Math.round(coordinatesOnPath.x), y: Math.round(coordinatesOnPath.y)};
+    }
+    return coordinatesOnPath;
+  }
+
+  static pickNearestPoint(line: Line, comparedPoint: Point): NearestPoint {
+    let nearest: NearestPoint = null;
+    const locationOnLine: Point = Geometry.findClosestPointOnLine(line, comparedPoint);
+    if (!!locationOnLine) {
+      return nearest = {
+        coordinates: locationOnLine,
+        distance: Geometry.getDistanceBetweenTwoPoints(locationOnLine, comparedPoint)
+      }
+    }
+    const points: Point[] = [line.startPoint, line.endPoint];
+    let distance = Infinity;
+    points.forEach((point: Point): void => {
+      const distanceToPoint: number = Geometry.getDistanceBetweenTwoPoints(point, comparedPoint);
+      if (distanceToPoint < distance) {
+        distance = distanceToPoint;
+        nearest = {
+          coordinates: point,
+          distance: distance
+        };
+      }
+    });
+    return nearest;
+  }
+}
+
+export interface NearestPoint {
+  coordinates: Point;
+  distance: number;
 }

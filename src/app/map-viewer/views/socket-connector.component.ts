@@ -15,11 +15,11 @@ import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../shared/utils/draw
 import {SocketService} from '../../shared/services/socket/socket.service';
 import {ActivatedRoute, Params} from '@angular/router';
 import {PublishedService} from '../publication.service';
-import {AreaService} from '../../shared/services/area/area.service';
+import {AreaService} from '../services/area/area.service';
 import {IconService} from '../../shared/services/drawing/icon.service';
 import {Geometry} from 'app/shared/utils/helper/geometry';
 import {Observable} from 'rxjs/Observable';
-import {Point} from 'app/map-editor/map.type';
+import {Line, Point} from 'app/map-editor/map.type';
 import {TranslateService} from '@ngx-translate/core';
 import {Config} from '../../../config';
 import {MapLoaderInformerService} from '../../shared/services/map-loader-informer/map-loader-informer.service';
@@ -39,6 +39,7 @@ import {Deferred} from '../../shared/utils/helper/deferred';
 import {TagOnMap} from '../../map/models/tag';
 import {APIObject} from '../../shared/utils/drawing/api.types';
 import Metadata = APIObject.Metadata;
+import {PathService} from '../services/path/path.service';
 
 @Component({
   templateUrl: './socket-connector.component.html'
@@ -66,6 +67,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
               protected mapLoaderInformer: MapLoaderInformerService,
               protected mapClick: MapClickService,
               private areaService: AreaService,
+              private pathService: PathService,
               private translateService: TranslateService,
               private iconService: IconService,
               private mapObjectService: ApiService,
@@ -327,6 +329,22 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       const width = this.d3map.container.node().getBBox().width;
       // @ts-ignore
       event.source.postMessage({type: `getMapDimensions`, mapObjectId: 'map', height: height, width: width, scale: this.scale}, event.origin);
+      event.source.postMessage({type: 'getMapDimensions', mapObjectId: 'map', height: height, width: width, scale: this.scale}, event.origin);
+    });
+  }
+
+  private getPointOnPath(event: MessageEvent) {
+    this.pathService.getPathByFloorId(this.floor.id).first().subscribe((pathFromConfiguration: Line[]): void => {
+      let calculatedPosition: Point = null;
+      if (!!pathFromConfiguration && pathFromConfiguration.length > 0) {
+        calculatedPosition = Geometry.findPointOnPathInGivenRange(pathFromConfiguration, event.data['args'].point, event.data['args'].accurac);
+      }
+      event.source.postMessage({
+          type: 'getPointOnPath',
+        mapObjectId: 'map',
+        calculatedPosition:
+        calculatedPosition
+      }, event.origin);
     });
   }
 
@@ -367,6 +385,9 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           if (this.originListeningOnClickMapEvent.indexOf(event) < 0) {
             this.originListeningOnClickMapEvent.push(event);
           }
+          break;
+        case 'getPointOnPath':
+          this.getPointOnPath(event);
           break;
       }
     }
