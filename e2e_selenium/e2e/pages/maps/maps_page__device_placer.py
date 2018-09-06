@@ -10,38 +10,6 @@ class MapsPageDevicePlacer(BasePage, MapsPageUtils):
         self.__actions = ActionChains
         super(MapsPageDevicePlacer, self).__init__(self.__driver)
 
-    def prepare_devices_in_db(self):
-        self.insert_sinks_to_db_from_csv()
-        self.insert_anchors_to_db_from_csv()
-        self.insert_devices_to_db_from_csv()
-        self.insert_uwb_to_db_from_csv()
-
-    def click_on_map(self):
-        element = self.wait_for_element_clickable(self.DEVICE_PLACER_MAP_LAYER)
-        actions = ActionChains(self.__driver)
-        actions.click(element)
-        actions.perform()
-
-    def click_device_placer_button(self):
-        return self.click_element(self.DEVICE_PLACER_BUTTON)
-
-    def is_device_placer_list_displayed(self):
-        return True if self.is_element_present(self.DEVICE_PLACER_LIST) else False
-
-    def is_device_placer_list_disappeared(self):
-        return True if self.is_element_disappear(self.DEVICE_PLACER_LIST) else False
-
-    def is_device_placer_list_title_displayed(self):
-        print('is_device_placer_list_title_displayed')
-
-    def set_device_on_map(self, offset_x, offset_y):
-        self.simulate_drag_and_drop_jquery(self.JQUERY_DEVICE_LIST_EVEN, self.JQUERY_MAP_LAYER, offset_x, offset_y)
-
-    def check_device_placer_list_title(self, device_name):
-        selectors = {"sinks": self.DEVICE_PLACER_SINKS_TITLE,
-                     "anchors": self.DEVICE_PLACER_ANCHORS_TITLE}
-        return self.wait_for_element(selectors[device_name])
-
     def __select_device_helper(self, device_id):
         selector_by_device_id = {
             "map111111"  : self.MAP_SINK_111111,
@@ -65,6 +33,35 @@ class MapsPageDevicePlacer(BasePage, MapsPageUtils):
             presence = select_fun[option](self.__select_device_helper(i))
             presence_arr.append(presence)
         return False if False in presence_arr else True
+
+    def prepare_devices_in_db(self):
+        self.insert_sinks_to_db_from_csv()
+        self.insert_anchors_to_db_from_csv()
+        self.insert_devices_to_db_from_csv()
+        self.insert_uwb_to_db_from_csv()
+
+    def click_on_map(self):
+        element = self.wait_for_element_clickable(self.DEVICE_PLACER_MAP_LAYER)
+        actions = ActionChains(self.__driver)
+        actions.click(element)
+        actions.perform()
+
+    def click_device_placer_button(self):
+        return self.click_element(self.DEVICE_PLACER_BUTTON)
+
+    def is_device_placer_list_displayed(self):
+        return True if self.is_element_present(self.DEVICE_PLACER_LIST) else False
+
+    def is_device_placer_list_disappeared(self):
+        return True if self.is_element_disappear(self.DEVICE_PLACER_LIST) else False
+
+    def set_device_on_map(self, offset_x, offset_y):
+        self.simulate_drag_and_drop_jquery(self.JQUERY_DEVICE_LIST_EVEN, self.JQUERY_MAP_LAYER, offset_x, offset_y)
+
+    def check_device_placer_list_title(self, device_name):
+        selectors = {"sinks": self.DEVICE_PLACER_SINKS_TITLE,
+                     "anchors": self.DEVICE_PLACER_ANCHORS_TITLE}
+        return self.wait_for_element(selectors[device_name])
 
     def is_device_appeared(self, *devices):
         return self.__presence_device_helper('appeared', devices)
@@ -107,7 +104,6 @@ class MapsPageDevicePlacer(BasePage, MapsPageUtils):
         return self.__presence_device_helper('disappear', devices)
 
     def get_device_color(self, device_id):
-
         web_element = self.wait_for_element(self.__select_device_helper(device_id))
         return self.__driver.execute_script('var sink = arguments[0];'
                                             'var sinkText = sink.getElementsByTagName("text")[0];'

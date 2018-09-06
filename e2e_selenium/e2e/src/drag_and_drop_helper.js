@@ -1,10 +1,7 @@
 (function( $ ) {
-        // console.log(arguments);
         $.fn.simulateDragDrop = function(options) {
-                console.log(this);
                 return this.each(function() {
                         new $.simulateDragDrop(this, options);
-                        // console.log(this);
                 });
         };
         $.simulateDragDrop = function(elem, options) {

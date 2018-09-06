@@ -6,7 +6,7 @@ from pages.maps.maps_page__area import MapsPageArea
 from pages.login_page import LoginPage
 from pages.constructions.floors_page import FloorsPage
 from selenium.webdriver import ActionChains
-
+import time
 
 class TestMapsPageArea(unittest.TestCase, MapsPageArea):
 
@@ -72,23 +72,23 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.maps_page_area.enter_area_name()
         self.maps_page_area.enter_on_enter_offset()
         self.maps_page_area.enter_on_leave_offset()
-        #
+
         self.__set_tags()
-        #
+
         self.maps_page_area.area_confirm_click()
         self.maps_page_area.save_draft_click()
-        # # Check the points are the same
-        self.maps_page_area.area_button_click(),
-        #
+        # Check the points are the same
+        self.maps_page_area.area_button_click()
+
         second_step_points = self.maps_page_area.get_polygon_points('0')
         # # Refresh page and check it again
         self.webdriver.refresh()
         self.maps_page_area.area_button_click()
         third_step_points = self.maps_page_area.get_polygon_points('0')
-        #
+
         self.assertEqual(first_step_points, second_step_points[:24])
-        # # TODO
-        # # self.assertEqual(first_step_points, third_step_points[:24])
+        # TODO
+        # self.assertEqual(first_step_points, third_step_points[:24])
         self.test_failed = False
 
     def test_02_add_new_area_correctly_square_with_all_params(self):
@@ -305,7 +305,6 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.maps_page_area.save_draft_click()
         self.webdriver.refresh()
         self.maps_page_area.is_area_button_displayed()
-        import time
         time.sleep(1)
         self.maps_page_area.area_button_click()
         # self.maps_page_area.edit_area_click()
@@ -334,7 +333,6 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.maps_page_area.save_draft_click()
         self.webdriver.refresh()
         self.maps_page_area.is_area_button_displayed()
-        import time
         time.sleep(1)
         self.maps_page_area.area_button_click()
         # self.maps_page_area.edit_area_click()
