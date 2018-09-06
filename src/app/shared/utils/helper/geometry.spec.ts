@@ -6,7 +6,7 @@ const precisionRound = (number: number, precision: number): number => {
   return Math.round(number * factor) / factor;
 };
 
-// when, given
+// given, when
 const p1: Point = {x: 1, y: 1},
       p2: Point = {x: 2, y: 2},
       p3: Point = {x: 3, y: 1},
@@ -99,10 +99,10 @@ describe('Geometry', () => {
   });
 
   it('should return lines intersection point 5, 5', () => {
-    // when
+    // given
     const line0 = {startPoint: {x: 0, y: 0}, endPoint: {x: 10, y: 10}};
     const line1 = {startPoint: {x: 10, y: 0}, endPoint: {x: 0, y: 10}};
-    // given
+    // when
     const point0: Point = Geometry.findLineToLineIntersection(line0, line1);
     // then
     expect(point0.x).toEqual(5);
@@ -110,10 +110,10 @@ describe('Geometry', () => {
   });
 
   it('should return lines intersection point 5, 5', () => {
-    // when
+    // given
     const line0 = {startPoint: {x: 0, y: 0}, endPoint: {x: 10, y: 10}};
     const line1 = {startPoint: {x: 0, y: 10}, endPoint: {x: 10, y: 0}};
-    // given
+    // when
     const point1: Point = Geometry.findLineToLineIntersection(line0, line1);
     // then
     expect(point1.x).toEqual(5);
@@ -121,10 +121,10 @@ describe('Geometry', () => {
   });
 
   it('should return lines intersection point 38, 38', () => {
-    // when
+    // given
     const line0 = {startPoint: {x: 0, y: 0}, endPoint: {x: 100, y: 100}};
     const line1 = {startPoint: {x: 70, y: 10}, endPoint: {x: 10, y: 66}};
-    // given
+    // when
     const point2: Point = Geometry.findLineToLineIntersection(line0, line1);
     // then
     expect(point2.x).toEqual(38);
@@ -132,10 +132,10 @@ describe('Geometry', () => {
   });
 
   it('should return lines intersection point 38, 38', () => {
-    // when
+    // given
     const line0 = {startPoint: {x: 0, y: 0}, endPoint: {x: 100, y: 100}};
     const line1 = {startPoint: {x: 10, y: 66}, endPoint: {x: 70, y: 10}};
-    // given
+    // when
     const point3: Point = Geometry.findLineToLineIntersection(line0, line1);
     // then
     expect(point3.x).toEqual(38);
@@ -143,14 +143,14 @@ describe('Geometry', () => {
   });
 
   it('should not return lines intersection point but null', () => {
-    // when
+    // given
     const line0 = {startPoint: {x: 0, y: 0}, endPoint: {x: 10, y: 10}};
     const line1 = {startPoint: {x: 20, y: 20}, endPoint: {x: 30, y: 30}};
     const line2 = {startPoint: {x: 0, y: 0}, endPoint: {x: 10, y: 10}};
     const line3 = {startPoint: {x: 0, y: 0}, endPoint: {x: 30, y: 30}};
     const line4 = {startPoint: {x: 0, y: 0}, endPoint: {x: 100, y: 100}};
     const line5 = {startPoint: {x: 0, y: 70}, endPoint: {x: 40, y: 60}};
-    // given
+    // when
     const point0: Point = Geometry.findLineToLineIntersection(line0, line1);
     const point1: Point = Geometry.findLineToLineIntersection(line2, line3);
     const point2: Point = Geometry.findLineToLineIntersection(line4, line5);
@@ -161,7 +161,7 @@ describe('Geometry', () => {
   });
 
   it('should return crossing point of given line and imaginary perpendicular line', () => {
-    // when
+    // given
     const line0 = {startPoint: {x: 0, y: 10}, endPoint: {x: 10, y: 10}};
     const line1 = {startPoint: {x: 10, y: 0}, endPoint: {x: 10, y: 10}};
     const line2 = {startPoint: {x: 1, y: 1}, endPoint: {x: 6, y: 6}};
@@ -169,7 +169,7 @@ describe('Geometry', () => {
     const givenPoint0 = {x: 5, y: 5};
     const givenPoint1 = {x: 6, y: 3};
     const givenPoint2 = {x: 4, y: 11};
-    // given
+    // when
     const point0: Point = Geometry.findClosestPointOnLine(line0, givenPoint0);
     const point1: Point = Geometry.findClosestPointOnLine(line1, givenPoint0);
     const point2: Point = Geometry.findClosestPointOnLine(line2, givenPoint1);
@@ -186,10 +186,10 @@ describe('Geometry', () => {
   });
 
   it('should to return end point of section', () => {
-    // when
+    // given
     const section0: Line = {startPoint: {x: -6, y: 6}, endPoint: {x: 6, y: 6}};
     const point0: Point = {x: 9, y: 5};
-    // given
+    // when
     const foundLocation: NearestPoint = Geometry.pickNearestPoint(section0, point0);
     // then
     expect(Math.round(foundLocation.coordinates.x)).toEqual(6);
@@ -198,10 +198,10 @@ describe('Geometry', () => {
   });
 
   it('should to return point that is on intersection of perpendicular line to section and given section', () => {
-    // when
+    // given
     const point1: Point = {x: 5, y: 2};
     const section1: Line = {startPoint: {x: 6, y: 6}, endPoint: {x: 0, y: 0}};
-    // given
+    // when
     const foundLocation: NearestPoint = Geometry.pickNearestPoint(section1, point1);
     // then
     expect(Math.round(foundLocation.coordinates.x)).toEqual(4);
@@ -211,10 +211,10 @@ describe('Geometry', () => {
   });
 
   it('should to return start point of section when closest point is outside section and distance is 3', () => {
-    // when
+    // given
     const point2: Point = {x: 8, y: 4};
     const section2: Line = {startPoint: {x: 6, y: 6}, endPoint: {x: 0, y: 0}};
-    // given
+    // when
     const foundLocation: NearestPoint = Geometry.pickNearestPoint(section2, point2);
     // then
     expect(Math.round(foundLocation.coordinates.x)).toEqual(6);
@@ -223,10 +223,10 @@ describe('Geometry', () => {
   });
 
   it('should to return start point of section when closest point is outside section and distance is 4', () => {
-    // when
+    // given
     const point3: Point = {x: 9, y: 9};
     const section3: Line = {startPoint: {x: 6, y: 6}, endPoint: {x: 0, y: 0}};
-    // given
+    // when
     const foundLocation: NearestPoint = Geometry.pickNearestPoint(section3, point3);
     // then
     expect(Math.round(foundLocation.coordinates.x)).toEqual(6);
@@ -235,7 +235,7 @@ describe('Geometry', () => {
   });
 
   it('should to return same point as given as closest point on path' , () => {
-    // when
+    // given
     const lines: Line[] = [];
     for (let x = 0; x <= 10; x++) {
       lines.push({
@@ -253,7 +253,7 @@ describe('Geometry', () => {
     const givenPoint1: Point = {x: 4, y: 9};
     const givenPoint2: Point = {x: 7, y: 9};
     const givenPoint3: Point = {x: 9, y: 9};
-    // given
+    // when
     const foundPointOnPath0: Point = Geometry.findPointOnPathInGivenRange(lines, givenPoint0);
     const foundPointOnPath1: Point = Geometry.findPointOnPathInGivenRange(lines, givenPoint1);
     const foundPointOnPath2: Point = Geometry.findPointOnPathInGivenRange(lines, givenPoint2);
@@ -267,7 +267,7 @@ describe('Geometry', () => {
   });
 
   it('should to return point of intersection of imaginary perpendicular line with closest section', () => {
-    // when
+    // given
     const lines: Line[] = [
       {startPoint: {x: 2, y: 6}, endPoint: {x: 8, y: 0}},
       {startPoint: {x: 5, y: 1}, endPoint: {x: 12, y: 8}},
@@ -275,7 +275,7 @@ describe('Geometry', () => {
     ];
     const givenPoint0: Point = {x: 3, y: 2};
     const givenPoint1: Point = {x: 7, y: 5};
-    // given
+    // when
     const foundPointOnPath0: Point = Geometry.findPointOnPathInGivenRange(lines, givenPoint0);
     const foundPointOnPath1: Point = Geometry.findPointOnPathInGivenRange(lines, givenPoint1);
     // then
@@ -287,14 +287,14 @@ describe('Geometry', () => {
   });
 
   it('should to return end point of line {startPoint: {x: 5, y: 9}, endPoint: {x: 2, y: 6}}', () => {
-    // when
+    // given
     const lines: Line[] = [
       {startPoint: {x: 2, y: 6}, endPoint: {x: 8, y: 0}},
       {startPoint: {x: 5, y: 1}, endPoint: {x: 12, y: 8}},
       {startPoint: {x: 5, y: 9}, endPoint: {x: 2, y: 6}}
     ];
     const givenPoint0: Point = {x: 0, y: 6};
-    // given
+    // when
     const foundPointOnPath0: Point = Geometry.findPointOnPathInGivenRange(lines, givenPoint0);
     // then
     expect(foundPointOnPath0.x).toEqual(2);
@@ -302,7 +302,7 @@ describe('Geometry', () => {
   });
 
   it('should return given point that belongs to line of given path', () => {
-    // when
+    // given
     const lines: Line[] = [
       {startPoint: {x: 2, y: 6}, endPoint: {x: 8, y: 0}},
       {startPoint: {x: 5, y: 1}, endPoint: {x: 12, y: 8}},
@@ -310,7 +310,7 @@ describe('Geometry', () => {
     ];
     const givenPoint0: Point = {x: 12, y: 8};
     const givenPoint1: Point = {x: 7, y: 3};
-    // given
+    // when
     const foundPointOnPath0: Point = Geometry.findPointOnPathInGivenRange(lines, givenPoint0);
     const foundPointOnPath1: Point = Geometry.findPointOnPathInGivenRange(lines, givenPoint1);
     // then
