@@ -106,8 +106,10 @@ class DevicesPage(BasePage, DevicesBaseLocators):
     def clear_short_id_input(self):
         return self.clear_text_input(self.short_id_input)
 
-    def clear_long_id_input(self):
-        return self.clear_text_input(self.long_id_input)
+    def clear_mac_address_input(self):
+        return self.clear_text_input(self.mac_address_input)
+    # def clear_long_id_input(self):
+    #     return self.clear_text_input(self.long_id_input)
 
     def clear_device_name_input(self):
         return self.clear_text_input(self.input)
@@ -115,8 +117,11 @@ class DevicesPage(BasePage, DevicesBaseLocators):
     def enter_short_id(self, short_id):
         return self.clear_and_fill_input(short_id, self.short_id_input)
 
-    def enter_long_id(self, long_id):
-        return self.clear_and_fill_input(long_id, self.long_id_input)
+    # def enter_long_id(self, long_id):
+    #     return self.clear_and_fill_input(long_id, self.long_id_input)
+
+    def enter_mac_address(self, mac_address):
+        return self.clear_and_fill_input(mac_address, self.mac_address_input)
 
     def save_add_device_click(self):
         return self.click_button(*self.save_button)
@@ -127,14 +132,15 @@ class DevicesPage(BasePage, DevicesBaseLocators):
     def if_new_device_is_displayed(self):
         # Expected properties
         expect_short_id = 'Short Id: ' + self.new_device_short_id
-        expect_long_id = 'Long Id: ' + self.new_device_long_id
+        expect_mac_address = 'Address Mac: ' + self.new_device_mac_address
         expect_device_name = 'Device Name: ' + self.new_device_name
         # Result properties
         result_short_id = self.get_text(self.last_row_short_id)
-        result_long_id = self.get_text(self.last_row_long_id)
+        result_mac_address = self.get_text(self.last_mac_adress)
         result_device_name = self.get_text(self.last_row_device_name)
         # Comparison
-        return True if(expect_short_id == result_short_id) and (expect_long_id == result_long_id) and (expect_device_name == result_device_name) else False
+        print(str(result_short_id), str(result_mac_address), str(result_device_name))
+        return True if(expect_short_id == result_short_id) and (expect_mac_address == result_mac_address) and (expect_device_name == result_device_name) else False
 
     def if_edited_device_is_displayed(self):
         expect_device_name = 'Device Name: ' + self.edit_device_name

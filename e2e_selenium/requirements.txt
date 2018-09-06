@@ -4,3 +4,4 @@ pyquibase
 pyvirtualdisplay
 html-testRunner
 unittest-xml-reporting
+requests
