@@ -7,7 +7,7 @@ import {PublishedService} from '../../publication.service';
 import {AreaService} from '../../services/area/area.service';
 import {IconService} from '../../../shared/services/drawing/icon.service';
 import {MapLoaderInformerService} from '../../../shared/services/map-loader-informer/map-loader-informer.service';
-import {MapObjectService} from '../../../shared/utils/drawing/map.object.service';
+import {ApiService} from '../../../shared/utils/drawing/api.service';
 import {FloorService} from '../../../floor/floor.service';
 import {TagVisibilityTogglerService} from '../../../shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
 import {BreadcrumbService} from '../../../shared/services/breadcrumbs/breadcrumb.service';
@@ -31,7 +31,7 @@ export class PublishedComponent extends SocketConnectorComponent implements OnIn
               pathService: PathService,
               translateService: TranslateService,
               iconService: IconService,
-              mapObjectService: MapObjectService,
+              mapObjectService: ApiService,
               floorService: FloorService,
               tagToggler: TagVisibilityTogglerService,
               breadcrumbService: BreadcrumbService

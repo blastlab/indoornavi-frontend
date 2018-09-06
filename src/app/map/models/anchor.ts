@@ -5,7 +5,7 @@ import {DevicePlacerService} from '../../map-editor/tool-bar/tools/device-placer
 import {ContextMenuService} from '../../shared/wrappers/editable/editable.service';
 import {TranslateService} from '@ngx-translate/core';
 import {DeviceInEditorConfiguration, DeviceType} from '../../map-editor/tool-bar/tools/device-placer/device-placer.types';
-import {Box} from '../../shared/utils/drawing/drawing.types';
+import {Box} from '../../shared/utils/drawing/drawing.builder';
 
 export class AnchorInEditor extends DeviceInEditor {
 

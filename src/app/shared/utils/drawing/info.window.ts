@@ -1,9 +1,10 @@
-import {BoxSize, DrawBuilder, SvgGroupWrapper} from './drawing.builder';
+import {Box, BoxSize, DrawBuilder, SvgGroupWrapper} from './drawing.builder';
 import {DrawConfiguration} from '../../../map-viewer/publication.type';
 import {Point} from '../../../map-editor/map.type';
 import * as d3 from 'd3';
-import {Box, MapObjectMetadata, Position} from './drawing.types';
-
+import {APIObject} from './api.types';
+import Metadata = APIObject.Metadata;
+import Position = APIObject.Position;
 
 export class InfoWindowGroupWrapper {
   private svgGroupWrapper: SvgGroupWrapper;
@@ -36,7 +37,7 @@ export class InfoWindowGroupWrapper {
     return this.infoWindowSize;
   }
 
-  draw(coordinates: Point, infoText: string, callback: Function, objectMetadata: MapObjectMetadata): InfoWindowGroupWrapper {
+  draw(coordinates: Point, infoText: string, callback: Function, objectMetadata: Metadata): InfoWindowGroupWrapper {
     const closingInfoWindowPointCoordinates: Point = {x: coordinates.x + this.size.width - 20, y: coordinates.y + 5 };
     this.svgGroupWrapper.getGroup()
       .attr('x', coordinates.x)

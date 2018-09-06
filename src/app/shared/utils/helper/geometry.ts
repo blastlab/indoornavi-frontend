@@ -1,6 +1,6 @@
 import {Line, Point} from '../../../map-editor/map.type';
-import {Box} from '../drawing/drawing.types';
 import * as d3 from 'd3';
+import {Box} from '../drawing/drawing.builder';
 
 export class Geometry {
 

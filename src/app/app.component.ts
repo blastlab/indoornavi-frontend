@@ -12,7 +12,7 @@ import {BreadcrumbService} from './shared/services/breadcrumbs/breadcrumb.servic
 export class AppComponent implements OnInit, OnDestroy {
   isUserLoggedIn: boolean;
   isDisplayedInIFrame: boolean = false;
-  displaySidebar: boolean = false;
+  sidebar: boolean = false;
   breadcrumbs: MenuItem[];
   private userLoggedInSubscription: Subscription;
   private breadcrumbIsReadySubscription: Subscription;
@@ -37,6 +37,7 @@ export class AppComponent implements OnInit, OnDestroy {
       this.breadcrumbs = breadcrumbs;
       this.cd.detectChanges();
     });
+    this.hideSidebar();
   }
 
   ngOnDestroy() {
@@ -44,4 +45,16 @@ export class AppComponent implements OnInit, OnDestroy {
     this.breadcrumbIsReadySubscription.unsubscribe();
   }
 
+  displaySidebar(): void {
+    this.sidebar = true;
+  }
+
+  hideSidebar(): void {
+    this.sidebar = false;
+  }
+
+  logout(): void {
+    this.isUserLoggedIn = false;
+    this.hideSidebar();
+  }
 }

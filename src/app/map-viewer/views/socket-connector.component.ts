@@ -1,6 +1,14 @@
 import {AfterViewInit, Component, NgZone, OnInit} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
-import {AreaEventMode, CommandType, CoordinatesSocketData, EventSocketData, MeasureSocketData, MeasureSocketDataType} from '../publication.type';
+import {
+  AreaEventMode,
+  CommandType,
+  CoordinatesSocketData,
+  CustomMessageEvent,
+  EventSocketData,
+  MeasureSocketData,
+  MeasureSocketDataType
+} from '../publication.type';
 import {Subject} from 'rxjs/Subject';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
 import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.builder';
@@ -18,7 +26,7 @@ import {MapLoaderInformerService} from '../../shared/services/map-loader-informe
 import {MapSvg} from '../../map/map.type';
 import {Area} from '../../map-editor/tool-bar/tools/area/area.type';
 import {Scale, ScaleCalculations} from '../../map-editor/tool-bar/tools/scale/scale.type';
-import {MapObjectService} from '../../shared/utils/drawing/map.object.service';
+import {ApiService} from '../../shared/utils/drawing/api.service';
 import {FloorService} from '../../floor/floor.service';
 import {Floor} from '../../floor/floor.type';
 import {TagVisibilityTogglerService} from '../../shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
@@ -26,10 +34,11 @@ import {TagToggle} from '../../shared/components/tag-visibility-toggler/tag-togg
 import {Tag} from '../../device/device.type';
 import {BreadcrumbService} from '../../shared/services/breadcrumbs/breadcrumb.service';
 import {SvgAnimator} from '../../shared/utils/drawing/animator';
-import {MapObjectMetadata} from '../../shared/utils/drawing/drawing.types';
 import {MapClickService} from '../../shared/services/map-click/map-click.service';
 import {Deferred} from '../../shared/utils/helper/deferred';
 import {TagOnMap} from '../../map/models/tag';
+import {APIObject} from '../../shared/utils/drawing/api.types';
+import Metadata = APIObject.Metadata;
 import {PathService} from '../services/path/path.service';
 
 @Component({
@@ -61,7 +70,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
               private pathService: PathService,
               private translateService: TranslateService,
               private iconService: IconService,
-              private mapObjectService: MapObjectService,
+              private mapObjectService: ApiService,
               private floorService: FloorService,
               protected tagTogglerService: TagVisibilityTogglerService,
               private breadcrumbService: BreadcrumbService) {
@@ -136,7 +145,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         }
         this.publishedService.checkOrigin(params['api_key'], event.origin).subscribe((verified: boolean): void => {
           // if (verified && !!this.scale) {
-            this.handleCommands(event);
+          this.handleCommands(event);
           // } else {
           //   event.source.postMessage({type: 'error', message: 'Origin not verified. Make sure you use your own API KEY.'}, '*');
           // }
@@ -159,7 +168,11 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   protected handleCoordinatesData(data: CoordinatesSocketData): void {
     const deviceId: number = data.coordinates.tagShortId;
     if (!this.isOnMap(deviceId) && this.visibleTags.get(deviceId)) {
-      const tagOnMap: TagOnMap = new TagOnMap(data.coordinates.point, this.d3map.container, {id: `tag-${deviceId}`, clazz: 'tag', name: `${deviceId}`});
+      const tagOnMap: TagOnMap = new TagOnMap(data.coordinates.point, this.d3map.container, {
+        id: `tag-${deviceId}`,
+        clazz: 'tag',
+        name: `${deviceId}`
+      });
       SvgAnimator.startBlinking(tagOnMap.getIconElement());
       this.tagsOnMap.setValue(deviceId, tagOnMap.setShortId(deviceId));
     } else if (this.visibleTags.get(deviceId)) {
@@ -172,6 +185,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           this.scaleCalculations.scaleInCentimeters,
           data.coordinates.point
         );
+        // @ts-ignore
         event.source.postMessage({type: 'coordinates', coordinates: data.coordinates}, '*');
       })
     }
@@ -268,20 +282,21 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private removeObjectFromMapObjectService(data: MapObjectMetadata): void {
-    if ('type' in data) {
-      if (data.type === 'INFO_WINDOW') {
-        this.mapObjectService.removeInfoWindow((data));
+  private removeObjectFromMapObjectService(metadata: Metadata): void {
+    if ('type' in metadata) {
+      if (metadata.type === 'INFO_WINDOW') {
+        this.mapObjectService.removeInfoWindow((metadata));
       } else {
-        this.mapObjectService.removeObject(data);
+        this.mapObjectService.removeObject(metadata);
       }
     }
   }
 
   protected subscribeToMapClick() {
-    this.mapClick.clickInvoked().subscribe((point:  Point) => {
+    this.mapClick.clickInvoked().subscribe((point: Point) => {
       if (this.originListeningOnClickMapEvent.length > 0) {
         this.originListeningOnClickMapEvent.forEach((event: MessageEvent): void => {
+          // @ts-ignore
           event.source.postMessage({type: 'click', position: point}, event.origin);
         });
       }
@@ -301,6 +316,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     if (this.originListeningOnEvent.containsKey('area')) {
       this.originListeningOnEvent.getValue('area').forEach((event: MessageEvent): void => {
         setTimeout((): void => {
+          // @ts-ignore
           event.source.postMessage({type: 'area', area: data.event}, '*');
         }, TagOnMap.TRANSITION_DURATION);
       });
@@ -311,6 +327,8 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     this.loadMapDeferred.promise.then(() => {
       const height = this.d3map.container.node().getBBox().height;
       const width = this.d3map.container.node().getBBox().width;
+      // @ts-ignore
+      event.source.postMessage({type: `getMapDimensions`, mapObjectId: 'map', height: height, width: width, scale: this.scale}, event.origin);
       event.source.postMessage({type: 'getMapDimensions', mapObjectId: 'map', height: height, width: width, scale: this.scale}, event.origin);
     });
   }
@@ -331,11 +349,11 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   }
 
   private handleCommands(event: MessageEvent): void {
-    const data = event.data;
+    const data = <CustomMessageEvent>event.data;
     if ('command' in data) {
-      switch (data['command']) {
+      switch (data.command) {
         case 'toggleTagVisibility':
-          const tagId = parseInt(data['args'], 10);
+          const tagId = parseInt(data.args, 10);
           this.socketService.send({type: CommandType[CommandType.TOGGLE_TAG], args: tagId});
           if (this.isOnMap(tagId)) {
             this.tagsOnMap.getValue(tagId).remove();
@@ -343,30 +361,22 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           }
           break;
         case 'addEventListener':
-          if (this.originListeningOnEvent.containsKey(data['args'])) {
-            this.originListeningOnEvent.getValue(data['args']).push(event);
+          if (this.originListeningOnEvent.containsKey(data.args)) {
+            this.originListeningOnEvent.getValue(data.args).push(event);
           } else {
-            this.originListeningOnEvent.setValue(data['args'], [event]);
+            this.originListeningOnEvent.setValue(data.args, [event]);
           }
           break;
         case 'createObject':
           const mapObjectId: number = this.mapObjectService.create();
+          // @ts-ignore
           event.source.postMessage({type: `createObject-${event.data.object}`, mapObjectId: mapObjectId}, '*');
           break;
         case 'drawObject':
-          this.mapObjectService.draw(data['args'], this.scale, event, this.d3map.container);
+          this.mapObjectService.draw(data.args, this.scale, event, this.d3map.container);
           break;
         case 'removeObject':
-          this.removeObjectFromMapObjectService(data['args']);
-          break;
-        case 'fillColor':
-          this.mapObjectService.setFillColor(data['args']);
-          break;
-        case 'strokeColor':
-          this.mapObjectService.setStrokeColor(data['args']);
-          break;
-        case 'setOpacity':
-          this.mapObjectService.setOpacity(data['args']);
+          this.removeObjectFromMapObjectService(data.args);
           break;
         case 'getMapDimensions':
           this.getMapDimensions(event);
