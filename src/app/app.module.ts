@@ -110,7 +110,7 @@ import {MousePositionViewerComponent} from './map-editor/mouse-position-viewer/m
 import {MapClickService} from './shared/services/map-click/map-click.service';
 import {NotSupportedBrowserComponent} from './not-supported-browser/not-supported-browser';
 import {LongIdValidatorDirective} from './shared/directive/long-id.directive';
-import {NumberInOfRangeValidatorDirective} from './shared/directive/number-in-of-range.directive';
+import {NumberInRangeValidatorDirective} from './shared/directive/number-in-range.directive';
 import {MacAddressDirective} from './shared/directive/mac-address.directive';
 import {PathComponent} from './map-editor/tool-bar/tools/path/path';
 import {DevicePlacerComponent} from './map-editor/tool-bar/tools/device-placer/device-placer.component';
@@ -149,7 +149,7 @@ export function HttpLoaderFactory(http: Http) {
     PublicationDialogComponent,
     DeviceComponent,
     LongIdValidatorDirective,
-    NumberInOfRangeValidatorDirective,
+    NumberInRangeValidatorDirective,
     AppAutoFocusDirective,
     ProperNameDirective,
     MacAddressDirective,
