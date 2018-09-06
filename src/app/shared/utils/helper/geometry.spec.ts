@@ -320,4 +320,3 @@ describe('Geometry', () => {
     expect(foundPointOnPath1.y).toEqual(3);
   });
 });
-
