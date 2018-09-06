@@ -62,16 +62,16 @@
             {{'bluetooth.major.required'|translate}}
           </div>
           <div class="ui-message ui-messages-error ui-corner-all"
-               *ngIf="major.errors?.properNumberOutOfRange && major.touched && major.dirty && !major.errors?.required">
+               *ngIf="major.errors?.properNumberInOfRange && major.touched && major.dirty && !major.errors?.required">
             <i class="fa fa-warning"></i>
-            {{major.errors?.properNumberOutOfRange|translate}}
+            {{major.errors?.properNumberInOfRange|translate}}
           </div>
         </div>
         <div class="ui-g-12 ui-md-2 ui-lg-2">
           <label for="major">{{'bluetooth.major'|translate}} *</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input [appProperNumberOutOfRange]="deviceType" [translateKey]="'bluetooth.major'" name="major" required [appAutoFocus]="displayDialog" pInputText id="major" [(ngModel)]="bluetooth.major" #major="ngModel" />
+          <input [appProperNumberInOfRange]="deviceType" [translateKey]="'bluetooth.major'" name="major" required [appAutoFocus]="displayDialog" pInputText id="major" [(ngModel)]="bluetooth.major" #major="ngModel" />
         </div>
       </div>
 
@@ -83,16 +83,16 @@
             {{'bluetooth.minor.required'|translate}}
           </div>
           <div class="ui-message ui-messages-error ui-corner-all"
-               *ngIf="minor.errors?.properNumberOutOfRange && minor.touched && minor.dirty && !minor.errors?.required">
+               *ngIf="minor.errors?.properNumberInOfRange && minor.touched && minor.dirty && !minor.errors?.required">
             <i class="fa fa-warning"></i>
-            {{minor.errors?.properNumberOutOfRange|translate}}
+            {{minor.errors?.properNumberInOfRange|translate}}
           </div>
         </div>
         <div class="ui-g-12 ui-md-2 ui-lg-2">
           <label for="minor">{{'bluetooth.minor'|translate}} *</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input [appProperNumberOutOfRange]="deviceType" [translateKey]="'bluetooth.minor'" name="minor" required pInputText id="minor" [(ngModel)]="bluetooth.minor" #minor="ngModel"/>
+          <input [appProperNumberInOfRange]="deviceType" [translateKey]="'bluetooth.minor'" name="minor" required pInputText id="minor" [(ngModel)]="bluetooth.minor" #minor="ngModel"/>
         </div>
       </div>
 

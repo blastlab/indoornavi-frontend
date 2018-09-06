@@ -2,17 +2,17 @@ import {Directive, Input} from '@angular/core';
 import {AbstractControl, NG_VALIDATORS, ValidationErrors, Validator} from '@angular/forms';
 
 @Directive({
-  selector: '[appProperNumberOutOfRange]',
-  providers: [{provide: NG_VALIDATORS, useExisting: NumberOutOfRangeValidatorDirective, multi: true}]
+  selector: '[appProperNumberInOfRange]',
+  providers: [{provide: NG_VALIDATORS, useExisting: NumberInOfRangeValidatorDirective, multi: true}]
 })
-export class NumberOutOfRangeValidatorDirective implements Validator {
-  @Input() appProperNumberOutOfRange: string;
+export class NumberInOfRangeValidatorDirective implements Validator {
+  @Input() appProperNumberInOfRange: string;
   @Input() translateKey: string;
 
   private message: ValidationErrors = null;
 
   static checkIsNumber(value: string, translateKey: string): ValidationErrors {
-    return /^\d+$/.test(value) ? null : {properNumberOutOfRange: `${translateKey}.mustBeNumber`}
+    return /^\d+$/.test(value) ? null : {properNumberInOfRange: `${translateKey}.mustBeNumber`}
   }
 
   static checkIsInRange(deviceType: string, value: string, translateKey: string): ValidationErrors {
@@ -21,7 +21,7 @@ export class NumberOutOfRangeValidatorDirective implements Validator {
     if (deviceType === 'tags') {
       if (val < 32678) {
         return {
-          properNumberOutOfRange: `${translateKey}.numberOutOfRange`
+          properNumberInOfRange: `${translateKey}.numberInOfRange`
         };
       }
     } else {
@@ -29,16 +29,16 @@ export class NumberOutOfRangeValidatorDirective implements Validator {
         return null;
       } else {
         return {
-          properNumberOutOfRange: `${translateKey}.numberOutOfRange`
+          properNumberInOfRange: `${translateKey}.numberInOfRange`
         };
       }
     }
   }
 
   validate(control: AbstractControl): ValidationErrors {
-    this.message = NumberOutOfRangeValidatorDirective.checkIsNumber(control.value, this.translateKey);
+    this.message = NumberInOfRangeValidatorDirective.checkIsNumber(control.value, this.translateKey);
     if (this.message == null) {
-      this.message = NumberOutOfRangeValidatorDirective.checkIsInRange(this.appProperNumberOutOfRange, control.value, this.translateKey);
+      this.message = NumberInOfRangeValidatorDirective.checkIsInRange(this.appProperNumberInOfRange, control.value, this.translateKey);
     }
     return this.message;
   }

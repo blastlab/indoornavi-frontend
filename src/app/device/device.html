@@ -117,16 +117,16 @@
             {{'device.shortId.required'|translate}}
           </div>
           <div class="ui-message ui-messages-error ui-corner-all"
-               *ngIf="shortIdInput.errors?.properNumberOutOfRange && shortIdInput.touched && shortIdInput.dirty && !shortIdInput.errors?.required">
+               *ngIf="shortIdInput.errors?.properNumberInOfRange && shortIdInput.touched && shortIdInput.dirty && !shortIdInput.errors?.required">
             <i class="fa fa-warning"></i>
-            {{shortIdInput.errors?.properNumberOutOfRange|translate}}
+            {{shortIdInput.errors?.properNumberInOfRange|translate}}
           </div>
         </div>
         <div class="ui-g-12 ui-md-2 ui-lg-2">
           <label for="shortId">{{'device.shortId'|translate}} *</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input name="shortId" [appProperNumberOutOfRange]="deviceType" [translateKey]="'device.shortId'" required [appAutoFocus]="displayDialog" pInputText id="shortId" [(ngModel)]="device.shortId" #shortIdInput="ngModel"/>
+          <input name="shortId" [appProperNumberInOfRange]="deviceType" [translateKey]="'device.shortId'" required [appAutoFocus]="displayDialog" pInputText id="shortId" [(ngModel)]="device.shortId" #shortIdInput="ngModel"/>
         </div>
       </div>
       <div class="ui-g">
