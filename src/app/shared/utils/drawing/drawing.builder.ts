@@ -149,7 +149,6 @@ export class SvgGroupWrapper {
       .attr('x', coordinates.x)
       .attr('y', coordinates.y)
       .attr('fill', this.groupDefaultColor)
-      .attr('display', 'none')
       .text(text);
     this.addElement(ElementType.TEXT, element);
     return this;
@@ -159,7 +158,7 @@ export class SvgGroupWrapper {
     return this.getElements(ElementType.TEXT);
   }
 
-  showTexts(): void {
+  showTexts(): SvgGroupWrapper {
     const textsToShow: d3.selection[] = this.getTexts();
     if (!!textsToShow) {
       textsToShow.forEach((text: d3.selection) => {
@@ -167,9 +166,10 @@ export class SvgGroupWrapper {
       });
     }
     this.textsHidden = false;
+    return this;
   }
 
-  hideTexts(): void {
+  hideTexts(): SvgGroupWrapper {
     const textsToHide: d3.selection[] = this.getTexts();
     if (!!textsToHide) {
       textsToHide.forEach((text: d3.selection) => {
@@ -177,6 +177,7 @@ export class SvgGroupWrapper {
       });
     }
     this.textsHidden = true;
+    return this;
   }
 
   addPolygon(points: Point[]): SvgGroupWrapper {
