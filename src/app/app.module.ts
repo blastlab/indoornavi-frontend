@@ -48,14 +48,14 @@ import {
   ContextMenuModule,
   FileUploadModule,
   GrowlModule,
+  InputMaskModule,
   MultiSelectModule,
   PanelMenuModule,
   RadioButtonModule,
   SidebarModule,
   SliderModule,
   ToolbarModule,
-  TooltipModule,
-  InputMaskModule
+  TooltipModule
 } from 'primeng/primeng';
 import {HintBarService} from './map-editor/hint-bar/hintbar.service';
 import {ToolbarService} from './map-editor/tool-bar/toolbar.service';
@@ -67,7 +67,6 @@ import {AreaService} from './map-viewer/services/area/area.service';
 import {MapEditorService} from './map-editor/map.editor.service';
 import {PermissionGroupService} from './user/permissionGroup/permissionGroup.service';
 import {MapLoaderInformerService} from './shared/services/map-loader-informer/map-loader-informer.service';
-import {IconService} from 'app/shared/services/drawing/icon.service';
 import {AcceptButtonsService} from 'app/shared/components/accept-buttons/accept-buttons.service';
 import {SocketService} from 'app/shared/services/socket/socket.service';
 import {ComplexService} from './complex/complex.service';
@@ -90,7 +89,6 @@ import {UnauthorizedComponent} from 'app/unauthorized/unauthorized';
 import {ChangePasswordComponent} from './user/changePassword/changePassword';
 import {SharedModule} from './shared/modules/shared.module';
 import {ToolDetailsComponent} from './map-editor/tool-bar/shared/details/tool-details';
-import {MdIconRegistry} from '@angular/material';
 import {SocketConnectorComponent} from './map-viewer/views/socket-connector.component';
 import {ZoomService} from './shared/services/zoom/zoom.service';
 import {MapComponent} from './map/map';
@@ -231,7 +229,6 @@ export function HttpLoaderFactory(http: Http) {
     BluetoothService,
     MapService,
     AcceptButtonsService,
-    IconService,
     MapService,
     ScaleInputService,
     ScaleHintService,
@@ -254,7 +251,6 @@ export function HttpLoaderFactory(http: Http) {
     MessageServiceWrapper,
     ToolbarService,
     HintBarService,
-    MdIconRegistry,
     HintBarService,
     ZoomService,
     AreaDetailsService,

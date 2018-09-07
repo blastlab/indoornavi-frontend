@@ -6,7 +6,6 @@ import {HeatMap, HeatMapPath, TimeStepBuffer} from './analytics.type';
 import {SocketService} from '../../../shared/services/socket/socket.service';
 import {PublishedService} from '../../publication.service';
 import {AreaService} from '../../services/area/area.service';
-import {IconService} from '../../../shared/services/drawing/icon.service';
 import {MapLoaderInformerService} from '../../../shared/services/map-loader-informer/map-loader-informer.service';
 import {CoordinatesSocketData} from '../../publication.type';
 import {HexagonalHeatMap} from './hexagonal.heatmap.service';
@@ -59,7 +58,6 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
               areaService: AreaService,
               pathService: PathService,
               translateService: TranslateService,
-              iconService: IconService,
               mapObjectService: ApiService,
               floorService: FloorService,
               tagTogglerService: TagVisibilityTogglerService,
@@ -76,7 +74,6 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       areaService,
       pathService,
       translateService,
-      iconService,
       mapObjectService,
       floorService,
       tagTogglerService,

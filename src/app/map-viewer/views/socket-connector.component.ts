@@ -16,7 +16,6 @@ import {SocketService} from '../../shared/services/socket/socket.service';
 import {ActivatedRoute, Params} from '@angular/router';
 import {PublishedService} from '../publication.service';
 import {AreaService} from '../services/area/area.service';
-import {IconService} from '../../shared/services/drawing/icon.service';
 import {Geometry} from 'app/shared/utils/helper/geometry';
 import {Observable} from 'rxjs/Observable';
 import {Line, Point} from 'app/map-editor/map.type';
@@ -38,8 +37,8 @@ import {MapClickService} from '../../shared/services/map-click/map-click.service
 import {Deferred} from '../../shared/utils/helper/deferred';
 import {TagOnMap} from '../../map/models/tag';
 import {APIObject} from '../../shared/utils/drawing/api.types';
-import Metadata = APIObject.Metadata;
 import {PathService} from '../services/path/path.service';
+import Metadata = APIObject.Metadata;
 
 @Component({
   templateUrl: './socket-connector.component.html'
@@ -69,7 +68,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
               private areaService: AreaService,
               private pathService: PathService,
               private translateService: TranslateService,
-              private iconService: IconService,
               private mapObjectService: ApiService,
               private floorService: FloorService,
               protected tagTogglerService: TagVisibilityTogglerService,
@@ -329,6 +327,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       const width = this.d3map.container.node().getBBox().width;
       // @ts-ignore
       event.source.postMessage({type: `getMapDimensions`, mapObjectId: 'map', height: height, width: width, scale: this.scale}, event.origin);
+      // @ts-ignore
       event.source.postMessage({type: 'getMapDimensions', mapObjectId: 'map', height: height, width: width, scale: this.scale}, event.origin);
     });
   }
@@ -339,8 +338,9 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       if (!!pathFromConfiguration && pathFromConfiguration.length > 0) {
         calculatedPosition = Geometry.findPointOnPathInGivenRange(pathFromConfiguration, event.data['args'].point, event.data['args'].accurac);
       }
+      // @ts-ignore
       event.source.postMessage({
-          type: 'getPointOnPath',
+        type: 'getPointOnPath',
         mapObjectId: 'map',
         calculatedPosition:
         calculatedPosition
