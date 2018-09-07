@@ -207,7 +207,6 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
         this.clearDrawnPath();
         this.lines = [];
         this.actionBarService.clearPath();
-        this.sendPathToConfiguration();
         this.hintBarService.sendHintMessage('path.hint.first');
       }
     }
