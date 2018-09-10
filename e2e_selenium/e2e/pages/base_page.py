@@ -81,6 +81,10 @@ class BasePage(object):
         element = ui.WebDriverWait(self.__driver, 10).until(EC.presence_of_element_located(locator), msg)
         return element
 
+    def wait_for_elements(self, locator, msg='No element has been displayed'):
+        element = ui.WebDriverWait(self.__driver, 10).until(EC.presence_of_all_elements_located(locator), msg)
+        return element
+
     def wait_for_element_clickable(self, locator, msg='Element has not been ready to be clicked.'):
         element = ui.WebDriverWait(self.__driver, 10).until(EC.element_to_be_clickable(locator), msg)
         return element

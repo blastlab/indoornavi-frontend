@@ -2,13 +2,15 @@ from locators.maps_base_locators import MapsBaseLocators
 from locators.maps_base__scale_locators import MapsBaseScaleLocators
 from locators.maps_base__area_locators import MapsBaseAreaLocators
 from locators.maps_base__device_placer_locators import MapsBaseDevicePlacerLocators
+from locators.maps_base__path_locators import MapsBasePathLocators
 from src.test_conf.test_config import *
 
 
 class MapsPageUtils(MapsBaseLocators,
                     MapsBaseScaleLocators,
                     MapsBaseAreaLocators,
-                    MapsBaseDevicePlacerLocators):
+                    MapsBaseDevicePlacerLocators,
+                    MapsBasePathLocators):
 
     __available_conf = {
         "scale": TEST_SCALE_CONF_DATA,
