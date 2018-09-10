@@ -150,7 +150,6 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
     }
     this.clearDrawnPath();
     this.currentLineGroup.removeElements(ElementType.CIRCLE);
-    this.sendPathToConfiguration();
   }
 
   private listenOnMapLoaded(): void {
@@ -208,7 +207,6 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
         this.clearDrawnPath();
         this.lines = [];
         this.actionBarService.clearPath();
-        this.sendPathToConfiguration();
         this.hintBarService.sendHintMessage('path.hint.first');
       }
     }
@@ -360,6 +358,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
         return;
       }
       if (!!this.tempLine) { // do not clean if last line wasn't tempLine
+        this.sendPathToConfiguration();
         this.cleanTempLine();
       }
       const line: Line = {
