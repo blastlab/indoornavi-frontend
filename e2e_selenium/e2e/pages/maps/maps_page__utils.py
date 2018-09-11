@@ -18,6 +18,8 @@ class MapsPageUtils(MapsBaseLocators,
         "tc_07_device_placer": TC07_DEVICE_PLACER_CONF
     }
 
+    TEST_PATHS_COORDINATES = TEST_PATHS_COORDINATES
+
     def __init__(self):
         super().__init__()
 

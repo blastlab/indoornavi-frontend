@@ -8,3 +8,5 @@ class MapsBasePathLocators(object):
     PATHS_BTN = (By.CSS_SELECTOR, 'app-path button')
     MAP_LAYER = (By.ID, 'map')
     PATH_LINE = (By.CSS_SELECTOR, '#path-new line')
+    DASHED_PATH_LINDE = (By.CSS_SELECTOR, '#path-new line.tempLine')
+    REMOVE_ALL_LINES_BTN = (By.XPATH, '//span[contains(text(),"Remove all lines")]')

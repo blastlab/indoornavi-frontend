@@ -74,34 +74,25 @@ class TestMapsPagePath(unittest.TestCase, MapsPagePath):
         self.path_page.click_path_button()
 
         logger.info('Step 2 : Draw path one section ')
-        self.path_page.draw_path_sections(path_sections)
-
-        logger.info('Step 3 : Check path is displayed')
-        self.path_page.is_path_displayed()
+        self.path_page.draw_path(path_sections)
 
         logger.info('Step 4 : Get path position')
         expected_att = self.path_page.get_path_lines_positions()
-        print(expected_att)
-        # print(len(expected_att))
-        # print(str(expected_att.items()))
+
+        logger.info('Step 5 : Save draft')
+        self.path_page.save_draft_click()
 
         logger.info('Step 5 : Refresh page')
         self.path_page.refresh_page()
-        #
+
         logger.info('Step 6 : Click path button')
         self.path_page.click_path_button()
 
-        logger.info('Step 7 : Check the path is still displayed')
-        self.path_page.is_path_displayed()
-
         logger.info('Step 8 : Get path lines position')
         result_attr = self.path_page.get_path_lines_positions()
-        print(result_attr)
-        print(type(result_attr))
-        # self.path_page.line_comparation(result_attr, expected_att)
-        #
-        # logger.info('Step 9 : Assert ')
-        # assert expected_att == result_attr, "Expected attributes {0} != Result attributes {1}".format(expected_att, result_attr)
+
+        logger.info('Step 9 : Compare two lines after refresh')
+        self.path_page.lines_comparison(result_attr, expected_att)
 
         self.test_failed = False
 
@@ -127,7 +118,7 @@ class TestMapsPagePath(unittest.TestCase, MapsPagePath):
 
     def test_03_draw_path_correctly_five_sections(self):
 
-        """TC03 DRAW PATH CORRECTLY FIVE SECTIONS"""
+        """TC03 DRAW PATH CORRECTLY FIVE SECTIONS """
 
         log_tc03 = logging.getLogger(self.shortDescription())
 
@@ -135,28 +126,78 @@ class TestMapsPagePath(unittest.TestCase, MapsPagePath):
 
         self.test_failed = False
 
-    def test_04_check_all_toolbars_after_draw_path(self):
+    def test_04_check_intersection_is_created(self):
 
-        """TC04 CHECK ALL TOOLBARS AFTER DRAW PATH"""
+        """ TC04 CHECK INTERSECTION IS CREATED """
 
         log_tc04 = logging.getLogger(self.shortDescription())
 
-        self.__test_draw_path_helper(12, log_tc04)
+        self.__test_draw_path_helper(6, log_tc04)
 
-        log_tc04.info('Step 7 : Click path button')
-        self.path_page.click_path_button()
+        log_tc04.info('Step 10 : Check the intersection has been created. There should be 8 lines.')
+        lines_elements = self.path_page.get_count_of_lines()
+        assert lines_elements == 8, "There has been created too much lines." if lines_elements > 8 else "There has been not enought lines."
 
         self.test_failed = False
 
-    def test_05_check_intersection_is_checked(self):
+    def test_05_check_is_possible_to_draw_path_outside_of_map(self):
 
-        """TC05 CHECK INTERSECTION IS CREATED """
-
+        """CHECK IS POSSIBLE TO DRAW PATH OUTSIDE OF MAP"""
         log_tc05 = logging.getLogger(self.shortDescription())
 
-        self.__test_draw_path_helper(12, log_tc05)
-
-        log_tc05.info('Step 7 : Click path button')
+        log_tc05.info('Step 1 : Click path button.')
         self.path_page.click_path_button()
 
+        log_tc05.info('Step 2 : Draw one section of path.')
+        self.path_page.draw_path(1)
+
+        log_tc05.info('Step 3 : Check line displayed on map.')
+        expected = self.path_page.get_count_of_lines()
+
+        log_tc05.info('Step 4 : Click outside of map.')
+        self.path_page.click_outside_map()
+
+        log_tc05.info('Step 5 : Check there are any additional lines displayed after click outside of map.')
+        result = self.path_page.get_count_of_lines()
+
+        assert expected+1 == result
+
+        log_tc05.info('Step 6 : Click save draft button.')
+        self.path_page.save_draft_click()
+
+        log_tc05.info('Step 7 : Refresh page.')
+        self.path_page.refresh_page()
+
+        log_tc05.info('Step 8 : Click path button.')
+        self.path_page.click_path_button()
+
+        log_tc05.info('Step 9 : Click path button.')
+        result = self.path_page.get_count_of_lines()
+
+        assert expected == result
+
         self.test_failed = False
+
+    def test_06_remove_all_lines(self):
+
+        log_tc06 = logging.getLogger(self.shortDescription())
+
+        self.__test_draw_path_helper(5, log_tc06)
+
+        log_tc06.info('Step 10 : Remove all lines')
+        self.path_page.remove_all_lines()
+
+        log_tc06.info('Step 11 : Click save draft button.')
+        self.path_page.save_draft_click()
+
+        log_tc06.info('Step 12 : Refresh page.')
+        self.path_page.refresh_page()
+
+        log_tc06.info('Step 13 : Click path button.')
+        self.path_page.click_path_button()
+
+        log_tc06.info('Step 14 : Check the path exists.')
+        assert self.path_page.is_path_dissapeared()
+
+        self.test_failed = False
+

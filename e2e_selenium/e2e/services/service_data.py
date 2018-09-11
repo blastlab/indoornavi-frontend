@@ -3,10 +3,15 @@ import csv
 from selenium.webdriver.common.by import By
 
 
-def get_test_translator_data():
-    with open('src/test_conf/test_translator.json') as translator_data:
-        data = json.load(translator_data)
+def get_data_json_from_file(path):
+    with open(path) as data_json:
+        data = json.load(data_json)
         return data
+
+
+def get_test_translator_data():
+        path = 'src/test_conf/test_translator.json'
+        return get_data_json_from_file(path)
 
 
 def parse_json_to_string(path):
