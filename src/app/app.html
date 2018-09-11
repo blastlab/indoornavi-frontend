@@ -4,10 +4,9 @@
     <p-sidebar id="sidebar-menu" [(visible)]="sidebar" position="right"
                [baseZIndex]="10000">
       <div class="ui-g">
-        <button pButton class="ui-button-secondary ui-g-12 ui-md-12 ui-lg-12 menu-button" [routerLink]="['./complexes']"
-                (click)="hideSidebar()" icon="fa-building fa-lg" [appHasPermission]="'COMPLEX_READ'">
-          <span>{{'complexes'|translate}}</span>
-        </button>
+        <h4>
+
+        </h4>
       </div>
       <div class="ui-g">
         <button pButton class="ui-button-secondary ui-g-12 ui-md-4 ui-lg-4 menu-button" [routerLink]="['./sinks']"
@@ -28,6 +27,28 @@
                (click)="hideSidebar()" icon="fa-bluetooth fa-lg" [appHasPermission]="'BLUETOOTH_UPDATE'">
           <span>{{'bluetooth.header'|translate}}</span>
         </button>
+      </div>
+      <div class="ui-g">
+        <h4>
+
+        </h4>
+      </div>
+      <div class="ui-g">
+        <button pButton class="ui-button-secondary ui-g-12 ui-md-12 ui-lg-12 menu-button" [routerLink]="['./localization']"
+                (click)="hideSidebar()" icon="fa-bandcamp fa-lg" [appHasPermission]="'COMPLEX_READ'">
+          <span>{{'tags.localization'|translate}}</span>
+        </button>
+      </div>
+      <div class="ui-g">
+        <button pButton class="ui-button-secondary ui-g-12 ui-md-12 ui-lg-12 menu-button" [routerLink]="['./complexes']"
+                (click)="hideSidebar()" icon="fa-building fa-lg" [appHasPermission]="'COMPLEX_READ'">
+          <span>{{'complexes'|translate}}</span>
+        </button>
+      </div>
+      <div class="ui-g">
+        <h4>
+
+        </h4>
       </div>
       <div class="ui-g">
         <button pButton class="ui-button-secondary ui-g-12 ui-md-12 ui-lg-12 menu-button" [routerLink]="['./publications']"

@@ -15,11 +15,13 @@ import {DeviceComponent} from './device/device';
 import {BluetoothComponent} from './bluetooth/bluetooth';
 import {AnalyticsComponent} from './map-viewer/views/analytics/analytics';
 import {NotSupportedBrowserComponent} from './not-supported-browser/not-supported-browser';
+import {LocalizationComponent} from './localization/localization.component';
 
 export const appRoutes: Routes = [
   {path: '', redirectTo: '/complexes', pathMatch: 'full'},
   {path: 'login', component: AuthComponent},
   {path: 'logout', component: AuthComponent},
+  {path: 'localization', component: LocalizationComponent, canActivate: [CanRead], data: {permission: 'COMPLEX'}},
   {path: 'complexes', component: ComplexComponent, canActivate: [CanRead], data: {permission: 'COMPLEX'}},
   {path: 'complexes/:complexId/buildings', component: BuildingComponent, canActivate: [CanRead], data: {permission: 'BUILDING'}},
   {path: 'anchors', component: DeviceComponent, canActivate: [CanRead], data: {permission: 'ANCHOR'}},

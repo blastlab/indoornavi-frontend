@@ -55,7 +55,8 @@ import {
   SliderModule,
   ToolbarModule,
   TooltipModule,
-  InputMaskModule
+  InputMaskModule,
+  OrderListModule
 } from 'primeng/primeng';
 import {HintBarService} from './map-editor/hint-bar/hintbar.service';
 import {ToolbarService} from './map-editor/tool-bar/toolbar.service';
@@ -119,6 +120,8 @@ import {DevicePlacerListComponent} from './map-editor/tool-bar/tools/device-plac
 import {DevicePlacerRowDirective} from './map-editor/tool-bar/tools/device-placer/list/device-placer.row';
 import {PathService} from './map-viewer/services/path/path.service';
 import {BluetoothService} from './bluetooth/bluetooth.service';
+import {LocalizationComponent} from './localization/localization.component';
+import {SelectButtonModule} from 'primeng/components/selectbutton/selectbutton';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -175,7 +178,8 @@ export function HttpLoaderFactory(http: Http) {
     DevicePlacerListComponent,
     DevicePlacerRowDirective,
     NotSupportedBrowserComponent,
-    PathComponent
+    PathComponent,
+    LocalizationComponent
   ],
   entryComponents: [
     PublicationDialogComponent,
@@ -218,7 +222,9 @@ export function HttpLoaderFactory(http: Http) {
     ContextMenuModule,
     FileUploadModule,
     RadioButtonModule,
-    InputMaskModule
+    InputMaskModule,
+    SelectButtonModule,
+    OrderListModule
   ],
   providers: [
     BuildingService,
