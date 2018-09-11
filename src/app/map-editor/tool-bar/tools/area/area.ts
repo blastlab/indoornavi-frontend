@@ -193,7 +193,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
         }
 
         if (this.getClickedAreas(this.areas).length > 1) {
-          this.applyContextMenuAreas();
+          this.applyContextMenuToAreas();
         } else {
           this.areas.forEach((areaBag: AreaBag): void => {
             this.applyRightMouseButtonClick(areaBag.editable);
@@ -586,7 +586,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     });
   }
 
-  private applyContextMenuAreas(): void {
+  private applyContextMenuToAreas(): void {
     const areas: AreaBag[] = this.getClickedAreas(this.areas);
     const labels: MenuItem[] = areas.map((area: AreaBag) => {
       return {
