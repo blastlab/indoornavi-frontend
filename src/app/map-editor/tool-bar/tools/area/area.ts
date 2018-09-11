@@ -187,12 +187,12 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
         this.lastPoint = null;
         this.tempLine = null;
 
-        if (this.onClickGetAreas(this.areas).length === 0) {
+        if (this.getClickedAreas(this.areas).length === 0) {
           this.contextMenuService.closeContextMenu();
           return;
         }
 
-        if (this.onClickGetAreas(this.areas).length > 1) {
+        if (this.getClickedAreas(this.areas).length > 1) {
           this.applyContextMenuAreas();
         } else {
           this.areas.forEach((areaBag: AreaBag): void => {
@@ -579,7 +579,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     });
   }
 
-  private onClickGetAreas(areas: AreaBag[]): AreaBag[] {
+  private getClickedAreas(areas: AreaBag[]): AreaBag[] {
     const mouseClickPosition: Array<number> = d3.mouse(this.container.node());
     return areas.filter((area) => {
       return Geometry.isPointWithinArea(mouseClickPosition, area);
@@ -587,7 +587,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
   }
 
   private applyContextMenuAreas(): void {
-    const areas: AreaBag[] = this.onClickGetAreas(this.areas);
+    const areas: AreaBag[] = this.getClickedAreas(this.areas);
     const labels: MenuItem[] = areas.map((area: AreaBag) => {
       return {
         label: area.dto.name,
