@@ -24,6 +24,7 @@ import {ScaleService} from '../../../../shared/services/scale/scale.service';
 import {Helper} from '../../../../shared/utils/helper/helper';
 import {Box} from '../../../../shared/utils/drawing/drawing.types';
 import {TranslateService} from '@ngx-translate/core';
+import {MenuItem} from 'primeng/primeng';
 
 @Component({
   selector: 'app-area',
@@ -586,8 +587,8 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
   }
 
   private applyContextMenuAreas(): void {
-    const areas = this.onClickGetAreas(this.areas);
-    const labels = areas.map((area: AreaBag) => {
+    const areas: AreaBag[] = this.onClickGetAreas(this.areas);
+    const labels: MenuItem[] = areas.map((area: AreaBag) => {
       return {
         label: area.dto.name,
         items: [
