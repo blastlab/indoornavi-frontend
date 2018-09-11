@@ -195,9 +195,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
         if (this.getClickedAreas(this.areas).length > 1) {
           this.applyContextMenuToAreas();
         } else {
-          this.areas.forEach((areaBag: AreaBag): void => {
-            this.applyRightMouseButtonClick(areaBag.editable);
-          });
+          this.applyContextMenuToSingleArea();
         }
       });
     }
@@ -524,17 +522,6 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     }));
   }
 
-  private applyRightMouseButtonClick(editable: Editable): void {
-    editable.on({
-      edit: () => {
-        this.setEditableToItemContextMenu();
-      },
-      remove: (): void => {
-        this.setRemoveToItemContextMenu();
-      }
-    });
-  }
-
   private findSelectedAreaBagIndex(): number {
     if (!this.selectedEditable) {
       return -1;
@@ -570,7 +557,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     let index = 0;
     this.areas.forEach((areaBag: AreaBag): void => {
       areaBag.editable = new Editable(this.createBuilder(index).createGroup(), this.contextMenuService);
-      this.applyRightMouseButtonClick(areaBag.editable);
+      this.applyContextMenuToSingleArea(areaBag);
       areaBag.editable.onSelected().subscribe((selected: Editable) => {
         this.selectedEditable = selected;
       });
@@ -583,6 +570,23 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     const mouseClickPosition: Array<number> = d3.mouse(this.container.node());
     return areas.filter((area) => {
       return Geometry.isPointWithinArea(mouseClickPosition, area);
+    });
+  }
+
+  private applyContextMenuToSingleArea(areaBag?: AreaBag): void {
+    let area = areaBag;
+
+    if (!area) {
+      area = this.getClickedAreas(this.areas)[0];
+    }
+
+    area.editable.on({
+      edit: () => {
+        this.setEditableToItemContextMenu();
+      },
+      remove: (): void => {
+        this.setRemoveToItemContextMenu();
+      }
     });
   }
 
