@@ -18,7 +18,9 @@ class MapsPageUtils(MapsBaseLocators,
         "tc_07_device_placer": TC07_DEVICE_PLACER_CONF
     }
 
-    TEST_PATHS_COORDINATES = TEST_PATHS_COORDINATES
+    @staticmethod
+    def get_test_paths_coordinates():
+        return TEST_PATHS_COORDINATES
 
     def __init__(self):
         super().__init__()
@@ -74,3 +76,4 @@ class MapsPageUtils(MapsBaseLocators,
 
     def save_draft_click(self):
         return self.click_element(self.SAVE_DRAFT_BTN)
+

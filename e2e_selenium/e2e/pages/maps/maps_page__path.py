@@ -6,11 +6,6 @@ import json
 
 class MapsPagePath(BasePage, MapsPageUtils):
 
-    def __init__(self, driver):
-        self.__driver = driver
-        self.__actions = ActionChains
-        super(MapsPagePath, self).__init__(self.__driver)
-
     def __draw_sections_helper(self, steps_num):
         """
         Function which simulate drawing path by sections.
@@ -21,7 +16,7 @@ class MapsPagePath(BasePage, MapsPageUtils):
         element_image = self.wait_for_element_clickable(self.MAP_IMAGE)
         action_session = ActionChains(self.__driver)
         action_session.click(element_image)
-        sections_from_file = self.TEST_PATHS_COORDINATES
+        sections_from_file = self.get_test_paths_coordinates()
 
         for x in range(0, steps_num):
             x_offset = sections_from_file[str(x)][0]
@@ -31,6 +26,30 @@ class MapsPagePath(BasePage, MapsPageUtils):
 
         action_session.click()
         action_session.perform()
+
+    @staticmethod
+    def lines_comparison(expected_json, result_json):
+        """
+        Compares two lines, checks if location coordinates agree.
+        The x-coordinate of first package must equal +-2px x coordinate from second package.
+        :param expected_json: json which represents location of line_a
+        :param result_json: json which represents location of line_b
+        """
+        expected_data = json.loads(expected_json)
+        result_data = json.loads(result_json)
+
+        for key_a, value_a in expected_data.items():
+            for key_b, value_b in result_data.items():
+                if key_a == key_b:
+                    value_a_x, value_a_y = value_a[0], value_a[1]
+                    value_b_x, value_b_y = value_b[0], value_b[1]
+
+                    assert value_a_x - 2 <= value_b_x <= value_a_x + 2 and value_a_y - 2 <= value_b_y <= value_a_y + 2
+
+    def __init__(self, driver):
+        self.__driver = driver
+        self.__actions = ActionChains
+        super(MapsPagePath, self).__init__(self.__driver)
 
     def check_double_click_on_start_will_display_path(self):
         element_image = self.wait_for_element_clickable(self.MAP_IMAGE)
@@ -75,8 +94,7 @@ class MapsPagePath(BasePage, MapsPageUtils):
         return self.wait_for_element(self.DASHED_PATH_LINDE)
 
     def get_count_of_lines(self):
-        var = self.count_of_elements(*self.PATH_LINE)
-        return var
+        return self.count_of_elements(*self.PATH_LINE)
 
     def prepare_devices_in_db(self):
         self.insert_sinks_to_db_from_csv()
@@ -100,25 +118,6 @@ class MapsPagePath(BasePage, MapsPageUtils):
             lines_json["line-{0}".format(iterator)] = line_attributes
 
         return json.dumps(lines_json)
-
-    @staticmethod
-    def lines_comparison(expected_json, result_json):
-        """
-        Compares two lines, checks if location coordinates agree.
-        The x-coordinate of first package must equal +-2px x coordinate from second package.
-        :param expected_json: json which represents location of line_a
-        :param result_json: json which represents location of line_b
-        """
-        data_a = json.loads(expected_json)
-        data_b = json.loads(result_json)
-
-        for key_a, value_a in data_a.items():
-            for key_b, value_b in data_b.items():
-                if key_a == key_b:
-                    value_a_x, value_a_y = value_a[0], value_a[1]
-                    value_b_x, value_b_y = value_b[0], value_b[1]
-
-                    assert value_a_x-2 <= value_b_x <= value_a_x+2 and value_a_y-2 <= value_b_y <= value_a_y+2
 
     def draw_path(self, sections):
         return self.__draw_sections_helper(sections)

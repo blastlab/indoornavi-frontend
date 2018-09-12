@@ -78,39 +78,28 @@ class BasePage(object):
         return True
 
     def wait_for_element(self, locator, msg='Element has not presented yet.'):
-        element = ui.WebDriverWait(self.__driver, 10).until(EC.presence_of_element_located(locator), msg)
-        return element
+        return ui.WebDriverWait(self.__driver, 10).until(EC.presence_of_element_located(locator), msg)
 
     def wait_for_elements(self, locator, msg='No element has been displayed'):
-        element = ui.WebDriverWait(self.__driver, 10).until(EC.presence_of_all_elements_located(locator), msg)
-        return element
+        return ui.WebDriverWait(self.__driver, 10).until(EC.presence_of_all_elements_located(locator), msg)
 
     def wait_for_element_clickable(self, locator, msg='Element has not been ready to be clicked.'):
-        element = ui.WebDriverWait(self.__driver, 10).until(EC.element_to_be_clickable(locator), msg)
-        return element
+        return ui.WebDriverWait(self.__driver, 10).until(EC.element_to_be_clickable(locator), msg)
 
     def wait_for_element_not_clickable(self, locator, msg='The element is still clickable.'):
-        element = ui.WebDriverWait(self.__driver, 10).until_not(EC.element_to_be_clickable(locator), msg)
-        return element
+        return ui.WebDriverWait(self.__driver, 10).until_not(EC.element_to_be_clickable(locator), msg)
 
     def wait_for_element_visibility(self, locator, msg='Element has not been visible yet.'):
-        element = ui.WebDriverWait(self.__driver, 10).until(EC.visibility_of_element_located(locator), msg)
-        return element
+        return ui.WebDriverWait(self.__driver, 10).until(EC.visibility_of_element_located(locator), msg)
 
     def wait_for_element_disappear(self, locator, msg='Element has not disappeared yet.'):
-        element = ui.WebDriverWait(self.__driver, 10).until_not(EC.visibility_of_element_located(locator), msg)
-        return element
+        return ui.WebDriverWait(self.__driver, 10).until_not(EC.visibility_of_element_located(locator), msg)
 
     def wait_for_element_has_changed_value(self, locator, attribute, value, msg="Element has not changed value."):
-        element = ui.WebDriverWait(self.__driver, 10).until(wait_for_the_attribute_value(locator, attribute, value),
-                                                            msg)
-        return element
+        return ui.WebDriverWait(self.__driver, 10).until(wait_for_the_attribute_value(locator, attribute, value), msg)
 
-    def wait_for_text_has_changed_after_drag(self, slider, text, locator,
-                                             msg="Displayed text has not been correct after drag."):
-        is_changed = ui.WebDriverWait(self.__driver, 10).until(
-            wait_for_the_specific_text_after_drag(slider, text, locator), msg)
-        return is_changed
+    def wait_for_text_has_changed_after_drag(self, slider, text, locator, msg="Displayed text has not been correct after drag."):
+        return ui.WebDriverWait(self.__driver, 10).until(wait_for_the_specific_text_after_drag(slider, text, locator), msg)
 
     def open_page(self, page_url):
         return self.__driver.get(page_url)
@@ -144,12 +133,10 @@ class BasePage(object):
         button.click()
 
     def get_text(self, locator):
-        item_text = self.wait_for_element_visibility(locator).text
-        return item_text
+        return self.wait_for_element_visibility(locator).text
 
     def get_value(self, locator):
-        value = self.wait_for_element_visibility(locator).get_attribute('value')
-        return value
+        return self.wait_for_element_visibility(locator).get_attribute('value')
 
     def get_all_elements_text(self, *locator):
         """
@@ -171,8 +158,7 @@ class BasePage(object):
     # Methods recommended for : "Constructions"
 
     def count_of_inner_elements(self, *locator):
-        count = self.__driver.find_elements(*locator)
-        return len(count)
+        return len(self.__driver.find_elements(*locator))
 
     def count_of_elements(self, *locator):
         return len(self.__driver.find_elements(*locator))

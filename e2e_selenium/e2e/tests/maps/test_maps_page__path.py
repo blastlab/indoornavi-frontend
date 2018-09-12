@@ -11,6 +11,34 @@ class TestMapsPagePath(unittest.TestCase, MapsPagePath):
 
     logging.basicConfig(level=logging.INFO)
 
+    def __test_draw_path_helper(self, path_sections, logger):
+
+        logger.info('Step 1 : Click path button')
+        self.path_page.click_path_button()
+
+        logger.info('Step 2 : Draw path one section ')
+        self.path_page.draw_path(path_sections)
+
+        logger.info('Step 4 : Get path position')
+        expected_att = self.path_page.get_path_lines_positions()
+
+        logger.info('Step 5 : Save draft')
+        self.path_page.save_draft_click()
+
+        logger.info('Step 5 : Refresh page')
+        self.path_page.refresh_page()
+
+        logger.info('Step 6 : Click path button')
+        self.path_page.click_path_button()
+
+        logger.info('Step 8 : Get path lines position')
+        result_attr = self.path_page.get_path_lines_positions()
+
+        logger.info('Step 9 : Compare two lines after refresh')
+        self.path_page.lines_comparison(result_attr, expected_att)
+
+        self.test_failed = False
+
     def setUp(self):
         self.test_failed = True
         self.webdriver = webdriver
@@ -54,34 +82,6 @@ class TestMapsPagePath(unittest.TestCase, MapsPagePath):
     def tearDown(self):
         TestDriver.tearDown(self)
         self.webdriver.quit()
-
-    def __test_draw_path_helper(self, path_sections, logger):
-
-        logger.info('Step 1 : Click path button')
-        self.path_page.click_path_button()
-
-        logger.info('Step 2 : Draw path one section ')
-        self.path_page.draw_path(path_sections)
-
-        logger.info('Step 4 : Get path position')
-        expected_att = self.path_page.get_path_lines_positions()
-
-        logger.info('Step 5 : Save draft')
-        self.path_page.save_draft_click()
-
-        logger.info('Step 5 : Refresh page')
-        self.path_page.refresh_page()
-
-        logger.info('Step 6 : Click path button')
-        self.path_page.click_path_button()
-
-        logger.info('Step 8 : Get path lines position')
-        result_attr = self.path_page.get_path_lines_positions()
-
-        logger.info('Step 9 : Compare two lines after refresh')
-        self.path_page.lines_comparison(result_attr, expected_att)
-
-        self.test_failed = False
 
     def test_01_draw_path_correctly_one_section(self):
 
