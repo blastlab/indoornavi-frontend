@@ -336,6 +336,7 @@ describe('Geometry', () => {
   });
 
   it('should return true if the point is within the area', () => {
+    // given
     const points = [
       { point: [886, 72] },
       { point: [854, 199] },
@@ -344,11 +345,15 @@ describe('Geometry', () => {
     ];
 
     points.forEach((item) => {
-      expect(Geometry.isPointWithinArea(item.point, area)).toBeTruthy();
+      // when
+      const isPointWithinArea = Geometry.isPointWithinArea(item.point, area);
+      // then
+      expect(isPointWithinArea).toBeTruthy();
     });
   });
 
   it('should return false if the point is out of the area', () => {
+    // given
     const points = [
       { point: [0, 0] },
       { point: [966, 82] },
@@ -358,7 +363,10 @@ describe('Geometry', () => {
     ];
 
     points.forEach((item) => {
-      expect(Geometry.isPointWithinArea(item.point, area)).toBeFalsy();
+      // when
+      const isPointWithinArea = Geometry.isPointWithinArea(item.point, area);
+      // then
+      expect(isPointWithinArea).toBeFalsy();
     });
   });
 });
