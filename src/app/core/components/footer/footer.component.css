@@ -1,0 +1,17 @@
+.app-footer {
+  font-size: 11px;
+  padding: 5px 0;
+}
+
+.app-version {
+  margin: 0;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  color: #b3b3b3;
+}
+
+.auth-footer {
+  justify-content: center;
+  margin-top: 50px;
+}
