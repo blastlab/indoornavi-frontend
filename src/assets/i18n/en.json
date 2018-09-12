@@ -180,6 +180,7 @@
   "map.upload.invalidFileSizeMessageDetail": "maximum upload size is {0}.",
   "map.upload.invalidFileSizeMessageSummary": "{0}: Invalid file size,",
   "map.upload.notAllowedType": "Not allowed file type. You can upload these file types: {{file_types}}.",
+  "name": "Name",
   "next": "Next",
   "no": "No",
   "notSupportedBrowser": "Your browser ({{browser}}) is not supported. To optimize system performance use Google Chrome.",

@@ -32,7 +32,11 @@ import {WizardComponent} from './map-editor/tool-bar/tools/wizard/wizard';
 import {ActionBarService} from './map-editor/action-bar/actionbar.service';
 import {ScaleService} from './shared/services/scale/scale.service';
 import {PublishedListComponent} from './map-viewer/list/publication-list';
-import {AllFieldsFilter} from './shared/utils/filters/allFieldsFilter';
+import {
+  AllFieldsFilter,
+  ParseArrayToStringCommaSeparated,
+  ParseArrayToStringCommaSeparatedTranslated
+} from './shared/utils/filters/filters'
 import {appRoutes} from './app.routes';
 import {PublishedService} from './map-viewer/publication.service';
 import {PublicationDialogComponent} from './map-viewer/dialog/publication.dialog';
@@ -167,6 +171,8 @@ export function HttpLoaderFactory(http: Http) {
     AreaComponent,
     AreaDetailsComponent,
     AllFieldsFilter,
+    ParseArrayToStringCommaSeparated,
+    ParseArrayToStringCommaSeparatedTranslated,
     AreaDetailsComponent,
     AnalyticsComponent,
     MinSelectedValidatorDirective,
