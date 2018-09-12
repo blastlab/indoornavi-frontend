@@ -233,6 +233,12 @@ export class Geometry {
     return nearest;
   }
 
+  /**
+   * Return true if the point is within the given area or false if the point is out of the given area
+   * @param {number[]} clickedPoint
+   * @param {Object} area
+   * @return {boolean}
+   */
   static isPointWithinArea(clickedPoint, area) {
     const areaPoints = area.dto.points;
     const point = {
