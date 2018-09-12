@@ -32,6 +32,14 @@ class MapsPagePath(BasePage, MapsPageUtils):
         action_session.click()
         action_session.perform()
 
+    def check_double_click_on_start_will_display_path(self):
+        element_image = self.wait_for_element_clickable(self.MAP_IMAGE)
+        action_session = ActionChains(self.__driver)
+        action_session.click(element_image)
+        action_session.double_click()
+        action_session.perform()
+        return self.is_path_disappeared()
+
     def click_outside_map(self):
         element_image = self.wait_for_element_clickable(self.MAP_IMAGE)
         action_session = ActionChains(self.__driver)
@@ -54,8 +62,14 @@ class MapsPagePath(BasePage, MapsPageUtils):
 
         return self.click_element(self.REMOVE_ALL_LINES_BTN)
 
-    def is_path_dissapeared(self):
-        return self.is_element_disappear(self.PATH_LINE)
+    def is_save_draft_btn_clickable(self):
+        return self.wait_for_element_not_clickable(self.SAVE_DRAFT_BTN)
+
+    def is_save_draft_label_disappeared(self):
+        return self.is_element_disappear(self.SAVE_DRAFT_LABEL)
+
+    def is_path_disappeared(self):
+        return self.is_element_disappear(self.PATH_LINE), self.is_element_disappear(self.PATH_CIRCLE)
 
     def is_dashed_line_visible(self):
         return self.wait_for_element(self.DASHED_PATH_LINDE)

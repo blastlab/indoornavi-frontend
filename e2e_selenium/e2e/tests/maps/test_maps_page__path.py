@@ -54,20 +54,7 @@ class TestMapsPagePath(unittest.TestCase, MapsPagePath):
     def tearDown(self):
         TestDriver.tearDown(self)
         self.webdriver.quit()
-    """
-    Test scenario
-        1 Check draw path correctly - one section
-        2 Check draw path correctly - two section
-        3 Check draw path correctly - five sections
-        4 Check all toolbars after draw path
-        5 Check the intersection is created
-        6 Check is possible to draw path outside of map
-        7 Remove all lines
-        8 Check 1Step Doubleclick draw will not end action
-        9 Bug [NAVI - 390] - Remove all paths doesnt work
-        10 Bug [NAVI - 391] - newest - check is it possible to save draft after disactive path toolbar
-    """
-    # SCALE TESTS
+
     def __test_draw_path_helper(self, path_sections, logger):
 
         logger.info('Step 1 : Click path button')
@@ -142,7 +129,8 @@ class TestMapsPagePath(unittest.TestCase, MapsPagePath):
 
     def test_05_check_is_possible_to_draw_path_outside_of_map(self):
 
-        """CHECK IS POSSIBLE TO DRAW PATH OUTSIDE OF MAP"""
+        """TC05 CHECK IS POSSIBLE TO DRAW PATH OUTSIDE OF MAP"""
+
         log_tc05 = logging.getLogger(self.shortDescription())
 
         log_tc05.info('Step 1 : Click path button.')
@@ -180,6 +168,8 @@ class TestMapsPagePath(unittest.TestCase, MapsPagePath):
 
     def test_06_remove_all_lines(self):
 
+        """TC06 CHECK REMOVE ALL LINES IS CORRECTLY"""
+
         log_tc06 = logging.getLogger(self.shortDescription())
 
         self.__test_draw_path_helper(5, log_tc06)
@@ -197,7 +187,79 @@ class TestMapsPagePath(unittest.TestCase, MapsPagePath):
         self.path_page.click_path_button()
 
         log_tc06.info('Step 14 : Check the path exists.')
-        assert self.path_page.is_path_dissapeared()
+        assert self.path_page.is_path_disappeared()
 
         self.test_failed = False
 
+    def test_07_bug_check_double_click_on_start_will_display_path(self):
+
+        """TC07 CHECK DOUBLE CLICK ON START WILL DISPLAY PATH"""
+
+        log_tc07 = logging.getLogger(self.shortDescription())
+
+        log_tc07.info('Step 1 : Click path button')
+        self.path_page.click_path_button()
+
+        log_tc07.info('Step 2  : Check double click on start will display path')
+        assert self.path_page.check_double_click_on_start_will_display_path()
+
+        log_tc07.info('Step 3 : Refresh page.')
+        self.path_page.refresh_page()
+
+        log_tc07.info('Step 4 : Click path button.')
+        self.path_page.click_path_button()
+
+        log_tc07.info('Step 5 : Check if the path exists')
+        self.path_page.is_path_disappeared()
+
+        self.test_failed = False
+
+    def test_08_bug_navi_390_remove_all_paths_doesnt_work(self):
+
+        """TC08 CHECK BUG [NAVI-390] - STILL EXISTS"""
+
+        log_tc08 = logging.getLogger(self.shortDescription())
+        self.__test_draw_path_helper(3, log_tc08)
+
+        log_tc08.info('Step 10 : Remove all lines')
+        self.path_page.remove_all_lines()
+
+        log_tc08.info('Step 11 : Check the path exists.')
+        assert self.path_page.is_path_disappeared()
+
+        log_tc08.info('Step 12 : Click save draft button.')
+        self.path_page.save_draft_click()
+
+        log_tc08.info('Step 13 : Check the "Save draft" label still exists')
+        self.path_page.is_save_draft_label_disappeared()
+
+        log_tc08.info('Step 14 : Refresh page.')
+        self.path_page.refresh_page()
+
+        log_tc08.info('Step 15 : Click path button.')
+        self.path_page.click_path_button()
+
+        log_tc08.info('Step 16 : Check the path exists.')
+        assert self.path_page.is_path_disappeared()
+
+        self.test_failed = False
+
+    def test_09_bug_navi_391_check_if_possible_to_save_draft_after_disactive_path_toolbar(self):
+
+        """TC09 CHECK BUG [NAVI-391] - STILL EXISTS"""
+
+        log_tc09 = logging.getLogger(self.shortDescription())
+
+        log_tc09.info('Step 1 : Click path button')
+        self.path_page.click_path_button()
+
+        log_tc09.info('Step 2 : Draw path one section ')
+        self.path_page.draw_path(1)
+
+        log_tc09.info('Step 3 : Click path button')
+        self.path_page.click_path_button()
+
+        log_tc09.info('Step 4 : Check the save btn is clickable after disactive tool')
+        self.assertFalse(self.path_page.is_save_draft_btn_clickable())
+
+        self.test_failed = False

@@ -89,6 +89,10 @@ class BasePage(object):
         element = ui.WebDriverWait(self.__driver, 10).until(EC.element_to_be_clickable(locator), msg)
         return element
 
+    def wait_for_element_not_clickable(self, locator, msg='The element is still clickable.'):
+        element = ui.WebDriverWait(self.__driver, 10).until_not(EC.element_to_be_clickable(locator), msg)
+        return element
+
     def wait_for_element_visibility(self, locator, msg='Element has not been visible yet.'):
         element = ui.WebDriverWait(self.__driver, 10).until(EC.visibility_of_element_located(locator), msg)
         return element
