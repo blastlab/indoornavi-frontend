@@ -36,7 +36,7 @@ import {
   AllFieldsFilter,
   ParseArrayToStringCommaSeparated,
   ParseArrayToStringCommaSeparatedTranslated
-} from './shared/utils/filters/filters'
+} from './shared/utils/filters';
 import {appRoutes} from './app.routes';
 import {PublishedService} from './map-viewer/publication.service';
 import {PublicationDialogComponent} from './map-viewer/dialog/publication.dialog';

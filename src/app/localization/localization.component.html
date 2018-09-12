@@ -1,0 +1,28 @@
+<p-toolbar>
+  <div class="left">
+    <button pButton class="ui-button-secondary"
+            id="change-tags-view"
+            (click)="toggleView()"
+            label="{{view|translate}}"
+            icon="fa-eye" iconPos="left">
+    </button>
+    <p-selectButton [options]="filterOptions" [(ngModel)]="selectedFilterValues" multiple="multiple"></p-selectButton>
+    <button class="ui-button-secondary" type="button" (click)="clear()" pButton icon="fa-ban" label="Clear"></button>
+  </div>
+</p-toolbar>
+
+<p-orderList *ngIf="view === 'list.view'" [value]="tags" [listStyle]="{'height':'800px'}" [responsive]="true" header="{{'tags.header'|translate}}"
+             filter="filter" filterBy="{{selectedFilterValues|parseArrayToStringCommaSeparated}}" filterPlaceholder="Filter by {{selectedFilterValues|parseArrayToStringCommaSeparatedTranslated}}">
+  <ng-template let-tag pTemplate="item">
+    <div class="ui-helper-clearfix">
+      <button pButton class="ui-button-secondary ui-g-2 ui-md-2 ui-lg-2"
+              (click)="click(tag.id)" icon="fa-tag fa-lg" label="{{'locate.tag'|translate}}" style="display:inline-block"></button>
+      <div style="display:inline-block">{{'id'|translate|uppercase}}: {{tag.id}}</div>
+      <div style="display:inline-block">{{'name'|translate|uppercase}}: {{tag.name}}</div>
+      <div style="display:inline-block">{{'complex'|translate|uppercase}}: {{tag.complex}}</div>
+      <div style="display:inline-block">{{'building'|translate|uppercase}}: {{tag.building}}</div>
+      <div style="display:inline-block">{{'floor'|translate|uppercase}}: {{tag.floor}}</div>
+      <div style="display:inline-block">{{'group'|translate|uppercase}}: {{tag.group}}</div>
+    </div>
+  </ng-template>
+</p-orderList>
