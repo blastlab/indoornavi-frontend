@@ -303,6 +303,7 @@
   "validator.input.max": "Must be less then 100 characters!",
   "validator.input.shortIdOutOfRange": "Short Id out of range.",
   "validator.input.incorrectMacAddress": "Mac Address is incorrect. Enter address in format: 1a:2b:3c:4d:5e:6f.",
+  "version": "version",
   "wizard.click.place.anchor": "Click on the map to place the anchor.",
   "wizard.click.place.sink": "Click on the map to place the sink.",
   "wizard.configuration.complete": "Basic configuration completed.",
