@@ -1,17 +1,16 @@
-import {Component, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Tag} from '../device/device.type';
 import {Subject} from 'rxjs/Subject';
 import {TranslateService} from '@ngx-translate/core';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
-import {SelectItem} from 'primeng/primeng';
+import {ConfirmationService, SelectItem} from 'primeng/primeng';
 import {SocketService} from '../shared/services/socket/socket.service';
 import {Config} from '../../config';
 import {MeasureSocketDataTags} from '../map-viewer/publication.type';
 
 @Component({
   selector: 'app-localization',
-  templateUrl: './localization.component.html',
-  encapsulation: ViewEncapsulation.None
+  templateUrl: './localization.component.html'
 })
 export class LocalizationComponent implements OnInit, OnDestroy {
 
@@ -28,6 +27,8 @@ export class LocalizationComponent implements OnInit, OnDestroy {
   selectedFilterValues: string[] = [];
   tags: TagMocked[];
   view: string = 'list.view';
+  message: string;
+  confirmationDialogName: string;
   private subscriptionDestroyer: Subject<void> = new Subject<void>();
 
   static mockData(tag: Tag): TagMocked {
@@ -42,12 +43,14 @@ export class LocalizationComponent implements OnInit, OnDestroy {
   constructor(
     public translate: TranslateService,
     private socketService: SocketService,
-    private breadcrumbService: BreadcrumbService
+    private breadcrumbService: BreadcrumbService,
+    private confirmationService: ConfirmationService
   ) { }
 
   ngOnInit() {
     this.setTranslations();
     this.initializeSocketConnection();
+    this.selectedFilterValues.push(this.filterOptions[0].label);
   }
 
   ngOnDestroy() {
@@ -55,17 +58,31 @@ export class LocalizationComponent implements OnInit, OnDestroy {
     this.subscriptionDestroyer.unsubscribe();
   }
 
-  toggleView() {
+  toggleView(): void {
     this.view === 'list.view' ? this.view = 'tree.view' : this.view = 'list.view';
   }
 
   click(id: number): void {
-    console.log(this.tags);
     console.log(id);
+    this.confirmationService.confirm({
+      message: this.message,
+      header: this.confirmationDialogName,
+      icon: 'fa-exclamation-circle',
+      accept: () => {
+        console.log('accepted');
+      },
+      reject: () => {
+        console.log('rejected');
+      }
+    });
   }
 
-  clear() {
+  clear(): void {
     this.selectedFilterValues = [];
+  }
+
+  logger(): void {
+    console.log('afdasfda');
   }
 
   private setTranslations(): void {
@@ -79,6 +96,12 @@ export class LocalizationComponent implements OnInit, OnDestroy {
       this.translate.get(item.label).subscribe((value: string) => {
         item.label = value;
       });
+    });
+    this.translate.get( 'go.to.map.with.tag.question').subscribe((value: string) => {
+      this.message = value;
+    });
+    this.translate.get( 'confirm').subscribe((value: string) => {
+      this.confirmationDialogName = value;
     });
   }
 

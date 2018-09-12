@@ -1,3 +1,4 @@
+<p-confirmDialog></p-confirmDialog>
 <p-toolbar>
   <div class="left">
     <button pButton class="ui-button-secondary"
@@ -6,17 +7,19 @@
             label="{{view|translate}}"
             icon="fa-eye" iconPos="left">
     </button>
+    <p style="display:inline-block">{{'filter.by'|translate}} </p>
     <p-selectButton [options]="filterOptions" [(ngModel)]="selectedFilterValues" multiple="multiple"></p-selectButton>
-    <button class="ui-button-secondary" type="button" (click)="clear()" pButton icon="fa-ban" label="Clear"></button>
+    <button class="ui-button-secondary" type="button" (click)="clear()" pButton icon="fa-ban" label="{{'reset.filter'|translate}}"></button>
   </div>
 </p-toolbar>
 
 <p-orderList *ngIf="view === 'list.view'" [value]="tags" [listStyle]="{'height':'800px'}" [responsive]="true" header="{{'tags.header'|translate}}"
-             filter="filter" filterBy="{{selectedFilterValues|parseArrayToStringCommaSeparated}}" filterPlaceholder="Filter by {{selectedFilterValues|parseArrayToStringCommaSeparatedTranslated}}">
+             filterBy="{{selectedFilterValues|parseArrayToStringCommaSeparated}}"
+             filterPlaceholder="{{'filter.by'|translate}} {{selectedFilterValues|parseArrayToStringCommaSeparatedTranslated}}"
+             (onSelectionChange)="click($event.value[0].id)"
+>
   <ng-template let-tag pTemplate="item">
-    <div class="ui-helper-clearfix">
-      <button pButton class="ui-button-secondary ui-g-2 ui-md-2 ui-lg-2"
-              (click)="click(tag.id)" icon="fa-tag fa-lg" label="{{'locate.tag'|translate}}" style="display:inline-block"></button>
+    <div class="ui-helper-clearfix" >
       <div style="display:inline-block">{{'id'|translate|uppercase}}: {{tag.id}}</div>
       <div style="display:inline-block">{{'name'|translate|uppercase}}: {{tag.name}}</div>
       <div style="display:inline-block">{{'complex'|translate|uppercase}}: {{tag.complex}}</div>
@@ -26,3 +29,4 @@
     </div>
   </ng-template>
 </p-orderList>
+
