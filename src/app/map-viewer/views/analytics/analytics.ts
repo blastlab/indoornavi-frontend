@@ -5,7 +5,7 @@ import {SocketConnectorComponent} from '../socket-connector.component';
 import {HeatMap, HeatMapPath, TimeStepBuffer} from './analytics.type';
 import {SocketService} from '../../../shared/services/socket/socket.service';
 import {PublishedService} from '../../publication.service';
-import {AreaService} from '../../../shared/services/area/area.service';
+import {AreaService} from '../../services/area/area.service';
 import {IconService} from '../../../shared/services/drawing/icon.service';
 import {MapLoaderInformerService} from '../../../shared/services/map-loader-informer/map-loader-informer.service';
 import {CoordinatesSocketData} from '../../publication.type';
@@ -14,7 +14,7 @@ import * as d3 from 'd3';
 import {MapSvg} from '../../../map/map.type';
 import {FloorService} from '../../../floor/floor.service';
 import {TagVisibilityTogglerService} from '../../../shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
-import {MapObjectService} from '../../../shared/utils/drawing/map.object.service';
+import {ApiService} from '../../../shared/utils/drawing/api.service';
 import {BreadcrumbService} from '../../../shared/services/breadcrumbs/breadcrumb.service';
 import {HeatMapControllerService} from '../../../shared/components/heat-map-controller/heat-map-controller/heat-map-controller.service';
 import {TagToggle} from '../../../shared/components/tag-visibility-toggler/tag-toggle.type';
@@ -22,6 +22,7 @@ import {PixelHeatMap} from './pixel.heatmap.service';
 import {HeatMapType} from '../../../shared/components/heat-map-controller/heat-map-controller/heat-map-controller.component';
 import {MapClickService} from '../../../shared/services/map-click/map-click.service';
 import {TagOnMap} from '../../../map/models/tag';
+import {PathService} from '../../services/path/path.service';
 
 @Component({
   templateUrl: './analytics.html'
@@ -56,9 +57,10 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
               mapLoaderInformer: MapLoaderInformerService,
               mapClickService: MapClickService,
               areaService: AreaService,
+              pathService: PathService,
               translateService: TranslateService,
               iconService: IconService,
-              mapObjectService: MapObjectService,
+              mapObjectService: ApiService,
               floorService: FloorService,
               tagTogglerService: TagVisibilityTogglerService,
               breadcrumbService: BreadcrumbService,
@@ -72,6 +74,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       mapLoaderInformer,
       mapClickService,
       areaService,
+      pathService,
       translateService,
       iconService,
       mapObjectService,

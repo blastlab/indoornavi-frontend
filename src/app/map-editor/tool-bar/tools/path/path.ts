@@ -14,13 +14,12 @@ import {Subject} from 'rxjs/Subject';
 import {Tool} from '../tool';
 import {ToolName} from '../tools.enum';
 import * as d3 from 'd3';
-import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../../../shared/utils/drawing/drawing.builder';
+import {Box, DrawBuilder, ElementType, SvgGroupWrapper} from '../../../../shared/utils/drawing/drawing.builder';
 import {Line, Point} from '../../../map.type';
 import {isNumber} from 'util';
 import {TranslateService} from '@ngx-translate/core';
 import {Configuration} from '../../../action-bar/actionbar.type';
 import {IntersectionIdentifier, PathContextCallback, PathContextMenuLabels} from './path.type';
-import {Box} from '../../../../shared/utils/drawing/drawing.types';
 
 @Component({
   selector: 'app-path',
@@ -151,7 +150,6 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
     }
     this.clearDrawnPath();
     this.currentLineGroup.removeElements(ElementType.CIRCLE);
-    this.sendPathToConfiguration();
   }
 
   private listenOnMapLoaded(): void {
@@ -209,7 +207,6 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
         this.clearDrawnPath();
         this.lines = [];
         this.actionBarService.clearPath();
-        this.sendPathToConfiguration();
         this.hintBarService.sendHintMessage('path.hint.first');
       }
     }
@@ -361,6 +358,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
         return;
       }
       if (!!this.tempLine) { // do not clean if last line wasn't tempLine
+        this.sendPathToConfiguration();
         this.cleanTempLine();
       }
       const line: Line = {
@@ -376,7 +374,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   private getIntersections(line: Line): IntersectionIdentifier[] {
     const intersections: IntersectionIdentifier[] = [];
     this.lines.forEach((linePath: Line): void => {
-      const intersectionPoint: Point = Geometry.findIntersection(linePath, line);
+      const intersectionPoint: Point = Geometry.findLineToLineIntersection(linePath, line);
       if (!!intersectionPoint && !Geometry.isSamePoint(intersectionPoint, this.lastPoint)) {
         const index: number = this.lines.findIndex((linePathNested: Line): boolean => {
           return (linePathNested.endPoint.x === linePath.endPoint.x &&

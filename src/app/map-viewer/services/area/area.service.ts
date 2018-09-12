@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpService} from '../http/http.service';
+import {HttpService} from '../../../shared/services/http/http.service';
 import {Observable} from 'rxjs/Rx';
 import {Area} from '../../../map-editor/tool-bar/tools/area/area.type';
 
