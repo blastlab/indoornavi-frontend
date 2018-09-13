@@ -19,7 +19,7 @@ import {AreaService} from '../services/area/area.service';
 import {IconService} from '../../shared/services/drawing/icon.service';
 import {Geometry} from 'app/shared/utils/helper/geometry';
 import {Observable} from 'rxjs/Observable';
-import {Line, Point} from 'app/map-editor/map.type';
+import {Line, Point, Point3d} from 'app/map-editor/map.type';
 import {TranslateService} from '@ngx-translate/core';
 import {Config} from '../../../config';
 import {MapLoaderInformerService} from '../../shared/services/map-loader-informer/map-loader-informer.service';
@@ -38,8 +38,8 @@ import {MapClickService} from '../../shared/services/map-click/map-click.service
 import {Deferred} from '../../shared/utils/helper/deferred';
 import {TagOnMap} from '../../map/models/tag';
 import {APIObject} from '../../shared/utils/drawing/api.types';
-import Metadata = APIObject.Metadata;
 import {PathService} from '../services/path/path.service';
+import Metadata = APIObject.Metadata;
 
 @Component({
   templateUrl: './socket-connector.component.html'
@@ -180,11 +180,13 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     }
     if (this.originListeningOnEvent.containsKey('coordinates')) {
       this.originListeningOnEvent.getValue('coordinates').forEach((event: MessageEvent): void => {
-        data.coordinates.point = Geometry.calculatePointPositionInCentimeters(
+        const point2d: Point = Geometry.calculatePointPositionInCentimeters(
           this.scaleCalculations.scaleLengthInPixels,
           this.scaleCalculations.scaleInCentimeters,
           data.coordinates.point
         );
+        data.coordinates.point.x = point2d.x;
+        data.coordinates.point.y = point2d.y;
         // @ts-ignore
         event.source.postMessage({type: 'coordinates', coordinates: data.coordinates}, '*');
       })
@@ -216,7 +218,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private moveTagOnMap(coordinates: Point, deviceId: number): void {
+  private moveTagOnMap(coordinates: Point3d, deviceId: number): void {
     const tag: TagOnMap = this.tagsOnMap.getValue(deviceId);
     // !document.hidden is here to avoid queueing transitions and therefore browser freezes
     if (tag.hasTransitionEnded() && !document.hidden) {
@@ -246,9 +248,11 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         this.ngZone.run(() => {
           if (this.isCoordinatesData(data)) {
             const coordinateSocketData: CoordinatesSocketData = (<CoordinatesSocketData>data);
-            coordinateSocketData.coordinates.point = Geometry.calculatePointPositionInPixels(Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
+            const point2d: Point = Geometry.calculatePointPositionInPixels(Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
               this.scale.getRealDistanceInCentimeters(),
               coordinateSocketData.coordinates.point);
+            coordinateSocketData.coordinates.point.x = point2d.x;
+            coordinateSocketData.coordinates.point.y = point2d.y;
             this.dataReceived.next(coordinateSocketData);
           } else if (this.isEventData(data)) {
             this.handleEventData(<EventSocketData> data);
@@ -329,6 +333,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       const width = this.d3map.container.node().getBBox().width;
       // @ts-ignore
       event.source.postMessage({type: `getMapDimensions`, mapObjectId: 'map', height: height, width: width, scale: this.scale}, event.origin);
+      // @ts-ignore
       event.source.postMessage({type: 'getMapDimensions', mapObjectId: 'map', height: height, width: width, scale: this.scale}, event.origin);
     });
   }
@@ -339,6 +344,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       if (!!pathFromConfiguration && pathFromConfiguration.length > 0) {
         calculatedPosition = Geometry.findPointOnPathInGivenRange(pathFromConfiguration, event.data['args'].point, event.data['args'].accurac);
       }
+      // @ts-ignore
       event.source.postMessage({
           type: 'getPointOnPath',
         mapObjectId: 'map',
