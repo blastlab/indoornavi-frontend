@@ -79,7 +79,7 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
         }
       },
       reject: () => {
-        this.messageService.failed('rejected.tag.find');
+        this.messageService.failed('action.rejected');
       }
     });
   }
