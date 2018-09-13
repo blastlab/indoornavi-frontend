@@ -76,7 +76,7 @@
   "DB_000": "Unknown database error. Please contact support.",
   "DB_001": "Floor level must be unique in the building.",
   "DB_002": "Short Id must be unique.",
-  "DB_003": "Long Id must be unique.",
+  "DB_003": "Address Mac must be unique.",
   "DB_004": "Username must be unique.",
   "device-list.label.height": "Height",
   "device-list.noRemainingDevicesLeft": "There are no more verified and not configured devices",
