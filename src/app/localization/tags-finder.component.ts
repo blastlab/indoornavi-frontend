@@ -26,7 +26,7 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
     {label: 'floor', value: 'floor'},
     {label: 'group', value: 'group'}
   ];
-  selectedFilterValues: string[] = [];
+  selectedFilterValue: string;
   tags: TagMocked[];
   view: string = 'list.view';
   message: string;
@@ -52,7 +52,7 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.setTranslations();
     this.initializeSocketConnection();
-    this.selectedFilterValues.push(this.filterOptions[0].label);
+    this.selectedFilterValue = this.filterOptions[0].value;
   }
 
   ngOnDestroy() {
@@ -65,26 +65,17 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
   }
 
   click(id: number): void {
-    console.log(id);
     this.confirmationService.confirm({
       message: this.message,
       header: this.confirmationDialogName,
       icon: 'fa-exclamation-circle',
       accept: () => {
-        console.log('accepted');
+        console.log('accepted', id);
       },
       reject: () => {
-        console.log('rejected');
+        console.log('rejected', id);
       }
     });
-  }
-
-  clear(): void {
-    this.selectedFilterValues = [];
-  }
-
-  logger(value: any): void {
-    console.log(value);
   }
 
   private setTranslations(): void {

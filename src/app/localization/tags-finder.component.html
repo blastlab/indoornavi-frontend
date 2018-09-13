@@ -8,15 +8,14 @@
             icon="fa-eye" iconPos="left">
     </button>
     <div style="display:inline-block">{{'filter.by'|translate}} </div>
-    <p-selectButton [options]="filterOptions" [(ngModel)]="selectedFilterValues" multiple="multiple"></p-selectButton>
-    <button class="ui-button-secondary" type="button" (click)="clear()" pButton icon="fa-ban" label="{{'reset.filter'|translate}}"></button>
+    <p-dropdown [options]="filterOptions" [(ngModel)]="selectedFilterValue" ></p-dropdown>
   </div>
 </p-toolbar>
 
 <p-orderList *ngIf="view === 'list.view'" [value]="tags" [listStyle]="{'height':'800px'}"
              [responsive]="true" header="{{'tags.header'|translate}}"
-             filterBy="{{selectedFilterValues|parseArrayToStringCommaSeparated}}"
-             filterPlaceholder="{{'filter.by'|translate}} {{selectedFilterValues|parseArrayToStringCommaSeparatedTranslated}}"
+             filterBy="{{selectedFilterValue}}"
+             filterPlaceholder="{{'filter.by'|translate}} {{selectedFilterValue|translate}}"
              (onSelectionChange)="click($event.value[0].id)"
              (onFilterEvent)="logger($event.value)"
 >
