@@ -179,25 +179,29 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
 
       this.currentAreaGroup = this.createBuilder().createGroup();
 
-      this.container.on('contextmenu', (): void => {
-        d3.event.preventDefault();
-        this.cleanGroup();
-        this.firstPointSelection = null;
-        this.lastPoint = null;
-        this.tempLine = null;
-
-        if (this.getClickedAreas(this.areas).length === 0) {
-          this.contextMenuService.closeContextMenu();
-          return;
-        }
-
-        if (this.getClickedAreas(this.areas).length > 1) {
-          this.applyContextMenuToAreas();
-        } else {
-          this.applyContextMenuToSingleArea();
-        }
-      });
+      this.openAreaContextMenu();
     }
+  }
+
+  openAreaContextMenu() {
+    this.container.on('contextmenu', (): void => {
+      d3.event.preventDefault();
+      this.cleanGroup();
+      this.firstPointSelection = null;
+      this.lastPoint = null;
+      this.tempLine = null;
+
+      if (this.getClickedAreas(this.areas).length === 0) {
+        this.contextMenuService.hide();
+        return;
+      }
+
+      if (this.getClickedAreas(this.areas).length > 1) {
+        this.applyContextMenuToAreas();
+      } else {
+        this.applyContextMenuToSingleArea();
+      }
+    });
   }
 
   setInactive(): void {
