@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
 import {Tag} from '../device/device.type';
 import {Subject} from 'rxjs/Subject';
 import {TranslateService} from '@ngx-translate/core';
@@ -10,9 +10,11 @@ import {MeasureSocketDataTags} from '../map-viewer/publication.type';
 
 @Component({
   selector: 'app-localization',
-  templateUrl: './localization.component.html'
+  templateUrl: './tags-finder.component.html',
+  styleUrls: ['./tags-finder.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
-export class LocalizationComponent implements OnInit, OnDestroy {
+export class TagsFinderComponent implements OnInit, OnDestroy {
 
   // TODO treeview add
 
@@ -81,13 +83,13 @@ export class LocalizationComponent implements OnInit, OnDestroy {
     this.selectedFilterValues = [];
   }
 
-  logger(): void {
-    console.log('afdasfda');
+  logger(value: any): void {
+    console.log(value);
   }
 
   private setTranslations(): void {
     this.translate.setDefaultLang('en');
-    this.translate.get( 'tags.localization.header').subscribe((value: string) => {
+    this.translate.get( 'tags.finder.header').subscribe((value: string) => {
       this.breadcrumbService.publishIsReady([
         {label: value, disabled: true}
       ]);
@@ -112,11 +114,10 @@ export class LocalizationComponent implements OnInit, OnDestroy {
       data.tags.forEach((tag: Tag) => {
         if (tag.verified) {
           // TODO: delete mock method after backend update
-          const tagMocked: TagMocked = LocalizationComponent.mockData(tag);
+          const tagMocked: TagMocked = TagsFinderComponent.mockData(tag);
           this.tags.push(tagMocked);
         }
       });
-      console.log(this.tags);
     });
   }
 

@@ -7,19 +7,21 @@
             label="{{view|translate}}"
             icon="fa-eye" iconPos="left">
     </button>
-    <p style="display:inline-block">{{'filter.by'|translate}} </p>
+    <div style="display:inline-block">{{'filter.by'|translate}} </div>
     <p-selectButton [options]="filterOptions" [(ngModel)]="selectedFilterValues" multiple="multiple"></p-selectButton>
     <button class="ui-button-secondary" type="button" (click)="clear()" pButton icon="fa-ban" label="{{'reset.filter'|translate}}"></button>
   </div>
 </p-toolbar>
 
-<p-orderList *ngIf="view === 'list.view'" [value]="tags" [listStyle]="{'height':'800px'}" [responsive]="true" header="{{'tags.header'|translate}}"
+<p-orderList *ngIf="view === 'list.view'" [value]="tags" [listStyle]="{'height':'800px'}"
+             [responsive]="true" header="{{'tags.header'|translate}}"
              filterBy="{{selectedFilterValues|parseArrayToStringCommaSeparated}}"
              filterPlaceholder="{{'filter.by'|translate}} {{selectedFilterValues|parseArrayToStringCommaSeparatedTranslated}}"
              (onSelectionChange)="click($event.value[0].id)"
+             (onFilterEvent)="logger($event.value)"
 >
   <ng-template let-tag pTemplate="item">
-    <div class="ui-helper-clearfix" >
+    <div class="ui-helper-clearfix">
       <div style="display:inline-block">{{'id'|translate|uppercase}}: {{tag.id}}</div>
       <div style="display:inline-block">{{'name'|translate|uppercase}}: {{tag.name}}</div>
       <div style="display:inline-block">{{'complex'|translate|uppercase}}: {{tag.complex}}</div>

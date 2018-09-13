@@ -1,0 +1,8 @@
+.ui-orderlist .ui-orderlist-controls,
+.ui-orderlist.ui-orderlist-responsive .ui-orderlist-controls
+{
+  display: none;
+}
+.ui-orderlist.ui-orderlist-responsive .ui-orderlist-list-container {
+  width: 100%;
+}
