@@ -1,23 +1,15 @@
 <p-confirmDialog></p-confirmDialog>
 <p-toolbar>
   <div class="left">
-    <button pButton class="ui-button-secondary"
-            id="change-tags-view"
-            (click)="toggleView()"
-            label="{{view|translate}}"
-            icon="fa-eye" iconPos="left">
-    </button>
     <div style="display:inline-block">{{'filter.by'|translate}} </div>
     <p-dropdown [options]="filterOptions" [(ngModel)]="selectedFilterValue" ></p-dropdown>
   </div>
 </p-toolbar>
-
-<p-orderList *ngIf="view === 'list.view'" [value]="tags" [listStyle]="{'height':'800px'}"
+<p-orderList [value]="tags" [listStyle]="{'height':'800px'}"
              [responsive]="true" header="{{'tags.header'|translate}}"
              filterBy="{{selectedFilterValue}}"
              filterPlaceholder="{{'filter.by'|translate}} {{selectedFilterValue|translate}}"
-             (onSelectionChange)="click($event.value[0].id)"
-             (onFilterEvent)="logger($event.value)"
+             (onSelectionChange)="click($event.value[0])"
 >
   <ng-template let-tag pTemplate="item">
     <div class="ui-helper-clearfix">
@@ -30,4 +22,3 @@
     </div>
   </ng-template>
 </p-orderList>
-

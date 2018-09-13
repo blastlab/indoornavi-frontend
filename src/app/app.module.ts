@@ -120,7 +120,7 @@ import {DevicePlacerListComponent} from './map-editor/tool-bar/tools/device-plac
 import {DevicePlacerRowDirective} from './map-editor/tool-bar/tools/device-placer/list/device-placer.row';
 import {PathService} from './map-viewer/services/path/path.service';
 import {BluetoothService} from './bluetooth/bluetooth.service';
-import {TagsFinderComponent} from './localization/tags-finder.component';
+import {TagsFinderComponent} from './tags-finder/tags-finder.component';
 import {SelectButtonModule} from 'primeng/components/selectbutton/selectbutton';
 
 export function HttpLoaderFactory(http: Http) {

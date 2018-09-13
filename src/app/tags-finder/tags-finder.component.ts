@@ -7,6 +7,8 @@ import {ConfirmationService, SelectItem} from 'primeng/primeng';
 import {SocketService} from '../shared/services/socket/socket.service';
 import {Config} from '../../config';
 import {MeasureSocketDataTags} from '../map-viewer/publication.type';
+import {Router} from '@angular/router';
+import {MessageServiceWrapper} from '../shared/services/message/message.service';
 
 @Component({
   selector: 'app-localization',
@@ -15,8 +17,6 @@ import {MeasureSocketDataTags} from '../map-viewer/publication.type';
   encapsulation: ViewEncapsulation.None
 })
 export class TagsFinderComponent implements OnInit, OnDestroy {
-
-  // TODO treeview add
 
   filterOptions: SelectItem[] = [
     {label: 'id', value: 'id'},
@@ -28,16 +28,15 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
   ];
   selectedFilterValue: string;
   tags: TagMocked[];
-  view: string = 'list.view';
   message: string;
   confirmationDialogName: string;
   private subscriptionDestroyer: Subject<void> = new Subject<void>();
 
   static mockData(tag: Tag): TagMocked {
     return Object.assign({
-      complex: Math.floor(Math.random() * 100).toString(),
-      building: Math.floor(Math.random() * 100).toString(),
-      floor: Math.floor(Math.random() * 100),
+      complex: 2,
+      building: 3,
+      floor: 4,
       group: Math.floor(Math.random() * 100).toString()
     }, tag);
   }
@@ -46,7 +45,9 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
     public translate: TranslateService,
     private socketService: SocketService,
     private breadcrumbService: BreadcrumbService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private router: Router,
+    private messageService: MessageServiceWrapper
   ) { }
 
   ngOnInit() {
@@ -60,20 +61,18 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
     this.subscriptionDestroyer.unsubscribe();
   }
 
-  toggleView(): void {
-    this.view === 'list.view' ? this.view = 'tree.view' : this.view = 'list.view';
-  }
-
-  click(id: number): void {
+  click(tag: TagMocked): void {
     this.confirmationService.confirm({
       message: this.message,
       header: this.confirmationDialogName,
       icon: 'fa-exclamation-circle',
       accept: () => {
-        console.log('accepted', id);
+        if (!!tag.complex && !!tag.building && !!tag.floor) {
+          this.router.navigate([`complexes/${tag.complex}/buildings/${tag.building}/floors/${tag.floor}/map`]);
+        }
       },
       reject: () => {
-        console.log('rejected', id);
+        this.messageService.failed('rejected.tag.find');
       }
     });
   }
@@ -116,8 +115,8 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
 }
 
 export interface TagMocked extends Tag {
-  complex: string,
-  building: string,
+  complex: number,
+  building: number,
   floor: number,
   group: string
 }

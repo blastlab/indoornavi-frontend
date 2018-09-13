@@ -238,6 +238,7 @@
   "publishedMap.details.edit": "Edit Map Access",
   "publishedMap.details.remove": "Delete Map Access",
   "publishedMaps": "Map Access",
+  "rejected.tag.find": "Rejected to locate tag on map",
   "remove": "Remove",
   "resetToPrevious": "Reset draft to previous publication",
   "S_000": "Unknown error occurred. Please contact support.",

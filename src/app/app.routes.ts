@@ -15,7 +15,7 @@ import {DeviceComponent} from './device/device';
 import {BluetoothComponent} from './bluetooth/bluetooth';
 import {AnalyticsComponent} from './map-viewer/views/analytics/analytics';
 import {NotSupportedBrowserComponent} from './not-supported-browser/not-supported-browser';
-import {TagsFinderComponent} from './localization/tags-finder.component';
+import {TagsFinderComponent} from './tags-finder/tags-finder.component';
 
 export const appRoutes: Routes = [
   {path: '', redirectTo: '/complexes', pathMatch: 'full'},
