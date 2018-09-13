@@ -37,17 +37,6 @@ export class SvgGroupWrapper {
 
     let element: d3.selection;
 
-    // create drag area
-    element = this.group
-      .append('circle')
-      .attr('cx', coordinates.x + 9) // move it right half icon size
-      .attr('cy', coordinates.y)
-      .attr('r', '10px')
-      .classed('dragarea', true)
-      .attr('fill', 'transparent');
-
-    this.addElement(ElementType.DRAG_AREA, element);
-
     // create icon
     element = this.group
       .append('text')

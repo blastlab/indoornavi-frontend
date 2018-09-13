@@ -8,6 +8,7 @@ import {InfoWindowGroupWrapper} from './info.window';
 import {APIObject} from './api.types';
 import {ApiHelper} from './api.helper';
 import {MarkerOnMap} from '../../../map/models/marker';
+import {DrawConfiguration} from '../../../map-viewer/publication.type';
 import Metadata = APIObject.Metadata;
 import Marker = APIObject.Marker;
 import Area = APIObject.Area;
@@ -22,7 +23,7 @@ export class ApiService {
   // TODO: standardize pointRadius for all points that will be drawn on the map
   private pointRadius: number = 5;
 
-  private static getDefaultConfiguration(objectMetadata: Metadata) {
+  private static getDefaultConfiguration(objectMetadata: Metadata): DrawConfiguration {
     return {id: `map-object-${objectMetadata.type}-${objectMetadata.object.id}`, clazz: 'map-object'};
   }
 

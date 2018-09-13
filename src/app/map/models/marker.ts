@@ -13,12 +13,18 @@ export class MarkerOnMap {
     height: 25
   };
 
+  private defaultIconSize: BoxSize = {
+    width: 10,
+    height: 32
+  };
+
   constructor(protected coordinates: Point, protected container: d3.selection, protected drawConfiguration: DrawConfiguration) {
     this.svgGroupWrapper = new DrawBuilder(container, drawConfiguration).createGroup()
+      .place({ x: coordinates.x - this.defaultIconSize.width / 2, y: coordinates.y })
       .addIcon(
         {
-          x: coordinates.x - 12,
-          y: coordinates.y - 22
+          x: 0,
+          y: 0
         },
         this.markerUnicode,
         2
@@ -29,16 +35,16 @@ export class MarkerOnMap {
       .attr('cursor', 'pointer');
   }
 
-  addLabel(label: string) {
+  addLabel(label: string): void {
     this.svgGroupWrapper.addText(
       {
-        x: this.coordinates.x + this.customIconSize.width / 2,
-        y: this.coordinates.y - this.customIconSize.height / 2
+        x: this.customIconSize.width / 2,
+        y: this.customIconSize.height / 2
       },
       label);
   }
 
-  addEvents(events: string[], originMessageEvent: MessageEvent) {
+  addEvents(events: string[], originMessageEvent: MessageEvent): void {
     events.forEach((event: string): void => {
       this.svgGroupWrapper.getGroup().on(event, (): void => {
         // @ts-ignore
@@ -47,30 +53,35 @@ export class MarkerOnMap {
     });
   }
 
-  setIcon(icon: string) {
+  setIcon(icon: string): void {
     this.getGroup().removeElements(ElementType.ICON);
-    this.svgGroupWrapper
+    const element: d3.selection = this.svgGroupWrapper
+      .place({
+        x: this.coordinates.x - this.customIconSize.width / 2,
+        y: this.coordinates.y - this.customIconSize.height
+      })
       .getGroup()
       .append('svg:image')
       .attr('xlink:href', icon)
-      .attr('x', this.coordinates.x - this.customIconSize.width / 2)
-      .attr('y', this.coordinates.y - this.customIconSize.height)
+      .attr('x', 0)
+      .attr('y', 0)
       .attr('width', this.customIconSize.width)
       .attr('height', this.customIconSize.height)
       .attr('stroke', 'black')
       .attr('fill', 'black')
       .attr('cursor', 'pointer');
+    this.svgGroupWrapper.getElements(ElementType.ICON).push(element);
   }
 
-  remove() {
+  remove(): void {
     this.svgGroupWrapper.remove();
   }
 
-  getGroup() {
+  getGroup(): SvgGroupWrapper {
     return this.svgGroupWrapper;
   }
 
-  setId(id: number) {
+  setId(id: number): void {
     this.id = id;
   }
 }
