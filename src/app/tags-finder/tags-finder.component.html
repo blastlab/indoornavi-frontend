@@ -5,7 +5,7 @@
     <p-dropdown [options]="filterOptions" [(ngModel)]="selectedFilterValue" ></p-dropdown>
   </div>
 </p-toolbar>
-<p-orderList [value]="tags" [listStyle]="{'height':'800px'}"
+<p-orderList [value]="tags" [listStyle]="{'height': listHeight}"
              [responsive]="true" header="{{'tags.header'|translate}}"
              filterBy="{{selectedFilterValue}}"
              filterPlaceholder="{{'filter.by'|translate}} {{selectedFilterValue|translate}}"
@@ -13,12 +13,12 @@
 >
   <ng-template let-tag pTemplate="item">
     <div class="ui-helper-clearfix">
-      <div style="display:inline-block">{{'id'|translate|uppercase}}: {{tag.id}}</div>
-      <div style="display:inline-block">{{'name'|translate|uppercase}}: {{tag.name}}</div>
-      <div style="display:inline-block">{{'complex'|translate|uppercase}}: {{tag.complex}}</div>
-      <div style="display:inline-block">{{'building'|translate|uppercase}}: {{tag.building}}</div>
-      <div style="display:inline-block">{{'floor'|translate|uppercase}}: {{tag.floor}}</div>
-      <div style="display:inline-block">{{'group'|translate|uppercase}}: {{tag.group}}</div>
+      <div class="tags-list-item" >{{'id'|translate|uppercase}}: {{tag.id}}</div>
+      <div class="tags-list-item">{{'name'|translate|uppercase}}: {{tag.name}}</div>
+      <div class="tags-list-item">{{'complex'|translate|uppercase}}: {{tag.complex}}</div>
+      <div class="tags-list-item">{{'building'|translate|uppercase}}: {{tag.building}}</div>
+      <div class="tags-list-item">{{'floor'|translate|uppercase}}: {{tag.floor}}</div>
+      <div class="tags-list-item">{{'group'|translate|uppercase}}: {{tag.group}}</div>
     </div>
   </ng-template>
 </p-orderList>

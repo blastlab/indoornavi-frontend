@@ -31,6 +31,7 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
   ];
   selectedFilterValue: string;
   tags: TagMocked[];
+  listHeight: string;
   private message: string;
   private confirmationDialogName: string;
   private subscriptionDestroyer: Subject<void> = new Subject<void>();
@@ -115,9 +116,14 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
           this.tags.push(tagMocked);
         }
       });
+      this.tags.length > 0 ? this.setListHeight() : this.listHeight = '200px';
     });
   }
 
+  private setListHeight(): void {
+    const tagsNumber: number = this.tags.length;
+    tagsNumber < 80 ? this.listHeight = `${tagsNumber * 10}` : this.listHeight = '800px';
+  }
   private getPublications(): void {
     this.httpService.doGet('publications').takeUntil(this.subscriptionDestroyer).subscribe((publications: Publication[]) => {
       this.publications = publications;

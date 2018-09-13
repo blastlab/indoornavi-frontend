@@ -6,3 +6,6 @@
 .ui-orderlist.ui-orderlist-responsive .ui-orderlist-list-container {
   width: 100%;
 }
+.tags-list-item {
+  display: inline-block;
+}
