@@ -6,9 +6,11 @@ import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.servi
 import {ConfirmationService, SelectItem} from 'primeng/primeng';
 import {SocketService} from '../shared/services/socket/socket.service';
 import {Config} from '../../config';
-import {MeasureSocketDataTags} from '../map-viewer/publication.type';
+import {MeasureSocketDataTags, Publication} from '../map-viewer/publication.type';
 import {Router} from '@angular/router';
 import {MessageServiceWrapper} from '../shared/services/message/message.service';
+import {HttpService} from '../shared/services/http/http.service';
+import {Floor} from '../floor/floor.type';
 
 @Component({
   selector: 'app-localization',
@@ -24,13 +26,15 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
     {label: 'complex', value: 'complex'},
     {label: 'building', value: 'building'},
     {label: 'floor', value: 'floor'},
-    {label: 'group', value: 'group'}
+    {label: 'group', value: 'group'},
+    {label: 'all', value: 'id,name,complex,building,floor,group'}
   ];
   selectedFilterValue: string;
   tags: TagMocked[];
-  message: string;
-  confirmationDialogName: string;
+  private message: string;
+  private confirmationDialogName: string;
   private subscriptionDestroyer: Subject<void> = new Subject<void>();
+  private publications: Publication[];
 
   static mockData(tag: Tag): TagMocked {
     return Object.assign({
@@ -47,12 +51,14 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
     private breadcrumbService: BreadcrumbService,
     private confirmationService: ConfirmationService,
     private router: Router,
-    private messageService: MessageServiceWrapper
+    private messageService: MessageServiceWrapper,
+    protected httpService: HttpService
   ) { }
 
   ngOnInit() {
     this.setTranslations();
     this.initializeSocketConnection();
+    this.getPublications();
     this.selectedFilterValue = this.filterOptions[0].value;
   }
 
@@ -68,7 +74,8 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
       icon: 'fa-exclamation-circle',
       accept: () => {
         if (!!tag.complex && !!tag.building && !!tag.floor) {
-          this.router.navigate([`complexes/${tag.complex}/buildings/${tag.building}/floors/${tag.floor}/map`]);
+          const publication: number = this.getPublication(tag.complex, tag.building, tag.floor);
+          !!publication ? this.router.navigate([`publications/${publication}`]) : this.messageService.failed('access.denied');
         }
       },
       reject: () => {
@@ -101,7 +108,7 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
     const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?client`);
     stream.takeUntil(this.subscriptionDestroyer).subscribe((data: MeasureSocketDataTags): void => {
       this.tags = [];
-      data.tags.forEach((tag: Tag) => {
+      data.tags.forEach((tag: Tag): void => {
         if (tag.verified) {
           // TODO: delete mock method after backend update
           const tagMocked: TagMocked = TagsFinderComponent.mockData(tag);
@@ -111,9 +118,28 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
     });
   }
 
+  private getPublications(): void {
+    this.httpService.doGet('publications').takeUntil(this.subscriptionDestroyer).subscribe((publications: Publication[]) => {
+      this.publications = publications;
+    });
+  }
 
+  private getPublication(complexId: number, buildingId: number, floorId: number): number {
+    let publicationNumber: number = null;
+    if (!!this.publications) {
+      this.publications.forEach((publication: Publication): void => {
+        publication.floors.forEach((floor: Floor): void => {
+          if (floor.id === floorId && floor.building.id === buildingId && floor.building.complex.id === complexId) {
+            publicationNumber = floor.id;
+          }
+        });
+      });
+    }
+    return publicationNumber;
+  }
 }
 
+// TODO after mock deleted Tag will contain all information from below interface, refactor this according to provided changes
 export interface TagMocked extends Tag {
   complex: number,
   building: number,
