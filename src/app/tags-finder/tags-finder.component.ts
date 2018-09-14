@@ -122,7 +122,7 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
 
   private setListHeight(): void {
     const tagsNumber: number = this.tags.length;
-    tagsNumber < 80 ? this.listHeight = `${tagsNumber * 10}px` : this.listHeight = '800px';
+    tagsNumber < 80 ? this.listHeight = `${tagsNumber * 30}px` : this.listHeight = '800px';
   }
   private getPublications(): void {
     this.httpService.doGet('publications').takeUntil(this.subscriptionDestroyer).subscribe((publications: Publication[]) => {

@@ -9,3 +9,7 @@
 .tags-list-item {
   display: inline-block;
 }
+
+.tags-list-filter {
+  display: inline-block;
+}

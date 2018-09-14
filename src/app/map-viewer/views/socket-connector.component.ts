@@ -116,7 +116,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
             scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
           };
         }
-        if (floor.imageId != null) {
+        if (!!floor.imageId) {
           this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg) => {
             this.d3map = mapSvg;
             this.loadMapDeferred.resolve();
