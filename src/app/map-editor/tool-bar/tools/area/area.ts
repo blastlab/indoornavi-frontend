@@ -286,6 +286,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
       .addCircle(point, AreaComponent.CIRCLE_R)
       .getLastElement(ElementType.CIRCLE);
 
+    this.selectedEditable = null;
     pointSelection
       .on('mouseover', (): void => {
         pointSelection.style('fill', 'red');
