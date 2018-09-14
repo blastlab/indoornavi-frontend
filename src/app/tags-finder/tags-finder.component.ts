@@ -75,8 +75,8 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
       icon: 'fa-exclamation-circle',
       accept: () => {
         if (!!tag.complex && !!tag.building && !!tag.floor) {
-          const publication: number = this.getPublication(tag.complex, tag.building, tag.floor);
-          !!publication ? this.router.navigate([`publications/${publication}`]) : this.messageService.failed('access.denied');
+          const publicationId: number = this.getPublicationId(tag.complex, tag.building, tag.floor);
+          !!publicationId ? this.router.navigate([`publications/${publicationId}`]) : this.messageService.failed('access.denied');
         }
       },
       reject: () => {
@@ -122,7 +122,7 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
 
   private setListHeight(): void {
     const tagsNumber: number = this.tags.length;
-    tagsNumber < 80 ? this.listHeight = `${tagsNumber * 10}` : this.listHeight = '800px';
+    tagsNumber < 80 ? this.listHeight = `${tagsNumber * 10}px` : this.listHeight = '800px';
   }
   private getPublications(): void {
     this.httpService.doGet('publications').takeUntil(this.subscriptionDestroyer).subscribe((publications: Publication[]) => {
@@ -130,7 +130,7 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
     });
   }
 
-  private getPublication(complexId: number, buildingId: number, floorId: number): number {
+  private getPublicationId(complexId: number, buildingId: number, floorId: number): number {
     let publicationNumber: number = null;
     if (!!this.publications) {
       this.publications.forEach((publication: Publication): void => {

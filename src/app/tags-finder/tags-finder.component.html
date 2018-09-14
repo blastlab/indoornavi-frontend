@@ -2,7 +2,7 @@
 <p-toolbar>
   <div class="left">
     <div style="display:inline-block">{{'filter.by'|translate}} </div>
-    <p-dropdown [options]="filterOptions" [(ngModel)]="selectedFilterValue" ></p-dropdown>
+    <p-dropdown [options]="filterOptions" [(ngModel)]="selectedFilterValue"></p-dropdown>
   </div>
 </p-toolbar>
 <p-orderList [value]="tags" [listStyle]="{'height': listHeight}"
