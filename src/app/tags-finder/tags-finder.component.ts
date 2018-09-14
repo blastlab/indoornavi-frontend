@@ -6,7 +6,7 @@ import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.servi
 import {ConfirmationService, SelectItem} from 'primeng/primeng';
 import {SocketService} from '../shared/services/socket/socket.service';
 import {Config} from '../../config';
-import {MeasureSocketDataTags, Publication} from '../map-viewer/publication.type';
+import {MeasureSocketDataTag, Publication} from '../map-viewer/publication.type';
 import {Router} from '@angular/router';
 import {MessageServiceWrapper} from '../shared/services/message/message.service';
 import {HttpService} from '../shared/services/http/http.service';
@@ -30,21 +30,12 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
     {label: 'all', value: 'id,name,complex,building,floor,group'}
   ];
   selectedFilterValue: string;
-  tags: TagMocked[];
+  tags: TagListBag[] = [];
   listHeight: string;
   private message: string;
   private confirmationDialogName: string;
   private subscriptionDestroyer: Subject<void> = new Subject<void>();
   private publications: Publication[];
-
-  static mockData(tag: Tag): TagMocked {
-    return Object.assign({
-      complex: 2,
-      building: 3,
-      floor: 4,
-      group: Math.floor(Math.random() * 100).toString()
-    }, tag);
-  }
 
   constructor(
     public translate: TranslateService,
@@ -60,6 +51,7 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
     this.setTranslations();
     this.initializeSocketConnection();
     this.getPublications();
+    this.initializeTimeIntervalForClearingTagsFromList();
     this.selectedFilterValue = this.filterOptions[0].value;
   }
 
@@ -68,21 +60,25 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
     this.subscriptionDestroyer.unsubscribe();
   }
 
-  click(tag: TagMocked): void {
+  click(tag: TagListBag): void {
     this.confirmationService.confirm({
       message: this.message,
       header: this.confirmationDialogName,
       icon: 'fa-exclamation-circle',
       accept: () => {
-        if (!!tag.complex && !!tag.building && !!tag.floor) {
-          const publicationId: number = this.getPublicationId(tag.complex, tag.building, tag.floor);
-          !!publicationId ? this.router.navigate([`publications/${publicationId}`]) : this.messageService.failed('access.denied');
-        }
+        // if (!!tag.complex && !!tag.building && !!tag.floor) {
+        //   const publicationId: number = this.getPublicationId(tag.complex, tag.building, tag.floor);
+        //   !!publicationId ? this.router.navigate([`publications/${publicationId}`]) : this.messageService.failed('access.denied');
+        // }
       },
       reject: () => {
         this.messageService.failed('action.rejected');
       }
     });
+  }
+
+  private initializeTimeIntervalForClearingTagsFromList(): void {
+    console.log('interval initialized, looping over this.tags and chacking if lastUpdateTime is range');
   }
 
   private setTranslations(): void {
@@ -106,27 +102,27 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
   }
 
   private initializeSocketConnection(): void {
-    const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?client`);
-    stream.takeUntil(this.subscriptionDestroyer).subscribe((data: MeasureSocketDataTags): void => {
-      this.tags = [];
-      data.tags.forEach((tag: Tag): void => {
-        if (tag.verified) {
-          // TODO: delete mock method after backend update
-          const tagMocked: TagMocked = TagsFinderComponent.mockData(tag);
-          this.tags.push(tagMocked);
+    const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}tagTracer?client`);
+    stream.takeUntil(this.subscriptionDestroyer).subscribe((tagData: MeasureSocketDataTag): void => {
+      let tagInTags = false;
+      const tagListBag: TagListBag = Object.assign({lastUpdateTime: Date.now()}, tagData);
+      this.tags.forEach((tagBag: TagListBag) => {
+        if (tagBag.tag.id === tagData.tag.id) {
+          tagBag = tagListBag;
+          tagInTags = true;
         }
       });
-      this.tags.length > 0 ? this.setListHeight() : this.listHeight = '200px';
+      if (!tagInTags) {
+        this.tags.push(tagListBag);
+      }
+      this.tags.length > 20 ? this.listHeight = '1000px' : this.listHeight = '600px';
     });
   }
 
-  private setListHeight(): void {
-    const tagsNumber: number = this.tags.length;
-    tagsNumber < 80 ? this.listHeight = `${tagsNumber * 30}px` : this.listHeight = '800px';
-  }
   private getPublications(): void {
     this.httpService.doGet('publications').takeUntil(this.subscriptionDestroyer).subscribe((publications: Publication[]) => {
       this.publications = publications;
+      console.log(publications);
     });
   }
 
@@ -146,9 +142,7 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
 }
 
 // TODO after mock deleted Tag will contain all information from below interface, refactor this according to provided changes
-export interface TagMocked extends Tag {
-  complex: number,
-  building: number,
-  floor: number,
-  group: string
+
+export interface TagListBag extends MeasureSocketDataTag {
+  lastUpdateTime: number
 }

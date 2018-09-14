@@ -13,12 +13,12 @@
 >
   <ng-template let-tag pTemplate="item">
     <div class="ui-helper-clearfix">
-      <div class="tags-list-item" >{{'id'|translate|uppercase}}: {{tag.id}}</div>
-      <div class="tags-list-item">{{'name'|translate|uppercase}}: {{tag.name}}</div>
-      <div class="tags-list-item">{{'complex'|translate|uppercase}}: {{tag.complex}}</div>
-      <div class="tags-list-item">{{'building'|translate|uppercase}}: {{tag.building}}</div>
-      <div class="tags-list-item">{{'floor'|translate|uppercase}}: {{tag.floor}}</div>
-      <div class="tags-list-item">{{'group'|translate|uppercase}}: {{tag.group}}</div>
+      <div class="ui-g-12 ui-md-2 ui-lg-2 tags-list-item" ><b>{{'id'|translate}}:</b> {{tag.id}}</div>
+      <div class="ui-g-12 ui-md-2 ui-lg-2 tags-list-item"><b>{{'name'|translate}}:</b> {{tag.name}}</div>
+      <div class="ui-g-12 ui-md-2 ui-lg-2 tags-list-item"><b>{{'complex'|translate}}:</b> {{tag.complex}}</div>
+      <div class="ui-g-12 ui-md-2 ui-lg-2 tags-list-item"><b>{{'building'|translate}}:</b> {{tag.building}}</div>
+      <div class="ui-g-12 ui-md-2 ui-lg-2 tags-list-item"><b>{{'floor'|translate}}:</b> {{tag.floor}}</div>
+      <div class="ui-g-12 ui-md-2 ui-lg-2 tags-list-item"><b>{{'group'|translate}}:</b> {{tag.group}}</div>
     </div>
   </ng-template>
 </p-orderList>

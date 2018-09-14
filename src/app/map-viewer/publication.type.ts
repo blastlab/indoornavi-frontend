@@ -71,6 +71,7 @@ export interface ValidationResult {
   imageSet?: boolean
 }
 
-export interface MeasureSocketDataTags extends MeasureSocketData {
-  tags: Tag[]
+export interface MeasureSocketDataTag {
+  tag: Tag;
+  floor: Floor
 }
