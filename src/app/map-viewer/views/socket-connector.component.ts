@@ -38,8 +38,8 @@ import {MapClickService} from '../../shared/services/map-click/map-click.service
 import {Deferred} from '../../shared/utils/helper/deferred';
 import {TagOnMap} from '../../map/models/tag';
 import {APIObject} from '../../shared/utils/drawing/api.types';
-import Metadata = APIObject.Metadata;
 import {PathService} from '../services/path/path.service';
+import Metadata = APIObject.Metadata;
 
 @Component({
   templateUrl: './socket-connector.component.html'
@@ -329,6 +329,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       const width = this.d3map.container.node().getBBox().width;
       // @ts-ignore
       event.source.postMessage({type: `getMapDimensions`, mapObjectId: 'map', height: height, width: width, scale: this.scale}, event.origin);
+      // @ts-ignore
       event.source.postMessage({type: 'getMapDimensions', mapObjectId: 'map', height: height, width: width, scale: this.scale}, event.origin);
     });
   }
@@ -339,6 +340,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       if (!!pathFromConfiguration && pathFromConfiguration.length > 0) {
         calculatedPosition = Geometry.findPointOnPathInGivenRange(pathFromConfiguration, event.data['args'].point, event.data['args'].accurac);
       }
+      // @ts-ignore
       event.source.postMessage({
           type: 'getPointOnPath',
         mapObjectId: 'map',
