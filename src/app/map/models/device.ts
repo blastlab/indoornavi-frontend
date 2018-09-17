@@ -91,7 +91,8 @@ export class DeviceInEditor {
     this.svgGroupWrapper = new DrawBuilder(container, drawConfiguration).createGroup()
       .place(coordinates)
       .addIcon2({x: 0, y: 11}, this.cursorIcon) // icon 0,0 coordinates are at the font bottom left
-      .addText({x: 0, y: 40}, deviceDescription);
+      .addText({x: 0, y: 40}, deviceDescription)
+      .hideTexts();
   }
 
   private setDeviceAppearance(color): void {
@@ -105,8 +106,11 @@ export class DeviceInEditor {
     let text = (!!this.drawConfiguration.name)
       ? `${this.drawConfiguration.name}-${this.drawConfiguration.id}`
       : `${this.drawConfiguration.clazz}-${this.drawConfiguration.id}`;
-    if (!!this.drawConfiguration.heightInMeters) {
-      text += ` (${this.drawConfiguration.heightInMeters / 100}m)`
+
+    const heightInMeters = this.drawConfiguration.heightInMeters;
+
+    if (!!heightInMeters || heightInMeters === 0) {
+      text += ` (${heightInMeters / 100}m)`
     }
     return text;
   }

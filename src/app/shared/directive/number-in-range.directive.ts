@@ -24,6 +24,12 @@ export class NumberInRangeValidatorDirective implements Validator {
           properNumberInRange: `${translateKey}.numberInRange`
         };
       }
+    } else if (deviceType === 'bluetooth') {
+      if (val > 65536) {
+        return {
+          properNumberInRange: `${translateKey}.numberInRange`
+        };
+      }
     } else {
       if (val < 32768 || val >= 2147483648) {
         return {
