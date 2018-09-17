@@ -1,4 +1,4 @@
-import {Component, OnInit, Input, DoCheck} from '@angular/core';
+import {Component, OnInit, Input, AfterViewChecked} from '@angular/core';
 import {environment} from '../../../../environments/environment';
 import {Location} from '@angular/common';
 
@@ -7,7 +7,7 @@ import {Location} from '@angular/common';
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.css']
 })
-export class FooterComponent implements OnInit, DoCheck {
+export class FooterComponent implements OnInit, AfterViewChecked {
 
   appVersion: string;
   year: number;
@@ -20,9 +20,10 @@ export class FooterComponent implements OnInit, DoCheck {
   ngOnInit() {
     this.appVersion = environment.version;
     this.year = new Date().getFullYear();
+    this.centerFooterInPage();
   }
 
-  ngDoCheck() {
+  ngAfterViewChecked() {
     this.centerFooterInPage();
   }
 
