@@ -5,20 +5,19 @@
     <p-dropdown [options]="filterOptions" [(ngModel)]="selectedFilterValue"></p-dropdown>
   </div>
 </p-toolbar>
-<p-orderList [value]="tags" [listStyle]="{'height': listHeight}"
-             [responsive]="true" header="{{'tags.header'|translate}}"
-             filterBy="{{selectedFilterValue}}"
-             filterPlaceholder="{{'filter.by'|translate}} {{selectedFilterValue|translate}}"
-             (onSelectionChange)="click($event.value[0])"
->
-  <ng-template let-tag pTemplate="item">
-    <div class="ui-helper-clearfix">
-      <div class="ui-g-12 ui-md-2 ui-lg-2 tags-list-item" ><b>{{'id'|translate}}:</b> {{tag.id}}</div>
-      <div class="ui-g-12 ui-md-2 ui-lg-2 tags-list-item"><b>{{'name'|translate}}:</b> {{tag.name}}</div>
-      <div class="ui-g-12 ui-md-2 ui-lg-2 tags-list-item"><b>{{'complex'|translate}}:</b> {{tag.complex}}</div>
-      <div class="ui-g-12 ui-md-2 ui-lg-2 tags-list-item"><b>{{'building'|translate}}:</b> {{tag.building}}</div>
-      <div class="ui-g-12 ui-md-2 ui-lg-2 tags-list-item"><b>{{'floor'|translate}}:</b> {{tag.floor}}</div>
-      <div class="ui-g-12 ui-md-2 ui-lg-2 tags-list-item"><b>{{'group'|translate}}:</b> {{tag.group}}</div>
-    </div>
-  </ng-template>
-</p-orderList>
+<p-dataTable [loading]="loading" [value]="tags" styleClass="auto" [lazy]="true">
+  <p-column  field="id" header="{{'id'|translate}}"></p-column>
+  <p-column  field="name" header="{{'name'|translate}}"></p-column>
+  <p-column  field="complex" header="{{'complex'|translate}}"></p-column>
+  <p-column  field="building" header="{{'building'|translate}}"></p-column>
+  <p-column  field="floor" header="{{'floor'|translate}}"></p-column>
+  <p-column field="floorId" header="{{'th.actions'|translate}}" styleClass="col-button">
+    <ng-template let-tag="rowData" pTemplate="body">
+      <button
+        pTooltip="{{'go.to.map'|translate}}" type="button"
+        pButton (click)="click(tag)"
+        icon="fa-level-down" class="ui-button-info">
+      </button>
+    </ng-template>
+  </p-column>
+</p-dataTable>

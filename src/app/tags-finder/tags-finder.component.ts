@@ -1,5 +1,4 @@
-import {Component, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
-import {Tag} from '../device/device.type';
+import {Component, DoCheck, OnChanges, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
 import {TranslateService} from '@ngx-translate/core';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
@@ -30,8 +29,9 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
     {label: 'all', value: 'id,name,complex,building,floor,group'}
   ];
   selectedFilterValue: string;
-  tags: TagListBag[] = [];
-  listHeight: string;
+  loading: boolean = true;
+  tags: TagListElement[] = [];
+  private readonly timeInterval = 10000;
   private message: string;
   private confirmationDialogName: string;
   private subscriptionDestroyer: Subject<void> = new Subject<void>();
@@ -49,9 +49,9 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.setTranslations();
-    this.initializeSocketConnection();
     this.getPublications();
-    this.initializeTimeIntervalForClearingTagsFromList();
+    this.initializeTimeInterval();
+    this.initializeSocketConnection();
     this.selectedFilterValue = this.filterOptions[0].value;
   }
 
@@ -60,16 +60,14 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
     this.subscriptionDestroyer.unsubscribe();
   }
 
-  click(tag: TagListBag): void {
+  click(tag: TagListElement): void {
     this.confirmationService.confirm({
       message: this.message,
       header: this.confirmationDialogName,
       icon: 'fa-exclamation-circle',
       accept: () => {
-        // if (!!tag.complex && !!tag.building && !!tag.floor) {
-        //   const publicationId: number = this.getPublicationId(tag.complex, tag.building, tag.floor);
-        //   !!publicationId ? this.router.navigate([`publications/${publicationId}`]) : this.messageService.failed('access.denied');
-        // }
+        this.messageService.success('map.switch');
+        console.log(tag);
       },
       reject: () => {
         this.messageService.failed('action.rejected');
@@ -77,8 +75,16 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
     });
   }
 
-  private initializeTimeIntervalForClearingTagsFromList(): void {
-    console.log('interval initialized, looping over this.tags and chacking if lastUpdateTime is range');
+  private initializeTimeInterval(): void {
+    const looper = () => setTimeout(() => {
+      const timeNow = new Date().getTime();
+      const activeTags: TagListElement[] = this.tags.filter((tag: TagListElement): boolean => {
+        return tag.lastUpdateTime > timeNow - this.timeInterval;
+      });
+      this.tags = Object.assign([], activeTags);
+      looper();
+    }, this.timeInterval);
+    looper();
   }
 
   private setTranslations(): void {
@@ -104,18 +110,29 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
   private initializeSocketConnection(): void {
     const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}tagTracer?client`);
     stream.takeUntil(this.subscriptionDestroyer).subscribe((tagData: MeasureSocketDataTag): void => {
+      this.loading = false;
       let tagInTags = false;
-      const tagListBag: TagListBag = Object.assign({lastUpdateTime: Date.now()}, tagData);
-      this.tags.forEach((tagBag: TagListBag) => {
-        if (tagBag.tag.id === tagData.tag.id) {
-          tagBag = tagListBag;
+      const tagListBag: TagListElement = {
+        lastUpdateTime: new Date().getTime(),
+        id: tagData.tag.shortId,
+        name: tagData.tag.name,
+        complex: tagData.floor.building.complex.name,
+        building: tagData.floor.building.name,
+        floor: tagData.floor.name,
+        floorId: tagData.floor.id
+      };
+      this.tags.forEach((tagListElement: TagListElement) => {
+        if (tagListElement.id === tagData.tag.shortId) {
+          tagListElement = tagListBag;
           tagInTags = true;
         }
       });
       if (!tagInTags) {
         this.tags.push(tagListBag);
       }
-      this.tags.length > 20 ? this.listHeight = '1000px' : this.listHeight = '600px';
+      // DataTable [value] reference variable needs to be overwritten not updated to update data view
+      // this bug or lack of feature in DataTable has solution used below,
+      this.tags = Object.assign([], this.tags);
     });
   }
 
@@ -141,8 +158,12 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
   }
 }
 
-// TODO after mock deleted Tag will contain all information from below interface, refactor this according to provided changes
-
-export interface TagListBag extends MeasureSocketDataTag {
-  lastUpdateTime: number
+export interface TagListElement {
+  lastUpdateTime: number;
+  id: number;
+  name: string;
+  complex: string;
+  building: string;
+  floor: string;
+  floorId: number;
 }

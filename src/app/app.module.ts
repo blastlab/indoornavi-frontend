@@ -55,8 +55,7 @@ import {
   SliderModule,
   ToolbarModule,
   TooltipModule,
-  InputMaskModule,
-  OrderListModule
+  InputMaskModule
 } from 'primeng/primeng';
 import {HintBarService} from './map-editor/hint-bar/hintbar.service';
 import {ToolbarService} from './map-editor/tool-bar/toolbar.service';
@@ -223,8 +222,7 @@ export function HttpLoaderFactory(http: Http) {
     FileUploadModule,
     RadioButtonModule,
     InputMaskModule,
-    SelectButtonModule,
-    OrderListModule
+    SelectButtonModule
   ],
   providers: [
     BuildingService,
