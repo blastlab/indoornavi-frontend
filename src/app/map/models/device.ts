@@ -106,8 +106,11 @@ export class DeviceInEditor {
     let text = (!!this.drawConfiguration.name)
       ? `${this.drawConfiguration.name}-${this.drawConfiguration.id}`
       : `${this.drawConfiguration.clazz}-${this.drawConfiguration.id}`;
-    if (!!this.drawConfiguration.heightInMeters) {
-      text += ` (${this.drawConfiguration.heightInMeters / 100}m)`
+
+    const heightInMeters = this.drawConfiguration.heightInMeters;
+
+    if (!!heightInMeters || heightInMeters === 0) {
+      text += ` (${heightInMeters / 100}m)`
     }
     return text;
   }
