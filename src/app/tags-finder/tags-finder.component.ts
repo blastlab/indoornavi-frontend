@@ -11,6 +11,7 @@ import {MessageServiceWrapper} from '../shared/services/message/message.service'
 import {HttpService} from '../shared/services/http/http.service';
 import {Floor} from '../floor/floor.type';
 import {TagListElement} from './tags-finder.type';
+import {TagFollowerInformerService} from '../shared/services/tag-follower-informer/tag-follower-informer.service';
 
 @Component({
   selector: 'app-localization',
@@ -46,7 +47,8 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
     private confirmationService: ConfirmationService,
     private router: Router,
     private messageService: MessageServiceWrapper,
-    protected httpService: HttpService
+    private tagFolowerInformerService: TagFollowerInformerService,
+    protected httpService: HttpService,
   ) { }
 
   ngOnInit() {
@@ -92,8 +94,9 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
         const floorId: number = this.getPublicationId(tag.floorId);
         if (!!floorId) {
           this.messageService.success('map.switch');
+          this.router.navigate([`embedded/${floorId}`]);
+          this.tagFolowerInformerService.dispatchTagToSpyOn(tag.id);
           console.log(tag);
-          console.log(floorId);
         } else {
           this.messageService.failed('access.denied');
         }
@@ -139,6 +142,7 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
   private initializeSocketConnection(): void {
     const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}tagTracer?client`);
     stream.takeUntil(this.subscriptionDestroyer).subscribe((tagData: MeasureSocketDataTag): void => {
+      console.log(tagData);
       this.loading = false;
       let tagInTags = false;
       const tagListBag: TagListElement = {
@@ -150,7 +154,7 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
         floor: tagData.floor.name,
         floorId: tagData.floor.id
       };
-      this.tags.forEach((tagListElement: TagListElement) => {
+      this.tags.forEach((tagListElement: TagListElement): void => {
         if (tagListElement.id === tagData.tag.shortId) {
           tagListElement = tagListBag;
           tagInTags = true;

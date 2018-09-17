@@ -13,6 +13,7 @@ import {TagVisibilityTogglerService} from '../../../shared/components/tag-visibi
 import {BreadcrumbService} from '../../../shared/services/breadcrumbs/breadcrumb.service';
 import {MapClickService} from '../../../shared/services/map-click/map-click.service';
 import {PathService} from '../../services/path/path.service';
+import {TagFollowerInformerService} from '../../../shared/services/tag-follower-informer/tag-follower-informer.service';
 
 
 @Component({
@@ -34,7 +35,8 @@ export class PublishedComponent extends SocketConnectorComponent implements OnIn
               mapObjectService: ApiService,
               floorService: FloorService,
               tagToggler: TagVisibilityTogglerService,
-              breadcrumbService: BreadcrumbService
+              breadcrumbService: BreadcrumbService,
+    tagFollowerInformerService: TagFollowerInformerService
   ) {
 
     super(
@@ -52,7 +54,10 @@ export class PublishedComponent extends SocketConnectorComponent implements OnIn
       floorService,
       tagToggler,
       breadcrumbService,
+      tagFollowerInformerService
     );
   }
+
+
 
 }
