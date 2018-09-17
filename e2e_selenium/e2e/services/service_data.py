@@ -3,18 +3,18 @@ import csv
 from selenium.webdriver.common.by import By
 
 
+def get_data_json_from_file(path):
+    with open(path) as data_json:
+        return json.load(data_json)
+
+
 def get_test_translator_data():
-    with open('src/test_conf/test_translator.json') as translator_data:
-        data = json.load(translator_data)
-        return data
+        return get_data_json_from_file('src/test_conf/test_translator.json')
 
 
 def parse_json_to_string(path):
     with open(path) as translator_data:
-        data = str(json.load(translator_data)).replace("'", '"')\
-                                              .replace("None", "null")\
-                                              .replace("True", "true")
-        return data
+        return str(json.load(translator_data)).replace("'", '"').replace("None", "null").replace("True", "true")
 
 
 def get_csv_data(filepath):
@@ -35,10 +35,8 @@ def get_csv_data(filepath):
 
 
 def get_multiselect_selector(params):
-    selector = (By.CLASS_NAME, "test-multiselect-item-{0}-{1}".format(params[0], params[1]))
-    return selector
+    return By.CLASS_NAME, "test-multiselect-item-{0}-{1}".format(params[0], params[1])
 
 
 def get_toast_selector(key):
-    selector = (By.XPATH, '//p[contains(text(),"{0}")]'.format(get_test_translator_data()[key]))
-    return selector
+    return By.XPATH, '//p[contains(text(),"{0}")]'.format(get_test_translator_data()[key])
