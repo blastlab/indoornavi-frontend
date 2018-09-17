@@ -15,3 +15,9 @@
   justify-content: center;
   margin-top: 50px;
 }
+
+.center-footer {
+  justify-content: center;
+  paddign-top: 10px;
+}
+

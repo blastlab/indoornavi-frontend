@@ -1,23 +1,34 @@
-import {Component, OnInit, Input} from '@angular/core';
+import {Component, OnInit, Input, DoCheck} from '@angular/core';
 import {environment} from '../../../../environments/environment';
+import {Location} from '@angular/common';
 
 @Component({
   selector: 'app-footer',
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.css']
 })
-export class FooterComponent implements OnInit {
+export class FooterComponent implements OnInit, DoCheck {
 
   appVersion: string;
   year: number;
+  centerFooter: string = '';
 
   @Input() classFooter: string = '';
 
-  constructor() {}
+  constructor(private location: Location) {}
 
   ngOnInit() {
     this.appVersion = environment.version;
     this.year = new Date().getFullYear();
+  }
+
+  ngDoCheck() {
+    this.centerFooterInPage();
+  }
+
+  private centerFooterInPage() {
+    const pages = ['changePassword'];
+    this.centerFooter = pages.includes(this.location.path().slice(1)) ? 'center-footer' : '';
   }
 
 }
