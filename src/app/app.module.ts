@@ -4,6 +4,7 @@ import {FormsModule} from '@angular/forms';
 import {Http, HttpModule} from '@angular/http';
 import {ComplexComponent} from './complex/complex';
 import {RouterModule} from '@angular/router';
+import {CoreModule} from './core/core.module';
 import {BuildingComponent} from './building/building';
 import {BuildingService} from './building/building.service';
 import {FloorComponent} from './floor/floor';
@@ -194,6 +195,7 @@ export function HttpLoaderFactory(http: Http) {
     }),
     RouterModule.forRoot(appRoutes),
     ImageUploadModule.forRoot(),
+    CoreModule,
     SharedModule,
     DataTableModule,
     SliderModule,
