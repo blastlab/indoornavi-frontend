@@ -111,7 +111,7 @@ export class ApiService {
           x: point.x + SvgGroupWrapper.customIconSize.width / 2,
           y: point.y - SvgGroupWrapper.customIconSize.height / 2
         },
-        marker.label)
+        marker.label);
     }
   }
 
