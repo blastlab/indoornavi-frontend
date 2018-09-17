@@ -40,6 +40,8 @@ import {TagOnMap} from '../../map/models/tag';
 import {APIObject} from '../../shared/utils/drawing/api.types';
 import Metadata = APIObject.Metadata;
 import {PathService} from '../services/path/path.service';
+import {Complex} from '../../complex/complex.type';
+import {ComplexService} from '../../complex/complex.service';
 
 @Component({
   templateUrl: './socket-connector.component.html'
@@ -71,6 +73,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
               private translateService: TranslateService,
               private iconService: IconService,
               private mapObjectService: ApiService,
+              private complexService: ComplexService,
               private floorService: FloorService,
               protected tagTogglerService: TagVisibilityTogglerService,
               private breadcrumbService: BreadcrumbService) {
@@ -328,8 +331,20 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       const height = this.d3map.container.node().getBBox().height;
       const width = this.d3map.container.node().getBBox().width;
       // @ts-ignore
-      event.source.postMessage({type: `getMapDimensions`, mapObjectId: 'map', height: height, width: width, scale: this.scale}, event.origin);
-      event.source.postMessage({type: 'getMapDimensions', mapObjectId: 'map', height: height, width: width, scale: this.scale}, event.origin);
+      event.source.postMessage({
+        type: `getMapDimensions`,
+        mapObjectId: 'map',
+        height: height,
+        width: width,
+        scale: this.scale
+      }, event.origin);
+      event.source.postMessage({
+        type: 'getMapDimensions',
+        mapObjectId: 'map',
+        height: height,
+        width: width,
+        scale: this.scale
+      }, event.origin);
     });
   }
 
@@ -340,10 +355,21 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
         calculatedPosition = Geometry.findPointOnPathInGivenRange(pathFromConfiguration, event.data['args'].point, event.data['args'].accurac);
       }
       event.source.postMessage({
-          type: 'getPointOnPath',
+        type: 'getPointOnPath',
         mapObjectId: 'map',
         calculatedPosition:
         calculatedPosition
+      }, event.origin);
+    });
+  }
+
+
+  private getComplexes(event: MessageEvent) {
+    this.complexService.getComplexes().first().subscribe((complexes: Complex[]) => {
+      console.log(complexes)
+      event.source.postMessage({
+        type: 'getComplexes',
+        complexes: complexes
       }, event.origin);
     });
   }
@@ -388,6 +414,9 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           break;
         case 'getPointOnPath':
           this.getPointOnPath(event);
+          break;
+        case 'getComplexes':
+          this.getComplexes(event);
           break;
       }
     }

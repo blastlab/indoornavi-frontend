@@ -23,6 +23,7 @@ import {HeatMapType} from '../../../shared/components/heat-map-controller/heat-m
 import {MapClickService} from '../../../shared/services/map-click/map-click.service';
 import {TagOnMap} from '../../../map/models/tag';
 import {PathService} from '../../services/path/path.service';
+import {ComplexService} from '../../../complex/complex.service';
 
 @Component({
   templateUrl: './analytics.html'
@@ -61,6 +62,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
               translateService: TranslateService,
               iconService: IconService,
               mapObjectService: ApiService,
+              complexService: ComplexService,
               floorService: FloorService,
               tagTogglerService: TagVisibilityTogglerService,
               breadcrumbService: BreadcrumbService,
@@ -78,6 +80,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       translateService,
       iconService,
       mapObjectService,
+      complexService,
       floorService,
       tagTogglerService,
       breadcrumbService
