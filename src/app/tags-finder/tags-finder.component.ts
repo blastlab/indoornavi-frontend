@@ -1,4 +1,4 @@
-import {Component, DoCheck, OnChanges, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
 import {TranslateService} from '@ngx-translate/core';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
@@ -10,6 +10,7 @@ import {Router} from '@angular/router';
 import {MessageServiceWrapper} from '../shared/services/message/message.service';
 import {HttpService} from '../shared/services/http/http.service';
 import {Floor} from '../floor/floor.type';
+import {TagListElement} from './tags-finder.type';
 
 @Component({
   selector: 'app-localization',
@@ -25,11 +26,12 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
     {label: 'complex', value: 'complex'},
     {label: 'building', value: 'building'},
     {label: 'floor', value: 'floor'},
-    {label: 'group', value: 'group'},
-    {label: 'all', value: 'id,name,complex,building,floor,group'}
+    {label: 'all', value: 'id,name,complex,building,floor'}
   ];
   selectedFilterValue: string;
   loading: boolean = true;
+  searchValue: string = '';
+  filteredTags: TagListElement[] = [];
   tags: TagListElement[] = [];
   private readonly timeInterval = 10000;
   private message: string;
@@ -60,14 +62,41 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
     this.subscriptionDestroyer.unsubscribe();
   }
 
+  applyFilter(): void {
+    const filterByFields: string[] = this.selectedFilterValue.split(',');
+    const tags: TagListElement[] = [];
+    this.tags.forEach((tag: TagListElement): void => {
+      let valueMatching = false;
+      filterByFields.forEach((field: string): void => {
+        let value: string;
+        typeof tag[field] === 'string' ? value = tag[field] : value = tag[field].toString();
+        if (value.includes(this.searchValue) || this.searchValue.length === 0) {
+          valueMatching = true;
+        }
+      });
+      if (valueMatching) {
+        tags.push(tag);
+      }
+    });
+    // DataTable [value] reference variable needs to be overwritten not updated to trigger data table view reload,
+    // this bug or lack of feature in DataTable has solution used below, by creating new data assignment instead of passing reference.
+    this.filteredTags = Object.assign([], tags);
+  }
+
   click(tag: TagListElement): void {
     this.confirmationService.confirm({
       message: this.message,
       header: this.confirmationDialogName,
       icon: 'fa-exclamation-circle',
       accept: () => {
-        this.messageService.success('map.switch');
-        console.log(tag);
+        const floorId: number = this.getPublicationId(tag.floorId);
+        if (!!floorId) {
+          this.messageService.success('map.switch');
+          console.log(tag);
+          console.log(floorId);
+        } else {
+          this.messageService.failed('access.denied');
+        }
       },
       reject: () => {
         this.messageService.failed('action.rejected');
@@ -130,25 +159,22 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
       if (!tagInTags) {
         this.tags.push(tagListBag);
       }
-      // DataTable [value] reference variable needs to be overwritten not updated to update data view
-      // this bug or lack of feature in DataTable has solution used below,
-      this.tags = Object.assign([], this.tags);
+      this.applyFilter();
     });
   }
 
   private getPublications(): void {
     this.httpService.doGet('publications').takeUntil(this.subscriptionDestroyer).subscribe((publications: Publication[]) => {
       this.publications = publications;
-      console.log(publications);
     });
   }
 
-  private getPublicationId(complexId: number, buildingId: number, floorId: number): number {
+  private getPublicationId(floorId: number): number {
     let publicationNumber: number = null;
     if (!!this.publications) {
       this.publications.forEach((publication: Publication): void => {
         publication.floors.forEach((floor: Floor): void => {
-          if (floor.id === floorId && floor.building.id === buildingId && floor.building.complex.id === complexId) {
+          if (floor.id === floorId) {
             publicationNumber = floor.id;
           }
         });
@@ -156,14 +182,5 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
     }
     return publicationNumber;
   }
-}
 
-export interface TagListElement {
-  lastUpdateTime: number;
-  id: number;
-  name: string;
-  complex: string;
-  building: string;
-  floor: string;
-  floorId: number;
 }

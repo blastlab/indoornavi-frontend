@@ -136,6 +136,7 @@
   "edit": "Edit",
   "enter": "Enter",
   "filter.by": "Filter by",
+  "filter.value": "Value to be filtered by",
   "field.required": "This field is required.",
   "filter.findByAllFields": "Search…",
   "floor": "Floor",
