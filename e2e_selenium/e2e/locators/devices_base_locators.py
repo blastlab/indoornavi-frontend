@@ -7,8 +7,8 @@ class DevicesBaseLocators(object):
         self.module = self.module_query.title()
         self.device_modal_title = 'Add new ' + self.module_query
         self.new_device_name = 'Test' + self.module_query
-        self.new_device_short_id = '123999'
-        self.negative_device_short_id = '999123'
+        self.new_device_short_id = '123999' if self.module_query != 'tag' else '123'
+        self.negative_device_short_id = '999123' if self.module_query != 'tag' else '999'
         # self.new_device_long_id = '1234'
         self.new_device_mac_address = "fa:09:91:d5:e4:5a"
         self.another_mac_address = "f3:a9:1e:1e:e4:da"

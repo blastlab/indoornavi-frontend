@@ -60,11 +60,12 @@ class MapsPagePath(BasePage, MapsPageUtils):
         return self.is_path_disappeared()
 
     def click_outside_map(self):
+        print(self.__driver.get_window_size())
         element_image = self.wait_for_element_clickable(self.MAP_IMAGE)
         action_session = ActionChains(self.__driver)
         action_session.click(element_image)
         action_session.move_by_offset(0, -300)
-        action_session.move_by_offset(0, -80)
+        action_session.move_by_offset(0, -150)
         action_session.click()
         action_session.perform()
         for x in range(0, 10):
