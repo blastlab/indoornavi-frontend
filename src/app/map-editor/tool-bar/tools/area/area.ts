@@ -619,10 +619,17 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     });
 
     this.contextMenuService.setItems(labels);
-    this.selectedEditable.groupWrapper.getGroup().on('contextmenu', (): void => {
-      d3.event.preventDefault();
-      this.contextMenuService.openContextMenu();
+
+    areas.forEach((area) => {
+      this.selectedEditable = area.editable;
     });
+
+    if (!!this.selectedEditable) {
+      this.selectedEditable.groupWrapper.getGroup().on('contextmenu', (): void => {
+        d3.event.preventDefault();
+        this.contextMenuService.openContextMenu();
+      });
+    }
   }
 
   private setTranslations(): void {
