@@ -24,7 +24,7 @@ class ServiceDb:
         # #self.ServiceLogger = ServiceLogger(self.__class__.__name__)
         # #self.ServiceLogger.logger.info("Init service Db" + str(self.ServiceDbId))
 
-        self.db_connect = mysql.connector.connect(user='root', password='', host=self.__db_hostname, database='Navi')
+        self.db_connect = mysql.connector.connect(user='root', password='password', host=self.__db_hostname, database='Navi')
         # #self.ServiceLogger.logger.info("Connect to Db")
 
         self.db_cursor = self.db_connect.cursor()
@@ -140,7 +140,7 @@ class ServiceDb:
           port=3306,
           db_name='Navi',
           username='root',
-          password='',
+          password='password',
           change_log_file=file_path
         )
         pyquibase.update()

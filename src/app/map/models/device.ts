@@ -103,14 +103,9 @@ export class DeviceInEditor {
   }
 
   private getDeviceDescription(): string {
-    let text = (!!this.drawConfiguration.name)
-      ? `${this.drawConfiguration.name}-${this.drawConfiguration.id}`
-      : `${this.drawConfiguration.clazz}-${this.drawConfiguration.id}`;
-
-    const heightInMeters = this.drawConfiguration.heightInMeters;
-
-    if (!!heightInMeters || heightInMeters === 0) {
-      text += ` (${heightInMeters / 100}m)`
+    let text: string = this.drawConfiguration.id.toString();
+    if (!!this.drawConfiguration.heightInMeters) {
+      text += ` (${this.drawConfiguration.heightInMeters / 100}m)`
     }
     return text;
   }

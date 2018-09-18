@@ -30,9 +30,9 @@ class MapsBaseDevicePlacerLocators(object):
     JQUERY_MAP_LAYER = '#map-upper-layer'
     # MAP_SINK_111111 = (By.CSS_SELECTOR, 'svg.sink')
     # MAP_SINK_222222 = (By.CSS_SELECTOR, 'svg.sink:nth-child(2)')
-    MAP_SINK_111111  = (By.ID, '111111')
-    MAP_SINK_222222  = (By.ID, '222222')
-    MAP_ANCHOR_33333 = (By.ID, '33333')
-    MAP_ANCHOR_44444 = (By.ID, '44444')
+    MAP_SINK_111111  = (By.ID, 'sink-111111')
+    MAP_SINK_222222  = (By.ID, 'sink-222222')
+    MAP_ANCHOR_33333 = (By.ID, 'anchor-33333')
+    MAP_ANCHOR_44444 = (By.ID, 'anchor-44444')
     UNSET_SINK_WARNING_OK = (By.CSS_SELECTOR, 'app-device-placer button[ng-reflect-label="Ok"]')
     UNSET_SINK_WARNING_CANCEL = (By.CSS_SELECTOR, 'app-device-placer button[ng-reflect-label="Cancel"]')
