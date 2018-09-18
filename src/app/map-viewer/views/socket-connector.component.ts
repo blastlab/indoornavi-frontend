@@ -40,7 +40,6 @@ import {TagOnMap} from '../../map/models/tag';
 import {APIObject} from '../../shared/utils/drawing/api.types';
 import {PathService} from '../services/path/path.service';
 import Metadata = APIObject.Metadata;
-import {TagFollowerInformerService} from '../../shared/services/tag-follower-informer/tag-follower-informer.service';
 
 @Component({
   templateUrl: './socket-connector.component.html'
@@ -75,8 +74,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
               private mapObjectService: ApiService,
               private floorService: FloorService,
               protected tagTogglerService: TagVisibilityTogglerService,
-              private breadcrumbService: BreadcrumbService,
-              protected tagFollowerInformerService: TagFollowerInformerService) {
+              private breadcrumbService: BreadcrumbService) {
 
     this.loadMapDeferred = new Deferred<boolean>();
     this.route.params.takeUntil(this.subscriptionDestructor)
@@ -104,7 +102,6 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
   ngOnInit(): void {
     this.translateService.setDefaultLang('en');
     this.subscribeToMapParametersChange();
-    this.subscribeToTagFallower();
     this.init();
   }
 
@@ -204,13 +201,6 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
 
   protected whenTransitionEnded(): Observable<number> {
     return this.transitionEnded.asObservable();
-  }
-
-  private subscribeToTagFallower(): void {
-    this.tagFollowerInformerService.spyOnTagToFollow().takeUntil(this.subscriptionDestructor)
-      .takeUntil(this.subscriptionDestructor).subscribe((tagShortId: number): void => {
-      console.log(tagShortId);
-    });
   }
 
   private isCoordinatesData(data: MeasureSocketData): boolean {

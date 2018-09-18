@@ -11,7 +11,6 @@ import {MessageServiceWrapper} from '../shared/services/message/message.service'
 import {HttpService} from '../shared/services/http/http.service';
 import {Floor} from '../floor/floor.type';
 import {TagListElement} from './tags-finder.type';
-import {TagFollowerInformerService} from '../shared/services/tag-follower-informer/tag-follower-informer.service';
 
 @Component({
   selector: 'app-localization',
@@ -47,7 +46,6 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
     private confirmationService: ConfirmationService,
     private router: Router,
     private messageService: MessageServiceWrapper,
-    private tagFolowerInformerService: TagFollowerInformerService,
     protected httpService: HttpService,
   ) { }
 
@@ -95,8 +93,6 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
         if (!!floorId) {
           this.messageService.success('map.switch');
           this.router.navigate([`embedded/${floorId}`]);
-          this.tagFolowerInformerService.dispatchTagToSpyOn(tag.id);
-          console.log(tag);
         } else {
           this.messageService.failed('access.denied');
         }
@@ -142,7 +138,6 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
   private initializeSocketConnection(): void {
     const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}tagTracer?client`);
     stream.takeUntil(this.subscriptionDestroyer).subscribe((tagData: MeasureSocketDataTag): void => {
-      console.log(tagData);
       this.loading = false;
       let tagInTags = false;
       const tagListBag: TagListElement = {

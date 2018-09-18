@@ -23,7 +23,6 @@ import {HeatMapType} from '../../../shared/components/heat-map-controller/heat-m
 import {MapClickService} from '../../../shared/services/map-click/map-click.service';
 import {TagOnMap} from '../../../map/models/tag';
 import {PathService} from '../../services/path/path.service';
-import {TagFollowerInformerService} from '../../../shared/services/tag-follower-informer/tag-follower-informer.service';
 
 @Component({
   templateUrl: './analytics.html'
@@ -65,8 +64,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
               floorService: FloorService,
               tagTogglerService: TagVisibilityTogglerService,
               breadcrumbService: BreadcrumbService,
-              private heatMapControllerService: HeatMapControllerService,
-              tagFollowerInformerService: TagFollowerInformerService
+              private heatMapControllerService: HeatMapControllerService
               ) {
     super(
       ngZone,
@@ -82,8 +80,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       mapObjectService,
       floorService,
       tagTogglerService,
-      breadcrumbService,
-      tagFollowerInformerService
+      breadcrumbService
     );
   }
 
