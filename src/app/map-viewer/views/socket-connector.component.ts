@@ -366,9 +366,9 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
 
   private getComplexes(event: MessageEvent) {
     this.complexService.getComplexes().first().subscribe((complexes: Complex[]) => {
-      console.log(complexes)
       event.source.postMessage({
         type: 'getComplexes',
+        mapObjectId: 'map',
         complexes: complexes
       }, event.origin);
     });
