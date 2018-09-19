@@ -54,7 +54,4 @@ export class PublishedComponent extends SocketConnectorComponent implements OnIn
       breadcrumbService
     );
   }
-
-
-
 }

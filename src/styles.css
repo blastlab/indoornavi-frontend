@@ -129,7 +129,7 @@ table th.col-button, table td.col-button, table th.col-checkbox, table td.col-ch
 }
 
 .menu-sidebar-spacer {
-  padding: 10px 0 0 0;
+  padding: 10px 0 0;
 }
 
 app-auth > div {

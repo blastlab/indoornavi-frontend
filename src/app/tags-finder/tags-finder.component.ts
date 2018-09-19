@@ -26,6 +26,7 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
     {label: 'complex', value: 'complex'},
     {label: 'building', value: 'building'},
     {label: 'floor', value: 'floor'},
+    // PrimeNg takes values for filter as string with no spaces
     {label: 'all', value: 'id,name,complex,building,floor'}
   ];
   selectedFilterValue: string;
@@ -69,7 +70,7 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
       let valueMatching = false;
       filterByFields.forEach((field: string): void => {
         let value: string;
-        typeof tag[field] === 'string' ? value = tag[field] : value = tag[field].toString();
+        value = typeof tag[field] === 'string' ? tag[field] : tag[field].toString();
         if (value.includes(this.searchValue) || this.searchValue.length === 0) {
           valueMatching = true;
         }
@@ -92,7 +93,7 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
         const floorId: number = this.getPublicationId(tag.floorId);
         if (!!floorId) {
           this.messageService.success('map.switch');
-          this.router.navigate([`embedded/${floorId}`]);
+          this.router.navigate(['embedded/', floorId]);
         } else {
           this.messageService.failed('access.denied');
         }
@@ -140,14 +141,15 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
     stream.takeUntil(this.subscriptionDestroyer).subscribe((tagData: MeasureSocketDataTag): void => {
       this.loading = false;
       let tagInTags = false;
+      const { tag, floor } = tagData;
       const tagListBag: TagListElement = {
         lastUpdateTime: new Date().getTime(),
-        id: tagData.tag.shortId,
-        name: tagData.tag.name,
-        complex: tagData.floor.building.complex.name,
-        building: tagData.floor.building.name,
-        floor: tagData.floor.name,
-        floorId: tagData.floor.id
+        id: tag.shortId,
+        name: tag.name,
+        complex: floor.building.complex.name,
+        building: floor.building.name,
+        floor: floor.name,
+        floorId: floor.id
       };
       this.tags.forEach((tagListElement: TagListElement): void => {
         if (tagListElement.id === tagData.tag.shortId) {

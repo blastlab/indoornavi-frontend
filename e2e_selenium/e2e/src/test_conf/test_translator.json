@@ -133,7 +133,7 @@
   "map.upload.notAllowedType": "Not allowed file type. You can upload these file types: {{file_types}}.",
   "next": "Next",
   "no": "No",
-  "notSupportedBrowser": "Your browser ({{browser}}) is not supported. To optimize system performance use Google Chrome.",
+  "not.supported.browser": "Your browser ({{browser}}) is not supported. To optimize system performance use Google Chrome.",
   "off": "Off",
   "ok": "Ok",
   "on": "On",

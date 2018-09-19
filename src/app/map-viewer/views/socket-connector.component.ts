@@ -80,7 +80,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
     this.route.params.takeUntil(this.subscriptionDestructor)
       .subscribe((params: Params) => {
         const floorId = +params['id'];
-        floorService.getFloor(floorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor) => {
+        floorService.getFloor(floorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
           breadcrumbService.publishIsReady([
             {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
             {
@@ -111,7 +111,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   private subscribeToMapParametersChange() {
-    this.route.params.takeUntil(this.subscriptionDestructor).subscribe((params: Params) => {
+    this.route.params.takeUntil(this.subscriptionDestructor).subscribe((params: Params): void => {
       const floorId = +params['id'];
       this.floorService.getFloor(floorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
         this.floor = floor;
@@ -126,7 +126,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
           this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg) => {
             this.d3map = mapSvg;
             this.loadMapDeferred.resolve();
-            this.publishedService.getTagsAvailableForUser(floor.id).takeUntil(this.subscriptionDestructor).subscribe((tags: Tag[]) => {
+            this.publishedService.getTagsAvailableForUser(floor.id).takeUntil(this.subscriptionDestructor).subscribe((tags: Tag[]): void => {
               this.tags = tags;
               this.tags.forEach((tag: Tag) => {
                 this.visibleTags.set(tag.shortId, true);
@@ -145,7 +145,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
 
   ngAfterViewInit(): void {
     window.addEventListener('message', (event: MessageEvent): void => {
-      this.route.queryParams.takeUntil(this.subscriptionDestructor).subscribe((params: Params) => {
+      this.route.queryParams.takeUntil(this.subscriptionDestructor).subscribe((params: Params): void => {
         if (event.origin === window.location.origin) {
           return;
         }
@@ -300,7 +300,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   protected subscribeToMapClick() {
-    this.mapClick.clickInvoked().takeUntil(this.subscriptionDestructor).subscribe((point: Point) => {
+    this.mapClick.clickInvoked().takeUntil(this.subscriptionDestructor).subscribe((point: Point): void => {
       if (this.originListeningOnClickMapEvent.length > 0) {
         this.originListeningOnClickMapEvent.forEach((event: MessageEvent): void => {
           // @ts-ignore

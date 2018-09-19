@@ -16,7 +16,7 @@ export class NotSupportedBrowserComponent implements OnInit {
   ngOnInit() {
     this.translateService.setDefaultLang('en');
     this.translateService
-      .get('notSupportedBrowser', {'browser': BrowserDetector.getBrowserName()})
+      .get('not.supported.browser', {'browser': BrowserDetector.getBrowserName()})
       .subscribe((translatedValue) => {
         this.message = translatedValue;
       });

@@ -21,7 +21,7 @@ export const appRoutes: Routes = [
   {path: '', redirectTo: '/complexes', pathMatch: 'full'},
   {path: 'login', component: AuthComponent},
   {path: 'logout', component: AuthComponent},
-  {path: 'tagsfinder', component: TagsFinderComponent, canActivate: [CanRead], data: {permission: 'COMPLEX'}},
+  {path: 'tagsfinder', component: TagsFinderComponent, canActivate: [CanRead], data: {permission: 'TAG'}},
   {path: 'complexes', component: ComplexComponent, canActivate: [CanRead], data: {permission: 'COMPLEX'}},
   {path: 'complexes/:complexId/buildings', component: BuildingComponent, canActivate: [CanRead], data: {permission: 'BUILDING'}},
   {path: 'anchors', component: DeviceComponent, canActivate: [CanRead], data: {permission: 'ANCHOR'}},
