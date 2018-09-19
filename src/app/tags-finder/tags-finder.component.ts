@@ -118,7 +118,7 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
 
   private setTranslations(): void {
     this.translate.setDefaultLang('en');
-    this.translate.get( 'tags.finder.header').subscribe((value: string) => {
+    this.translate.get( 'tags.finder').subscribe((value: string) => {
       this.breadcrumbService.publishIsReady([
         {label: value, disabled: true}
       ]);

@@ -9,7 +9,7 @@
   </div>
 </p-toolbar>
 <p-dataTable [loading]="loading" [paginator]="true"  [rows]="20" [value]="filteredTags" styleClass="auto" [lazy]="true">
-  <p-header>{{'tags.finder'|translate}}</p-header>
+  <p-header>{{'tags.list'|translate}}</p-header>
   <p-column field="id" header="{{'id'|translate}}"></p-column>
   <p-column field="name" header="{{'name'|translate}}" filterPlaceholder="Search"></p-column>
   <p-column field="complex" header="{{'complex'|translate}}"></p-column>
