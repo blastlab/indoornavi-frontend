@@ -334,15 +334,8 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       event.source.postMessage({
         type: `getMapDimensions`,
         mapObjectId: 'map',
-        height: height,
-        width: width,
-        scale: this.scale
-      }, event.origin);
-      event.source.postMessage({
-        type: 'getMapDimensions',
-        mapObjectId: 'map',
-        height: height,
-        width: width,
+        height,
+        width,
         scale: this.scale
       }, event.origin);
     });
@@ -357,7 +350,6 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       event.source.postMessage({
         type: 'getPointOnPath',
         mapObjectId: 'map',
-        calculatedPosition:
         calculatedPosition
       }, event.origin);
     });
@@ -369,7 +361,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       event.source.postMessage({
         type: 'getComplexes',
         mapObjectId: 'map',
-        complexes: complexes
+        complexes
       }, event.origin);
     });
   }
