@@ -79,6 +79,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
     this.loadMapDeferred = new Deferred<boolean>();
     this.route.params.takeUntil(this.subscriptionDestructor)
       .subscribe((params: Params) => {
+        console.log(params);
         const floorId = +params['id'];
         floorService.getFloor(floorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
           breadcrumbService.publishIsReady([
