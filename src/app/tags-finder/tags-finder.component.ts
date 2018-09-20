@@ -93,7 +93,7 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
         const floorId: number = this.getPublicationId(tag.floorId);
         if (!!floorId) {
           this.messageService.success('map.switch');
-          this.router.navigate(['embedded/', floorId]);
+          this.router.navigate(['follower/', floorId]);
         } else {
           this.messageService.failed('access.denied');
         }

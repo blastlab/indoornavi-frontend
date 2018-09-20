@@ -72,17 +72,31 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
               private translateService: TranslateService,
               private iconService: IconService,
               private mapObjectService: ApiService,
-              private floorService: FloorService,
+              protected floorService: FloorService,
               protected tagTogglerService: TagVisibilityTogglerService,
-              private breadcrumbService: BreadcrumbService) {
+              protected breadcrumbService: BreadcrumbService) {
 
     this.loadMapDeferred = new Deferred<boolean>();
+  }
+
+  ngOnInit(): void {
+    this.setCorrespondingFloorParams();
+    this.translateService.setDefaultLang('en');
+    this.subscribeToMapParametersChange();
+    this.init();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptionDestructor.next();
+    this.subscriptionDestructor.unsubscribe();
+  }
+
+  protected setCorrespondingFloorParams(): void {
     this.route.params.takeUntil(this.subscriptionDestructor)
       .subscribe((params: Params) => {
-        console.log(params);
         const floorId = +params['id'];
-        floorService.getFloor(floorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
-          breadcrumbService.publishIsReady([
+        this.floorService.getFloor(floorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
+          this.breadcrumbService.publishIsReady([
             {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
             {
               label: floor.building.complex.name,
@@ -98,17 +112,6 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
           ]);
         });
       });
-  }
-
-  ngOnInit(): void {
-    this.translateService.setDefaultLang('en');
-    this.subscribeToMapParametersChange();
-    this.init();
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptionDestructor.next();
-    this.subscriptionDestructor.unsubscribe();
   }
 
   private subscribeToMapParametersChange() {

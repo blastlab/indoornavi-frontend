@@ -16,6 +16,7 @@ import {BluetoothComponent} from './bluetooth/bluetooth';
 import {AnalyticsComponent} from './map-viewer/views/analytics/analytics';
 import {NotSupportedBrowserComponent} from './not-supported-browser/not-supported-browser';
 import {TagsFinderComponent} from './tags-finder/tags-finder.component';
+import {TagFollowerComponent} from './map-viewer/views/tagfollower/tag-follower';
 
 export const appRoutes: Routes = [
   {path: '', redirectTo: '/complexes', pathMatch: 'full'},
@@ -31,6 +32,7 @@ export const appRoutes: Routes = [
   {path: 'publications', component: PublishedListComponent, canActivate: [CanRead], data: {permission: 'PUBLICATION'}},
   {path: 'publications/:id', component: PublishedComponent, canActivate: [CanRead], data: {permission: 'PUBLICATION'}},
   {path: 'embedded/:id', component: PublishedComponent, data: {isPublic: true}},
+  {path: 'follower/:id', component: TagFollowerComponent, data: {isPublic: true}},
   {path: 'analytics', component: AnalyticsComponent, canActivate: [CanRead], data: {permission: 'PUBLICATION'}},
   {path: 'analytics/:id', component: AnalyticsComponent, canActivate: [CanRead], data: {permission: 'PUBLICATION'}},
   {path: 'users', component: UserComponent, canActivate: [CanRead], data: {permission: 'USER'}},
