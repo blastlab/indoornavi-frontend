@@ -185,6 +185,7 @@
   "locate.tag": "Locate Tag on Map",
   "map": "Map",
   "map.switch": "Switched to map view",
+  "map.switched": "Switched to different floor view",
   "map.upload.header": "Choose an image from disk or drag&drop it below. It will be used as a background for the floor.",
   "map.upload.invalidFileSizeMessageDetail": "maximum upload size is {0}.",
   "map.upload.invalidFileSizeMessageSummary": "{0}: Invalid file size,",

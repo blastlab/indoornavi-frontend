@@ -69,23 +69,22 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
   }
 
   protected setCorrespondingFloorParams(): void {
-    const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}tagTracer?client`);
     this.route.params.takeUntil(this.subscriptionDestructor)
       .subscribe((params: Params) => {
         this.tagShortId = +params['id'];
-        stream.takeUntil(this.subscriptionDestructor).subscribe((tagData: MeasureSocketDataTag): void => {
-          this.setBreadcrumbs();
-        });
       });
   }
+
   protected subscribeToMapParametersChange(): void {
     const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}tagTracer?client`);
     stream.takeUntil(this.subscriptionDestructor).subscribe((tagData: MeasureSocketDataTag): void => {
       if (!this.tagFloorId) {
         this.tagFloorId = +tagData.floor.id;
         this.setCorrespondingFloor();
+        this.setBreadcrumbs();
       } else if (this.tagFloorId !== +tagData.floor.id) {
-        this.messageService.success('map.switch');
+        this.tagFloorId = null;
+        this.messageService.success('map.switched');
         this.router.navigate(['follower/', tagData.tag.shortId]);
       }
     });
