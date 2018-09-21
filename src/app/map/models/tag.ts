@@ -16,7 +16,8 @@ export class TagOnMap {
     this.svgGroupWrapper = new DrawBuilder(container, drawConfiguration).createGroup()
       .addIcon2({x: 0, y: 0}, this.tagUnicode, 2)
       .addText({x: 0, y: 36}, this.getDeviceDescription())
-      .hideTexts()
+      //  changed for hardware tests
+      // .hideTexts()
       .place({x: coordinates.x, y: coordinates.y});
   }
 

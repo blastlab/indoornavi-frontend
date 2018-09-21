@@ -54,8 +54,7 @@ export class PublishedComponent extends SocketConnectorComponent implements OnIn
       complexService,
       floorService,
       tagToggler,
-      breadcrumbService,
+      breadcrumbService
     );
   }
-
 }

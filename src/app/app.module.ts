@@ -33,7 +33,7 @@ import {WizardComponent} from './map-editor/tool-bar/tools/wizard/wizard';
 import {ActionBarService} from './map-editor/action-bar/actionbar.service';
 import {ScaleService} from './shared/services/scale/scale.service';
 import {PublishedListComponent} from './map-viewer/list/publication-list';
-import {AllFieldsFilter} from './shared/utils/filters/allFieldsFilter';
+import {AllFieldsFilter} from './shared/utils/filters';
 import {appRoutes} from './app.routes';
 import {PublishedService} from './map-viewer/publication.service';
 import {PublicationDialogComponent} from './map-viewer/dialog/publication.dialog';
@@ -120,6 +120,8 @@ import {DevicePlacerListComponent} from './map-editor/tool-bar/tools/device-plac
 import {DevicePlacerRowDirective} from './map-editor/tool-bar/tools/device-placer/list/device-placer.row';
 import {PathService} from './map-viewer/services/path/path.service';
 import {BluetoothService} from './bluetooth/bluetooth.service';
+import {TagsFinderComponent} from './tags-finder/tags-finder.component';
+import {SelectButtonModule} from 'primeng/components/selectbutton/selectbutton';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -176,7 +178,8 @@ export function HttpLoaderFactory(http: Http) {
     DevicePlacerListComponent,
     DevicePlacerRowDirective,
     NotSupportedBrowserComponent,
-    PathComponent
+    PathComponent,
+    TagsFinderComponent
   ],
   entryComponents: [
     PublicationDialogComponent,
@@ -220,7 +223,8 @@ export function HttpLoaderFactory(http: Http) {
     ContextMenuModule,
     FileUploadModule,
     RadioButtonModule,
-    InputMaskModule
+    InputMaskModule,
+    SelectButtonModule
   ],
   providers: [
     BuildingService,
