@@ -74,7 +74,7 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
       .subscribe((params: Params) => {
         this.tagShortId = +params['id'];
         stream.takeUntil(this.subscriptionDestructor).subscribe((tagData: MeasureSocketDataTag): void => {
-          this.setBreadcrumbs(tagData);
+          this.setBreadcrumbs();
         });
       });
   }
@@ -91,7 +91,7 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
     });
   }
 
-  private setBreadcrumbs(tagData: MeasureSocketDataTag): void {
+  private setBreadcrumbs(): void {
       if (this.tagFloorId) {
         this.floorService.getFloor(this.tagFloorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
           this.breadcrumbService.publishIsReady([
