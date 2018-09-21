@@ -55,10 +55,10 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
   private areasOnMap: Dictionary<number, SvgGroupWrapper> = new Dictionary<number, SvgGroupWrapper>();
   private originListeningOnEvent: Dictionary<string, MessageEvent[]> = new Dictionary<string, MessageEvent[]>();
   private originListeningOnClickMapEvent: Array<MessageEvent> = [];
-  private tags: Tag[] = [];
-  private visibleTags: Map<number, boolean> = new Map();
-  private scaleCalculations: ScaleCalculations;
-  private loadMapDeferred: Deferred<boolean>;
+  protected tags: Tag[] = [];
+  protected visibleTags: Map<number, boolean> = new Map();
+  protected scaleCalculations: ScaleCalculations;
+  protected loadMapDeferred: Deferred<boolean>;
   protected subscriptionDestructor: Subject<void> = new Subject<void>();
 
   constructor(protected ngZone: NgZone,
@@ -95,6 +95,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
     this.route.params.takeUntil(this.subscriptionDestructor)
       .subscribe((params: Params) => {
         const floorId = +params['id'];
+        console.log(floorId);
         this.floorService.getFloor(floorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
           this.breadcrumbService.publishIsReady([
             {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
@@ -114,7 +115,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
       });
   }
 
-  private subscribeToMapParametersChange() {
+  protected subscribeToMapParametersChange() {
     this.route.params.takeUntil(this.subscriptionDestructor).subscribe((params: Params): void => {
       const floorId = +params['id'];
       this.floorService.getFloor(floorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
@@ -242,7 +243,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
     this.socketService.send({type: CommandType[CommandType.SET_TAGS], args: `[${this.extractTagsShortIds()}]`});
   }
 
-  private initializeSocketConnection(): void {
+  protected initializeSocketConnection(): void {
     this.ngZone.runOutsideAngular((): void => {
       const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?client`);
       this.setSocketConfiguration();
@@ -278,7 +279,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
     });
   }
 
-  private drawAreas(floorId: number): void {
+  protected drawAreas(floorId: number): void {
     this.areaService.getAllByFloor(floorId).first().subscribe((areas: Area[]): void => {
       areas.forEach((area: Area) => {
         const drawBuilder: DrawBuilder = new DrawBuilder(this.d3map.container, {id: `area-${area.id}`, clazz: 'area'});
