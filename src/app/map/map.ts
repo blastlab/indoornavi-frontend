@@ -3,7 +3,8 @@ import {MapEditorService} from '../map-editor/map.editor.service';
 import {MapLoaderInformerService} from '../shared/services/map-loader-informer/map-loader-informer.service';
 import {Floor} from '../floor/floor.type';
 import {MapSvg} from './map.type';
-import {ActivatedRoute, Data} from '@angular/router';
+import {ActivatedRoute, Data } from '@angular/router';
+import {Location} from '@angular/common';
 import {MapClickService} from '../shared/services/map-click/map-click.service';
 import * as d3 from 'd3';
 import {DevicePlacerService} from '../map-editor/tool-bar/tools/device-placer/device-placer.service';
@@ -16,13 +17,15 @@ import {DevicePlacerService} from '../map-editor/tool-bar/tools/device-placer/de
 export class MapComponent implements OnInit {
   @Input() floor: Floor;
   public isPublic: boolean = false;
+  public mapPublication: boolean = false;
   private imageLoaded: boolean = false;
 
   constructor(private mapLoaderInformer: MapLoaderInformerService,
               private mapEditorService: MapEditorService,
               private devicePlacerService: DevicePlacerService,
               private mapClick: MapClickService,
-              protected route: ActivatedRoute) {
+              protected route: ActivatedRoute,
+              private location: Location) {
   }
 
   ngOnInit(): void {
@@ -38,6 +41,7 @@ export class MapComponent implements OnInit {
         this.applyOnTouchesListener(mapSvg);
       }
     });
+    this.mapPublication = this.location.path().match(/publications/) ? true : false;
   }
 
   droppedObject(event) {
