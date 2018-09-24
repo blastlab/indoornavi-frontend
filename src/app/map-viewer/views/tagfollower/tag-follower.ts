@@ -30,6 +30,7 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
 
   private tagShortId: number;
   private tagFloorId: number;
+  private breadcrumbsSet: boolean = false;
 
   constructor(
     ngZone: NgZone,
@@ -81,7 +82,6 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
       if (!this.tagFloorId) {
         this.tagFloorId = +tagData.floor.id;
         this.setCorrespondingFloor();
-        this.setBreadcrumbs();
       } else if (this.tagFloorId !== +tagData.floor.id) {
         this.tagFloorId = null;
         this.messageService.success('map.switched');
@@ -89,10 +89,11 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
       }
     });
   }
-
-  private setBreadcrumbs(): void {
-      if (this.tagFloorId) {
-        this.floorService.getFloor(this.tagFloorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
+  private setCorrespondingFloor(): void {
+    if (this.tagFloorId) {
+      this.floorService.getFloor(this.tagFloorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
+        this.floor = floor;
+        if (!this.breadcrumbsSet) {
           this.breadcrumbService.publishIsReady([
             {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
             {
@@ -107,38 +108,34 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
             },
             {label: `${(floor.name.length ? floor.name : floor.level)}`, disabled: true}
           ]);
-        });
-      }
-  }
-
-  private setCorrespondingFloor(): void {
-    this.floorService.getFloor(this.tagFloorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
-      this.floor = floor;
-      if (!!floor.scale) {
-        this.scale = new Scale(this.floor.scale);
-        this.scaleCalculations = {
-          scaleLengthInPixels: Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
-          scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
-        };
-      }
-      if (!!floor.imageId) {
-        this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg) => {
-          this.d3map = mapSvg;
-          this.loadMapDeferred.resolve();
-          this.publishedService.getTagsAvailableForUser(floor.id).takeUntil(this.subscriptionDestructor).subscribe((tags: Tag[]): void => {
-            this.tags = tags;
-            this.tags.forEach((tag: Tag) => {
-              this.visibleTags.set(tag.shortId, true);
+          this.breadcrumbsSet = true;
+        }
+        if (!!floor.scale) {
+          this.scale = new Scale(this.floor.scale);
+          this.scaleCalculations = {
+            scaleLengthInPixels: Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
+            scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
+          };
+        }
+        if (!!floor.imageId) {
+          this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg) => {
+            this.d3map = mapSvg;
+            this.loadMapDeferred.resolve();
+            this.publishedService.getTagsAvailableForUser(floor.id).takeUntil(this.subscriptionDestructor).subscribe((tags: Tag[]): void => {
+              this.tags = tags;
+              this.tags.forEach((tag: Tag) => {
+                this.visibleTags.set(tag.shortId, true);
+              });
+              this.tagTogglerService.setTags(tags);
+              if (!!floor.scale) {
+                this.drawAreas(floor.id);
+                this.initializeSocketConnection();
+              }
             });
-            this.tagTogglerService.setTags(tags);
-            if (!!floor.scale) {
-              this.drawAreas(floor.id);
-              this.initializeSocketConnection();
-            }
           });
-        });
-      }
-    });
+        }
+      });
+    }
   }
 
 }
