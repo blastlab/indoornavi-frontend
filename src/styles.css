@@ -213,3 +213,9 @@ svg {
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .1);
   background-color: #6f6f6f;
 }
+
+@media screen and (max-width: 768px) {
+  .map-publication .tag-toggler {
+    display: none;
+  }
+}
