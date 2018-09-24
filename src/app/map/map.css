@@ -12,5 +12,6 @@
 #map-container.public {
   height: 95vh;
   border: none;
+  background-color: transparent;
 }
 
