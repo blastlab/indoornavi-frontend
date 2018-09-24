@@ -215,7 +215,7 @@ svg {
 }
 
 @media screen and (max-width: 768px) {
-  .map-publication .tag-toggler {
+  .public .tag-toggler {
     display: none;
   }
 }

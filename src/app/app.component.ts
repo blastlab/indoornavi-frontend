@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {AuthGuard} from './auth/auth.guard';
-import {ActivatedRoute, Params} from '@angular/router';
+import {ActivatedRoute, Data, Params} from '@angular/router';
 import {MenuItem} from 'primeng/primeng';
 import {Subscription} from 'rxjs/Subscription';
 import {BreadcrumbService} from './shared/services/breadcrumbs/breadcrumb.service';
@@ -17,6 +17,7 @@ export class AppComponent implements OnInit, OnDestroy {
   sidebar: boolean = false;
   breadcrumbs: MenuItem[];
   mapPublication: boolean = false;
+  isPublic: boolean = false;
   private userLoggedInSubscription: Subscription;
   private breadcrumbIsReadySubscription: Subscription;
 
@@ -29,6 +30,9 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.route.data.subscribe((data: Data) => {
+      this.isPublic = !!(data.isPublic);
+    });
     this.route.queryParams.subscribe((params: Params) => {
       if (!!params['api_key']) {
         this.isDisplayedInIFrame = true;
