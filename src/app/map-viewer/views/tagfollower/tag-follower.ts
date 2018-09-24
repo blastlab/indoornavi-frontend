@@ -94,50 +94,60 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
       this.floorService.getFloor(this.tagFloorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
         this.floor = floor;
         if (!this.breadcrumbsSet) {
-          this.breadcrumbService.publishIsReady([
-            {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
-            {
-              label: floor.building.complex.name,
-              routerLink: `/complexes/${floor.building.complex.id}/buildings`,
-              routerLinkActiveOptions: {exact: true}
-            },
-            {
-              label: floor.building.name,
-              routerLink: `/complexes/${floor.building.complex.id}/buildings/${floor.building.id}/floors`,
-              routerLinkActiveOptions: {exact: true}
-            },
-            {label: `${(floor.name.length ? floor.name : floor.level)}`, disabled: true}
-          ]);
-          this.breadcrumbsSet = true;
+          this.setBreadcrumbs(floor);
         }
         if (!!floor.scale) {
-          this.scale = new Scale(this.floor.scale);
-          this.scaleCalculations = {
-            scaleLengthInPixels: Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
-            scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
-          };
+          this.setScale();
         }
         if (!!floor.imageId) {
-          this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg) => {
-            this.d3map = mapSvg;
-            this.loadMapDeferred.resolve();
-            this.publishedService.getTagsAvailableForUser(floor.id).takeUntil(this.subscriptionDestructor).subscribe((tags: Tag[]): void => {
-              this.tags = tags;
-              this.tags.forEach((tag: Tag) => {
-                this.visibleTags.set(tag.shortId, true);
-              });
-              this.tagTogglerService.setTags(tags);
-              if (!!floor.scale) {
-                this.drawAreas(floor.id);
-                this.initializeSocketConnection();
-              }
-            });
-          });
+          this.subscribeToMapLoader(floor);
         }
       });
     }
   }
 
+  private subscribeToMapLoader(floor: Floor): void {
+    this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg) => {
+      this.d3map = mapSvg;
+      this.loadMapDeferred.resolve();
+      this.publishedService.getTagsAvailableForUser(floor.id).takeUntil(this.subscriptionDestructor).subscribe((tags: Tag[]): void => {
+        this.tags = tags;
+        this.tags.forEach((tag: Tag) => {
+          this.visibleTags.set(tag.shortId, true);
+        });
+        this.tagTogglerService.setTags(tags);
+        if (!!floor.scale) {
+          this.drawAreas(floor.id);
+          this.initializeSocketConnection();
+        }
+      });
+    });
+  }
 
+  private setBreadcrumbs(floor: Floor): void {
+    this.breadcrumbService.publishIsReady([
+      {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
+      {
+        label: floor.building.complex.name,
+        routerLink: `/complexes/${floor.building.complex.id}/buildings`,
+        routerLinkActiveOptions: {exact: true}
+      },
+      {
+        label: floor.building.name,
+        routerLink: `/complexes/${floor.building.complex.id}/buildings/${floor.building.id}/floors`,
+        routerLinkActiveOptions: {exact: true}
+      },
+      {label: `${(floor.name.length ? floor.name : floor.level)}`, disabled: true}
+    ]);
+    this.breadcrumbsSet = true;
+  }
+
+  private setScale(): void {
+    this.scale = new Scale(this.floor.scale);
+    this.scaleCalculations = {
+      scaleLengthInPixels: Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
+      scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
+    };
+  }
 
 }
