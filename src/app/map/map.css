@@ -5,10 +5,6 @@
   position: relative;
 }
 
-#map-container.map-publication {
-  background: transparent;
-}
-
 #map-container.public {
   height: 95vh;
   border: none;
