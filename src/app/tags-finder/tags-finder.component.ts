@@ -174,5 +174,4 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
         return !!publication.floors.find((floor: Floor): boolean => floor.id === floorId);
       });
     }
-
 }
