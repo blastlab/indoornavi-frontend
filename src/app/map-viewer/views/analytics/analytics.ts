@@ -168,5 +168,4 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       heatMap.temperatureTimeIntervalForCooling = this.heatMapSettings.temperatureLifeTime;
     });
   }
-
 }

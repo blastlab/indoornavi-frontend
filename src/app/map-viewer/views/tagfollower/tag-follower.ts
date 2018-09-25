@@ -21,6 +21,7 @@ import {Scale} from '../../../map-editor/tool-bar/tools/scale/scale.type';
 import {MapSvg} from '../../../map/map.type';
 import {Geometry} from '../../../shared/utils/helper/geometry';
 import {Tag} from '../../../device/device.type';
+import {ComplexService} from '../../../complex/complex.service';
 
 
 @Component({
@@ -44,6 +45,7 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
     translateService: TranslateService,
     iconService: IconService,
     mapObjectService: ApiService,
+    complexService: ComplexService,
     floorService: FloorService,
     tagToggler: TagVisibilityTogglerService,
     breadcrumbService: BreadcrumbService,
@@ -63,6 +65,7 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
       translateService,
       iconService,
       mapObjectService,
+      complexService,
       floorService,
       tagToggler,
       breadcrumbService
