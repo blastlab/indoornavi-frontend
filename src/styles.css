@@ -214,8 +214,3 @@ svg {
   background-color: #6f6f6f;
 }
 
-@media screen and (max-width: 768px) {
-  .public .tag-toggler {
-    display: none;
-  }
-}

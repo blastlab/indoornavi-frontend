@@ -30,9 +30,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.route.data.subscribe((data: Data) => {
-      this.isPublic = !!(data.isPublic);
-    });
+    this.isPublic= this.location.path().match(/embedded/) ? true : false;
     this.route.queryParams.subscribe((params: Params) => {
       if (!!params['api_key']) {
         this.isDisplayedInIFrame = true;
