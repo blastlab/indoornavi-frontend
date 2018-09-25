@@ -84,7 +84,7 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
         this.setCorrespondingFloor();
       } else if (this.tagFloorId !== +tagData.floor.id) {
         this.tagFloorId = null;
-        this.messageService.success('map.switched');
+        this.messageService.success('map.switch.floor');
         this.router.navigate(['follower/', tagData.tag.shortId]);
       }
     });

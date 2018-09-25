@@ -91,7 +91,7 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
       icon: 'fa-exclamation-circle',
       accept: () => {
         if (this.isAccessAllowed(tag.floorId)) {
-          this.messageService.success('map.switch');
+          this.messageService.success('map.switch.view');
           this.router.navigate(['follower/', tag.id]);
         } else {
           this.messageService.failed('access.denied');
