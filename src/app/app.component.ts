@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {AuthGuard} from './auth/auth.guard';
-import {ActivatedRoute, Data, Params} from '@angular/router';
+import {ActivatedRoute, Params} from '@angular/router';
 import {MenuItem} from 'primeng/primeng';
 import {Subscription} from 'rxjs/Subscription';
 import {BreadcrumbService} from './shared/services/breadcrumbs/breadcrumb.service';
@@ -16,18 +16,11 @@ export class AppComponent implements OnInit, OnDestroy {
   isDisplayedInIFrame: boolean = false;
   sidebar: boolean = false;
   breadcrumbs: MenuItem[];
-  mapPublication: boolean = false;
   isPublic: boolean = false;
   private userLoggedInSubscription: Subscription;
   private breadcrumbIsReadySubscription: Subscription;
 
-  constructor(
-    private authGuard: AuthGuard,
-    private route: ActivatedRoute,
-    private breadcrumbService: BreadcrumbService,
-    private cd: ChangeDetectorRef,
-    private location: Location) {
-  }
+  constructor(private authGuard: AuthGuard, private route: ActivatedRoute, private breadcrumbService: BreadcrumbService, private cd: ChangeDetectorRef, private location: Location) {}
 
   ngOnInit() {
     this.isPublic = this.location.path().match(/embedded/) ? true : false;
@@ -48,7 +41,6 @@ export class AppComponent implements OnInit, OnDestroy {
       this.cd.detectChanges();
     });
     this.hideSidebar();
-    this.mapPublication = this.location.path().match(/publications/) ? true : false;
   }
 
   ngOnDestroy() {
