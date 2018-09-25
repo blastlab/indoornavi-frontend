@@ -40,6 +40,8 @@ import {TagOnMap} from '../../map/models/tag';
 import {APIObject} from '../../shared/utils/drawing/api.types';
 import {PathService} from '../services/path/path.service';
 import Metadata = APIObject.Metadata;
+import {Complex} from '../../complex/complex.type';
+import {ComplexService} from '../../complex/complex.service';
 
 @Component({
   templateUrl: './socket-connector.component.html'
@@ -72,6 +74,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
               private translateService: TranslateService,
               private iconService: IconService,
               private mapObjectService: ApiService,
+              private complexService: ComplexService,
               protected floorService: FloorService,
               protected tagTogglerService: TagVisibilityTogglerService,
               protected breadcrumbService: BreadcrumbService) {
@@ -339,9 +342,13 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
       const height = this.d3map.container.node().getBBox().height;
       const width = this.d3map.container.node().getBBox().width;
       // @ts-ignore
-      event.source.postMessage({type: `getMapDimensions`, mapObjectId: 'map', height: height, width: width, scale: this.scale}, event.origin);
-      // @ts-ignore
-      event.source.postMessage({type: 'getMapDimensions', mapObjectId: 'map', height: height, width: width, scale: this.scale}, event.origin);
+      event.source.postMessage({
+        type: `getMapDimensions`,
+        mapObjectId: 'map',
+        height,
+        width,
+        scale: this.scale
+      }, event.origin);
     });
   }
 
@@ -353,10 +360,20 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
       }
       // @ts-ignore
       event.source.postMessage({
-          type: 'getPointOnPath',
+        type: 'getPointOnPath',
         mapObjectId: 'map',
-        calculatedPosition:
         calculatedPosition
+      }, event.origin);
+    });
+  }
+
+
+  private getComplexes(event: MessageEvent) {
+    this.complexService.getComplexes().first().subscribe((complexes: Complex[]) => {
+      event.source.postMessage({
+        type: 'getComplexes',
+        mapObjectId: 'map',
+        complexes
       }, event.origin);
     });
   }
@@ -401,6 +418,9 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
           break;
         case 'getPointOnPath':
           this.getPointOnPath(event);
+          break;
+        case 'getComplexes':
+          this.getComplexes(event);
           break;
       }
     }
