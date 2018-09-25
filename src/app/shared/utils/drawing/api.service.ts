@@ -64,7 +64,7 @@ export class ApiService {
     switch (objectMetadata.type) {
       case 'POLYLINE':
         this.addToMapContainer(objectMetadata, container);
-        this.drawPolyline(objectMetadata, this.getCalculatedPoints(objectMetadata.object['points'], scale));
+        this.drawPolyline(objectMetadata, this.getCalculatedPoints(objectMetadata.object['points'], scale), 'dotted');
         break;
       case 'AREA':
         this.addToMapContainer(objectMetadata, container);
@@ -139,14 +139,20 @@ export class ApiService {
     }
   }
 
-  private drawPolyline(objectMetadata: Metadata, points: Point[]) {
+  private drawPolyline(objectMetadata: Metadata, points: Point[], type) {
     const polyline: Polyline = <Polyline>objectMetadata.object;
     this.objects.get(polyline.id).addPolyline(points, this.pointRadius);
     const lines: d3.selection[] = this.objects.get(polyline.id).getElements(ElementType.LINE);
     const circles: d3.selection[] = this.objects.get(polyline.id).getElements(ElementType.CIRCLE);
+
+    const typeLine = {
+      'line': line => ApiHelper.setStrokeColor(line, polyline.color),
+      'dotted': line => ApiHelper.setDottedLine(line, polyline.color, 4)
+    };
+
     if (!!polyline.color) {
       lines.forEach((line: d3.selection) => {
-        ApiHelper.setStrokeColor(line, polyline.color);
+        typeLine[type](line);
       });
       circles.forEach((circle: d3.selection) => {
         ApiHelper.setFillColor(circle, polyline.color);

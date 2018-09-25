@@ -20,4 +20,11 @@ export class ApiHelper {
   static setStrokeWidth(element: d3.selection, width: number): void {
     element.attr('stroke-width', width);
   }
+
+  static setDottedLine(element: d3.selection, color: string, width: number): void {
+    ApiHelper.setStrokeColor(element, color);
+    ApiHelper.setStrokeWidth(element, width);
+    element.attr('stroke-dasharray', '0.1, 25');
+    element.attr('stroke-linecap', 'round');
+  }
 }
