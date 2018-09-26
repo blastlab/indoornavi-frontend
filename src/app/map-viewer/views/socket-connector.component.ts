@@ -40,6 +40,7 @@ import {TagOnMap} from '../../map/models/tag';
 import {APIObject} from '../../shared/utils/drawing/api.types';
 import {PathService} from '../services/path/path.service';
 import Metadata = APIObject.Metadata;
+import NavigationData = APIObject.NavigationData;
 import {Complex} from '../../complex/complex.type';
 import {ComplexService} from '../../complex/complex.service';
 
@@ -57,6 +58,8 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
   private areasOnMap: Dictionary<number, SvgGroupWrapper> = new Dictionary<number, SvgGroupWrapper>();
   private originListeningOnEvent: Dictionary<string, MessageEvent[]> = new Dictionary<string, MessageEvent[]>();
   private originListeningOnClickMapEvent: Array<MessageEvent> = [];
+  private navigation: any = null;
+  private navigationPositionUpdate: Subject<Point> = new Subject();
   protected tags: Tag[] = [];
   protected visibleTags: Map<number, boolean> = new Map();
   protected scaleCalculations: ScaleCalculations;
@@ -382,6 +385,9 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
     const data = <CustomMessageEvent>event.data;
     if ('command' in data) {
       switch (data.command) {
+        case 'navigation':
+          this.handleNavigation(event);
+          break;
         case 'toggleTagVisibility':
           const tagId = parseInt(data.args, 10);
           this.socketService.send({type: CommandType[CommandType.TOGGLE_TAG], args: tagId});
@@ -425,4 +431,31 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
       }
     }
   }
+
+  private handleNavigation(event: MessageEvent) {
+    const args: NavigationData = event.data.args.object;
+    if (!!this.navigation) {
+      if (args.action === 'update') {
+        this.navigationPositionUpdate.next(args.position);
+        if (args.position.x === 199) { // use case example
+          // send event if navigation finished args
+          event.source.postMessage({type: 'navigation', action: 'finished'}, event.origin);
+        }
+      }
+      if (args.action === 'stop') {
+        console.log('removing navigation');
+        this.navigation = null;
+      }
+    } else if (args.action === 'start') {
+      // create your navigation class that will handle:
+      // path calculation
+      // path drawing
+      this.navigation = true;
+      console.log('creating navigation');
+      this.navigationPositionUpdate.takeUntil(this.subscriptionDestructor).subscribe((point: Point): void => {
+        console.log(`Received new update ${point}`);
+      });
+    }
+  }
 }
+
