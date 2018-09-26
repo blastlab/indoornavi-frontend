@@ -63,10 +63,8 @@ export class ApiService {
     }
     switch (objectMetadata.type) {
       case 'POLYLINE':
-        const points = [{x: 480, y: 480}, {x: 1220, y: 480}, {x: 1220, y: 1220}, {x: 480, y: 1220}, {x: 750, y: 750}];
         this.addToMapContainer(objectMetadata, container);
-        // this.drawPolyline(objectMetadata, this.getCalculatedPoints(objectMetadata.object['points'], scale), 'dotted');
-        this.drawLine(objectMetadata, this.getCalculatedPoints(points, scale), 'dotted');
+        this.drawLine(objectMetadata, this.getCalculatedPoints(objectMetadata.object['points'], scale), 'solid');
         break;
       case 'AREA':
         this.addToMapContainer(objectMetadata, container);
