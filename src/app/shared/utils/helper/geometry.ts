@@ -232,6 +232,13 @@ export class Geometry {
     });
     return nearest;
   }
+
+  static dijkstraShortestPath(nodes: Line[], start: Point, finish: Point): Line[] {
+    console.log(nodes);
+    console.log(start);
+    console.log(finish);
+   return [];
+  }
 }
 
 export interface NearestPoint {

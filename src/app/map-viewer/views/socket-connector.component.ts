@@ -452,6 +452,10 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
       // path drawing
       this.navigation = true;
       console.log('creating navigation');
+      this.pathService.getPathByFloorId(this.floor.id).first().subscribe((pathFromConfiguration: Line[]): void => {
+        const shortestPath: Line[] = Geometry.dijkstraShortestPath(pathFromConfiguration, args.location, args.destination);
+        console.log(shortestPath);
+      });
       this.navigationPositionUpdate.takeUntil(this.subscriptionDestructor).subscribe((point: Point): void => {
         console.log(`Received new update ${point}`);
       });
