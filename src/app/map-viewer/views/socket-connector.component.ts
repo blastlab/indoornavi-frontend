@@ -40,6 +40,7 @@ import {TagOnMap} from '../../map/models/tag';
 import {APIObject} from '../../shared/utils/drawing/api.types';
 import {PathService} from '../services/path/path.service';
 import Metadata = APIObject.Metadata;
+import NavigationData = APIObject.NavigationData;
 import {Complex} from '../../complex/complex.type';
 import {ComplexService} from '../../complex/complex.service';
 
@@ -57,10 +58,12 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
   private areasOnMap: Dictionary<number, SvgGroupWrapper> = new Dictionary<number, SvgGroupWrapper>();
   private originListeningOnEvent: Dictionary<string, MessageEvent[]> = new Dictionary<string, MessageEvent[]>();
   private originListeningOnClickMapEvent: Array<MessageEvent> = [];
-  private tags: Tag[] = [];
-  private visibleTags: Map<number, boolean> = new Map();
-  private scaleCalculations: ScaleCalculations;
-  private loadMapDeferred: Deferred<boolean>;
+  private navigation: any = null;
+  private navigationPositionUpdate: Subject<Point> = new Subject();
+  protected tags: Tag[] = [];
+  protected visibleTags: Map<number, boolean> = new Map();
+  protected scaleCalculations: ScaleCalculations;
+  protected loadMapDeferred: Deferred<boolean>;
   protected subscriptionDestructor: Subject<void> = new Subject<void>();
 
   constructor(protected ngZone: NgZone,
@@ -75,16 +78,31 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
               private iconService: IconService,
               private mapObjectService: ApiService,
               private complexService: ComplexService,
-              private floorService: FloorService,
+              protected floorService: FloorService,
               protected tagTogglerService: TagVisibilityTogglerService,
-              private breadcrumbService: BreadcrumbService) {
+              protected breadcrumbService: BreadcrumbService) {
 
     this.loadMapDeferred = new Deferred<boolean>();
+  }
+
+  ngOnInit(): void {
+    this.setCorrespondingFloorParams();
+    this.translateService.setDefaultLang('en');
+    this.subscribeToMapParametersChange();
+    this.init();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptionDestructor.next();
+    this.subscriptionDestructor.unsubscribe();
+  }
+
+  protected setCorrespondingFloorParams(): void {
     this.route.params.takeUntil(this.subscriptionDestructor)
       .subscribe((params: Params) => {
         const floorId = +params['id'];
-        floorService.getFloor(floorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
-          breadcrumbService.publishIsReady([
+        this.floorService.getFloor(floorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
+          this.breadcrumbService.publishIsReady([
             {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
             {
               label: floor.building.complex.name,
@@ -102,18 +120,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
       });
   }
 
-  ngOnInit(): void {
-    this.translateService.setDefaultLang('en');
-    this.subscribeToMapParametersChange();
-    this.init();
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptionDestructor.next();
-    this.subscriptionDestructor.unsubscribe();
-  }
-
-  private subscribeToMapParametersChange() {
+  protected subscribeToMapParametersChange() {
     this.route.params.takeUntil(this.subscriptionDestructor).subscribe((params: Params): void => {
       const floorId = +params['id'];
       this.floorService.getFloor(floorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
@@ -241,7 +248,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
     this.socketService.send({type: CommandType[CommandType.SET_TAGS], args: `[${this.extractTagsShortIds()}]`});
   }
 
-  private initializeSocketConnection(): void {
+  protected initializeSocketConnection(): void {
     this.ngZone.runOutsideAngular((): void => {
       const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?client`);
       this.setSocketConfiguration();
@@ -277,7 +284,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
     });
   }
 
-  private drawAreas(floorId: number): void {
+  protected drawAreas(floorId: number): void {
     this.areaService.getAllByFloor(floorId).first().subscribe((areas: Area[]): void => {
       areas.forEach((area: Area) => {
         const drawBuilder: DrawBuilder = new DrawBuilder(this.d3map.container, {id: `area-${area.id}`, clazz: 'area'});
@@ -378,6 +385,9 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
     const data = <CustomMessageEvent>event.data;
     if ('command' in data) {
       switch (data.command) {
+        case 'navigation':
+          this.handleNavigation(event);
+          break;
         case 'toggleTagVisibility':
           const tagId = parseInt(data.args, 10);
           this.socketService.send({type: CommandType[CommandType.TOGGLE_TAG], args: tagId});
@@ -421,4 +431,31 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
       }
     }
   }
+
+  private handleNavigation(event: MessageEvent) {
+    const args: NavigationData = event.data.args.object;
+    if (!!this.navigation) {
+      if (args.action === 'update') {
+        this.navigationPositionUpdate.next(args.position);
+        if (args.position.x === 199) { // use case example
+          // send event if navigation finished args
+          event.source.postMessage({type: 'navigation', action: 'finished'}, event.origin);
+        }
+      }
+      if (args.action === 'stop') {
+        console.log('removing navigation');
+        this.navigation = null;
+      }
+    } else if (args.action === 'start') {
+      // create your navigation class that will handle:
+      // path calculation
+      // path drawing
+      this.navigation = true;
+      console.log('creating navigation');
+      this.navigationPositionUpdate.takeUntil(this.subscriptionDestructor).subscribe((point: Point): void => {
+        console.log(`Received new update ${point}`);
+      });
+    }
+  }
 }
+

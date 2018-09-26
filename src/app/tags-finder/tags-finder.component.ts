@@ -90,10 +90,9 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
       header: this.confirmationDialogName,
       icon: 'fa-exclamation-circle',
       accept: () => {
-        const floorId: number = this.getPublicationId(tag.floorId);
-        if (!!floorId) {
-          this.messageService.success('map.switch');
-          this.router.navigate(['embedded/', floorId]);
+        if (this.isAccessAllowed(tag.floorId)) {
+          this.messageService.success('map.switch.view');
+          this.router.navigate(['follower/', tag.id]);
         } else {
           this.messageService.failed('access.denied');
         }
@@ -170,18 +169,9 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
     });
   }
 
-  private getPublicationId(floorId: number): number {
-    let publicationNumber: number = null;
-    if (!!this.publications) {
-      this.publications.forEach((publication: Publication): void => {
-        publication.floors.forEach((floor: Floor): void => {
-          if (floor.id === floorId) {
-            publicationNumber = floor.id;
-          }
-        });
+  private isAccessAllowed(floorId: number): boolean {
+      return this.publications.some((publication: Publication): boolean  => {
+        return !!publication.floors.find((floor: Floor): boolean => floor.id === floorId);
       });
     }
-    return publicationNumber;
-  }
-
 }

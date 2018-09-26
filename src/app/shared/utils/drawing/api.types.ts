@@ -51,6 +51,14 @@ export namespace APIObject {
     color: string;
   }
 
+  export interface NavigationData {
+    action: string;
+    position?: Point;
+    location?: Point;
+    destination?: Point;
+    accuracy?: number;
+  }
+
   export enum Position {
     TOP,
     RIGHT,
