@@ -24,7 +24,8 @@ export class ApiHelper {
   static setDottedLine(element: d3.selection, color: string, width: number): void {
     ApiHelper.setStrokeColor(element, color);
     ApiHelper.setStrokeWidth(element, width);
-    element.attr('stroke-dasharray', '0.1, 25');
-    element.attr('stroke-linecap', 'round');
+    element.attr('stroke-dasharray', '0.1, 15');
+    element.attr('stroke-linecap', 'round')
+    element.attr('fill', 'none');
   }
 }
