@@ -43,7 +43,7 @@ import Metadata = APIObject.Metadata;
 import NavigationData = APIObject.NavigationData;
 import {Complex} from '../../complex/complex.type';
 import {ComplexService} from '../../complex/complex.service';
-import {NavigationService} from '../../shared/utils/navigation/navigation.service';
+import {PathDisplayService} from '../../shared/utils/navigation/path.display.service';
 
 @Component({
   templateUrl: './socket-connector.component.html'
@@ -59,8 +59,6 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
   private areasOnMap: Dictionary<number, SvgGroupWrapper> = new Dictionary<number, SvgGroupWrapper>();
   private originListeningOnEvent: Dictionary<string, MessageEvent[]> = new Dictionary<string, MessageEvent[]>();
   private originListeningOnClickMapEvent: Array<MessageEvent> = [];
-  private navigation: any = null;
-  private navigationPositionUpdate: Subject<Point> = new Subject();
   protected tags: Tag[] = [];
   protected visibleTags: Map<number, boolean> = new Map();
   protected scaleCalculations: ScaleCalculations;
@@ -79,6 +77,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
               private iconService: IconService,
               private mapObjectService: ApiService,
               private complexService: ComplexService,
+              private pathDisplayService: PathDisplayService,
               protected floorService: FloorService,
               protected tagTogglerService: TagVisibilityTogglerService,
               protected breadcrumbService: BreadcrumbService) {
@@ -435,31 +434,19 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
 
   private handleNavigation(event: MessageEvent) {
     const args: NavigationData = event.data.args.object;
-    if (!!this.navigation) {
+    if (this.pathDisplayService.isNavigationReady) {
       if (args.action === 'update') {
-        this.navigationPositionUpdate.next(args.position);
-        if (args.position.x === 199) { // use case example
-          // send event if navigation finished args
-          event.source.postMessage({type: 'navigation', action: 'finished'}, event.origin);
-        }
+        this.pathDisplayService.updatePosition(args.position);
       }
       if (args.action === 'stop') {
         console.log('removing navigation');
-        this.navigation = null;
+        this.pathDisplayService.stopNavigation();
       }
     } else if (args.action === 'start') {
-      // create your navigation class that will handle:
-      // path calculation
-      // path drawing
-      this.navigation = true;
+      this.pathDisplayService.setNavigationPath(this.floor.id, args.position, args.destination, args.accuracy, event);
       console.log('creating navigation');
-      this.pathService.getPathByFloorId(this.floor.id).first().subscribe((pathFromConfiguration: Line[]): void => {
-        const shortestPath: Line[] = NavigationService.calculateDijkstraShortestPath(pathFromConfiguration, args.location, args.destination);
-        console.log(shortestPath);
-      });
-      this.navigationPositionUpdate.takeUntil(this.subscriptionDestructor).subscribe((point: Point): void => {
-        console.log(`Received new update ${point}`);
-      });
+    } else if (args.action === 'update') {
+      this.pathDisplayService.setLastCoordinates(args.position);
     }
   }
 }

@@ -126,7 +126,7 @@ export class ApiService {
       new InfoWindowGroupWrapper(container, {id: `map-object-${objectMetadata.type}-${objectMetadata.object.id}`, clazz: 'map-object'}));
   }
 
-  private drawArea(objectMetadata: Metadata, points: Point[]) {
+  private drawArea(objectMetadata: Metadata, points: Point[]): void {
     const area: Area = <Area>objectMetadata.object;
     const areaSelection: d3.selection = this.objects.get(area.id).getGroup();
     this.objects.get(area.id).addPolygon(points);
@@ -139,7 +139,7 @@ export class ApiService {
     }
   }
 
-  private drawPolyline(objectMetadata: Metadata, points: Point[]) {
+  private drawPolyline(objectMetadata: Metadata, points: Point[]): void {
     const polyline: Polyline = <Polyline>objectMetadata.object;
     this.objects.get(polyline.id).addPolyline(points, this.pointRadius);
     const lines: d3.selection[] = this.objects.get(polyline.id).getElements(ElementType.LINE);
@@ -154,7 +154,7 @@ export class ApiService {
     }
   }
 
-  private placeCircleOnMap(objectMetadata: Metadata, point: Point) {
+  private placeCircleOnMap(objectMetadata: Metadata, point: Point): void {
     const circle: Circle = <Circle>objectMetadata.object;
     this.objects.get(circle.id).addCircle(point, circle.radius);
     const circleSelection: d3.selection = this.objects.get(circle.id).getElements(ElementType.CIRCLE)[0];
@@ -171,7 +171,7 @@ export class ApiService {
     }
   }
 
-  private drawInfoWindow(objectMetadata: Metadata) {
+  private drawInfoWindow(objectMetadata: Metadata): void {
     const infoWindowObject = this.infoWindows.get(objectMetadata.object.id);
     const infoWindow: InfoWindow = (<InfoWindow>objectMetadata.object);
     if (!!infoWindow.width) {
