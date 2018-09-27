@@ -43,6 +43,7 @@ import Metadata = APIObject.Metadata;
 import NavigationData = APIObject.NavigationData;
 import {Complex} from '../../complex/complex.type';
 import {ComplexService} from '../../complex/complex.service';
+import {NavigationService} from '../../shared/utils/navigation/navigation.service';
 
 @Component({
   templateUrl: './socket-connector.component.html'
@@ -453,7 +454,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
       this.navigation = true;
       console.log('creating navigation');
       this.pathService.getPathByFloorId(this.floor.id).first().subscribe((pathFromConfiguration: Line[]): void => {
-        const shortestPath: Line[] = Geometry.dijkstraShortestPath(pathFromConfiguration, args.location, args.destination);
+        const shortestPath: Line[] = NavigationService.calculateDijkstraShortestPath(pathFromConfiguration, args.location, args.destination);
         console.log(shortestPath);
       });
       this.navigationPositionUpdate.takeUntil(this.subscriptionDestructor).subscribe((point: Point): void => {

@@ -123,6 +123,7 @@ import {BluetoothService} from './bluetooth/bluetooth.service';
 import {TagsFinderComponent} from './tags-finder/tags-finder.component';
 import {SelectButtonModule} from 'primeng/components/selectbutton/selectbutton';
 import {TagFollowerComponent} from './map-viewer/views/tagfollower/tag-follower';
+import {NavigationService} from './shared/utils/navigation/navigation.service';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -273,7 +274,8 @@ export function HttpLoaderFactory(http: Http) {
     HeatMapControllerService,
     DevicePlacerService,
     HeatMapControllerService,
-    PathService
+    PathService,
+    NavigationService
   ], bootstrap: [AppComponent]
 })
 
