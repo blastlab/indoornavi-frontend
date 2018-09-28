@@ -14,6 +14,7 @@ import {BreadcrumbService} from '../../../shared/services/breadcrumbs/breadcrumb
 import {MapClickService} from '../../../shared/services/map-click/map-click.service';
 import {PathService} from '../../services/path/path.service';
 import {ComplexService} from '../../../complex/complex.service';
+import {PathDisplayService} from '../../../shared/utils/navigation/path.display.service';
 
 
 @Component({
@@ -33,6 +34,7 @@ export class PublishedComponent extends SocketConnectorComponent implements OnIn
               translateService: TranslateService,
               iconService: IconService,
               mapObjectService: ApiService,
+              pathDisplayService: PathDisplayService,
               complexService: ComplexService,
               floorService: FloorService,
               tagToggler: TagVisibilityTogglerService,
@@ -52,6 +54,7 @@ export class PublishedComponent extends SocketConnectorComponent implements OnIn
       iconService,
       mapObjectService,
       complexService,
+      pathDisplayService,
       floorService,
       tagToggler,
       breadcrumbService

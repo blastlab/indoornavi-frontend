@@ -238,3 +238,4 @@ export interface NearestPoint {
   coordinates: Point;
   distance: number;
 }
+
