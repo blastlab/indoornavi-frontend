@@ -1,14 +1,6 @@
 import {AfterViewInit, Component, NgZone, OnDestroy, OnInit} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
-import {
-  AreaEventMode,
-  CommandType,
-  CoordinatesSocketData,
-  CustomMessageEvent,
-  EventSocketData,
-  MeasureSocketData,
-  MeasureSocketDataType
-} from '../publication.type';
+import {AreaEventMode, CommandType, CoordinatesSocketData, CustomMessageEvent, EventSocketData, MeasureSocketData, MeasureSocketDataType} from '../publication.type';
 import {Subject} from 'rxjs/Subject';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
 import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.builder';
@@ -39,11 +31,11 @@ import {Deferred} from '../../shared/utils/helper/deferred';
 import {TagOnMap} from '../../map/models/tag';
 import {APIObject} from '../../shared/utils/drawing/api.types';
 import {PathService} from '../services/path/path.service';
-import Metadata = APIObject.Metadata;
-import NavigationData = APIObject.NavigationData;
 import {Complex} from '../../complex/complex.type';
 import {ComplexService} from '../../complex/complex.service';
-import {PathDisplayService} from '../../shared/utils/navigation/path.display.service';
+import {NavigationController} from '../../shared/utils/navigation/navigation.controller';
+import Metadata = APIObject.Metadata;
+import NavigationData = APIObject.NavigationData;
 
 @Component({
   templateUrl: './socket-connector.component.html'
@@ -77,7 +69,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
               private iconService: IconService,
               private mapObjectService: ApiService,
               private complexService: ComplexService,
-              private pathDisplayService: PathDisplayService,
+              private navigationController: NavigationController,
               protected floorService: FloorService,
               protected tagTogglerService: TagVisibilityTogglerService,
               protected breadcrumbService: BreadcrumbService) {
@@ -386,7 +378,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
     if ('command' in data) {
       switch (data.command) {
         case 'navigation':
-          this.handleNavigation(event);
+          this.navigationController.handleNavigation(event, this.floor.id, this.d3map.container, this.scale);
           break;
         case 'toggleTagVisibility':
           const tagId = parseInt(data.args, 10);
@@ -409,6 +401,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
           event.source.postMessage({type: `createObject-${event.data.object}`, mapObjectId: mapObjectId}, '*');
           break;
         case 'drawObject':
+          console.log('args', data.args);
           this.mapObjectService.draw(data.args, this.scale, event, this.d3map.container);
           break;
         case 'removeObject':
@@ -432,22 +425,5 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
     }
   }
 
-  private handleNavigation(event: MessageEvent) {
-    const args: NavigationData = event.data.args.object;
-    if (this.pathDisplayService.isNavigationReady) {
-      if (args.action === 'update') {
-        this.pathDisplayService.updatePosition(args.position);
-      }
-      if (args.action === 'stop') {
-        console.log('removing navigation');
-        this.pathDisplayService.stopNavigation();
-      }
-    } else if (args.action === 'start') {
-      this.pathDisplayService.setNavigationPath(this.floor.id, args.position, args.destination, args.accuracy, event);
-      console.log('creating navigation');
-    } else if (args.action === 'update') {
-      this.pathDisplayService.setLastCoordinates(args.position);
-    }
-  }
 }
 

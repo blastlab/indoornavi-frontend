@@ -124,7 +124,7 @@ import {TagsFinderComponent} from './tags-finder/tags-finder.component';
 import {SelectButtonModule} from 'primeng/components/selectbutton/selectbutton';
 import {TagFollowerComponent} from './map-viewer/views/tagfollower/tag-follower';
 import {NavigationService} from './shared/utils/navigation/navigation.service';
-import {PathDisplayService} from './shared/utils/navigation/path.display.service';
+import {NavigationController} from './shared/utils/navigation/navigation.controller';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -277,7 +277,7 @@ export function HttpLoaderFactory(http: Http) {
     HeatMapControllerService,
     PathService,
     NavigationService,
-    PathDisplayService
+    NavigationController
   ], bootstrap: [AppComponent]
 })
 

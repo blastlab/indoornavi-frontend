@@ -232,6 +232,23 @@ export class Geometry {
     });
     return nearest;
   }
+
+  static pickClosestNode(lines: Line[], coordinates: Point): Point {
+    let closestNode: Point = lines[0].startPoint;
+    let distance: number = Geometry.getDistanceBetweenTwoPoints(coordinates, closestNode);
+    lines.forEach((line: Line): void => {
+      const startPointDistance: number = Geometry.getDistanceBetweenTwoPoints(coordinates, line.startPoint);
+      const endPointDistance: number = Geometry.getDistanceBetweenTwoPoints(coordinates, line.endPoint);
+      if (distance > startPointDistance) {
+        closestNode = line.startPoint;
+        distance = startPointDistance
+      }
+      if (distance > endPointDistance) {
+        closestNode = line.endPoint;
+      }
+    });
+    return closestNode;
+  }
 }
 
 export interface NearestPoint {
