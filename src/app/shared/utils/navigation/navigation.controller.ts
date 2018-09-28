@@ -10,6 +10,7 @@ import {Observable} from 'rxjs/Observable';
 import Metadata = APIObject.Metadata;
 import Path = APIObject.Path;
 import NavigationData = APIObject.NavigationData;
+import {NavigationService} from './navigation.service';
 
 @Injectable()
 export class NavigationController {
@@ -110,7 +111,8 @@ export class NavigationController {
   }
 
   private calculateNavigationPath(lines: Line[], location: Point, destination: Point, accuracy: number): void {
-    // this.pathCalculated = NavigationService.calculateDijkstraShortestPath(lines, location, destination);
+    const path: Line[] = NavigationService.calculateDijkstraShortestPath(lines, location, destination);
+    console.log(path);
     this.objectMetadata = {
       object: {
         id: 123123123123
@@ -122,7 +124,7 @@ export class NavigationController {
   }
 
   private redrawPath(): void {
-    //usun
+    // del
     if (!!this.objectMetadata) {
       this.mapObjectService.draw(this.objectMetadata, this.scale, this.event, this.container);
     }

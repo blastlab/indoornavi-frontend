@@ -35,7 +35,6 @@ import {Complex} from '../../complex/complex.type';
 import {ComplexService} from '../../complex/complex.service';
 import {NavigationController} from '../../shared/utils/navigation/navigation.controller';
 import Metadata = APIObject.Metadata;
-import NavigationData = APIObject.NavigationData;
 
 @Component({
   templateUrl: './socket-connector.component.html'

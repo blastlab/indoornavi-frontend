@@ -1,6 +1,9 @@
 import {Geometry} from '../helper/geometry';
 import {Line, Point} from '../../../map-editor/map.type';
 import {GraphRelation, Vertex} from './navigation.types';
+import {SvgGroupWrapper} from '../drawing/drawing.builder';
+import Dictionary from 'typescript-collections/dist/lib/Dictionary';
+import {log} from 'util';
 
 export class NavigationService {
 
@@ -47,15 +50,22 @@ export class NavigationService {
   }
 
   static calculateDijkstraShortestPath(lines: Line[], start: Point, finish: Point): Line[] {
-    const startPointOnPath: Point = Geometry.pickClosestNode(lines, start);
-    const finishPointOnPath: Point = Geometry.pickClosestNode(lines, finish);
+    const startPointIndex: number = Geometry.pickClosestNodeIndex(lines, start);
+    const endPointIndex: number = Geometry.pickClosestNodeIndex(lines, finish);
+    console.log(startPointIndex, endPointIndex);
+    const dijkstraVertexMatrix: Vertex[] = NavigationService.createDijkstraVertexMatrix(lines);
+    console.log({index: endPointIndex, cost: Infinity});
+    console.log(dijkstraVertexMatrix[startPointIndex]);
+    console.log(dijkstraVertexMatrix[startPointIndex].graphs);
+    const costs = {};
+    costs[endPointIndex] = Infinity;
+    dijkstraVertexMatrix[startPointIndex].graphs.forEach((cost: GraphRelation) => {
+      costs[cost.vertexIndex] = cost.cost;
+    });
+    console.log(costs);
+    // const parents: Dictionary<number, Vertex> = Object.assign({startPointIndex: }, {startPointIndex: dijkstraVertexMatrix[startPointIndex]});
+    const processed = [];
 
-    console.log(startPointOnPath, finishPointOnPath);
-    const dijkstraVertexMatrix = NavigationService.createDijkstraVertexMatrix(lines);
-    const cost: GraphRelation[] = [];
-    // cost.push({
-    //   vertexIndex: ,
-    // });
     console.log(dijkstraVertexMatrix);
     return lines;
   }

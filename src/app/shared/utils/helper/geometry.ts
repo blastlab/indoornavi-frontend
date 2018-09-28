@@ -233,21 +233,21 @@ export class Geometry {
     return nearest;
   }
 
-  static pickClosestNode(lines: Line[], coordinates: Point): Point {
-    let closestNode: Point = lines[0].startPoint;
-    let distance: number = Geometry.getDistanceBetweenTwoPoints(coordinates, closestNode);
-    lines.forEach((line: Line): void => {
+  static pickClosestNodeIndex(lines: Line[], coordinates: Point): number {
+    let closestNodeIndex = 0;
+    let distance: number = Geometry.getDistanceBetweenTwoPoints(coordinates, lines[closestNodeIndex].startPoint);
+    lines.forEach((line: Line, index: number): void => {
       const startPointDistance: number = Geometry.getDistanceBetweenTwoPoints(coordinates, line.startPoint);
       const endPointDistance: number = Geometry.getDistanceBetweenTwoPoints(coordinates, line.endPoint);
       if (distance > startPointDistance) {
-        closestNode = line.startPoint;
+        closestNodeIndex = index;
         distance = startPointDistance
       }
       if (distance > endPointDistance) {
-        closestNode = line.endPoint;
+        closestNodeIndex = index;
       }
     });
-    return closestNode;
+    return closestNodeIndex;
   }
 }
 
