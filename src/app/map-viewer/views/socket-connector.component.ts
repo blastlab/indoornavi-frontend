@@ -311,7 +311,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
       if (this.originListeningOnClickMapEvent.length > 0) {
         this.originListeningOnClickMapEvent.forEach((event: MessageEvent): void => {
           // @ts-ignore
-          event.source.postMessage({type: 'click', position: point}, event.origin);
+          event.source.postMessage({type: 'click', position: point}, '*');
         });
       }
     });
@@ -348,7 +348,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
         height,
         width,
         scale: this.scale
-      }, event.origin);
+      }, '*');
     });
   }
 
@@ -363,7 +363,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
         type: 'getPointOnPath',
         mapObjectId: 'map',
         calculatedPosition
-      }, event.origin);
+      }, '*');
     });
   }
 
@@ -374,7 +374,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
         type: 'getComplexes',
         mapObjectId: 'map',
         complexes
-      }, event.origin);
+      }, '*');
     });
   }
 
