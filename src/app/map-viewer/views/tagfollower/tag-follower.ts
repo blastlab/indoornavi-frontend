@@ -22,7 +22,7 @@ import {MapSvg} from '../../../map/map.type';
 import {Geometry} from '../../../shared/utils/helper/geometry';
 import {Tag} from '../../../device/device.type';
 import {ComplexService} from '../../../complex/complex.service';
-import {PathDisplayService} from '../../../shared/utils/navigation/path.display.service';
+import {NavigationController} from '../../../shared/utils/navigation/navigation.controller';
 
 
 @Component({
@@ -46,7 +46,7 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
     translateService: TranslateService,
     iconService: IconService,
     mapObjectService: ApiService,
-    pathDisplayService: PathDisplayService,
+    pathDisplayService: NavigationController,
     complexService: ComplexService,
     floorService: FloorService,
     tagToggler: TagVisibilityTogglerService,

@@ -27,5 +27,6 @@ export class ApiHelper {
     element.attr('stroke-dasharray', '0.1, 15');
     element.attr('stroke-linecap', 'round')
     element.attr('fill', 'none');
+    ApiHelper.setStrokeColor(element, '#ff0000');
   }
 }

@@ -1,4 +1,4 @@
-import {Point} from '../../../map-editor/map.type';
+import {Line, Point} from '../../../map-editor/map.type';
 
 export namespace APIObject {
   export interface Base {
@@ -7,6 +7,10 @@ export namespace APIObject {
 
   export interface Polyline extends Base {
     color: string;
+  }
+
+  export interface Path extends Base {
+    lines: Line[];
   }
 
   export interface Area extends Base {

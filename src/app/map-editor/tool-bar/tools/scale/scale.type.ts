@@ -23,6 +23,11 @@ export class Scale extends ScaleDto {
     return !!this.realDistance && !!this.measure && !!this.start && !!this.stop;
   }
 
+  getLenInPix(): Measure {
+    return this.measure;
+  }
+
+
 }
 
 export enum Measure {

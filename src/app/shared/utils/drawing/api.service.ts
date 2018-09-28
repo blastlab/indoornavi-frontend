@@ -140,6 +140,7 @@ export class ApiService {
   }
 
   private drawLine(objectMetadata: Metadata, points: Point[], type): void {
+    console.log('drawLine', objectMetadata, points, type);
     const polyline: Polyline = <Polyline>objectMetadata.object;
     // this.objects.get(polyline.id).addPolyline(points, this.pointRadius);
     this.objects.get(polyline.id).addTypeLine(points, type, this.pointRadius);
@@ -148,12 +149,14 @@ export class ApiService {
 
     const typeLine = {
       'solid': () => this.setSolidPolyline(lines, circles, polyline),
-      'dotted': () => this.setDottedLine(lines, circles, polyline)
+      'dotted': () => {
+        this.setDottedLine(lines, circles, polyline)
+      }
     };
 
-    if (!!polyline.color) {
+    // if (!!polyline.color) {
       typeLine[type]();
-    }
+    // }
   }
 
   private setSolidPolyline(lines: d3.selection, circles: d3.selection, polyline) {

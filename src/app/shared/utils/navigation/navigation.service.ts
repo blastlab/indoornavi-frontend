@@ -42,27 +42,29 @@ export class NavigationService {
       endVertexIndex = NavigationService.addNewVertex(line.endPoint, vertexMatrix);
     }
     const cost: number = Geometry.getDistanceBetweenTwoPoints(line.startPoint, line.endPoint);
-    console.log(cost);
     NavigationService.updateVertexMatrix(startVertexIndex, endVertexIndex, cost, vertexMatrix);
     NavigationService.updateVertexMatrix(endVertexIndex, startVertexIndex, cost, vertexMatrix);
   }
 
   static calculateDijkstraShortestPath(lines: Line[], start: Point, finish: Point): Line[] {
+    const startPointOnPath: Point = Geometry.pickClosestNode(lines, start);
+    const finishPointOnPath: Point = Geometry.pickClosestNode(lines, finish);
+
+    console.log(startPointOnPath, finishPointOnPath);
     const dijkstraVertexMatrix = NavigationService.createDijkstraVertexMatrix(lines);
-    console.log(lines);
-    console.log(start);
-    console.log(finish);
+    const cost: GraphRelation[] = [];
+    // cost.push({
+    //   vertexIndex: ,
+    // });
     console.log(dijkstraVertexMatrix);
-    return [];
+    return lines;
   }
 
-  static createDijkstraVertexMatrix(lines: Line[]): any[] {
+  static createDijkstraVertexMatrix(lines: Line[]): Vertex[] {
     const vertexMatrix: Vertex[] = [];
     lines.forEach((line: Line): void => {
       NavigationService.appendToVertexMatrix(line, vertexMatrix);
-      // aaa
     });
-
     return vertexMatrix;
   }
 }

@@ -24,7 +24,7 @@ import {MapClickService} from '../../../shared/services/map-click/map-click.serv
 import {TagOnMap} from '../../../map/models/tag';
 import {PathService} from '../../services/path/path.service';
 import {ComplexService} from '../../../complex/complex.service';
-import {PathDisplayService} from '../../../shared/utils/navigation/path.display.service';
+import {NavigationController} from '../../../shared/utils/navigation/navigation.controller';
 
 @Component({
   templateUrl: './analytics.html'
@@ -63,7 +63,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
               translateService: TranslateService,
               iconService: IconService,
               mapObjectService: ApiService,
-              pathDisplayService: PathDisplayService,
+              pathDisplayService: NavigationController,
               complexService: ComplexService,
               floorService: FloorService,
               tagTogglerService: TagVisibilityTogglerService,
