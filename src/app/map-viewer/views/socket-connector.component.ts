@@ -402,7 +402,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
           break;
         case 'drawObject':
           // console.log('args', data.args);
-          this.mapObjectService.draw(data.args, this.scale, event, this.d3map.container);
+          this.mapObjectService.draw(data.args, this.scale, event, this.d3map.container, 'solid');
           break;
         case 'removeObject':
           this.removeObjectFromMapObjectService(data.args);

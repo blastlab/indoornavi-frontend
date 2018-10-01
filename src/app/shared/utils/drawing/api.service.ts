@@ -57,14 +57,14 @@ export class ApiService {
     }
   }
 
-  draw(objectMetadata: Metadata, scale: Scale, originMessageEvent: MessageEvent, container: d3.selection): void {
+  draw(objectMetadata: Metadata, scale: Scale, originMessageEvent: MessageEvent, container: d3.selection, type: string): void {
     if (!!this.objects.get(objectMetadata.object.id)) {
       this.removeObject(objectMetadata);
     }
     switch (objectMetadata.type) {
       case 'POLYLINE':
         this.addToMapContainer(objectMetadata, container);
-        this.drawLine(objectMetadata, this.getCalculatedPoints(objectMetadata.object['points'], scale), 'dotted');
+        this.drawLine(objectMetadata, this.getCalculatedPoints(objectMetadata.object['points'], scale), type);
         break;
       case 'AREA':
         this.addToMapContainer(objectMetadata, container);
@@ -140,7 +140,7 @@ export class ApiService {
   }
 
   private drawLine(objectMetadata: Metadata, points: Point[], type): void {
-    console.log('drawLine', objectMetadata, points, type);
+    // console.log('drawLine', objectMetadata, points, type);
     const polyline: Polyline = <Polyline>objectMetadata.object;
     // this.objects.get(polyline.id).addPolyline(points, this.pointRadius);
     this.objects.get(polyline.id).addTypeLine(points, type, this.pointRadius);
@@ -153,6 +153,8 @@ export class ApiService {
         this.setDottedLine(lines, circles, polyline)
       }
     };
+
+    // console.log('polyline', polyline);
 
     // if (!!polyline.color) {
       typeLine[type]();
