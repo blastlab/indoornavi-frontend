@@ -128,6 +128,10 @@ table th.col-button, table td.col-button, table th.col-checkbox, table td.col-ch
   width: 40px;
 }
 
+.menu-sidebar-spacer {
+  padding: 10px 0 0;
+}
+
 app-auth > div {
   width: 400px;
   height: 250px;

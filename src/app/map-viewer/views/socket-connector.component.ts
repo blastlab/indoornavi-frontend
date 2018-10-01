@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, NgZone, OnInit} from '@angular/core';
+import {AfterViewInit, Component, NgZone, OnDestroy, OnInit} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
 import {
   AreaEventMode,
@@ -40,11 +40,13 @@ import {TagOnMap} from '../../map/models/tag';
 import {APIObject} from '../../shared/utils/drawing/api.types';
 import {PathService} from '../services/path/path.service';
 import Metadata = APIObject.Metadata;
+import {Complex} from '../../complex/complex.type';
+import {ComplexService} from '../../complex/complex.service';
 
 @Component({
   templateUrl: './socket-connector.component.html'
 })
-export class SocketConnectorComponent implements OnInit, AfterViewInit {
+export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewInit {
   public floor: Floor;
   protected socketSubscription: Subscription;
   protected d3map: MapSvg = null;
@@ -55,10 +57,11 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   private areasOnMap: Dictionary<number, SvgGroupWrapper> = new Dictionary<number, SvgGroupWrapper>();
   private originListeningOnEvent: Dictionary<string, MessageEvent[]> = new Dictionary<string, MessageEvent[]>();
   private originListeningOnClickMapEvent: Array<MessageEvent> = [];
-  private tags: Tag[] = [];
-  private visibleTags: Map<number, boolean> = new Map();
-  private scaleCalculations: ScaleCalculations;
-  private loadMapDeferred: Deferred<boolean>;
+  protected tags: Tag[] = [];
+  protected visibleTags: Map<number, boolean> = new Map();
+  protected scaleCalculations: ScaleCalculations;
+  protected loadMapDeferred: Deferred<boolean>;
+  protected subscriptionDestructor: Subject<void> = new Subject<void>();
 
   constructor(protected ngZone: NgZone,
               protected socketService: SocketService,
@@ -71,16 +74,32 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
               private translateService: TranslateService,
               private iconService: IconService,
               private mapObjectService: ApiService,
-              private floorService: FloorService,
+              private complexService: ComplexService,
+              protected floorService: FloorService,
               protected tagTogglerService: TagVisibilityTogglerService,
-              private breadcrumbService: BreadcrumbService) {
+              protected breadcrumbService: BreadcrumbService) {
 
     this.loadMapDeferred = new Deferred<boolean>();
-    this.route.params
+  }
+
+  ngOnInit(): void {
+    this.setCorrespondingFloorParams();
+    this.translateService.setDefaultLang('en');
+    this.subscribeToMapParametersChange();
+    this.init();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptionDestructor.next();
+    this.subscriptionDestructor.unsubscribe();
+  }
+
+  protected setCorrespondingFloorParams(): void {
+    this.route.params.takeUntil(this.subscriptionDestructor)
       .subscribe((params: Params) => {
         const floorId = +params['id'];
-        floorService.getFloor(floorId).subscribe((floor: Floor) => {
-          breadcrumbService.publishIsReady([
+        this.floorService.getFloor(floorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
+          this.breadcrumbService.publishIsReady([
             {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
             {
               label: floor.building.complex.name,
@@ -98,16 +117,10 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       });
   }
 
-  ngOnInit(): void {
-    this.translateService.setDefaultLang('en');
-    this.subscribeToMapParametersChange();
-    this.init();
-  }
-
-  private subscribeToMapParametersChange() {
-    this.route.params.subscribe((params: Params) => {
+  protected subscribeToMapParametersChange() {
+    this.route.params.takeUntil(this.subscriptionDestructor).subscribe((params: Params): void => {
       const floorId = +params['id'];
-      this.floorService.getFloor(floorId).subscribe((floor: Floor): void => {
+      this.floorService.getFloor(floorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
         this.floor = floor;
         if (!!floor.scale) {
           this.scale = new Scale(this.floor.scale);
@@ -116,11 +129,11 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
             scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
           };
         }
-        if (floor.imageId != null) {
+        if (!!floor.imageId) {
           this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg) => {
             this.d3map = mapSvg;
             this.loadMapDeferred.resolve();
-            this.publishedService.getTagsAvailableForUser(floor.id).subscribe((tags: Tag[]) => {
+            this.publishedService.getTagsAvailableForUser(floor.id).takeUntil(this.subscriptionDestructor).subscribe((tags: Tag[]): void => {
               this.tags = tags;
               this.tags.forEach((tag: Tag) => {
                 this.visibleTags.set(tag.shortId, true);
@@ -139,11 +152,12 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     window.addEventListener('message', (event: MessageEvent): void => {
-      this.route.queryParams.subscribe((params: Params) => {
+      this.route.queryParams.takeUntil(this.subscriptionDestructor).subscribe((params: Params): void => {
         if (event.origin === window.location.origin) {
           return;
         }
-        this.publishedService.checkOrigin(params['api_key'], event.origin).subscribe((verified: boolean): void => {
+        this.publishedService.checkOrigin(params['api_key'], event.origin).takeUntil(this.subscriptionDestructor)
+          .subscribe((verified: boolean): void => {
           // if (verified && !!this.scale) {
           this.handleCommands(event);
           // } else {
@@ -155,7 +169,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   }
 
   protected init(): void {
-    this.whenDataArrived().subscribe((data: CoordinatesSocketData): void => {
+    this.whenDataArrived().takeUntil(this.subscriptionDestructor).subscribe((data: CoordinatesSocketData): void => {
       this.handleCoordinatesData(data);
     });
     this.subscribeToMapClick();
@@ -231,18 +245,18 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     this.socketService.send({type: CommandType[CommandType.SET_TAGS], args: `[${this.extractTagsShortIds()}]`});
   }
 
-  private initializeSocketConnection(): void {
+  protected initializeSocketConnection(): void {
     this.ngZone.runOutsideAngular((): void => {
       const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?client`);
       this.setSocketConfiguration();
-      this.tagTogglerService.onToggleTag().subscribe((tagToggle: TagToggle) => {
+      this.tagTogglerService.onToggleTag().takeUntil(this.subscriptionDestructor).subscribe((tagToggle: TagToggle) => {
         this.socketService.send({type: CommandType[CommandType.TOGGLE_TAG], args: tagToggle.tag.shortId});
         this.visibleTags.set(tagToggle.tag.shortId, tagToggle.selected);
         if (!tagToggle.selected) {
           this.removeNotVisibleTags();
         }
       });
-      this.socketSubscription = stream.subscribe((data: MeasureSocketData): void => {
+      this.socketSubscription = stream.takeUntil(this.subscriptionDestructor).subscribe((data: MeasureSocketData): void => {
         this.ngZone.run(() => {
           if (this.isCoordinatesData(data)) {
             const coordinateSocketData: CoordinatesSocketData = (<CoordinatesSocketData>data);
@@ -267,7 +281,7 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private drawAreas(floorId: number): void {
+  protected drawAreas(floorId: number): void {
     this.areaService.getAllByFloor(floorId).first().subscribe((areas: Area[]): void => {
       areas.forEach((area: Area) => {
         const drawBuilder: DrawBuilder = new DrawBuilder(this.d3map.container, {id: `area-${area.id}`, clazz: 'area'});
@@ -293,11 +307,11 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
   }
 
   protected subscribeToMapClick() {
-    this.mapClick.clickInvoked().subscribe((point: Point) => {
+    this.mapClick.clickInvoked().takeUntil(this.subscriptionDestructor).subscribe((point: Point): void => {
       if (this.originListeningOnClickMapEvent.length > 0) {
         this.originListeningOnClickMapEvent.forEach((event: MessageEvent): void => {
           // @ts-ignore
-          event.source.postMessage({type: 'click', position: point}, event.origin);
+          event.source.postMessage({type: 'click', position: point}, '*');
         });
       }
     });
@@ -328,9 +342,13 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       const height = this.d3map.container.node().getBBox().height;
       const width = this.d3map.container.node().getBBox().width;
       // @ts-ignore
-      event.source.postMessage({type: `getMapDimensions`, mapObjectId: 'map', height: height, width: width, scale: this.scale}, event.origin);
-      // @ts-ignore
-      event.source.postMessage({type: 'getMapDimensions', mapObjectId: 'map', height: height, width: width, scale: this.scale}, event.origin);
+      event.source.postMessage({
+        type: `getMapDimensions`,
+        mapObjectId: 'map',
+        height,
+        width,
+        scale: this.scale
+      }, '*');
     });
   }
 
@@ -342,11 +360,21 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
       }
       // @ts-ignore
       event.source.postMessage({
-          type: 'getPointOnPath',
+        type: 'getPointOnPath',
         mapObjectId: 'map',
-        calculatedPosition:
         calculatedPosition
-      }, event.origin);
+      }, '*');
+    });
+  }
+
+
+  private getComplexes(event: MessageEvent) {
+    this.complexService.getComplexes().first().subscribe((complexes: Complex[]) => {
+      event.source.postMessage({
+        type: 'getComplexes',
+        mapObjectId: 'map',
+        complexes
+      }, '*');
     });
   }
 
@@ -390,6 +418,9 @@ export class SocketConnectorComponent implements OnInit, AfterViewInit {
           break;
         case 'getPointOnPath':
           this.getPointOnPath(event);
+          break;
+        case 'getComplexes':
+          this.getComplexes(event);
           break;
       }
     }

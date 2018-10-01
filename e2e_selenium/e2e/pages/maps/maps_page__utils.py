@@ -2,19 +2,25 @@ from locators.maps_base_locators import MapsBaseLocators
 from locators.maps_base__scale_locators import MapsBaseScaleLocators
 from locators.maps_base__area_locators import MapsBaseAreaLocators
 from locators.maps_base__device_placer_locators import MapsBaseDevicePlacerLocators
+from locators.maps_base__path_locators import MapsBasePathLocators
 from src.test_conf.test_config import *
 
 
 class MapsPageUtils(MapsBaseLocators,
                     MapsBaseScaleLocators,
                     MapsBaseAreaLocators,
-                    MapsBaseDevicePlacerLocators):
+                    MapsBaseDevicePlacerLocators,
+                    MapsBasePathLocators):
 
     __available_conf = {
         "scale": TEST_SCALE_CONF_DATA,
         "area": TEST_AREA_CONF_DATA,
         "tc_07_device_placer": TC07_DEVICE_PLACER_CONF
     }
+
+    @staticmethod
+    def get_test_paths_coordinates():
+        return TEST_PATHS_COORDINATES
 
     def __init__(self):
         super().__init__()
@@ -70,3 +76,4 @@ class MapsPageUtils(MapsBaseLocators,
 
     def save_draft_click(self):
         return self.click_element(self.SAVE_DRAFT_BTN)
+

@@ -70,3 +70,8 @@ export interface ValidationResult {
   scaleSet?: boolean;
   imageSet?: boolean
 }
+
+export interface MeasureSocketDataTag {
+  tag: Tag;
+  floor: Floor
+}
