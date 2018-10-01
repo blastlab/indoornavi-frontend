@@ -10,3 +10,7 @@ export interface GraphRelation {
   vertexIndex: number;
   cost: number;
 }
+
+export interface Cost {
+  [key: number]: number
+}

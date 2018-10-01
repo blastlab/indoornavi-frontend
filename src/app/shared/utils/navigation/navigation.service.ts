@@ -1,9 +1,6 @@
 import {Geometry} from '../helper/geometry';
 import {Line, Point} from '../../../map-editor/map.type';
-import {GraphRelation, Vertex} from './navigation.types';
-import {SvgGroupWrapper} from '../drawing/drawing.builder';
-import Dictionary from 'typescript-collections/dist/lib/Dictionary';
-import {log} from 'util';
+import {Cost, GraphRelation, Vertex} from './navigation.types';
 
 export class NavigationService {
 
@@ -50,23 +47,37 @@ export class NavigationService {
   }
 
   static calculateDijkstraShortestPath(lines: Line[], start: Point, finish: Point): Line[] {
+
     const startPointIndex: number = Geometry.pickClosestNodeIndex(lines, start);
     const endPointIndex: number = Geometry.pickClosestNodeIndex(lines, finish);
-    console.log(startPointIndex, endPointIndex);
     const dijkstraVertexMatrix: Vertex[] = NavigationService.createDijkstraVertexMatrix(lines);
-    console.log({index: endPointIndex, cost: Infinity});
-    console.log(dijkstraVertexMatrix[startPointIndex]);
-    console.log(dijkstraVertexMatrix[startPointIndex].graphs);
-    const costs = {};
-    costs[endPointIndex] = Infinity;
-    dijkstraVertexMatrix[startPointIndex].graphs.forEach((cost: GraphRelation) => {
-      costs[cost.vertexIndex] = cost.cost;
-    });
-    console.log(costs);
-    // const parents: Dictionary<number, Vertex> = Object.assign({startPointIndex: }, {startPointIndex: dijkstraVertexMatrix[startPointIndex]});
-    const processed = [];
 
-    console.log(dijkstraVertexMatrix);
+    const costs: Cost[] = [{[endPointIndex] : Infinity }];
+    const processed: number[] = [startPointIndex];
+
+    console.log("graphs: ",  dijkstraVertexMatrix[startPointIndex].graphs);
+
+    costs.concat(dijkstraVertexMatrix[startPointIndex].graphs.reduce((arr, next) => {
+      arr.push({
+        [next.vertexIndex]: next.cost
+      });
+      return arr;
+    }, []));
+
+    console.log('costs', costs);
+
+
+    const parents = dijkstraVertexMatrix[startPointIndex].graphs.map( item => ({ [item.vertexIndex]: startPointIndex }) );
+    console.log('parents', parents);
+
+    console.log('matrix: ', dijkstraVertexMatrix);
+
+    processed.concat(dijkstraVertexMatrix[startPointIndex].graphs.map( item => item.vertexIndex));
+    processed.push(startPointIndex);
+    console.log('processed', processed);
+
+
+
     return lines;
   }
 

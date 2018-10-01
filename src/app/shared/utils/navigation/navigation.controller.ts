@@ -98,8 +98,8 @@ export class NavigationController {
       this.lastCoordinates = null;
     }
     this.updatePath(pointUpdate);
-    console.log(this.objectMetadata);
-    console.log(pointUpdate);
+    // console.log(this.objectMetadata);
+    // console.log(pointUpdate);
   }
 
   private updatePath(point: Point): void {
@@ -112,7 +112,6 @@ export class NavigationController {
 
   private calculateNavigationPath(lines: Line[], location: Point, destination: Point, accuracy: number): void {
     const path: Line[] = NavigationService.calculateDijkstraShortestPath(lines, location, destination);
-    console.log(path);
     this.objectMetadata = {
       object: {
         id: 123123123123
@@ -120,7 +119,6 @@ export class NavigationController {
       type: 'POLYLINE'
     };
     this.objectMetadata.object = Object.assign((<Path>this.objectMetadata.object), {lines: lines});
-    console.log(this.objectMetadata.object);
   }
 
   private redrawPath(): void {
