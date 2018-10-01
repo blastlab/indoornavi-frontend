@@ -395,10 +395,10 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
           !!intersectionPoint &&
           !Geometry.isSamePoint(pathLine.startPoint, intersectionPoint) &&
           !Geometry.isSamePoint(pathLine.endPoint, intersectionPoint)) {
-          if (Math.abs(intersectionPoint.x - pathLine.startPoint.x) <= 10 || Math.abs(intersectionPoint.y - pathLine.startPoint.y) <= 10) {
+          if (Math.abs(intersectionPoint.x - pathLine.startPoint.x) <= 10 && Math.abs(intersectionPoint.y - pathLine.startPoint.y) <= 10) {
             intersectionPoint = pathLine.startPoint;
           }
-          if (Math.abs(intersectionPoint.x - pathLine.endPoint.x) <= 10 || Math.abs(intersectionPoint.y - pathLine.endPoint.y) <= 10) {
+          if (Math.abs(intersectionPoint.x - pathLine.endPoint.x) <= 10 && Math.abs(intersectionPoint.y - pathLine.endPoint.y) <= 10) {
             intersectionPoint = pathLine.endPoint;
           }
           const index: number = this.lines.findIndex((pathLineNested: Line): boolean => {
