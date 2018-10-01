@@ -331,6 +331,10 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
     if (!!this.attractionPoint) {
       point = this.attractionPoint;
     }
+    point = {
+      x: Math.round(point.x),
+      y: Math.round(point.y)
+    };
     if (!this.firstPointSelection) {
       this.hintBarService.sendHintMessage('path.hint.second');
       this.firstPointSelection = this.drawPoint(point);
@@ -367,46 +371,59 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
       };
       const intersections: IntersectionIdentifier[] = this.getIntersections(line);
       intersections.length > 0 ? this.drawPathIntersected(point, intersections) : this.drawPathNotIntersected(point, line);
+      console.log('intersections ', intersections);
+      console.log('lines ', this.lines);
     }
     this.lastPoint = Object.assign({}, point);
   }
 
-  private getIntersections(line: Line): IntersectionIdentifier[] {
+  private lineAlreadyExists(newLine: Line): boolean {
+    return !!this.lines.find((line: Line): boolean => {
+      const sameLineInSameDirection: boolean = line.startPoint.x === newLine.startPoint.x && line.startPoint.y === newLine.startPoint.y &&
+        line.endPoint.x === newLine.endPoint.x && line.endPoint.y === newLine.endPoint.y;
+      const sameLineInOppositeDirection: boolean = line.startPoint.x === newLine.endPoint.x && line.startPoint.y === newLine.endPoint.y &&
+        line.endPoint.x === newLine.startPoint.x && line.endPoint.y === newLine.startPoint.y;
+      return sameLineInSameDirection  || sameLineInOppositeDirection;
+    });
+  }
+
+  private getIntersections(givenLine: Line): IntersectionIdentifier[] {
     const intersections: IntersectionIdentifier[] = [];
-    this.lines.forEach((linePath: Line): void => {
-      const intersectionPoint: Point = Geometry.findLineToLineIntersection(linePath, line);
-      if (!!intersectionPoint && !Geometry.isSamePoint(intersectionPoint, this.lastPoint)) {
-        const index: number = this.lines.findIndex((linePathNested: Line): boolean => {
-          return (linePathNested.endPoint.x === linePath.endPoint.x &&
-            linePathNested.endPoint.y === linePath.endPoint.y &&
-            linePathNested.startPoint.x === linePath.startPoint.x &&
-            linePathNested.startPoint.y === linePath.startPoint.y)
-        });
-        intersections.push({
-          index: index,
-          point: intersectionPoint
-        });
-      }
+    this.lines.forEach((pathLine: Line): void => {
+        const intersectionPoint: Point = Geometry.findLineToLineIntersection(pathLine, givenLine);
+        if (
+          !!intersectionPoint &&
+          !Geometry.isSamePoint(pathLine.startPoint, intersectionPoint) &&
+          !Geometry.isSamePoint(pathLine.endPoint, intersectionPoint)) {
+          const index: number = this.lines.findIndex((pathLineNested: Line): boolean => {
+            return (pathLineNested.endPoint.x === pathLine.endPoint.x &&
+              pathLineNested.endPoint.y === pathLine.endPoint.y &&
+              pathLineNested.startPoint.x === pathLine.startPoint.x &&
+              pathLineNested.startPoint.y === pathLine.startPoint.y)
+          });
+          intersections.push({
+            index: index,
+            point: intersectionPoint
+          });
+        }
     });
     return intersections;
   }
 
   private drawPathIntersected(point: Point, intersections: IntersectionIdentifier[]): void {
-    this.intersectCrossed(intersections).forEach((lineIntersected: Line) => {
-      this.lines.push(lineIntersected);
-    });
-    this.intersectCurrent(point, intersections).forEach((lineIntersected: Line): void => {
-      this.lines.push(lineIntersected);
-    });
+    this.lines = this.lines.concat(this.intersectCrossed(intersections));
+    this.lines = this.lines.concat(this.intersectCurrent(point, intersections));
     this.currentLineGroup.getGroup().remove();
     this.currentLineGroup = this.createBuilder().createGroup();
     this.drawLinesFromConfiguration();
   }
 
   private drawPathNotIntersected(point: Point, line: Line): void {
+    if (!this.lineAlreadyExists(line)) {
+      this.drawLine(point);
+      this.lines.push(line);
+    }
     this.drawPoint(point);
-    this.drawLine(point);
-    this.lines.push(line);
   }
 
   private intersectCrossed(intersections: IntersectionIdentifier[]): Line[] {
@@ -424,8 +441,12 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
           startPoint: intersection.point,
           endPoint: lineToIntersect.endPoint
         };
-      lines.push(intersectedLeft);
-      lines.push(intersectedRight);
+      if (!this.lineAlreadyExists(intersectedLeft) || !this.lineAlreadyExists(intersectedRight)) {
+        lines.push(intersectedLeft);
+        lines.push(intersectedRight);
+      } else {
+        this.lines.push(lineToIntersect);
+      }
     });
     return lines;
   }
@@ -434,16 +455,22 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
     const lines: Line[] = [];
     let first: Point = this.lastPoint;
     intersections.forEach((intersection: IntersectionIdentifier): void => {
-      lines.push({
-          startPoint: first,
-          endPoint: intersection.point
-        });
+      const lineToLastIntersection: Line = {
+        startPoint: first,
+        endPoint: intersection.point
+      };
+      if (!this.lineAlreadyExists(lineToLastIntersection)) {
+        lines.push(lineToLastIntersection);
+      }
       first = intersection.point
     });
-    lines.push({
-        startPoint: first,
-        endPoint: point
-      });
+    const lineFromLastIntersectionToLastPoint: Line = {
+      startPoint: first,
+      endPoint: point
+    };
+    if (!this.lineAlreadyExists(lineFromLastIntersectionToLastPoint)) {
+      lines.push(lineFromLastIntersectionToLastPoint);
+    }
     return lines;
   }
 

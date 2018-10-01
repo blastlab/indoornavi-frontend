@@ -79,12 +79,12 @@ export class Geometry {
     return Math.floor(firstPoint.x) === Math.floor(lastPoint.x) && Math.floor(firstPoint.y) === Math.floor(lastPoint.y);
   }
 
-  static isBetween(first: number, middle: number, last: number): boolean {
-    const precision = 0.01;
+  static isBetween(first: number, middle: number, last: number, precision: number = 0): boolean {
     return first < last ? first - precision <= middle && middle <= last + precision : last - precision <= middle && middle <= first + precision;
   };
 
   static findLineToLineIntersection(firstSection: Line, secondSection: Line): Point {
+    const precision = 0.01;
     const x1: number = firstSection.startPoint.x;
     const y1: number = firstSection.startPoint.y;
     const x2: number = firstSection.endPoint.x;
@@ -102,44 +102,43 @@ export class Geometry {
       return null;
     } else {
       if (x1 >= x2) {
-        if (!Geometry.isBetween(x2, x_section, x1)) {
+        if (!Geometry.isBetween(x2, x_section, x1, precision)) {
           return null;
         }
       } else {
-        if (!Geometry.isBetween(x1, x_section, x2)) {
+        if (!Geometry.isBetween(x1, x_section, x2, precision)) {
           return null;
         }
       }
       if (y1 >= y2) {
-        if (!Geometry.isBetween(y2, y_section, y1)) {
+        if (!Geometry.isBetween(y2, y_section, y1, precision)) {
           return null;
         }
       } else {
-        if (!Geometry.isBetween(y1, y_section, y2)) {
+        if (!Geometry.isBetween(y1, y_section, y2, precision)) {
           return null;
         }
       }
       if (x3 >= x4) {
-        if (!Geometry.isBetween(x4, x_section, x3)) {
+        if (!Geometry.isBetween(x4, x_section, x3, precision)) {
           return null;
         }
       } else {
-        if (!Geometry.isBetween(x3, x_section, x4)) {
+        if (!Geometry.isBetween(x3, x_section, x4, precision)) {
           return null;
         }
       }
       if (y3 >= y4) {
-        if (!Geometry.isBetween(y4, y_section, y3)) {
+        if (!Geometry.isBetween(y4, y_section, y3, precision)) {
           return null;
         }
       } else {
-        if (!Geometry.isBetween(y3, y_section, y4)) {
+        if (!Geometry.isBetween(y3, y_section, y4, precision)) {
           return null;
         }
       }
     }
     return {x: Math.floor(x_section), y: Math.floor(y_section)};
-
   }
 
   static calculatePolygonPointsRealPosition(draggingPolygon: d3.selection, shiftPoint: Point): Point[] {
@@ -159,6 +158,7 @@ export class Geometry {
   static findClosestPointOnLine(line: Line, givenPoint: Point): Point {
     // given line equation: y = a1 * x + b1
     // line that We are looking for equation: y = a2 * x + b2
+    const precision = 0.01;
     const a1: number = Geometry.getSlope(line.startPoint, line.endPoint);
     const b1: number = line.startPoint.y - a1 * line.startPoint.x;
     let a2: number;
@@ -183,7 +183,7 @@ export class Geometry {
         y: a1 * x + b1
       };
     }
-    if (Geometry.isBetween(line.startPoint.x, point.x, line.endPoint.x) && Geometry.isBetween(line.startPoint.y, point.y, line.endPoint.y)) {
+    if (Geometry.isBetween(line.startPoint.x, point.x, line.endPoint.x, precision) && Geometry.isBetween(line.startPoint.y, point.y, line.endPoint.y, precision)) {
       point = {
         x: point.x,
         y: point.y

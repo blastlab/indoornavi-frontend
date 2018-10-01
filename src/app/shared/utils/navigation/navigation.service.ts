@@ -6,9 +6,9 @@ export class NavigationService {
 
   static updateVertexMatrix(vertexIndexToUpdate: number, relatedVertexIndex: number, cost: number, vertexMatrix: Vertex[]): void {
     const foundVertex: GraphRelation = vertexMatrix[vertexIndexToUpdate].graphs.find((relation: GraphRelation): boolean => {
-      return vertexIndexToUpdate === relation.vertexIndex;
+      return relatedVertexIndex === relation.vertexIndex;
     });
-    if (foundVertex) {
+    if (!!foundVertex) {
       return;
     }
     vertexMatrix[vertexIndexToUpdate].graphs.push({
@@ -26,6 +26,7 @@ export class NavigationService {
   }
 
   static appendToVertexMatrix(line: Line, vertexMatrix: Vertex[]): void {
+    console.log('len: ', vertexMatrix.length);
     if (line.startPoint.x === line.endPoint.x && line.startPoint.y === line.endPoint.y) {
       return;
     }
@@ -51,11 +52,12 @@ export class NavigationService {
     const startPointIndex: number = Geometry.pickClosestNodeIndex(lines, start);
     const endPointIndex: number = Geometry.pickClosestNodeIndex(lines, finish);
     const dijkstraVertexMatrix: Vertex[] = NavigationService.createDijkstraVertexMatrix(lines);
+    console.log(lines);
 
     const costs: Cost[] = [{[endPointIndex] : Infinity }];
     const processed: number[] = [startPointIndex];
 
-    console.log("graphs: ",  dijkstraVertexMatrix[startPointIndex].graphs);
+    console.log('graphs: ',  dijkstraVertexMatrix[startPointIndex].graphs);
 
     costs.concat(dijkstraVertexMatrix[startPointIndex].graphs.reduce((arr, next) => {
       arr.push({
