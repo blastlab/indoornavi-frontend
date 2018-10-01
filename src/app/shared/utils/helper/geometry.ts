@@ -84,7 +84,7 @@ export class Geometry {
   };
 
   static findLineToLineIntersection(firstSection: Line, secondSection: Line): Point {
-    const precision = 0.01;
+    const precision = 10; // precision how close to the line end intersection can happen (in pixels)
     const x1: number = firstSection.startPoint.x;
     const y1: number = firstSection.startPoint.y;
     const x2: number = firstSection.endPoint.x;

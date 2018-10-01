@@ -390,11 +390,17 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   private getIntersections(givenLine: Line): IntersectionIdentifier[] {
     const intersections: IntersectionIdentifier[] = [];
     this.lines.forEach((pathLine: Line): void => {
-        const intersectionPoint: Point = Geometry.findLineToLineIntersection(pathLine, givenLine);
+        let intersectionPoint: Point = Geometry.findLineToLineIntersection(pathLine, givenLine);
         if (
           !!intersectionPoint &&
           !Geometry.isSamePoint(pathLine.startPoint, intersectionPoint) &&
           !Geometry.isSamePoint(pathLine.endPoint, intersectionPoint)) {
+          if (Math.abs(intersectionPoint.x - pathLine.startPoint.x) <= 10 || Math.abs(intersectionPoint.y - pathLine.startPoint.y) <= 10) {
+            intersectionPoint = pathLine.startPoint;
+          }
+          if (Math.abs(intersectionPoint.x - pathLine.endPoint.x) <= 10 || Math.abs(intersectionPoint.y - pathLine.endPoint.y) <= 10) {
+            intersectionPoint = pathLine.endPoint;
+          }
           const index: number = this.lines.findIndex((pathLineNested: Line): boolean => {
             return (pathLineNested.endPoint.x === pathLine.endPoint.x &&
               pathLineNested.endPoint.y === pathLine.endPoint.y &&
