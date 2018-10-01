@@ -11,7 +11,6 @@ import Metadata = APIObject.Metadata;
 import Path = APIObject.Path;
 import NavigationData = APIObject.NavigationData;
 import {Geometry} from '../helper/geometry';
-import {current} from 'codelyzer/util/syntaxKind';
 
 @Injectable()
 export class NavigationController {
@@ -36,6 +35,7 @@ export class NavigationController {
     const args: NavigationData = event.data.args.object;
     if (this.isNavigationReady) {
       if (args.action === 'update') {
+        console.log('update');
         this.updatePosition(args.position);
       }
       if (args.action === 'stop') {
@@ -65,7 +65,7 @@ export class NavigationController {
     this.event = event;
     this.pathService.getPathByFloorId(floorId).takeUntil(this.subscriptionDestructor).subscribe((lines: Line[]): void => {
       this.calculateNavigationPath(lines, location, destination, accuracy);
-      // all calc and drawn
+
       this.onPositionChanged().takeUntil(this.subscriptionDestructor).subscribe((pointUpdate: Point): void => {
         this.handlePathUpdate(pointUpdate);
       });
@@ -74,7 +74,6 @@ export class NavigationController {
   }
 
   private updatePosition(position: Point): void {
-    // pull to path than update this.path
     this.positionChanged.next(position);
   }
 
@@ -99,19 +98,17 @@ export class NavigationController {
     }
     this.updatePath(pointUpdate);
 
+    if (this.objectMetadata === null) {
+      return;
+    }
+
     const currentPointOnPath = Geometry.findPointOnPathInGivenRange(this.objectMetadata.object['lines'], pointUpdate);
-
     this.lines = this.objectMetadata.object['lines'];
-    console.log('pointUpdate', pointUpdate);
-    console.log('currentPointOnPath', currentPointOnPath);
 
-
-    const findLineIndex = this.objectMetadata.object['lines'].findIndex(line => this.isPointOnLineBetweenTwoPoints(line, currentPointOnPath));
+    const findLineIndex = this.objectMetadata.object['lines'].findIndex(line => Geometry.isPointOnLineBetweenTwoPoints(line, currentPointOnPath));
     if (findLineIndex === -1) {
       return;
     }
-    console.log('findLineIndex', findLineIndex);
-    console.log('points', this.lines);
 
     this.lines = this.lines.slice(findLineIndex);
     this.lines[0].startPoint = currentPointOnPath;
@@ -121,32 +118,13 @@ export class NavigationController {
       prev.push(next.endPoint);
       return prev;
     }, []);
-    console.log('reduce points', points);
+
     this.objectMetadata.object['points'] = points;
-    // console.log('findLineIndex', findLineIndex);
-
-    // console.log('new lines', this.objectMetadata.object['lines']);
     this.redrawPath();
-
-    console.log("=================================");
-  }
-
-  private isPointOnLineBetweenTwoPoints(line: Line, point: Point) {
-    const { startPoint, endPoint } = line;
-
-    const onLine: boolean = ((point.y - startPoint.y) * (endPoint.x - startPoint.x)) - ((endPoint.y - startPoint.y) * (point.x - startPoint.x)) === 0;
-    const inRange: boolean = (point.x >= Math.min(startPoint.x, endPoint.x) && point.x <= Math.max(startPoint.x, endPoint.x) &&
-      point.y >= Math.min(startPoint.y, endPoint.y) && point.y <= Math.max(startPoint.y, endPoint.y));
-
-    if (onLine && inRange) {
-      return true;
-    }
-
-    return false;
   }
 
   private updatePath(point: Point): void {
-    const pointOnPath: Point = point; // actualization from pull to path
+    const pointOnPath: Point = point;
     if (this.destination.x === pointOnPath.x && this.destination.y === pointOnPath.y) {
       this.stopNavigation();
       return;
@@ -166,9 +144,8 @@ export class NavigationController {
   }
 
   private redrawPath(): void {
-    // usun
     if (!!this.objectMetadata) {
-      this.mapObjectService.draw(this.objectMetadata, this.scale, this.event, this.container);
+      this.mapObjectService.draw(this.objectMetadata, this.scale, this.event, this.container, 'dotted');
     }
   }
 
