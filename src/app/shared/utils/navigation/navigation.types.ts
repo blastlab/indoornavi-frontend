@@ -12,5 +12,9 @@ export interface GraphRelation {
 }
 
 export interface Cost {
-  [key: number]: number
+  [x: number]: number
+}
+
+export interface Parent {
+  [child: number]: number
 }

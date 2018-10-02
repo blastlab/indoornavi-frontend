@@ -371,8 +371,6 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
       };
       const intersections: IntersectionIdentifier[] = this.getIntersections(line);
       intersections.length > 0 ? this.drawPathIntersected(point, intersections) : this.drawPathNotIntersected(point, line);
-      console.log('intersections ', intersections);
-      console.log('lines ', this.lines);
     }
     this.lastPoint = Object.assign({}, point);
   }

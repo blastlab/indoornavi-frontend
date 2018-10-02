@@ -1,6 +1,6 @@
 import {Geometry} from '../helper/geometry';
 import {Line, Point} from '../../../map-editor/map.type';
-import {Cost, GraphRelation, Vertex} from './navigation.types';
+import {Cost, GraphRelation, Parent, Vertex} from './navigation.types';
 
 export class NavigationService {
 
@@ -26,7 +26,6 @@ export class NavigationService {
   }
 
   static appendToVertexMatrix(line: Line, vertexMatrix: Vertex[]): void {
-    console.log('len: ', vertexMatrix.length);
     if (line.startPoint.x === line.endPoint.x && line.startPoint.y === line.endPoint.y) {
       return;
     }
@@ -52,33 +51,44 @@ export class NavigationService {
     const startPointIndex: number = Geometry.pickClosestNodeIndex(lines, start);
     const endPointIndex: number = Geometry.pickClosestNodeIndex(lines, finish);
     const dijkstraVertexMatrix: Vertex[] = NavigationService.createDijkstraVertexMatrix(lines);
-    console.log(lines);
 
-    const costs: Cost[] = [{[endPointIndex] : Infinity }];
+    const costs: Cost = {
+      [startPointIndex]: 0,
+      [endPointIndex]: Infinity
+    };
     const processed: number[] = [startPointIndex];
+    const parents: Parent = {[endPointIndex]: null};
+    let cheapestVertexIndex: number = startPointIndex;
+    while (!processed.includes(endPointIndex)) {
+      dijkstraVertexMatrix[cheapestVertexIndex].graphs.forEach((graph: GraphRelation): void => {
+        if (processed.includes(graph.vertexIndex)) {
+          return;
+        }
+        const parenCost: number = costs[`${cheapestVertexIndex}`];
+        const childCost: number = graph.cost + parenCost;
 
-    console.log('graphs: ',  dijkstraVertexMatrix[startPointIndex].graphs);
-
-    costs.concat(dijkstraVertexMatrix[startPointIndex].graphs.reduce((arr, next) => {
-      arr.push({
-        [next.vertexIndex]: next.cost
+        if (Object.keys(costs).includes(`${graph.vertexIndex}`) && costs[`${graph.vertexIndex}`] > childCost) {
+          costs[`${graph.vertexIndex}`] = childCost;
+        } else {
+          costs[`${graph.vertexIndex}`] = childCost;
+        }
+        parents[`${graph.vertexIndex}`] = cheapestVertexIndex;
       });
-      return arr;
-    }, []));
-
-    console.log('costs', costs);
-
-
-    const parents = dijkstraVertexMatrix[startPointIndex].graphs.map( item => ({ [item.vertexIndex]: startPointIndex }) );
-    console.log('parents', parents);
-
-    console.log('matrix: ', dijkstraVertexMatrix);
-
-    processed.concat(dijkstraVertexMatrix[startPointIndex].graphs.map( item => item.vertexIndex));
-    processed.push(startPointIndex);
-    console.log('processed', processed);
-
-
+      let minCost = Infinity;
+      let minValueIndex: number;
+      for (const key of Object.keys(costs)) {
+        const keyAsNumber = parseInt(key, 10);
+        if (!processed.includes(keyAsNumber)) {
+          if (minCost > costs[key]) {
+            minCost = costs[key];
+            minValueIndex = keyAsNumber;
+          }
+        }
+      }
+      cheapestVertexIndex = minValueIndex;
+      processed.push(cheapestVertexIndex);
+      console.log('processed : ', processed);
+    }
 
     return lines;
   }
@@ -90,4 +100,5 @@ export class NavigationService {
     });
     return vertexMatrix;
   }
+
 }
