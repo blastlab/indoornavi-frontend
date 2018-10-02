@@ -6,7 +6,10 @@
 /out-tsc
 
 # dependencies
-/node_modules
+node_modules/**
+
+# generated
+#package-lock.json
 
 # IDEs and editors
 /.idea
@@ -37,6 +40,13 @@ testem.log
 /e2e/*.js
 /e2e/*.map
 
+# e2e_selenium
+*/__pycache__/
+*.py[cod]
+/e2e_selenium/.idea
+/e2e_selenium/venv
+/e2e_selenium/e2e/reports
+
 # System Files
-.DS_Store
+# .DS_Store # covered by node_modules
 Thumbs.db

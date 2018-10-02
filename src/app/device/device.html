@@ -1,0 +1,163 @@
+<p-toolbar>
+  <div class="left">
+    <button pButton class="ui-button-secondary"
+            id="open-dialog" [appHasPermission]="createPermission"
+            (click)="openDialog()"
+            label="{{'add'|translate}}"
+            icon="fa-plus" iconPos="left">
+    </button>
+  </div>
+
+  <div *ngIf="devicesUpdating.length === 0" class="right" id="update-panel">
+    <div *ngIf="devicesToUpdate.length === 0 && updateMode" id="hint">{{'device.update.hint'|translate}}</div>
+    <div *ngIf="updateMode">
+      <div>
+        <p-checkbox *ngIf="devicesUpdating.length === 0" name="deviceToUpdate" binary=true (onChange)="selectAllToUpload()"
+                    label="{{'devices.select.all'|translate}}"
+                    [(ngModel)]="allSelected">
+        </p-checkbox>
+      </div>
+      <div>
+        <input #firmwareInput name="firmware[]" type="file" [ngStyle]="{ 'display': 'none' }" (change)="fileSelected()">
+        <button pButton #firmwareButton
+                class="ui-button-secondary"
+                (click)="firmwareInput.click()"
+                [ngClass]="{'ui-state-active': updateMode, 'ui-state-default': !updateMode}"
+                label="{{'device.upload.choose'|translate}}"
+                icon="fa-plus" iconPos="left">
+        </button>
+      </div>
+      <div>
+        <button pButton class="ui-button-secondary"
+                id="upload" [appHasPermission]="editPermission"
+                (click)="upload()"
+                [ngClass]="{'ui-state-active': updateMode, 'ui-state-default': !updateMode}"
+                label="{{'device.upload.mode'|translate}}"
+                icon="fa-upload" iconPos="left">
+        </button>
+      </div>
+    </div>
+    <div>
+      <button pButton class="ui-button-info"
+              id="update" [appHasPermission]="editPermission"
+              (click)="toggleUpdateMode()"
+              label="{{'device.update.mode'|translate}}"
+              icon="fa-briefcase" iconPos="left">
+      </button>
+    </div>
+  </div>
+  <div *ngIf="devicesUpdating.length > 0" class="right">
+    <span>{{"device.firmware.updating"|translate}}</span>
+  </div>
+</p-toolbar>
+
+<p-pickList class="device-list" [source]="notVerified" [target]="verified" dragdrop="true" [responsive]="true"
+            sourceHeader="{{'device.notVerified'|translate}}" targetHeader="{{'device.verified'|translate}}"
+            [showSourceControls]="false" [showTargetControls]="false" filterBy="shortId"
+            sourceFilterPlaceholder="{{'device.searchByShortId'|translate}}" targetFilterPlaceholder="{{'device.searchByShortId'|translate}}"
+            (onMoveToTarget)="onItemMoved($event.items)" (onMoveToSource)="onItemMoved($event.items)">
+  <ng-template let-device pTemplate="item">
+    <div class="ui-helper-clearfix">
+      <div class="ui-g">
+        <div [ngClass]="{'ui-g-9 ui-md-9 ui-lg-9': !device.floorId, 'ui-g-5 ui-md-5 ui-lg-5': device.floorId}" class="device-details">
+          <div><b>{{'device.shortId'|translate}}:</b> {{device['shortId']}}</div>
+          <div><b>{{'device.longId'|translate}}:</b> {{device['longId']}}</div>
+          <div><b>{{'device.name'|translate}}:</b> {{device['name']}}</div>
+          <div *ngIf="device.firmwareVersion && devicesUpdating.indexOf(device) < 0">
+            <b>{{'device.firmware.version'|translate}}:</b>
+            <span [innerHtml]="device.firmwareVersion"></span>
+          </div>
+          <div *ngIf="updateMode && devicesUpdating.indexOf(device) >= 0">
+            <b>{{'device.firmware.updating'|translate}}&nbsp;</b>
+            <p-progressSpinner [style]="{width: '15px', height: '15px'}"
+                               strokeWidth="8"
+                               fill="#EEEEEE"
+                               animationDuration="1s">
+            </p-progressSpinner>
+          </div>
+        </div>
+        <div *ngIf="device.floorId" class="ui-g-4 ui-md-4 ui-lg-4 device-published-details">
+          <div><b>{{'device.publishedOnFloorWithId'|translate}}:</b> {{device.floorId}}</div>
+        </div>
+        <div class="ui-g-3 ui-md-3 ui-lg-3">
+          <button
+            [appHasPermission]="editPermission"
+            pTooltip="{{'edit'|translate}}" type="button" pButton (click)="openDialog(device)" icon="fa-edit" class="ui-button-info">
+          </button>
+          <button
+            [appHasPermission]="deletePermission"
+            pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(device)" icon="fa-trash" class="ui-button-danger">
+          </button>
+          <p-checkbox #updateCheckbox *ngIf="updateMode && devicesUpdating.length === 0" name="deviceToUpdate" id="{{device.shortId}}" [value]="device" (onChange)="checkAllSelected()"
+                      [(ngModel)]="devicesToUpdate" [disabled]="true">
+          </p-checkbox>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</p-pickList>
+
+<p-dialog header="{{'device.details'|translate}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
+          [contentStyle]="{ overflow: 'visible' }"
+          [width]="800"
+          dismissableMask="true">
+  <form #deviceForm="ngForm" novalidate>
+    <div *ngIf="device">
+      <div class="ui-g">
+        <div class="ui-g-12 ui-md-4 ui-lg-4">
+          <div class="ui-message ui-messages-error ui-corner-all"
+               *ngIf="shortIdInput.errors?.required && shortIdInput.touched && shortIdInput.dirty">
+            <i class="fa fa-warning"></i>
+            {{'device.shortId.required'|translate}}
+          </div>
+        </div>
+        <div class="ui-g-12 ui-md-2 ui-lg-2">
+          <label for="shortId">{{'device.shortId'|translate}} *</label>
+        </div>
+        <div class="ui-g-12 ui-md-6 ui-lg-6">
+          <input name="shortId" required [appAutoFocus]="displayDialog" pInputText id="shortId" [(ngModel)]="device.shortId" #shortIdInput="ngModel"/>
+        </div>
+      </div>
+      <div class="ui-g">
+        <div class="ui-g-12 ui-md-4 ui-lg-4">
+          <div class="ui-message ui-messages-error ui-corner-all"
+               *ngIf="longIdInput.errors?.required && longIdInput.touched && longIdInput.dirty">
+            <i class="fa fa-warning"></i>
+            {{'device.longId.required'|translate}}
+          </div>
+        </div>
+        <div class="ui-g-12 ui-md-2 ui-lg-2">
+          <label for="longId">{{'device.longId'|translate}} *</label>
+        </div>
+        <div class="ui-g-12 ui-md-6 ui-lg-6">
+          <input name="longId" required pInputText id="longId" [(ngModel)]="device.longId" #longIdInput="ngModel"/>
+        </div>
+      </div>
+      <div class="ui-g">
+        <div class="ui-g-12 ui-md-2 ui-lg-2 ui-g-offset-12 ui-md-offset-4 ui-lg-offset-4">
+          <label for="name">{{'device.name'|translate}}</label>
+        </div>
+        <div class="ui-g-12 ui-md-6 ui-lg-6">
+          <input name="name" pInputText id="name" [(ngModel)]="device.name" #nameInput="ngModel"/>
+        </div>
+      </div>
+      <p-footer>
+        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+          <button type="button" pButton icon="fa-close" (click)="cancel()"
+                  label="{{'cancel'|translate}}"></button>
+          <button type="submit" pButton icon="fa-check" (click)="save(deviceForm.valid)" label="{{'save'|translate}}"></button>
+        </div>
+      </p-footer>
+    </div>
+  </form>
+</p-dialog>
+
+<p-confirmDialog icon="fa fa-question-circle" width="425"></p-confirmDialog>
+
+<p-dialog header="{{'information.important'|translate}}" [(visible)]="displayInfoDialog" modal="modal" [responsive]="true" [width]="350"
+          [minWidth]="200">
+  <div>{{'device.update.hint'|translate}}</div>
+  <p-footer>
+    <button type="button" pButton icon="fa-check" (click)="displayInfoDialog=false" label="{{'ok'|translate}}"></button>
+  </p-footer>
+</p-dialog>

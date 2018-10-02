@@ -1,0 +1,41 @@
+<button id="wizard-activation"
+        pButton
+        [ngClass]="{'active-tool' : active}" (click)="nextStep()"
+        pTooltip="{{'wizard.tooltip'|translate}}"
+        icon="fa-sitemap" iconPos="left"
+        [disabled]="disabled"
+>
+</button>
+
+<p-dialog header="{{'wizard.configuration.not.complete'|translate}}" [draggable]="false" [(visible)]="displayDialog"
+          [responsive]="true" showEffect="fade" [modal]="true"
+          [contentStyle]="{ overflow: 'visible' }"
+          [width]="600" [closable]="false">
+  <form #wizardForm="ngForm" novalidate>
+    <div class="ui-g">
+      <div class="ui-g-12">
+        {{title|translate}}
+      </div>
+    </div>
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-4 ui-lg-4">
+      </div>
+      <div class="ui-g-12 ui-md-1 ui-lg-1">
+        <p-progressSpinner pTooltip="{{'wizardStep.waitingForDevicesInfo'|translate}}"
+                           [style]="{width: '30px', height: '30px'}"></p-progressSpinner>
+      </div>
+      <div class="ui-g-12 ui-md-7 ui-lg-7">
+        <p-dropdown [disabled]="isLoading" id="options" autoWidth="false" [style]="{ width: '100%' }" name="options"
+                    [options]="options" [(ngModel)]="selectedItemId" placeholder="{{placeholder|translate}}"></p-dropdown>
+      </div>
+    </div>
+    <p-footer>
+      <div class="ui-dialog-buttonpane ui-helper-clearfix">
+        <button type="submit" pButton icon="fa-arrow-right" (click)="placeOnMap()"
+                [disabled]="!selectedItemId" label="{{'next'|translate}}"></button>
+        <button type="button" pButton icon="fa-arrow-left" (click)="previousStep()"
+                label="{{'previous'|translate}}"></button>
+      </div>
+    </p-footer>
+  </form>
+</p-dialog>

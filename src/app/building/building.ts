@@ -1,143 +1,107 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {Building} from './building.type';
 import {BuildingService} from './building.service';
-import {MdDialog, MdDialogRef} from '@angular/material';
-import {BuildingDialogComponent} from './building.dialog';
-import {BuildingConfirmComponent} from './building.confirm';
-import {ToastService} from '../utils/toast/toast.service';
 import {NgForm} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
-import {FloorService} from '../floor/floor.service';
+import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
+import {Complex} from '../complex/complex.type';
+import {ConfirmationService} from 'primeng/primeng';
+import {MessageServiceWrapper} from '../shared/services/message/message.service';
+import {CrudComponent, CrudHelper} from '../shared/components/crud/crud.component';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: 'building.html',
-  styleUrls: ['building.css']
+  templateUrl: 'building.html'
 })
-export class BuildingComponent implements OnInit {
-  buildings: Array<Building> = [];
-
+export class BuildingComponent implements OnInit, CrudComponent {
+  complex: Complex = new Complex();
   building: Building;
-  dialogRef: MdDialogRef<BuildingDialogComponent>;
-  confirmRef: MdDialogRef<BuildingConfirmComponent>;
-
-  private complexId: number = 0;
-
+  loading: boolean = true;
+  displayDialog: boolean = false;
+  confirmBody: string;
   @ViewChild('buildingForm') buildingForm: NgForm;
 
-  ngOnInit(): void {
-
-    this.route.params
-    // (+) converts string 'id' to a number
-      .subscribe((params: Params) => {
-        this.complexId = +params['complexId'];
-        this.buildingService.getComplexWithBuildings(this.complexId).subscribe((result: any) => {
-          this.buildings = result.buildings;
-        });
-        this.newBuilding();
-      });
-    this.translate.setDefaultLang('en');
-  }
-
   constructor(private buildingService: BuildingService,
-              private dialog: MdDialog,
-              private toast: ToastService,
+              private messageService: MessageServiceWrapper,
               public translate: TranslateService,
               private router: Router,
-              private floorService: FloorService,
-              private route: ActivatedRoute) {
+              private route: ActivatedRoute,
+              private confirmationService: ConfirmationService,
+              private breadcrumbsService: BreadcrumbService) {
   }
 
-  editBuilding(building: Building): void {
-    this.dialogRef = this.dialog.open(BuildingDialogComponent);
-    this.dialogRef.componentInstance.building = {
-      name: building.name,
-      complexId: building.complexId,
-    };
+  ngOnInit(): void {
+    this.route.params.subscribe((params: Params) => {
+      const complexId = +params['complexId'];
+      this.buildingService.getComplexWithBuildings(complexId).subscribe((complex: Complex) => {
+        this.complex = complex;
+        this.loading = false;
+        this.breadcrumbsService.publishIsReady([
+          {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
+          {label: complex.name, disabled: true}
+        ]);
+      });
+    });
+    this.translate.setDefaultLang('en');
+    this.translate.get('confirm.body').subscribe((value: string) => {
+      this.confirmBody = value;
+    });
+  }
 
-    this.dialogRef.afterClosed().subscribe((newBuilding: Building) => {
-      if (newBuilding !== undefined) { // dialog has been closed without save button clicked
-        building.name = newBuilding.name;
-        this.updateBuilding(building);
+  openDialog(building?: Building): void {
+    if (!!building) {
+      this.building = {...building};
+    } else {
+      this.building = new Building('', this.complex, []);
+    }
+    this.displayDialog = true;
+  }
+
+  save(isValid: boolean): void {
+    if (isValid) {
+      (!!this.building.id ?
+          this.buildingService.updateBuilding(this.building)
+          :
+          this.buildingService.addBuilding(this.building)
+      ).subscribe((savedBuilding: Building) => {
+        const isNew = !(!!this.building.id);
+        if (isNew) {
+          this.messageService.success('building.create.success');
+        } else {
+          this.messageService.success('building.save.success');
+        }
+        this.complex.buildings = <Building[]>CrudHelper.add(savedBuilding, this.complex.buildings, isNew);
+      }, (err: string) => {
+        this.messageService.failed(err);
+      });
+      this.buildingForm.resetForm();
+      this.displayDialog = false;
+    } else {
+      CrudHelper.validateAllFields(this.buildingForm);
+    }
+  }
+
+  cancel(): void {
+    this.displayDialog = false;
+    this.buildingForm.resetForm();
+  }
+
+  remove(index: number): void {
+    this.confirmationService.confirm({
+      message: this.confirmBody,
+      accept: () => {
+        const buildingId: number = this.complex.buildings[index].id;
+        this.buildingService.removeBuilding(buildingId).subscribe(() => {
+          this.complex.buildings = <Building[]>CrudHelper.remove(index, this.complex.buildings);
+          this.messageService.success('building.remove.success');
+        }, (msg: string) => {
+          this.messageService.failed(msg);
+        });
       }
-      this.dialogRef = null;
     });
   }
 
-  openBuildingRemoveConfirmationDialog(index: number): void {
-    this.confirmRef = this.dialog.open(BuildingConfirmComponent);
-    const buildingId: number = this.buildings[index].id;
-
-    this.confirmRef.afterClosed().subscribe(state => {
-      if (state) {
-        this.removeBuildingRequest(index, buildingId);
-      }
-      this.dialogRef = null;
-    });
+  goTo(building: Building): void {
+    this.router.navigate(['/complexes', this.complex.id, 'buildings', building.id, 'floors']);
   }
-
-  removeBuilding(index: number): void {
-    const buildingId: number = this.buildings[index].id;
-    this.floorService.getBuildingWithFloors(buildingId).subscribe((result: any) => {
-      if (result && result.floors && result.floors.length) {
-        this.openBuildingRemoveConfirmationDialog(index);
-      } else {
-        this.removeBuildingRequest(index, buildingId);
-      }
-    });
-  }
-
-  updateBuilding(buildingToUpdate: Building): void {
-    this.buildingService.updateBuilding(buildingToUpdate).subscribe((building: Building) => {
-      this.toast.showSuccess('building.save.success');
-    }, (msg: string) => {
-      this.toast.showFailure(msg);
-    });
-  }
-
-  openDialog(): void {
-    this.dialogRef = this.dialog.open(BuildingDialogComponent);
-    this.dialogRef.componentInstance.building = {
-      name: '',
-      complexId: this.complexId
-    };
-
-    this.dialogRef.afterClosed().subscribe(building => {
-      if (building !== undefined) {
-        this.saveBuilding(building);
-      }
-      this.dialogRef = null;
-    });
-  }
-
-  saveBuilding(building: Building) {
-    this.buildingService.addBuilding(building).subscribe((newBuilding: Building) => {
-      this.buildings.push(newBuilding);
-      this.toast.showSuccess('building.create.success');
-    }, (err: string) => {
-      this.toast.showFailure(err);
-    });
-  }
-
-  openBuilding(building: Building): void {
-    this.router.navigate(['/complexes', this.complexId, 'buildings', building.id, 'floors']);
-  }
-
-  private removeBuildingRequest(index: number, buildingId: number) {
-    this.buildingService.removeBuilding(buildingId).subscribe(() => {
-      this.buildings.splice(index, 1);
-      this.toast.showSuccess('building.remove.success');
-    }, (msg: string) => {
-      this.toast.showFailure(msg);
-    });
-  }
-
-  private newBuilding(): void {
-    this.building = {
-      name: '',
-      complexId: this.complexId
-    };
-  }
-
 }

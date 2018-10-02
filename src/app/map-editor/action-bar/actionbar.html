@@ -1,0 +1,26 @@
+<div id="actionbar">
+  <span [@draftStateAnimation]="draftState" id="savingDraft">{{draftStateText}}</span>
+
+  <!--menu-buttons are wrapped with span, so tooltip can be displayed even when button is disabled -->
+  <span pTooltip="{{'saveDraft'|translate}}">
+    <button pButton
+            id="save-draft"
+            [disabled]="saveButtonDisabled" (click)="saveDraft()"
+            icon="fa-floppy-o">
+    </button>
+  </span>
+  <span pTooltip="{{undoTooltip}}">
+    <button pButton
+            [disabled]="resetButtonDisabled" (click)="resetToPreviousPublication()"
+            icon="fa-undo">
+    </button>
+  </span>
+  <span pTooltip="{{'publish'|translate}}">
+    <button pButton
+            [disabled]="publishButtonDisabled" (click)="publish()"
+            icon="fa-upload">
+    </button>
+  </span>
+</div>
+
+<p-confirmDialog key="preUndo" icon="fa-question-circle" width="425"></p-confirmDialog>

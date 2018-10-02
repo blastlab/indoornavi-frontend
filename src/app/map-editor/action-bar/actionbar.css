@@ -1,0 +1,11 @@
+#actionbar {
+  overflow: hidden;
+}
+
+#savingDraft {
+  font-size: 0.9em;
+  color: #fafafa;
+  font-weight: bold;
+  display: inline-block;
+  margin-right: 5px;
+}

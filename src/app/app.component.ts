@@ -1,51 +1,47 @@
-import {Component} from '@angular/core';
-import {BreadcrumbService} from 'ng2-breadcrumb/ng2-breadcrumb';
+import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {AuthGuard} from './auth/auth.guard';
 import {ActivatedRoute, Params} from '@angular/router';
+import {MenuItem} from 'primeng/primeng';
+import {Subscription} from 'rxjs/Subscription';
+import {BreadcrumbService} from './shared/services/breadcrumbs/breadcrumb.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.html'
 })
-export class AppComponent {
-  public isUserLoggedIn: boolean;
-  public isDisplayedInIFrame: boolean = false;
+export class AppComponent implements OnInit, OnDestroy {
+  isUserLoggedIn: boolean;
+  isDisplayedInIFrame: boolean = false;
+  displaySidebar: boolean = false;
+  breadcrumbs: MenuItem[];
+  private userLoggedInSubscription: Subscription;
+  private breadcrumbIsReadySubscription: Subscription;
 
-  constructor(private breadcrumbService: BreadcrumbService, private authGuard: AuthGuard, private route: ActivatedRoute) {
+  constructor(private authGuard: AuthGuard, private route: ActivatedRoute, private breadcrumbService: BreadcrumbService, private cd: ChangeDetectorRef) {
+  }
+
+  ngOnInit() {
     this.route.queryParams.subscribe((params: Params) => {
       if (!!params['api_key']) {
         this.isDisplayedInIFrame = true;
       }
     });
     this.isUserLoggedIn = !!localStorage.getItem('currentUser');
-    this.authGuard.userLoggedIn().subscribe((loggedIn: boolean) => {
+    this.userLoggedInSubscription = this.authGuard.userLoggedIn().subscribe((loggedIn: boolean) => {
+      if (!loggedIn) {
+        localStorage.removeItem('currentUser');
+      }
       this.isUserLoggedIn = loggedIn;
     });
-    breadcrumbService.addFriendlyNameForRoute('/complexes', 'Complexes');
-    breadcrumbService.addFriendlyNameForRoute('/buildings', 'Buildings');
-    breadcrumbService.addFriendlyNameForRoute('/floors', 'Floors');
-    breadcrumbService.addFriendlyNameForRouteRegex('/complexes/\\d+/buildings', 'Buildings');
-    breadcrumbService.addFriendlyNameForRouteRegex('/buildings/\\d+/floors', 'Floors');
-    breadcrumbService.addFriendlyNameForRouteRegex('/floors/\\d+/map', 'Map');
-    breadcrumbService.addFriendlyNameForRoute('/sinks', 'Sinks');
-    breadcrumbService.addFriendlyNameForRoute('/anchors', 'Anchors');
-    breadcrumbService.addFriendlyNameForRoute('/tags', 'Tags');
-    breadcrumbService.addFriendlyNameForRoute('/sinks', 'Sinks');
-    breadcrumbService.addFriendlyNameForRouteRegex('^/maps$', 'Published maps');
-    breadcrumbService.addFriendlyNameForRouteRegex('/maps/\\d+', 'Map view');
-    breadcrumbService.addFriendlyNameForRoute('/users', 'Users');
-    breadcrumbService.addFriendlyNameForRoute('/changePassword', 'Change password');
-    breadcrumbService.addFriendlyNameForRoute('/permissionGroups', 'Permission groups');
+    this.breadcrumbIsReadySubscription = this.breadcrumbService.isReady().subscribe((breadcrumbs: MenuItem[]) => {
+      this.breadcrumbs = breadcrumbs;
+      this.cd.detectChanges();
+    });
+  }
 
-    breadcrumbService.hideRouteRegex('^/complexes/\\d+$');
-    breadcrumbService.hideRouteRegex('^/complexes/\\d+/buildings/\\d+$');
-    breadcrumbService.hideRouteRegex('^/complexes/\\d+/buildings/\\d+/floors/\\d+$');
-    breadcrumbService.hideRouteRegex('^/buildings/\\d+$');
-    breadcrumbService.hideRouteRegex('^/floors/\\d+$');
-    breadcrumbService.hideRouteRegex('^/login');
-    breadcrumbService.hideRouteRegex('^/embedded$');
-    breadcrumbService.hideRouteRegex('^/embedded/\\d+\\?api_key=\\w+$');
-    breadcrumbService.hideRouteRegex('^/unauthorized');
+  ngOnDestroy() {
+    this.userLoggedInSubscription.unsubscribe();
+    this.breadcrumbIsReadySubscription.unsubscribe();
   }
 
 }

@@ -1,0 +1,41 @@
+<p-toolbar>
+  <div class="ui-toolbar-group-left">
+    <button pButton class="ui-button-secondary"
+            id="add-publishedMa"
+            [appHasPermission]="'PUBLICATION_CREATE'"
+            (click)="openDialog(null)"
+            label="{{'add'|translate}}"
+            icon="fa-plus" iconPos="left"
+    ></button>
+  </div>
+</p-toolbar>
+
+<p-dataTable [loading]="loading" [value]="publishedMaps" styleClass="auto">
+  <p-column header="{{'publishedList.floor'|translate}}">
+    <ng-template let-publishedMap="rowData" pTemplate="body">
+      <div *ngFor="let floor of publishedMap.floors">{{floor.displayName}}</div>
+    </ng-template>
+  </p-column>
+  <p-column header="{{'publishedList.tags'|translate}}">
+    <ng-template let-publishedMap="rowData" pTemplate="body">
+      <div *ngFor="let tag of publishedMap.tags">{{tag.shortId}} - {{tag.longId}}</div>
+    </ng-template>
+  </p-column>
+  <p-column header="{{'publishedList.users'|translate}}">
+    <ng-template let-publishedMap="rowData" pTemplate="body">
+      <div *ngFor="let user of publishedMap.users">{{user.username}}</div>
+    </ng-template>
+  </p-column>
+  <p-column header="{{'th.actions'|translate}}" styleClass="col-button">
+    <ng-template let-publishedMap="rowData" let-i="rowIndex" pTemplate="body">
+      <button pButton ngClass="editButton ui-button-info" pTooltip="{{'edit'|translate}}" [appHasPermission]="'PUBLICATION_UPDATE'" (click)="openDialog(publishedMap)" icon="fa-edit">
+      </button>
+      <button pButton ngClass="deleteButton ui-button-danger" pTooltip="{{'remove'|translate}}" [appHasPermission]="'PUBLICATION_DELETE'" (click)="remove(i)" icon="fa-trash">
+      </button>
+    </ng-template>
+  </p-column>
+</p-dataTable>
+
+<app-publication-dialog></app-publication-dialog>
+
+<p-confirmDialog icon="fa-question-circle" width="425"></p-confirmDialog>

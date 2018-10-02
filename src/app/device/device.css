@@ -1,16 +1,38 @@
-.devices-list {
+.device-list .ui-picklist-list {
+  height: 400px;
+}
+
+.device-list .ui-picklist-listwrapper button, .device-list .ui-chkbox {
+  display: inline-block;
+  float: right;
+}
+
+.device-list .ui-chkbox {
+  margin-top: 5px;
+}
+
+.device-list .device-details {
+  font-size: 0.8em;
+}
+
+#hint {
+  font-size: 0.8em;
+}
+
+.left {
   float: left;
-  width: 50%;
 }
 
-h3.verified  {
-  color: #77f977
+.right {
+  float: right;
 }
 
-.row {
-  padding: 10px 0;
+#update-panel div {
+  display: inline-block;
+  vertical-align: middle;
 }
 
-.drop-zone {
-  min-height: 200px;
+#update-panel .ui-fileupload-buttonbar {
+  vertical-align: middle;
+  padding: 0;
 }

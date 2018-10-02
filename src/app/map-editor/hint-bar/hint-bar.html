@@ -1,0 +1,11 @@
+<div id="hint-bar" class="ui-helper-clearfix">
+  <div class="ui-toolbar-group-left">
+    <span id="hintBar"><strong *ngIf="toolName != 'NONE'">{{toolName}}: </strong> {{hintMessage}}</span>
+  </div>
+  <div class="ui-toolbar-group-right">
+    <app-scale-hint></app-scale-hint>
+  </div>
+  <div class="ui-toolbar-group-right">
+    <app-mouse-position-viewer></app-mouse-position-viewer>
+  </div>
+</div>

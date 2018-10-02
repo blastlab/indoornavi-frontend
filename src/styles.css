@@ -1,18 +1,12 @@
-/* You can add global styles to this file, and also import other style files */
-body{
-  display: block;
+@import '~@angular/material/core/theming/prebuilt/deeppurple-amber.css';
+@import '~primeng/resources/primeng.css';
+@import '~primeng/resources/themes/ludvig/theme.css';
+@import '~font-awesome/css/font-awesome.css';
+
+body {
   font-family: 'Roboto', sans-serif;
-  margin: 20px 30px;
 }
-.adding-section{
-  margin: 30px 0;
-}
-table tr td{
-  border-bottom: 1px solid #000;
-}
-.adding-section button{
-  margin: 15px 0;
-}
+
 .error-toast {
   background: #d92020 !important;
 }
@@ -30,7 +24,7 @@ table tr td{
   display: block;
 }
 
-.breadcrumb-item+.breadcrumb-item:before {
+.breadcrumb-item + .breadcrumb-item:before {
   content: '|'
 }
 
@@ -52,11 +46,121 @@ table tr td{
   visibility: hidden;
 }
 
-#map-container {
-  max-width: 100%;
-  max-height: 800px;
-  overflow: auto;
+
+table th.col-button, table td.col-button, table th.col-checkbox, table td.col-checkbox {
+  width: 1%;
+  white-space: nowrap;
+  text-align: center;
 }
 
-@import '~@angular/material/core/theming/prebuilt/deeppurple-amber.css';
-@import '~@swimlane/ngx-datatable/release/themes/material.css';
+.auto table {
+  table-layout: auto;
+}
+
+.ui-datatable-odd {
+  background: #ffffff;
+}
+
+.ui-datatable-even {
+  background: #F2F5F9;
+}
+
+.ui-inputtext {
+  width: 100%;
+}
+
+.device-list .ui-picklist-list {
+  height: 400px;
+}
+
+.device-list .ui-picklist-listwrapper button {
+  display: inline-block;
+  float: right;
+}
+
+.device-list .device-details,
+.device-list .device-published-details {
+  font-size: 0.8em;
+}
+
+.device-list .device-published-details {
+  margin: auto;
+}
+
+.ui-message {
+  font-size: 0.8em;
+}
+
+#sidebar-menu .ui-sidebar-close {
+  display: none;
+}
+
+#sidebar-menu .ui-sidebar {
+  padding: 0;
+}
+
+#sidebar-menu .menu-button {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column-reverse;
+  flex-direction: column-reverse;
+  height: 75px;
+  margin: 0;
+  align-items: center;
+}
+
+#sidebar-menu .menu-button span:nth-child(1) {
+  font-size: small;
+}
+
+.ui-breadcrumb {
+  color: inherit;
+  background: none;
+  border: none;
+}
+
+.ui-breadcrumb a {
+  color: inherit;
+}
+
+#menu {
+  float: right;
+  height: 40px;
+  width: 40px;
+}
+
+app-auth > div {
+  width: 400px;
+  height: 250px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 25px;
+  right: 0;
+  margin: auto;
+}
+
+.ui-toolbar {
+  margin-bottom: 10px;
+}
+
+.wizardSink, .wizardAnchor {
+  cursor: move;
+}
+
+#map {
+  cursor: move;
+}
+
+.active-tool {
+  box-shadow: whitesmoke 2px 2px;
+}
+
+.ui-growl {
+  bottom: 20px;
+  top: auto;
+}
+
+.ui-fileupload-content {
+  min-height: 150px;
+}

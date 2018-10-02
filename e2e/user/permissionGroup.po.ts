@@ -7,20 +7,25 @@ export class PermissionGroupPage {
   }
 
   static addPermissionGroup() {
-    element(by.id('new-permissionGroup-button')).click();
-    element(by.id('name-input')).sendKeys('Test');
-    element(by.tagName('angular2-multiselect')).click();
-    element.all(by.className('pure-checkbox')).first().click();
-    element(by.tagName('angular2-multiselect')).click();
-    element(by.id('save-button')).click();
-  }
-
-  static getPermissionGroupsCount() { // TODO: change to utils method
-    return element.all(by.tagName('tr')).count();
+    const permissionGroupButton = element(by.id('new-permissionGroup-button'));
+    const nameInput = element(by.id('name-input'));
+    const multiselectNG2 = element(by.tagName('angular2-multiselect'));
+    const pureCheckbox = element.all(by.className('pure-checkbox')).first();
+    const saveButton = element(by.id('save-button'));
+    Utils.waitForElement(permissionGroupButton);
+    permissionGroupButton.click();
+    Utils.waitForElement(nameInput);
+    nameInput.sendKeys('Test');
+    Utils.waitForElement(multiselectNG2);
+    multiselectNG2.click();
+    pureCheckbox.click();
+    multiselectNG2.click();
+    saveButton.click();
   }
 
   static editPermissionGroupName(name: string) {
     PermissionGroupPage.getLastPermissionGroup().element(by.className('edit-button')).click();
+    Utils.waitForElement(element(by.id('name-input')));
     element(by.id('name-input')).clear();
     element(by.id('name-input')).sendKeys(name);
     element(by.id('save-button')).click();

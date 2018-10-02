@@ -1,7 +1,8 @@
 import {browser, by, element, promise as protractorPromise} from 'protractor';
 import {Utils} from '../utils';
 import {ScaleTool} from '../map/toolbar/tools/scale/scale.po';
-import {Measure} from '../../src/app/map/toolbar/tools/scale/scale.type';
+import {Measure} from '../../src/app/map-editor/tool-bar/tools/scale/scale.type';
+import {WebElement} from 'selenium-webdriver';
 
 export class PublishedPage {
   static navigateToPublishedList() {
@@ -9,7 +10,6 @@ export class PublishedPage {
   }
 
   static createPublishedMap(elementName: string) {
-    Utils.waitForElement(element(by.id('new-publishedList-button')));
     element(by.id('new-publishedList-button')).click();
     element(by.name('complexId')).click();
     element(by.cssContainingText('md-option.complexOption', elementName)).click();
@@ -29,7 +29,6 @@ export class PublishedPage {
   }
 
   static removeLastlyAddedMap() {
-    Utils.waitForElement(element.all(by.className('deleteButton')).last());
     element.all(by.className('deleteButton')).last().click();
   }
 
@@ -38,7 +37,6 @@ export class PublishedPage {
   }
 
   static editPublishedMap() {
-    Utils.waitForElement(element.all(by.className('editButton')).last());
     element.all(by.className('editButton')).last().click();
     element(by.className('tags')).click();
     element(by.className('tags')).element(by.cssContainingText('label', '11999 - 1199999')).click();
@@ -51,10 +49,18 @@ export class PublishedPage {
 
   static getLastMap(): Promise<LastMap> {
     return new Promise((resolve) => {
-      resolve({
-        floor: element.all(by.tagName('datatable-row-wrapper')).last().all(by.className('datatable-body-cell-label')).get(0).getText(),
-        tags: element.all(by.tagName('datatable-row-wrapper')).last().all(by.className('datatable-body-cell-label')).get(1).getText(),
-        users: element.all(by.tagName('datatable-row-wrapper')).last().all(by.className('datatable-body-cell-label')).get(2).getText()
+      element.all(by.tagName('datatable-row-wrapper')).last().all(by.className('datatable-body-cell-label')).then((elements: WebElement[]) => {
+        elements[0].getText().then((floor: string) => {
+          elements[1].getText().then((tags: string) => {
+            elements[2].getText().then((users: string) => {
+              resolve({
+                floor: floor,
+                tags: tags,
+                users: users
+              });
+            });
+          });
+        })
       });
     });
   }

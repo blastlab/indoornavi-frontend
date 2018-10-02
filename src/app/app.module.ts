@@ -3,79 +3,110 @@ import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {Http, HttpModule} from '@angular/http';
 import {ComplexComponent} from './complex/complex';
-import {MaterialModule, MdButtonModule, MdCardModule, MdDialogModule, MdIconModule, MdIconRegistry} from '@angular/material';
-import {ComplexService} from './complex/complex.service';
-import {ComplexDialogComponent} from './complex/complex.dialog';
-import {ComplexConfirmComponent} from './complex/complex.confirm';
-import {ToastService} from './utils/toast/toast.service';
-import {HttpService} from './utils/http/http.service';
-import {AppComponent} from './app.component';
 import {RouterModule} from '@angular/router';
 import {BuildingComponent} from './building/building';
-import {BuildingDialogComponent} from './building/building.dialog';
-import {BuildingConfirmComponent} from './building/building.confirm';
 import {BuildingService} from './building/building.service';
 import {FloorComponent} from './floor/floor';
 import {FloorService} from './floor/floor.service';
-import {FloorDialogComponent} from './floor/floor.dialog';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
-import {Ng2BreadcrumbModule} from 'ng2-breadcrumb/ng2-breadcrumb';
 import {WebSocketService} from 'angular2-websocket-service';
-import {SocketService} from './utils/socket/socket.service';
-import {DndModule} from 'ng2-dnd';
-import {DeviceListComponent} from './device/device.list';
-import {DeviceDialogComponent} from './device/device.dialog';
 import {DeviceService} from './device/device.service';
-import {FlexLayoutModule} from '@angular/flex-layout';
 import {ImageUploadModule} from 'angular2-image-upload';
-import {MapControllerComponent} from './map/map.controller';
-import {MapViewerComponent} from './map/map.viewer';
-import {MapUploaderComponent} from './map/map.uploader';
-import {MapService} from './map/map.service';
-import {HintBarComponent} from './map/hint-bar/hint-bar';
-import {ToolbarComponent} from './map/toolbar/toolbar';
-import {ScaleComponent} from './map/toolbar/tools/scale/scale';
-import {ScaleInputComponent} from './map/toolbar/tools/scale/input/input';
-import {ScaleInputService} from './map/toolbar/tools/scale/input/input.service';
-import {ScaleHintComponent} from './map/toolbar/tools/scale/hint/hint';
-import {ScaleHintService} from './map/toolbar/tools/scale/hint/hint.service';
-import {MapLoaderInformerService} from './utils/map-loader-informer/map-loader-informer.service';
-import {UserComponent} from './user/user';
-import {UserDialogComponent} from './user/user.dialog';
-import {UserService} from './user/user.service';
+import {MapControllerComponent} from './map-editor/map.controller';
+import {MapUploaderComponent} from './map-editor/uploader/map.uploader';
+import {MapService} from './map-editor/uploader/map.uploader.service';
+import {HintBarComponent} from './map-editor/hint-bar/hint-bar';
+import {ToolbarComponent} from './map-editor/tool-bar/toolbar';
+import {ScaleComponent} from './map-editor/tool-bar/tools/scale/scale';
+import {ScaleInputComponent} from './map-editor/tool-bar/tools/scale/input/input';
+import {ScaleInputService} from './map-editor/tool-bar/tools/scale/input/input.service';
+import {ScaleHintComponent} from './map-editor/tool-bar/tools/scale/hint/hint';
+import {ScaleHintService} from './map-editor/tool-bar/tools/scale/hint/hint.service';
+import {UserComponent} from './user/user/user';
+import {UserService} from './user/user/user.service';
 import {AuthComponent} from './auth/auth';
 import {AuthGuard, CanRead} from './auth/auth.guard';
 import {AuthService} from './auth/auth.service';
-import {ChangePasswordComponent} from './user/changePassword';
-import {SharedModule} from './utils/shared/shared.module';
-import {UnauthorizedComponent} from './utils/unauthorized/unauthorized';
-import {PermissionGroupComponent} from './user/permissionGroup';
-import {PermissionGroupService} from './user/permissionGroup.service';
-import {AngularMultiSelectModule} from 'angular2-multiselect-dropdown/angular2-multiselect-dropdown';
-import {WizardComponent} from './map/toolbar/tools/wizard/wizard';
-import {AcceptButtonsComponent} from './utils/accept-buttons/accept-buttons';
-import {AcceptButtonsService} from './utils/accept-buttons/accept-buttons.service';
-import {FirstStepComponent} from './map/toolbar/tools/wizard/first-step/first-step';
-import {SecondStepComponent} from './map/toolbar/tools/wizard/second-step/second-step';
-import {ThirdStepComponent} from './map/toolbar/tools/wizard/third-step/third-step';
-import {DrawingService} from './utils/drawing/drawing.service';
-import {IconService} from './utils/drawing/icon.service';
-import {HintBarService} from './map/hint-bar/hint-bar.service';
-import {ActionBarService} from './map/actionbar/actionbar.service';
-import {D3Service} from 'd3-ng2-service';
-import {ScaleService} from './map/toolbar/tools/scale/scale.service';
-import {PublishedComponent} from './published/published';
-import {PublishedListComponent} from './published/list/published-list';
-import {NgxDatatableModule} from '@swimlane/ngx-datatable';
+import {WizardComponent} from './map-editor/tool-bar/tools/wizard/wizard';
+import {ActionBarService} from './map-editor/action-bar/actionbar.service';
+import {ScaleService} from './shared/services/scale/scale.service';
+import {PublishedListComponent} from './map-viewer/list/publication-list';
+import {AllFieldsFilter} from './shared/utils/filters/allFieldsFilter';
+import {DevicePlacerController} from './map-editor/tool-bar/tools/devices/device-placer.controller';
 import {appRoutes} from './app.routes';
-import {PublishedService} from './published/published.service';
-import {MapViewerService} from './map/map.viewer.service';
-import {PublishedDialogComponent} from './published/dialog/published.dialog';
-import {ConfirmDialogComponent} from './utils/confirm-dialog/confirm.dialog';
-import {DeviceComponent} from './device/device.component';
-import {ActionBarComponent} from 'app/map/actionbar/actionbar';
-import {AreaService} from './area/area.service';
+import {PublishedService} from './map-viewer/publication.service';
+import {PublicationDialogComponent} from './map-viewer/dialog/publication.dialog';
+import {ActionBarComponent} from 'app/map-editor/action-bar/actionbar';
+import {Md5} from 'ts-md5/dist/md5';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {
+  BreadcrumbModule,
+  ButtonModule,
+  CheckboxModule,
+  ConfirmationService,
+  ConfirmDialogModule,
+  ContextMenuModule,
+  FileUploadModule,
+  GrowlModule,
+  MultiSelectModule,
+  PanelMenuModule,
+  RadioButtonModule,
+  SidebarModule,
+  SliderModule,
+  ToolbarModule,
+  TooltipModule
+} from 'primeng/primeng';
+import {HintBarService} from './map-editor/hint-bar/hintbar.service';
+import {ToolbarService} from './map-editor/tool-bar/toolbar.service';
+import {AppComponent} from './app.component';
+import {MessageServiceWrapper} from './shared/services/message/message.service';
+import {MessageService} from 'primeng/components/common/messageservice';
+import {BreadcrumbService} from './shared/services/breadcrumbs/breadcrumb.service';
+import {AreaService} from './shared/services/area/area.service';
+import {MapEditorService} from './map-editor/map.editor.service';
+import {PermissionGroupService} from './user/permissionGroup/permissionGroup.service';
+import {MapLoaderInformerService} from './shared/services/map-loader-informer/map-loader-informer.service';
+import {IconService} from 'app/shared/services/drawing/icon.service';
+import {AcceptButtonsService} from 'app/shared/components/accept-buttons/accept-buttons.service';
+import {SocketService} from 'app/shared/services/socket/socket.service';
+import {ComplexService} from './complex/complex.service';
+import {HttpService} from './shared/services/http/http.service';
+import {ProgressSpinnerModule} from 'primeng/components/progressspinner/progressspinner';
+import {OverlayPanelModule} from 'primeng/components/overlaypanel/overlaypanel';
+import {PickListModule} from 'primeng/components/picklist/picklist';
+import {InputTextModule} from 'primeng/components/inputtext/inputtext';
+import {DragDropModule} from 'primeng/components/dragdrop/dragdrop';
+import {DropdownModule} from 'primeng/components/dropdown/dropdown';
+import {DialogModule} from 'primeng/components/dialog/dialog';
+import {DataTableModule} from 'primeng/components/datatable/datatable';
+import {AppAutoFocusDirective} from './shared/directive/autofocus.directive';
+import {DeviceComponent} from 'app/device/device';
+import {AcceptButtonsComponent} from 'app/shared/components/accept-buttons/accept-buttons';
+import {PermissionGroupComponent} from 'app/user/permissionGroup/permissionGroup';
+import {UnauthorizedComponent} from 'app/unauthorized/unauthorized';
+import {ChangePasswordComponent} from './user/changePassword/changePassword';
+import {SharedModule} from './shared/modules/shared.module';
+import {ToolDetailsComponent} from './map-editor/tool-bar/shared/details/tool-details';
+import {MdIconRegistry} from '@angular/material';
+import {SocketConnectorComponent} from './map-viewer/views/socket-connector.component';
+import {ZoomService} from './shared/services/zoom/zoom.service';
+import {MapComponent} from './map/map';
+import {AreasComponent} from './map-editor/tool-bar/tools/area/areas';
+import {AreaDetailsComponent} from './map-editor/tool-bar/tools/area/details/area-details';
+import {AreaDetailsService} from './map-editor/tool-bar/tools/area/details/area-details.service';
+import {ContextMenuService} from './shared/wrappers/editable/editable.service';
+import {PublishedComponent} from './map-viewer/views/publications/publication';
+import {AnalyticsComponent} from './map-viewer/views/analytics/analytics';
+import {DevicesComponent} from './map-editor/tool-bar/tools/devices/devices';
+import {DevicesListComponent} from './map-editor/tool-bar/tools/devices/list/devices-list';
+import {MapObjectService} from './shared/utils/drawing/map.object.service';
+import {MinSelectedValidator} from './shared/directive/minselected.directive';
+import {TagVisibilityTogglerComponent} from './shared/components/tag-visibility-toggler/tag-visibility-toggler';
+import {TagVisibilityTogglerService} from './shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
+import {HeatMapControllerComponent} from './shared/components/heat-map-controller/heat-map-controller/heat-map-controller.component';
+import {HeatMapControllerService} from './shared/components/heat-map-controller/heat-map-controller/heat-map-controller.service';
+import {MousePositionViewerComponent} from './map-editor/mouse-position-viewer/mouse-position-viewer.component';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -84,18 +115,10 @@ export function HttpLoaderFactory(http: Http) {
 @NgModule({
   declarations: [
     ComplexComponent,
-    ComplexDialogComponent,
-    ComplexConfirmComponent,
     BuildingComponent,
-    BuildingDialogComponent,
-    DeviceListComponent,
-    DeviceDialogComponent,
-    BuildingConfirmComponent,
     FloorComponent,
-    FloorDialogComponent,
     AppComponent,
     MapControllerComponent,
-    MapViewerComponent,
     MapUploaderComponent,
     HintBarComponent,
     ToolbarComponent,
@@ -103,7 +126,6 @@ export function HttpLoaderFactory(http: Http) {
     ScaleInputComponent,
     ScaleHintComponent,
     UserComponent,
-    UserDialogComponent,
     AuthComponent,
     ChangePasswordComponent,
     UnauthorizedComponent,
@@ -111,35 +133,37 @@ export function HttpLoaderFactory(http: Http) {
     ActionBarComponent,
     WizardComponent,
     AcceptButtonsComponent,
-    FirstStepComponent,
-    SecondStepComponent,
-    ThirdStepComponent,
     PublishedComponent,
     PublishedListComponent,
-    PublishedDialogComponent,
-    ConfirmDialogComponent,
-    DeviceComponent
+    PublicationDialogComponent,
+    DeviceComponent,
+    AppAutoFocusDirective,
+    ToolDetailsComponent,
+    ToolDetailsComponent,
+    DeviceComponent,
+    SocketConnectorComponent,
+    MapComponent,
+    AreasComponent,
+    AreaDetailsComponent,
+    AppAutoFocusDirective,
+    DevicesComponent,
+    DevicesListComponent,
+    AllFieldsFilter,
+    AreaDetailsComponent,
+    AnalyticsComponent,
+    MinSelectedValidator,
+    TagVisibilityTogglerComponent,
+    HeatMapControllerComponent,
+    MousePositionViewerComponent
   ],
   entryComponents: [
-    ComplexDialogComponent,
-    ComplexConfirmComponent,
-    BuildingDialogComponent,
-    DeviceDialogComponent,
-    BuildingConfirmComponent,
-    FloorDialogComponent,
-    UserDialogComponent,
-    PublishedDialogComponent,
-    ConfirmDialogComponent
+    PublicationDialogComponent,
   ],
   imports: [
     BrowserModule,
-    MdDialogModule,
-    MdCardModule,
-    MdButtonModule,
-    MdIconModule,
     FormsModule,
-    MaterialModule,
     HttpModule,
+    BrowserAnimationsModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -148,29 +172,43 @@ export function HttpLoaderFactory(http: Http) {
       }
     }),
     RouterModule.forRoot(appRoutes),
-    Ng2BreadcrumbModule.forRoot(),
-    DndModule.forRoot(),
-    FlexLayoutModule,
     ImageUploadModule.forRoot(),
     SharedModule,
-    AngularMultiSelectModule,
-    NgxDatatableModule
+    DataTableModule,
+    SliderModule,
+    ButtonModule,
+    DialogModule,
+    ConfirmDialogModule,
+    DragDropModule,
+    DropdownModule,
+    MultiSelectModule,
+    InputTextModule,
+    PickListModule,
+    CheckboxModule,
+    ButtonModule,
+    ToolbarModule,
+    PanelMenuModule,
+    SidebarModule,
+    BreadcrumbModule,
+    TooltipModule,
+    GrowlModule,
+    ProgressSpinnerModule,
+    OverlayPanelModule,
+    ContextMenuModule,
+    FileUploadModule,
+    RadioButtonModule
   ],
   providers: [
     BuildingService,
     FloorService,
     HttpService,
     ComplexService,
-    ToastService,
     WebSocketService,
     SocketService,
     DeviceService,
     MapService,
     AcceptButtonsService,
-    DrawingService,
-    MdIconRegistry,
     IconService,
-    HintBarService,
     MapService,
     ScaleInputService,
     ScaleHintService,
@@ -181,11 +219,27 @@ export function HttpLoaderFactory(http: Http) {
     AuthGuard,
     ActionBarService,
     PermissionGroupService,
-    D3Service,
+    DevicePlacerController,
     ScaleService,
     PublishedService,
-    MapViewerService,
-    AreaService
+    MapEditorService,
+    AreaService,
+    Md5,
+    ConfirmationService,
+    BreadcrumbService,
+    MessageService,
+    MessageServiceWrapper,
+    ToolbarService,
+    HintBarService,
+    MdIconRegistry,
+    HintBarService,
+    ZoomService,
+    AreaDetailsService,
+    ContextMenuService,
+    MapObjectService,
+    ContextMenuService,
+    TagVisibilityTogglerService,
+    HeatMapControllerService
   ], bootstrap: [AppComponent]
 })
 

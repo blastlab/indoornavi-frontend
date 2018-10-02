@@ -1,30 +1,58 @@
-<h1 [translate]="'building.header'"></h1>
+<p-toolbar [appHasPermission]="'BUILDING_CREATE'">
+  <div class="ui-toolbar-group-left">
+    <button pButton class="ui-button-secondary" id="new-building-button" (click)="openDialog()"
+            label="{{'add'|translate}}"
+            icon="fa-plus">
+    </button>
+  </div>
+</p-toolbar>
 
-<div class="adding-section">
-  <button [appHasPermission]="'BUILDING_CREATE'" md-raised-button id="new-building-button" type="button" (click)="openDialog()">{{'add'|translate}}</button>
-</div>
+<p-dataTable [loading]="loading" [value]="complex.buildings" styleClass="auto">
+  <p-column field="name" header="{{'building.name'|translate}}"></p-column>
+  <p-column header="{{'th.actions'|translate}}" styleClass="col-button">
+    <ng-template let-building="rowData" let-i="rowIndex" pTemplate="body">
+      <button
+        pTooltip="{{'go.to.floors'|translate}}" type="button" pButton (click)="goTo(building)" icon="fa-level-down">
+      </button>
+      <button
+        [appHasPermission]="'BUILDING_UPDATE'"
+        pTooltip="{{'edit'|translate}}" type="button" pButton (click)="openDialog(building)" icon="fa-edit" class="ui-button-info">
+      </button>
+      <button
+        [appHasPermission]="'BUILDING_DELETE'"
+        pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(i)" icon="fa-trash" class="ui-button-danger">
+      </button>
+    </ng-template>
+  </p-column>
+</p-dataTable>
 
-<table cellpadding="10" cellspacing="0">
-  <tr>
-    <th [translate]="'building.name'"></th>
-    <th colspan="3" [translate]="'th.actions'"></th>
-  </tr>
-  <tr *ngFor="let building of buildings; let i = index" class="building">
-    <td class="building-name">{{building.name}}</td>
-    <td>
-      <button class="building-floor-button" (click)="openBuilding(building)" md-mini-fab md-tooltip="{{'go.to.floors'|translate}}" mdTooltipPosition="above">
-        <i class="material-icons">open_in_browser</i>
-      </button>
-    </td>
-    <td>
-      <button md-tooltip="{{'edit'|translate}}"  [appHasPermission]="'BUILDING_UPDATE'" class="building-edit-button" (click)="editBuilding(building)" md-mini-fab mdTooltipPosition="above">
-        <i class="material-icons">mode_edit</i>
-      </button>
-    </td>
-    <td>
-      <button md-tooltip="{{'remove'|translate}}"  [appHasPermission]="'BUILDING_DELETE'" class="building-remove-button" (click)="removeBuilding(i)" md-mini-fab md-mini-fab mdTooltipPosition="above">
-        <i class="material-icons">delete</i>
-      </button>
-    </td>
-  </tr>
-</table>
+<p-dialog header="{{'building.details'|translate}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
+          [contentStyle]="{ overflow: 'visible' }"
+          [width]="800"
+          dismissableMask="true">
+  <form #buildingForm="ngForm" novalidate>
+    <div class="ui-g" *ngIf="building">
+      <div class="ug-g-12 ui-md-4 ui-lg-4">
+        <div class="ui-message ui-messages-error ui-corner-all"
+             *ngIf="nameInput.errors?.required && nameInput.touched && nameInput.dirty">
+          <i class="fa fa-warning"></i>
+          {{'building.name.required'|translate}}
+        </div>
+      </div>
+      <div class="ui-g-12 ui-md-3 ui-lg-3">
+        <label for="name">{{'building.name'|translate}}&nbsp;*</label>
+      </div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <input required name="name" [appAutoFocus]="displayDialog" pInputText id="name" [(ngModel)]="building.name" #nameInput="ngModel"/>
+      </div>
+    </div>
+    <p-footer>
+      <div class="ui-dialog-buttonpane ui-helper-clearfix">
+        <button type="button" pButton icon="fa-close" (click)="cancel()" label="{{'cancel'|translate}}"></button>
+        <button type="submit" pButton icon="fa-check" (click)="save(buildingForm.valid)" label="{{'save'|translate}}"></button>
+      </div>
+    </p-footer>
+  </form>
+</p-dialog>
+
+<p-confirmDialog icon="fa fa-question-circle" width="425"></p-confirmDialog>
