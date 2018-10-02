@@ -87,9 +87,10 @@ export class NavigationService {
       }
       cheapestVertexIndex = minValueIndex;
       processed.push(cheapestVertexIndex);
-      console.log('processed : ', processed);
     }
-
+    console.log('processed : ', processed);
+    console.log('start, finish :', startPointIndex, endPointIndex);
+    console.log('parents: ', parents);
     return lines;
   }
 
