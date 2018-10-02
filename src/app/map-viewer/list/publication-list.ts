@@ -14,6 +14,8 @@ import {PublicationDialogComponent} from '../dialog/publication.dialog';
 })
 export class PublishedListComponent implements OnInit, CrudComponentList {
   publishedMaps: Publication[];
+  dialogTitle: string;
+  removeDialogTitle: string;
   loading: boolean = true;
   confirmBody: string;
 
@@ -42,6 +44,10 @@ export class PublishedListComponent implements OnInit, CrudComponentList {
     this.translateService.get('confirm.body').subscribe((value: string) => {
       this.confirmBody = value;
     });
+    this.translateService.get('publishedMap.details.remove').subscribe((value: string) => {
+      this.removeDialogTitle = value;
+    });
+
   }
 
   openDialog(map?: Publication) {
@@ -56,6 +62,7 @@ export class PublishedListComponent implements OnInit, CrudComponentList {
 
   remove(index: number): void {
     this.confirmationService.confirm({
+      header: this.removeDialogTitle,
       message: this.confirmBody,
       accept: () => {
         const map = this.publishedMaps[index];

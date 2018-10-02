@@ -1,6 +1,5 @@
 import {Point} from '../../../map.type';
 import {SelectItem} from 'primeng/primeng';
-import {DrawConfiguration} from '../../../../map-viewer/publication.type';
 import {ScaleCalculations} from '../scale/scale.type';
 
 export interface SocketMessage {
@@ -40,7 +39,7 @@ export enum Step {
 
 export interface WizardStep {
   load(items: SelectItem[], message: string, scaleCalculations?: ScaleCalculations): SelectItem[];
-  getDrawConfiguration(selectedItem: number): DrawConfiguration;
+  getDrawConfiguration(selectedItem: number): any;
   beforePlaceOnMap(selectedItem?: number): void;
   afterPlaceOnMap(): void;
   getBeforePlaceOnMapHint(): string;

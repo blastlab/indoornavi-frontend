@@ -2,8 +2,7 @@ import * as d3 from 'd3';
 
 export class SvgAnimator {
 
-  static startBlinking(selection: d3.selection): void {
-    const element: d3.selection = selection[0];
+  static startBlinking(element: d3.selection): void {
     const fill: string = element.style('fill');
     const stroke: string = element.style('stroke');
     let counter = 0;

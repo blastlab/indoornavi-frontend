@@ -9,13 +9,29 @@ import {ToolDetailsComponent} from '../../../map-editor/tool-bar/shared/details/
 })
 export class AcceptButtonsComponent implements OnInit {
   @ViewChild('toolDetails') toolDetails: ToolDetailsComponent;
+  bodyTextKey: string = 'ask.to.confirm.placement';
+  confirmTextKey: string = 'ok';
+  declineTextKey: string = 'cancel';
+
   constructor(private acceptButtonsService: AcceptButtonsService) {
 
   }
 
-  ngOnInit () {
-    this.acceptButtonsService.visibilitySet.subscribe((value: boolean) => {
+  ngOnInit() {
+    this.acceptButtonsService.visibilityChanged.subscribe((value: boolean) => {
       value ? this.toolDetails.show() : this.toolDetails.hide();
+    });
+
+    this.acceptButtonsService.translationsChanged.subscribe((value: AcceptButtonsTranslations) => {
+      if (!!value.bodyTextKey) {
+        this.bodyTextKey = value.bodyTextKey;
+      }
+      if (!!value.confirmTextKey) {
+        this.confirmTextKey = value.confirmTextKey;
+      }
+      if (!!value.declineTextKey) {
+        this.declineTextKey = value.declineTextKey;
+      }
     });
   }
 
@@ -23,4 +39,10 @@ export class AcceptButtonsComponent implements OnInit {
     this.acceptButtonsService.publishDecision(decision);
     this.toolDetails.hide();
   }
+}
+
+export interface AcceptButtonsTranslations {
+  bodyTextKey?: string;
+  confirmTextKey?: string;
+  declineTextKey?: string;
 }

@@ -26,10 +26,13 @@
   </p-column>
 </p-dataTable>
 
-<p-dialog header="{{'building.details'|translate}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
+<p-dialog [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
           [contentStyle]="{ overflow: 'visible' }"
           [width]="800"
-          dismissableMask="true">
+          dismissableMask="true" (onHide)="cancel()">
+  <p-header>
+    {{dialogTitle|translate}}
+  </p-header>
   <form #buildingForm="ngForm" novalidate>
     <div class="ui-g" *ngIf="building">
       <div class="ug-g-12 ui-md-4 ui-lg-4">
@@ -38,12 +41,17 @@
           <i class="fa fa-warning"></i>
           {{'building.name.required'|translate}}
         </div>
+        <div class="ui-message ui-messages-error ui-corner-all"
+             *ngIf="nameInput.errors?.properName && nameInput.touched && nameInput.dirty">
+          <i class="fa fa-warning"></i>
+          {{nameInput.errors?.properName|translate}}
+        </div>
       </div>
       <div class="ui-g-12 ui-md-3 ui-lg-3">
         <label for="name">{{'building.name'|translate}}&nbsp;*</label>
       </div>
       <div class="ui-g-12 ui-md-5 ui-lg-5">
-        <input required name="name" [appAutoFocus]="displayDialog" pInputText id="name" [(ngModel)]="building.name" #nameInput="ngModel"/>
+        <input appProperNameValidator required name="name" [appAutoFocus]="displayDialog" pInputText id="name" [(ngModel)]="building.name" #nameInput="ngModel"/>
       </div>
     </div>
     <p-footer>

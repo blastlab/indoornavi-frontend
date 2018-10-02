@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '@angular/router';
 import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Observable';
+import {BrowserDetector} from '../shared/services/browser-detector/browser.detector';
 
 @Injectable()
 export class AuthGuard {
@@ -39,7 +40,12 @@ export class CanRead implements CanActivate {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    if (localStorage.getItem('currentUser')) {
+    if (!!localStorage.getItem('currentUser')) {
+      if (BrowserDetector.getBrowserName() !== 'Chrome') {
+        this.router.navigate(['/notSupportedBrowser']);
+        return false;
+      }
+
       if (route.data.permission) {
         return PermissionChecker.check(route.data.permission + '_READ', this.router);
       }

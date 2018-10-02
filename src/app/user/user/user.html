@@ -35,10 +35,13 @@
   </p-column>
 </p-dataTable>
 
-<p-dialog header="{{'user.details'|translate}}" [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
+<p-dialog [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
           [contentStyle]="{ overflow: 'visible' }"
           [width]="800"
-          dismissableMask="true">
+          dismissableMask="true" (onHide)="cancel()">
+  <p-header>
+    {{dialogTitle|translate}}
+  </p-header>
   <div *ngIf="user">
     <form #userForm="ngForm" novalidate>
       <div class="ui-g">
@@ -57,7 +60,7 @@
                  #usernameInput="ngModel"/>
         </div>
       </div>
-      <div class="ui-g">
+      <div class="ui-g" *ngIf="!user.id">
         <div class="ug-g-12 ui-md-4 ui-lg-4">
           <div class="ui-message ui-messages-error ui-corner-all"
                *ngIf="passwordInput.errors?.required && passwordInput.touched && passwordInput.dirty">
@@ -73,7 +76,7 @@
                  #passwordInput="ngModel"/>
         </div>
       </div>
-      <div class="ui-g">
+      <div class="ui-g" *ngIf="!user.id">
         <div class="ug-g-12 ui-md-4 ui-lg-4">
           <div class="ui-message ui-messages-error ui-corner-all"
                *ngIf="repeatPasswordInput.errors?.required && repeatPasswordInput.touched && repeatPasswordInput.dirty">
@@ -95,7 +98,7 @@
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
           <p-multiSelect name="permissionGroups" id="permissionGroups" [options]="permissionGroups" [(ngModel)]="user.permissionGroups"
-                         optionLabel="name"
+                         optionLabel="name" [resetFilterOnHide]="true"
                          [style]="{ width: '100%' }" dataKey="id">
           </p-multiSelect>
         </div>

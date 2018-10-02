@@ -21,21 +21,16 @@ import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
 import {ScaleService} from '../../../../shared/services/scale/scale.service';
 import {Scale, ScaleCalculations, ScaleDto} from '../scale/scale.type';
 import {Geometry} from '../../../../shared/utils/helper/geometry';
-import {Anchor, Sink} from '../../../../device/device.type';
-import {DrawConfiguration} from '../../../../map-viewer/publication.type';
+import {Anchor} from '../../../../device/device.type';
 import {MapLoaderInformerService} from '../../../../shared/services/map-loader-informer/map-loader-informer.service';
-import {DevicePlacerController} from '../devices/device-placer.controller';
 import {IconService} from '../../../../shared/services/drawing/icon.service';
-import {DrawBuilder} from '../../../../shared/utils/drawing/drawing.builder';
-import {CommonDevice} from '../../../../shared/utils/drawing/common/device.common';
-import {Expandable} from '../../../../shared/utils/drawing/drawables/expandable';
 
 
 @Component({
   selector: 'app-wizard',
   templateUrl: './wizard.html'
 })
-export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDestroy {
+export class WizardComponent implements Tool, OnInit, OnDestroy {
   @Input() floor: Floor;
   displayDialog: boolean = false;
   options: SelectItem[];
@@ -52,12 +47,13 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
   private socketSubscription: Subscription;
   private map: d3.selection;
   private mapLoadedSubscription: Subscription;
-  private drawnDevices: Expandable[] = [];
+  // private drawnDevices: Expandable[] = [];
   private wizardData: WizardData = new WizardData();
   private hintMessage: string;
   private scaleChanged: Subscription;
   private scaleCalculations: ScaleCalculations;
   private disabledHandler: Subscription;
+  private decisionMadeSubscription: Subscription;
 
   constructor(public translate: TranslateService,
               protected iconService: IconService,
@@ -69,9 +65,8 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
               private hintBarService: HintBarService,
               private actionBarService: ActionBarService,
               private zoomService: ZoomService,
-              private placerController: DevicePlacerController,
               private scaleService: ScaleService) {
-    super(iconService);
+    // super(iconService);
   }
 
   ngOnInit() {
@@ -87,34 +82,21 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
     this.mapLoadedSubscription = null;
     this.scaleChanged.unsubscribe();
     this.disabledHandler.unsubscribe();
+    if (!!this.decisionMadeSubscription) {
+      this.decisionMadeSubscription.unsubscribe();
+    }
   }
 
-  private bindMapSelection(): void {
-    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapLoaded) => {
-      this.map = mapLoaded.container;
-    });
-  }
-
-  private captureScaleChanges(): void {
-    this.scaleChanged = this.scaleService.scaleChanged.subscribe((scale: ScaleDto): void => {
-      this.scale = new Scale(scale);
-      if (!!this.scale.start && !!this.scale.stop) {
-        this.scaleCalculations = {
-          scaleLengthInPixels: Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
-          scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
-        };
-      }
-    })
-  }
-
-  private handleDisablingFromService(): void {
-    this.disabledHandler = this.toolbarService.wizardDisabled.subscribe((setDisabled) => {
-      this.disabled = setDisabled;
-    })
+  begin(): void { // init xor unset wizard
+    if (this.active) {
+      this.toolbarService.emitToolChanged(null);
+      return;
+    }
+    this.nextStep();
   }
 
   nextStep(): void {
-    if (!this.activeStep) { // init wizard
+    if (!this.activeStep) {
       this.toolbarService.emitToolChanged(this);
       this.activeStep = this.steps[this.currentIndex];
       this.openSocket();
@@ -137,10 +119,6 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
     this.displayDialog = true;
   }
 
-  private isFinalStep() {
-    return this.currentIndex === this.steps.length;
-  }
-
   previousStep(): void {
     if (this.currentIndex === 0) { // current step if first so we close wizard
       this.cleanBeforeClosingWizard();
@@ -153,7 +131,7 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
     this.currentIndex -= 1;
     this.activeStep = this.steps[this.currentIndex];
     this.activeStep.clean();
-    this.drawnDevices[this.currentIndex] = null;
+    // this.drawnDevices[this.currentIndex] = null;
     this.activeStep.updateWizardData(this.wizardData, this.selectedItemId, this.scaleCalculations);
     const message: SocketMessage = this.activeStep.prepareToSend(this.wizardData);
     this.socketService.send(message);
@@ -167,14 +145,14 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
     this.map.style('cursor', 'crosshair');
     this.map.on('click', () => {
       const coordinates: Point = this.zoomService.calculateTransition({x: d3.event.offsetX, y: d3.event.offsetY});
-      const deviceConfig: DrawConfiguration = this.activeStep.getDrawConfiguration(this.selectedItemId);
-      const drawBuilder = new DrawBuilder(this.map, deviceConfig);
-      const wrapper = this.drawEditorDevice(drawBuilder, deviceConfig, coordinates);
-      const drawnDevice = WizardComponent.createConnectableDevice(wrapper);
-      this.drawnDevices[this.currentIndex] = drawnDevice;
-      drawnDevice.connectable.dragOn();
-      drawnDevice.connectable.handleHovering();
-      drawnDevice.selectable.handleHovering();
+      // const deviceConfig: CommonDeviceConfiguration = this.activeStep.getDrawConfiguration(this.selectedItemId);
+      // const drawBuilder = new DrawBuilder(this.map, deviceConfig);
+      // const wrapper = this.drawEditorDevice(drawBuilder, deviceConfig, coordinates);
+      // const drawnDevice = WizardComponent.createConnectableDevice(wrapper);
+      // this.drawnDevices[this.currentIndex] = drawnDevice;
+      // drawnDevice.connectable.dragOn();
+      // drawnDevice.connectable.handleHovering();
+      // drawnDevice.selectable.handleHovering();
       this.map.on('click', null);
       this.map.style('cursor', 'default');
       this.showAcceptButtons();
@@ -182,7 +160,12 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
   }
 
   setActive(): void {
-    this.active = true;
+    if (this.active) {
+      this.setInactive();
+    } else {
+      this.active = true;
+      this.closeSocket();
+    }
   }
 
   setInactive(): void {
@@ -191,6 +174,9 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
     this.currentIndex = 0;
     this.cleanBeforeClosingWizard();
     this.acceptButtons.publishVisibility(false);
+    if (!!this.decisionMadeSubscription) {
+      this.decisionMadeSubscription.unsubscribe();
+    }
   }
 
   setDisabled(value: boolean): void {
@@ -217,13 +203,41 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
       x: this.wizardData.secondAnchorPosition.x,
       y: this.wizardData.secondAnchorPosition.y
     });
-    this.actionBarService.setSink(<Sink>{
-      shortId: this.wizardData.sinkShortId,
-      x: this.wizardData.sinkPosition.x,
-      y: this.wizardData.sinkPosition.y,
-      anchors: anchors
+    // this.actionBarService.setSink(<Sink>{
+    //   shortId: this.wizardData.sinkShortId,
+    //   x: this.wizardData.sinkPosition.x,
+    //   y: this.wizardData.sinkPosition.y,
+    //   anchors: anchors
+    // });
+    // this.placerController.emitWizardSaveConfiguration(this.drawnDevices);
+  }
+
+  private isFinalStep(): boolean {
+    return this.currentIndex === this.steps.length;
+  }
+
+  private bindMapSelection(): void {
+    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapLoaded) => {
+      this.map = mapLoaded.container;
     });
-    this.placerController.emitWizardSaveConfiguration(this.drawnDevices);
+  }
+
+  private captureScaleChanges(): void {
+    this.scaleChanged = this.scaleService.scaleChanged.subscribe((scale: ScaleDto): void => {
+      this.scale = new Scale(scale);
+      if (!!this.scale.start && !!this.scale.stop) {
+        this.scaleCalculations = {
+          scaleLengthInPixels: Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
+          scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
+        };
+      }
+    })
+  }
+
+  private handleDisablingFromService(): void {
+    this.disabledHandler = this.toolbarService.wizardDisabled.subscribe((setDisabled) => {
+      this.disabled = setDisabled;
+    })
   }
 
   private cleanBeforeClosingWizard(): void {
@@ -240,7 +254,7 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
     this.selectedItemId = undefined;
   }
 
-  private stepChanged() {
+  private stepChanged(): void {
     this.placeholder = this.activeStep.getPlaceholder();
     this.title = this.activeStep.getTitle();
     this.selectedItemId = undefined;
@@ -251,11 +265,11 @@ export class WizardComponent extends CommonDevice implements Tool, OnInit, OnDes
   private showAcceptButtons(): void {
     this.hintBarService.sendHintMessage(this.activeStep.getAfterPlaceOnMapHint());
     this.acceptButtons.publishVisibility(true);
-    this.acceptButtons.decisionMade.first().subscribe(
+    this.decisionMadeSubscription = this.acceptButtons.decisionMade.first().subscribe(
       data => {
         this.activeStep.setSelectedItemId(this.selectedItemId);
         if (data) {
-          this.drawnDevices[this.currentIndex].connectable.dragOff();
+          // this.drawnDevices[this.currentIndex].connectable.dragOff();
           this.nextStep();
         } else {
           this.activeStep.clean();

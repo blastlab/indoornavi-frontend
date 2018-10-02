@@ -52,6 +52,11 @@ export enum CommandType {
   TOGGLE_TAG
 }
 
+export interface CustomMessageEvent {
+  args: any;
+  command: string;
+}
+
 export interface DrawConfiguration {
   id: string;
   clazz: string;
@@ -64,4 +69,9 @@ export interface DrawConfiguration {
 export interface ValidationResult {
   scaleSet?: boolean;
   imageSet?: boolean
+}
+
+export interface MeasureSocketDataTag {
+  tag: Tag;
+  floor: Floor
 }

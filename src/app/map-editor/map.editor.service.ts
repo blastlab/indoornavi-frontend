@@ -51,7 +51,7 @@ export class MapEditorService {
         };
 
         const zoom = d3.zoom()
-          .scaleExtent([1, 2])
+          .scaleExtent([0.1, 2])
           .translateExtent(MapEditorService.maxTranslate(mapContainer, image))
           .on('zoom', zoomed);
 
@@ -72,6 +72,7 @@ export class MapEditorService {
 
         zoom.translateBy(map, (mapContainer.offsetWidth - image.width) / 2, (mapContainer.offsetHeight - image.height) / 2);
         map.call(zoom);
+        map.on('dblclick.zoom', null);
 
         window.addEventListener('resize', () => {
           zoom.translateExtent(MapEditorService.maxTranslate(mapContainer, image));

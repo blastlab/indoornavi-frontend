@@ -20,6 +20,7 @@ import {Subject} from 'rxjs/Subject';
 import {MessageServiceWrapper} from '../../shared/services/message/message.service';
 import {SelectItem} from 'primeng/primeng';
 import {Tag} from '../../device/device.type';
+import {Helper} from '../../shared/utils/helper/helper';
 
 @Component({
   selector: 'app-publication-dialog',
@@ -28,19 +29,25 @@ import {Tag} from '../../device/device.type';
 export class PublicationDialogComponent implements OnInit, CrudComponentForm {
   displayDialog: boolean = false;
   complexes: Complex[] = [];
+  dialogTitle: string;
+
   selectedComplexes: Complex[] = [];
+  activeComplexes: Complex[] = [];
   buildings: Building[] = [];
   selectedBuildings: Building[] = [];
+  activeBuildings: Building[] = [];
   floors: SelectItem[] = [];
   selectedFloors: Floor[] = [];
   tags: Tag[] = [];
-  selectedTags: Tag[] = [];
+  tagsToSelect: SelectItem[] = [];
+  selectedTags: number[] = [];
   users: User[] = [];
   selectedUsers: User[] = [];
   publication: Publication;
   validationError: string;
   dialogClosed: Subject<Publication> = new Subject<Publication>();
   @ViewChild('publishedMapForm') publishedMapForm: NgForm;
+  tagsLabel: string;
 
   constructor(private deviceService: DeviceService,
               private userService: UserService,
@@ -57,6 +64,12 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
     this.deviceService.setUrl('tags');
     this.deviceService.getAll().subscribe((tags: Tag[]) => {
       this.tags = tags;
+      this.tagsToSelect = tags.map((tag: Tag) => {
+        return {
+          label: `${tag.shortId}`,
+          value: tag.shortId
+        };
+      });
     });
     this.userService.getUsers().subscribe((users: User[]) => {
       this.users = users;
@@ -65,6 +78,9 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
       this.complexes = complexes;
     });
     this.translateService.setDefaultLang('en');
+    this.translateService.get('publishedList.tags.select').subscribe((value: string) => {
+      this.tagsLabel = value;
+    });
   }
 
   open(publishedMap?: Publication): Observable<Publication> {
@@ -89,6 +105,12 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
 
   complexChanged() {
     this.buildings.length = 0;
+
+    if (!this.isDataSelected(this.selectedComplexes) || !this.isChooseSameData(this.activeComplexes, this.selectedComplexes)) {
+      this.selectedBuildings.length = 0;
+      this.selectedFloors.length = 0;
+    }
+
     this.selectedComplexes.forEach((complex: Complex) => {
       this.buildingService.getComplexWithBuildings(complex.id).subscribe((complexFromDb: Complex) => {
         this.buildings = this.buildings.concat(complexFromDb.buildings);
@@ -98,6 +120,11 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
 
   buildingChanged() {
     this.floors.length = 0;
+
+    if (!this.isDataSelected(this.selectedBuildings) || !this.isChooseSameData(this.activeBuildings, this.selectedBuildings)) {
+      this.selectedFloors.length = 0;
+    }
+
     this.selectedBuildings.forEach((building: Building) => {
       this.floorService.getBuildingWithFloors(building.id).subscribe((buildingFromDb: Building) => {
         this.floors = this.floors.concat(
@@ -114,18 +141,23 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
 
   setMap(map: Publication) {
     if (!!map) {
-      this.selectedComplexes = map.floors.map(floor => {
+      this.dialogTitle = 'publishedMap.details.edit';
+      this.activeComplexes = this.selectedComplexes = map.floors.map(floor => {
         return floor.building.complex;
       });
       this.complexChanged();
-      this.selectedBuildings = map.floors.map(floor => {
+      this.activeBuildings = this.selectedBuildings = map.floors.map(floor => {
         return floor.building;
       });
       this.buildingChanged();
-      this.selectedFloors = map.floors;
-      this.selectedTags = map.tags;
+      this.selectedFloors = Helper.deepCopy(map.floors);
+      this.selectedTags = map.tags.map((tag: Tag) => {
+        return tag.shortId;
+      });
       this.selectedUsers = map.users;
       this.publication = map;
+    } else {
+      this.dialogTitle = 'publishedMap.details.add';
     }
   }
 
@@ -161,7 +193,7 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
         this.publishedMapService.save({
           id: this.publication ? this.publication.id : null,
           floors: this.selectedFloors,
-          tags: this.selectedTags,
+          tags: this.mapToTags(this.selectedTags),
           users: this.selectedUsers,
         }).subscribe((savedMap: Publication) => {
           this.displayDialog = false;
@@ -174,6 +206,15 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
       }
     });
   }
+
+  private mapToTags(tagsShortIds: number[]): Tag[] {
+    return tagsShortIds.map((shortId: number) => {
+      return this.tags.find((tag: Tag) => {
+        return tag.shortId === shortId;
+      });
+    });
+  }
+
 
   private checkScaleAndImage(): Promise<ValidationResult> {
     return new Promise((resolve) => {
@@ -202,6 +243,16 @@ export class PublicationDialogComponent implements OnInit, CrudComponentForm {
           });
         }
       );
+    });
+  }
+
+  private isDataSelected(data): boolean {
+    return !!data.length;
+  }
+
+  private isChooseSameData(selectedArrData: Array<Complex | Building>, currentArrData: Array<Complex | Building>): boolean {
+    return currentArrData.some((currData: Complex | Building): boolean => {
+      return selectedArrData.every((selData: Complex | Building): boolean => currData.id === selData.id)
     });
   }
 }

@@ -83,7 +83,7 @@
 //     ScaleTool.deleteLastAddedComplex();
 //   });
 //
-//   it('should be able to activate scale tool', () => {
+//   it('should be able to activateForMouseEvents scale tool', () => {
 //     expect(element(by.id('hint-bar')).getText()).toEqual('SCALE: Click at map to set scale.');
 //   });
 //

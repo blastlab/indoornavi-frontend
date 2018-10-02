@@ -39,6 +39,7 @@ export class Editable {
   onSelected(): Observable<Editable> {
     return this.selected.asObservable();
   }
+
 }
 
 export interface EditableCallbacks {

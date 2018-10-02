@@ -4,6 +4,7 @@ import {FormsModule} from '@angular/forms';
 import {Http, HttpModule} from '@angular/http';
 import {ComplexComponent} from './complex/complex';
 import {RouterModule} from '@angular/router';
+import {CoreModule} from './core/core.module';
 import {BuildingComponent} from './building/building';
 import {BuildingService} from './building/building.service';
 import {FloorComponent} from './floor/floor';
@@ -32,8 +33,7 @@ import {WizardComponent} from './map-editor/tool-bar/tools/wizard/wizard';
 import {ActionBarService} from './map-editor/action-bar/actionbar.service';
 import {ScaleService} from './shared/services/scale/scale.service';
 import {PublishedListComponent} from './map-viewer/list/publication-list';
-import {AllFieldsFilter} from './shared/utils/filters/allFieldsFilter';
-import {DevicePlacerController} from './map-editor/tool-bar/tools/devices/device-placer.controller';
+import {AllFieldsFilter} from './shared/utils/filters';
 import {appRoutes} from './app.routes';
 import {PublishedService} from './map-viewer/publication.service';
 import {PublicationDialogComponent} from './map-viewer/dialog/publication.dialog';
@@ -55,7 +55,8 @@ import {
   SidebarModule,
   SliderModule,
   ToolbarModule,
-  TooltipModule
+  TooltipModule,
+  InputMaskModule
 } from 'primeng/primeng';
 import {HintBarService} from './map-editor/hint-bar/hintbar.service';
 import {ToolbarService} from './map-editor/tool-bar/toolbar.service';
@@ -63,7 +64,7 @@ import {AppComponent} from './app.component';
 import {MessageServiceWrapper} from './shared/services/message/message.service';
 import {MessageService} from 'primeng/components/common/messageservice';
 import {BreadcrumbService} from './shared/services/breadcrumbs/breadcrumb.service';
-import {AreaService} from './shared/services/area/area.service';
+import {AreaService} from './map-viewer/services/area/area.service';
 import {MapEditorService} from './map-editor/map.editor.service';
 import {PermissionGroupService} from './user/permissionGroup/permissionGroup.service';
 import {MapLoaderInformerService} from './shared/services/map-loader-informer/map-loader-informer.service';
@@ -81,7 +82,9 @@ import {DropdownModule} from 'primeng/components/dropdown/dropdown';
 import {DialogModule} from 'primeng/components/dialog/dialog';
 import {DataTableModule} from 'primeng/components/datatable/datatable';
 import {AppAutoFocusDirective} from './shared/directive/autofocus.directive';
+import {ProperNameDirective} from './shared/directive/propername.directive';
 import {DeviceComponent} from 'app/device/device';
+import {BluetoothComponent} from 'app/bluetooth/bluetooth';
 import {AcceptButtonsComponent} from 'app/shared/components/accept-buttons/accept-buttons';
 import {PermissionGroupComponent} from 'app/user/permissionGroup/permissionGroup';
 import {UnauthorizedComponent} from 'app/unauthorized/unauthorized';
@@ -92,21 +95,34 @@ import {MdIconRegistry} from '@angular/material';
 import {SocketConnectorComponent} from './map-viewer/views/socket-connector.component';
 import {ZoomService} from './shared/services/zoom/zoom.service';
 import {MapComponent} from './map/map';
-import {AreasComponent} from './map-editor/tool-bar/tools/area/areas';
+import {AreaComponent} from './map-editor/tool-bar/tools/area/area';
 import {AreaDetailsComponent} from './map-editor/tool-bar/tools/area/details/area-details';
 import {AreaDetailsService} from './map-editor/tool-bar/tools/area/details/area-details.service';
 import {ContextMenuService} from './shared/wrappers/editable/editable.service';
 import {PublishedComponent} from './map-viewer/views/publications/publication';
 import {AnalyticsComponent} from './map-viewer/views/analytics/analytics';
-import {DevicesComponent} from './map-editor/tool-bar/tools/devices/devices';
-import {DevicesListComponent} from './map-editor/tool-bar/tools/devices/list/devices-list';
-import {MapObjectService} from './shared/utils/drawing/map.object.service';
-import {MinSelectedValidator} from './shared/directive/minselected.directive';
+import {ApiService} from './shared/utils/drawing/api.service';
+import {MinSelectedValidatorDirective} from './shared/directive/minselected.directive';
 import {TagVisibilityTogglerComponent} from './shared/components/tag-visibility-toggler/tag-visibility-toggler';
 import {TagVisibilityTogglerService} from './shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
 import {HeatMapControllerComponent} from './shared/components/heat-map-controller/heat-map-controller/heat-map-controller.component';
 import {HeatMapControllerService} from './shared/components/heat-map-controller/heat-map-controller/heat-map-controller.service';
 import {MousePositionViewerComponent} from './map-editor/mouse-position-viewer/mouse-position-viewer.component';
+import {MapClickService} from './shared/services/map-click/map-click.service';
+import {NotSupportedBrowserComponent} from './not-supported-browser/not-supported-browser';
+import {LongIdValidatorDirective} from './shared/directive/long-id.directive';
+import {NumberInRangeValidatorDirective} from './shared/directive/number-in-range.directive';
+import {MacAddressDirective} from './shared/directive/mac-address.directive';
+import {PathComponent} from './map-editor/tool-bar/tools/path/path';
+import {DevicePlacerComponent} from './map-editor/tool-bar/tools/device-placer/device-placer.component';
+import {DevicePlacerService} from './map-editor/tool-bar/tools/device-placer/device-placer.service';
+import {DevicePlacerListComponent} from './map-editor/tool-bar/tools/device-placer/list/device-placer.list';
+import {DevicePlacerRowDirective} from './map-editor/tool-bar/tools/device-placer/list/device-placer.row';
+import {PathService} from './map-viewer/services/path/path.service';
+import {BluetoothService} from './bluetooth/bluetooth.service';
+import {TagsFinderComponent} from './tags-finder/tags-finder.component';
+import {SelectButtonModule} from 'primeng/components/selectbutton/selectbutton';
+import {TagFollowerComponent} from './map-viewer/views/tagfollower/tag-follower';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -137,24 +153,35 @@ export function HttpLoaderFactory(http: Http) {
     PublishedListComponent,
     PublicationDialogComponent,
     DeviceComponent,
+    LongIdValidatorDirective,
+    NumberInRangeValidatorDirective,
     AppAutoFocusDirective,
+    ProperNameDirective,
+    MacAddressDirective,
     ToolDetailsComponent,
     ToolDetailsComponent,
     DeviceComponent,
+    BluetoothComponent,
     SocketConnectorComponent,
     MapComponent,
-    AreasComponent,
+    MapComponent,
+    AreaComponent,
     AreaDetailsComponent,
-    AppAutoFocusDirective,
-    DevicesComponent,
-    DevicesListComponent,
     AllFieldsFilter,
     AreaDetailsComponent,
     AnalyticsComponent,
-    MinSelectedValidator,
+    MinSelectedValidatorDirective,
     TagVisibilityTogglerComponent,
     HeatMapControllerComponent,
-    MousePositionViewerComponent
+    MousePositionViewerComponent,
+    NotSupportedBrowserComponent,
+    DevicePlacerComponent,
+    DevicePlacerListComponent,
+    DevicePlacerRowDirective,
+    NotSupportedBrowserComponent,
+    PathComponent,
+    TagsFinderComponent,
+    TagFollowerComponent
   ],
   entryComponents: [
     PublicationDialogComponent,
@@ -173,6 +200,7 @@ export function HttpLoaderFactory(http: Http) {
     }),
     RouterModule.forRoot(appRoutes),
     ImageUploadModule.forRoot(),
+    CoreModule,
     SharedModule,
     DataTableModule,
     SliderModule,
@@ -196,7 +224,9 @@ export function HttpLoaderFactory(http: Http) {
     OverlayPanelModule,
     ContextMenuModule,
     FileUploadModule,
-    RadioButtonModule
+    RadioButtonModule,
+    InputMaskModule,
+    SelectButtonModule
   ],
   providers: [
     BuildingService,
@@ -206,6 +236,7 @@ export function HttpLoaderFactory(http: Http) {
     WebSocketService,
     SocketService,
     DeviceService,
+    BluetoothService,
     MapService,
     AcceptButtonsService,
     IconService,
@@ -213,13 +244,13 @@ export function HttpLoaderFactory(http: Http) {
     ScaleInputService,
     ScaleHintService,
     MapLoaderInformerService,
+    MapClickService,
     UserService,
     AuthService,
     CanRead,
     AuthGuard,
     ActionBarService,
     PermissionGroupService,
-    DevicePlacerController,
     ScaleService,
     PublishedService,
     MapEditorService,
@@ -236,10 +267,13 @@ export function HttpLoaderFactory(http: Http) {
     ZoomService,
     AreaDetailsService,
     ContextMenuService,
-    MapObjectService,
+    ApiService,
     ContextMenuService,
     TagVisibilityTogglerService,
-    HeatMapControllerService
+    HeatMapControllerService,
+    DevicePlacerService,
+    HeatMapControllerService,
+    PathService
   ], bootstrap: [AppComponent]
 })
 

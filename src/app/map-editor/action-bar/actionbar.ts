@@ -38,8 +38,8 @@ export class ActionBarComponent implements OnInit, OnDestroy {
   private configurationChangedSubscription: Subscription;
   private timer: Timer;
 
-  private draftState: string = 'hidden';
-  private draftStateText: string;
+  public draftState: string = 'hidden';
+  public draftStateText: string;
   private savedText: string;
   private savingText: string;
 
@@ -47,7 +47,7 @@ export class ActionBarComponent implements OnInit, OnDestroy {
   private undoDialogBody: string;
   private undoDialogBodyDate: string;
   private undoDialogBodyInitial: string;
-  private undoTooltip: string;
+  public undoTooltip: string;
   private undoTooltipPrevious: string;
   private undoTooltipInitial: string;
 
@@ -145,6 +145,8 @@ export class ActionBarComponent implements OnInit, OnDestroy {
     if (!!this.cd) {
       this.cd.detach();
     }
+
+    this.configurationService.clear();
   }
 
   public saveDraft(): void {

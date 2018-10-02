@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HexagonalHeatMap} from './hexagonal.heatmap.service';
 import {Point} from '../../../map-editor/map.type';
 import {CoordinatesSocketData} from '../../publication.type';
@@ -10,7 +10,10 @@ export class PixelHeatMap extends HexagonalHeatMap {
   private transformDistance: number;
   private pixelPoints: Point[] = [];
 
-  constructor(width, height, heatPointSize, heatColors) {
+  constructor(protected width: number,
+              protected height: number,
+              protected heatPointSize: number,
+              protected heatColors: string[]) {
     super(width, height, heatPointSize, heatColors);
     this.calculatePixelPoints();
     this.calculatePlasmaParameters();

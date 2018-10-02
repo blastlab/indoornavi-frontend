@@ -1,0 +1,27 @@
+<p-confirmDialog></p-confirmDialog>
+<p-toolbar>
+  <div class="left">
+    <div class="tags-list-filter">{{'filter.by'|translate}} </div>
+    <p-dropdown [options]="filterOptions" [(ngModel)]="selectedFilterValue"></p-dropdown>
+  </div>
+  <div class="tags-list-filter">
+    <input #gb type="text" pInputText size="40" placeholder="{{'filter.value'|translate}}" [(ngModel)]="searchValue" (keyup)="applyFilter()">
+  </div>
+</p-toolbar>
+<p-dataTable [loading]="loading" [paginator]="true"  [rows]="20" [value]="filteredTags" styleClass="auto" [lazy]="true">
+  <p-header>{{'tags.list'|translate}}</p-header>
+  <p-column field="id" header="{{'id'|translate}}"></p-column>
+  <p-column field="name" header="{{'name'|translate}}" filterPlaceholder="Search"></p-column>
+  <p-column field="complex" header="{{'complex'|translate}}"></p-column>
+  <p-column field="building" header="{{'building'|translate}}"></p-column>
+  <p-column field="floor" header="{{'floor'|translate}}"></p-column>
+  <p-column field="floorId" header="{{'th.actions'|translate}}" styleClass="col-button">
+    <ng-template let-tag="rowData" pTemplate="body">
+      <button
+        pTooltip="{{'go.to.map'|translate}}" type="button"
+        pButton (click)="click(tag)"
+        icon="fa-level-down" class="ui-button-info">
+      </button>
+    </ng-template>
+  </p-column>
+</p-dataTable>

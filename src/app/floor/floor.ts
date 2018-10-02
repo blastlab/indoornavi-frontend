@@ -15,6 +15,9 @@ import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.servi
 })
 export class FloorComponent implements OnInit, CrudComponent {
   floor: Floor;
+  dialogTitle: string;
+  removeDialogTitle: string;
+
   building: Building = new Building();
   loading: boolean = true;
   displayDialog: boolean = false;
@@ -52,13 +55,18 @@ export class FloorComponent implements OnInit, CrudComponent {
     this.translate.get('confirm.body').subscribe((value: string) => {
       this.confirmBody = value;
     });
+    this.translate.get('floor.details.remove').subscribe((value: string) => {
+      this.removeDialogTitle = value;
+    });
   }
 
-  openDialog(floor: Floor): void {
+  openDialog(floor?: Floor): void {
     if (!!floor) {
       this.floor = {...floor};
+      this.dialogTitle = 'floor.details.edit';
     } else {
       this.floor = new Floor('', this.getCurrentMaxLevel() + 1, this.building);
+      this.dialogTitle = 'floor.details.add';
     }
     this.displayDialog = true;
   }
@@ -95,6 +103,7 @@ export class FloorComponent implements OnInit, CrudComponent {
 
   remove(index: number): void {
     this.confirmationService.confirm({
+      header: this.removeDialogTitle,
       message: this.confirmBody,
       accept: () => {
         const floorId: number = this.building.floors[index].id;

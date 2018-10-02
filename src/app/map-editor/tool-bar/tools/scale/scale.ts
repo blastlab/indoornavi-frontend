@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {Tool} from '../tool';
 import {ToolName} from '../tools.enum';
 import * as d3 from 'd3';
@@ -16,7 +16,6 @@ import {ScaleService} from '../../../../shared/services/scale/scale.service';
 import {Helper} from '../../../../shared/utils/helper/helper';
 import {ToolbarService} from '../../toolbar.service';
 import {HintBarService} from '../../../hint-bar/hintbar.service';
-import {MapSvg} from '../../../../map/map.type';
 import {MapEditorService} from '../../../map.editor.service';
 import {ZoomService} from '../../../../shared/services/zoom/zoom.service';
 
@@ -45,6 +44,8 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   private pointsArray: Point[] = [];
   private linesArray: Line[] = [];
   private hintBarMessages: Subscription;
+  private scaleSnapshot: Scale;
+  private isDragging: boolean = false;
 
   constructor(private translate: TranslateService,
               private scaleInputService: ScaleInputService,
@@ -55,7 +56,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
               private actionBarService: ActionBarService,
               private scaleService: ScaleService,
               private zoomService: ZoomService
-              ) {
+  ) {
     this.setTranslations();
   }
 
@@ -79,6 +80,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.linesArray = [];
     this.isFirstPointDrawn = false;
     this.hintBarMessages.unsubscribe();
+    this.scaleBackup = null;
   }
 
   ngOnInit(): void {
@@ -103,7 +105,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.drawScale(configuration.data.scale);
     });
 
-    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe((mapSvg: MapSvg) => {
+    this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe(() => {
       this.createSvgGroupWithScale();
     });
 
@@ -133,7 +135,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.toolbarService.emitToolChanged(null);
     });
     this.scaleInputService.rejected.subscribe(() => {
-      this.rejectChanges();
+      this.rejectChanges(this.scaleBackup);
     });
     this.hintBarMessages = this.hintBarService.onHintMessageReceived().subscribe((message: string) => {
       this.hintMessage = message;
@@ -143,6 +145,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   getHintMessage(): string {
     return this.hintMessage;
   }
+
 
   getToolName(): ToolName {
     return ToolName.SCALE;
@@ -160,23 +163,38 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     this.changeHintBarMessage();
   }
 
-  // implements Tool so needs to have this method
   setDisabled(value: boolean): void {
+    this.disabled = value;
   }
 
   onClick(): void {
-    // TODO: resolve bug with hint bur message
-    this.toolbarService.emitToolChanged(this);
+    if (this.active) {
+      this.toolbarService.emitToolChanged(null);
+    } else {
+      this.toolbarService.emitToolChanged(this);
+    }
   }
 
-  private rejectChanges() {
-    if (this.scaleBackup) {
-      this.scale = Helper.deepCopy(this.scaleBackup);
+  private rejectChanges(scale: Scale) {
+    if (!!scale) {
+      this.scale = Helper.deepCopy(scale);
       this.scaleGroup.remove();
       this.createSvgGroupWithScale();
       this.pointsArray = [];
       this.linesArray = [];
       this.drawScale(this.scale);
+    }
+  }
+
+  @HostListener('document:keydown.escape', [])
+  public handleEscape(): void {
+    if (this.isDragging) {
+      this.rejectChanges(this.scaleSnapshot);
+      this.setScaleVisible();
+      this.isScaleSet = false;
+      this.isFirstPointDrawn = false;
+      this.scaleGroup.style('display', 'flex');
+      this.setScalePoints();
     }
   }
 
@@ -193,13 +211,14 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   private drawScaleFromConfiguration(): void {
-    if (!!this.scale.realDistance && !!this.scale.start && !!this.scale.stop) {
+    if (!!this.scale.start && !!this.scale.stop) {
       this.isScaleSet = true;
       this.pointsArray.push(this.scale.start);
       this.pointsArray.push(this.scale.stop);
       this.linesArray.push(this.createLine());
       this.redrawLine();
       this.redrawEndings();
+      this.redrawPoints();
     }
   }
 
@@ -228,12 +247,13 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.scaleService.changeVisibility(true);
     }
 
-    if (!d3.select(`#${ScaleComponent.SCALE_GROUP_SELECTOR_ID}`).empty() && this.isScaleSet) {
-      d3.select(`#${ScaleComponent.SCALE_GROUP_SELECTOR_ID}`).style('display', 'flex');
+    const scaleGroup: d3.selection = d3.select(`#${ScaleComponent.SCALE_GROUP_SELECTOR_ID}`);
+    if (!scaleGroup.empty() && this.isScaleSet) {
+      scaleGroup.style('display', 'flex');
       this.redrawLine();
       this.redrawEndings();
       this.redrawPoints();
-    } else if (d3.select(`#${ScaleComponent.SCALE_GROUP_SELECTOR_ID}`).empty()) {
+    } else if (scaleGroup.empty()) {
       d3.select(`#${MapEditorService.MAP_LAYER_SELECTOR_ID}`).append('g')
         .attr('id', ScaleComponent.SCALE_GROUP_SELECTOR_ID)
         .style('display', 'flex');
@@ -243,10 +263,11 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
   }
 
   private hideScale(): void {
+    const mapLayer: d3.selection = d3.select(`#${MapEditorService.MAP_LAYER_SELECTOR_ID}`);
     this.scaleService.changeVisibility(false);
-    d3.select(`#${MapEditorService.MAP_LAYER_SELECTOR_ID}`).style('cursor', 'default');
+    mapLayer.style('cursor', 'default');
     this.scaleGroup.style('display', 'none');
-    d3.select(`#${MapEditorService.MAP_LAYER_SELECTOR_ID}`).on('click', null);
+    mapLayer.on('click', null);
   }
 
   private addPoint(): void {
@@ -308,11 +329,15 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
   private redrawPoints(): void {
 
-    const subject = () => { return { x: d3.event.x, y: d3.event.y }};
+    const subject = () => {
+      return {x: d3.event.x, y: d3.event.y}
+    };
 
     const dragStart = (_, index: number, selections: d3.selection[]): void => {
+      this.scaleSnapshot = Helper.deepCopy(this.scale);
       d3.event.sourceEvent.stopPropagation();
       d3.select(selections[index]).classed('dragging', true);
+      this.isDragging = true;
     };
 
     const dragging = (d, index: number, selections: d3.selection[]): void => {
@@ -351,7 +376,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       // offsetFromBorder[0] gives left and upper border offset,
       // and offsetFromBorder[1] gives right and bottom border offset,
       // sign is giving a direction of the offset
-      const offsetFromBorder = [{x : 5, y: 5}, {x: -5, y: -5}];
+      const offsetFromBorder = [{x: 5, y: 5}, {x: -5, y: -5}];
       const eventPosition: Point = this.zoomService.calculateInMapEditorRangeEvent({x: x, y: y}, offsetFromBorder);
       d3.select(selections[index]).attr('cx', d.x = eventPosition.x).attr('cy', d.y = eventPosition.y);
       this.redrawLine();
@@ -360,6 +385,7 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
 
     const dragStop = (_, index: number, selections: d3.selection[]) => {
       d3.select(selections[index]).classed('dragging', false);
+      this.isDragging = false;
     };
 
     const drag = d3.drag()
@@ -483,11 +509,11 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     if (!this.active) {
       this.hintBarService.sendHintMessage('hint.chooseTool');
     } else {
-      if ( !!this.scale.start && !!this.scale.stop && !!this.scale.measure ) {
+      if (!!this.scale.start && !!this.scale.stop && !!this.scale.measure) {
         this.hintBarService.sendHintMessage('scale.move.to.change');
-      } else if ( this.pointsArray.length === 2 ) {
+      } else if (this.pointsArray.length === 2) {
         this.hintBarService.sendHintMessage('scale.enter.real.distance');
-      } else if ( this.pointsArray.length === 1 ) {
+      } else if (this.pointsArray.length === 1) {
         this.hintBarService.sendHintMessage('scale.set.second.point');
       } else {
         this.hintBarService.sendHintMessage('scale.set.first.point');

@@ -1,12 +1,15 @@
-import {BoxSize, DrawBuilder, SvgGroupWrapper} from './drawing.builder';
+import {Box, BoxSize, DrawBuilder, SvgGroupWrapper} from './drawing.builder';
 import {DrawConfiguration} from '../../../map-viewer/publication.type';
 import {Point} from '../../../map-editor/map.type';
 import * as d3 from 'd3';
-import {Box, MapObjectMetadata, Position} from './drawing.types';
-
+import {APIObject} from './api.types';
+import Metadata = APIObject.Metadata;
+import Position = APIObject.Position;
 
 export class InfoWindowGroupWrapper {
   private svgGroupWrapper: SvgGroupWrapper;
+  private closeIconContainerWidth: number = 13;
+  private closeIconContainerHeight: number = 16;
 
   private infoWindowSize: BoxSize = {
     width: 350,
@@ -34,28 +37,30 @@ export class InfoWindowGroupWrapper {
     return this.infoWindowSize;
   }
 
-  draw(coordinates: Point, infoText: string, callback: Function, objectMetadata: MapObjectMetadata): InfoWindowGroupWrapper {
+  draw(coordinates: Point, infoText: string, callback: Function, objectMetadata: Metadata): InfoWindowGroupWrapper {
     const closingInfoWindowPointCoordinates: Point = {x: coordinates.x + this.size.width - 20, y: coordinates.y + 5 };
     this.svgGroupWrapper.getGroup()
-      .append('foreignObject')
       .attr('x', coordinates.x)
       .attr('y', coordinates.y)
+      .append('foreignObject')
       .attr('width', this.infoWindowSize.width)
       .attr('height', this.infoWindowSize.height)
-      .html(`<div>${infoText}</div>`)
+      // height of content should be infoWindowSize.height - 2 x padding top
+      .html(`<div class="infoWindow-content" style="height: ${this.infoWindowSize.height - 50}px">${infoText}</div>`)
       .style('background-color', this.infoWindowBoxProps.fill)
       .style('border-style', this.infoWindowBoxProps.style)
       .style('border-radius', `${this.infoWindowBoxProps.radius}px`)
       .style('border-width', `${ this.infoWindowBoxProps.width}px`)
       .style('border-color', this.infoWindowBoxProps.color)
-      .style('padding', `${this.infoWindowBoxProps.padding}px`)
+      .style('padding-top', `25px`)
       .attr('opacity', this.infoWindowBoxProps.opacity);
 
     this.svgGroupWrapper.getGroup()
       .append('foreignObject')
-      .attr('x', closingInfoWindowPointCoordinates.x )
-      .attr('y', closingInfoWindowPointCoordinates.y)
-      .attr('id', 'infoWindow-text')
+      .attr('x', closingInfoWindowPointCoordinates.x - coordinates.x)
+      .attr('y', closingInfoWindowPointCoordinates.y - coordinates.y)
+      .attr('width', this.closeIconContainerWidth)
+      .attr('height', this.closeIconContainerHeight)
       .attr('fill', 'black')
       .attr('cursor', 'pointer')
       .html('<i class="fa fa-close"></i>')

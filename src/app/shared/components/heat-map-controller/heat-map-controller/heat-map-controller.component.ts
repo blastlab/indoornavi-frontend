@@ -8,31 +8,21 @@ import {HeatMapControllerService} from './heat-map-controller.service';
   styleUrls: ['./heat-map-controller.component.css']
 })
 export class HeatMapControllerComponent {
-  private playingAnimation: boolean = false;
-  private pathLength: number = 25; // in seconds for user friendly units
-  private heatTimeWait: number = 5; // in seconds for user friendly units
-  private heatMapType: string = '0';
+  public playingAnimation: boolean = false;
+  public pathLength: number = 25; // in seconds for user friendly units
+  public heatTimeWait: number = 5; // in seconds for user friendly units
+  public heatMapType: string = '0';
   Hexagonal: HeatMapType = HeatMapType.HEXAGONAL;
   Square: HeatMapType = HeatMapType.SQUARE;
 
   constructor(private heatMapControllerService: HeatMapControllerService) { }
 
-  setPathLength (event: number): void {
-    this.pathLength = event;
-    // calculate time to [ms] before passing as observable
-    this.heatMapControllerService.setHeatMapWaterfallDisplayTime(this.pathLength * 1000);
-  }
-
-  setHeatTimeWait (event: number): void {
-    this.heatTimeWait = event;
-    // calculate time to [ms] before passing as observable
-    this.heatMapControllerService.setHeatTimeGapChange(this.heatTimeWait * 1000);
-  }
-
   toggleHeatAnimation(): void {
     this.playingAnimation = !this.playingAnimation;
     this.heatMapControllerService.setHeatMapType(parseInt(this.heatMapType, 10));
     this.heatMapControllerService.togglePlayingAnimation(this.playingAnimation);
+    this.heatMapControllerService.setHeatMapWaterfallDisplayTime(this.pathLength * 1000);
+    this.heatMapControllerService.setHeatTimeGapChange(this.heatTimeWait * 1000);
   }
 
 }

@@ -1,31 +1,34 @@
 import {ActivatedRoute} from '@angular/router';
-import {Component, NgZone, OnInit} from '@angular/core';
+import {Component, NgZone, OnDestroy, OnInit} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {SocketConnectorComponent} from '../socket-connector.component';
 import {HeatMap, HeatMapPath, TimeStepBuffer} from './analytics.type';
 import {SocketService} from '../../../shared/services/socket/socket.service';
 import {PublishedService} from '../../publication.service';
-import {AreaService} from '../../../shared/services/area/area.service';
+import {AreaService} from '../../services/area/area.service';
 import {IconService} from '../../../shared/services/drawing/icon.service';
 import {MapLoaderInformerService} from '../../../shared/services/map-loader-informer/map-loader-informer.service';
 import {CoordinatesSocketData} from '../../publication.type';
 import {HexagonalHeatMap} from './hexagonal.heatmap.service';
 import * as d3 from 'd3';
-import {Movable} from '../../../shared/wrappers/movable/movable';
 import {MapSvg} from '../../../map/map.type';
 import {FloorService} from '../../../floor/floor.service';
 import {TagVisibilityTogglerService} from '../../../shared/components/tag-visibility-toggler/tag-visibility-toggler.service';
-import {MapObjectService} from '../../../shared/utils/drawing/map.object.service';
+import {ApiService} from '../../../shared/utils/drawing/api.service';
 import {BreadcrumbService} from '../../../shared/services/breadcrumbs/breadcrumb.service';
 import {HeatMapControllerService} from '../../../shared/components/heat-map-controller/heat-map-controller/heat-map-controller.service';
 import {TagToggle} from '../../../shared/components/tag-visibility-toggler/tag-toggle.type';
 import {PixelHeatMap} from './pixel.heatmap.service';
 import {HeatMapType} from '../../../shared/components/heat-map-controller/heat-map-controller/heat-map-controller.component';
+import {MapClickService} from '../../../shared/services/map-click/map-click.service';
+import {TagOnMap} from '../../../map/models/tag';
+import {PathService} from '../../services/path/path.service';
+import {ComplexService} from '../../../complex/complex.service';
 
 @Component({
   templateUrl: './analytics.html'
 })
-export class AnalyticsComponent extends SocketConnectorComponent implements OnInit {
+export class AnalyticsComponent extends SocketConnectorComponent implements OnInit, OnDestroy {
   private timeStepBuffer: Map<number, TimeStepBuffer[]> = new Map();
   private mapId = 'map';
   private activeHeatMap: HeatMap[] = [];
@@ -53,10 +56,13 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
               route: ActivatedRoute,
               publishedService: PublishedService,
               mapLoaderInformer: MapLoaderInformerService,
+              mapClickService: MapClickService,
               areaService: AreaService,
+              pathService: PathService,
               translateService: TranslateService,
               iconService: IconService,
-              mapObjectService: MapObjectService,
+              mapObjectService: ApiService,
+              complexService: ComplexService,
               floorService: FloorService,
               tagTogglerService: TagVisibilityTogglerService,
               breadcrumbService: BreadcrumbService,
@@ -68,10 +74,13 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       route,
       publishedService,
       mapLoaderInformer,
+      mapClickService,
       areaService,
+      pathService,
       translateService,
       iconService,
       mapObjectService,
+      complexService,
       floorService,
       tagTogglerService,
       breadcrumbService
@@ -79,21 +88,25 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
   }
 
   protected init(): void {
-    this.heatMapControllerService.onHeaMapTypeChange().subscribe((type: HeatMapType): void => {
+    this.heatMapControllerService.onHeaMapTypeChange().takeUntil(this.subscriptionDestructor)
+      .subscribe((type: HeatMapType): void => {
       this.heatMapType = type;
     });
-    this.heatMapControllerService.onAnimationToggled().subscribe((animationToggle: boolean): void => {
+    this.heatMapControllerService.onAnimationToggled().takeUntil(this.subscriptionDestructor)
+      .subscribe((animationToggle: boolean): void => {
       this.playingAnimation = animationToggle;
       if (!this.playingAnimation) {
         this.getActiveHeatMap().erase();
       }
 
     });
-    this.heatMapControllerService.onHeatMapWaterfallDisplayTimesChange().subscribe((heatMapWaterfallDisplayTime: number): void => {
+    this.heatMapControllerService.onHeatMapWaterfallDisplayTimesChange().takeUntil(this.subscriptionDestructor)
+      .subscribe((heatMapWaterfallDisplayTime: number): void => {
       this.heatMapSettings.temperatureLifeTime = heatMapWaterfallDisplayTime;
       this.getActiveHeatMap().temperatureTimeIntervalForCooling = this.heatMapSettings.temperatureLifeTime;
     });
-    this.heatMapControllerService.onHeatMapTimeGapChange().subscribe((heatTimeGap: number): void => {
+    this.heatMapControllerService.onHeatMapTimeGapChange().takeUntil(this.subscriptionDestructor)
+      .subscribe((heatTimeGap: number): void => {
       this.heatMapSettings.temperatureWaitTime = heatTimeGap;
       this.getActiveHeatMap().temperatureTimeIntervalForHeating = this.heatMapSettings.temperatureWaitTime;
     });
@@ -101,7 +114,8 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       // both hexagonalHeatMap and pixelHeatMap needs to be created upfront, to be displayed in svg layer below tags svg layer
       this.createHeatMapGrid(mapSvg.layer);
     });
-    this.whenDataArrived().subscribe((data: CoordinatesSocketData): void => {
+    this.whenDataArrived().takeUntil(this.subscriptionDestructor)
+      .subscribe((data: CoordinatesSocketData): void => {
       // update
       const timeOfDataStep: number = Date.now();
       if (this.timeStepBuffer.has(data.coordinates.tagShortId)) {
@@ -111,16 +125,18 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       }
       this.handleCoordinatesData(data);
     });
-    this.tagTogglerService.onToggleTag().subscribe((tagToggle: TagToggle) => {
+    this.tagTogglerService.onToggleTag().takeUntil(this.subscriptionDestructor)
+      .subscribe((tagToggle: TagToggle) => {
       if (this.tagsOnMap.containsKey(tagToggle.tag.shortId) && !tagToggle.selected) {
         this.timeStepBuffer.delete(tagToggle.tag.shortId);
         this.getActiveHeatMap().erase(tagToggle.tag.shortId);
       }
     });
-    this.whenTransitionEnded().subscribe((tagShortId: number): void => {
+    this.whenTransitionEnded().takeUntil(this.subscriptionDestructor)
+      .subscribe((tagShortId: number): void => {
       const timeStepBuffer = this.timeStepBuffer.get(tagShortId);
       if (!!timeStepBuffer && timeStepBuffer.length > 0 && !document.hidden) {
-        const timeWhenTransitionIsFinished: number = Date.now() - Movable.TRANSITION_DURATION;
+        const timeWhenTransitionIsFinished: number = Date.now() - TagOnMap.TRANSITION_DURATION;
         for (let index = 0; index < timeStepBuffer.length; index ++) {
           if (timeStepBuffer[index].timeOfDataStep < timeWhenTransitionIsFinished) {
             if (this.playingAnimation) {
@@ -152,5 +168,4 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       heatMap.temperatureTimeIntervalForCooling = this.heatMapSettings.temperatureLifeTime;
     });
   }
-
 }

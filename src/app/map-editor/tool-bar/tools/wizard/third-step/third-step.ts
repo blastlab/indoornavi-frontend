@@ -3,7 +3,6 @@ import {Point} from '../../../../map.type';
 import {AnchorSuggestedPositions, SocketMessage, Step, WizardData, WizardStep} from '../wizard.type';
 import {SelectItem} from 'primeng/primeng';
 import {Geometry} from '../../../../../shared/utils/helper/geometry';
-import {DrawConfiguration} from 'app/map-viewer/publication.type';
 import {ScaleCalculations} from '../../scale/scale.type';
 
 export class ThirdStep implements WizardStep {
@@ -43,10 +42,10 @@ export class ThirdStep implements WizardStep {
     }
   }
 
-  getDrawConfiguration(selectedItemID: number): DrawConfiguration {
+  getDrawConfiguration(selectedItemID: number): any {
     return {
       id: `` + selectedItemID, clazz: 'wizard anchor', name: 'anchor' + selectedItemID,
-      color: 'green', display: 'true'
+      color: 'green', display: 'true', heightInMeters: 2 // TODO: change it to value taken from device (not now, since we don't know the future for wizard)
     };
   }
 
