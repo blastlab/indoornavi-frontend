@@ -438,6 +438,9 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
       return b.index - a.index;
     });
     intersections.forEach((intersection: IntersectionIdentifier): void => {
+      if (this.isIntersectionOnLineVertex(intersection)) {
+        return;
+      }
       const lineToIntersect: Line = this.lines.splice(intersection.index, 1)[0];
       const intersectedLeft: Line = {
           startPoint: lineToIntersect.startPoint,
@@ -478,6 +481,14 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
       lines.push(lineFromLastIntersectionToLastPoint);
     }
     return lines;
+  }
+
+  private isIntersectionOnLineVertex(intersection: IntersectionIdentifier): boolean {
+    const isOnStartVertex: boolean =  this.lines[intersection.index].startPoint.x === intersection.point.x &&
+      this.lines[intersection.index].startPoint.y === intersection.point.y;
+    const isOnEndVertex: boolean =  this.lines[intersection.index].endPoint.x === intersection.point.x &&
+      this.lines[intersection.index].endPoint.y === intersection.point.y;
+    return isOnEndVertex || isOnStartVertex;
   }
 
 }
