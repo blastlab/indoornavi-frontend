@@ -32,6 +32,7 @@ export class NavigationController {
   ) {}
 
   handleNavigation(event: MessageEvent, floorId, container, scale) {
+    console.log(event);
     const args: NavigationData = event.data.args.object;
     if (this.isNavigationReady) {
       if (args.action === 'update') {
@@ -135,11 +136,11 @@ export class NavigationController {
     // this.pathCalculated = NavigationService.calculateDijkstraShortestPath(lines, location, destination);
     this.objectMetadata = {
       object: {
-        id: 123123123123
+        id: 123123123123,
       },
       type: 'POLYLINE'
     };
-    this.objectMetadata.object = Object.assign((<Path>this.objectMetadata.object), {lines: lines});
+    this.objectMetadata.object = Object.assign((<Path>this.objectMetadata.object), {lines: lines, color: '#906090'});
     // console.log(this.objectMetadata.object);
   }
 
