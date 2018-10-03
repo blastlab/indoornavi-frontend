@@ -10,6 +10,7 @@ import {Observable} from 'rxjs/Observable';
 import Metadata = APIObject.Metadata;
 import Path = APIObject.Path;
 import NavigationData = APIObject.NavigationData;
+import {NavigationService} from './navigation.service';
 import {Geometry} from '../helper/geometry';
 
 @Injectable()
@@ -45,7 +46,7 @@ export class NavigationController {
       }
     } else if (args.action === 'start') {
       this.setNavigationPath(floorId, args.location, args.destination, args.accuracy, event, container, scale);
-      console.log('creating navigation');
+      console.log('creating navigation', args.location, args.destination);
     } else if (args.action === 'update') {
       this.setLastCoordinates(args.position);
     }
@@ -133,10 +134,11 @@ export class NavigationController {
   }
 
   private calculateNavigationPath(lines: Line[], location: Point, destination: Point, accuracy: number): void {
+    // const path: Line[] = NavigationService.calculateDijkstraShortestPath(lines, location, destination);
     // this.pathCalculated = NavigationService.calculateDijkstraShortestPath(lines, location, destination);
     this.objectMetadata = {
       object: {
-        id: 123123123123,
+        id: 123123123123
       },
       type: 'POLYLINE'
     };
@@ -145,6 +147,7 @@ export class NavigationController {
   }
 
   private redrawPath(): void {
+    //usun
     if (!!this.objectMetadata) {
       this.mapObjectService.draw(this.objectMetadata, this.scale, this.event, this.container, 'dotted');
     }
