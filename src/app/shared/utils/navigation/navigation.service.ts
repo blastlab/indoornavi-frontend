@@ -57,7 +57,7 @@ export class NavigationService {
     const endPointIndex: number = dijkstraVertexMatrix.findIndex((vertex: Vertex): boolean => {
       return vertex.coordinates.x === endPointCoordinatesOnLines.x && vertex.coordinates.y === endPointCoordinatesOnLines.y;
     });
-    console.log(dijkstraVertexMatrix);
+    console.log('Vertex[]: ', dijkstraVertexMatrix);
 
     const costs: Cost = {
       [startPointIndex]: 0,
@@ -73,13 +73,18 @@ export class NavigationService {
         }
         const parenCost: number = costs[`${cheapestVertexIndex}`];
         const childCost: number = graph.cost + parenCost;
+        console.log(`parenCost, childCost`, parenCost, childCost);
 
-        if (Object.keys(costs).includes(`${graph.vertexIndex}`) && costs[`${graph.vertexIndex}`] > childCost) {
-          costs[`${graph.vertexIndex}`] = childCost;
+        if (Object.keys(costs).includes(`${graph.vertexIndex}`)) {
+          if (costs[`${graph.vertexIndex}`] > childCost) {
+            costs[`${graph.vertexIndex}`] = childCost;
+            parents[`${graph.vertexIndex}`] = cheapestVertexIndex;
+          }
         } else {
           costs[`${graph.vertexIndex}`] = childCost;
+          parents[`${graph.vertexIndex}`] = cheapestVertexIndex;
         }
-        parents[`${graph.vertexIndex}`] = cheapestVertexIndex;
+        console.log('costs', costs);
       });
       let minCost = Infinity;
       let minValueIndex: number;
