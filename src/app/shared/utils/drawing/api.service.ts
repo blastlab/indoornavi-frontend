@@ -57,14 +57,14 @@ export class ApiService {
     }
   }
 
-  draw(objectMetadata: Metadata, scale: Scale, originMessageEvent: MessageEvent, container: d3.selection): void {
+  draw(objectMetadata: Metadata, scale: Scale, originMessageEvent: MessageEvent, container: d3.selection, type: string): void {
     if (!!this.objects.get(objectMetadata.object.id)) {
       this.removeObject(objectMetadata);
     }
     switch (objectMetadata.type) {
       case 'POLYLINE':
         this.addToMapContainer(objectMetadata, container);
-        this.drawPolyline(objectMetadata, this.getCalculatedPoints(objectMetadata.object['points'], scale));
+        this.drawLine(objectMetadata, this.getCalculatedPoints(objectMetadata.object['points'], scale), type);
         break;
       case 'AREA':
         this.addToMapContainer(objectMetadata, container);
@@ -139,19 +139,37 @@ export class ApiService {
     }
   }
 
-  private drawPolyline(objectMetadata: Metadata, points: Point[]): void {
+  private drawLine(objectMetadata: Metadata, points: Point[], type): void {
     const polyline: Polyline = <Polyline>objectMetadata.object;
-    this.objects.get(polyline.id).addPolyline(points, this.pointRadius);
+    this.objects.get(polyline.id).addTypeLine(points, type, this.pointRadius);
     const lines: d3.selection[] = this.objects.get(polyline.id).getElements(ElementType.LINE);
     const circles: d3.selection[] = this.objects.get(polyline.id).getElements(ElementType.CIRCLE);
+
+    const typeLine = {
+      'solid': () => this.setSolidPolyline(lines, circles, polyline),
+      'dotted': () => {
+        this.setDottedLine(lines, circles, polyline)
+      }
+    };
+
     if (!!polyline.color) {
-      lines.forEach((line: d3.selection) => {
-        ApiHelper.setStrokeColor(line, polyline.color);
-      });
-      circles.forEach((circle: d3.selection) => {
-        ApiHelper.setFillColor(circle, polyline.color);
-      });
+      typeLine[type]();
     }
+  }
+
+  private setSolidPolyline(lines: d3.selection, circles: d3.selection, polyline) {
+    lines.forEach((line: d3.selection) => {
+      ApiHelper.setStrokeColor(line, polyline.color);
+    });
+    circles.forEach((circle: d3.selection) => {
+      ApiHelper.setFillColor(circle, polyline.color);
+    });
+  }
+
+  private setDottedLine(lines: d3.selection, circles: d3.selection, polyline) {
+     lines.forEach((line: d3.selection) => {
+      ApiHelper.setDottedLine(line, polyline.color, 5)
+    });
   }
 
   private placeCircleOnMap(objectMetadata: Metadata, point: Point): void {

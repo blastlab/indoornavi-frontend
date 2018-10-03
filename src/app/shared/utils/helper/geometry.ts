@@ -249,6 +249,20 @@ export class Geometry {
     });
     return closestNodeCoordinates;
   }
+
+  static isPointOnLineBetweenTwoPoints(line: Line, point: Point): boolean {
+    const { startPoint, endPoint } = line;
+
+    const onLine: boolean = ((point.y - startPoint.y) * (endPoint.x - startPoint.x)) - ((endPoint.y - startPoint.y) * (point.x - startPoint.x)) <= 10;
+    const inRange: boolean = (point.x >= Math.min(startPoint.x, endPoint.x) && point.x <= Math.max(startPoint.x, endPoint.x) &&
+      point.y >= Math.min(startPoint.y, endPoint.y) && point.y <= Math.max(startPoint.y, endPoint.y));
+
+    if (onLine && inRange) {
+      return true;
+    }
+
+    return false;
+  }
 }
 
 export interface NearestPoint {

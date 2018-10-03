@@ -11,6 +11,7 @@ import Metadata = APIObject.Metadata;
 import Path = APIObject.Path;
 import NavigationData = APIObject.NavigationData;
 import {NavigationService} from './navigation.service';
+import {Geometry} from '../helper/geometry';
 
 @Injectable()
 export class NavigationController {
@@ -24,18 +25,19 @@ export class NavigationController {
   private objectMetadata: Metadata;
   private subscriptionDestructor: Subject<void> = new Subject<void>();
   private positionChanged: Subject<Point> = new Subject<Point>();
-
+  private lines: Line[];
 
   constructor(
     private pathService: PathService,
     private mapObjectService: ApiService
-  ) {
-  }
+  ) {}
 
   handleNavigation(event: MessageEvent, floorId, container, scale) {
+    console.log(event);
     const args: NavigationData = event.data.args.object;
     if (this.isNavigationReady) {
       if (args.action === 'update') {
+        console.log('update');
         this.updatePosition(args.position);
       }
       if (args.action === 'stop') {
@@ -65,7 +67,7 @@ export class NavigationController {
     this.event = event;
     this.pathService.getPathByFloorId(floorId).takeUntil(this.subscriptionDestructor).subscribe((lines: Line[]): void => {
       this.calculateNavigationPath(lines, location, destination, accuracy);
-      // all calc and drawn
+
       this.onPositionChanged().takeUntil(this.subscriptionDestructor).subscribe((pointUpdate: Point): void => {
         this.handlePathUpdate(pointUpdate);
       });
@@ -74,7 +76,6 @@ export class NavigationController {
   }
 
   private updatePosition(position: Point): void {
-    // pull to path than update this.path
     this.positionChanged.next(position);
   }
 
@@ -98,12 +99,34 @@ export class NavigationController {
       this.lastCoordinates = null;
     }
     this.updatePath(pointUpdate);
-    // console.log(this.objectMetadata);
-    // console.log(pointUpdate);
+
+    if (this.objectMetadata === null) {
+      return;
+    }
+
+    const currentPointOnPath = Geometry.findPointOnPathInGivenRange(this.objectMetadata.object['lines'], pointUpdate);
+    this.lines = this.objectMetadata.object['lines'];
+
+    const findLineIndex = this.objectMetadata.object['lines'].findIndex(line => Geometry.isPointOnLineBetweenTwoPoints(line, currentPointOnPath));
+    if (findLineIndex === -1) {
+      return;
+    }
+
+    this.lines = this.lines.slice(findLineIndex);
+    this.lines[0].startPoint = currentPointOnPath;
+
+    const points = this.lines.reduce((prev, next) => {
+      prev.push(next.startPoint);
+      prev.push(next.endPoint);
+      return prev;
+    }, []);
+
+    this.objectMetadata.object['points'] = points;
+    this.redrawPath();
   }
 
   private updatePath(point: Point): void {
-    const pointOnPath: Point = point; // actualization from pull to path
+    const pointOnPath: Point = point;
     if (this.destination.x === pointOnPath.x && this.destination.y === pointOnPath.y) {
       this.stopNavigation();
       return;
@@ -112,19 +135,22 @@ export class NavigationController {
 
   private calculateNavigationPath(lines: Line[], location: Point, destination: Point, accuracy: number): void {
     const path: Line[] = NavigationService.calculateDijkstraShortestPath(lines, location, destination);
+    path.reverse();
+    // this.pathCalculated = NavigationService.calculateDijkstraShortestPath(lines, location, destination);
     this.objectMetadata = {
       object: {
         id: 123123123123
       },
       type: 'POLYLINE'
     };
-    this.objectMetadata.object = Object.assign((<Path>this.objectMetadata.object), {lines: lines});
+    this.objectMetadata.object = Object.assign((<Path>this.objectMetadata.object), {lines: path, color: '#906090'});
+    // console.log(this.objectMetadata.object);
   }
 
   private redrawPath(): void {
-    // del
+    //usun
     if (!!this.objectMetadata) {
-      this.mapObjectService.draw(this.objectMetadata, this.scale, this.event, this.container);
+      this.mapObjectService.draw(this.objectMetadata, this.scale, this.event, this.container, 'dotted');
     }
   }
 
