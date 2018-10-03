@@ -204,6 +204,7 @@ export class ApiService {
   }
 
   private getCalculatedPoints(pointsToCalculate: Point[], scale: Scale): Point[] {
+    console.log('pointsToCalculate', pointsToCalculate);
     const points: Point[] = [];
     pointsToCalculate.forEach((point: Point): void => {
       points.push(Geometry.calculatePointPositionInPixels(Geometry.getDistanceBetweenTwoPoints(scale.start, scale.stop),

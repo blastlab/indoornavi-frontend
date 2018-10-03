@@ -33,7 +33,6 @@ export class NavigationController {
   ) {}
 
   handleNavigation(event: MessageEvent, floorId, container, scale) {
-    console.log(event);
     const args: NavigationData = event.data.args.object;
     if (this.isNavigationReady) {
       if (args.action === 'update') {
@@ -60,6 +59,7 @@ export class NavigationController {
     this.container = container;
     this.destination = destination;
     this.scale = scale;
+
     if (this.isNavigationReady) {
       this.event.source.postMessage({type: 'navigation', action: 'working'}, this.event.origin);
       return;
@@ -115,9 +115,15 @@ export class NavigationController {
     this.lines = this.lines.slice(findLineIndex);
     this.lines[0].startPoint = currentPointOnPath;
 
+
+
+    console.log('inpx', this.scale.getLenInPix());
+    console.log('incm', this.scale.getRealDistanceInCentimeters());
+
     const points = this.lines.reduce((prev, next) => {
-      prev.push(next.startPoint);
-      prev.push(next.endPoint);
+      // point = calcPointInCm(this.scale, point);
+      prev.push(Geometry.calculatePointPositionInCentimeters(this.scale.getLenInPix(), this.scale.getRealDistanceInCentimeters(), next.startPoint));
+      prev.push(Geometry.calculatePointPositionInCentimeters(this.scale.getLenInPix(), this.scale.getRealDistanceInCentimeters(), next.endPoint));
       return prev;
     }, []);
 
@@ -135,6 +141,7 @@ export class NavigationController {
 
   private calculateNavigationPath(lines: Line[], location: Point, destination: Point, accuracy: number): void {
     const path: Line[] = NavigationService.calculateDijkstraShortestPath(lines, location, destination);
+    console.log('path', path);
     path.reverse();
     // this.pathCalculated = NavigationService.calculateDijkstraShortestPath(lines, location, destination);
     this.objectMetadata = {
@@ -144,7 +151,7 @@ export class NavigationController {
       type: 'POLYLINE'
     };
     this.objectMetadata.object = Object.assign((<Path>this.objectMetadata.object), {lines: path, color: '#906090'});
-    // console.log(this.objectMetadata.object);
+    console.log('this.objectMetadata.object', this.objectMetadata.object['lines']);
   }
 
   private redrawPath(): void {
