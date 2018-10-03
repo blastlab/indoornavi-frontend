@@ -115,7 +115,7 @@ export class NavigationController {
     this.lines = this.lines.slice(findLineIndex);
     this.lines[0].startPoint = currentPointOnPath;
 
-    const points = this.createPointPathFromLinePath(this.lines);
+    const points = this.createPointPathFromLinePath(this.scale, this.lines);
     this.objectMetadata.object['points'] = points;
     this.redrawPath();
   }
@@ -139,7 +139,7 @@ export class NavigationController {
       type: 'POLYLINE'
     };
 
-    const points = this.createPointPathFromLinePath(path);
+    const points = this.createPointPathFromLinePath(this.scale, path);
 
     this.objectMetadata.object['points'] = points;
 
@@ -151,11 +151,11 @@ export class NavigationController {
     return Geometry.calculatePointPositionInCentimeters(scale.getLenInPix(), scale.getRealDistanceInCentimeters(), point);
   }
 
-  private createPointPathFromLinePath(path: Line[]): Point[] {
-    return path.reduce((prev, next) => {
-      prev.push(this.caltPointInCentimeters(this.scale, next.startPoint));
-      prev.push(this.caltPointInCentimeters(this.scale, next.endPoint));
-      return prev;
+  private createPointPathFromLinePath(scale: Scale, path: Line[]): Point[] {
+    return path.reduce((points, point) => {
+      points.push(this.caltPointInCentimeters(scale, point.startPoint));
+      points.push(this.caltPointInCentimeters(scale, point.endPoint));
+      return points;
     }, []);
   }
 
