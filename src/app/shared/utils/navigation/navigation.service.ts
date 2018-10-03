@@ -17,12 +17,12 @@ export class NavigationService {
 
   calculateDijkstraShortestPath(lines: Line[], start: Point, finish: Point): Line[] {
     this.lines = lines;
-    this.calculateGraphAndStartFinisIndexes(start, finish);
+    this.calculateGraphWithPathParameters(start, finish);
     this.searchForShortestPathInGraph();
     return this.composeLinesFromParentsSchema();
   }
 
-  private calculateGraphAndStartFinisIndexes (start, finish): void {
+  private calculateGraphWithPathParameters(start, finish): void {
     const startPointCoordinatesOnLines: Point = Geometry.pickClosestNodeCoordinates(this.lines, start);
     const endPointCoordinatesOnLines: Point = Geometry.pickClosestNodeCoordinates(this.lines, finish);
     this.createDijkstraVertexMatrix();
