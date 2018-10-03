@@ -115,18 +115,9 @@ export class NavigationController {
     this.lines = this.lines.slice(findLineIndex);
     this.lines[0].startPoint = currentPointOnPath;
 
-    const points = this.lines.reduce((prev, next) => {
-      prev.push(this.caltPointInCentimeters(this.scale, next.startPoint));
-      prev.push(this.caltPointInCentimeters(this.scale, next.endPoint));
-      return prev;
-    }, []);
-
+    const points = this.createPointPathFromLinePath(this.lines);
     this.objectMetadata.object['points'] = points;
     this.redrawPath();
-  }
-
-  private caltPointInCentimeters(scale: Scale, point: Point): Point {
-    return Geometry.calculatePointPositionInCentimeters(scale.getLenInPix(), scale.getRealDistanceInCentimeters(), point);
   }
 
   private updatePath(point: Point): void {
@@ -141,19 +132,34 @@ export class NavigationController {
     const path: Line[] = NavigationService.calculateDijkstraShortestPath(lines, location, destination);
     console.log('path', path);
     path.reverse();
-    // this.pathCalculated = NavigationService.calculateDijkstraShortestPath(lines, location, destination);
     this.objectMetadata = {
       object: {
-        id: 123123123123
+        id: Math.round(new Date().getTime() * Math.random() * 1000)
       },
       type: 'POLYLINE'
     };
+
+    const points = this.createPointPathFromLinePath(path);
+
+    this.objectMetadata.object['points'] = points;
+
     this.objectMetadata.object = Object.assign((<Path>this.objectMetadata.object), {lines: path, color: '#906090'});
-    console.log('this.objectMetadata.object', this.objectMetadata.object['lines']);
+    this.redrawPath();
+  }
+
+  private caltPointInCentimeters(scale: Scale, point: Point): Point {
+    return Geometry.calculatePointPositionInCentimeters(scale.getLenInPix(), scale.getRealDistanceInCentimeters(), point);
+  }
+
+  private createPointPathFromLinePath(path: Line[]): Point[] {
+    return path.reduce((prev, next) => {
+      prev.push(this.caltPointInCentimeters(this.scale, next.startPoint));
+      prev.push(this.caltPointInCentimeters(this.scale, next.endPoint));
+      return prev;
+    }, []);
   }
 
   private redrawPath(): void {
-    //usun
     if (!!this.objectMetadata) {
       this.mapObjectService.draw(this.objectMetadata, this.scale, this.event, this.container, 'dotted');
     }
