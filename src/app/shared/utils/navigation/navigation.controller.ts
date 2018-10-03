@@ -134,7 +134,8 @@ export class NavigationController {
   }
 
   private calculateNavigationPath(lines: Line[], location: Point, destination: Point, accuracy: number): void {
-    // const path: Line[] = NavigationService.calculateDijkstraShortestPath(lines, location, destination);
+    const path: Line[] = NavigationService.calculateDijkstraShortestPath(lines, location, destination);
+    path.reverse();
     // this.pathCalculated = NavigationService.calculateDijkstraShortestPath(lines, location, destination);
     this.objectMetadata = {
       object: {
@@ -142,7 +143,7 @@ export class NavigationController {
       },
       type: 'POLYLINE'
     };
-    this.objectMetadata.object = Object.assign((<Path>this.objectMetadata.object), {lines: lines, color: '#906090'});
+    this.objectMetadata.object = Object.assign((<Path>this.objectMetadata.object), {lines: path, color: '#906090'});
     // console.log(this.objectMetadata.object);
   }
 
