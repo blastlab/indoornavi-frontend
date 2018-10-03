@@ -1,85 +1,45 @@
 import {Geometry} from '../helper/geometry';
 import {Line, Point} from '../../../map-editor/map.type';
-import {Cost, GraphRelation, Parent, Vertex} from './navigation.types';
+import {Costs, GraphRelation, Parents, Vertex} from './navigation.types';
 
 export class NavigationService {
 
   private lines: Line[];
   private dijkstraVertexMatrix: Vertex[] = [];
+  private startPointIndex: number;
+  private endPointIndex: number;
+  private costs: Costs;
+  private processed: number[];
+  private parents: Parents;
+  private cheapestVertexIndex: number;
 
-  constructor() {
+  constructor() {}
 
-  }
   calculateDijkstraShortestPath(lines: Line[], start: Point, finish: Point): Line[] {
     this.lines = lines;
-    const startPointCoordinatesOnLines: Point = Geometry.pickClosestNodeCoordinates(lines, start);
-    const endPointCoordinatesOnLines: Point = Geometry.pickClosestNodeCoordinates(lines, finish);
-    this.createDijkstraVertexMatrix();
-    const startPointIndex: number = this.dijkstraVertexMatrix.findIndex((vertex: Vertex): boolean => {
-      return vertex.coordinates.x === startPointCoordinatesOnLines.x && vertex.coordinates.y === startPointCoordinatesOnLines.y;
-    });
-    const endPointIndex: number = this.dijkstraVertexMatrix.findIndex((vertex: Vertex): boolean => {
-      return vertex.coordinates.x === endPointCoordinatesOnLines.x && vertex.coordinates.y === endPointCoordinatesOnLines.y;
-    });
-    console.log('Vertex[]: ', this.dijkstraVertexMatrix);
-
-    const costs: Cost = {
-      [startPointIndex]: 0,
-      [endPointIndex]: Infinity
-    };
-    const processed: number[] = [startPointIndex];
-    const parents: Parent = {[endPointIndex]: null};
-    let cheapestVertexIndex: number = startPointIndex;
-    while (!processed.includes(endPointIndex)) {
-      this.dijkstraVertexMatrix[cheapestVertexIndex].graphs.forEach((graph: GraphRelation): void => {
-        if (processed.includes(graph.vertexIndex)) {
-          return;
-        }
-        const parenCost: number = costs[`${cheapestVertexIndex}`];
-        const childCost: number = graph.cost + parenCost;
-        console.log(`parenCost, childCost`, parenCost, childCost);
-
-        if (Object.keys(costs).includes(`${graph.vertexIndex}`)) {
-          if (costs[`${graph.vertexIndex}`] > childCost) {
-            costs[`${graph.vertexIndex}`] = childCost;
-            parents[`${graph.vertexIndex}`] = cheapestVertexIndex;
-          }
-        } else {
-          costs[`${graph.vertexIndex}`] = childCost;
-          parents[`${graph.vertexIndex}`] = cheapestVertexIndex;
-        }
-      });
-      let minCost = Infinity;
-      let minValueIndex: number;
-      for (const key of Object.keys(costs)) {
-        const keyAsNumber = parseInt(key, 10);
-        if (!processed.includes(keyAsNumber)) {
-          if (minCost > costs[key]) {
-            minCost = costs[key];
-            minValueIndex = keyAsNumber;
-          }
-        }
-      }
-      cheapestVertexIndex = minValueIndex;
-      processed.push(cheapestVertexIndex);
-    }
-    const shortestPathLine: Line[] = [];
-    let actualIndexFromParents = endPointIndex;
-    let currentStartPoint: Point;
-    let currentEndPoint: Point = this.dijkstraVertexMatrix[endPointIndex].coordinates;
-    while ( actualIndexFromParents !== startPointIndex) {
-      actualIndexFromParents = parents[`${actualIndexFromParents}`];
-      currentStartPoint = this.dijkstraVertexMatrix[actualIndexFromParents].coordinates;
-      const line: Line = {
-        startPoint: currentStartPoint,
-        endPoint: currentEndPoint
-      };
-      shortestPathLine.push(line);
-      currentEndPoint = currentStartPoint;
-    }
-    return shortestPathLine;
+    this.calculateGraphAndStartFinisIndexes(start, finish);
+    this.searchForShortestPathInGraph();
+    return this.composeLinesFromParentsSchema();
   }
 
+  private calculateGraphAndStartFinisIndexes (start, finish): void {
+    const startPointCoordinatesOnLines: Point = Geometry.pickClosestNodeCoordinates(this.lines, start);
+    const endPointCoordinatesOnLines: Point = Geometry.pickClosestNodeCoordinates(this.lines, finish);
+    this.createDijkstraVertexMatrix();
+    this.startPointIndex = this.dijkstraVertexMatrix.findIndex((vertex: Vertex): boolean => {
+      return vertex.coordinates.x === startPointCoordinatesOnLines.x && vertex.coordinates.y === startPointCoordinatesOnLines.y;
+    });
+    this.endPointIndex = this.dijkstraVertexMatrix.findIndex((vertex: Vertex): boolean => {
+      return vertex.coordinates.x === endPointCoordinatesOnLines.x && vertex.coordinates.y === endPointCoordinatesOnLines.y;
+    });
+    this.costs = {
+      [this.startPointIndex]: 0,
+      [this.endPointIndex]: Infinity
+    };
+    this.processed = [this.startPointIndex];
+    this.parents = {[this.endPointIndex]: null};
+    this.cheapestVertexIndex = this.startPointIndex;
+  }
 
   private updateVertexMatrix(vertexIndexToUpdate: number, relatedVertexIndex: number, cost: number): void {
     const foundVertex: GraphRelation = this.dijkstraVertexMatrix[vertexIndexToUpdate].graphs.find((relation: GraphRelation): boolean => {
@@ -127,6 +87,58 @@ export class NavigationService {
     this.lines.forEach((line: Line): void => {
       this.appendToVertexMatrix(line);
     });
+  }
+
+  private searchForShortestPathInGraph () {
+    while (!this.processed.includes(this.endPointIndex)) {
+      this.dijkstraVertexMatrix[this.cheapestVertexIndex].graphs.forEach((graph: GraphRelation): void => {
+        if (this.processed.includes(graph.vertexIndex)) {
+          return;
+        }
+        const parenCost: number = this.costs[`${this.cheapestVertexIndex}`];
+        const childCost: number = graph.cost + parenCost;
+        if (Object.keys(this.costs).includes(`${graph.vertexIndex}`)) {
+          if (this.costs[`${graph.vertexIndex}`] > childCost) {
+            this.costs[`${graph.vertexIndex}`] = childCost;
+            this.parents[`${graph.vertexIndex}`] = this.cheapestVertexIndex;
+          }
+        } else {
+          this.costs[`${graph.vertexIndex}`] = childCost;
+          this.parents[`${graph.vertexIndex}`] = this.cheapestVertexIndex;
+        }
+      });
+      let minCost = Infinity;
+      let minValueIndex: number;
+      for (const key of Object.keys(this.costs)) {
+        const keyAsNumber = parseInt(key, 10);
+        if (!this.processed.includes(keyAsNumber)) {
+          if (minCost > this.costs[key]) {
+            minCost = this.costs[key];
+            minValueIndex = keyAsNumber;
+          }
+        }
+      }
+      this.cheapestVertexIndex = minValueIndex;
+      this.processed.push(this.cheapestVertexIndex);
+    }
+  }
+
+  private composeLinesFromParentsSchema (): Line[] {
+    const shortestPathLine: Line[] = [];
+    let actualIndexFromParents = this.endPointIndex;
+    let currentStartPoint: Point;
+    let currentEndPoint: Point = this.dijkstraVertexMatrix[this.endPointIndex].coordinates;
+    while ( actualIndexFromParents !== this.startPointIndex) {
+      actualIndexFromParents = this.parents[`${actualIndexFromParents}`];
+      currentStartPoint = this.dijkstraVertexMatrix[actualIndexFromParents].coordinates;
+      const line: Line = {
+        startPoint: currentStartPoint,
+        endPoint: currentEndPoint
+      };
+      shortestPathLine.push(line);
+      currentEndPoint = currentStartPoint;
+    }
+    return shortestPathLine;
   }
 
 }

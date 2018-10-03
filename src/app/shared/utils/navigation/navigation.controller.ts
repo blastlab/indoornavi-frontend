@@ -29,7 +29,8 @@ export class NavigationController {
 
   constructor(
     private pathService: PathService,
-    private mapObjectService: ApiService
+    private mapObjectService: ApiService,
+    private navigationService: NavigationService,
   ) {}
 
   handleNavigation(event: MessageEvent, floorId, container, scale) {
@@ -140,7 +141,7 @@ export class NavigationController {
   }
 
   private calculateNavigationPath(lines: Line[], location: Point, destination: Point, accuracy: number): void {
-    const path: Line[] = NavigationService.calculateDijkstraShortestPath(lines, location, destination);
+    const path: Line[] = this.navigationService.calculateDijkstraShortestPath(lines, location, destination);
     console.log('path', path);
     path.reverse();
     // this.pathCalculated = NavigationService.calculateDijkstraShortestPath(lines, location, destination);
