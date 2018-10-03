@@ -47,10 +47,17 @@ export class NavigationService {
   }
 
   static calculateDijkstraShortestPath(lines: Line[], start: Point, finish: Point): Line[] {
-
-    const startPointIndex: number = Geometry.pickClosestNodeIndex(lines, start);
-    const endPointIndex: number = Geometry.pickClosestNodeIndex(lines, finish);
+    console.log('lines', lines);
+    const startPointCoordinatesOnLines: Point = Geometry.pickClosestNodeCoordinates(lines, start);
+    const endPointCoordinatesOnLines: Point = Geometry.pickClosestNodeCoordinates(lines, finish);
     const dijkstraVertexMatrix: Vertex[] = NavigationService.createDijkstraVertexMatrix(lines);
+    const startPointIndex: number = dijkstraVertexMatrix.findIndex((vertex: Vertex): boolean => {
+      return vertex.coordinates.x === startPointCoordinatesOnLines.x && vertex.coordinates.y === startPointCoordinatesOnLines.y;
+    });
+    const endPointIndex: number = dijkstraVertexMatrix.findIndex((vertex: Vertex): boolean => {
+      return vertex.coordinates.x === endPointCoordinatesOnLines.x && vertex.coordinates.y === endPointCoordinatesOnLines.y;
+    });
+    console.log(dijkstraVertexMatrix);
 
     const costs: Cost = {
       [startPointIndex]: 0,
@@ -91,7 +98,22 @@ export class NavigationService {
     console.log('processed : ', processed);
     console.log('start, finish :', startPointIndex, endPointIndex);
     console.log('parents: ', parents);
-    return lines;
+    const shortestPathLine: Line[] = [];
+    let actualIndexFromParents = endPointIndex;
+    let currentStartPoint: Point;
+    let currentEndPoint: Point = dijkstraVertexMatrix[endPointIndex].coordinates;
+    while ( actualIndexFromParents !== startPointIndex) {
+      actualIndexFromParents = parents[`${actualIndexFromParents}`];
+      currentStartPoint = dijkstraVertexMatrix[actualIndexFromParents].coordinates;
+      const line: Line = {
+        startPoint: currentStartPoint,
+        endPoint: currentEndPoint
+      };
+      shortestPathLine.push(line);
+      currentEndPoint = currentStartPoint;
+    }
+    console.log('shortest path: ', shortestPathLine);
+    return shortestPathLine;
   }
 
   static createDijkstraVertexMatrix(lines: Line[]): Vertex[] {

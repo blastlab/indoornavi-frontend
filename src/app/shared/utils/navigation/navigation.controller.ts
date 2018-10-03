@@ -44,7 +44,7 @@ export class NavigationController {
       }
     } else if (args.action === 'start') {
       this.setNavigationPath(floorId, args.location, args.destination, args.accuracy, event, container, scale);
-      console.log('creating navigation');
+      console.log('creating navigation', args.location, args.destination);
     } else if (args.action === 'update') {
       this.setLastCoordinates(args.position);
     }
