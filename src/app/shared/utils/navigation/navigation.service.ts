@@ -42,7 +42,8 @@ export class NavigationService {
   }
 
   private updateVertexMatrix(vertexIndexToUpdate: number, relatedVertexIndex: number, cost: number): void {
-    const foundVertex: GraphRelation = this.dijkstraVertexMatrix[vertexIndexToUpdate].graphs.find((relation: GraphRelation): boolean => {
+    const foundVertex: GraphRelation = this.dijkstraVertexMatrix[vertexIndexToUpdate]
+      .graphs.find((relation: GraphRelation): boolean => {
       return relatedVertexIndex === relation.vertexIndex;
     });
     if (!!foundVertex) {
@@ -54,7 +55,7 @@ export class NavigationService {
     });
   }
 
-  private addNewVertex (coordinates: Point): number {
+  private addNewVertex(coordinates: Point): number {
     this.dijkstraVertexMatrix.push({
       coordinates: coordinates,
       graphs: []
@@ -89,7 +90,7 @@ export class NavigationService {
     });
   }
 
-  private searchForShortestPathInGraph () {
+  private searchForShortestPathInGraph() {
     while (!this.processed.includes(this.endPointIndex)) {
       this.dijkstraVertexMatrix[this.cheapestVertexIndex].graphs.forEach((graph: GraphRelation): void => {
         if (this.processed.includes(graph.vertexIndex)) {
@@ -123,7 +124,7 @@ export class NavigationService {
     }
   }
 
-  private composeLinesFromParentsSchema (): Line[] {
+  private composeLinesFromParentsSchema(): Line[] {
     const shortestPathLine: Line[] = [];
     let actualIndexFromParents = this.endPointIndex;
     let currentStartPoint: Point;
