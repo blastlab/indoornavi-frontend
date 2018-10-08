@@ -71,8 +71,7 @@ export class NavigationController {
       this.isNavigationReady = true;
 
       if (this.lastCoordinates) {
-        this.isDestinationPointAchievement(this.lastCoordinates);
-        this.lastCoordinates = null;
+        this.updatePosition(this.lastCoordinates);
       }
     });
   }
