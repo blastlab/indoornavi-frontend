@@ -36,16 +36,13 @@ export class NavigationController {
     const args: NavigationData = event.data.args.object;
     if (this.isNavigationReady) {
       if (args.action === 'update') {
-        console.log('update');
         this.updatePosition(args.position);
       }
       if (args.action === 'stop') {
-        console.log('removing navigation');
         this.stopNavigation();
       }
     } else if (args.action === 'start') {
       this.setNavigationPath(floorId, args.location, args.destination, args.accuracy, event, container, scale);
-      console.log('creating navigation', args.location, args.destination);
     } else if (args.action === 'update') {
       this.setLastCoordinates(args.position);
     }
@@ -72,6 +69,11 @@ export class NavigationController {
         this.handlePathUpdate(pointUpdate);
       });
       this.isNavigationReady = true;
+
+      if (this.lastCoordinates) {
+        this.isDestinationPointAchievement(this.lastCoordinates);
+        this.lastCoordinates = null;
+      }
     });
   }
 
@@ -89,22 +91,18 @@ export class NavigationController {
     }
     this.subscriptionDestructor.next();
     this.subscriptionDestructor = null;
+    this.mapObjectService.removeObject(this.objectMetadata);
     this.objectMetadata = null;
     this.event = null;
   }
 
   private handlePathUpdate(pointUpdate: Point): void {
-    if (this.lastCoordinates) {
-      this.updatePath(this.lastCoordinates);
-      this.lastCoordinates = null;
-    }
-    this.updatePath(pointUpdate);
-
-    if (this.objectMetadata === null) {
+    const currentPointOnPath = Geometry.findPointOnPathInGivenRange(this.objectMetadata.object['lines'], pointUpdate);
+    if (this.isDestinationPointAchievement(currentPointOnPath)) {
+      this.stopNavigation();
       return;
     }
 
-    const currentPointOnPath = Geometry.findPointOnPathInGivenRange(this.objectMetadata.object['lines'], pointUpdate);
     this.lines = this.objectMetadata.object['lines'];
 
     const findLineIndex = this.objectMetadata.object['lines'].findIndex(line => Geometry.isPointOnLineBetweenTwoPoints(line, currentPointOnPath));
@@ -120,17 +118,17 @@ export class NavigationController {
     this.redrawPath();
   }
 
-  private updatePath(point: Point): void {
-    const pointOnPath: Point = point;
-    if (this.destination.x === pointOnPath.x && this.destination.y === pointOnPath.y) {
-      this.stopNavigation();
-      return;
-    }
+  private isDestinationPointAchievement(pointOnPath: Point): boolean {
+    const range = 0;
+    const pulledDestination: Point = Geometry.findPointOnPathInGivenRange(this.objectMetadata.object['lines'], this.destination);
+    return (pointOnPath.x >= (pulledDestination.x - range) &&
+      pointOnPath.x <= (pulledDestination.x + range) &&
+      pointOnPath.y >= (pulledDestination.y - range) &&
+      pointOnPath.y <= (pulledDestination.y + range));
   }
 
   private calculateNavigationPath(lines: Line[], location: Point, destination: Point, accuracy: number): void {
     const path: Line[] = NavigationService.calculateDijkstraShortestPath(lines, location, destination);
-    console.log('path', path);
     path.reverse();
     this.objectMetadata = {
       object: {
@@ -147,14 +145,14 @@ export class NavigationController {
     this.redrawPath();
   }
 
-  private caltPointInCentimeters(scale: Scale, point: Point): Point {
+  private calcPointInCentimeters(scale: Scale, point: Point): Point {
     return Geometry.calculatePointPositionInCentimeters(scale.getLenInPix(), scale.getRealDistanceInCentimeters(), point);
   }
 
   private createPointPathFromLinePath(scale: Scale, path: Line[]): Point[] {
     return path.reduce((points, point) => {
-      points.push(this.caltPointInCentimeters(scale, point.startPoint));
-      points.push(this.caltPointInCentimeters(scale, point.endPoint));
+      points.push(this.calcPointInCentimeters(scale, point.startPoint));
+      points.push(this.calcPointInCentimeters(scale, point.endPoint));
       return points;
     }, []);
   }
