@@ -70,7 +70,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
               private complexService: ComplexService,
               private navigationController: NavigationController,
               protected floorService: FloorService,
-              protected tagTogglerService: TagVisibilityTogglerService,
+              protected tagToggleService: TagVisibilityTogglerService,
               protected breadcrumbService: BreadcrumbService) {
 
     this.loadMapDeferred = new Deferred<boolean>();
@@ -132,7 +132,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
               this.tags.forEach((tag: Tag) => {
                 this.visibleTags.set(tag.shortId, true);
               });
-              this.tagTogglerService.setTags(tags);
+              this.tagToggleService.setTags(tags);
               if (!!floor.scale) {
                 this.drawAreas(floor.id);
                 this.initializeSocketConnection();
@@ -245,7 +245,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
     this.ngZone.runOutsideAngular((): void => {
       const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?client`);
       this.setSocketConfiguration();
-      this.tagTogglerService.onToggleTag().takeUntil(this.subscriptionDestructor).subscribe((tagToggle: TagToggle) => {
+      this.tagToggleService.onToggleTag().takeUntil(this.subscriptionDestructor).subscribe((tagToggle: TagToggle) => {
         this.socketService.send({type: CommandType[CommandType.TOGGLE_TAG], args: tagToggle.tag.shortId});
         this.visibleTags.set(tagToggle.tag.shortId, tagToggle.selected);
         if (!tagToggle.selected) {

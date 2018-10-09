@@ -121,7 +121,7 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
         this.tags.forEach((tag: Tag) => {
           this.visibleTags.set(tag.shortId, true);
         });
-        this.tagTogglerService.setTags(tags);
+        this.tagToggleService.setTags(tags);
         if (!!floor.scale) {
           this.drawAreas(floor.id);
           this.initializeSocketConnection();

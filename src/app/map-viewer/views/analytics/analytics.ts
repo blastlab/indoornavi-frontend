@@ -128,7 +128,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       }
       this.handleCoordinatesData(data);
     });
-    this.tagTogglerService.onToggleTag().takeUntil(this.subscriptionDestructor)
+    this.tagToggleService.onToggleTag().takeUntil(this.subscriptionDestructor)
       .subscribe((tagToggle: TagToggle) => {
       if (this.tagsOnMap.containsKey(tagToggle.tag.shortId) && !tagToggle.selected) {
         this.timeStepBuffer.delete(tagToggle.tag.shortId);
