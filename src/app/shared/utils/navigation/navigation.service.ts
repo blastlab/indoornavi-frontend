@@ -90,7 +90,7 @@ export class NavigationService {
     });
   }
 
-  private searchForShortestPathInGraph() {
+  private searchForShortestPathInGraph(): void {
     while (!this.processed.includes(this.endPointIndex)) {
       this.dijkstraVertexMatrix[this.cheapestVertexIndex].graphs.forEach((graph: GraphRelation): void => {
         if (this.processed.includes(graph.vertexIndex)) {

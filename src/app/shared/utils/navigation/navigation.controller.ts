@@ -156,7 +156,7 @@ export class NavigationController {
   }
 
   private redrawPath(): void {
-    //usun
+    // usun
     if (!!this.objectMetadata) {
       this.mapObjectService.draw(this.objectMetadata, this.scale, this.event, this.container, 'dotted');
     }
