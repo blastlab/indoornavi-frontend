@@ -39,9 +39,9 @@ import {Deferred} from '../../shared/utils/helper/deferred';
 import {TagOnMap} from '../../map/models/tag';
 import {APIObject} from '../../shared/utils/drawing/api.types';
 import {PathService} from '../services/path/path.service';
-import Metadata = APIObject.Metadata;
 import {Complex} from '../../complex/complex.type';
 import {ComplexService} from '../../complex/complex.service';
+import Metadata = APIObject.Metadata;
 
 @Component({
   templateUrl: './socket-connector.component.html'
@@ -351,7 +351,8 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
         mapObjectId: 'map',
         height,
         width,
-        scale: this.scale
+        scale: this.scale,
+        tempId: event.data.tempId
       }, '*');
     });
   }
@@ -405,7 +406,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
         case 'createObject':
           const mapObjectId: number = this.mapObjectService.create();
           // @ts-ignore
-          event.source.postMessage({type: `createObject-${event.data.object}`, mapObjectId: mapObjectId}, '*');
+          event.source.postMessage({type: `createObject-${event.data.object}`, mapObjectId: mapObjectId, tempId: event.data.tempId}, '*');
           break;
         case 'drawObject':
           this.mapObjectService.draw(data.args, this.scale, event, this.d3map.container);
