@@ -102,7 +102,7 @@ export class ApiService {
     marker.events.forEach((event: string): void => {
       element.getGroup().on(event, (): void => {
         // @ts-ignore
-        originMessageEvent.source.postMessage({type: `${event}-${marker.id}`, objectId: marker.id}, originMessageEvent.origin);
+        originMessageEvent.source.postMessage({type: `${event}-${marker.id}`, objectId: marker.id}, '*');
       });
     });
     if (!!marker.label) {
