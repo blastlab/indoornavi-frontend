@@ -14,3 +14,7 @@ export interface Transform {
   y: number;
 }
 
+export enum TypeLine {
+  Solid = 'solid',
+  Dotted = 'dotted'
+}

@@ -1,7 +1,7 @@
 import {DrawBuilder, ElementType, SvgGroupWrapper} from './drawing.builder';
 import {Injectable} from '@angular/core';
 import * as d3 from 'd3';
-import {Point} from '../../../map-editor/map.type';
+import {Point, TypeLine} from '../../../map-editor/map.type';
 import {Geometry} from 'app/shared/utils/helper/geometry';
 import {IconService, NaviIcons} from '../../services/drawing/icon.service';
 import {Scale} from '../../../map-editor/tool-bar/tools/scale/scale.type';
@@ -141,14 +141,14 @@ export class ApiService {
 
   private drawLine(objectMetadata: Metadata, points: Point[]): void {
     const polyline: Polyline = <Polyline>objectMetadata.object;
-    const type: string = objectMetadata.object['typeLine'];
+    const type: TypeLine = objectMetadata.object['typeLine'];
     this.objects.get(polyline.id).addTypeLine(points, type, this.pointRadius);
     const lines: d3.selection[] = this.objects.get(polyline.id).getElements(ElementType.LINE);
     const circles: d3.selection[] = this.objects.get(polyline.id).getElements(ElementType.CIRCLE);
 
     const typeLine = {
-      'solid': () => this.setSolidPolyline(lines, circles, polyline),
-      'dotted': () => {
+      [TypeLine.Solid]: () => this.setSolidPolyline(lines, circles, polyline),
+      [TypeLine.Dotted]: () => {
         this.setDottedLine(lines, circles, polyline)
       }
     };
