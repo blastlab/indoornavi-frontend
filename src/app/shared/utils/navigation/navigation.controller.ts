@@ -97,7 +97,7 @@ export class NavigationController {
 
   private handlePathUpdate(pointUpdate: Point): void {
     const currentPointOnPath = Geometry.findPointOnPathInGivenRange(this.objectMetadata.object['lines'], pointUpdate);
-    if (this.isDestinationPointAchievement(currentPointOnPath)) {
+    if (this.isDestinationAchieved(currentPointOnPath)) {
       this.stopNavigation();
       return;
     }
@@ -117,7 +117,7 @@ export class NavigationController {
     this.redrawPath();
   }
 
-  private isDestinationPointAchievement(pointOnPath: Point): boolean {
+  private isDestinationAchieved(pointOnPath: Point): boolean {
     const range = 0;
     const pulledDestination: Point = Geometry.findPointOnPathInGivenRange(this.objectMetadata.object['lines'], this.destination);
     return (pointOnPath.x >= (pulledDestination.x - range) &&
@@ -144,14 +144,14 @@ export class NavigationController {
     this.redrawPath();
   }
 
-  private calcPointInCentimeters(scale: Scale, point: Point): Point {
+  private calculatePointInCentimeters(scale: Scale, point: Point): Point {
     return Geometry.calculatePointPositionInCentimeters(scale.getLenInPix(), scale.getRealDistanceInCentimeters(), point);
   }
 
   private createPointPathFromLinePath(scale: Scale, path: Line[]): Point[] {
     return path.reduce((points, point) => {
-      points.push(this.calcPointInCentimeters(scale, point.startPoint));
-      points.push(this.calcPointInCentimeters(scale, point.endPoint));
+      points.push(this.calculatePointInCentimeters(scale, point.startPoint));
+      points.push(this.calculatePointInCentimeters(scale, point.endPoint));
       return points;
     }, []);
   }
