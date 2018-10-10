@@ -57,14 +57,14 @@ export class ApiService {
     }
   }
 
-  draw(objectMetadata: Metadata, scale: Scale, originMessageEvent: MessageEvent, container: d3.selection, type: string): void {
+  draw(objectMetadata: Metadata, scale: Scale, originMessageEvent: MessageEvent, container: d3.selection): void {
     if (!!this.objects.get(objectMetadata.object.id)) {
       this.removeObject(objectMetadata);
     }
     switch (objectMetadata.type) {
       case 'POLYLINE':
         this.addToMapContainer(objectMetadata, container);
-        this.drawLine(objectMetadata, this.getCalculatedPoints(objectMetadata.object['points'], scale), type);
+        this.drawLine(objectMetadata, this.getCalculatedPoints(objectMetadata.object['points'], scale));
         break;
       case 'AREA':
         this.addToMapContainer(objectMetadata, container);
@@ -139,8 +139,9 @@ export class ApiService {
     }
   }
 
-  private drawLine(objectMetadata: Metadata, points: Point[], type): void {
+  private drawLine(objectMetadata: Metadata, points: Point[]): void {
     const polyline: Polyline = <Polyline>objectMetadata.object;
+    const type: string = objectMetadata.object['typeLine'];
     this.objects.get(polyline.id).addTypeLine(points, type, this.pointRadius);
     const lines: d3.selection[] = this.objects.get(polyline.id).getElements(ElementType.LINE);
     const circles: d3.selection[] = this.objects.get(polyline.id).getElements(ElementType.CIRCLE);
