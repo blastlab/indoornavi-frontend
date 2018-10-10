@@ -1,4 +1,4 @@
-import {Point} from '../../map-editor/map.type';
+import {Point, Point3d} from '../../map-editor/map.type';
 import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.builder';
 import * as d3 from 'd3';
 import {DrawConfiguration} from '../../map-viewer/publication.type';
@@ -16,8 +16,6 @@ export class TagOnMap {
     this.svgGroupWrapper = new DrawBuilder(container, drawConfiguration).createGroup()
       .addIcon2({x: 0, y: 0}, this.tagUnicode, 2)
       .addText({x: 0, y: 36}, this.getDeviceDescription())
-      //  changed for hardware tests
-      // .hideTexts()
       .place({x: coordinates.x, y: coordinates.y});
   }
 
@@ -30,7 +28,7 @@ export class TagOnMap {
     return this.svgGroupWrapper.getLastElement(ElementType.ICON);
   }
 
-  move(destination: Point): Promise<number> {
+  move(destination: Point3d): Promise<number> {
     return new Promise((resolve) => {
       this.svgGroupWrapper.getGroup()
         .transition()

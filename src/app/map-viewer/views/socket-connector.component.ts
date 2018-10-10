@@ -19,7 +19,7 @@ import {AreaService} from '../services/area/area.service';
 import {IconService} from '../../shared/services/drawing/icon.service';
 import {Geometry} from 'app/shared/utils/helper/geometry';
 import {Observable} from 'rxjs/Observable';
-import {Line, Point} from 'app/map-editor/map.type';
+import {Line, Point, Point3d} from 'app/map-editor/map.type';
 import {TranslateService} from '@ngx-translate/core';
 import {Config} from '../../../config';
 import {MapLoaderInformerService} from '../../shared/services/map-loader-informer/map-loader-informer.service';
@@ -39,9 +39,9 @@ import {Deferred} from '../../shared/utils/helper/deferred';
 import {TagOnMap} from '../../map/models/tag';
 import {APIObject} from '../../shared/utils/drawing/api.types';
 import {PathService} from '../services/path/path.service';
-import Metadata = APIObject.Metadata;
 import {Complex} from '../../complex/complex.type';
 import {ComplexService} from '../../complex/complex.service';
+import Metadata = APIObject.Metadata;
 
 @Component({
   templateUrl: './socket-connector.component.html'
@@ -57,10 +57,10 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
   private areasOnMap: Dictionary<number, SvgGroupWrapper> = new Dictionary<number, SvgGroupWrapper>();
   private originListeningOnEvent: Dictionary<string, MessageEvent[]> = new Dictionary<string, MessageEvent[]>();
   private originListeningOnClickMapEvent: Array<MessageEvent> = [];
-  private tags: Tag[] = [];
-  private visibleTags: Map<number, boolean> = new Map();
-  private scaleCalculations: ScaleCalculations;
-  private loadMapDeferred: Deferred<boolean>;
+  protected tags: Tag[] = [];
+  protected visibleTags: Map<number, boolean> = new Map();
+  protected scaleCalculations: ScaleCalculations;
+  protected loadMapDeferred: Deferred<boolean>;
   protected subscriptionDestructor: Subject<void> = new Subject<void>();
 
   constructor(protected ngZone: NgZone,
@@ -75,16 +75,31 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
               private iconService: IconService,
               private mapObjectService: ApiService,
               private complexService: ComplexService,
-              private floorService: FloorService,
+              protected floorService: FloorService,
               protected tagTogglerService: TagVisibilityTogglerService,
-              private breadcrumbService: BreadcrumbService) {
+              protected breadcrumbService: BreadcrumbService) {
 
     this.loadMapDeferred = new Deferred<boolean>();
+  }
+
+  ngOnInit(): void {
+    this.setCorrespondingFloorParams();
+    this.translateService.setDefaultLang('en');
+    this.subscribeToMapParametersChange();
+    this.init();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptionDestructor.next();
+    this.subscriptionDestructor.unsubscribe();
+  }
+
+  protected setCorrespondingFloorParams(): void {
     this.route.params.takeUntil(this.subscriptionDestructor)
       .subscribe((params: Params) => {
         const floorId = +params['id'];
-        floorService.getFloor(floorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
-          breadcrumbService.publishIsReady([
+        this.floorService.getFloor(floorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
+          this.breadcrumbService.publishIsReady([
             {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
             {
               label: floor.building.complex.name,
@@ -102,18 +117,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
       });
   }
 
-  ngOnInit(): void {
-    this.translateService.setDefaultLang('en');
-    this.subscribeToMapParametersChange();
-    this.init();
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptionDestructor.next();
-    this.subscriptionDestructor.unsubscribe();
-  }
-
-  private subscribeToMapParametersChange() {
+  protected subscribeToMapParametersChange() {
     this.route.params.takeUntil(this.subscriptionDestructor).subscribe((params: Params): void => {
       const floorId = +params['id'];
       this.floorService.getFloor(floorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
@@ -190,11 +194,13 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
     }
     if (this.originListeningOnEvent.containsKey('coordinates')) {
       this.originListeningOnEvent.getValue('coordinates').forEach((event: MessageEvent): void => {
-        data.coordinates.point = Geometry.calculatePointPositionInCentimeters(
+        const point2d: Point = Geometry.calculatePointPositionInCentimeters(
           this.scaleCalculations.scaleLengthInPixels,
           this.scaleCalculations.scaleInCentimeters,
           data.coordinates.point
         );
+        data.coordinates.point.x = point2d.x;
+        data.coordinates.point.y = point2d.y;
         // @ts-ignore
         event.source.postMessage({type: 'coordinates', coordinates: data.coordinates}, '*');
       })
@@ -226,7 +232,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
     });
   }
 
-  private moveTagOnMap(coordinates: Point, deviceId: number): void {
+  private moveTagOnMap(coordinates: Point3d, deviceId: number): void {
     const tag: TagOnMap = this.tagsOnMap.getValue(deviceId);
     // !document.hidden is here to avoid queueing transitions and therefore browser freezes
     if (tag.hasTransitionEnded() && !document.hidden) {
@@ -241,7 +247,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
     this.socketService.send({type: CommandType[CommandType.SET_TAGS], args: `[${this.extractTagsShortIds()}]`});
   }
 
-  private initializeSocketConnection(): void {
+  protected initializeSocketConnection(): void {
     this.ngZone.runOutsideAngular((): void => {
       const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?client`);
       this.setSocketConfiguration();
@@ -256,9 +262,11 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
         this.ngZone.run(() => {
           if (this.isCoordinatesData(data)) {
             const coordinateSocketData: CoordinatesSocketData = (<CoordinatesSocketData>data);
-            coordinateSocketData.coordinates.point = Geometry.calculatePointPositionInPixels(Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
+            const point2d: Point = Geometry.calculatePointPositionInPixels(Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
               this.scale.getRealDistanceInCentimeters(),
               coordinateSocketData.coordinates.point);
+            coordinateSocketData.coordinates.point.x = point2d.x;
+            coordinateSocketData.coordinates.point.y = point2d.y;
             this.dataReceived.next(coordinateSocketData);
           } else if (this.isEventData(data)) {
             this.handleEventData(<EventSocketData> data);
@@ -277,7 +285,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
     });
   }
 
-  private drawAreas(floorId: number): void {
+  protected drawAreas(floorId: number): void {
     this.areaService.getAllByFloor(floorId).first().subscribe((areas: Area[]): void => {
       areas.forEach((area: Area) => {
         const drawBuilder: DrawBuilder = new DrawBuilder(this.d3map.container, {id: `area-${area.id}`, clazz: 'area'});
@@ -307,7 +315,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
       if (this.originListeningOnClickMapEvent.length > 0) {
         this.originListeningOnClickMapEvent.forEach((event: MessageEvent): void => {
           // @ts-ignore
-          event.source.postMessage({type: 'click', position: point}, event.origin);
+          event.source.postMessage({type: 'click', position: point}, '*');
         });
       }
     });
@@ -343,8 +351,9 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
         mapObjectId: 'map',
         height,
         width,
-        scale: this.scale
-      }, event.origin);
+        scale: this.scale,
+        tempId: event.data.tempId
+      }, '*');
     });
   }
 
@@ -359,18 +368,19 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
         type: 'getPointOnPath',
         mapObjectId: 'map',
         calculatedPosition
-      }, event.origin);
+      }, '*');
     });
   }
 
 
   private getComplexes(event: MessageEvent) {
     this.complexService.getComplexes().first().subscribe((complexes: Complex[]) => {
+      // @ts-ignore
       event.source.postMessage({
         type: 'getComplexes',
         mapObjectId: 'map',
         complexes
-      }, event.origin);
+      }, '*');
     });
   }
 
@@ -396,7 +406,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
         case 'createObject':
           const mapObjectId: number = this.mapObjectService.create();
           // @ts-ignore
-          event.source.postMessage({type: `createObject-${event.data.object}`, mapObjectId: mapObjectId}, '*');
+          event.source.postMessage({type: `createObject-${event.data.object}`, mapObjectId: mapObjectId, tempId: event.data.tempId}, '*');
           break;
         case 'drawObject':
           this.mapObjectService.draw(data.args, this.scale, event, this.d3map.container);
