@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
 import {TranslateService} from '@ngx-translate/core';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
-import {ConfirmationService, SelectItem} from 'primeng/primeng';
+import {SelectItem} from 'primeng/primeng';
 import {SocketService} from '../shared/services/socket/socket.service';
 import {Config} from '../../config';
 import {MeasureSocketDataTag, Publication} from '../map-viewer/publication.type';
@@ -44,7 +44,6 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
     public translate: TranslateService,
     private socketService: SocketService,
     private breadcrumbService: BreadcrumbService,
-    private confirmationService: ConfirmationService,
     private router: Router,
     private messageService: MessageServiceWrapper,
     protected httpService: HttpService,
@@ -85,22 +84,12 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
   }
 
   click(tag: TagListElement): void {
-    this.confirmationService.confirm({
-      message: this.message,
-      header: this.confirmationDialogName,
-      icon: 'fa-exclamation-circle',
-      accept: () => {
-        if (this.isAccessAllowed(tag.floorId)) {
-          this.messageService.success('map.switch.view');
-          this.router.navigate(['follower/', tag.id]);
-        } else {
-          this.messageService.failed('access.denied');
-        }
-      },
-      reject: () => {
-        this.messageService.failed('action.rejected');
-      }
-    });
+    if (this.isAccessAllowed(tag.floorId)) {
+      this.messageService.success('map.switch.view');
+      this.router.navigate(['tagsfinder/follower/', tag.id]);
+    } else {
+      this.messageService.failed('access.denied');
+    }
   }
 
   private initializeTimeInterval(): void {
@@ -141,13 +130,14 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
       this.loading = false;
       let tagInTags = false;
       const { tag, floor } = tagData;
+      const name: string = floor.name.length > 0 ? floor.name :  floor.id.toString();
       const tagListBag: TagListElement = {
         lastUpdateTime: new Date().getTime(),
         id: tag.shortId,
         name: tag.name,
         complex: floor.building.complex.name,
         building: floor.building.name,
-        floor: floor.name,
+        floor: name,
         floorId: floor.id
       };
       this.tags.forEach((tagListElement: TagListElement): void => {

@@ -82,28 +82,31 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
   protected subscribeToMapParametersChange(): void {
     const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}tagTracer?client`);
     stream.takeUntil(this.subscriptionDestructor).subscribe((tagData: MeasureSocketDataTag): void => {
-      if (!this.tagFloorId) {
+      // console.log(+tagData.tag.shortId, +tagData.floor.id);
+      if (this.tagFloorId && this.tagShortId === +tagData.tag.shortId) {
+        if (this.tagFloorId !== +tagData.floor.id) {
+          console.log('switching view');
+          this.tagFloorId = +tagData.floor.id;
+          this.setCorrespondingFloor(true);
+        }
+      } else if (this.tagShortId === +tagData.tag.shortId) {
         this.tagFloorId = +tagData.floor.id;
         this.setCorrespondingFloor();
-      } else if (this.tagFloorId !== +tagData.floor.id) {
-        this.tagFloorId = null;
-        this.messageService.success('map.switch.floor');
-        this.router.navigate(['follower/', tagData.tag.shortId]);
       }
     });
   }
-  private setCorrespondingFloor(): void {
+  private setCorrespondingFloor(force: boolean = false): void {
     if (this.tagFloorId) {
       this.floorService.getFloor(this.tagFloorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
         this.floor = floor;
-        if (!this.breadcrumbsSet) {
-          this.setBreadcrumbs(floor);
+        if (!this.breadcrumbsSet || force) {
+          this.setBreadcrumbs();
         }
-        if (!!floor.scale) {
+        if (!!floor.scale || force) {
           this.setScale();
         }
-        if (!!floor.imageId) {
-          this.subscribeToMapLoader(floor);
+        if (!!floor.imageId || force) {
+          // this.subscribeToMapLoader(floor);
         }
       });
     }
@@ -112,8 +115,9 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
   private subscribeToMapLoader(floor: Floor): void {
     this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg) => {
       this.d3map = mapSvg;
+      console.log(this.d3map);
       this.loadMapDeferred.resolve();
-      this.publishedService.getTagsAvailableForUser(floor.id).takeUntil(this.subscriptionDestructor).subscribe((tags: Tag[]): void => {
+      this.publishedService.getTagsAvailableForUser(floor.id).first().subscribe((tags: Tag[]): void => {
         this.tags = tags;
         this.tags.forEach((tag: Tag) => {
           this.visibleTags.set(tag.shortId, true);
@@ -127,20 +131,18 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
     });
   }
 
-  private setBreadcrumbs(floor: Floor): void {
+  private setBreadcrumbs(): void {
     this.breadcrumbService.publishIsReady([
-      {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
       {
-        label: floor.building.complex.name,
-        routerLink: `/complexes/${floor.building.complex.id}/buildings`,
+        label: 'Tagsfinder',
+        routerLink: '/tagsfinder',
         routerLinkActiveOptions: {exact: true}
       },
       {
-        label: floor.building.name,
-        routerLink: `/complexes/${floor.building.complex.id}/buildings/${floor.building.id}/floors`,
-        routerLinkActiveOptions: {exact: true}
-      },
-      {label: `${(floor.name.length ? floor.name : floor.level)}`, disabled: true}
+        label: 'Follower',
+        routerLink: `/complexes/follower/${this.tagShortId}`,
+        disabled: true
+      }
     ]);
     this.breadcrumbsSet = true;
   }
