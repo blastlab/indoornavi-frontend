@@ -140,7 +140,7 @@ export class NavigationController {
 
     this.objectMetadata.object['points'] = points;
 
-    this.objectMetadata.object = Object.assign((<Path>this.objectMetadata.object), {lines: path, color: '#906090', typeLine: 'dotted'});
+    this.objectMetadata.object = Object.assign((<Path>this.objectMetadata.object), {lines: path, color: '#906090', lineType: 'dotted'});
     this.redrawPath();
   }
 
