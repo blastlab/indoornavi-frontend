@@ -18,7 +18,7 @@ export interface Transform {
   y: number;
 }
 
-export enum TypeLine {
+export enum LineType {
   Solid = 'solid',
   Dotted = 'dotted'
 }
