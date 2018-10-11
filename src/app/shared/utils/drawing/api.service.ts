@@ -147,7 +147,7 @@ export class ApiService {
     const circles: d3.selection[] = this.objects.get(polyline.id).getElements(ElementType.CIRCLE);
 
     const lineType = {
-      [LineType.Solid]: () => this.setSolidPolyline(lines, circles, polyline),
+      [LineType.Solid]: () => this.setSolidLine(lines, circles, polyline),
       [LineType.Dotted]: () => {
         this.setDottedLine(lines, circles, polyline)
       }
@@ -158,7 +158,7 @@ export class ApiService {
     }
   }
 
-  private setSolidPolyline(lines: d3.selection, circles: d3.selection, polyline) {
+  private setSolidLine(lines: d3.selection, circles: d3.selection, polyline): void {
     lines.forEach((line: d3.selection) => {
       ApiHelper.setStrokeColor(line, polyline.color);
     });
@@ -167,7 +167,7 @@ export class ApiService {
     });
   }
 
-  private setDottedLine(lines: d3.selection, circles: d3.selection, polyline) {
+  private setDottedLine(lines: d3.selection, circles: d3.selection, polyline): void {
      lines.forEach((line: d3.selection) => {
       ApiHelper.setDottedLine(line, polyline.color, 5)
     });
