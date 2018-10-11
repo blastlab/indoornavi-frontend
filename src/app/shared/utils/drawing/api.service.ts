@@ -147,8 +147,8 @@ export class ApiService {
     const circles: d3.selection[] = this.objects.get(polyline.id).getElements(ElementType.CIRCLE);
 
     const lineType = {
-      [LineType.Solid]: () => this.drawSolidPolyline(lines, circles, polyline),
-      [LineType.Dotted]: () => {
+      [LineType.SOLID]: () => this.drawSolidPolyline(lines, circles, polyline),
+      [LineType.DOTTED]: () => {
         this.drawDottedPolyline(lines, circles, polyline)
       }
     };

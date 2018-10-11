@@ -19,6 +19,6 @@ export interface Transform {
 }
 
 export enum LineType {
-  Solid = 'solid',
-  Dotted = 'dotted'
+  SOLID = 'solid',
+  DOTTED = 'dotted'
 }
