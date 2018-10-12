@@ -82,31 +82,28 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
   protected subscribeToMapParametersChange(): void {
     const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}tagTracer?client`);
     stream.takeUntil(this.subscriptionDestructor).subscribe((tagData: MeasureSocketDataTag): void => {
-      // console.log(+tagData.tag.shortId, +tagData.floor.id);
       if (this.tagFloorId && this.tagShortId === +tagData.tag.shortId) {
         if (this.tagFloorId !== +tagData.floor.id) {
-          console.log('switching view');
-          this.tagFloorId = +tagData.floor.id;
-          this.setCorrespondingFloor(true);
+          this.redirectTo(this.router.url);
         }
       } else if (this.tagShortId === +tagData.tag.shortId) {
         this.tagFloorId = +tagData.floor.id;
-        this.setCorrespondingFloor();
+        this.setCorrespondingFloorParameters();
       }
     });
   }
-  private setCorrespondingFloor(force: boolean = false): void {
+
+  private setCorrespondingFloorParameters(): void {
     if (this.tagFloorId) {
       this.floorService.getFloor(this.tagFloorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
         this.floor = floor;
-        if (!this.breadcrumbsSet || force) {
+        if (!this.breadcrumbsSet) {
           this.setBreadcrumbs();
         }
-        if (!!floor.scale || force) {
+        if (!!floor.scale) {
           this.setScale();
         }
-        if (!!floor.imageId || force) {
-          console.log(floor);
+        if (!!floor.imageId) {
           this.subscribeToMapLoader(floor);
         }
       });
@@ -115,9 +112,7 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
 
   private subscribeToMapLoader(floor: Floor): void {
     this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg) => {
-      console.log(floor);
       this.d3map = mapSvg;
-      console.log(this.d3map);
       this.loadMapDeferred.resolve();
       this.publishedService.getTagsAvailableForUser(floor.id).first().subscribe((tags: Tag[]): void => {
         this.tags = tags;
@@ -151,11 +146,15 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
 
   private setScale(): void {
     this.scale = new Scale(this.floor.scale);
-    console.log(this.scale);
     this.scaleCalculations = {
       scaleLengthInPixels: Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
       scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
     };
+  }
+
+  private redirectTo(uri: string): void {
+    this.router.navigateByUrl('/', {skipLocationChange: true}).then(() =>
+      this.router.navigate([uri]));
   }
 
 }
