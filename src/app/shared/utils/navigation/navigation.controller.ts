@@ -128,7 +128,7 @@ export class NavigationController {
   }
 
   private calculateNavigationPath(lines: Line[], location: Point, destination: Point, accuracy: number): void {
-    const path: Line[] = NavigationService.calculateDijkstraShortestPath(lines, location, destination);
+    const path: Line[] = this.navigationService.calculateDijkstraShortestPath(lines, location, destination);
     path.reverse();
     this.objectMetadata = {
       object: {
