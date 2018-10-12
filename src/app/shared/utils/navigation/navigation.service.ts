@@ -91,14 +91,14 @@ export class NavigationService {
   }
 
   private searchForShortestPathInGraph(): void {
-    while (!this.processed.includes(this.endPointIndex)) {
+    while (this.processed.indexOf(this.endPointIndex) < 0) {
       this.dijkstraVertexMatrix[this.cheapestVertexIndex].graphs.forEach((graph: GraphRelation): void => {
-        if (this.processed.includes(graph.vertexIndex)) {
+        if (this.processed.indexOf(graph.vertexIndex) > 0) {
           return;
         }
         const parenCost: number = this.costs[`${this.cheapestVertexIndex}`];
         const childCost: number = graph.cost + parenCost;
-        if (Object.keys(this.costs).includes(`${graph.vertexIndex}`)) {
+        if (Object.keys(this.costs).indexOf(`${graph.vertexIndex}`) > 0) {
           if (this.costs[`${graph.vertexIndex}`] > childCost) {
             this.costs[`${graph.vertexIndex}`] = childCost;
             this.parents[`${graph.vertexIndex}`] = this.cheapestVertexIndex;
@@ -112,7 +112,7 @@ export class NavigationService {
       let minValueIndex: number;
       for (const key of Object.keys(this.costs)) {
         const keyAsNumber = parseInt(key, 10);
-        if (!this.processed.includes(keyAsNumber)) {
+        if (this.processed.indexOf(keyAsNumber) < 0) {
           if (minCost > this.costs[key]) {
             minCost = this.costs[key];
             minValueIndex = keyAsNumber;
