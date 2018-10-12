@@ -29,7 +29,8 @@ export class NavigationController {
 
   constructor(
     private pathService: PathService,
-    private mapObjectService: ApiService
+    private mapObjectService: ApiService,
+    private navigationService: NavigationService,
   ) {}
 
   handleNavigation(event: MessageEvent, floorId, container, scale) {

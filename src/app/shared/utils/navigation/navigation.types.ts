@@ -11,10 +11,10 @@ export interface GraphRelation {
   cost: number;
 }
 
-export interface Cost {
+export interface Costs {
   [x: number]: number
 }
 
-export interface Parent {
+export interface Parents {
   [child: number]: number
 }
