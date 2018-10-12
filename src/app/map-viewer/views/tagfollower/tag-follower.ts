@@ -106,7 +106,8 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
           this.setScale();
         }
         if (!!floor.imageId || force) {
-          // this.subscribeToMapLoader(floor);
+          console.log(floor);
+          this.subscribeToMapLoader(floor);
         }
       });
     }
@@ -114,6 +115,7 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
 
   private subscribeToMapLoader(floor: Floor): void {
     this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg) => {
+      console.log(floor);
       this.d3map = mapSvg;
       console.log(this.d3map);
       this.loadMapDeferred.resolve();
@@ -149,6 +151,7 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
 
   private setScale(): void {
     this.scale = new Scale(this.floor.scale);
+    console.log(this.scale);
     this.scaleCalculations = {
       scaleLengthInPixels: Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
       scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
