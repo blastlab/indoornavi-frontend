@@ -4,23 +4,26 @@ import {ActivatedRoute, Params} from '@angular/router';
 import {MenuItem} from 'primeng/primeng';
 import {Subscription} from 'rxjs/Subscription';
 import {BreadcrumbService} from './shared/services/breadcrumbs/breadcrumb.service';
+import {Location} from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.html'
+  templateUrl: './app.html',
+  styleUrls: ['./app.css']
 })
 export class AppComponent implements OnInit, OnDestroy {
   isUserLoggedIn: boolean;
   isDisplayedInIFrame: boolean = false;
   sidebar: boolean = false;
   breadcrumbs: MenuItem[];
+  isPublic: boolean = false;
   private userLoggedInSubscription: Subscription;
   private breadcrumbIsReadySubscription: Subscription;
 
-  constructor(private authGuard: AuthGuard, private route: ActivatedRoute, private breadcrumbService: BreadcrumbService, private cd: ChangeDetectorRef) {
-  }
+  constructor(private authGuard: AuthGuard, private route: ActivatedRoute, private breadcrumbService: BreadcrumbService, private cd: ChangeDetectorRef, private location: Location) {}
 
   ngOnInit() {
+    this.isPublic = this.location.path().match(/embedded/) ? true : false;
     this.route.queryParams.subscribe((params: Params) => {
       if (!!params['api_key']) {
         this.isDisplayedInIFrame = true;

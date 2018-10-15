@@ -45,13 +45,14 @@ export class InfoWindowGroupWrapper {
       .append('foreignObject')
       .attr('width', this.infoWindowSize.width)
       .attr('height', this.infoWindowSize.height)
-      .html(`<div>${infoText}</div>`)
+      // height of content should be infoWindowSize.height - 2 x padding top
+      .html(`<div class="infoWindow-content" style="height: ${this.infoWindowSize.height - 50}px">${infoText}</div>`)
       .style('background-color', this.infoWindowBoxProps.fill)
       .style('border-style', this.infoWindowBoxProps.style)
       .style('border-radius', `${this.infoWindowBoxProps.radius}px`)
       .style('border-width', `${ this.infoWindowBoxProps.width}px`)
       .style('border-color', this.infoWindowBoxProps.color)
-      .style('padding', `${this.infoWindowBoxProps.padding}px`)
+      .style('padding-top', `25px`)
       .attr('opacity', this.infoWindowBoxProps.opacity);
 
     this.svgGroupWrapper.getGroup()
@@ -60,7 +61,6 @@ export class InfoWindowGroupWrapper {
       .attr('y', closingInfoWindowPointCoordinates.y - coordinates.y)
       .attr('width', this.closeIconContainerWidth)
       .attr('height', this.closeIconContainerHeight)
-      .attr('id', 'infoWindow-text')
       .attr('fill', 'black')
       .attr('cursor', 'pointer')
       .html('<i class="fa fa-close"></i>')

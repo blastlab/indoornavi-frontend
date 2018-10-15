@@ -266,7 +266,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
 
   private placeSinkOnMap(sink: Sink, coordinates?: Point): SinkBag {
     const sinkDrawConfiguration: DeviceInEditorConfiguration = {
-      id: `${sink.shortId}`,
+      id: `sink-${sink.shortId}`,
       clazz: `sink`,
       heightInMeters: sink.z
     };
@@ -292,7 +292,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
 
   private placeAnchorOnMap(sinkBag: SinkBag, anchor: Anchor, coordinates?: Point): AnchorBag {
     const anchorDrawConfiguration: DeviceInEditorConfiguration = {
-      id: `${anchor.shortId}`,
+      id: `anchor-${anchor.shortId}`,
       clazz: `anchor`,
       heightInMeters: anchor.z
     };

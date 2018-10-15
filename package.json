@@ -1,6 +1,6 @@
 {
   "name": "indoor-navi",
-  "version": "0.9.1",
+  "version": "0.7.7",
   "license": "UNLICENSED",
   "scripts": {
     "ng": "ng",
@@ -46,7 +46,7 @@
     "@angular/compiler-cli": "4.4.6",
     "@biesbjerg/ng2-translate-extract": "0.6.0",
     "@types/jasmine": "2.5.38",
-    "@types/node": "7.0.46",
+    "@types/node": "^8.10.29",
     "chai": "3.5.0",
     "codelyzer": "3.0.1",
     "jasmine-core": "2.8.0",

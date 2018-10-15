@@ -1,7 +1,7 @@
 import {DrawBuilder, ElementType, SvgGroupWrapper} from './drawing.builder';
 import {Injectable} from '@angular/core';
 import * as d3 from 'd3';
-import {Point} from '../../../map-editor/map.type';
+import {Point, LineType} from '../../../map-editor/map.type';
 import {Geometry} from 'app/shared/utils/helper/geometry';
 import {IconService, NaviIcons} from '../../services/drawing/icon.service';
 import {Scale} from '../../../map-editor/tool-bar/tools/scale/scale.type';
@@ -64,7 +64,7 @@ export class ApiService {
     switch (objectMetadata.type) {
       case 'POLYLINE':
         this.addToMapContainer(objectMetadata, container);
-        this.drawPolyline(objectMetadata, this.getCalculatedPoints(objectMetadata.object['points'], scale));
+        this.drawLine(objectMetadata, this.getCalculatedPoints(objectMetadata.object['points'], scale));
         break;
       case 'AREA':
         this.addToMapContainer(objectMetadata, container);
@@ -102,7 +102,7 @@ export class ApiService {
     marker.events.forEach((event: string): void => {
       element.getGroup().on(event, (): void => {
         // @ts-ignore
-        originMessageEvent.source.postMessage({type: `${event}-${marker.id}`, objectId: marker.id}, originMessageEvent.origin);
+        originMessageEvent.source.postMessage({type: `${event}-${marker.id}`, objectId: marker.id}, '*');
       });
     });
     if (!!marker.label) {
@@ -111,7 +111,7 @@ export class ApiService {
           x: point.x + SvgGroupWrapper.customIconSize.width / 2,
           y: point.y - SvgGroupWrapper.customIconSize.height / 2
         },
-        marker.label)
+        marker.label);
     }
   }
 
@@ -126,7 +126,7 @@ export class ApiService {
       new InfoWindowGroupWrapper(container, {id: `map-object-${objectMetadata.type}-${objectMetadata.object.id}`, clazz: 'map-object'}));
   }
 
-  private drawArea(objectMetadata: Metadata, points: Point[]) {
+  private drawArea(objectMetadata: Metadata, points: Point[]): void {
     const area: Area = <Area>objectMetadata.object;
     const areaSelection: d3.selection = this.objects.get(area.id).getGroup();
     this.objects.get(area.id).addPolygon(points);
@@ -139,22 +139,41 @@ export class ApiService {
     }
   }
 
-  private drawPolyline(objectMetadata: Metadata, points: Point[]) {
+  private drawLine(objectMetadata: Metadata, points: Point[]): void {
     const polyline: Polyline = <Polyline>objectMetadata.object;
-    this.objects.get(polyline.id).addPolyline(points, this.pointRadius);
+    const type: LineType = objectMetadata.object['lineType'];
+    this.objects.get(polyline.id).addLineType(points, type, this.pointRadius);
     const lines: d3.selection[] = this.objects.get(polyline.id).getElements(ElementType.LINE);
     const circles: d3.selection[] = this.objects.get(polyline.id).getElements(ElementType.CIRCLE);
+
+    const lineType = {
+      [LineType.SOLID]: () => this.drawSolidPolyline(lines, circles, polyline),
+      [LineType.DOTTED]: () => {
+        this.drawDottedPolyline(lines, circles, polyline)
+      }
+    };
+
     if (!!polyline.color) {
-      lines.forEach((line: d3.selection) => {
-        ApiHelper.setStrokeColor(line, polyline.color);
-      });
-      circles.forEach((circle: d3.selection) => {
-        ApiHelper.setFillColor(circle, polyline.color);
-      });
+      lineType[type]();
     }
   }
 
-  private placeCircleOnMap(objectMetadata: Metadata, point: Point) {
+  private drawSolidPolyline(lines: d3.selection, circles: d3.selection, polyline): void {
+    lines.forEach((line: d3.selection) => {
+      ApiHelper.setStrokeColor(line, polyline.color);
+    });
+    circles.forEach((circle: d3.selection) => {
+      ApiHelper.setFillColor(circle, polyline.color);
+    });
+  }
+
+  private drawDottedPolyline(lines: d3.selection, circles: d3.selection, polyline): void {
+     lines.forEach((line: d3.selection) => {
+      ApiHelper.setDottedPolyline(line, polyline.color, 5)
+    });
+  }
+
+  private placeCircleOnMap(objectMetadata: Metadata, point: Point): void {
     const circle: Circle = <Circle>objectMetadata.object;
     this.objects.get(circle.id).addCircle(point, circle.radius);
     const circleSelection: d3.selection = this.objects.get(circle.id).getElements(ElementType.CIRCLE)[0];
@@ -171,7 +190,7 @@ export class ApiService {
     }
   }
 
-  private drawInfoWindow(objectMetadata: Metadata) {
+  private drawInfoWindow(objectMetadata: Metadata): void {
     const infoWindowObject = this.infoWindows.get(objectMetadata.object.id);
     const infoWindow: InfoWindow = (<InfoWindow>objectMetadata.object);
     if (!!infoWindow.width) {

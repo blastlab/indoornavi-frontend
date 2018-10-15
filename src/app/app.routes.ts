@@ -15,11 +15,14 @@ import {DeviceComponent} from './device/device';
 import {BluetoothComponent} from './bluetooth/bluetooth';
 import {AnalyticsComponent} from './map-viewer/views/analytics/analytics';
 import {NotSupportedBrowserComponent} from './not-supported-browser/not-supported-browser';
+import {TagsFinderComponent} from './tags-finder/tags-finder.component';
+import {TagFollowerComponent} from './map-viewer/views/tagfollower/tag-follower';
 
 export const appRoutes: Routes = [
   {path: '', redirectTo: '/complexes', pathMatch: 'full'},
   {path: 'login', component: AuthComponent},
   {path: 'logout', component: AuthComponent},
+  {path: 'tagsfinder', component: TagsFinderComponent, canActivate: [CanRead], data: {permission: 'TAG'}},
   {path: 'complexes', component: ComplexComponent, canActivate: [CanRead], data: {permission: 'COMPLEX'}},
   {path: 'complexes/:complexId/buildings', component: BuildingComponent, canActivate: [CanRead], data: {permission: 'BUILDING'}},
   {path: 'anchors', component: DeviceComponent, canActivate: [CanRead], data: {permission: 'ANCHOR'}},
@@ -29,6 +32,7 @@ export const appRoutes: Routes = [
   {path: 'publications', component: PublishedListComponent, canActivate: [CanRead], data: {permission: 'PUBLICATION'}},
   {path: 'publications/:id', component: PublishedComponent, canActivate: [CanRead], data: {permission: 'PUBLICATION'}},
   {path: 'embedded/:id', component: PublishedComponent, data: {isPublic: true}},
+  {path: 'follower/:id', component: TagFollowerComponent, data: {isPublic: true}},
   {path: 'analytics', component: AnalyticsComponent, canActivate: [CanRead], data: {permission: 'PUBLICATION'}},
   {path: 'analytics/:id', component: AnalyticsComponent, canActivate: [CanRead], data: {permission: 'PUBLICATION'}},
   {path: 'users', component: UserComponent, canActivate: [CanRead], data: {permission: 'USER'}},
