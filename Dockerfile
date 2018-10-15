@@ -6,7 +6,7 @@ COPY . /opt/app
 
 WORKDIR /opt/app
 
-RUN ng build --prod
+RUN ng build --prod -output-hashing all
 
 ##### RUN
 
