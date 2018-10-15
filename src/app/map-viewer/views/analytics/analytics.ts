@@ -24,6 +24,7 @@ import {MapClickService} from '../../../shared/services/map-click/map-click.serv
 import {TagOnMap} from '../../../map/models/tag';
 import {PathService} from '../../services/path/path.service';
 import {ComplexService} from '../../../complex/complex.service';
+import {NavigationController} from '../../../shared/utils/navigation/navigation.controller';
 
 @Component({
   templateUrl: './analytics.html'
@@ -62,6 +63,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
               translateService: TranslateService,
               iconService: IconService,
               mapObjectService: ApiService,
+              pathDisplayService: NavigationController,
               complexService: ComplexService,
               floorService: FloorService,
               tagTogglerService: TagVisibilityTogglerService,
@@ -81,6 +83,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       iconService,
       mapObjectService,
       complexService,
+      pathDisplayService,
       floorService,
       tagTogglerService,
       breadcrumbService
@@ -125,7 +128,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       }
       this.handleCoordinatesData(data);
     });
-    this.tagTogglerService.onToggleTag().takeUntil(this.subscriptionDestructor)
+    this.tagToggleService.onToggleTag().takeUntil(this.subscriptionDestructor)
       .subscribe((tagToggle: TagToggle) => {
       if (this.tagsOnMap.containsKey(tagToggle.tag.shortId) && !tagToggle.selected) {
         this.timeStepBuffer.delete(tagToggle.tag.shortId);

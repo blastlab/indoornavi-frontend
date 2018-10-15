@@ -228,6 +228,29 @@ export class SvgGroupWrapper {
     return this;
   }
 
+  private setLineCurveData() {
+    return d3.line()
+      .x((points: Point) => points.x)
+      .y((points: Point) => points.y)
+      .curve(d3.curveLinear);
+  }
+
+  addDottedPolyline(points: Point[]): SvgGroupWrapper {
+    const element: d3.selection = this.group
+      .append('path')
+      .attr('d', this.setLineCurveData()(points));
+    this.addElement(ElementType.LINE, element);
+    return this;
+  }
+
+  addLineType(points: Point[], type: string, radius: number): SvgGroupWrapper {
+    const lineType = {
+      'solid': () => this.addPolyline(points, radius),
+      'dotted': () => this.addDottedPolyline(points)
+    };
+    return lineType[type]();
+  }
+
   remove(): void {
     this.group.remove();
   }
