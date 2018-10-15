@@ -37,16 +37,13 @@ export class NavigationController {
     const args: NavigationData = event.data.args.object;
     if (this.isNavigationReady) {
       if (args.action === 'update') {
-        console.log('update');
         this.updatePosition(args.position);
       }
       if (args.action === 'stop') {
-        console.log('removing navigation');
         this.stopNavigation();
       }
     } else if (args.action === 'start') {
       this.setNavigationPath(floorId, args.location, args.destination, args.accuracy, event, container, scale);
-      console.log('creating navigation', args.location, args.destination);
     } else if (args.action === 'update') {
       this.setLastCoordinates(args.position);
     }
@@ -73,6 +70,10 @@ export class NavigationController {
         this.handlePathUpdate(pointUpdate);
       });
       this.isNavigationReady = true;
+
+      if (this.lastCoordinates) {
+        this.updatePosition(this.lastCoordinates);
+      }
     });
   }
 
@@ -90,22 +91,18 @@ export class NavigationController {
     }
     this.subscriptionDestructor.next();
     this.subscriptionDestructor = null;
+    this.mapObjectService.removeObject(this.objectMetadata);
     this.objectMetadata = null;
     this.event = null;
   }
 
   private handlePathUpdate(pointUpdate: Point): void {
-    if (this.lastCoordinates) {
-      this.updatePath(this.lastCoordinates);
-      this.lastCoordinates = null;
-    }
-    this.updatePath(pointUpdate);
-
-    if (this.objectMetadata === null) {
+    const currentPointOnPath = Geometry.findPointOnPathInGivenRange(this.objectMetadata.object['lines'], pointUpdate);
+    if (this.isDestinationAchieved(currentPointOnPath)) {
+      this.stopNavigation();
       return;
     }
 
-    const currentPointOnPath = Geometry.findPointOnPathInGivenRange(this.objectMetadata.object['lines'], pointUpdate);
     this.lines = this.objectMetadata.object['lines'];
 
     const findLineIndex = this.objectMetadata.object['lines'].findIndex(line => Geometry.isPointOnLineBetweenTwoPoints(line, currentPointOnPath));
@@ -116,48 +113,53 @@ export class NavigationController {
     this.lines = this.lines.slice(findLineIndex);
     this.lines[0].startPoint = currentPointOnPath;
 
-
-
-    console.log('inpx', this.scale.getLenInPix());
-    console.log('incm', this.scale.getRealDistanceInCentimeters());
-
-    const points = this.lines.reduce((prev, next) => {
-      // point = calcPointInCm(this.scale, point);
-      prev.push(Geometry.calculatePointPositionInCentimeters(this.scale.getLenInPix(), this.scale.getRealDistanceInCentimeters(), next.startPoint));
-      prev.push(Geometry.calculatePointPositionInCentimeters(this.scale.getLenInPix(), this.scale.getRealDistanceInCentimeters(), next.endPoint));
-      return prev;
-    }, []);
-
+    const points = this.createPointPathFromLinePath(this.scale, this.lines);
     this.objectMetadata.object['points'] = points;
     this.redrawPath();
   }
 
-  private updatePath(point: Point): void {
-    const pointOnPath: Point = point;
-    if (this.destination.x === pointOnPath.x && this.destination.y === pointOnPath.y) {
-      this.stopNavigation();
-      return;
-    }
+  private isDestinationAchieved(pointOnPath: Point): boolean {
+    const range = 0;
+    const pulledDestination: Point = Geometry.findPointOnPathInGivenRange(this.objectMetadata.object['lines'], this.destination);
+    return (pointOnPath.x >= (pulledDestination.x - range) &&
+      pointOnPath.x <= (pulledDestination.x + range) &&
+      pointOnPath.y >= (pulledDestination.y - range) &&
+      pointOnPath.y <= (pulledDestination.y + range));
   }
 
   private calculateNavigationPath(lines: Line[], location: Point, destination: Point, accuracy: number): void {
     const path: Line[] = this.navigationService.calculateDijkstraShortestPath(lines, location, destination);
-    console.log('path', path);
     path.reverse();
-    // this.pathCalculated = NavigationService.calculateDijkstraShortestPath(lines, location, destination);
     this.objectMetadata = {
       object: {
-        id: 123123123123
+        id: Math.round(new Date().getTime() * Math.random() * 1000)
       },
       type: 'POLYLINE'
     };
-    this.objectMetadata.object = Object.assign((<Path>this.objectMetadata.object), {lines: path, color: '#906090'});
-    console.log('this.objectMetadata.object', this.objectMetadata.object['lines']);
+
+    const points = this.createPointPathFromLinePath(this.scale, path);
+
+    this.objectMetadata.object['points'] = points;
+
+    this.objectMetadata.object = Object.assign((<Path>this.objectMetadata.object), {lines: path, color: '#906090', lineType: 'dotted'});
+    this.redrawPath();
+  }
+
+  private calculatePointInCentimeters(scale: Scale, point: Point): Point {
+    return Geometry.calculatePointPositionInCentimeters(scale.getLenInPix(), scale.getRealDistanceInCentimeters(), point);
+  }
+
+  private createPointPathFromLinePath(scale: Scale, path: Line[]): Point[] {
+    return path.reduce((points, point) => {
+      points.push(this.calculatePointInCentimeters(scale, point.startPoint));
+      points.push(this.calculatePointInCentimeters(scale, point.endPoint));
+      return points;
+    }, []);
   }
 
   private redrawPath(): void {
     if (!!this.objectMetadata) {
-      this.mapObjectService.draw(this.objectMetadata, this.scale, this.event, this.container, 'dotted');
+      this.mapObjectService.draw(this.objectMetadata, this.scale, this.event, this.container);
     }
   }
 

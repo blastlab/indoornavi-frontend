@@ -243,12 +243,12 @@ export class SvgGroupWrapper {
     return this;
   }
 
-  addTypeLine(points: Point[], type: string, radius: number): SvgGroupWrapper {
-    const typeLine = {
+  addLineType(points: Point[], type: string, radius: number): SvgGroupWrapper {
+    const lineType = {
       'solid': () => this.addPolyline(points, radius),
       'dotted': () => this.addDottedPolyline(points)
     };
-    return typeLine[type]();
+    return lineType[type]();
   }
 
   remove(): void {

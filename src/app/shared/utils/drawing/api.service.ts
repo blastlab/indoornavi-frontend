@@ -1,7 +1,7 @@
 import {DrawBuilder, ElementType, SvgGroupWrapper} from './drawing.builder';
 import {Injectable} from '@angular/core';
 import * as d3 from 'd3';
-import {Point} from '../../../map-editor/map.type';
+import {Point, LineType} from '../../../map-editor/map.type';
 import {Geometry} from 'app/shared/utils/helper/geometry';
 import {IconService, NaviIcons} from '../../services/drawing/icon.service';
 import {Scale} from '../../../map-editor/tool-bar/tools/scale/scale.type';
@@ -57,14 +57,14 @@ export class ApiService {
     }
   }
 
-  draw(objectMetadata: Metadata, scale: Scale, originMessageEvent: MessageEvent, container: d3.selection, type: string): void {
+  draw(objectMetadata: Metadata, scale: Scale, originMessageEvent: MessageEvent, container: d3.selection): void {
     if (!!this.objects.get(objectMetadata.object.id)) {
       this.removeObject(objectMetadata);
     }
     switch (objectMetadata.type) {
       case 'POLYLINE':
         this.addToMapContainer(objectMetadata, container);
-        this.drawLine(objectMetadata, this.getCalculatedPoints(objectMetadata.object['points'], scale), type);
+        this.drawLine(objectMetadata, this.getCalculatedPoints(objectMetadata.object['points'], scale));
         break;
       case 'AREA':
         this.addToMapContainer(objectMetadata, container);
@@ -139,25 +139,26 @@ export class ApiService {
     }
   }
 
-  private drawLine(objectMetadata: Metadata, points: Point[], type): void {
+  private drawLine(objectMetadata: Metadata, points: Point[]): void {
     const polyline: Polyline = <Polyline>objectMetadata.object;
-    this.objects.get(polyline.id).addTypeLine(points, type, this.pointRadius);
+    const type: LineType = objectMetadata.object['lineType'];
+    this.objects.get(polyline.id).addLineType(points, type, this.pointRadius);
     const lines: d3.selection[] = this.objects.get(polyline.id).getElements(ElementType.LINE);
     const circles: d3.selection[] = this.objects.get(polyline.id).getElements(ElementType.CIRCLE);
 
-    const typeLine = {
-      'solid': () => this.setSolidPolyline(lines, circles, polyline),
-      'dotted': () => {
-        this.setDottedLine(lines, circles, polyline)
+    const lineType = {
+      [LineType.SOLID]: () => this.drawSolidPolyline(lines, circles, polyline),
+      [LineType.DOTTED]: () => {
+        this.drawDottedPolyline(lines, circles, polyline)
       }
     };
 
     if (!!polyline.color) {
-      typeLine[type]();
+      lineType[type]();
     }
   }
 
-  private setSolidPolyline(lines: d3.selection, circles: d3.selection, polyline) {
+  private drawSolidPolyline(lines: d3.selection, circles: d3.selection, polyline): void {
     lines.forEach((line: d3.selection) => {
       ApiHelper.setStrokeColor(line, polyline.color);
     });
@@ -166,9 +167,9 @@ export class ApiService {
     });
   }
 
-  private setDottedLine(lines: d3.selection, circles: d3.selection, polyline) {
+  private drawDottedPolyline(lines: d3.selection, circles: d3.selection, polyline): void {
      lines.forEach((line: d3.selection) => {
-      ApiHelper.setDottedLine(line, polyline.color, 5)
+      ApiHelper.setDottedPolyline(line, polyline.color, 5)
     });
   }
 
@@ -204,7 +205,6 @@ export class ApiService {
   }
 
   private getCalculatedPoints(pointsToCalculate: Point[], scale: Scale): Point[] {
-    console.log('pointsToCalculate', pointsToCalculate);
     const points: Point[] = [];
     pointsToCalculate.forEach((point: Point): void => {
       points.push(Geometry.calculatePointPositionInPixels(Geometry.getDistanceBetweenTwoPoints(scale.start, scale.stop),

@@ -406,7 +406,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
           event.source.postMessage({type: `createObject-${event.data.object}`, mapObjectId: mapObjectId, tempId: event.data.tempId}, '*');
           break;
         case 'drawObject':
-          this.mapObjectService.draw(data.args, this.scale, event, this.d3map.container, 'solid');
+          this.mapObjectService.draw(data.args, this.scale, event, this.d3map.container);
           break;
         case 'removeObject':
           this.removeObjectFromMapObjectService(data.args);
