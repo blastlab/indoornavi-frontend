@@ -363,7 +363,7 @@ describe('Geometry', () => {
     };
     const points: Point[] = [
       {x: 7, y: 5},
-      {x: 2, y: 3},
+      {x: 2, y: 6},
       {x: 6, y: 7},
       {x: 0, y: 1}
     ];
