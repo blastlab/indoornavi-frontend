@@ -9,4 +9,3 @@ export class Helper {
     return mobileDevices.test(navigator.userAgent);
   }
 }
-
