@@ -48,7 +48,7 @@ export class MarkerOnMap {
     events.forEach((event: string): void => {
       this.svgGroupWrapper.getGroup().on(event, (): void => {
         // @ts-ignore
-        originMessageEvent.source.postMessage({type: `${event}-${this.id}`, objectId: this.id}, originMessageEvent.origin);
+        originMessageEvent.source.postMessage({type: `${event}-${this.id}`, objectId: this.id}, '*');
       });
     });
   }
