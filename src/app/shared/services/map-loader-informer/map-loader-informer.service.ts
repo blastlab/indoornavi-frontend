@@ -11,7 +11,7 @@ export class MapLoaderInformerService {
     return this.isLoaded.asObservable();
   }
 
-  publishIsLoaded(mapSvg: MapSvg) {
+  publishIsLoaded(mapSvg: MapSvg): void {
     this.isLoaded.next(mapSvg);
   }
 }

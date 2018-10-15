@@ -19,20 +19,26 @@ export class NumberInRangeValidatorDirective implements Validator {
     const val = parseInt(value, 10);
 
     if (deviceType === 'tags') {
-      if (val < 32678) {
+      if (val > 32767) {
+        return {
+          properNumberInRange: `${translateKey}.numberInRange`
+        };
+      }
+    } else if (deviceType === 'bluetooth') {
+      if (val > 65536) {
         return {
           properNumberInRange: `${translateKey}.numberInRange`
         };
       }
     } else {
-      if (val > 32767 && val < 2147483648) {
-        return null;
-      } else {
+      if (val < 32768 || val >= 2147483648) {
         return {
           properNumberInRange: `${translateKey}.numberInRange`
         };
       }
     }
+
+    return null;
   }
 
   validate(control: AbstractControl): ValidationErrors {

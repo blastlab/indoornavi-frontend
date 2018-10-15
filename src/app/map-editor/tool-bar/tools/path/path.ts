@@ -16,7 +16,6 @@ import {ToolName} from '../tools.enum';
 import * as d3 from 'd3';
 import {Box, DrawBuilder, ElementType, SvgGroupWrapper} from '../../../../shared/utils/drawing/drawing.builder';
 import {Line, Point} from '../../../map.type';
-import {isNumber} from 'util';
 import {TranslateService} from '@ngx-translate/core';
 import {Configuration} from '../../../action-bar/actionbar.type';
 import {IntersectionIdentifier, PathContextCallback, PathContextMenuLabels} from './path.type';
@@ -150,7 +149,6 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
     }
     this.clearDrawnPath();
     this.currentLineGroup.removeElements(ElementType.CIRCLE);
-    this.sendPathToConfiguration();
   }
 
   private listenOnMapLoaded(): void {
@@ -205,10 +203,9 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   private setContextMenuCallbacks(): void {
     this.callbacks = {
       removeAll: () => {
-        this.clearDrawnPath();
+        this.clearDrawnPath(true);
         this.lines = [];
         this.actionBarService.clearPath();
-        this.sendPathToConfiguration();
         this.hintBarService.sendHintMessage('path.hint.first');
       }
     }
@@ -227,7 +224,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
     this.actionBarService.addPath(this.lines);
   }
 
-  private clearDrawnPath(): void {
+  private clearDrawnPath(createNew: boolean = false): void {
     this.currentLineGroup.getGroup().remove();
     this.firstPointSelection = null;
     this.lastPoint = null;
@@ -235,12 +232,14 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
       this.tempLine.remove();
       this.tempLine = null;
     }
-    this.currentLineGroup = this.createBuilder().createGroup();
+    if (createNew) {
+      this.currentLineGroup = this.createBuilder().createGroup();
+    }
   }
 
   private createBuilder(index?: number): DrawBuilder {
     return new DrawBuilder(this.container, {
-      id: `path-${isNumber(index) ? index : 'new'}`,
+      id: `path`,
       clazz: `path`
     });
   }
@@ -360,6 +359,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
         return;
       }
       if (!!this.tempLine) { // do not clean if last line wasn't tempLine
+        this.sendPathToConfiguration();
         this.cleanTempLine();
       }
       const line: Line = {
