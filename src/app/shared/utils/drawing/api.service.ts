@@ -141,11 +141,10 @@ export class ApiService {
 
   private drawLine(objectMetadata: Metadata, points: Point[]): void {
     const polyline: Polyline = <Polyline>objectMetadata.object;
-    const type: LineType = objectMetadata.object['lineType'];
+    const type: LineType = !!objectMetadata.object['lineType'] ? objectMetadata.object['lineType'] : LineType.SOLID;
     this.objects.get(polyline.id).addLineType(points, type, this.pointRadius);
     const lines: d3.selection[] = this.objects.get(polyline.id).getElements(ElementType.LINE);
     const circles: d3.selection[] = this.objects.get(polyline.id).getElements(ElementType.CIRCLE);
-
     const lineType = {
       [LineType.SOLID]: () => this.drawSolidPolyline(lines, circles, polyline),
       [LineType.DOTTED]: () => {
