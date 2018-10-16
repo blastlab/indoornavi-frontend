@@ -36,6 +36,9 @@ export class NavigationController {
 
   handleNavigation(event: MessageEvent, floorId, container, scale) {
     const args: NavigationData = event.data.args.object;
+    if (args.action === 'stop') {
+      this.stopNavigation();
+    }
     if (this.isNavigationReady) {
       if (args.action === 'update') {
         this.updatePosition(args.position);
@@ -44,8 +47,6 @@ export class NavigationController {
       this.setNavigationPath(floorId, args.location, args.destination, args.accuracy, event, container, scale);
     } else if (args.action === 'update') {
       this.setLastCoordinates(args.position);
-    } else if (args.action === 'stop') {
-      this.stopNavigation();
     }
   }
 
