@@ -1,4 +1,4 @@
-import {Point} from '../../../map-editor/map.type';
+import {Line, Point} from '../../../map-editor/map.type';
 
 export namespace APIObject {
   export interface Base {
@@ -7,6 +7,10 @@ export namespace APIObject {
 
   export interface Polyline extends Base {
     color: string;
+  }
+
+  export interface Path extends Base {
+    lines: Line[];
   }
 
   export interface Area extends Base {
@@ -49,6 +53,14 @@ export namespace APIObject {
   export interface Border {
     width: number;
     color: string;
+  }
+
+  export interface NavigationData {
+    action: string;
+    position?: Point;
+    location?: Point;
+    destination?: Point;
+    accuracy?: number;
   }
 
   export enum Position {

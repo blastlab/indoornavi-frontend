@@ -1,12 +1,13 @@
-#map-container {
+.map-container {
   overflow: hidden;
   background: #f4f4f4;
   height: 80vh;
   position: relative;
 }
 
-#map-container.public {
+.map-container.public {
   height: 95vh;
   border: none;
+  background-color: transparent;
 }
 
