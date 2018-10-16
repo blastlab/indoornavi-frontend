@@ -12,6 +12,7 @@ import Path = APIObject.Path;
 import NavigationData = APIObject.NavigationData;
 import {NavigationService} from './navigation.service';
 import {Geometry} from '../helper/geometry';
+import {Subscription} from 'rxjs/Subscription';
 
 @Injectable()
 export class NavigationController {
@@ -26,6 +27,7 @@ export class NavigationController {
   private subscriptionDestructor: Subject<void> = new Subject<void>();
   private positionChanged: Subject<Point> = new Subject<Point>();
   private lines: Line[];
+  subscriptionPathService: Subscription;
 
   constructor(
     private pathService: PathService,
@@ -35,6 +37,8 @@ export class NavigationController {
 
   handleNavigation(event: MessageEvent, floorId, container, scale) {
     const args: NavigationData = event.data.args.object;
+
+    console.log(args, 'is Navigation ready', this.isNavigationReady);
     if (this.isNavigationReady) {
       if (args.action === 'update') {
         this.updatePosition(args.position);
@@ -63,9 +67,9 @@ export class NavigationController {
       return;
     }
     this.event = event;
-    this.pathService.getPathByFloorId(floorId).takeUntil(this.subscriptionDestructor).subscribe((lines: Line[]): void => {
+    this.subscriptionPathService = this.pathService.getPathByFloorId(floorId).takeUntil(this.subscriptionDestructor).subscribe((lines: Line[]): void => {
       this.calculateNavigationPath(lines, location, destination, accuracy);
-
+      console.log('sdfsda sdafsd', this.isNavigationReady);
       this.onPositionChanged().takeUntil(this.subscriptionDestructor).subscribe((pointUpdate: Point): void => {
         this.handlePathUpdate(pointUpdate);
       });
@@ -89,6 +93,8 @@ export class NavigationController {
     if (!!this.event) {
       this.event.source.postMessage({type: 'navigation', action: 'finished'}, this.event.origin);
     }
+    this.subscriptionPathService.unsubscribe();
+    this.isNavigationReady = false;
     this.subscriptionDestructor.next();
     this.subscriptionDestructor = null;
     this.mapObjectService.removeObject(this.objectMetadata);
