@@ -13,10 +13,6 @@ export enum ElementType {
 }
 
 export class SvgGroupWrapper {
-  static customIconSize: BoxSize = {
-    width: 25,
-    height: 25
-  };
   container: d3.selection;
   private elements: Map<ElementType, d3.selection[]> = new Map();
   private textsHidden: boolean = true;
@@ -34,23 +30,12 @@ export class SvgGroupWrapper {
     this.groupDefaultColor = (colored) ? colored : 'black';
   }
 
-  addIcon2(coordinates: Point, iconCode: string, iconSizeMultiplier?: number): SvgGroupWrapper {
+  addIcon(coordinates: Point, iconCode: string, iconSizeMultiplier?: number): SvgGroupWrapper {
     if (!!iconSizeMultiplier && iconSizeMultiplier < 2 || iconSizeMultiplier > 5) {
       throw new Error('Icon size multiplier must be in range <2, 5>');
     }
 
     let element: d3.selection;
-
-    // create drag area
-    element = this.group
-      .append('circle')
-      .attr('cx', coordinates.x + 9) // move it right half icon size
-      .attr('cy', coordinates.y)
-      .attr('r', '10px')
-      .classed('dragarea', true)
-      .attr('fill', 'transparent');
-
-    this.addElement(ElementType.DRAG_AREA, element);
 
     // create icon
     element = this.group
@@ -74,43 +59,6 @@ export class SvgGroupWrapper {
     this.group
       .attr('x', coordinates.x)
       .attr('y', coordinates.y);
-    return this;
-  }
-
-  // TODO: remove if no more uses
-  addIcon(coordinates: Point, icon: string): SvgGroupWrapper {
-    let element: d3.selection;
-    element = this.group
-      .append('circle')
-      .attr('cx', coordinates.x + 12)
-      .attr('cy', coordinates.y + 12)
-      .attr('r', '10px')
-      .classed('dragarea', true)
-      .attr('fill', 'transparent');
-    this.addElement(ElementType.DRAG_AREA, element);
-    element = this.group
-      .append('svg')
-      .attr('x', coordinates.x)
-      .attr('y', coordinates.y)
-      .html(icon)
-      .attr('stroke', this.groupDefaultColor)
-      .attr('fill', this.groupDefaultColor);
-    this.addElement(ElementType.ICON, element);
-    return this;
-  }
-
-  // TODO: this should be part of MarkerOnMap class
-  addCustomIcon(coordinates: Point, image: string): SvgGroupWrapper {
-    const element: d3.selection = this.group
-      .append('svg:image')
-      .attr('xlink:href', image)
-      .attr('x', coordinates.x - SvgGroupWrapper.customIconSize.width / 2)
-      .attr('y', coordinates.y - SvgGroupWrapper.customIconSize.height)
-      .attr('width', SvgGroupWrapper.customIconSize.width)
-      .attr('height', SvgGroupWrapper.customIconSize.height)
-      .attr('stroke', 'black')
-      .attr('fill', 'black');
-    this.addElement(ElementType.IMAGE, element);
     return this;
   }
 
@@ -226,6 +174,29 @@ export class SvgGroupWrapper {
       lastPoint = point;
     });
     return this;
+  }
+
+  private setLineCurveData() {
+    return d3.line()
+      .x((points: Point) => points.x)
+      .y((points: Point) => points.y)
+      .curve(d3.curveLinear);
+  }
+
+  addDottedPolyline(points: Point[]): SvgGroupWrapper {
+    const element: d3.selection = this.group
+      .append('path')
+      .attr('d', this.setLineCurveData()(points));
+    this.addElement(ElementType.LINE, element);
+    return this;
+  }
+
+  addLineType(points: Point[], type: string, radius: number): SvgGroupWrapper {
+    const lineType = {
+      'solid': () => this.addPolyline(points, radius),
+      'dotted': () => this.addDottedPolyline(points)
+    };
+    return lineType[type]();
   }
 
   remove(): void {

@@ -1,14 +1,6 @@
 import {AfterViewInit, Component, NgZone, OnDestroy, OnInit} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
-import {
-  AreaEventMode,
-  CommandType,
-  CoordinatesSocketData,
-  CustomMessageEvent,
-  EventSocketData,
-  MeasureSocketData,
-  MeasureSocketDataType
-} from '../publication.type';
+import {AreaEventMode, CommandType, CoordinatesSocketData, CustomMessageEvent, EventSocketData, MeasureSocketData, MeasureSocketDataType} from '../publication.type';
 import {Subject} from 'rxjs/Subject';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
 import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.builder';
@@ -16,7 +8,6 @@ import {SocketService} from '../../shared/services/socket/socket.service';
 import {ActivatedRoute, Params} from '@angular/router';
 import {PublishedService} from '../publication.service';
 import {AreaService} from '../services/area/area.service';
-import {IconService} from '../../shared/services/drawing/icon.service';
 import {Geometry} from 'app/shared/utils/helper/geometry';
 import {Observable} from 'rxjs/Observable';
 import {Line, Point, Point3d} from 'app/map-editor/map.type';
@@ -41,6 +32,7 @@ import {APIObject} from '../../shared/utils/drawing/api.types';
 import {PathService} from '../services/path/path.service';
 import {Complex} from '../../complex/complex.type';
 import {ComplexService} from '../../complex/complex.service';
+import {NavigationController} from '../../shared/utils/navigation/navigation.controller';
 import Metadata = APIObject.Metadata;
 
 @Component({
@@ -72,11 +64,11 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
               private areaService: AreaService,
               private pathService: PathService,
               private translateService: TranslateService,
-              private iconService: IconService,
               private mapObjectService: ApiService,
               private complexService: ComplexService,
+              private navigationController: NavigationController,
               protected floorService: FloorService,
-              protected tagTogglerService: TagVisibilityTogglerService,
+              protected tagToggleService: TagVisibilityTogglerService,
               protected breadcrumbService: BreadcrumbService) {
 
     this.loadMapDeferred = new Deferred<boolean>();
@@ -138,7 +130,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
               this.tags.forEach((tag: Tag) => {
                 this.visibleTags.set(tag.shortId, true);
               });
-              this.tagTogglerService.setTags(tags);
+              this.tagToggleService.setTags(tags);
               if (!!floor.scale) {
                 this.drawAreas(floor.id);
                 this.initializeSocketConnection();
@@ -251,7 +243,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
     this.ngZone.runOutsideAngular((): void => {
       const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?client`);
       this.setSocketConfiguration();
-      this.tagTogglerService.onToggleTag().takeUntil(this.subscriptionDestructor).subscribe((tagToggle: TagToggle) => {
+      this.tagToggleService.onToggleTag().takeUntil(this.subscriptionDestructor).subscribe((tagToggle: TagToggle) => {
         this.socketService.send({type: CommandType[CommandType.TOGGLE_TAG], args: tagToggle.tag.shortId});
         this.visibleTags.set(tagToggle.tag.shortId, tagToggle.selected);
         if (!tagToggle.selected) {
@@ -388,6 +380,9 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
     const data = <CustomMessageEvent>event.data;
     if ('command' in data) {
       switch (data.command) {
+        case 'navigation':
+          this.navigationController.handleNavigation(event, this.floor.id, this.d3map.container, this.scale);
+          break;
         case 'toggleTagVisibility':
           const tagId = parseInt(data.args, 10);
           this.socketService.send({type: CommandType[CommandType.TOGGLE_TAG], args: tagId});

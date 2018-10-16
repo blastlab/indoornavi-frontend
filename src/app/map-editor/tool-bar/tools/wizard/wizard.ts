@@ -23,7 +23,6 @@ import {Scale, ScaleCalculations, ScaleDto} from '../scale/scale.type';
 import {Geometry} from '../../../../shared/utils/helper/geometry';
 import {Anchor} from '../../../../device/device.type';
 import {MapLoaderInformerService} from '../../../../shared/services/map-loader-informer/map-loader-informer.service';
-import {IconService} from '../../../../shared/services/drawing/icon.service';
 
 
 @Component({
@@ -56,7 +55,7 @@ export class WizardComponent implements Tool, OnInit, OnDestroy {
   private decisionMadeSubscription: Subscription;
 
   constructor(public translate: TranslateService,
-              protected iconService: IconService,
+              // protected iconService: IconService,
               private ngZone: NgZone,
               private socketService: SocketService,
               private acceptButtons: AcceptButtonsService,

@@ -5,7 +5,6 @@ import {TranslateService} from '@ngx-translate/core';
 import {SocketService} from '../../../shared/services/socket/socket.service';
 import {PublishedService} from '../../publication.service';
 import {AreaService} from '../../services/area/area.service';
-import {IconService} from '../../../shared/services/drawing/icon.service';
 import {MapLoaderInformerService} from '../../../shared/services/map-loader-informer/map-loader-informer.service';
 import {ApiService} from '../../../shared/utils/drawing/api.service';
 import {FloorService} from '../../../floor/floor.service';
@@ -22,6 +21,7 @@ import {MapSvg} from '../../../map/map.type';
 import {Geometry} from '../../../shared/utils/helper/geometry';
 import {Tag} from '../../../device/device.type';
 import {ComplexService} from '../../../complex/complex.service';
+import {NavigationController} from '../../../shared/utils/navigation/navigation.controller';
 
 
 @Component({
@@ -43,8 +43,8 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
     areaService: AreaService,
     pathService: PathService,
     translateService: TranslateService,
-    iconService: IconService,
     mapObjectService: ApiService,
+    pathDisplayService: NavigationController,
     complexService: ComplexService,
     floorService: FloorService,
     tagToggler: TagVisibilityTogglerService,
@@ -63,9 +63,9 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
       areaService,
       pathService,
       translateService,
-      iconService,
       mapObjectService,
       complexService,
+      pathDisplayService,
       floorService,
       tagToggler,
       breadcrumbService
@@ -119,7 +119,7 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
         this.tags.forEach((tag: Tag) => {
           this.visibleTags.set(tag.shortId, true);
         });
-        this.tagTogglerService.setTags(tags);
+        this.tagToggleService.setTags(tags);
         if (!!floor.scale) {
           this.drawAreas(floor.id);
           this.initializeSocketConnection();

@@ -319,4 +319,46 @@ describe('Geometry', () => {
     expect(foundPointOnPath1.x).toEqual(7);
     expect(foundPointOnPath1.y).toEqual(3);
   });
+
+  it('should return true if point is on line between two points', () => {
+    // given
+    const line: Line = {
+      startPoint: {x: 1, y: 1}, endPoint: {x: 5, y: 5}
+    };
+    const points: Point[] = [
+      {x: 3, y: 3},
+      {x: 1, y: 1},
+      {x: 2, y: 2},
+      {x: 4, y: 4}
+    ];
+
+    points.forEach(point => {
+      // when
+      const isPointOnLineBetweenTwoPoints = Geometry.isPointOnLineBetweenTwoPoints(line, point);
+      // then
+      expect(isPointOnLineBetweenTwoPoints).toBeTruthy()
+    });
+  });
+
+
+  it('should return false if point is not between two points', () => {
+    // given
+    const line: Line = {
+      startPoint: {x: 1, y: 1}, endPoint: {x: 5, y: 5}
+    };
+    const points: Point[] = [
+      {x: 7, y: 5},
+      {x: 2, y: 6},
+      {x: 6, y: 7},
+      {x: 0, y: 1}
+    ];
+
+    points.forEach(point => {
+      // when
+      const isPointOutsideTwoPointsOnLine = Geometry.isPointOnLineBetweenTwoPoints(line, point);
+      // then
+      expect(isPointOutsideTwoPointsOnLine).toBeFalsy()
+    });
+  });
+
 });
