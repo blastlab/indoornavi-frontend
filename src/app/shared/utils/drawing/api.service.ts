@@ -3,12 +3,12 @@ import {Injectable} from '@angular/core';
 import * as d3 from 'd3';
 import {Point, LineType} from '../../../map-editor/map.type';
 import {Geometry} from 'app/shared/utils/helper/geometry';
-import {IconService, NaviIcons} from '../../services/drawing/icon.service';
 import {Scale} from '../../../map-editor/tool-bar/tools/scale/scale.type';
 import {InfoWindowGroupWrapper} from './info.window';
 import {APIObject} from './api.types';
 import {ApiHelper} from './api.helper';
-import DefaultIcon = APIObject.DefaultIcon;
+import {MarkerOnMap} from '../../../map/models/marker';
+import {DrawConfiguration} from '../../../map-viewer/publication.type';
 import Metadata = APIObject.Metadata;
 import Marker = APIObject.Marker;
 import Area = APIObject.Area;
@@ -22,12 +22,12 @@ export class ApiService {
   private infoWindows: Map<number, InfoWindowGroupWrapper> = new Map();
   // TODO: standardize pointRadius for all points that will be drawn on the map
   private pointRadius: number = 5;
-  private defaultIcon: DefaultIcon = {
-    icon: NaviIcons.MARKER,
-    translation: {x: 12, y: 22}
-  };
 
-  constructor(private iconService: IconService) {
+  private static getDefaultConfiguration(objectMetadata: Metadata): DrawConfiguration {
+    return {id: `map-object-${objectMetadata.type}-${objectMetadata.object.id}`, clazz: 'map-object'};
+  }
+
+  constructor() {
   }
 
   create(): number {
@@ -71,8 +71,7 @@ export class ApiService {
         this.drawArea(objectMetadata, this.getCalculatedPoints(objectMetadata.object['points'], scale));
         break;
       case 'MARKER':
-        this.addToMapContainer(objectMetadata, container);
-        this.placeMarkerOnMap(objectMetadata, this.getCalculatedPoints([objectMetadata.object['position']], scale)[0], originMessageEvent);
+        this.placeMarkerOnMap(objectMetadata, container, this.getCalculatedPoints([objectMetadata.object['position']], scale)[0], originMessageEvent);
         break;
       case 'CIRCLE':
         this.addToMapContainer(objectMetadata, container);
@@ -86,38 +85,29 @@ export class ApiService {
     }
   }
 
-  private placeMarkerOnMap(objectMetadata: Metadata, point: Point, originMessageEvent: MessageEvent): void {
-    const element: SvgGroupWrapper = this.objects.get(objectMetadata.object.id);
+  private placeMarkerOnMap(objectMetadata: Metadata, container: d3.selection, point: Point, originMessageEvent: MessageEvent): void {
     const marker: Marker = <Marker>objectMetadata.object;
+    const markerOnMap: MarkerOnMap = new MarkerOnMap(point, container, ApiService.getDefaultConfiguration(objectMetadata));
+    markerOnMap.setId(objectMetadata.object.id);
+
     if (!!marker.icon) {
-      element.addCustomIcon(point, marker.icon).getGroup().attr('cursor', 'pointer');
-    } else {
-      element.addIcon(
-        {
-          x: point.x - this.defaultIcon.translation.x,
-          y: point.y - this.defaultIcon.translation.y
-        },
-        this.iconService.getIcon(this.defaultIcon.icon)).getGroup().attr('cursor', 'pointer');
+      markerOnMap.setIcon(marker.icon);
     }
-    marker.events.forEach((event: string): void => {
-      element.getGroup().on(event, (): void => {
-        // @ts-ignore
-        originMessageEvent.source.postMessage({type: `${event}-${marker.id}`, objectId: marker.id}, '*');
-      });
-    });
+
+    if (!!marker.events) {
+      markerOnMap.addEvents(marker.events, originMessageEvent);
+    }
+
     if (!!marker.label) {
-      element.addText(
-        {
-          x: point.x + SvgGroupWrapper.customIconSize.width / 2,
-          y: point.y - SvgGroupWrapper.customIconSize.height / 2
-        },
-        marker.label);
+      markerOnMap.addLabel(marker.label);
     }
+
+    this.objects.set(objectMetadata.object.id, markerOnMap.getGroup());
   }
 
   private addToMapContainer(objectMetadata: Metadata, container: d3.selection): void {
     this.objects.set(objectMetadata.object.id,
-      new DrawBuilder(container, {id: `map-object-${objectMetadata.type}-${objectMetadata.object.id}`, clazz: 'map-object'})
+      new DrawBuilder(container, ApiService.getDefaultConfiguration(objectMetadata))
         .createGroup());
   }
 
@@ -212,6 +202,7 @@ export class ApiService {
     });
     return points;
   }
+
 }
 
 

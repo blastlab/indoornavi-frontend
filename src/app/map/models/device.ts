@@ -90,9 +90,8 @@ export class DeviceInEditor {
     const deviceDescription = this.getDeviceDescription();
     this.svgGroupWrapper = new DrawBuilder(container, drawConfiguration).createGroup()
       .place(coordinates)
-      .addIcon2({x: 0, y: 11}, this.cursorIcon) // icon 0,0 coordinates are at the font bottom left
-      .addText({x: 0, y: 40}, deviceDescription)
-      .hideTexts();
+      .addIcon({x: 0, y: 11}, this.cursorIcon) // icon 0,0 coordinates are at the font bottom left
+      .addText({x: 0, y: 40}, deviceDescription);
   }
 
   private setDeviceAppearance(color): void {
