@@ -68,8 +68,6 @@ export class NavigationController {
     this.event = event;
     this.pathService.getPathByFloorId(floorId).takeUntil(this.subscriptionDestructor).subscribe((lines: Line[]): void => {
       this.calculateNavigationPath(lines, location, destination, accuracy);
-      this.isNavigationReady = true;
-
       this.onPositionChanged().takeUntil(this.subscriptionDestructor).subscribe((pointUpdate: Point): void => {
         this.handlePathUpdate(pointUpdate);
       });
@@ -139,19 +137,24 @@ export class NavigationController {
 
   private calculateNavigationPath(lines: Line[], location: Point, destination: Point, accuracy: number): void {
     const path: Line[] = this.navigationService.calculateDijkstraShortestPath(lines, location, destination);
-    path.reverse();
-    this.objectMetadata = {
-      object: {
-        id: Math.round(new Date().getTime() * Math.random() * 1000)
-      },
-      type: 'POLYLINE'
-    };
+    if (path.length === 0) {
+      this.isNavigationReady = true;
+      this.stopNavigation();
+    } else {
+      path.reverse();
+      this.objectMetadata = {
+        object: {
+          id: Math.round(new Date().getTime() * Math.random() * 1000)
+        },
+        type: 'POLYLINE'
+      };
 
-    this.objectMetadata.object['points'] = this.createPointPathFromLinePath(this.scale, path);
+      this.objectMetadata.object['points'] = this.createPointPathFromLinePath(this.scale, path);
 
-    this.objectMetadata.object = Object.assign((<Path>this.objectMetadata.object), {lines: path, color: '#906090', lineType: 'dotted'});
-    this.redrawPath();
-    this.isNavigationReady = true;
+      this.objectMetadata.object = Object.assign((<Path>this.objectMetadata.object), {lines: path, color: '#906090', lineType: 'dotted'});
+      this.redrawPath();
+      this.isNavigationReady = true;
+    }
   }
 
   private createPointPathFromLinePath(scale: Scale, path: Line[]): Point[] {
