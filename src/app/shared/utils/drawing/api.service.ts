@@ -44,7 +44,7 @@ export class ApiService {
   }
 
   removeObject(objectMetadata: Metadata): void {
-    if (this.objects.has(objectMetadata.object.id)) {
+    if (objectMetadata != null && this.objects.has(objectMetadata.object.id)) {
       this.objects.get(objectMetadata.object.id).remove();
       this.objects.delete(objectMetadata.object.id);
     }

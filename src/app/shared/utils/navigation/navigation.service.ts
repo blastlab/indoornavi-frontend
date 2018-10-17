@@ -95,7 +95,7 @@ export class NavigationService {
   }
 
   private searchForShortestPathInGraph(): void {
-    if (!this.cheapestVertexIndex) {
+    if (this.cheapestVertexIndex == null) {
       return;
     }
     while (this.processed.indexOf(this.endPointIndex) < 0) {
