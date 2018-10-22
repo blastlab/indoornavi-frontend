@@ -72,6 +72,7 @@ export class ApiService {
         break;
       case 'MARKER':
         this.addToMapContainer(objectMetadata, container);
+        console.log(objectMetadata.object['position']);
         this.placeMarkerOnMap(objectMetadata, this.getCalculatedPoints([objectMetadata.object['position']], scale)[0], originMessageEvent);
         break;
       case 'CIRCLE':
