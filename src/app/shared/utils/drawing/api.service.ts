@@ -67,8 +67,7 @@ export class ApiService {
         this.drawLine(objectMetadata, this.getCalculatedPoints(objectMetadata.object['points'], scale));
         break;
       case 'AREA':
-        this.addToMapContainer(objectMetadata, container);
-        this.drawArea(objectMetadata, this.getCalculatedPoints(objectMetadata.object['points'], scale));
+        this.drawArea(objectMetadata, container, this.getCalculatedPoints(objectMetadata.object['points'], scale), originMessageEvent);
         break;
       case 'MARKER':
         this.placeMarkerOnMap(objectMetadata, container, this.getCalculatedPoints([objectMetadata.object['position']], scale)[0], originMessageEvent);
@@ -116,17 +115,28 @@ export class ApiService {
       new InfoWindowGroupWrapper(container, {id: `map-object-${objectMetadata.type}-${objectMetadata.object.id}`, clazz: 'map-object'}));
   }
 
-  private drawArea(objectMetadata: Metadata, points: Point[]): void {
+  private drawArea(objectMetadata: Metadata, container: d3.selection, points: Point[], originMessageEvent: MessageEvent): void {
     const area: Area = <Area>objectMetadata.object;
-    const areaSelection: d3.selection = this.objects.get(area.id).getGroup();
-    this.objects.get(area.id).addPolygon(points);
+    let areaSelection: SvgGroupWrapper  = new DrawBuilder(container, ApiService.getDefaultConfiguration(objectMetadata)).createGroup();
+
     if (!!area.color) {
-      ApiHelper.setFillColor(areaSelection, area.color);
+      ApiHelper.setFillColor(areaSelection.getGroup(), area.color);
     }
     if (!!area.opacity) {
-      ApiHelper.setStrokeOpacity(areaSelection, area.opacity);
-      ApiHelper.setFillOpacity(areaSelection, area.opacity);
+      ApiHelper.setStrokeOpacity(areaSelection.getGroup(), area.opacity);
+      ApiHelper.setFillOpacity(areaSelection.getGroup(), area.opacity);
     }
+
+    if (!!area.events) {
+      area.events.forEach((event: string): void => {
+        areaSelection.getGroup().on(event, (): void => {
+            originMessageEvent.source.postMessage({type: `${event}-${area.id}`, objectId: area.id}, '*');
+          });
+        });
+    }
+    areaSelection.addPolygon(points);
+
+    this.objects.set(objectMetadata.object.id, areaSelection);
   }
 
   private drawLine(objectMetadata: Metadata, points: Point[]): void {
