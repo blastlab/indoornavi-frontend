@@ -25,20 +25,24 @@ export class NavigationService {
   private calculateGraphWithPathParameters(start, finish): void {
     const startPointCoordinatesOnLines: Point = Geometry.pickClosestNodeCoordinates(this.lines, start);
     const endPointCoordinatesOnLines: Point = Geometry.pickClosestNodeCoordinates(this.lines, finish);
-    this.createDijkstraVertexMatrix();
-    this.startPointIndex = this.dijkstraVertexMatrix.findIndex((vertex: Vertex): boolean => {
-      return vertex.coordinates.x === startPointCoordinatesOnLines.x && vertex.coordinates.y === startPointCoordinatesOnLines.y;
-    });
-    this.endPointIndex = this.dijkstraVertexMatrix.findIndex((vertex: Vertex): boolean => {
-      return vertex.coordinates.x === endPointCoordinatesOnLines.x && vertex.coordinates.y === endPointCoordinatesOnLines.y;
-    });
-    this.costs = {
-      [this.startPointIndex]: 0,
-      [this.endPointIndex]: Infinity
-    };
-    this.processed = [this.startPointIndex];
-    this.parents = {[this.endPointIndex]: null};
-    this.cheapestVertexIndex = this.startPointIndex;
+    if (startPointCoordinatesOnLines.x === endPointCoordinatesOnLines.x && startPointCoordinatesOnLines.y === endPointCoordinatesOnLines.y) {
+      return;
+    } else {
+      this.createDijkstraVertexMatrix();
+      this.startPointIndex = this.dijkstraVertexMatrix.findIndex((vertex: Vertex): boolean => {
+        return vertex.coordinates.x === startPointCoordinatesOnLines.x && vertex.coordinates.y === startPointCoordinatesOnLines.y;
+      });
+      this.endPointIndex = this.dijkstraVertexMatrix.findIndex((vertex: Vertex): boolean => {
+        return vertex.coordinates.x === endPointCoordinatesOnLines.x && vertex.coordinates.y === endPointCoordinatesOnLines.y;
+      });
+      this.costs = {
+        [this.startPointIndex]: 0,
+        [this.endPointIndex]: Infinity
+      };
+      this.processed = [this.startPointIndex];
+      this.parents = {[this.endPointIndex]: null};
+      this.cheapestVertexIndex = this.startPointIndex;
+    }
   }
 
   private updateVertexMatrix(vertexIndexToUpdate: number, relatedVertexIndex: number, cost: number): void {
@@ -91,6 +95,9 @@ export class NavigationService {
   }
 
   private searchForShortestPathInGraph(): void {
+    if (this.cheapestVertexIndex == null) {
+      return;
+    }
     while (this.processed.indexOf(this.endPointIndex) < 0) {
       this.dijkstraVertexMatrix[this.cheapestVertexIndex].graphs.forEach((graph: GraphRelation): void => {
         if (this.processed.indexOf(graph.vertexIndex) > -1) {
@@ -125,6 +132,9 @@ export class NavigationService {
   }
 
   private composeLinesFromParentsSchema(): Line[] {
+    if (!this.cheapestVertexIndex) {
+      return [];
+    }
     const shortestPathLine: Line[] = [];
     let actualIndexFromParents = this.endPointIndex;
     let currentStartPoint: Point;

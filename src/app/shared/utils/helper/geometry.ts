@@ -1,6 +1,7 @@
 import {Line, Point} from '../../../map-editor/map.type';
 import * as d3 from 'd3';
 import {Box} from '../drawing/drawing.builder';
+import {Scale} from '../../../map-editor/tool-bar/tools/scale/scale.type';
 
 export class Geometry {
 
@@ -262,6 +263,10 @@ export class Geometry {
     }
 
     return false;
+  }
+
+  static calculatePointInCentimeters(scale: Scale, point: Point): Point {
+    return Geometry.calculatePointPositionInCentimeters(scale.getLenInPix(), scale.getRealDistanceInCentimeters(), point);
   }
 }
 
