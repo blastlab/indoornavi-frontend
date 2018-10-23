@@ -2,6 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {TagVisibilityTogglerService} from './tag-visibility-toggler.service';
 import {Subscription} from 'rxjs/Subscription';
 import {Tag} from '../../../device/device.type';
+import {Helper} from '../../utils/helper/helper';
 
 @Component({
   selector: 'app-tag-visibility-toggler',
@@ -11,6 +12,8 @@ import {Tag} from '../../../device/device.type';
 export class TagVisibilityTogglerComponent implements OnInit, OnDestroy {
   selectedTags: Tag[];
   tags: Tag[];
+  isMobile: boolean;
+
   private tagSetSubscription: Subscription;
 
   constructor(private tagVisibilityTogglerService: TagVisibilityTogglerService) {
@@ -21,6 +24,8 @@ export class TagVisibilityTogglerComponent implements OnInit, OnDestroy {
       this.selectedTags = tags;
       this.tags = tags;
     });
+
+    this.isMobile = Helper.detectMobile();
   }
 
   ngOnDestroy(): void {
