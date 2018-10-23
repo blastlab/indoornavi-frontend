@@ -571,8 +571,9 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
 
   private getClickedAreas(areas: AreaBag[]): AreaBag[] {
     const mouseClickPosition: Array<number> = d3.mouse(this.container.node());
-    return areas.filter((area) => {
-      return Geometry.isPointWithinArea(mouseClickPosition, area);
+    const mouseClickPoint: Point = {x: mouseClickPosition[0], y: mouseClickPosition[1]};
+    return areas.filter((area: AreaBag) => {
+      return Geometry.isPointWithinArea(mouseClickPoint, area.dto);
     });
   }
 

@@ -1,6 +1,7 @@
 import {Line, Point} from '../../../map-editor/map.type';
 import * as d3 from 'd3';
 import {Box} from '../drawing/drawing.builder';
+import {Area, AreaBag} from '../../../map-editor/tool-bar/tools/area/area.type';
 
 export class Geometry {
 
@@ -259,21 +260,9 @@ export class Geometry {
     return onLine && inRange;
   }
 
-    return false;
-  }
 
-  /**
-   * Return true if the point is within the given area or false if the point is out of the given area
-   * @param {number[]} clickedPoint
-   * @param {Object} area
-   * @return {boolean}
-   */
-  static isPointWithinArea(clickedPoint, area) {
-    const areaPoints = area.dto.points;
-    const point = {
-      x: clickedPoint[0],
-      y: clickedPoint[1]
-    };
+  static isPointWithinArea(point: Point, area: Area): boolean {
+    const areaPoints = area.points;
     let inside = false;
     let intersect = false;
     let xi, yi, xj, yj = null;
