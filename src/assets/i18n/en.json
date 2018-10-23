@@ -151,6 +151,7 @@
   "floor.name": "Floor name",
   "floor.remove.success": "Floor has been removed.",
   "floor.save.success": "Floor has been saved.",
+  "follow.tag.on.map": "Follow tag on map",
   "go.to.analytics": "Go to heat map view",
   "go.to.buildings": "Go to buildings",
   "go.to.floors": "Go to floors",

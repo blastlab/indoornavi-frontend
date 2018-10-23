@@ -8,7 +8,6 @@ import {SocketService} from '../../shared/services/socket/socket.service';
 import {ActivatedRoute, Params} from '@angular/router';
 import {PublishedService} from '../publication.service';
 import {AreaService} from '../services/area/area.service';
-import {IconService} from '../../shared/services/drawing/icon.service';
 import {Geometry} from 'app/shared/utils/helper/geometry';
 import {Observable} from 'rxjs/Observable';
 import {Line, Point, Point3d} from 'app/map-editor/map.type';
@@ -65,7 +64,6 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
               private areaService: AreaService,
               private pathService: PathService,
               private translateService: TranslateService,
-              private iconService: IconService,
               private mapObjectService: ApiService,
               private complexService: ComplexService,
               private navigationController: NavigationController,

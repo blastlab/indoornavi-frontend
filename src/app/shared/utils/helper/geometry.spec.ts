@@ -14,6 +14,21 @@ const p1: Point = {x: 1, y: 1},
       p5: Point = {x: 5, y: 5},
       p6: Point = {x: 4, y: 5};
 
+const area = {
+  dto: {
+    points: [
+      {x: 966, y: 82},
+      {x: 1067, y: 160},
+      {x: 1073, y: 247},
+      {x: 1037, y: 316},
+      {x: 873, y: 308},
+      {x: 854, y: 199},
+      {x: 936, y: 135},
+      {x: 881, y: 68}
+    ]
+  }
+};
+
 describe('Geometry', () => {
   it('should return slope value', () => {
     // then
@@ -361,4 +376,39 @@ describe('Geometry', () => {
     });
   });
 
+
+  it('should return true if the point is within the area', () => {
+    // given
+    const points = [
+      { point: [886, 72] },
+      { point: [854, 199] },
+      { point: [966.5, 82.5] },
+      { point: [964, 237] }
+    ];
+
+    points.forEach((item) => {
+      // when
+      const isPointWithinArea = Geometry.isPointWithinArea(item.point, area);
+      // then
+      expect(isPointWithinArea).toBeTruthy();
+    });
+  });
+
+  it('should return false if the point is out of the area', () => {
+    // given
+    const points = [
+      { point: [0, 0] },
+      { point: [966, 82] },
+      { point: [853.5, 198.5] },
+      { point: [Infinity, -Infinity] },
+      { point: [-40, -20] }
+    ];
+
+    points.forEach((item) => {
+      // when
+      const isPointWithinArea = Geometry.isPointWithinArea(item.point, area);
+      // then
+      expect(isPointWithinArea).toBeFalsy();
+    });
+  });
 });

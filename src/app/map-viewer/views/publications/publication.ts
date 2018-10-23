@@ -5,7 +5,6 @@ import {TranslateService} from '@ngx-translate/core';
 import {SocketService} from '../../../shared/services/socket/socket.service';
 import {PublishedService} from '../../publication.service';
 import {AreaService} from '../../services/area/area.service';
-import {IconService} from '../../../shared/services/drawing/icon.service';
 import {MapLoaderInformerService} from '../../../shared/services/map-loader-informer/map-loader-informer.service';
 import {ApiService} from '../../../shared/utils/drawing/api.service';
 import {FloorService} from '../../../floor/floor.service';
@@ -32,7 +31,6 @@ export class PublishedComponent extends SocketConnectorComponent implements OnIn
               areaService: AreaService,
               pathService: PathService,
               translateService: TranslateService,
-              iconService: IconService,
               mapObjectService: ApiService,
               pathDisplayService: NavigationController,
               complexService: ComplexService,
@@ -51,7 +49,6 @@ export class PublishedComponent extends SocketConnectorComponent implements OnIn
       areaService,
       pathService,
       translateService,
-      iconService,
       mapObjectService,
       complexService,
       pathDisplayService,

@@ -14,6 +14,7 @@ export namespace APIObject {
   }
 
   export interface Area extends Base {
+    events: string[];
     color: string;
     opacity: number;
   }
