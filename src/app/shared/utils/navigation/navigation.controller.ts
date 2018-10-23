@@ -12,6 +12,7 @@ import {Geometry} from '../helper/geometry';
 import Metadata = APIObject.Metadata;
 import Path = APIObject.Path;
 import NavigationData = APIObject.NavigationData;
+import Circle = APIObject.Circle;
 
 @Injectable()
 export class NavigationController {
@@ -21,9 +22,11 @@ export class NavigationController {
   private scale: Scale;
   private destination: Point;
   private lastCoordinates: Point;
+  private accuracy: number;
   private event: MessageEvent;
-  private objectMetadata: Metadata;
-  private subscriptionDestructor: Subject<void> = new Subject<void>();
+  private objectMetadataPolyline: Metadata;
+  private objectMetadataStart: Metadata;
+  private objectMetadataFinish: Metadata;
   private positionChanged: Subject<Point> = new Subject<Point>();
   private lines: Line[];
   private stoppedBeforeIsNavigationReady: boolean = false;
@@ -57,18 +60,16 @@ export class NavigationController {
   private setNavigationPath(floorId: number, location: Point, destination: Point, accuracy: number, event: MessageEvent, container: d3.selection, scale: Scale) {
     this.container = container;
     this.destination = destination;
+    this.accuracy =  (accuracy && accuracy > 0) ? accuracy : Infinity;
     this.scale = scale;
-    if (!this.subscriptionDestructor) {
-      this.subscriptionDestructor = new Subject<void>();
-    }
     if (this.isNavigationReady) {
       this.event.source.postMessage({type: 'navigation', action: 'working'}, this.event.origin);
       return;
     }
     this.event = event;
-    this.pathService.getPathByFloorId(floorId).takeUntil(this.subscriptionDestructor).subscribe((lines: Line[]): void => {
-      this.calculateNavigationPath(lines, location, destination, accuracy);
-      this.onPositionChanged().takeUntil(this.subscriptionDestructor).subscribe((pointUpdate: Point): void => {
+    this.pathService.getPathByFloorId(floorId).subscribe((lines: Line[]): void => {
+      this.calculateNavigationPath(lines, location, destination);
+      this.onPositionChanged().subscribe((pointUpdate: Point): void => {
         this.handlePathUpdate(pointUpdate);
       });
       if (this.lastCoordinates) {
@@ -94,11 +95,14 @@ export class NavigationController {
     }
     if (this.isNavigationReady) {
       this.isNavigationReady = false;
-      this.mapObjectService.removeObject(this.objectMetadata);
-      this.subscriptionDestructor.next();
-      this.subscriptionDestructor = null;
-      this.objectMetadata = null;
+      this.mapObjectService.removeObject(this.objectMetadataPolyline);
+      this.objectMetadataPolyline = null;
+      this.mapObjectService.removeObject(this.objectMetadataStart);
+      this.objectMetadataStart = null;
+      this.mapObjectService.removeObject(this.objectMetadataFinish);
+      this.objectMetadataFinish = null;
       this.event = null;
+      this.accuracy = null;
       this.stoppedBeforeIsNavigationReady = false;
     } else {
       this.stoppedBeforeIsNavigationReady = true;
@@ -106,52 +110,86 @@ export class NavigationController {
   }
 
   private handlePathUpdate(pointUpdate: Point): void {
-    const currentPointOnPath = Geometry.findPointOnPathInGivenRange(this.objectMetadata.object['lines'], pointUpdate);
-    if (this.isDestinationAchieved(currentPointOnPath)) {
-      this.stopNavigation();
-      return;
+    const currentPointOnPath = Geometry.findPointOnPathInGivenRange(this.objectMetadataPolyline.object['lines'], pointUpdate, this.accuracy);
+    if (!!currentPointOnPath) {
+      if (this.isDestinationAchieved(currentPointOnPath)) {
+        this.stopNavigation();
+        return;
+      }
+
+      this.lines = this.objectMetadataPolyline.object['lines'];
+      const findLineIndex = this.objectMetadataPolyline.object['lines'].findIndex(line => Geometry.isPointOnLineBetweenTwoPoints(line, currentPointOnPath));
+      if (findLineIndex === -1) {
+        return;
+      }
+
+      this.lines = this.lines.slice(findLineIndex);
+      this.lines[0].startPoint = currentPointOnPath;
+
+      this.objectMetadataPolyline.object['points'] = this.createPointPathFromLinePath(this.scale, this.lines);
+      this.objectMetadataPolyline.object['lines'] = this.lines;
+      this.objectMetadataStart.object['position'] = Object.assign(
+        (<Circle>this.objectMetadataStart.object),
+        this.objectMetadataPolyline.object['points'][0]);
+      this.objectMetadataFinish.object['position'] = Object.assign(
+        (<Circle>this.objectMetadataFinish.object),
+        this.objectMetadataPolyline.object['points'][this.objectMetadataPolyline.object['points'].length - 1]);
+      this.redrawPath();
     }
-
-    this.lines = this.objectMetadata.object['lines'];
-
-    const findLineIndex = this.objectMetadata.object['lines'].findIndex(line => Geometry.isPointOnLineBetweenTwoPoints(line, currentPointOnPath));
-    if (findLineIndex === -1) {
-      return;
-    }
-
-    this.lines = this.lines.slice(findLineIndex);
-    this.lines[0].startPoint = currentPointOnPath;
-
-    this.objectMetadata.object['points'] = this.createPointPathFromLinePath(this.scale, this.lines);
-    this.redrawPath();
   }
 
   private isDestinationAchieved(pointOnPath: Point): boolean {
     const range = 0;
-    const pulledDestination: Point = Geometry.findPointOnPathInGivenRange(this.objectMetadata.object['lines'], this.destination);
+    const pulledDestination: Point = Geometry.findPointOnPathInGivenRange(this.objectMetadataPolyline.object['lines'], this.destination);
     return (pointOnPath.x >= (pulledDestination.x - range) &&
       pointOnPath.x <= (pulledDestination.x + range) &&
       pointOnPath.y >= (pulledDestination.y - range) &&
       pointOnPath.y <= (pulledDestination.y + range));
   }
 
-  private calculateNavigationPath(lines: Line[], location: Point, destination: Point, accuracy: number): void {
+  private calculateNavigationPath(lines: Line[], location: Point, destination: Point): void {
     const path: Line[] = this.navigationService.calculateDijkstraShortestPath(lines, location, destination);
     if (path.length === 0) {
       this.isNavigationReady = false;
+      this.event.source.postMessage({type: 'navigation', action: 'error'}, this.event.origin);
       this.stopNavigation();
     } else {
+      this.event.source.postMessage({type: 'navigation', action: 'created'}, this.event.origin);
       path.reverse();
-      this.objectMetadata = {
+      this.objectMetadataPolyline = {
         object: {
           id: Math.round(new Date().getTime() * Math.random() * 1000)
         },
         type: 'POLYLINE'
       };
-
-      this.objectMetadata.object['points'] = this.createPointPathFromLinePath(this.scale, path);
-
-      this.objectMetadata.object = Object.assign((<Path>this.objectMetadata.object), {lines: path, color: '#906090', lineType: 'dotted'});
+      this.objectMetadataStart = {object: {
+          id: Math.round(new Date().getTime() * Math.random() * 1000)
+        },
+        type: 'CIRCLE'
+      };
+      this.objectMetadataFinish = {object: {
+          id: Math.round(new Date().getTime() * Math.random() * 1000)
+        },
+        type: 'CIRCLE'
+      };
+      this.objectMetadataPolyline.object['points'] = this.createPointPathFromLinePath(this.scale, path);
+      this.objectMetadataPolyline.object = Object.assign(
+        (<Path>this.objectMetadataPolyline.object),
+        {lines: path, color: '#0000ff', lineType: 'dotted'});
+      this.objectMetadataStart.object['position'] = Object.assign(
+        (<Circle>this.objectMetadataStart.object),
+        this.objectMetadataPolyline.object['points'][0]);
+      this.objectMetadataStart.object = Object.assign(
+        (<Circle>this.objectMetadataStart.object), {
+        radius: 10, border: {width: 2, color: '#00ff00'}, opacity: 1, color: '#00ff00'
+      });
+      this.objectMetadataFinish.object['position'] = Object.assign(
+        (<Circle>this.objectMetadataFinish.object),
+        this.objectMetadataPolyline.object['points'][this.objectMetadataPolyline.object['points'].length - 1]);
+      this.objectMetadataFinish.object = Object.assign(
+        (<Circle>this.objectMetadataFinish.object), {
+        radius: 15, border: {width: 2, color: '#ff0000'}, opacity: 1, color: '#ff0000'
+      });
       this.redrawPath();
       this.isNavigationReady = true;
     }
@@ -159,15 +197,17 @@ export class NavigationController {
 
   private createPointPathFromLinePath(scale: Scale, path: Line[]): Point[] {
     return path.reduce((points, point) => {
-      points.push(Geometry.calculatePointInCentimeters(scale, point.startPoint));
-      points.push(Geometry.calculatePointInCentimeters(scale, point.endPoint));
+      points.push(Geometry.calculatePointPositionInCentimeters(scale.getLenInPix(), scale.getRealDistanceInCentimeters(), point.startPoint));
+      points.push(Geometry.calculatePointPositionInCentimeters(scale.getLenInPix(), scale.getRealDistanceInCentimeters(), point.endPoint));
       return points;
     }, []);
   }
 
   private redrawPath(): void {
-    if (!!this.objectMetadata) {
-      this.mapObjectService.draw(this.objectMetadata, this.scale, this.event, this.container);
+    if (!!this.objectMetadataPolyline && this.objectMetadataStart && this.objectMetadataFinish) {
+      this.mapObjectService.draw(this.objectMetadataPolyline, this.scale, this.event, this.container);
+      this.mapObjectService.draw(this.objectMetadataStart, this.scale, this.event, this.container);
+      this.mapObjectService.draw(this.objectMetadataFinish, this.scale, this.event, this.container);
     }
   }
 

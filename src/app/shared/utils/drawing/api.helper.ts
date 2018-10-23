@@ -24,9 +24,9 @@ export class ApiHelper {
   static setDottedPolyline(element: d3.selection, color: string, width: number): void {
     ApiHelper.setStrokeColor(element, color);
     ApiHelper.setStrokeWidth(element, width);
-    element.attr('stroke-dasharray', '0.1, 15');
-    element.attr('stroke-linecap', 'round')
-    element.attr('fill', 'none');
-    ApiHelper.setStrokeColor(element, '#ff0000');
+    element
+      .attr('stroke-dasharray', '0.1, 15')
+      .attr('stroke-linecap', 'round')
+      .attr('fill', 'none');
   }
 }

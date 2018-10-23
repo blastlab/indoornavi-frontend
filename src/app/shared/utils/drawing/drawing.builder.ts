@@ -22,6 +22,13 @@ export class SvgGroupWrapper {
     throw new Error(`${elementType} is null or undefined`);
   }
 
+  static setLineCurveData() {
+    return d3.line()
+      .x((points: Point) => points.x)
+      .y((points: Point) => points.y)
+      .curve(d3.curveLinear);
+  }
+
   constructor(private group: d3.selection,
               container: d3.selection,
               colored?: string) {
@@ -176,17 +183,10 @@ export class SvgGroupWrapper {
     return this;
   }
 
-  private setLineCurveData() {
-    return d3.line()
-      .x((points: Point) => points.x)
-      .y((points: Point) => points.y)
-      .curve(d3.curveLinear);
-  }
-
-  addDottedPolyline(points: Point[]): SvgGroupWrapper {
+  private addDottedPolyline(points: Point[]): SvgGroupWrapper {
     const element: d3.selection = this.group
       .append('path')
-      .attr('d', this.setLineCurveData()(points));
+      .attr('d', SvgGroupWrapper.setLineCurveData()(points));
     this.addElement(ElementType.LINE, element);
     return this;
   }
