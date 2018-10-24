@@ -1,5 +1,6 @@
 import {Geometry, NearestPoint} from './geometry';
 import {Line, Point} from '../../../map-editor/map.type';
+import {Area} from '../../../map-editor/tool-bar/tools/area/area.type';
 
 const precisionRound = (number: number, precision: number): number => {
   const factor = Math.pow(10, precision);
@@ -14,8 +15,14 @@ const p1: Point = {x: 1, y: 1},
       p5: Point = {x: 5, y: 5},
       p6: Point = {x: 4, y: 5};
 
-const area = {
-  dto: {
+const area: Area = {
+  id: null,
+  name: null,
+  configurations: [],
+  buffer: null,
+  heightMin: null,
+  heightMax: null,
+  floorId: null,
     points: [
       {x: 966, y: 82},
       {x: 1067, y: 160},
@@ -26,7 +33,6 @@ const area = {
       {x: 936, y: 135},
       {x: 881, y: 68}
     ]
-  }
 };
 
 describe('Geometry', () => {
@@ -380,10 +386,10 @@ describe('Geometry', () => {
   it('should return true if the point is within the area', () => {
     // given
     const points = [
-      { point: [886, 72] },
-      { point: [854, 199] },
-      { point: [966.5, 82.5] },
-      { point: [964, 237] }
+      {point: {x: 886, y: 72}},
+      {point: {x: 854, y: 199}},
+      {point: {x: 966.5, y: 82.5}},
+      {point: {x: 964, y: 237}}
     ];
 
     points.forEach((item) => {
@@ -397,11 +403,11 @@ describe('Geometry', () => {
   it('should return false if the point is out of the area', () => {
     // given
     const points = [
-      { point: [0, 0] },
-      { point: [966, 82] },
-      { point: [853.5, 198.5] },
-      { point: [Infinity, -Infinity] },
-      { point: [-40, -20] }
+      {point: {x: 0, y: 0}},
+      {point: {x: 966, y: 82}},
+      {point: {x: 853.5, y: 198.5}},
+      {point: {x: Infinity, y: -Infinity}},
+      {point: {x: -40, y: -20}}
     ];
 
     points.forEach((item) => {

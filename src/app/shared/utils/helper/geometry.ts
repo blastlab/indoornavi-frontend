@@ -2,6 +2,7 @@ import {Line, Point} from '../../../map-editor/map.type';
 import * as d3 from 'd3';
 import {Box} from '../drawing/drawing.builder';
 import {Scale} from '../../../map-editor/tool-bar/tools/scale/scale.type';
+import {Area, AreaBag} from '../../../map-editor/tool-bar/tools/area/area.type';
 
 export class Geometry {
 
@@ -270,12 +271,8 @@ export class Geometry {
    * @param {Object} area
    * @return {boolean}
    */
-  static isPointWithinArea(clickedPoint, area) {
-    const areaPoints = area.dto.points;
-    const point = {
-      x: clickedPoint[0],
-      y: clickedPoint[1]
-    };
+  static isPointWithinArea(point: Point, area: Area): boolean {
+    const areaPoints = area.points;
     let inside = false;
     let intersect = false;
     let xi, yi, xj, yj = null;
@@ -300,4 +297,3 @@ export interface NearestPoint {
   coordinates: Point;
   distance: number;
 }
-
