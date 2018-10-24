@@ -38,6 +38,7 @@ export class NavigationController {
   ) {}
 
   handleNavigation(event: MessageEvent, floorId, container, scale) {
+    console.log(event);
     const args: NavigationData = event.data.args.object;
     if (args.action === 'stop') {
       this.stopNavigation();
@@ -63,7 +64,7 @@ export class NavigationController {
     this.accuracy =  (accuracy && accuracy > 0) ? accuracy : Infinity;
     this.scale = scale;
     if (this.isNavigationReady) {
-      this.event.source.postMessage({type: 'navigation', action: 'working'}, this.event.origin);
+      this.event.source.postMessage({type: 'navigation', action: 'working'}, '*');
       return;
     }
     this.event = event;
@@ -91,7 +92,7 @@ export class NavigationController {
 
   private stopNavigation() {
     if (!!this.event) {
-      this.event.source.postMessage({type: 'navigation', action: 'finished'}, this.event.origin);
+      this.event.source.postMessage({type: 'navigation', action: 'finished'}, '*');
     }
     if (this.isNavigationReady) {
       this.isNavigationReady = false;
@@ -128,12 +129,10 @@ export class NavigationController {
 
       this.objectMetadataPolyline.object['points'] = this.createPointPathFromLinePath(this.scale, this.lines);
       this.objectMetadataPolyline.object['lines'] = this.lines;
-      this.objectMetadataStart.object['position'] = Object.assign(
-        (<Circle>this.objectMetadataStart.object),
-        this.objectMetadataPolyline.object['points'][0]);
-      this.objectMetadataFinish.object['position'] = Object.assign(
-        (<Circle>this.objectMetadataFinish.object),
-        this.objectMetadataPolyline.object['points'][this.objectMetadataPolyline.object['points'].length - 1]);
+      const startPointCirclePosition: Point = this.objectMetadataPolyline.object['points'][0];
+      const finishPointCirclePosition: Point = this.objectMetadataPolyline.object['points'][this.objectMetadataPolyline.object['points'].length - 1];
+      this.objectMetadataStart.object['position'] = Object.assign((<Circle>this.objectMetadataStart.object), startPointCirclePosition);
+      this.objectMetadataFinish.object['position'] = Object.assign((<Circle>this.objectMetadataFinish.object), finishPointCirclePosition);
       this.redrawPath();
     }
   }
@@ -151,10 +150,10 @@ export class NavigationController {
     const path: Line[] = this.navigationService.calculateDijkstraShortestPath(lines, location, destination);
     if (path.length === 0) {
       this.isNavigationReady = false;
-      this.event.source.postMessage({type: 'navigation', action: 'error'}, this.event.origin);
+      this.event.source.postMessage({type: 'navigation', action: 'error'},  '*');
       this.stopNavigation();
     } else {
-      this.event.source.postMessage({type: 'navigation', action: 'created'}, this.event.origin);
+      this.event.source.postMessage({type: 'navigation', action: 'created'},  '*');
       path.reverse();
       this.setNavigationMetadata(path);
       this.redrawPath();
