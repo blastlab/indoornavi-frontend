@@ -37,7 +37,6 @@ export class Anchor extends UWB {
   xInPixels?: number;
   yInPixels?: number;
   floorId?: number;
-  battery?: number;
 
   constructor(
     verified: boolean,
@@ -60,6 +59,40 @@ export class Anchor extends UWB {
     this.xInPixels = xInPixels;
     this.yInPixels = yInPixels;
     this.floorId = floorId;
+  }
+}
+
+export class AnchorBatteryStatus extends Anchor {
+  battery?: number;
+
+  constructor(
+    verified: boolean,
+    shortId: number,
+    id?: number,
+    name?: string,
+    macAddress?: string,
+    firmwareVersion?: string,
+    x?: number,
+    y?: number,
+    z?: number,
+    xInPixels?: number,
+    yInPixels?: number,
+    floorId?: number
+  ) {
+    super(
+      verified,
+      shortId,
+      id,
+      name,
+      macAddress,
+      firmwareVersion,
+      x,
+      y,
+      z,
+      xInPixels,
+      yInPixels,
+      floorId
+    )
   }
 }
 

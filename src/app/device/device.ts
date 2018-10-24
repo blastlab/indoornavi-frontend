@@ -5,7 +5,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute} from '@angular/router';
 import {DeviceService} from './device.service';
 import {CrudComponent, CrudHelper} from '../shared/components/crud/crud.component';
-import {Anchor, Device, DeviceStatus, Status, UpdateRequest, UWB} from './device.type';
+import {Anchor, AnchorBatteryStatus, Device, DeviceStatus, Status, UpdateRequest, UWB} from './device.type';
 import {NgForm} from '@angular/forms';
 import {Checkbox, ConfirmationService} from 'primeng/primeng';
 import {MessageServiceWrapper} from '../shared/services/message/message.service';
@@ -19,8 +19,8 @@ import {Md5} from 'ts-md5/dist/md5';
   encapsulation: ViewEncapsulation.None
 })
 export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
-  public verified: Anchor[] = [];
-  public notVerified: Anchor[] = [];
+  public verified: AnchorBatteryStatus[] = [];
+  public notVerified: AnchorBatteryStatus[] = [];
   public deviceType: string;
   public dialogTitle: string;
   public removeDialogTitle: string;
@@ -49,7 +49,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   private devicesWaitingForNewFirmwareVersion: DeviceStatus[] = [];
   private deviceHash: string | Int32Array;
 
-  static mokeBatteryStatus(device: Anchor): Anchor {
+  static mockBatteryStatus(device: Anchor): AnchorBatteryStatus { // TODO: delete this after web socket communication for battery status is build
     const randomNum = Math.round(Math.random());
     const randomBatteryStatus = Math.floor(Math.random() * 100);
     randomNum === 1 ? device['battery'] = randomBatteryStatus : device['battery'] = null;
@@ -106,6 +106,8 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   save(isValid: boolean): void {
+    const deviceToUpdate: UWB = Object.assign({}, this.device);
+    delete deviceToUpdate['battery'];
     if (isValid) {
       const isNew = !(!!this.device.id);
       if (!isNew && Md5.hashStr(JSON.stringify(this.device)) !== this.deviceHash) {
@@ -118,9 +120,9 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
         this.device.macAddress = null;
       }
       (!!this.device.id ?
-          this.deviceService.update(this.device)
+          this.deviceService.update(deviceToUpdate)
           :
-          this.deviceService.create(this.device)
+          this.deviceService.create(deviceToUpdate)
       ).subscribe(() => {
         if (isNew) {
           this.messageService.success('device.create.success');
@@ -170,10 +172,12 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     });
   }
 
-  onItemMoved(movedDevices: UWB[]): void {
-    movedDevices.forEach((device: UWB) => {
+  onItemMoved(movedDevices: AnchorBatteryStatus[]): void {
+    movedDevices.forEach((device: AnchorBatteryStatus) => {
       device.verified = !device.verified;
-      this.deviceService.update(device).subscribe(() => {
+      const deviceToSend: Anchor = Object.assign({}, device);
+      delete deviceToSend['battery'];
+      this.deviceService.update(deviceToSend).subscribe(() => {
         this.messageService.success('device.save.success');
       });
     });
@@ -230,6 +234,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       this.socketSubscription.unsubscribe();
       const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}info?client&${this.deviceType}`);
       this.firmwareSocketSubscription = stream.subscribe((message) => {
+        console.log(message);
         if (message.type === 'INFO') {
           (<DeviceStatus[]>message.devices).forEach((deviceStatus: DeviceStatus) => {
             if (deviceStatus.status.toString() === Status[Status.ONLINE] || deviceStatus.status.toString() === Status[Status.OFFLINE]) {
@@ -351,7 +356,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
           if (this.isAlreadyOnAnyList(device)) {
             return;
           }
-          device = DeviceComponent.mokeBatteryStatus(device);
+          device = DeviceComponent.mockBatteryStatus(device); // TODO: delete after proper communication is build
           if (device.verified) {
             this.verified.push(device);
           } else {
@@ -363,12 +368,12 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   private sendBatteryStatusRequest(): void {
-    const verifiedId: number[] = this.verified.map((device: Anchor) => {
+    const verifiedId: number[] = this.verified.map((device: AnchorBatteryStatus) => {
       if (!!device.battery) {
         return device.shortId;
       }
     });
-    const notVerifiedId: number[] = this.notVerified.map((device: Anchor) => {
+    const notVerifiedId: number[] = this.notVerified.map((device: AnchorBatteryStatus) => {
       if (!!device.battery) {
         return device.shortId;
       }

@@ -77,11 +77,11 @@
             </p-progressSpinner>
           </div>
 
-          <div *ngIf="device.battery" else batteryLoading>
+          <div *ngIf="device.battery">
             <b>{{'device.battery'|translate}}:</b>
             <p-progressBar [value]="device.battery"></p-progressBar>
           </div>
-          <div #batteryLoading>
+          <div *ngIf="!device.battery">
             <b>{{'device.battery'|translate}}:</b>
             <p-progressSpinner [style]="{width: '15px', height: '15px'}"
                                strokeWidth="8"
