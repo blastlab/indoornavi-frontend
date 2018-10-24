@@ -11,3 +11,11 @@
   background-color: transparent;
 }
 
+@media screen and (-webkit-device-pixel-ratio:0
+
+) {
+  .map-container {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+  }
+}
