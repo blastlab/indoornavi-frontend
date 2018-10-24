@@ -234,7 +234,6 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       this.socketSubscription.unsubscribe();
       const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}info?client&${this.deviceType}`);
       this.firmwareSocketSubscription = stream.subscribe((message) => {
-        console.log(message);
         if (message.type === 'INFO') {
           (<DeviceStatus[]>message.devices).forEach((deviceStatus: DeviceStatus) => {
             if (deviceStatus.status.toString() === Status[Status.ONLINE] || deviceStatus.status.toString() === Status[Status.OFFLINE]) {
@@ -266,6 +265,23 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       this.connectToRegistrationSocket();
     }
   }
+
+  sendBatteryStatusRequest(): void {
+    const noBatteryStatus: number[] = [];
+    this.verified.forEach((device: AnchorBatteryStatus) => {
+      if (!device.battery) {
+        noBatteryStatus.push(device.shortId);
+      }
+    });
+     this.notVerified.map((device: AnchorBatteryStatus) => {
+      if (!device.battery) {
+        noBatteryStatus.push(device.shortId);
+      }
+    });
+    console.log(noBatteryStatus);
+    this.socketService.send(noBatteryStatus);
+  }
+
   private updateFirmwareVersion(deviceStatus: DeviceStatus) {
     let deviceToChangeFirmware: UWB;
     const index = this.devicesWaitingForNewFirmwareVersion.findIndex((ds: DeviceStatus) => {
@@ -365,21 +381,6 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
         });
       });
     });
-  }
-
-  private sendBatteryStatusRequest(): void {
-    const verifiedId: number[] = this.verified.map((device: AnchorBatteryStatus) => {
-      if (!!device.battery) {
-        return device.shortId;
-      }
-    });
-    const notVerifiedId: number[] = this.notVerified.map((device: AnchorBatteryStatus) => {
-      if (!!device.battery) {
-        return device.shortId;
-      }
-    });
-
-    this.socketService.send(verifiedId.concat(notVerifiedId));
   }
 
 }
