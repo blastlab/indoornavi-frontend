@@ -76,6 +76,19 @@
                                animationDuration="1s">
             </p-progressSpinner>
           </div>
+
+          <div *ngIf="device.battery" else batteryLoading>
+            <b>{{'device.battery'|translate}}:</b>
+            <p-progressBar [value]="device.battery"></p-progressBar>
+          </div>
+          <div #batteryLoading>
+            <b>{{'device.battery'|translate}}:</b>
+            <p-progressSpinner [style]="{width: '15px', height: '15px'}"
+                               strokeWidth="8"
+                               fill="#EEEEEE"
+                               animationDuration="1s">
+            </p-progressSpinner>
+          </div>
         </div>
         <div *ngIf="device.floorId" class="ui-g-4 ui-md-4 ui-lg-4 device-published-details">
           <div><b>{{'device.publishedOnFloorWithId'|translate}}:</b> {{device.floorId}}</div>

@@ -87,6 +87,7 @@
   "device-placer.confirmation.body": "Warning: You're about to unset sink which has connected anchors, this will unset sink and all his anchors.",
   "device-placer.confirmation.header": "Sink unset warning",
   "device.create.success": "Device has been created",
+  "device.battery": "Battery Level",
   "device.details": "Device details",
   "device.details.bluetooth": "Bluetooth details",
   "device.details.bluetooth.add": "Add Bluetooth",

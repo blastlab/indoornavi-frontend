@@ -37,6 +37,7 @@ export class Anchor extends UWB {
   xInPixels?: number;
   yInPixels?: number;
   floorId?: number;
+  battery?: number;
 
   constructor(
     verified: boolean,

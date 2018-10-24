@@ -49,6 +49,13 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   private devicesWaitingForNewFirmwareVersion: DeviceStatus[] = [];
   private deviceHash: string | Int32Array;
 
+  static mokeBatteryStatus(device: Anchor): Anchor {
+    const randomNum = Math.round(Math.random());
+    const randomBatteryStatus = Math.floor(Math.random() * 100);
+    randomNum === 1 ? device['battery'] = randomBatteryStatus : device['battery'] = null;
+    return device;
+  }
+
   constructor(public translate: TranslateService,
               private socketService: SocketService,
               private messageService: MessageServiceWrapper,
@@ -344,6 +351,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
           if (this.isAlreadyOnAnyList(device)) {
             return;
           }
+          device = DeviceComponent.mokeBatteryStatus(device);
           if (device.verified) {
             this.verified.push(device);
           } else {
@@ -352,6 +360,21 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
         });
       });
     });
+  }
+
+  private sendBatteryStatusRequest(): void {
+    const verifiedId: number[] = this.verified.map((device: Anchor) => {
+      if (!!device.battery) {
+        return device.shortId;
+      }
+    });
+    const notVerifiedId: number[] = this.notVerified.map((device: Anchor) => {
+      if (!!device.battery) {
+        return device.shortId;
+      }
+    });
+
+    this.socketService.send(verifiedId.concat(notVerifiedId));
   }
 
 }
