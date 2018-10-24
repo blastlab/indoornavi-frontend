@@ -197,11 +197,11 @@ export class NavigationController {
       type: 'CIRCLE'
     };
     this.objectMetadataPolyline.object['points'] = this.createPointPathFromLinePath(this.scale, path);
-    this.objectMetadataPolyline.object = Object.assign((<Path>this.objectMetadataPolyline.object), {lines: path, color: '#0000ff', lineType: 'dotted'});
+    this.objectMetadataPolyline.object = Object.assign((<Path>this.objectMetadataPolyline.object), {lines: path, color: '#007FFF ', lineType: 'dotted'});
     const startPointCirclePosition: Point = this.objectMetadataPolyline.object['points'][0];
     const finishPointCirclePosition: Point = this.objectMetadataPolyline.object['points'][this.objectMetadataPolyline.object['points'].length - 1];
-    const startPointCircleFeatures: Object = {radius: 10, border: {width: 2, color: '#00ff00'}, opacity: 1, color: '#00ff00'};
-    const finishPointCircleFeatures: Object = {radius: 15, border: {width: 2, color: '#ff0000'}, opacity: 1, color: '#ff0000'};
+    const startPointCircleFeatures: Object = {radius: 10, border: {width: 2, color: '#007FFF '}, opacity: 1, color: '#007FFF '};
+    const finishPointCircleFeatures: Object = {radius: 15, border: {width: 2, color: '#007FFF '}, opacity: 1, color: '#007FFF '};
     this.objectMetadataStart.object['position'] = Object.assign((<Circle>this.objectMetadataStart.object), startPointCirclePosition);
     this.objectMetadataStart.object = Object.assign((<Circle>this.objectMetadataStart.object), startPointCircleFeatures);
     this.objectMetadataFinish.object['position'] = Object.assign((<Circle>this.objectMetadataFinish.object), finishPointCircleFeatures);
