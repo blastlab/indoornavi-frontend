@@ -122,6 +122,7 @@ export class ApiService {
     if (!!area.border) {
       ApiHelper.setStrokeColor(areaSelection.getGroup(), area.border.color);
       ApiHelper.setStrokeWidth(areaSelection.getGroup(), area.border.width);
+      ApiHelper.setRoundCorners(areaSelection.getGroup());
     }
     if (!!area.color) {
       ApiHelper.setFillColor(areaSelection.getGroup(), area.color);
