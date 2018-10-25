@@ -102,7 +102,7 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
         heightIsValid = (this.area.heightMin < this.area.heightMax && this.area.heightMin >= 0 && this.area.heightMax >= 1);
       }
       if (heightIsValid) {
-        this.area.points.length = 0;
+        this.area.pointsInPixels.length = 0;
         const selector = `${!!this.editable ? '#' + this.editable.groupWrapper.getGroup().attr('id') : '#' + AreaComponent.NEW_AREA_ID}`;
         const svgGroup = d3.select(selector);
         const pointsSelection: d3.selection = svgGroup.selectAll('circle');
@@ -163,7 +163,7 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
   }
 
   private addPoint(point: d3.selection): void {
-    this.area.points.push(
+    this.area.pointsInPixels.push(
       {
         x: parseInt(point.attr('cx'), 10) + this.shift.x,
         y: parseInt(point.attr('cy'), 10) + this.shift.y

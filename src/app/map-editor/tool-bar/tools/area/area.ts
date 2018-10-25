@@ -80,7 +80,6 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
 
       this.actionBarService.configurationLoaded().first().subscribe((configuration: Configuration): void => {
         if (!!configuration.data.areas) {
-          console.log(configuration.data);
           const configurationCopy = Helper.deepCopy(configuration);
           configurationCopy.data.areas.forEach((area: Area): void => {
             this.areas.push({
@@ -235,7 +234,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     const points: Point[] = area.pointsInPixels.map((point: Point) => {
       return Geometry.calculatePointPositionInCentimeters(this.scale.getRealDistanceInCentimeters(), this.scale.getLenInPix(), point)
     });
-    area.points = Object.assign({}, points);
+    area.points = Object.assign([], points);
     return area;
   }
 
