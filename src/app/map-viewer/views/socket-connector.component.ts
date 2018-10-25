@@ -283,7 +283,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
         const drawBuilder: DrawBuilder = new DrawBuilder(this.d3map.container, {id: `area-${area.id}`, clazz: 'area'});
         const areaOnMap = drawBuilder
           .createGroup()
-          .addPolygon(area.points);
+          .addPolygon(area.pointsInPixels);
         areaOnMap.getLastElement(ElementType.POLYGON)
           .style('opacity', Area.getCustomSettings().opacity)
           .style('fill', Area.getCustomSettings().fill);
