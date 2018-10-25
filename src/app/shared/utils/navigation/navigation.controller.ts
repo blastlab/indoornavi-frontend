@@ -38,7 +38,6 @@ export class NavigationController {
   ) {}
 
   handleNavigation(event: MessageEvent, floorId, container, scale) {
-    console.log(event);
     const args: NavigationData = event.data.args.object;
     if (args.action === 'stop') {
       this.stopNavigation();
