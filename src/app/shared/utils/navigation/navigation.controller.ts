@@ -173,6 +173,7 @@ export class NavigationController {
       this.mapObjectService.draw(this.objectMetadataPolyline, this.scale, this.event, this.container);
       this.mapObjectService.draw(this.objectMetadataStart, this.scale, this.event, this.container);
       this.mapObjectService.draw(this.objectMetadataFinish, this.scale, this.event, this.container);
+      this.event.source.postMessage({type: 'navigation', action: 'updated'},  '*');
     }
   }
 
