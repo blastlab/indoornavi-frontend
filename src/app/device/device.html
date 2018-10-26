@@ -185,3 +185,9 @@
     <button type="button" pButton icon="fa-check" (click)="displayInfoDialog=false" label="{{'ok'|translate}}"></button>
   </p-footer>
 </p-dialog>
+
+
+<p-dialog header="{{'information.important'|translate}}" [(visible)]="displayTerminalWindow" modal="modal" [responsive]="true" [width]="350"
+          [minWidth]="200">
+  <p-terminal welcomeMessage="Welcome to Indoor Navi terminal window" prompt="Navi $"></p-terminal>'
+</p-dialog>

@@ -117,7 +117,7 @@ export class ApiService {
 
   private drawArea(objectMetadata: Metadata, container: d3.selection, points: Point[], originMessageEvent: MessageEvent): void {
     const area: Area = <Area>objectMetadata.object;
-    let areaSelection: SvgGroupWrapper  = new DrawBuilder(container, ApiService.getDefaultConfiguration(objectMetadata)).createGroup();
+    const areaSelection: SvgGroupWrapper  = new DrawBuilder(container, ApiService.getDefaultConfiguration(objectMetadata)).createGroup();
 
     if (!!area.color) {
       ApiHelper.setFillColor(areaSelection.getGroup(), area.color);

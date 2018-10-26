@@ -28,6 +28,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   public deletePermission: string;
   public editPermission: string;
   public displayDialog: boolean = false;
+  public displayTerminalWindow = false;
   public device: UWB;
   public updateMode: boolean = false;
   public devicesToUpdate: UWB[] = [];
