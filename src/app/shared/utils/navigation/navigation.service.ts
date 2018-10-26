@@ -23,9 +23,13 @@ export class NavigationService {
   }
 
   private calculateGraphWithPathParameters(start, finish): void {
+    if (this.lines.length === 0) {
+      return;
+    }
     const startPointCoordinatesOnLines: Point = Geometry.pickClosestNodeCoordinates(this.lines, start);
     const endPointCoordinatesOnLines: Point = Geometry.pickClosestNodeCoordinates(this.lines, finish);
-    if (startPointCoordinatesOnLines.x === endPointCoordinatesOnLines.x && startPointCoordinatesOnLines.y === endPointCoordinatesOnLines.y) {
+    const isSamePoint: boolean = startPointCoordinatesOnLines.x === endPointCoordinatesOnLines.x && startPointCoordinatesOnLines.y === endPointCoordinatesOnLines.y;
+    if (isSamePoint) {
       return;
     } else {
       this.createDijkstraVertexMatrix();

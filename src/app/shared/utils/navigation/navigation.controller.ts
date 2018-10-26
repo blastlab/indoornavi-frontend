@@ -72,7 +72,7 @@ export class NavigationController {
       this.onPositionChanged().subscribe((pointUpdate: Point): void => {
         this.handlePathUpdate(pointUpdate);
       });
-      if (this.lastCoordinates) {
+      if (this.lastCoordinates && this.isNavigationReady) {
         this.updatePosition(this.lastCoordinates);
       }
       if (this.stoppedBeforeIsNavigationReady) {
