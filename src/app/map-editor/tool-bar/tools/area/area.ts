@@ -232,7 +232,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
 
   private setPointsRealDimensionsInCentimeters(area: Area): Area {
     const points: Point[] = area.pointsInPixels.map((point: Point) => {
-      return Geometry.calculatePointPositionInCentimeters(this.scale.getRealDistanceInCentimeters(), this.scale.getLenInPix(), point)
+      return Geometry.calculatePointPositionInCentimeters(this.scale.getDistanceInPixels(), this.scale.getRealDistanceInCentimeters(), point)
     });
     area.points = Object.assign([], points);
     return area;
