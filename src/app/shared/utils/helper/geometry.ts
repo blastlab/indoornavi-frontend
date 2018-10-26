@@ -48,11 +48,11 @@ export class Geometry {
   }
 
   static calculateDistanceInPixels(lengthInPixels: number, lengthInCentimeters: number, realDistance: number): number {
-    return lengthInPixels / lengthInCentimeters * realDistance;
+    return (lengthInPixels / lengthInCentimeters) * realDistance;
   }
 
   static calculateDistanceInCentimeters(lengthInPixels: number, lengthInCentimeters: number, pixelDistance: number): number {
-    return lengthInCentimeters / lengthInPixels * pixelDistance;
+    return (lengthInCentimeters / lengthInPixels) * pixelDistance;
   }
 
   static calculatePointPositionInPixels(lengthInPixels: number, lengthInCentimeters: number, point: Point): Point {
