@@ -54,7 +54,7 @@ import {
   PanelMenuModule,
   RadioButtonModule,
   SidebarModule,
-  SliderModule,
+  SliderModule, TerminalModule,
   ToolbarModule,
   TooltipModule
 } from 'primeng/primeng';
@@ -124,6 +124,7 @@ import {TagFollowerComponent} from './map-viewer/views/tagfollower/tag-follower'
 import {NavigationService} from './shared/utils/navigation/navigation.service';
 import {NavigationController} from './shared/utils/navigation/navigation.controller';
 import {TerminalService} from 'primeng/components/terminal/terminalservice';
+import {PanelModule} from 'primeng/components/panel/panel';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -227,7 +228,9 @@ export function HttpLoaderFactory(http: Http) {
     FileUploadModule,
     RadioButtonModule,
     InputMaskModule,
-    SelectButtonModule
+    SelectButtonModule,
+    TerminalModule,
+    PanelModule
   ],
   providers: [
     BuildingService,

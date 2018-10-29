@@ -1,5 +1,5 @@
 import {Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild, ViewChildren, ViewEncapsulation} from '@angular/core';
-import {Subscription} from 'rxjs/Rx';
+import {Subject, Subscription} from 'rxjs/Rx';
 import {Config} from '../../config';
 import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute} from '@angular/router';
@@ -12,6 +12,7 @@ import {MessageServiceWrapper} from '../shared/services/message/message.service'
 import {SocketService} from '../shared/services/socket/socket.service';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
 import {Md5} from 'ts-md5/dist/md5';
+import {TerminalService} from 'primeng/components/terminal/terminalservice';
 
 @Component({
   templateUrl: './device.html',
@@ -29,6 +30,9 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   public editPermission: string;
   public displayDialog: boolean = false;
   public displayTerminalWindow = false;
+  public terminalWelcomeMessage: string;
+  public terminalResponseMessage: string = '';
+  public terminalActiveDeviceId: number = 0;
   public device: UWB;
   public updateMode: boolean = false;
   public devicesToUpdate: UWB[] = [];
@@ -46,7 +50,9 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   private firmwareSocketSubscription: Subscription;
   private confirmBodyTranslate: Subscription;
   private uploadBodyTranslate: Subscription;
+  private subscriptionDestructor: Subject<void> = new Subject<void>();
   private confirmBody: string;
+  private terminalSuperUser: boolean = false;
   private devicesWaitingForNewFirmwareVersion: DeviceStatus[] = [];
   private deviceHash: string | Int32Array;
 
@@ -57,7 +63,9 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
               private route: ActivatedRoute,
               private deviceService: DeviceService,
               private confirmationService: ConfirmationService,
-              private breadcrumbService: BreadcrumbService) {
+              private breadcrumbService: BreadcrumbService,
+              private terminalService: TerminalService
+  ) {
   }
 
   ngOnInit() {
@@ -76,12 +84,18 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     this.translate.get(`device.details.${this.deviceType}.remove`).subscribe((value: string) => {
       this.removeDialogTitle = value;
     });
+    this.translate.get('device.terminal.welcome').first().subscribe((value: string) => {
+      this.terminalWelcomeMessage = value;
+    });
     this.ngZone.runOutsideAngular(() => {
       this.connectToRegistrationSocket();
     });
+    this.setTerminalCommandHandler();
   }
 
   ngOnDestroy() {
+    this.subscriptionDestructor.next();
+    this.subscriptionDestructor = null;
     if (this.socketSubscription) {
       this.socketSubscription.unsubscribe();
     }
@@ -255,6 +269,47 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       this.connectToRegistrationSocket();
     }
   }
+
+  terminal(device: UWB): void {
+    this.terminalActiveDeviceId = device.shortId;
+    this.displayTerminalWindow = !this.displayTerminalWindow;
+  }
+
+  private setTerminalCommandHandler(): void {
+    this.terminalService.commandHandler.takeUntil(this.subscriptionDestructor).subscribe(command => {
+      let responseMessage: string;
+      let responseData: string;
+      switch (command.toLowerCase()) {
+        case 'su':
+          responseMessage = 'terminal.response.superUser';
+          responseData = '';
+          this.terminalSuperUser = true;
+          this.sendResponseToTermianl(responseMessage, responseData);
+          break;
+        case 'help':
+          responseMessage = 'terminal.response.commands';
+          responseData = 'help, fuckOff, fuckOn, fuckRandom';
+          this.sendResponseToTermianl(responseMessage, responseData);
+          break;
+        case 'exit':
+          this.terminalSuperUser = false;
+          this.displayTerminalWindow = !this.displayTerminalWindow;
+          break;
+        default:
+          responseMessage = 'terminal.response.wrong.command';
+          responseData = '';
+          this.sendResponseToTermianl(responseMessage, responseData);
+      }
+    });
+  }
+
+  private sendResponseToTermianl(responseMessage: string, responseData: string): void {
+    this.translate.get(responseMessage).first().subscribe((message: string) => {
+      const value = `${message} ${responseData}`;
+      this.terminalService.sendResponse(value);
+    });
+  }
+
   private updateFirmwareVersion(deviceStatus: DeviceStatus) {
     let deviceToChangeFirmware: UWB;
     const index = this.devicesWaitingForNewFirmwareVersion.findIndex((ds: DeviceStatus) => {

@@ -91,6 +91,13 @@
             [disabled]="updateMode"
             pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(device)" icon="fa-trash" class="ui-button-danger">
           </button>
+          <button pButton class="ui-button-secondary"
+                  id="terminal" [appHasPermission]="editPermission"
+                  (click)="terminal(device)"
+                  [ngClass]="{'ui-state-active': displayTerminalWindow, 'ui-state-default': !displayTerminalWindow}"
+                  pTooltip="{{'device.terminal'|translate}}"
+                  icon="fa-terminal" iconPos="left">
+          </button>
           <p-checkbox #updateCheckbox *ngIf="updateMode && devicesUpdating.length === 0" name="deviceToUpdate" id="{{device.shortId}}" [value]="device" (onChange)="checkAllSelected()"
                       [(ngModel)]="devicesToUpdate" [disabled]="true">
           </p-checkbox>
@@ -187,7 +194,9 @@
 </p-dialog>
 
 
-<p-dialog header="{{'information.important'|translate}}" [(visible)]="displayTerminalWindow" modal="modal" [responsive]="true" [width]="350"
-          [minWidth]="200">
-  <p-terminal welcomeMessage="Welcome to Indoor Navi terminal window" prompt="Navi $"></p-terminal>'
+<p-dialog header="$ {{'device.terminal'|translate}}" [(visible)]="displayTerminalWindow" modal="modal" [responsive]="true" [width]="800"
+          [minWidth]="400">
+  <p-panel header="{{'device.terminal.device.replay'|translate}}" [style]="{width: '100%', height: '200px'}">
+    {{terminalResponseMessage}}</p-panel>
+  <p-terminal welcomeMessage="{{terminalWelcomeMessage}}" prompt="Device Id: {{terminalActiveDeviceId}} $"></p-terminal>
 </p-dialog>
