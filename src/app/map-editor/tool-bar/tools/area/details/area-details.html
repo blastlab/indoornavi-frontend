@@ -1,6 +1,13 @@
 <app-tool-details #toolDetails>
   <form #areaDetailsForm="ngForm" novalidate>
     <div class="ui-g">
+      <div class="ui-g-1" *ngIf="areaId">
+        <span class="ui-float-label">
+          <input pInputText name="areaId"
+                 [(ngModel)]="areaId" [disabled]="true" />
+          <label for="heightMin">{{'Area id:'|translate}}</label>
+        </span>
+      </div>
       <div class="ui-g-2">
         <span class="ui-float-label">
           <input pInputText name="name" id="name" type="text"
@@ -66,7 +73,7 @@
           </div>
         </div>
       </div>
-      <div class="ui-g-1 ui-g-offset-1">
+      <div class="ui-g-1" [ngClass]="{'ui-g-offset-1': !areaId}">
         <div class="ui-toolbar-group-right">
           <button id="reject-decision"
                   pButton class="ui-button-danger"
