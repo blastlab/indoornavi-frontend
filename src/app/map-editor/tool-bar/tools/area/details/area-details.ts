@@ -95,7 +95,11 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
   confirm(formIsValid: boolean): void {
     if (formIsValid) {
       let heightIsValid = true;
-      if (!this.area.heightMax || !this.area.heightMin) { // check if height values are set, if not or deleted than send null
+
+      const isSetAreaHeightMax = !this.area.heightMax && this.area.heightMax >= 1;
+      const isSetAreaHeightMin = !this.area.heightMin && this.area.heightMin < 0;
+
+      if (isSetAreaHeightMax || isSetAreaHeightMin) { // check if height values are set, if not or deleted than send null
         this.area.heightMax = null;
         this.area.heightMin = null;
       } else {
