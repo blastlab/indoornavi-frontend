@@ -15,6 +15,22 @@
   font-size: 0.8em;
 }
 
+.terminal-response {
+  width: 100%;
+  height: 500px;
+  max-height: 600px;
+  overflow: scroll;
+  color: #008800;
+}
+
+.terminal-super-active {
+  color: #880000;
+}
+
+.terminal-super-deactivated {
+  color: #000;
+}
+
 #hint {
   font-size: 0.8em;
 }

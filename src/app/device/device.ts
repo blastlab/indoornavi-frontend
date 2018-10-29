@@ -31,7 +31,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   public displayDialog: boolean = false;
   public displayTerminalWindow = false;
   public terminalWelcomeMessage: string;
-  public terminalResponseMessage: string = '';
+  public terminalResponseMessage: string[] = [];
   public terminalActiveDeviceId: number = 0;
   public device: UWB;
   public updateMode: boolean = false;
@@ -39,6 +39,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   public devicesUpdating: UWB[] = [];
   public allSelected: boolean = false;
   public displayInfoDialog: boolean = false;
+  public terminalSuperUser: boolean = false;
   @ViewChildren('updateCheckbox') public deviceCheckboxes: Checkbox[];
   @ViewChild('firmwareInput') public firmwareInput: ElementRef;
   @ViewChild('firmwareButton') public firmwareButton: ElementRef;
@@ -52,9 +53,13 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   private uploadBodyTranslate: Subscription;
   private subscriptionDestructor: Subject<void> = new Subject<void>();
   private confirmBody: string;
-  private terminalSuperUser: boolean = false;
   private devicesWaitingForNewFirmwareVersion: DeviceStatus[] = [];
   private deviceHash: string | Int32Array;
+  private terminalPause: boolean = false;
+  private availableCommands: string[];
+  private connectedToWebSocket: boolean = false;
+  private usedCommands: string[] = [];
+  private terminalComponent: Element;
 
   constructor(public translate: TranslateService,
               private socketService: SocketService,
@@ -69,6 +74,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   ngOnInit() {
+    this.setCommands();
     this.deviceType = this.route.snapshot.routeConfig.path;
     this.setPermissions();
     this.translate.setDefaultLang('en');
@@ -91,6 +97,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       this.connectToRegistrationSocket();
     });
     this.setTerminalCommandHandler();
+    this.listenToTerminalKeyDown();
   }
 
   ngOnDestroy() {
@@ -273,37 +280,141 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   terminal(device: UWB): void {
     this.terminalActiveDeviceId = device.shortId;
     this.displayTerminalWindow = !this.displayTerminalWindow;
+    this.terminalSuperUser = false;
+    this.connectedToWebSocket = false;
+    this.terminalComponent = null;
+    this.clearTerminal();
+    this.fakeWebSocket();
+    this.listenToTerminalKeyDown();
   }
 
-  private setTerminalCommandHandler(): void {
-    this.terminalService.commandHandler.takeUntil(this.subscriptionDestructor).subscribe(command => {
-      let responseMessage: string;
-      let responseData: string;
-      switch (command.toLowerCase()) {
-        case 'su':
-          responseMessage = 'terminal.response.superUser';
-          responseData = '';
-          this.terminalSuperUser = true;
-          this.sendResponseToTermianl(responseMessage, responseData);
-          break;
-        case 'help':
-          responseMessage = 'terminal.response.commands';
-          responseData = 'help, fuckOff, fuckOn, fuckRandom';
-          this.sendResponseToTermianl(responseMessage, responseData);
-          break;
-        case 'exit':
-          this.terminalSuperUser = false;
-          this.displayTerminalWindow = !this.displayTerminalWindow;
-          break;
-        default:
-          responseMessage = 'terminal.response.wrong.command';
-          responseData = '';
-          this.sendResponseToTermianl(responseMessage, responseData);
+  private clearTerminal(): void {
+    const components: Element[] = [].slice.call(document.getElementsByClassName('ui-terminal-command'));
+    components.forEach((element: Element) => {
+      const elementFather: Node = element.parentNode;
+      while (elementFather.firstChild) {
+        elementFather.removeChild(elementFather.firstChild);
       }
     });
   }
 
-  private sendResponseToTermianl(responseMessage: string, responseData: string): void {
+  private fakeWebSocket(): void {
+    this.terminalResponseMessage = [];
+    this.terminalResponseMessage.push('CONNECTING TO DEVICE...');
+    let counter = 0;
+    const looper = () => setTimeout(() => {
+      if (!this.terminalPause) {
+        counter++;
+        this.terminalResponseMessage.push(`Information from ${counter}`);
+        if (this.terminalResponseMessage.length > 1000) {
+          this.terminalResponseMessage.splice(0, 1);
+        }
+        const element = document.getElementById('informationWindow');
+        element.scrollTop = element.scrollHeight;
+      }
+      if (this.connectedToWebSocket) {
+        looper();
+      }
+    }, 250);
+    setTimeout(() => {
+      this.terminalResponseMessage.push('CONNECTED');
+      this.connectedToWebSocket = true;
+      looper();
+    }, 3000);
+  }
+
+  private setTerminalCommandHandler(): void {
+    this.terminalService.commandHandler.takeUntil(this.subscriptionDestructor).subscribe(command => {
+      let responseMessage = '';
+      let responseData = '';
+      switch (command.toLowerCase()) {
+        case 'su':
+          responseMessage = 'terminal.response.superUser.on';
+          this.terminalSuperUser = true;
+          this.sendResponseToTerminal(responseMessage, responseData);
+          break;
+        case 'help':
+          responseMessage = 'terminal.response.commands';
+          responseData = 'help, fuckOff, fuckOn, fuckRandom';
+          break;
+        case 'exit':
+          if (this.terminalSuperUser) {
+            this.terminalSuperUser = false;
+            responseMessage = 'terminal.response.superUser.off';
+          } else {
+            this.displayTerminalWindow = false;
+            this.connectedToWebSocket = false;
+            this.removeTerminalKeyDownListener();
+          }
+          break;
+        case 'pause':
+          this.terminalPause = true;
+          responseMessage = 'terminal.window.pause';
+          responseData = 'off';
+          break;
+        case 'resume':
+          this.terminalPause = false;
+          responseMessage = 'terminal.window.pause';
+          responseData = 'on';
+          break;
+        case 'clear':
+          responseMessage = 'terminal.clear';
+          this.clearTerminal();
+          break;
+        default:
+          if (this.checkCommandExists(command)) {
+            responseMessage = 'terminal.command.sent.to.device';
+            this.handleDeviceCommand(command);
+          } else {
+            responseMessage = 'terminal.response.wrong.command';
+          }
+      }
+      if (!this.terminalSuperUser && this.displayTerminalWindow) {
+        this.sendResponseToTerminal(responseMessage, responseData);
+      }
+    });
+  }
+
+  private listenToTerminalKeyDown(): void {
+    this.terminalComponent = [].slice.call(document.getElementsByClassName('ui-terminal-input'))[0];
+    this.terminalComponent.addEventListener('keydown', this.handleKeyDown);
+  }
+
+  private removeTerminalKeyDownListener(): void {
+    this.terminalComponent.removeEventListener('keydown', this.handleKeyDown);
+    this.terminalComponent = null;
+  }
+
+  private handleKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'ArrowUp') {
+      console.log('key up');
+    } else if (event.key === 'ArrowDown') {
+      console.log('key down');
+    }
+  }
+
+  private setCommands(): void {
+    this.availableCommands = [
+      'set',
+      'add',
+      'remove',
+      'update',
+      'connect'
+    ];
+  }
+
+  private handleDeviceCommand(command: string): void {
+    this.usedCommands.push(command);
+    console.log(`Sending * ${command} * over web socket to * ${this.terminalActiveDeviceId} *`)
+  }
+
+  private checkCommandExists(command: string): boolean {
+    const commandSplit: string[] = command.split(' ');
+    const commandIndex = this.availableCommands.indexOf(commandSplit[0]);
+    return commandIndex > -1;
+  }
+
+  private sendResponseToTerminal(responseMessage: string, responseData: string): void {
     this.translate.get(responseMessage).first().subscribe((message: string) => {
       const value = `${message} ${responseData}`;
       this.terminalService.sendResponse(value);

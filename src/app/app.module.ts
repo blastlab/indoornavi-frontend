@@ -54,7 +54,8 @@ import {
   PanelMenuModule,
   RadioButtonModule,
   SidebarModule,
-  SliderModule, TerminalModule,
+  SliderModule,
+  TerminalModule,
   ToolbarModule,
   TooltipModule
 } from 'primeng/primeng';
