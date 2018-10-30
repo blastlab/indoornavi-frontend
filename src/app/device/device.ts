@@ -61,6 +61,8 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   private usedCommands: string[] = [];
   private terminalComponent: Element;
   private commandIndex: number;
+  private activeCommand: string;
+  private menuCommands: string[] = ['help, su', 'exit', 'pause', 'resume', 'clear', 'use'];
 
   constructor(public translate: TranslateService,
               private socketService: SocketService,
@@ -285,6 +287,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     this.terminalSuperUser = false;
     this.connectedToWebSocket = false;
     this.terminalComponent = null;
+    this.activeCommand = null;
     this.clearTerminal();
     this.fakeWebSocket();
   }
@@ -336,7 +339,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
           break;
         case 'help':
           responseMessage = 'terminal.response.commands';
-          responseData = 'help, fuckOff, fuckOn, fuckRandom';
+          responseData = this.menuCommands.join(', ') + this.availableCommands.join(', ');
           break;
         case 'exit':
           if (this.terminalSuperUser) {
@@ -360,6 +363,15 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
         case 'clear':
           responseMessage = 'terminal.clear';
           this.clearTerminal();
+          break;
+        case 'use':
+          if (!!this.activeCommand) {
+            responseMessage = 'terminal.command.sent.to.device';
+            this.handleDeviceCommand(this.activeCommand);
+            this.activeCommand = null;
+          } else {
+            responseMessage = 'terminal.not.active.command';
+          }
           break;
         default:
           if (this.checkCommandExists(command)) {
@@ -399,10 +411,12 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   private insertCommandToTerminal(command: string): void {
-    this.terminalService.sendResponse(`Last used command: ${command}`);
+    this.activeCommand = command;
+    this.sendResponseToTerminal('terminal.active.command', command);
   }
 
   private setCommands(): void {
+    // collect available commands from back end
     this.availableCommands = [
       'set',
       'add',
