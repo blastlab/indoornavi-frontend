@@ -66,7 +66,6 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
       }
     });
     this.areaDetailsService.onSet().subscribe((area: AreaBag): void => {
-      area.dto.id = null;
       this.areaId = area.dto.id;
       this.area = Helper.deepCopy(area.dto);
       this.editable = area.editable;
