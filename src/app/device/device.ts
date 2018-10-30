@@ -60,6 +60,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   private connectedToWebSocket: boolean = false;
   private usedCommands: string[] = [];
   private terminalComponent: Element;
+  private commandIndex: number;
 
   constructor(public translate: TranslateService,
               private socketService: SocketService,
@@ -118,6 +119,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     if (this.firmwareSocketSubscription) {
       this.firmwareSocketSubscription.unsubscribe();
     }
+    this.removeTerminalKeyDownListener();
   }
 
   save(isValid: boolean): void {
@@ -285,7 +287,6 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     this.terminalComponent = null;
     this.clearTerminal();
     this.fakeWebSocket();
-    this.listenToTerminalKeyDown();
   }
 
   private clearTerminal(): void {
@@ -344,7 +345,6 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
           } else {
             this.displayTerminalWindow = false;
             this.connectedToWebSocket = false;
-            this.removeTerminalKeyDownListener();
           }
           break;
         case 'pause':
@@ -377,20 +377,29 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
 
   private listenToTerminalKeyDown(): void {
     this.terminalComponent = [].slice.call(document.getElementsByClassName('ui-terminal-input'))[0];
-    this.terminalComponent.addEventListener('keydown', this.handleKeyDown);
+    this.terminalComponent.addEventListener('keyup', this.handleKeyDown.bind(this), false);
   }
 
   private removeTerminalKeyDownListener(): void {
-    this.terminalComponent.removeEventListener('keydown', this.handleKeyDown);
+    this.terminalComponent.removeEventListener('keyup', this.handleKeyDown.bind(this), false);
     this.terminalComponent = null;
   }
 
   private handleKeyDown(event: KeyboardEvent): void {
-    if (event.key === 'ArrowUp') {
-      console.log('key up');
-    } else if (event.key === 'ArrowDown') {
-      console.log('key down');
+    if (this.commandIndex === null || this.commandIndex === undefined) {
+      return;
     }
+    if (event.keyCode === 38 && this.commandIndex > 0) {
+      this.insertCommandToTerminal(this.usedCommands[--this.commandIndex])
+    } else if (event.keyCode === 40 && this.commandIndex < this.usedCommands.length - 1) {
+      this.insertCommandToTerminal(this.usedCommands[++this.commandIndex])
+    } else if (event.keyCode === 38 || event.keyCode === 40) {
+      this.insertCommandToTerminal(this.usedCommands[this.commandIndex]);
+    }
+  }
+
+  private insertCommandToTerminal(command: string): void {
+    this.terminalService.sendResponse(`Last used command: ${command}`);
   }
 
   private setCommands(): void {
@@ -405,7 +414,11 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
 
   private handleDeviceCommand(command: string): void {
     this.usedCommands.push(command);
-    console.log(`Sending * ${command} * over web socket to * ${this.terminalActiveDeviceId} *`)
+    this.commandIndex = this.usedCommands.length;
+    if (this.usedCommands.length > 100) {
+      this.usedCommands.splice(0, 1);
+    }
+    console.log(`Sending * ${command} * over web socket to * ${this.terminalActiveDeviceId} *`);
   }
 
   private checkCommandExists(command: string): boolean {
