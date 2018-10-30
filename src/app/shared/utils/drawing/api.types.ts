@@ -63,6 +63,9 @@ export namespace APIObject {
     location?: Point;
     destination?: Point;
     accuracy?: number;
+    navigationPoint?: Metadata;
+    pathColor?: string;
+    state?: boolean;
   }
 
   export enum Position {
