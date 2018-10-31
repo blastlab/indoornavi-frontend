@@ -47,6 +47,7 @@ export class NavigationController {
         this.updatePosition(args.position);
       }
     } else if (args.action === 'start') {
+      this.stoppedBeforeIsNavigationReady = false;
       this.setNavigationPath(floorId, args.location, args.destination, args.accuracy, event, container, scale);
     } else if (args.action === 'update') {
       this.setLastCoordinates(args.position);
