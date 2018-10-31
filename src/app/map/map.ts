@@ -7,7 +7,6 @@ import {ActivatedRoute, Data} from '@angular/router';
 import {MapClickService} from '../shared/services/map-click/map-click.service';
 import * as d3 from 'd3';
 import {DevicePlacerService} from '../map-editor/tool-bar/tools/device-placer/device-placer.service';
-import {Helper} from '../shared/utils/helper/helper';
 
 @Component({
   selector: 'app-map',
@@ -17,7 +16,6 @@ import {Helper} from '../shared/utils/helper/helper';
 export class MapComponent implements OnInit {
   @Input() floor: Floor;
   public isPublic: boolean = false;
-  public isMobile: boolean = false;
   private imageLoaded: boolean = false;
 
   constructor(private mapLoaderInformer: MapLoaderInformerService,
@@ -40,8 +38,6 @@ export class MapComponent implements OnInit {
         this.applyOnTouchesListener(mapSvg);
       }
     });
-
-
   }
 
   droppedObject(event) {
