@@ -59,6 +59,7 @@ export class NavigationController {
         }
         break;
       case 'start':
+        this.stoppedBeforeIsNavigationReady = false;
         this.setNavigationPath(floorId, args.location, args.destination, args.accuracy, event, container, scale);
         break;
       case 'disableStart':
