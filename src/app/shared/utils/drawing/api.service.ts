@@ -119,11 +119,15 @@ export class ApiService {
     const area: Area = <Area>objectMetadata.object;
     let areaSelection: SvgGroupWrapper  = new DrawBuilder(container, ApiService.getDefaultConfiguration(objectMetadata)).createGroup();
 
+    if (!!area.border) {
+      ApiHelper.setStrokeColor(areaSelection.getGroup(), area.border.color);
+      ApiHelper.setStrokeWidth(areaSelection.getGroup(), area.border.width);
+      ApiHelper.setRoundCorners(areaSelection.getGroup());
+    }
     if (!!area.color) {
       ApiHelper.setFillColor(areaSelection.getGroup(), area.color);
     }
     if (!!area.opacity) {
-      ApiHelper.setStrokeOpacity(areaSelection.getGroup(), area.opacity);
       ApiHelper.setFillOpacity(areaSelection.getGroup(), area.opacity);
     }
 

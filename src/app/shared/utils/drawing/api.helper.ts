@@ -29,4 +29,8 @@ export class ApiHelper {
       .attr('stroke-linecap', 'round')
       .attr('fill', 'none');
   }
+
+  static setRoundCorners(element: d3.selection): void {
+    element.attr('stroke-linejoin', 'round');
+  }
 }

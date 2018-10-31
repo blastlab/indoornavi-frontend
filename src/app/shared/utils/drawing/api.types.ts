@@ -17,6 +17,7 @@ export namespace APIObject {
     events: string[];
     color: string;
     opacity: number;
+    border: Border;
   }
 
   export interface Circle extends Base {
