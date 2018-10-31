@@ -63,6 +63,9 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   private commandIndex: number;
   private activeCommand: string;
   private menuCommands: string[] = ['help, su', 'exit', 'freeze', 'unfreeze', 'clear', 'use'];
+  private scrolledTop: boolean = true;
+  private terminalResponseWindow: Element;
+  private terminalResponseWindowHeight: number;
 
   constructor(public translate: TranslateService,
               private socketService: SocketService,
@@ -101,6 +104,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     });
     this.setTerminalCommandHandler();
     this.listenToTerminalKeyDown();
+    this.terminalResponseWindowHeight = document.getElementById('informationWindow').scrollHeight;
   }
 
   ngOnDestroy() {
@@ -302,29 +306,40 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     });
   }
 
+  private setScrollReaction(): void {
+    this.scrolledTop = (this.terminalResponseWindow.scrollTop + this.terminalResponseWindowHeight - this.terminalResponseWindow.scrollHeight > -40);
+  }
+
+  private zeroScrollTop(): void {
+      this.terminalResponseWindow.scrollTop = this.terminalResponseWindow.scrollHeight;
+  }
+
   private fakeWebSocket(): void {
     this.terminalResponseMessage = [];
     this.terminalResponseMessage.push('CONNECTING TO DEVICE...');
+    this.terminalResponseWindow = document.getElementById('informationWindow');
     let counter = 0;
     const looper = () => setTimeout(() => {
+      this.setScrollReaction();
       if (!this.terminalPause) {
         counter++;
         this.terminalResponseMessage.push(`Information from ${counter}`);
         if (this.terminalResponseMessage.length > 1000) {
           this.terminalResponseMessage.splice(0, 1);
         }
-        const element = document.getElementById('informationWindow');
-        element.scrollTop = element.scrollHeight;
+        if (this.scrolledTop) {
+          this.zeroScrollTop();
+        }
       }
       if (this.connectedToWebSocket) {
         looper();
       }
-    }, 250);
+    }, 200);
     setTimeout(() => {
       this.terminalResponseMessage.push('CONNECTED');
       this.connectedToWebSocket = true;
       looper();
-    }, 3000);
+    }, 2000);
   }
 
   private setTerminalCommandHandler(): void {
