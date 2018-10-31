@@ -35,7 +35,6 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
   onLeaveLabel: string;
   areaConfigurationOnEnter: AreaConfiguration = new AreaConfiguration(Mode.ON_ENTER, 0);
   areaConfigurationOnLeave: AreaConfiguration = new AreaConfiguration(Mode.ON_LEAVE, 0);
-  areaId: number;
 
   private editable: Editable;
   private shift: Point;
@@ -66,7 +65,6 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
       }
     });
     this.areaDetailsService.onSet().subscribe((area: AreaBag): void => {
-      this.areaId = area.dto.id;
       this.area = Helper.deepCopy(area.dto);
       this.editable = area.editable;
       this.area.configurations.forEach((areaConfiguration: AreaConfiguration): void => {
