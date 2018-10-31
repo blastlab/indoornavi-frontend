@@ -62,7 +62,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   private terminalComponent: Element;
   private commandIndex: number;
   private activeCommand: string;
-  private menuCommands: string[] = ['help, su', 'exit', 'pause', 'resume', 'clear', 'use'];
+  private menuCommands: string[] = ['help, su', 'exit', 'freeze', 'unfreeze', 'clear', 'use'];
 
   constructor(public translate: TranslateService,
               private socketService: SocketService,
@@ -350,15 +350,13 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
             this.connectedToWebSocket = false;
           }
           break;
-        case 'pause':
+        case 'freeze':
           this.terminalPause = true;
           responseMessage = 'terminal.window.pause';
-          responseData = 'off';
           break;
-        case 'resume':
+        case 'unfreeze':
           this.terminalPause = false;
-          responseMessage = 'terminal.window.pause';
-          responseData = 'on';
+          responseMessage = 'terminal.window.resume';
           break;
         case 'clear':
           responseMessage = 'terminal.clear';
