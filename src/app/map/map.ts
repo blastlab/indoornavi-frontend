@@ -41,7 +41,7 @@ export class MapComponent implements OnInit {
       }
     });
 
-    this.isMobile = Helper.detectMobile();
+
   }
 
   droppedObject(event) {

@@ -1,4 +1,4 @@
-<div id="map-container" [ngClass]="{'public': isPublic, 'ios-style': isMobile}" class="map-container">
+<div id="map-container" [ngClass]="{'public': isPublic}" class="map-container">
   <svg id="map-upper-layer" class="drop-zone" pDroppable="devices" (onDrop)="droppedObject($event)">
   </svg>
   <ng-content></ng-content>
