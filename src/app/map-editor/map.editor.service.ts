@@ -6,6 +6,7 @@ import {MapSvg} from '../map/map.type';
 import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Observable';
 import {Transform} from './map.type';
+import {Helper} from '../shared/utils/helper/helper';
 
 @Injectable()
 export class MapEditorService {
@@ -72,7 +73,12 @@ export class MapEditorService {
 
         zoom.translateBy(map, (mapContainer.offsetWidth - image.width) / 2, (mapContainer.offsetHeight - image.height) / 2);
         map.call(zoom);
-        map.on('dblclick.zoom', null);
+
+        if (Helper.detectMobile()) {
+          map.on('dblclick', zoomed);
+        } else {
+          map.on('dblclick.zoom', null);
+        }
 
         window.addEventListener('resize', () => {
           zoom.translateExtent(MapEditorService.maxTranslate(mapContainer, image));
