@@ -165,8 +165,12 @@ export class NavigationController {
       this.objectMetadataPolyline.object['lines'] = this.lines;
       const startPointCirclePosition: Point = this.objectMetadataPolyline.object['points'][0];
       const finishPointCirclePosition: Point = this.objectMetadataPolyline.object['points'][this.objectMetadataPolyline.object['points'].length - 1];
-      if (!this.disableStartPoint) this.objectMetadataStart.object['position'] = Object.assign((<Circle>this.objectMetadataStart.object), startPointCirclePosition);
-      if (!this.disableEndPoint) this.objectMetadataFinish.object['position'] = Object.assign((<Circle>this.objectMetadataFinish.object), finishPointCirclePosition);
+      if (!this.disableStartPoint) {
+        this.objectMetadataStart.object['position'] = Object.assign((<Circle>this.objectMetadataStart.object), startPointCirclePosition);
+      }
+      if (!this.disableEndPoint) {
+        this.objectMetadataFinish.object['position'] = Object.assign((<Circle>this.objectMetadataFinish.object), finishPointCirclePosition);
+      }
       this.redrawPath();
     }
   }
@@ -206,8 +210,12 @@ export class NavigationController {
   private redrawPath(): void {
     if (!!this.objectMetadataPolyline) {
       this.mapObjectService.draw(this.objectMetadataPolyline, this.scale, this.event, this.container);
-      if (!this.disableStartPoint && this.objectMetadataStart) this.mapObjectService.draw(this.objectMetadataStart, this.scale, this.event, this.container);
-      if (!this.disableEndPoint && this.objectMetadataFinish)this.mapObjectService.draw(this.objectMetadataFinish, this.scale, this.event, this.container);
+      if (!this.disableStartPoint && this.objectMetadataStart) {
+        this.mapObjectService.draw(this.objectMetadataStart, this.scale, this.event, this.container);
+      }
+      if (!this.disableEndPoint && this.objectMetadataFinish) {
+        this.mapObjectService.draw(this.objectMetadataFinish, this.scale, this.event, this.container);
+      }
     }
   }
 
