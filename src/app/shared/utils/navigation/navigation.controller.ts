@@ -154,12 +154,25 @@ export class NavigationController {
       this.event.source.postMessage({type: 'navigation', action: 'error'}, this.event.origin);
       this.stopNavigation();
     } else {
-      this.event.source.postMessage({type: 'navigation', action: 'created'}, this.event.origin);
+      const pathLength: number = this.calculatePathLength(path);
+      this.event.source.postMessage({type: 'navigation', action: 'created', pathLength: pathLength}, this.event.origin);
       path.reverse();
       this.setNavigationMetadata(path);
       this.redrawPath();
       this.isNavigationReady = true;
     }
+  }
+
+  private calculatePathLength(path: Line[]): number {
+    let pathLength = 0;
+    path.forEach((line: Line): void => {
+      pathLength += Geometry.getDistanceBetweenTwoPoints(line.startPoint, line.endPoint);
+    });
+    return Math.round(Geometry.calculateDistanceInCentimeters(
+      Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
+      this.scale.realDistance,
+      pathLength
+    ));
   }
 
   private createPointPathFromLinePath(scale: Scale, path: Line[]): Point[] {
