@@ -37,6 +37,7 @@ export class NavigationController {
   private startPointObject: Object = {radius: 10, border: {width: 2, color: '#007FFF '}, opacity: 1, color: '#007FFF '};
   private endPointObject: Object = {radius: 10, border: {width: 2, color: '#007FFF '}, opacity: 1, color: '#007FFF '};
   private pathColor: string = '#007FFF';
+  private pathWidth: number = 5;
 
   constructor(
     private pathService: PathService,
@@ -77,16 +78,12 @@ export class NavigationController {
       case 'setPathColor':
         this.pathColor = args.pathColor;
         break;
+      case 'setPathWidth':
+        this.pathWidth = args.pathWidth;
+        break;
     }
 
   }
-
-  private generateId(): Object {
-    return {
-      id: Math.round(new Date().getTime() * Math.random() * 1000)
-    }
-  }
-
 
   private setLastCoordinates(coordinates: Point): void {
     this.lastCoordinates = coordinates;
@@ -232,7 +229,7 @@ export class NavigationController {
   private setNavigationMetadata(path: Line[]): void {
     this.objectMetadataPolyline = this.assignId('POLYLINE');
     this.objectMetadataPolyline.object['points'] = this.createPointPathFromLinePath(this.scale, path);
-    this.objectMetadataPolyline.object = Object.assign((<Path>this.objectMetadataPolyline.object), {lines: path, color: this.pathColor, lineType: 'dotted'});
+    this.objectMetadataPolyline.object = Object.assign((<Path>this.objectMetadataPolyline.object), {lines: path, color: this.pathColor, width: this.pathWidth, lineType: 'dotted'});
 
     if (!this.disableStartPoint) {
       this.objectMetadataStart = this.assignId('CIRCLE');
