@@ -36,6 +36,7 @@ export class NavigationController {
   private startPointObject: Object = {radius: 10, border: {width: 2, color: '#007FFF '}, opacity: 1, color: '#007FFF '};
   private endPointObject: Object = {radius: 10, border: {width: 2, color: '#007FFF '}, opacity: 1, color: '#007FFF '};
   private pathColor: string = '#007FFF';
+  private pathWidth: number = 5;
 
   constructor(
     private pathService: PathService,
@@ -77,16 +78,12 @@ export class NavigationController {
       case 'setPathColor':
         this.pathColor = args.pathColor;
         break;
+      case 'setPathWidth':
+        this.pathWidth = args.pathWidth;
+        break;
     }
 
   }
-
-  private generateId(): Object {
-    return {
-      id: Math.round(new Date().getTime() * Math.random() * 1000)
-    }
-  }
-
 
   private setLastCoordinates(coordinates: Point): void {
     this.lastCoordinates = coordinates;
@@ -167,8 +164,12 @@ export class NavigationController {
       this.objectMetadataPolyline.object['lines'] = this.lines;
       const startPointCirclePosition: Point = this.objectMetadataPolyline.object['points'][0];
       const finishPointCirclePosition: Point = this.objectMetadataPolyline.object['points'][this.objectMetadataPolyline.object['points'].length - 1];
-      this.objectMetadataStart.object['position'] = Object.assign((<Circle>this.objectMetadataStart.object), startPointCirclePosition);
-      this.objectMetadataFinish.object['position'] = Object.assign((<Circle>this.objectMetadataFinish.object), finishPointCirclePosition);
+      if (!this.disableStartPoint) {
+        this.objectMetadataStart.object['position'] = Object.assign((<Circle>this.objectMetadataStart.object), startPointCirclePosition);
+      }
+      if (!this.disableEndPoint) {
+        this.objectMetadataFinish.object['position'] = Object.assign((<Circle>this.objectMetadataFinish.object), finishPointCirclePosition);
+      }
       this.redrawPath();
     }
   }
@@ -208,8 +209,12 @@ export class NavigationController {
   private redrawPath(): void {
     if (!!this.objectMetadataPolyline) {
       this.mapObjectService.draw(this.objectMetadataPolyline, this.scale, this.event, this.container);
-      if (!this.disableStartPoint && this.objectMetadataStart) this.mapObjectService.draw(this.objectMetadataStart, this.scale, this.event, this.container);
-      if (!this.disableEndPoint && this.objectMetadataFinish)this.mapObjectService.draw(this.objectMetadataFinish, this.scale, this.event, this.container);
+      if (!this.disableStartPoint && this.objectMetadataStart) {
+        this.mapObjectService.draw(this.objectMetadataStart, this.scale, this.event, this.container);
+      }
+      if (!this.disableEndPoint && this.objectMetadataFinish) {
+        this.mapObjectService.draw(this.objectMetadataFinish, this.scale, this.event, this.container);
+      }
     }
   }
 
@@ -226,7 +231,7 @@ export class NavigationController {
   private setNavigationMetadata(path: Line[]): void {
     this.objectMetadataPolyline = this.assignId('POLYLINE');
     this.objectMetadataPolyline.object['points'] = this.createPointPathFromLinePath(this.scale, path);
-    this.objectMetadataPolyline.object = Object.assign((<Path>this.objectMetadataPolyline.object), {lines: path, color: this.pathColor, lineType: 'dotted'});
+    this.objectMetadataPolyline.object = Object.assign((<Path>this.objectMetadataPolyline.object), {lines: path, color: this.pathColor, width: this.pathWidth, lineType: 'dotted'});
 
     if (!this.disableStartPoint) {
       this.objectMetadataStart = this.assignId('CIRCLE');

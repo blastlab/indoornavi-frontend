@@ -66,6 +66,7 @@ export namespace APIObject {
     navigationPoint?: Metadata;
     pathColor?: string;
     state?: boolean;
+    pathWidth?: number;
   }
 
   export enum Position {
