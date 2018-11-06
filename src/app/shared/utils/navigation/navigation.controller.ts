@@ -222,7 +222,6 @@ export class NavigationController {
     };
   }
 
-
   private setNavigationMetadata(path: Line[]): void {
     this.objectMetadataPolyline = this.assignId('POLYLINE');
     this.objectMetadataPolyline.object['points'] = this.createPointPathFromLinePath(this.scale, path);
