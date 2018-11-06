@@ -53,7 +53,7 @@ export class MarkerOnMap {
     });
   }
 
-  setIconFromUrl(icon: string): void {
+  setIconFromUrl(iconUrl: string): void {
     this.getGroup().removeElements(ElementType.ICON);
     const element: d3.selection = this.svgGroupWrapper
       .place({
@@ -62,7 +62,7 @@ export class MarkerOnMap {
       })
       .getGroup()
       .append('svg:image')
-      .attr('xlink:href', icon)
+      .attr('xlink:href', iconUrl)
       .attr('x', 0)
       .attr('y', 0)
       .attr('width', this.customIconSize.width)
@@ -73,7 +73,7 @@ export class MarkerOnMap {
     this.svgGroupWrapper.getElements(ElementType.ICON).push(element);
   }
 
-  injectBase64Icon(iconBase64String): void {
+  injectBase64Icon(iconBase64String: string): void {
     this.getGroup().removeElements(ElementType.ICON);
     const element: d3.selection = this.svgGroupWrapper
       .place({
