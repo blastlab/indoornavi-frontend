@@ -110,7 +110,7 @@ export class SvgGroupWrapper {
     return this;
   }
 
-  addTextBg(coordinates: Point, color: string = this.groupDefaultColor): SvgGroupWrapper {
+  addBackground(coordinates: Point, color: string = this.groupDefaultColor): SvgGroupWrapper {
     const element: d3.selection = this.group
       .append('rect')
       .attr('x', coordinates.x - 10)
