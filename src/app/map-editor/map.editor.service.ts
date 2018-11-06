@@ -46,6 +46,7 @@ export class MapEditorService {
         const mapContainer = document.getElementById(MapEditorService.MAP_CONTAINER_SELECTOR_ID);
 
         const zoomed = () => {
+          d3.event.stopPropagation();
           g.attr('transform', d3.event.transform);
           this.transformation = d3.zoomTransform(document.getElementById(MapEditorService.MAP_UPPER_LAYER_SELECTOR_ID));
           this.changeTransformation(this.transformation);
