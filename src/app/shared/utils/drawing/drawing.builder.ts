@@ -122,7 +122,7 @@ export class SvgGroupWrapper {
     return this;
   }
 
-  hideElement(type): SvgGroupWrapper {
+  hideElement(type: ElementType): SvgGroupWrapper {
     const elementToHide: d3.election = this.getElements(type);
     if (!!elementToHide) {
       elementToHide.forEach((element: d3.selection) => {
