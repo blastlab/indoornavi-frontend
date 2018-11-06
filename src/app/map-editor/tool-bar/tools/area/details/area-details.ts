@@ -81,6 +81,7 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
     });
     this.areaDetailsService.onDecisionMade().takeUntil(this.subscriptionDestroyer).subscribe((area: AreaBag) => {
       if (!area) { // rejected
+        this.cleanUp();
         this.toolDetails.hide();
       }
     });
