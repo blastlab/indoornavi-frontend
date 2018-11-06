@@ -89,8 +89,8 @@ export class ApiService {
     const markerOnMap: MarkerOnMap = new MarkerOnMap(point, container, ApiService.getDefaultConfiguration(objectMetadata));
     markerOnMap.setId(objectMetadata.object.id);
 
-    if (!!marker.icon) {
-      markerOnMap.setIcon(marker.icon);
+    if (!!marker.icon_url) {
+      markerOnMap.setIcon(marker.icon_url);
     }
 
     if (!!marker.events) {
@@ -117,7 +117,7 @@ export class ApiService {
 
   private drawArea(objectMetadata: Metadata, container: d3.selection, points: Point[], originMessageEvent: MessageEvent): void {
     const area: Area = <Area>objectMetadata.object;
-    let areaSelection: SvgGroupWrapper  = new DrawBuilder(container, ApiService.getDefaultConfiguration(objectMetadata)).createGroup();
+    const areaSelection: SvgGroupWrapper  = new DrawBuilder(container, ApiService.getDefaultConfiguration(objectMetadata)).createGroup();
 
     if (!!area.border) {
       ApiHelper.setStrokeColor(areaSelection.getGroup(), area.border.color);
