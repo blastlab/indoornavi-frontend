@@ -64,7 +64,7 @@ export class NavigationController {
     this.accuracy =  (accuracy && accuracy > 0) ? accuracy : Infinity;
     this.scale = scale;
     if (this.isNavigationReady) {
-      this.event.source.postMessage({type: 'navigation', action: 'working'}, this.event.origin);
+      this.event.source.postMessage({type: 'navigation', action: 'working'}, '*');
       return;
     }
     this.event = event;
@@ -73,6 +73,8 @@ export class NavigationController {
       this.onPositionChanged().subscribe((pointUpdate: Point): void => {
         if (!!this.objectMetadataPolyline) {
           this.handlePathUpdate(pointUpdate);
+        } else {
+          this.event.source.postMessage({type: 'navigation', action: 'unavailable'}, '*');
         }
       });
       if (this.lastCoordinates) {
