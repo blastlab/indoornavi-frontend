@@ -1,3 +1,8 @@
 .map-padding {
   padding: 0;
 }
+
+.mobile-device-style {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+}
