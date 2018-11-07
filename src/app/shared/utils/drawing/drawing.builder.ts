@@ -9,7 +9,8 @@ export enum ElementType {
   CIRCLE,
   LINE,
   DRAG_AREA,
-  IMAGE
+  IMAGE,
+  RECT
 }
 
 export class SvgGroupWrapper {
@@ -98,14 +99,36 @@ export class SvgGroupWrapper {
     return this;
   }
 
-  addText(coordinates: Point, text: string): SvgGroupWrapper {
+  addText(coordinates: Point, text: string, color: string = this.groupDefaultColor): SvgGroupWrapper {
     const element: d3.selection = this.group
       .append('text')
       .attr('x', coordinates.x)
       .attr('y', coordinates.y)
-      .attr('fill', this.groupDefaultColor)
+      .attr('fill', color)
       .text(text);
     this.addElement(ElementType.TEXT, element);
+    return this;
+  }
+
+  addBackground(coordinates: Point, color: string = this.groupDefaultColor): SvgGroupWrapper {
+    const element: d3.selection = this.group
+      .append('rect')
+      .attr('x', coordinates.x - 10)
+      .attr('y', coordinates.y - 15)
+      .attr('width', 80)
+      .attr('height', 20)
+      .attr('fill', color);
+    this.addElement(ElementType.RECT, element);
+    return this;
+  }
+
+  hideElement(type: ElementType): SvgGroupWrapper {
+    const elementToHide: d3.election = this.getElements(type);
+    if (!!elementToHide) {
+      elementToHide.forEach((element: d3.selection) => {
+        element.attr('display', 'none');
+      });
+    }
     return this;
   }
 

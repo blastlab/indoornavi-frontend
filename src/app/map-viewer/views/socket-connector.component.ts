@@ -281,9 +281,17 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
     this.areaService.getAllByFloor(floorId).first().subscribe((areas: Area[]): void => {
       areas.forEach((area: Area) => {
         const drawBuilder: DrawBuilder = new DrawBuilder(this.d3map.container, {id: `area-${area.id}`, clazz: 'area'});
+        const textPoint = {
+          x: area.points[0].x + 10,
+          y: area.points[0].y + 15,
+        };
         const areaOnMap = drawBuilder
           .createGroup()
-          .addPolygon(area.points);
+          .addPolygon(area.points)
+          .addBackground(textPoint)
+          .hideElement(ElementType.RECT)
+          .addText(textPoint, `area-${area.id}`, '#fff')
+          .hideElement(ElementType.TEXT);
         areaOnMap.getLastElement(ElementType.POLYGON)
           .style('opacity', Area.getCustomSettings().opacity)
           .style('fill', Area.getCustomSettings().fill);
