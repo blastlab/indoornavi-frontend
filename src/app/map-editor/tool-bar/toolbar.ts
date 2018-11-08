@@ -5,7 +5,6 @@ import {Subscription} from 'rxjs/Subscription';
 import {Floor} from '../../floor/floor.type';
 import {Configuration} from '../action-bar/actionbar.type';
 import {ActionBarService} from '../action-bar/actionbar.service';
-import {ToolName} from './tools/tools.enum';
 import {merge} from 'rxjs/observable/merge';
 
 @Component({
