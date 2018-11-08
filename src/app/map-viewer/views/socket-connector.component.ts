@@ -34,6 +34,7 @@ import {Complex} from '../../complex/complex.type';
 import {ComplexService} from '../../complex/complex.service';
 import {NavigationController} from '../../shared/utils/navigation/navigation.controller';
 import Metadata = APIObject.Metadata;
+import {Helper} from '../../shared/utils/helper/helper';
 
 @Component({
   templateUrl: './socket-connector.component.html'
@@ -132,7 +133,9 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
               });
               this.tagToggleService.setTags(tags);
               if (!!floor.scale) {
-                this.drawAreas(floor.id);
+                if (!Helper.detectMobile()) {
+                  this.drawAreas(floor.id);
+                }
                 this.initializeSocketConnection();
               }
             });
