@@ -40,7 +40,7 @@ export class MarkerOnMap {
     const labelText: d3.selection = this.svgGroupWrapper.getGroup().select('text');
     const textWidth: number = labelText.node().getComputedTextLength();
     const textHeight: number = labelText.node().getBoundingClientRect().height;
-    labelText.attr('x', - textWidth / 2).attr('y', this.customIconSize.height + textHeight);
+    labelText.attr('x', - textWidth / 2 + this.customIconSize.width / 2).attr('y', this.customIconSize.height + textHeight);
   }
 
   addEvents(events: string[], originMessageEvent: MessageEvent): void {
