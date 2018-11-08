@@ -102,6 +102,8 @@ export class NavigationController {
       this.onPositionChanged().subscribe((pointUpdate: Point): void => {
         if (!!this.objectMetadataPolyline) {
           this.handlePathUpdate(pointUpdate);
+        } else {
+          this.event.source.postMessage({type: 'navigation', action: 'unavailable'}, '*');
         }
       });
       if (this.lastCoordinates) {
