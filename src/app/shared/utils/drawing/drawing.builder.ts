@@ -206,14 +206,6 @@ export class SvgGroupWrapper {
     return this;
   }
 
-  private addDottedPolyline(points: Point[]): SvgGroupWrapper {
-    const element: d3.selection = this.group
-      .append('path')
-      .attr('d', SvgGroupWrapper.setLineCurveData()(points));
-    this.addElement(ElementType.LINE, element);
-    return this;
-  }
-
   addLineType(points: Point[], type: string, radius: number): SvgGroupWrapper {
     const lineType = {
       'solid': () => this.addPolyline(points, radius),
@@ -260,6 +252,11 @@ export class SvgGroupWrapper {
     }
   }
 
+  setVisibility(visible: boolean): void {
+    const displayValue: string = visible ? `inline` : `none`;
+    return this.group.attr(`display`, displayValue);
+  }
+
   protected addElement(type: ElementType, element: d3.selection): void {
     if (this.elements.has(type)) {
       this.elements.get(type).push(element);
@@ -268,9 +265,12 @@ export class SvgGroupWrapper {
     }
   }
 
-  setVisibility(visible: boolean): void {
-    const displayValue: string = visible ? `inline` : `none`;
-    return this.group.attr(`display`, displayValue);
+  private addDottedPolyline(points: Point[]): SvgGroupWrapper {
+    const element: d3.selection = this.group
+      .append('path')
+      .attr('d', SvgGroupWrapper.setLineCurveData()(points));
+    this.addElement(ElementType.LINE, element);
+    return this;
   }
 
 }
