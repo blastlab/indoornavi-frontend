@@ -36,12 +36,11 @@ export class MarkerOnMap {
   }
 
   addLabel(label: string): void {
-    this.svgGroupWrapper.addText(
-      {
-        x: this.customIconSize.width / 2,
-        y: this.customIconSize.height / 2
-      },
-      label);
+    this.svgGroupWrapper.addText({ x: 0, y: 0}, label);
+    const labelText: d3.selection = this.svgGroupWrapper.getGroup().select('text');
+    const textWidth: number = labelText.node().getComputedTextLength();
+    const textHeight: number = labelText.node().getBoundingClientRect().height;
+    labelText.attr('x', - textWidth / 2).attr('y', this.customIconSize.height + textHeight);
   }
 
   addEvents(events: string[], originMessageEvent: MessageEvent): void {
