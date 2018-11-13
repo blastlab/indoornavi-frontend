@@ -87,6 +87,7 @@
             pTooltip="{{'configuration'|translate}}"
             type="button"
             pButton
+            (click)="openDeviceConfigDialog()"
             icon="fa-cog"
             class="ui-button-warning"></button>
           <button
@@ -107,6 +108,11 @@
     </div>
   </ng-template>
 </p-pickList>
+
+<!-- DEVICE CONFIGURATION -->
+<app-device-configuration
+  [displayDeviceConfig]="displayDeviceConfig"
+  (deviceConfigClosed)="closeDeviceConfig($event)"></app-device-configuration>
 
 <p-dialog [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
           [contentStyle]="{ overflow: 'visible' }"

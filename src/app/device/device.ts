@@ -35,6 +35,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   public devicesUpdating: UWB[] = [];
   public allSelected: boolean = false;
   public displayInfoDialog: boolean = false;
+  public displayDeviceConfig: boolean = false;
   @ViewChildren('updateCheckbox') public deviceCheckboxes: Checkbox[];
   @ViewChild('firmwareInput') public firmwareInput: ElementRef;
   @ViewChild('firmwareButton') public firmwareButton: ElementRef;
@@ -255,6 +256,15 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       this.connectToRegistrationSocket();
     }
   }
+
+  openDeviceConfigDialog(): void {
+    this.displayDeviceConfig = true;
+  }
+
+  closeDeviceConfig(eventData: boolean): void {
+    this.displayDeviceConfig = eventData;
+  }
+
   private updateFirmwareVersion(deviceStatus: DeviceStatus) {
     let deviceToChangeFirmware: UWB;
     const index = this.devicesWaitingForNewFirmwareVersion.findIndex((ds: DeviceStatus) => {
