@@ -62,6 +62,7 @@
   "complex.remove.success": "Complex has been removed.",
   "complex.save.success": "Complex has been saved.",
   "complexes": "Complexes",
+  "configuration": "Configuration",
   "configuration.preUndoConfirmDialog.body": "Are you sure you want to reset current draft to the last publication state? ({{date}})",
   "configuration.preUndoConfirmDialog.no": "No",
   "configuration.preUndoConfirmDialog.yes": "Yes",

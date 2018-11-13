@@ -82,6 +82,14 @@
         </div>
         <div class="ui-g-3 ui-md-3 ui-lg-3">
           <button
+            [appHasPermission]="configPermission"
+            [disabled]="updateMode"
+            pTooltip="{{'configuration'|translate}}"
+            type="button"
+            pButton
+            icon="fa-cog"
+            class="ui-button-warning"></button>
+          <button
             [appHasPermission]="editPermission"
             [disabled]="updateMode"
             pTooltip="{{'edit'|translate}}" type="button" pButton (click)="openDialog(device)" icon="fa-edit" class="ui-button-info">
