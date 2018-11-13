@@ -1,6 +1,31 @@
 <p-dialog
   header="Title"
   [(visible)]="displayDeviceConfig"
+  [draggable]="false"
+  [responsive]="true"
+  [modal]="true"
+  [dismissableMask]="true"
+  [contentStyle]="{ overflow: 'visible' }"
+  [width]="800"
+  breakpoint="640"
   (onHide)="closeDeviceConfig()">
-  Content
+
+  Lorem ipsum dolor sit amet
+
+
+  <p-footer>
+    <div class="ui-dialog-buttonpane ui-helper-clearfix">
+      <button
+        type="button"
+        pButton icon="fa-close"
+        (click)="closeDeviceConfig()"
+        label="{{'cancel'|translate}}"></button>
+      <button
+        type="submit"
+        pButton
+        icon="fa-check"
+        (click)="saveDeviceConfig()"
+        label="{{'save'|translate}}"></button>
+    </div>
+  </p-footer>
 </p-dialog>

@@ -12,8 +12,12 @@ export class DeviceConfigurationComponent implements OnInit {
   ngOnInit() {
   }
 
-  closeDeviceConfig() {
+  closeDeviceConfig(): void {
     this.deviceConfigClosed.emit(false);
+  }
+
+  saveDeviceConfig() {
+    this.closeDeviceConfig();
   }
 
 }
