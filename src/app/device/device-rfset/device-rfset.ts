@@ -12,7 +12,7 @@ export class DeviceRfsetComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {
-    console.log(this.rfsetConfigData);
+
   }
 
 }

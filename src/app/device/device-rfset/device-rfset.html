@@ -1,7 +1,7 @@
 <div class="ui-g">
-  <div class="ui-g-12 ui-md-4 ui-lg-4"></div>
-  <div class="ui-g-12 ui-md-2 ui-lg-2">
-    <label for="radioChanel">Radio channel</label>
+  <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
+  <div class="ui-g-12 ui-md-2 ui-lg-3">
+    <label for="radioChanel">{{'device.config.rch'|translate}}</label>
   </div>
   <div class="ui-g-12 ui-md-6 ui-lg-6">
     <p-dropdown [options]="rfsetConfigData.radioChannels"
@@ -14,9 +14,9 @@
 </div>
 
 <div class="ui-g">
-  <div class="ui-g-12 ui-md-4 ui-lg-4"></div>
-  <div class="ui-g-12 ui-md-2 ui-lg-2">
-    <label for="radioChanel">Radio baud rate</label>
+  <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
+  <div class="ui-g-12 ui-md-2 ui-lg-3">
+    <label for="radioChanel">{{'device.config.rbr'|translate}}</label>
   </div>
   <div class="ui-g-12 ui-md-6 ui-lg-6">
     <p-dropdown [options]="rfsetConfigData.radioBaudRate"
@@ -24,6 +24,51 @@
                 id="radioBaudRate"
                 placeholder="Select radio baud rate"
                 name="radioBaudRate">
+    </p-dropdown>
+  </div>
+</div>
+
+<div class="ui-g">
+  <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
+  <div class="ui-g-12 ui-md-2 ui-lg-3">
+    <label for="preambleLength">{{'device.config.plen'|translate}}</label>
+  </div>
+  <div class="ui-g-12 ui-md-6 ui-lg-6">
+    <p-dropdown [options]="rfsetConfigData.preambleLength"
+                [style]="{ width: '100%' }"
+                id="preambleLength"
+                placeholder="Select preamble length"
+                name="preambleLength">
+    </p-dropdown>
+  </div>
+</div>
+
+<div class="ui-g">
+  <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
+  <div class="ui-g-12 ui-md-2 ui-lg-3">
+    <label for="pulseRepetitionFrequency">{{'device.config.prf'|translate}}</label>
+  </div>
+  <div class="ui-g-12 ui-md-6 ui-lg-6">
+    <p-dropdown [options]="rfsetConfigData.pulseRepetitionFrequency"
+                [style]="{ width: '100%' }"
+                id="pulseRepetitionFrequency"
+                placeholder="Select pulse repetition frequency"
+                name="pulseRepetitionFrequency">
+    </p-dropdown>
+  </div>
+</div>
+
+<div class="ui-g">
+  <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
+  <div class="ui-g-12 ui-md-2 ui-lg-3">
+    <label for="preambleAcquisitionChunk">{{'device.config.pac'|translate}}</label>
+  </div>
+  <div class="ui-g-12 ui-md-6 ui-lg-6">
+    <p-dropdown [options]="rfsetConfigData.preambleAcquisitionChunk"
+                [style]="{ width: '100%' }"
+                id="preambleAcquisitionChunk"
+                placeholder="Select preamble acquisition chunk"
+                name="preambleAcquisitionChunk">
     </p-dropdown>
   </div>
 </div>
