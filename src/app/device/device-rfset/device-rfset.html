@@ -1,119 +1,137 @@
-<div class="ui-g">
-  <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
-  <div class="ui-g-12 ui-md-2 ui-lg-3">
-    <label for="radioChanel">{{'device.config.rch'|translate}}</label>
-  </div>
-  <div class="ui-g-12 ui-md-6 ui-lg-6">
-    <p-dropdown [options]="rfsetConfigData.radioChannels"
-                [style]="{ width: '100%' }"
-                id="radioChanel"
-                placeholder="Select radio channel"
-                name="radioChanel">
-    </p-dropdown>
-  </div>
-</div>
+<ngForm [formGroup]="rfConfigForm">
+  <div formGroupName="rfData">
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-2 ui-lg-3">
+        <label for="radioChanel">{{'device.config.rch'|translate}}</label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
+        <p-dropdown [options]="rfsetConfigData.radioChannels"
+                    formControlName="radioChannel"
+                    [style]="{ width: '100%' }"
+                    id="radioChanel"
+                    placeholder="Select radio channel">
+        </p-dropdown>
+      </div>
+    </div>
 
-<div class="ui-g">
-  <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
-  <div class="ui-g-12 ui-md-2 ui-lg-3">
-    <label for="radioChanel">{{'device.config.rbr'|translate}}</label>
-  </div>
-  <div class="ui-g-12 ui-md-6 ui-lg-6">
-    <p-dropdown [options]="rfsetConfigData.radioBaudRate"
-                [style]="{ width: '100%' }"
-                id="radioBaudRate"
-                placeholder="Select radio baud rate"
-                name="radioBaudRate">
-    </p-dropdown>
-  </div>
-</div>
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-2 ui-lg-3">
+        <label for="radioChanel">{{'device.config.rbr'|translate}}</label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
+        <p-dropdown [options]="rfsetConfigData.radioBaudRate"
+                    formControlName="radioBaudRate"
+                    [style]="{ width: '100%' }"
+                    id="radioBaudRate"
+                    placeholder="Select radio baud rate">
+        </p-dropdown>
+      </div>
+    </div>
 
-<div class="ui-g">
-  <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
-  <div class="ui-g-12 ui-md-2 ui-lg-3">
-    <label for="preambleLength">{{'device.config.plen'|translate}}</label>
-  </div>
-  <div class="ui-g-12 ui-md-6 ui-lg-6">
-    <p-dropdown [options]="rfsetConfigData.preambleLength"
-                [style]="{ width: '100%' }"
-                id="preambleLength"
-                placeholder="Select preamble length"
-                name="preambleLength">
-    </p-dropdown>
-  </div>
-</div>
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-2 ui-lg-3">
+        <label for="preambleLength">{{'device.config.plen'|translate}}</label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
+        <p-dropdown [options]="rfsetConfigData.preambleLength"
+                    formControlName="preambleLength"
+                    [style]="{ width: '100%' }"
+                    id="preambleLength"
+                    placeholder="Select preamble length">
+        </p-dropdown>
+      </div>
+    </div>
 
-<div class="ui-g">
-  <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
-  <div class="ui-g-12 ui-md-2 ui-lg-3">
-    <label for="pulseRepetitionFrequency">{{'device.config.prf'|translate}}</label>
-  </div>
-  <div class="ui-g-12 ui-md-6 ui-lg-6">
-    <p-dropdown [options]="rfsetConfigData.pulseRepetitionFrequency"
-                [style]="{ width: '100%' }"
-                id="pulseRepetitionFrequency"
-                placeholder="Select pulse repetition frequency"
-                name="pulseRepetitionFrequency">
-    </p-dropdown>
-  </div>
-</div>
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-2 ui-lg-3">
+        <label for="pulseRepetitionFrequency">{{'device.config.prf'|translate}}</label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
+        <p-dropdown [options]="rfsetConfigData.pulseRepetitionFrequency"
+                    formControlName="pulseRepetitionFrequency"
+                    [style]="{ width: '100%' }"
+                    id="pulseRepetitionFrequency"
+                    placeholder="Select pulse repetition frequency">
+        </p-dropdown>
+      </div>
+    </div>
 
-<div class="ui-g">
-  <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
-  <div class="ui-g-12 ui-md-2 ui-lg-3">
-    <label for="preambleAcquisitionChunk">{{'device.config.pac'|translate}}</label>
-  </div>
-  <div class="ui-g-12 ui-md-6 ui-lg-6">
-    <p-dropdown [options]="rfsetConfigData.preambleAcquisitionChunk"
-                [style]="{ width: '100%' }"
-                id="preambleAcquisitionChunk"
-                placeholder="Select preamble acquisition chunk"
-                name="preambleAcquisitionChunk">
-    </p-dropdown>
-  </div>
-</div>
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-2 ui-lg-3">
+        <label for="preambleAcquisitionChunk">{{'device.config.pac'|translate}}</label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
+        <p-dropdown [options]="rfsetConfigData.preambleAcquisitionChunk"
+                    formControlName="preambleAcquisitionChunk"
+                    [style]="{ width: '100%' }"
+                    id="preambleAcquisitionChunk"
+                    placeholder="Select preamble acquisition chunk">
+        </p-dropdown>
+      </div>
+    </div>
 
-<div class="ui-g">
-  <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
-  <div class="ui-g-12 ui-md-2 ui-lg-3">
-    <label for="communicationCode">{{'device.config.code'|translate}}</label>
-  </div>
-  <div class="ui-g-12 ui-md-6 ui-lg-6">
-    <p-spinner
-      [(ngModel)]="deviceRfCode"
-      size="40"
-      [style]="{ width: '100%' }"
-      name="communicationCode"
-      [min]="1"
-      [max]="24"
-      id="communicationCode"></p-spinner>
-  </div>
-</div>
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-2 ui-lg-3">
+        <label for="communicationCode">{{'device.config.code'|translate}}</label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
+        <p-spinner
+          formControlName="communicationCode"
+          size="40"
+          [style]="{ width: '100%' }"
+          [min]="1"
+          [max]="24"
+          id="communicationCode"></p-spinner>
+      </div>
+    </div>
 
-<div class="ui-g">
-  <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
-  <div class="ui-g-12 ui-md-2 ui-lg-3">
-    <label for="communicationCode">{{'device.config.sfd'|translate}}</label>
-  </div>
-  <div class="ui-g-12 ui-md-6 ui-lg-6">
-    <p-spinner
-      [(ngModel)]="deviceSdf"
-      size="40"
-      [style]="{ width: '100%' }"
-      name="sfd"
-      [min]="1"
-      [max]="65536"
-      id="sfd"></p-spinner>
-  </div>
-</div>
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-2 ui-lg-3">
+        <label for="sfd">{{'device.config.sfd'|translate}}</label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
+        <p-spinner
+          formControlName="sfd"
+          size="40"
+          [style]="{ width: '100%' }"
+          [min]="1"
+          [max]="65536"
+          id="sfd"></p-spinner>
+      </div>
+    </div>
 
-<div class="ui-g">
-  <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
-  <div class="ui-g-12 ui-md-2 ui-lg-3">
-    <label>{{'device.config.nsfd'|translate}}</label>
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-2 ui-lg-3">
+        <label>{{'device.config.nsfd'|translate}}</label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
+        <p-inputSwitch
+          formControlName="nsfd"></p-inputSwitch>
+      </div>
+    </div>
+
+    <div class="ui-dialog-buttonpane ui-helper-clearfix">
+      <button
+        type="button"
+        pButton
+        icon="fa-cogs"
+        (click)="resetDevice()"
+        label="{{'Default settings'|translate}}"></button>
+
+      <button
+        type="button"
+        pButton
+        icon="fa-share-square"
+        (click)="sendToDevice()"
+        label="{{'Send to device'|translate}}"></button>
+    </div>
   </div>
-  <div class="ui-g-12 ui-md-6 ui-lg-6">
-    <p-inputSwitch
-      [(ngModel)]="deviceNsfdChecked"></p-inputSwitch>
-  </div>
-</div>
+</ngForm>
