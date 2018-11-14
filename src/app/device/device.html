@@ -112,6 +112,7 @@
 <!-- DEVICE CONFIGURATION -->
 <app-device-configuration
   [displayDeviceConfig]="displayDeviceConfig"
+  [deviceType]="deviceType"
   (deviceConfigClosed)="closeDeviceConfig($event)"></app-device-configuration>
 
 <p-dialog [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"

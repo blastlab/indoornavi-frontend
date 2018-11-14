@@ -1,5 +1,4 @@
 <p-dialog
-  header="Title"
   [(visible)]="displayDeviceConfig"
   [draggable]="false"
   [responsive]="true"
@@ -10,8 +9,21 @@
   breakpoint="640"
   (onHide)="closeDeviceConfig()">
 
-  Lorem ipsum dolor sit amet
+  <p-header>
+    {{titleHeader|translate}}
+  </p-header>
 
+  <p-tabView>
+    <p-tabPanel header="rfset">
+      rf setting
+    </p-tabPanel>
+    <p-tabPanel header="txset">
+      tx setting
+    </p-tabPanel>
+    <p-tabPanel header="ranging time">
+      ranging time
+    </p-tabPanel>
+  </p-tabView>
 
   <p-footer>
     <div class="ui-dialog-buttonpane ui-helper-clearfix">

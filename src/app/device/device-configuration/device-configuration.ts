@@ -7,9 +7,14 @@ import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 export class DeviceConfigurationComponent implements OnInit {
 
   @Input() displayDeviceConfig: boolean;
+  @Input() deviceType: string;
   @Output() deviceConfigClosed: EventEmitter<boolean> = new EventEmitter<boolean>();
+  titleHeader: string;
+
+  constructor() {}
 
   ngOnInit() {
+    this.titleHeader = `device.details.${this.deviceType}.config`;
   }
 
   closeDeviceConfig(): void {
