@@ -8,11 +8,18 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 export class DeviceRangingTimeComponent implements OnInit {
 
   rangingTimeConfigForm: FormGroup;
+  selectedType = null;
+  disabled: boolean;
 
   constructor(private fb: FormBuilder) {}
 
   ngOnInit() {
     this.createRangingTimeForm();
+  }
+
+  changeType(value) {
+    this.selectedType = value;
+    this.disabled = !this.disabled;
   }
 
   private createRangingTimeForm(): void {
