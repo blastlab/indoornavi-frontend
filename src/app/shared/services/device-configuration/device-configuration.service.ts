@@ -21,11 +21,11 @@ export class DeviceConfigurationService {
   }
 
   getPulseRepetitionFrequency(): Observable<DeviceConfiguration[]> {
-    return of([{ label: '16', value: 16 }, { label: '64', value: 16 }]);
+    return of([{ label: '16', value: 16 }, { label: '64', value: 64 }]);
   }
 
   getPreambleAcquisitionChunk(): Observable<DeviceConfiguration[]> {
-    return of([{ label: '8', value: 8 }, { label: '16', value: 16 }, { label: '32', value: 32 }, { label: '64', value: 16 }]);
+    return of([{ label: '8', value: 8 }, { label: '16', value: 16 }, { label: '32', value: 32 }, { label: '64', value: 64 }]);
   }
 }
 
