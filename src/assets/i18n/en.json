@@ -100,7 +100,6 @@
   "device.details.bluetooth": "Bluetooth details",
   "device.details.bluetooth.add": "Add Bluetooth",
   "device.details.bluetooth.edit": "Edit Bluetooth",
-  "device.details.bluetooth.edit": "Edit Bluetooth",
   "device.details.bluetooth.remove": "Delete Bluetooth",
   "device.details.sinks": "Sink details",
   "device.details.sinks.add": "Add Sink",
