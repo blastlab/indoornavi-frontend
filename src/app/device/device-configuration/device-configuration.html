@@ -15,11 +15,14 @@
 
   <p-tabView>
     <p-tabPanel header="rfset">
-      rf setting
+      <app-device-rfset
+        [rfsetConfigData]="rfsetConfigData"></app-device-rfset>
     </p-tabPanel>
+
     <p-tabPanel header="txset">
       tx setting
     </p-tabPanel>
+
     <p-tabPanel header="ranging time">
       ranging time
     </p-tabPanel>
