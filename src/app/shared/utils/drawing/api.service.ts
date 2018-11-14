@@ -88,8 +88,9 @@ export class ApiService {
     const marker: Marker = <Marker>objectMetadata.object;
     const markerOnMap: MarkerOnMap = new MarkerOnMap(point, container, ApiService.getDefaultConfiguration(objectMetadata));
     markerOnMap.setId(objectMetadata.object.id);
-
-    marker.iconUrl ? markerOnMap.setIconFromUrl(marker.icon) : markerOnMap.setIconFromBase64(marker.icon);
+    if (!!marker.icon) {
+      marker.iconUrl ? markerOnMap.setIconFromUrl(marker.icon) : markerOnMap.setIconFromBase64(marker.icon);
+    }
     if (!!marker.events) {
       markerOnMap.addEvents(marker.events, originMessageEvent);
     }
