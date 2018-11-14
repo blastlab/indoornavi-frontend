@@ -9,8 +9,8 @@ export class MarkerOnMap {
   private id: number;
   private markerUnicode = '\uf041'; // fa-map-marker
   private customIconSize: BoxSize = {
-    width: 25,
-    height: 25
+    width: 55,
+    height: 55
   };
 
   private defaultIconSize: BoxSize = {
@@ -73,7 +73,7 @@ export class MarkerOnMap {
     this.svgGroupWrapper.getElements(ElementType.ICON).push(element);
   }
 
-  injectBase64Icon(iconBase64String: string): void {
+  setIconFromBase64(iconBase64String: string): void {
     this.getGroup().removeElements(ElementType.ICON);
     const element: d3.selection = this.svgGroupWrapper
       .place({

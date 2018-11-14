@@ -148,14 +148,14 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
         if (event.origin === window.location.origin) {
           return;
         }
-        this.publishedService.checkOrigin(params['api_key'], event.origin).takeUntil(this.subscriptionDestructor)
-          .subscribe((verified: boolean): void => {
+        // this.publishedService.checkOrigin(params['api_key'], event.origin).takeUntil(this.subscriptionDestructor)
+        //   .subscribe((verified: boolean): void => {
           // if (verified && !!this.scale) {
           this.handleCommands(event);
           // } else {
           //   event.source.postMessage({type: 'error', message: 'Origin not verified. Make sure you use your own API KEY.'}, '*');
           // }
-        });
+        // });
       });
     }, false);
   }

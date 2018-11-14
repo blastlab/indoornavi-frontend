@@ -34,8 +34,8 @@ export namespace APIObject {
 
   export interface Marker extends Base {
     events: string[];
-    iconUrl: string;
-    iconStringBase64: string;
+    iconUrl: boolean;
+    icon: string;
     label: string;
     points: Point[];
   }
