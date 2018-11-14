@@ -117,7 +117,7 @@ export class ApiService {
 
   private drawArea(objectMetadata: Metadata, container: d3.selection, points: Point[], originMessageEvent: MessageEvent): void {
     const area: Area = <Area>objectMetadata.object;
-    let areaSelection: SvgGroupWrapper  = new DrawBuilder(container, ApiService.getDefaultConfiguration(objectMetadata)).createGroup();
+    const areaSelection: SvgGroupWrapper  = new DrawBuilder(container, ApiService.getDefaultConfiguration(objectMetadata)).createGroup();
 
     if (!!area.border) {
       ApiHelper.setStrokeColor(areaSelection.getGroup(), area.border.color);
@@ -172,7 +172,7 @@ export class ApiService {
 
   private drawDottedPolyline(lines: d3.selection, circles: d3.selection, polyline): void {
      lines.forEach((line: d3.selection) => {
-      ApiHelper.setDottedPolyline(line, polyline.color, 5)
+      ApiHelper.setDottedPolyline(line, polyline.color, polyline.width)
     });
   }
 
