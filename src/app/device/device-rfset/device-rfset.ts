@@ -27,7 +27,7 @@ export class DeviceRfSetComponent implements OnInit {
   }
 
   resetDevice(): void {
-    this.rfConfigForm.patchValue({ rfData: this.rfDefaultData});
+    this.rfConfigForm.patchValue({ rfData: this.rfDefaultData });
   }
 
   private createRfForm(): void {
@@ -35,9 +35,9 @@ export class DeviceRfSetComponent implements OnInit {
       rfData: this.fb.group({
         radioChannel: 5,
         radioBaudRate: 6800,
-        preambleLength: 256,
-        pulseRepetitionFrequency: 64,
-        preambleAcquisitionChunk: 32,
+        preambleLength: 1546,
+        pulseRepetitionFrequency: 16,
+        preambleAcquisitionChunk: 16,
         communicationCode: 100,
         sfd: 100,
         nsfd: true
