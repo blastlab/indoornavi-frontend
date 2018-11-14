@@ -5,7 +5,7 @@ import {FormBuilder, FormGroup} from '@angular/forms';
   selector: 'app-device-rfset',
   templateUrl: './device-rfset.html'
 })
-export class DeviceRfsetComponent implements OnInit {
+export class DeviceRfSetComponent implements OnInit {
 
   @Input() rfsetConfigData;
   rfConfigForm: FormGroup;
