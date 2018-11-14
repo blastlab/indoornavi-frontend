@@ -1,5 +1,4 @@
 import {Component, OnInit, Input, Output, EventEmitter, OnDestroy} from '@angular/core';
-import {SelectItem} from 'primeng/primeng';
 import {DeviceConfigurationService} from '../../shared/services/device-configuration/device-configuration.service';
 import {Subject} from 'rxjs/Subject';
 
@@ -39,6 +38,7 @@ export class DeviceConfigurationComponent implements OnInit, OnDestroy {
 
   private setRtfConfig() {
     this.deviceConfigurationService.getConfigDevices()
+      .takeUntil(this.subscribtionDestructor)
       .subscribe(rtfData => this.rfsetConfigData = rtfData);
   }
 }
