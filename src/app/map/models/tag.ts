@@ -14,7 +14,7 @@ export class TagOnMap {
 
   constructor(protected coordinates: Point, protected container: d3.selection, protected drawConfiguration: DrawConfiguration) {
     this.svgGroupWrapper = new DrawBuilder(container, drawConfiguration).createGroup()
-      .addIcon({x: 0, y: 0}, this.tagUnicode, 2)
+      .addIcon({x: 0, y: 0}, this.tagUnicode, 45, 8, 8)
       .addText({x: 0, y: 36}, this.getDeviceDescription())
       .place({x: coordinates.x, y: coordinates.y});
   }

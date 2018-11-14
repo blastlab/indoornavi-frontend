@@ -25,7 +25,7 @@ export class SinkInEditor extends DeviceInEditor {
     protected containerBox: Box
   ) {
     super(shortId, coordinates, container, drawConfiguration, devicePlacerService, contextMenuService, translateService, containerBox);
-    this.svgGroupWrapper = this.svgGroupWrapper.addIcon({x: 18, y: 18}, this.sinkUnicode, 2);
+    this.svgGroupWrapper = this.svgGroupWrapper.addIcon({x: 18, y: 18}, this.sinkUnicode, 45, 8, 8);
   }
 
   addAnchor(anchor: AnchorBag): void {

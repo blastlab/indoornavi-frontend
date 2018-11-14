@@ -38,7 +38,7 @@ export class SvgGroupWrapper {
   }
 
   addIcon(coordinates: Point, iconCode: string, iconSizeScalar?: number, transformHorizontal?: number, transformVertical?: number): SvgGroupWrapper {
-    if (!!iconSizeScalar && !transformHorizontal || !transformVertical) {
+    if (!!iconSizeScalar && (!transformHorizontal || !transformVertical)) {
       throw new Error('Icon size scalar must be set with horizontal transformation and vertical transformation set to integer');
     }
 
