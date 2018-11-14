@@ -8,6 +8,9 @@ import {SelectItem} from 'primeng/primeng';
 export class DeviceRfsetComponent implements OnInit {
 
   @Input() rfsetConfigData;
+  deviceRfCode = 1;
+  deviceSdf = 1;
+  deviceNsfdChecked = true;
 
   constructor() {}
 

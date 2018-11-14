@@ -57,7 +57,9 @@ import {
   SliderModule,
   ToolbarModule,
   TooltipModule,
-  TabViewModule
+  TabViewModule,
+  SpinnerModule,
+  InputSwitchModule
 } from 'primeng/primeng';
 import {HintBarService} from './map-editor/hint-bar/hintbar.service';
 import {ToolbarService} from './map-editor/tool-bar/toolbar.service';
@@ -226,6 +228,8 @@ export function HttpLoaderFactory(http: Http) {
     BreadcrumbModule,
     TooltipModule,
     TabViewModule,
+    SpinnerModule,
+    InputSwitchModule,
     GrowlModule,
     ProgressSpinnerModule,
     OverlayPanelModule,

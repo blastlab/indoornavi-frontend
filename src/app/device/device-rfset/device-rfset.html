@@ -72,3 +72,48 @@
     </p-dropdown>
   </div>
 </div>
+
+<div class="ui-g">
+  <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
+  <div class="ui-g-12 ui-md-2 ui-lg-3">
+    <label for="communicationCode">{{'device.config.code'|translate}}</label>
+  </div>
+  <div class="ui-g-12 ui-md-6 ui-lg-6">
+    <p-spinner
+      [(ngModel)]="deviceRfCode"
+      size="40"
+      [style]="{ width: '100%' }"
+      name="communicationCode"
+      [min]="1"
+      [max]="24"
+      id="communicationCode"></p-spinner>
+  </div>
+</div>
+
+<div class="ui-g">
+  <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
+  <div class="ui-g-12 ui-md-2 ui-lg-3">
+    <label for="communicationCode">{{'device.config.sfd'|translate}}</label>
+  </div>
+  <div class="ui-g-12 ui-md-6 ui-lg-6">
+    <p-spinner
+      [(ngModel)]="deviceSdf"
+      size="40"
+      [style]="{ width: '100%' }"
+      name="sfd"
+      [min]="1"
+      [max]="65536"
+      id="sfd"></p-spinner>
+  </div>
+</div>
+
+<div class="ui-g">
+  <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
+  <div class="ui-g-12 ui-md-2 ui-lg-3">
+    <label>{{'device.config.nsfd'|translate}}</label>
+  </div>
+  <div class="ui-g-12 ui-md-6 ui-lg-6">
+    <p-inputSwitch
+      [(ngModel)]="deviceNsfdChecked"></p-inputSwitch>
+  </div>
+</div>
