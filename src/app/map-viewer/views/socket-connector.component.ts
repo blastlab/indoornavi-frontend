@@ -34,6 +34,7 @@ import {Complex} from '../../complex/complex.type';
 import {ComplexService} from '../../complex/complex.service';
 import {NavigationController} from '../../shared/utils/navigation/navigation.controller';
 import Metadata = APIObject.Metadata;
+import {Helper} from '../../shared/utils/helper/helper';
 
 @Component({
   templateUrl: './socket-connector.component.html'
@@ -136,7 +137,9 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
               });
               this.tagToggleService.setTags(tags);
               if (!!floor.scale) {
-                this.drawAreas(floor.id);
+                if (!Helper.detectMobile()) {
+                  this.drawAreas(floor.id);
+                }
                 this.initializeSocketConnection();
               }
             });
@@ -291,9 +294,17 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
     this.areaService.getAllByFloor(floorId).first().subscribe((areas: Area[]): void => {
       areas.forEach((area: Area) => {
         const drawBuilder: DrawBuilder = new DrawBuilder(this.d3map.container, {id: `area-${area.id}`, clazz: 'area'});
+        const textPoint = {
+          x: area.points[0].x + 10,
+          y: area.points[0].y + 15,
+        };
         const areaOnMap = drawBuilder
           .createGroup()
-          .addPolygon(area.points);
+          .addPolygon(area.points)
+          .addBackground(textPoint)
+          .hideElement(ElementType.RECT)
+          .addText(textPoint, `area-${area.id}`, '#fff')
+          .hideElement(ElementType.TEXT);
         areaOnMap.getLastElement(ElementType.POLYGON)
           .style('opacity', Area.getCustomSettings().opacity)
           .style('fill', Area.getCustomSettings().fill);
