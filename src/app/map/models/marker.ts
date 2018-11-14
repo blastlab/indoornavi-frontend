@@ -9,9 +9,12 @@ export class MarkerOnMap {
   private id: number;
   private markerUnicode = '\uf041'; // fa-map-marker
   private customIconSize: BoxSize = {
-    width: 25,
-    height: 25
+    width: 45,
+    height: 45
   };
+  private iconSizeScalar: number = 45;
+  private transformHorizontal: number = 8;
+  private transformVertical: number = 8;
 
   private defaultIconSize: BoxSize = {
     width: 10,
@@ -27,7 +30,9 @@ export class MarkerOnMap {
           y: 0
         },
         this.markerUnicode,
-        2
+        this.iconSizeScalar,
+        this.transformHorizontal,
+        this.transformVertical
       );
 
     this.svgGroupWrapper
@@ -36,11 +41,15 @@ export class MarkerOnMap {
   }
 
   addLabel(label: string): void {
-    this.svgGroupWrapper.addText({ x: 0, y: 0}, label);
-    const labelText: d3.selection = this.svgGroupWrapper.getGroup().select('text');
-    const x: number = (this.customIconSize.width - labelText.node().getComputedTextLength()) / 2;
-    const y: number = labelText.node().getBoundingClientRect().height + this.customIconSize.height;
-    labelText.attr('x', x).attr('y', y);
+    const isIconFont  = this.svgGroupWrapper.getGroup().selectAll('.font-icon').data().map( d => d).length > 0 ;
+    let x = 0;
+    let y = 0;
+    if (!isIconFont) {
+      x = this.customIconSize.width;
+      y = this.customIconSize.height;
+    }
+    this.svgGroupWrapper
+      .addText({ x: x, y: y}, label, true);
   }
 
   addEvents(events: string[], originMessageEvent: MessageEvent): void {

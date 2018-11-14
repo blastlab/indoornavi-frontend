@@ -37,24 +37,26 @@ export class SvgGroupWrapper {
     this.groupDefaultColor = (colored) ? colored : 'black';
   }
 
-  addIcon(coordinates: Point, iconCode: string, iconSizeMultiplier?: number): SvgGroupWrapper {
-    if (!!iconSizeMultiplier && iconSizeMultiplier < 2 || iconSizeMultiplier > 5) {
-      throw new Error('Icon size multiplier must be in range <2, 5>');
+  addIcon(coordinates: Point, iconCode: string, iconSizeScalar?: number, transformHorizontal?: number, transformVertical?: number): SvgGroupWrapper {
+    if (!!iconSizeScalar && !transformHorizontal || !transformVertical) {
+      throw new Error('Icon size scalar must be set with horizontal transformation and vertical transformation set to integer');
     }
 
     let element: d3.selection;
-
+    const x: number = transformHorizontal ? transformHorizontal : 0;
+    const y: number = transformVertical ? transformVertical : 0;
     // create icon
     element = this.group
       .append('text')
-      .attr('x', coordinates.x)
-      .attr('y', coordinates.y)
+      .attr('class', 'font-icon')
+      .attr('x', coordinates.x - x)
+      .attr('y', coordinates.y - y)
       .attr('font-family', 'FontAwesome')
       .text(iconCode);
 
     // set icon size
-    if (!!iconSizeMultiplier) {
-      element.attr('font-size', `${iconSizeMultiplier}em`);
+    if (!!iconSizeScalar) {
+      element.attr('font-size', `${iconSizeScalar}px`);
     }
 
     this.addElement(ElementType.ICON, element);
@@ -98,7 +100,7 @@ export class SvgGroupWrapper {
     return this;
   }
 
-  addText(coordinates: Point, text: string): SvgGroupWrapper {
+  addText(coordinates: Point, text: string, center: boolean = false): SvgGroupWrapper {
     const element: d3.selection = this.group
       .append('text')
       .attr('x', coordinates.x)
@@ -106,6 +108,11 @@ export class SvgGroupWrapper {
       .attr('fill', this.groupDefaultColor)
       .text(text);
     this.addElement(ElementType.TEXT, element);
+    if (center) {
+      const x: number = (coordinates.x - element.node().getComputedTextLength()) / 2;
+      const y: number = element.node().getBoundingClientRect().height + coordinates.y;
+      element.attr('x', x).attr('y', y);
+    }
     return this;
   }
 
