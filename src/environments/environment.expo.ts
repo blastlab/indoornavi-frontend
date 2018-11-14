@@ -5,6 +5,6 @@
 
 export const environment = {
   production: true,
-  base_url: 'indoornavi.westeurope.azurecontainer.io:8080',
+  base_url: 'indoornavi-backend.azurewebsites.net',
   version: require('../../package.json').version
 };
