@@ -2,19 +2,29 @@ import {Point, Point3d} from '../../map-editor/map.type';
 import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.builder';
 import * as d3 from 'd3';
 import {DrawConfiguration} from '../../map-viewer/publication.type';
+import {ModelsConfig} from './models.config';
 
 export class TagOnMap {
   static TRANSITION_DURATION: number = 1000;
 
   protected svgGroupWrapper: SvgGroupWrapper;
-
-  private tagUnicode = '\uf183'; // fa-male
   private transitionEnded: boolean = true;
   private shortId: number;
 
-  constructor(protected coordinates: Point, protected container: d3.selection, protected drawConfiguration: DrawConfiguration) {
+  constructor(
+    protected coordinates: Point,
+    protected container: d3.selection,
+    protected drawConfiguration: DrawConfiguration,
+    protected models: ModelsConfig
+  ) {
     this.svgGroupWrapper = new DrawBuilder(container, drawConfiguration).createGroup()
-      .addIcon({x: 0, y: 0}, this.tagUnicode, 45, 8, 8)
+      .addIcon(
+        {x: 0, y: 0},
+        this.models.tagUnicode,
+        this.models.iconSizeScalar,
+        this.models.transformHorizontal,
+        this.models.transformVertical
+      )
       .addText({x: 0, y: 36}, this.getDeviceDescription())
       .place({x: coordinates.x, y: coordinates.y});
   }

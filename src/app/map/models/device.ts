@@ -6,6 +6,7 @@ import {ContextMenuService} from '../../shared/wrappers/editable/editable.servic
 import {TranslateService} from '@ngx-translate/core';
 import {DeviceAppearance, DeviceCallbacks, DeviceInEditorConfiguration} from '../../map-editor/tool-bar/tools/device-placer/device-placer.types';
 import {Geometry} from '../../shared/utils/helper/geometry';
+import {ModelsConfig} from './models.config';
 
 
 export class DeviceInEditor {
@@ -13,9 +14,6 @@ export class DeviceInEditor {
   protected svgGroupWrapper: SvgGroupWrapper;
 
   private reactiveToEvents: boolean = false;
-  private cursorIcon: string = '\uf245';
-  private colorOutOfScope: string = '#727272';
-  private colorInScope: string = '#000000';
   private appearance: DeviceAppearance = DeviceAppearance.IN_SCOPE;
   private unsetLabel: string;
 
@@ -27,7 +25,8 @@ export class DeviceInEditor {
     protected devicePlacerService: DevicePlacerService,
     protected contextMenuService: ContextMenuService,
     protected translateService: TranslateService,
-    protected containerBox: Box
+    protected containerBox: Box,
+    protected models: ModelsConfig
   ) {
     this.createDeviceOnMapGroup(coordinates, container, drawConfiguration);
     this.addReactionToMouseEvents();
@@ -40,17 +39,17 @@ export class DeviceInEditor {
   }
 
   setActive(): void {
-    this.setDeviceAppearance(this.colorInScope);
+    this.setDeviceAppearance(this.models.colorInScope);
     this.appearance = DeviceAppearance.ACTIVE;
   }
 
   setInGroupScope(): void {
-    this.setDeviceAppearance(this.colorInScope);
+    this.setDeviceAppearance(this.models.colorInScope);
     this.appearance = DeviceAppearance.IN_SCOPE;
   }
 
   setOutOfGroupScope(): void {
-    this.setDeviceAppearance(this.colorOutOfScope);
+    this.setDeviceAppearance(this.models.colorOutOfScope);
     this.appearance = DeviceAppearance.OUT_SCOPE;
   }
 
@@ -90,7 +89,7 @@ export class DeviceInEditor {
     const deviceDescription = this.getDeviceDescription();
     this.svgGroupWrapper = new DrawBuilder(container, drawConfiguration).createGroup()
       .place(coordinates)
-      .addIcon({x: 0, y: 11}, this.cursorIcon) // icon 0,0 coordinates are at the font bottom left
+      .addIcon({x: 0, y: 11}, this.models.cursorIcon) // icon 0,0 coordinates are at the font bottom left
       .addText({x: 0, y: 40}, deviceDescription);
   }
 

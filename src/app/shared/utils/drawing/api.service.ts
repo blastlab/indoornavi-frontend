@@ -15,6 +15,7 @@ import Area = APIObject.Area;
 import Polyline = APIObject.Polyline;
 import Circle = APIObject.Circle;
 import InfoWindow = APIObject.InfoWindow;
+import {ModelsConfig} from '../../../map/models/models.config';
 
 @Injectable()
 export class ApiService {
@@ -27,7 +28,7 @@ export class ApiService {
     return {id: `map-object-${objectMetadata.type}-${objectMetadata.object.id}`, clazz: 'map-object'};
   }
 
-  constructor() {
+  constructor(private models: ModelsConfig) {
   }
 
   create(): number {
@@ -86,7 +87,7 @@ export class ApiService {
 
   private placeMarkerOnMap(objectMetadata: Metadata, container: d3.selection, point: Point, originMessageEvent: MessageEvent): void {
     const marker: Marker = <Marker>objectMetadata.object;
-    const markerOnMap: MarkerOnMap = new MarkerOnMap(point, container, ApiService.getDefaultConfiguration(objectMetadata));
+    const markerOnMap: MarkerOnMap = new MarkerOnMap(point, container, ApiService.getDefaultConfiguration(objectMetadata), this.models);
     markerOnMap.setId(objectMetadata.object.id);
 
     if (!!marker.icon) {

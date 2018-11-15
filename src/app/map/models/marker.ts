@@ -1,38 +1,28 @@
-import {BoxSize, DrawBuilder, ElementType, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.builder';
+import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.builder';
 import {Point} from '../../map-editor/map.type';
 import {DrawConfiguration} from '../../map-viewer/publication.type';
 import * as d3 from 'd3';
+import {ModelsConfig} from './models.config';
 
 export class MarkerOnMap {
   protected svgGroupWrapper: SvgGroupWrapper;
 
   private id: number;
-  private markerUnicode = '\uf041'; // fa-map-marker
-  private customIconSize: BoxSize = {
-    width: 45,
-    height: 45
-  };
-  private iconSizeScalar: number = 45;
-  private transformHorizontal: number = 8;
-  private transformVertical: number = 8;
 
-  private defaultIconSize: BoxSize = {
-    width: 10,
-    height: 32
-  };
-
-  constructor(protected coordinates: Point, protected container: d3.selection, protected drawConfiguration: DrawConfiguration) {
+  constructor(
+    protected coordinates: Point,
+    protected container: d3.selection,
+    protected drawConfiguration: DrawConfiguration,
+    private models: ModelsConfig
+  ) {
     this.svgGroupWrapper = new DrawBuilder(container, drawConfiguration).createGroup()
-      .place({ x: coordinates.x - this.defaultIconSize.width / 2, y: coordinates.y })
+      .place({ x: coordinates.x - this.models.defaultIconSize.width / 2, y: coordinates.y })
       .addIcon(
-        {
-          x: 0,
-          y: 0
-        },
-        this.markerUnicode,
-        this.iconSizeScalar,
-        this.transformHorizontal,
-        this.transformVertical
+        {x: 0, y: 0},
+        this.models.markerUnicode,
+        this.models.iconSizeScalar,
+        this.models.transformHorizontal,
+        this.models.transformVertical
       );
 
     this.svgGroupWrapper
@@ -45,8 +35,8 @@ export class MarkerOnMap {
     let x = 0;
     let y = 0;
     if (!isIconFont) {
-      x = this.customIconSize.width;
-      y = this.customIconSize.height;
+      x = this.models.customIconSize.width;
+      y = this.models.customIconSize.height;
     }
     this.svgGroupWrapper
       .addText({ x: x, y: y}, label, true);
@@ -65,16 +55,16 @@ export class MarkerOnMap {
     this.getGroup().removeElements(ElementType.ICON);
     const element: d3.selection = this.svgGroupWrapper
       .place({
-        x: this.coordinates.x - this.customIconSize.width / 2,
-        y: this.coordinates.y - this.customIconSize.height
+        x: this.coordinates.x - this.models.customIconSize.width / 2,
+        y: this.coordinates.y - this.models.customIconSize.height
       })
       .getGroup()
       .append('svg:image')
       .attr('xlink:href', icon)
       .attr('x', 0)
       .attr('y', 0)
-      .attr('width', this.customIconSize.width)
-      .attr('height', this.customIconSize.height)
+      .attr('width', this.models.customIconSize.width)
+      .attr('height', this.models.customIconSize.height)
       .attr('stroke', 'black')
       .attr('fill', 'black')
       .attr('cursor', 'pointer');
