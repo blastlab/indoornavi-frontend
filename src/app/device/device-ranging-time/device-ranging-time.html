@@ -9,6 +9,8 @@
         <input
           formControlName="rangingTimeOneSlot"
           pInputText
+          #rangingTimeOneSlot
+          (input)="calculateRangingPeriod()"
           id="rangingTimeOneSlot" />
       </div>
     </div>
@@ -17,46 +19,48 @@
       <div class="ui-g-12 ui-md-5 ui-lg-5"></div>
       <div class="ui-g-12 ui-md-7 ui-lg-7">
         <p-radioButton
+          formControlName="typeRangingTime"
           (click)="changeType('time')"
           label="Ranging Period"
+          value="time"
           name="groupname"></p-radioButton>
         <p-radioButton
+          formControlName="typeRangingTime"
           (click)="changeType('measurments')"
           label="Number of ranging"
+          value="measurments"
           name="groupname"></p-radioButton>
       </div>
     </div>
 
-    <ng-container *ngIf="selectedType">
-      <p>{{ selectedType }}</p>
-      <div class="ui-g">
-        <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
-        <div class="ui-g-12 ui-md-3 ui-lg-4">
-          <label for="rangingPeriod">{{'device.config.rangingPerion'|translate}}</label>
-        </div>
-        <div class="ui-g-12 ui-md-5 ui-lg-5" *ngIf="disabled">
-          <input
-            formControlName="rangingPeriod"
-            pInputText
-            [disabled]="disabled"
-            id="rangingPeriod" />
-          {{ disabled }}
-        </div>
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-3 ui-lg-4">
+        <label for="rangingPeriod">{{'device.config.rangingPerion'|translate}}</label>
       </div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <input
+          formControlName="rangingPeriod"
+          *ngIf="!isRangingPeriodDisabled"
+          id="rangingPeriod" />
+        <span *ngIf="isRangingPeriodDisabled">{{ rangingPeriod }}</span>
+      </div>
+    </div>
 
-      <div class="ui-g">
-        <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
-        <div class="ui-g-12 ui-md-3 ui-lg-4">
-          <label for="numberOfMeasurement">{{'device.config.numberOfMeasurments'|translate}}</label>
-        </div>
-        <div class="ui-g-12 ui-md-5 ui-lg-5">
-          <input
-            formControlName="numberOfMeasurement"
-            pInputText
-            id="numberOfMeasurement" />
-        </div>
+    <div class="ui-g" [ngClass]="{ 'hidden': !isRangingPeriodDisabled }">
+      <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-3 ui-lg-4">
+        <label for="numberOfMeasurement">{{'device.config.numberOfMeasurments'|translate}}</label>
       </div>
-    </ng-container>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <input
+          formControlName="numberOfMeasurement"
+          pInputText
+          #numberOfMeasurement
+          (input)="calculateRangingPeriod()"
+          id="numberOfMeasurement" />
+      </div>
+    </div>
 
     <div class="ui-dialog-buttonpane ui-helper-clearfix">
       <button
