@@ -10,6 +10,7 @@ export class ModelsConfig {
   tagUnicode = '\uf183'; // fa-male
   colorOutOfScope: string = '#727272';
   colorInScope: string = '#000000';
+  pointRadius: number = 5;
   customIconSize: BoxSize = {
     width: 45,
     height: 45
