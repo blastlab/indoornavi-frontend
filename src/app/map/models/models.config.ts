@@ -11,6 +11,7 @@ export class ModelsConfig {
   colorOutOfScope: string = '#727272';
   colorInScope: string = '#000000';
   pointRadius: number = 5;
+  labelTextLength = 24;
   customIconSize: BoxSize = {
     width: 45,
     height: 45
