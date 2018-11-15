@@ -97,6 +97,7 @@ export class ApiService {
     }
 
     if (!!marker.label) {
+      marker.label = marker.label.length > 24 ? `${marker.label.slice(0, 23)}...` : marker.label;
       markerOnMap.addLabel(marker.label);
     }
 

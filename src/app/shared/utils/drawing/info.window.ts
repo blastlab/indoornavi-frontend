@@ -119,7 +119,7 @@ export class InfoWindowGroupWrapper {
         coordinates.y = box.y + box.height / 2 - this.infoWindowSize.height / 2;
         break;
       case Position.BOTTOM:
-        coordinates.x = box.x + box.width / 2 - this.infoWindowSize.width / 2;
+        coordinates.x = box.x - this.infoWindowSize.width / 2 + this.models.iconSizeScalar / 2;
         coordinates.y = box.y + box.height;
         break;
       case Position.BOTTOM_LEFT:
