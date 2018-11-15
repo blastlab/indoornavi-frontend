@@ -11,6 +11,7 @@ export class DeviceRfSetComponent implements OnInit {
   @Input() rfsetConfigData;
   rfConfigForm: FormGroup;
   rfDefaultData;
+  isButtonSendDisabled = true;
 
   constructor(
     private fb: FormBuilder,
@@ -20,10 +21,12 @@ export class DeviceRfSetComponent implements OnInit {
   ngOnInit() {
     this.createRfForm();
     this.setDefaultRfConfig();
+    this.rfConfigForm.valueChanges.subscribe(() => this.isButtonSendDisabled = false );
   }
 
   sendToDevice(): void {
     console.log(this.rfConfigForm.value);
+    this.isButtonSendDisabled = true;
   }
 
   resetDevice(): void {
