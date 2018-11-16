@@ -100,7 +100,7 @@ export class SvgGroupWrapper {
     return this;
   }
 
-  addText(coordinates: Point, text: string, center: boolean = false): SvgGroupWrapper {
+  addText(coordinates: Point, text: string, center = false): SvgGroupWrapper {
     const element: d3.selection = this.group
       .append('text')
       .attr('x', coordinates.x)

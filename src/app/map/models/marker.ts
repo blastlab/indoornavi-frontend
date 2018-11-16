@@ -39,7 +39,7 @@ export class MarkerOnMap {
       y = this.models.customIconSize.height;
     }
     this.svgGroupWrapper
-      .addText({ x: x, y: y}, label, true);
+      .addText({x: x, y: y}, label, true);
   }
 
   addEvents(events: string[], originMessageEvent: MessageEvent): void {
