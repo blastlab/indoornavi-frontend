@@ -100,14 +100,10 @@ export class NavigationController {
     this.accuracy = (accuracy && accuracy > 0) ? accuracy : Infinity;
     this.scale = scale;
     this.event = event;
-    if (!!this.maze) {
+    this.pathService.getPathByFloorId(floorId).subscribe((lines: Line[]): void => {
+      this.maze = lines;
       this.beggingNavigationForGivenMaze(location, destination);
-    } else {
-      this.pathService.getPathByFloorId(floorId).subscribe((lines: Line[]): void => {
-        this.maze = lines;
-        this.beggingNavigationForGivenMaze(location, destination);
-      });
-    }
+    });
   }
 
   private beggingNavigationForGivenMaze(location, destination) {
@@ -139,7 +135,9 @@ export class NavigationController {
     if (!!this.event) {
       this.event.source.postMessage({type: 'navigation', action: 'canceled'}, '*');
     }
-    this.stopNavigation();
+    if (this.isNavigationReady) {
+      this.stopNavigation();
+    }
   }
 
   private finishNavigation() {
@@ -167,10 +165,10 @@ export class NavigationController {
   }
 
   private handlePathUpdate(pointUpdate: Point): void {
+    console.log('pointUpdate', pointUpdate);
     const currentPointOnPath = Geometry.findPointOnPathInGivenRange(this.objectMetadataPolyline.object['lines'], pointUpdate, this.accuracy);
     if (!!currentPointOnPath) {
       if (this.isDestinationAchieved(currentPointOnPath)) {
-        console.log(currentPointOnPath);
         this.finishNavigation();
         return;
       }
@@ -209,11 +207,10 @@ export class NavigationController {
 
   private calculateNavigationPath(lines: Line[], location: Point, destination: Point): void {
     const path: Line[] = this.navigationService.calculateDijkstraShortestPath(lines, location, destination);
-    console.log(path);
+    console.log(path.length);
     if (path.length === 0) {
       this.isNavigationReady = false;
       this.event.source.postMessage({type: 'navigation', action: 'error'},  '*');
-      this.stopNavigation();
     } else {
       const pathLength: number = this.calculatePathLength(path);
       this.event.source.postMessage({type: 'navigation', action: 'created', pathLength: pathLength}, '*');
@@ -270,7 +267,6 @@ export class NavigationController {
     this.objectMetadataPolyline.object['points'] = this.createPointPathFromLinePath(this.scale, path);
     this.objectMetadataPolyline.object = Object.assign((<Path>this.objectMetadataPolyline.object),
       {lines: path, color: this.pathColor, width: this.pathWidth, lineType: 'dotted'});
-
     if (!this.disableStartPoint) {
       this.objectMetadataStart = this.assignId('CIRCLE');
       this.objectMetadataStart.object['position'] = Object.assign((<Circle>this.objectMetadataStart.object),
