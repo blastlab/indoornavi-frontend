@@ -88,6 +88,7 @@ import {ProperNameDirective} from './shared/directive/propername.directive';
 import {DeviceComponent} from 'app/device/device';
 import {DeviceConfigurationComponent} from 'app/device/device-configuration/device-configuration';
 import {DeviceRfSetComponent} from 'app/device/device-rfset/device-rfset';
+import {DeviceTxSetComponent} from 'app/device/device-txset/device-txset';
 import {DeviceRangingTimeComponent} from 'app/device/device-ranging-time/device-ranging-time';
 import {BluetoothComponent} from 'app/bluetooth/bluetooth';
 import {AcceptButtonsComponent} from 'app/shared/components/accept-buttons/accept-buttons';
@@ -162,6 +163,7 @@ export function HttpLoaderFactory(http: Http) {
     DeviceComponent,
     DeviceConfigurationComponent,
     DeviceRfSetComponent,
+    DeviceTxSetComponent,
     DeviceRangingTimeComponent,
     LongIdValidatorDirective,
     NumberInRangeValidatorDirective,
