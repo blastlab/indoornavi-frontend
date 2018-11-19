@@ -25,7 +25,7 @@ export class TagOnMap {
         this.models.transformHorizontal,
         this.models.transformVertical
       )
-      .addText({x: 0, y: 36}, this.getDeviceDescription())
+      .addText({coordinates: {x: 0, y: 36}}, this.getDeviceDescription(), 'f000')
       .place({x: coordinates.x, y: coordinates.y});
   }
 

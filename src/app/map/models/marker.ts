@@ -1,5 +1,5 @@
 import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.builder';
-import {Point} from '../../map-editor/map.type';
+import {Point, PositionDescription} from '../../map-editor/map.type';
 import {DrawConfiguration} from '../../map-viewer/publication.type';
 import * as d3 from 'd3';
 import {ModelsConfig} from './models.config';
@@ -39,7 +39,7 @@ export class MarkerOnMap {
       y = this.models.customIconSize.height;
     }
     this.svgGroupWrapper
-      .addText({x: x, y: y}, label, true);
+      .addText({coordinates: {x: x, y: y}, description: PositionDescription.CENTRE}, label, '#000');
   }
 
   addEvents(events: string[], originMessageEvent: MessageEvent): void {

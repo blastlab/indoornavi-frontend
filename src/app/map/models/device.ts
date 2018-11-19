@@ -90,7 +90,7 @@ export class DeviceInEditor {
     this.svgGroupWrapper = new DrawBuilder(container, drawConfiguration).createGroup()
       .place(coordinates)
       .addIcon({x: 0, y: 11}, this.models.cursorIcon) // icon 0,0 coordinates are at the font bottom left
-      .addText({x: 0, y: 40}, deviceDescription);
+      .addText({coordinates: {x: 0, y: 40}}, deviceDescription, '#000');
   }
 
   private setDeviceAppearance(color): void {

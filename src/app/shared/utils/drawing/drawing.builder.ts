@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import {Point} from '../../../map-editor/map.type';
+import {Point, TextPosition, PositionDescription} from '../../../map-editor/map.type';
 import {DrawConfiguration} from '../../../map-viewer/publication.type';
 
 export enum ElementType {
@@ -30,7 +30,7 @@ export class SvgGroupWrapper {
       .curve(d3.curveLinear);
   }
 
-  constructor(private group: d3.selection,
+  constructor(readonly group: d3.selection,
               container: d3.selection,
               colored?: string) {
     this.group = group;
@@ -101,17 +101,18 @@ export class SvgGroupWrapper {
     return this;
   }
 
-  addText(coordinates: Point, text: string, color: string = this.groupDefaultColor): SvgGroupWrapper {
+  addText(position: TextPosition, text: string, color: string = this.groupDefaultColor): SvgGroupWrapper {
+    console.log(position, text, color);
     const element: d3.selection = this.group
       .append('text')
-      .attr('x', coordinates.x)
-      .attr('y', coordinates.y)
+      .attr('x', position.coordinates.x)
+      .attr('y', position.coordinates.y)
       .attr('fill', color)
       .text(text);
     this.addElement(ElementType.TEXT, element);
-    if (center) {
-      const x: number = (coordinates.x - element.node().getComputedTextLength()) / 2;
-      const y: number = element.node().getBoundingClientRect().height + coordinates.y;
+    if (position.description === PositionDescription.CENTRE) {
+      const x: number = (position.coordinates.x - element.node().getComputedTextLength()) / 2;
+      const y: number = element.node().getBoundingClientRect().height + position.coordinates.y;
       element.attr('x', x).attr('y', y);
     }
     return this;

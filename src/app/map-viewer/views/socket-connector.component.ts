@@ -307,7 +307,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
           .addPolygon(area.points)
           .addBackground(textPoint)
           .hideElement(ElementType.RECT)
-          .addText(textPoint, `area-${area.id}`, '#fff')
+          .addText({coordinates: textPoint}, `area-${area.id}`, '#000')
           .hideElement(ElementType.TEXT);
         areaOnMap.getLastElement(ElementType.POLYGON)
           .style('opacity', Area.getCustomSettings().opacity)
