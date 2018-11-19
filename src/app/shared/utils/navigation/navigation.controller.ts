@@ -99,7 +99,11 @@ export class NavigationController {
     this.pathService.getPathByFloorId(floorId).subscribe((lines: Line[]): void => {
       this.calculateNavigationPath(lines, location, destination);
       this.onPositionChanged().subscribe((pointUpdate: Point): void => {
-        this.handlePathUpdate(pointUpdate);
+        if (!!this.objectMetadataPolyline) {
+          this.handlePathUpdate(pointUpdate);
+        } else {
+          this.event.source.postMessage({type: 'navigation', action: 'unavailable'}, '*');
+        }
       });
       if (this.lastCoordinates) {
         this.updatePosition(this.lastCoordinates);

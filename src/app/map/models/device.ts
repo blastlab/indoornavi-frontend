@@ -1,5 +1,5 @@
 import {Point} from '../../map-editor/map.type';
-import {Box, DrawBuilder, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.builder';
+import {Box, DrawBuilder, ElementType, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.builder';
 import * as d3 from 'd3';
 import {DevicePlacerService} from '../../map-editor/tool-bar/tools/device-placer/device-placer.service';
 import {ContextMenuService} from '../../shared/wrappers/editable/editable.service';
@@ -112,7 +112,7 @@ export class DeviceInEditor {
     const onMouseOut = (): void => {
       if (this.reactiveToEvents) {
         this.svgGroupWrapper.getGroup().style('cursor', 'default');
-        this.svgGroupWrapper.hideTexts();
+        this.svgGroupWrapper.hideElement(ElementType.TEXT);
         switch (this.appearance) {
           case 0:
             this.setInGroupScope();
@@ -175,7 +175,7 @@ export class DeviceInEditor {
         if (!coordinatesInRange && !!coordinatesBackUp) {
           this.svgGroupWrapper.getGroup().attr('x', coordinatesBackUp.x);
           this.svgGroupWrapper.getGroup().attr('y', coordinatesBackUp.y);
-          this.svgGroupWrapper.hideTexts();
+          this.svgGroupWrapper.hideElement(ElementType.TEXT);
           this.svgGroupWrapper.getGroup().dispatch('mouseup');
         }
         this.coordinates = {

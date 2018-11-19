@@ -35,6 +35,7 @@ import {ComplexService} from '../../complex/complex.service';
 import {NavigationController} from '../../shared/utils/navigation/navigation.controller';
 import Metadata = APIObject.Metadata;
 import {ModelsConfig} from '../../map/models/models.config';
+import {Helper} from '../../shared/utils/helper/helper';
 
 @Component({
   templateUrl: './socket-connector.component.html'
@@ -50,6 +51,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
   private areasOnMap: Dictionary<number, SvgGroupWrapper> = new Dictionary<number, SvgGroupWrapper>();
   private originListeningOnEvent: Dictionary<string, MessageEvent[]> = new Dictionary<string, MessageEvent[]>();
   private originListeningOnClickMapEvent: Array<MessageEvent> = [];
+  private pathFromConfiguration: Line[];
   protected tags: Tag[] = [];
   protected visibleTags: Map<number, boolean> = new Map();
   protected scaleCalculations: ScaleCalculations;
@@ -117,6 +119,9 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
       const floorId = +params['id'];
       this.floorService.getFloor(floorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
         this.floor = floor;
+        if (this.floor) {
+          this.subscribeToPathOnFloor();
+        }
         if (!!floor.scale) {
           this.scale = new Scale(this.floor.scale);
           this.scaleCalculations = {
@@ -135,7 +140,9 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
               });
               this.tagToggleService.setTags(tags);
               if (!!floor.scale) {
-                this.drawAreas(floor.id);
+                if (!Helper.detectMobile()) {
+                  this.drawAreas(floor.id);
+                }
                 this.initializeSocketConnection();
               }
             });
@@ -151,14 +158,14 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
         if (event.origin === window.location.origin) {
           return;
         }
-        this.publishedService.checkOrigin(params['api_key'], event.origin).takeUntil(this.subscriptionDestructor)
-          .subscribe((verified: boolean): void => {
+        // this.publishedService.checkOrigin(params['api_key'], event.origin).takeUntil(this.subscriptionDestructor)
+        //   .subscribe((verified: boolean): void => {
           // if (verified && !!this.scale) {
           this.handleCommands(event);
           // } else {
           //   event.source.postMessage({type: 'error', message: 'Origin not verified. Make sure you use your own API KEY.'}, '*');
           // }
-        });
+      //   });
       });
     }, false);
   }
@@ -206,6 +213,12 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
 
   protected whenTransitionEnded(): Observable<number> {
     return this.transitionEnded.asObservable();
+  }
+
+  private subscribeToPathOnFloor(): void {
+    this.pathService.getPathByFloorId(this.floor.id).first().subscribe((pathFromConfiguration: Line[]): void => {
+      this.pathFromConfiguration = pathFromConfiguration;
+    });
   }
 
   private isCoordinatesData(data: MeasureSocketData): boolean {
@@ -285,9 +298,17 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
     this.areaService.getAllByFloor(floorId).first().subscribe((areas: Area[]): void => {
       areas.forEach((area: Area) => {
         const drawBuilder: DrawBuilder = new DrawBuilder(this.d3map.container, {id: `area-${area.id}`, clazz: 'area'});
+        const textPoint = {
+          x: area.points[0].x + 10,
+          y: area.points[0].y + 15,
+        };
         const areaOnMap = drawBuilder
           .createGroup()
-          .addPolygon(area.points);
+          .addPolygon(area.points)
+          .addBackground(textPoint)
+          .hideElement(ElementType.RECT)
+          .addText(textPoint, `area-${area.id}`, '#fff')
+          .hideElement(ElementType.TEXT);
         areaOnMap.getLastElement(ElementType.POLYGON)
           .style('opacity', Area.getCustomSettings().opacity)
           .style('fill', Area.getCustomSettings().fill);
@@ -354,10 +375,10 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   private getPointOnPath(event: MessageEvent) {
-    this.pathService.getPathByFloorId(this.floor.id).first().subscribe((pathFromConfiguration: Line[]): void => {
+
       let calculatedPosition: Point = null;
-      if (!!pathFromConfiguration && pathFromConfiguration.length > 0) {
-        calculatedPosition = Geometry.findPointOnPathInGivenRange(pathFromConfiguration, event.data['args'].point, event.data['args'].accurac);
+      if (!!this.pathFromConfiguration && this.pathFromConfiguration.length > 0) {
+        calculatedPosition = Geometry.findPointOnPathInGivenRange(this.pathFromConfiguration, event.data['args'].point, event.data['args'].accurac);
       }
       // @ts-ignore
       event.source.postMessage({
@@ -365,7 +386,6 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
         mapObjectId: 'map',
         calculatedPosition
       }, '*');
-    });
   }
 
 
