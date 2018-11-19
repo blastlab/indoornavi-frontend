@@ -165,7 +165,6 @@ export class NavigationController {
   }
 
   private handlePathUpdate(pointUpdate: Point): void {
-    console.log('pointUpdate', pointUpdate);
     const currentPointOnPath = Geometry.findPointOnPathInGivenRange(this.objectMetadataPolyline.object['lines'], pointUpdate, this.accuracy);
     if (!!currentPointOnPath) {
       if (this.isDestinationAchieved(currentPointOnPath)) {
@@ -207,7 +206,6 @@ export class NavigationController {
 
   private calculateNavigationPath(lines: Line[], location: Point, destination: Point): void {
     const path: Line[] = this.navigationService.calculateDijkstraShortestPath(lines, location, destination);
-    console.log(path.length);
     if (path.length === 0) {
       this.isNavigationReady = false;
       this.event.source.postMessage({type: 'navigation', action: 'error'},  '*');

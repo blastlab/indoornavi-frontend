@@ -25,7 +25,6 @@ export class NavigationService {
   private calculateGraphWithPathParameters(start, finish): void {
     const startPointCoordinatesOnLines: Point = Geometry.pickClosestNodeCoordinates(this.lines, start);
     const endPointCoordinatesOnLines: Point = Geometry.pickClosestNodeCoordinates(this.lines, finish);
-    console.log(startPointCoordinatesOnLines, endPointCoordinatesOnLines);
     if (startPointCoordinatesOnLines.x === endPointCoordinatesOnLines.x && startPointCoordinatesOnLines.y === endPointCoordinatesOnLines.y) {
       return;
     } else {
@@ -133,7 +132,7 @@ export class NavigationService {
   }
 
   private composeLinesFromParentsSchema(): Line[] {
-    if (!this.cheapestVertexIndex) {
+    if (this.cheapestVertexIndex === null) {
       return [];
     }
     const shortestPathLine: Line[] = [];

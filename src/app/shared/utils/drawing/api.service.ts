@@ -63,7 +63,6 @@ export class ApiService {
     }
     switch (objectMetadata.type) {
       case 'POLYLINE':
-        console.log('drawing polyline ', objectMetadata.object['points']);
         this.addToMapContainer(objectMetadata, container);
         this.drawLine(objectMetadata, this.getCalculatedPoints(objectMetadata.object['points'], scale));
         break;
