@@ -1,1 +1,139 @@
-tx set component
+<ngForm [formGroup]="txConfigForm">
+  <div formGroupName="txPower">
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-3 ui-lg-3">
+        <label>{{'device.config.p1c'|translate}} (dB): {{txConfigForm.value.txPower.p1c}}</label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
+        <p-slider
+          formControlName="p1c"
+          [step]="3"
+          [min]="0"
+          [max]="18"></p-slider>
+      </div>
+    </div>
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-3 ui-lg-3">
+        <label>{{'device.config.p1f'|translate}} (dB): {{txConfigForm.value.txPower.p1f/dividePNFByStep}}</label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
+        <p-slider
+          formControlName="p1f"
+          [step]="1"
+          [min]="0"
+          [max]="30"></p-slider>
+      </div>
+    </div>
+
+    <hr />
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-3 ui-lg-3">
+        <label>{{'device.config.p2c'|translate}} (dB): {{txConfigForm.value.txPower.p2c}}</label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
+        <p-slider
+          formControlName="p2c"
+          [step]="3"
+          [min]="0"
+          [max]="18"></p-slider>
+      </div>
+    </div>
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-3 ui-lg-3">
+        <label>{{'device.config.p2f'|translate}} (dB): {{txConfigForm.value.txPower.p2f/dividePNFByStep}}</label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
+        <p-slider
+          formControlName="p2f"
+          [step]="1"
+          [min]="0"
+          [max]="30"></p-slider>
+      </div>
+    </div>
+
+    <hr />
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-3 ui-lg-3">
+        <label>{{'device.config.p3c'|translate}} (dB): {{txConfigForm.value.txPower.p3c}}</label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
+        <p-slider
+          formControlName="p3c"
+          [step]="3"
+          [min]="0"
+          [max]="18"></p-slider>
+      </div>
+    </div>
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-3 ui-lg-3">
+        <label>{{'device.config.p3f'|translate}} (dB): {{txConfigForm.value.txPower.p3f/dividePNFByStep}}</label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
+        <p-slider
+          formControlName="p3f"
+          [step]="1"
+          [min]="0"
+          [max]="30"></p-slider>
+      </div>
+    </div>
+
+    <hr />
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-3 ui-lg-3">
+        <label>{{'device.config.p4c'|translate}} (dB): {{txConfigForm.value.txPower.p4c}}</label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
+        <p-slider
+          formControlName="p4c"
+          [step]="3"
+          [min]="0"
+          [max]="18"></p-slider>
+      </div>
+    </div>
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-3 ui-lg-3">
+        <label>{{'device.config.p4f'|translate}} (dB): {{txConfigForm.value.txPower.p4f/dividePNFByStep}}</label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
+        <p-slider
+          formControlName="p4f"
+          [step]="1"
+          [min]="0"
+          [max]="30"></p-slider>
+      </div>
+    </div>
+
+    <div class="ui-dialog-buttonpane ui-helper-clearfix">
+      <button
+        type="button"
+        pButton
+        icon="fa-cogs"
+        (click)="setTxDeviceDefault()"
+        label="{{'device.config.default'|translate}}"></button>
+
+      <button
+        type="button"
+        pButton
+        icon="fa-share-square"
+        (click)="sendTxDataToDevice()"
+        [disabled]="isButtonSendDisabled"
+        label="{{'device.config.save'|translate}}"></button>
+    </div>
+  </div>
+</ngForm>
