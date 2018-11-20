@@ -72,7 +72,6 @@ export class DeviceTxSetComponent implements OnInit {
   }
 
   private calculatePn(pf: number, pc: number): number {
-    console.log('val', pf, pc / this.dividePNFByStep);
     return pf + pc / this.dividePNFByStep;
   }
 

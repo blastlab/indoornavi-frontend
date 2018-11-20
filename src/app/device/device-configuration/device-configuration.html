@@ -26,6 +26,10 @@
       <app-device-rfset
         [rfsetConfigData]="rfsetConfigData"></app-device-rfset>
     </p-tabPanel>
+
+    <p-tabPanel header="imu" *ngIf="deviceType === 'tags'">
+      <app-device-imu></app-device-imu>
+    </p-tabPanel>
   </p-tabView>
 
   <p-footer>
