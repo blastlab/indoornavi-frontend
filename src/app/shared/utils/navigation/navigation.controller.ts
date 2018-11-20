@@ -93,7 +93,6 @@ export class NavigationController {
     if (this.isNavigationReady) {
       this.event.source.postMessage({type: 'navigation', action: 'recalculated'}, '*');
       this.stopNavigation();
-      // return;
     }
     this.container = container;
     this.destination = destination;
@@ -102,11 +101,11 @@ export class NavigationController {
     this.event = event;
     this.pathService.getPathByFloorId(floorId).subscribe((lines: Line[]): void => {
       this.maze = lines;
-      this.beggingNavigationForGivenMaze(location, destination);
+      this.startNavigationForGivenMaze(location, destination);
     });
   }
 
-  private beggingNavigationForGivenMaze(location, destination) {
+  private startNavigationForGivenMaze(location, destination) {
     this.calculateNavigationPath(this.maze, location, destination);
     this.onPositionChanged().subscribe((pointUpdate: Point): void => {
       if (!!this.objectMetadataPolyline) {
