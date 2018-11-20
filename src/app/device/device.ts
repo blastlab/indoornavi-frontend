@@ -57,7 +57,8 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   constructor(public translate: TranslateService,
-              private socketService: SocketService,
+              private socketRegistrationService: SocketService,
+              private socketClientService: SocketService,
               private messageService: MessageServiceWrapper,
               private ngZone: NgZone,
               private route: ActivatedRoute,
@@ -223,7 +224,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     this.devicesUpdating = this.devicesToUpdate;
 
     this.getBase64(files[0]).then((base64: string): void => {
-      this.socketService.send(new UpdateRequest(this.devicesToUpdate.map((device: UWB): number => device.shortId), base64));
+      this.socketRegistrationService.send(new UpdateRequest(this.devicesToUpdate.map((device: UWB): number => device.shortId), base64));
       this.messageService.success('uploading.firmware.message');
     });
   }
@@ -232,8 +233,9 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     this.updateMode = !this.updateMode;
     if (this.updateMode) {
       this.socketSubscription.unsubscribe();
-      const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}info?client&${this.deviceType}`);
+      const stream = this.socketClientService.connect(`${Config.WEB_SOCKET_URL}info?client&${this.deviceType}`);
       this.firmwareSocketSubscription = stream.subscribe((message) => {
+        console.log(message);
         if (message.type === 'INFO') {
           (<DeviceStatus[]>message.devices).forEach((deviceStatus: DeviceStatus) => {
             if (deviceStatus.status.toString() === Status[Status.ONLINE] || deviceStatus.status.toString() === Status[Status.OFFLINE]) {
@@ -267,19 +269,23 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   sendBatteryStatusRequest(): void {
-    const noBatteryStatus: number[] = [];
+    const noBatteryStatus: any[] = [];
     this.verified.forEach((device: AnchorBatteryStatus) => {
       if (!device.battery) {
-        noBatteryStatus.push(device.shortId);
+        noBatteryStatus.push({shortId: device.shortId});
       }
     });
      this.notVerified.map((device: AnchorBatteryStatus) => {
       if (!device.battery) {
-        noBatteryStatus.push(device.shortId);
+        noBatteryStatus.push({shortId: device.shortId});
       }
     });
-    console.log(noBatteryStatus);
-    this.socketService.send(noBatteryStatus);
+    const message: any = {
+        type: 'CHECK_BATTERY_LEVEL',
+        args: noBatteryStatus
+      };
+    console.log(message);
+    this.socketClientService.send(message);
   }
 
   private updateFirmwareVersion(deviceStatus: DeviceStatus) {
@@ -365,14 +371,16 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   private connectToRegistrationSocket() {
-    const stream = this.socketService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.deviceType}`);
+    const stream = this.socketRegistrationService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.deviceType}`);
     this.socketSubscription = stream.subscribe((devices: Array<UWB>): void => {
+      console.log(devices);
       this.ngZone.run((): void => {
         devices.forEach((device: UWB) => {
           if (this.isAlreadyOnAnyList(device)) {
             return;
           }
-          device = DeviceComponent.mockBatteryStatus(device); // TODO: delete after proper communication is build
+
+          // device = DeviceComponent.mockBatteryStatus(device); // TODO: delete after proper communication is build
           if (device.verified) {
             this.verified.push(device);
           } else {
