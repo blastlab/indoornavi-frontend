@@ -1,1 +1,14 @@
-<p>imu html component</p>
+<ngForm [formGroup]="imuConfigForm">
+  <div formGroupName="imuData">
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-2 ui-lg-3">
+        <label>{{'enable motionless asleep'|translate}}</label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
+        <p-inputSwitch
+          formControlName="toggleImu"></p-inputSwitch>
+      </div>
+    </div>
+  </div>
+</ngForm>
