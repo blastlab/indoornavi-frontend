@@ -10,12 +10,21 @@ export class DeviceTxSetComponent implements OnInit {
   readonly divideByStep = 2;
   txConfigForm: FormGroup;
   isButtonSendDisabled = true;
+  p1: number;
+  p2: number;
+  p3: number;
+  p4: number;
 
   constructor(private fb: FormBuilder) {}
 
   ngOnInit() {
     this.createTxForm();
-    this.txConfigForm.valueChanges.subscribe(() => this.setIsButtonDisabled(false));
+    this.setSumDefaultPower();
+
+    this.txConfigForm.valueChanges.subscribe(() => {
+      this.setIsButtonDisabled(false);
+      this.setSumDefaultPower();
+    });
   }
 
   sendTxDataToDevice(): void {
@@ -46,12 +55,25 @@ export class DeviceTxSetComponent implements OnInit {
     this.isButtonSendDisabled = isDisabled;
   }
 
+  private setSumDefaultPower() {
+    const { p1c, p1f, p2c, p2f, p3c, p3f, p4c, p4f } = this.txConfigForm.value.txPower;
+    this.p1 = this.calculatePn(p1c, p1f);
+    this.p2 = this.calculatePn(p2c, p2f);
+    this.p3 = this.calculatePn(p3c, p3f);
+    this.p4 = this.calculatePn(p4c, p4f);
+  }
+
   private calculateStepPf(power: number, step: number): number {
     return power * step;
   }
 
   private calculateDatabasePf(power: number, step: number): number {
     return power / step;
+  }
+
+  private calculatePn(pf: number, pc: number): number {
+    console.log('val', pf, pc / this.dividePNFByStep);
+    return pf + pc / this.dividePNFByStep;
   }
 
   private createTxForm(): void {
