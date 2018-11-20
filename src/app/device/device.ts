@@ -40,7 +40,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
 
   @ViewChild('deviceForm') deviceForm: NgForm;
 
-  private socketSubscription: Subscription;
+  private socketRegistrationSubscription: Subscription;
   private translateUploadingFirmwareMessage: Subscription;
   private firmwareSocketSubscription: Subscription;
   private confirmBodyTranslate: Subscription;
@@ -89,8 +89,8 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   ngOnDestroy() {
-    if (this.socketSubscription) {
-      this.socketSubscription.unsubscribe();
+    if (this.socketRegistrationSubscription) {
+      this.socketRegistrationSubscription.unsubscribe();
     }
     if (this.translateUploadingFirmwareMessage) {
       this.translateUploadingFirmwareMessage.unsubscribe();
@@ -232,7 +232,10 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   toggleUpdateMode(): void {
     this.updateMode = !this.updateMode;
     if (this.updateMode) {
-      this.socketSubscription.unsubscribe();
+      if (this.firmwareSocketSubscription) {
+        this.firmwareSocketSubscription.unsubscribe();
+      }
+      this.socketRegistrationSubscription.unsubscribe();
       const stream = this.socketClientService.connect(`${Config.WEB_SOCKET_URL}info?client&${this.deviceType}`);
       this.firmwareSocketSubscription = stream.subscribe((message) => {
         console.log(message);
@@ -275,17 +278,27 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
         noBatteryStatus.push({shortId: device.shortId});
       }
     });
-     this.notVerified.map((device: AnchorBatteryStatus) => {
+    this.notVerified.map((device: AnchorBatteryStatus) => {
       if (!device.battery) {
         noBatteryStatus.push({shortId: device.shortId});
       }
     });
-    const message: any = {
+    const socketPayload: any = {
         type: 'CHECK_BATTERY_LEVEL',
         args: noBatteryStatus
       };
-    console.log(message);
-    this.socketClientService.send(message);
+    if (this.firmwareSocketSubscription) {
+      this.firmwareSocketSubscription.unsubscribe();
+    }
+    const stream = this.socketClientService.connect(`${Config.WEB_SOCKET_URL}info?client&${this.deviceType}`);
+    this.firmwareSocketSubscription = stream.subscribe((message) => {
+      console.log(message);
+      // do something with message
+      // if message contains battery status then unsubscribe
+      this.firmwareSocketSubscription.unsubscribe();
+    });
+    console.log(socketPayload);
+    this.socketClientService.send(socketPayload);
   }
 
   private updateFirmwareVersion(deviceStatus: DeviceStatus) {
@@ -372,14 +385,13 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
 
   private connectToRegistrationSocket() {
     const stream = this.socketRegistrationService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.deviceType}`);
-    this.socketSubscription = stream.subscribe((devices: Array<UWB>): void => {
+    this.socketRegistrationSubscription = stream.subscribe((devices: Array<UWB>): void => {
       console.log(devices);
       this.ngZone.run((): void => {
         devices.forEach((device: UWB) => {
           if (this.isAlreadyOnAnyList(device)) {
             return;
           }
-
           // device = DeviceComponent.mockBatteryStatus(device); // TODO: delete after proper communication is build
           if (device.verified) {
             this.verified.push(device);
