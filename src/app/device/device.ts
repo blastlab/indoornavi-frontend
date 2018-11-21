@@ -49,12 +49,12 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   private devicesWaitingForNewFirmwareVersion: DeviceStatus[] = [];
   private deviceHash: string | Int32Array;
 
-  static mockBatteryStatus(device: Anchor): AnchorBatteryStatus { // TODO: delete this after web socket communication for battery status is build
-    const randomNum = Math.round(Math.random());
-    const randomBatteryStatus = Math.floor(Math.random() * 100);
-    randomNum === 1 ? device['battery'] = randomBatteryStatus : device['battery'] = null;
-    return device;
-  }
+  // static mockBatteryStatus(device: Anchor): AnchorBatteryStatus { // TODO: delete this after web socket communication for battery status is build
+  //   const randomNum = Math.round(Math.random());
+  //   const randomBatteryStatus = Math.floor(Math.random() * 100);
+  //   randomNum === 1 ? device['battery'] = randomBatteryStatus : device['battery'] = null;
+  //   return device;
+  // }
 
   constructor(public translate: TranslateService,
               private socketRegistrationService: SocketService,
@@ -236,7 +236,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
         this.firmwareSocketSubscription.unsubscribe();
       }
       this.socketRegistrationSubscription.unsubscribe();
-      const stream = this.socketClientService.connect(`${Config.WEB_SOCKET_URL}info?client&${this.deviceType}`);
+      const stream = this.socketClientService.connect(`${Config.WEB_SOCKET_URL}info?client&`);
       this.firmwareSocketSubscription = stream.subscribe((message) => {
         console.log(message);
         if (message.type === 'INFO') {
@@ -290,12 +290,12 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     if (this.firmwareSocketSubscription) {
       this.firmwareSocketSubscription.unsubscribe();
     }
-    const stream = this.socketClientService.connect(`${Config.WEB_SOCKET_URL}info?client&${this.deviceType}`);
+    const stream = this.socketClientService.connect(`${Config.WEB_SOCKET_URL}info?client`);
     this.firmwareSocketSubscription = stream.subscribe((message) => {
       console.log(message);
       // do something with message
       // if message contains battery status then unsubscribe
-      this.firmwareSocketSubscription.unsubscribe();
+      // this.firmwareSocketSubscription.unsubscribe();
     });
     console.log(socketPayload);
     this.socketClientService.send(socketPayload);
