@@ -101,6 +101,7 @@
   "device.config.rangingPerion": "Ranging period (ms)",
   "device.config.rangingTime": "Ranging time one slot time (ms)",
   "device.config.numberOfMeasurments": "Number of ranging slot in one period (ms)",
+  "device.config.motionlessAsleep": "Enable motionless asleep",
   "device.config.default": "Default settings",
   "device.config.p1c": "P1 c",
   "device.config.p1f": "P1 f",
