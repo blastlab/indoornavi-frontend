@@ -213,3 +213,13 @@ svg {
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .1);
   background-color: #6f6f6f;
 }
+
+.ui-slider-handle.ui-state-default {
+  background: #1765A3;
+  border: 0;
+}
+
+.ui-slider.ui-widget-content {
+  border-color: #95bcda;
+}
+
