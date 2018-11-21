@@ -4,7 +4,8 @@ import {DeviceConfigurationService} from '../../shared/services/device-configura
 
 @Component({
   selector: 'app-device-rfset',
-  templateUrl: './device-rfset.html'
+  templateUrl: './device-rfset.html',
+  styleUrls: ['./device-rfset.css']
 })
 export class DeviceRfSetComponent implements OnInit {
 

@@ -1,11 +1,14 @@
 <ngForm [formGroup]="rfConfigForm">
   <div formGroupName="rfData">
     <div class="ui-g">
-      <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
-      <div class="ui-g-12 ui-md-2 ui-lg-3">
-        <label for="radioChanel">{{'device.config.rch'|translate}}</label>
+      <div class="ui-g-12 ui-md-2 ui-lg-2"></div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <label for="radioChanel" class="label-info">
+          {{'device.config.rch'|translate}}
+          <p-message severity="info" [pTooltip]="'device.config.radioChannel.tooltip'|translate"></p-message>
+        </label>
       </div>
-      <div class="ui-g-12 ui-md-6 ui-lg-6">
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
         <p-dropdown [options]="rfsetConfigData.radioChannels"
                     formControlName="radioChannel"
                     [style]="{ width: '100%' }"
@@ -16,11 +19,14 @@
     </div>
 
     <div class="ui-g">
-      <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
-      <div class="ui-g-12 ui-md-2 ui-lg-3">
-        <label for="radioChanel">{{'device.config.rbr'|translate}}</label>
+      <div class="ui-g-12 ui-md-2 ui-lg-2"></div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <label for="radioChanel" class="label-info">
+          {{'device.config.rbr'|translate}}
+          <p-message severity="info" [pTooltip]="'device.config.radioBaudRate.tooltip'|translate"></p-message>
+        </label>
       </div>
-      <div class="ui-g-12 ui-md-6 ui-lg-6">
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
         <p-dropdown [options]="rfsetConfigData.radioBaudRate"
                     formControlName="radioBaudRate"
                     [style]="{ width: '100%' }"
@@ -31,11 +37,14 @@
     </div>
 
     <div class="ui-g">
-      <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
-      <div class="ui-g-12 ui-md-2 ui-lg-3">
-        <label for="preambleLength">{{'device.config.plen'|translate}}</label>
+      <div class="ui-g-12 ui-md-2 ui-lg-2"></div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <label for="preambleLength" class="label-info">
+          {{'device.config.plen'|translate}}
+          <p-message severity="info" [pTooltip]="'device.config.preambleLength.tooltip'|translate"></p-message>
+        </label>
       </div>
-      <div class="ui-g-12 ui-md-6 ui-lg-6">
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
         <p-dropdown [options]="rfsetConfigData.preambleLength"
                     formControlName="preambleLength"
                     [style]="{ width: '100%' }"
@@ -46,11 +55,14 @@
     </div>
 
     <div class="ui-g">
-      <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
-      <div class="ui-g-12 ui-md-2 ui-lg-3">
-        <label for="pulseRepetitionFrequency">{{'device.config.prf'|translate}}</label>
+      <div class="ui-g-12 ui-md-2 ui-lg-2"></div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <label for="pulseRepetitionFrequency" class="label-info">
+          {{'device.config.prf'|translate}}
+          <p-message severity="info" [pTooltip]="'device.config.pulseRepetition.tooltip'|translate"></p-message>
+        </label>
       </div>
-      <div class="ui-g-12 ui-md-6 ui-lg-6">
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
         <p-dropdown [options]="rfsetConfigData.pulseRepetitionFrequency"
                     formControlName="pulseRepetitionFrequency"
                     [style]="{ width: '100%' }"
@@ -61,11 +73,14 @@
     </div>
 
     <div class="ui-g">
-      <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
-      <div class="ui-g-12 ui-md-2 ui-lg-3">
-        <label for="preambleAcquisitionChunk">{{'device.config.pac'|translate}}</label>
+      <div class="ui-g-12 ui-md-2 ui-lg-2"></div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <label for="preambleAcquisitionChunk" class="label-info">
+          {{'device.config.pac'|translate}}
+          <p-message severity="info" [pTooltip]="'device.config.preambleAcquisitionChunk.tooltip'|translate"></p-message>
+        </label>
       </div>
-      <div class="ui-g-12 ui-md-6 ui-lg-6">
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
         <p-dropdown [options]="rfsetConfigData.preambleAcquisitionChunk"
                     formControlName="preambleAcquisitionChunk"
                     [style]="{ width: '100%' }"
@@ -76,11 +91,14 @@
     </div>
 
     <div class="ui-g">
-      <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
-      <div class="ui-g-12 ui-md-2 ui-lg-3">
-        <label for="communicationCode">{{'device.config.code'|translate}}</label>
+      <div class="ui-g-12 ui-md-2 ui-lg-2"></div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <label for="communicationCode" class="label-info">
+          {{'device.config.code'|translate}}
+          <p-message severity="info" [pTooltip]="'device.config.communicationCode.tooltip'|translate"></p-message>
+        </label>
       </div>
-      <div class="ui-g-12 ui-md-6 ui-lg-6">
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
         <p-spinner
           formControlName="communicationCode"
           size="40"
@@ -92,11 +110,14 @@
     </div>
 
     <div class="ui-g">
-      <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
-      <div class="ui-g-12 ui-md-2 ui-lg-3">
-        <label for="sfd">{{'device.config.sfd'|translate}}</label>
+      <div class="ui-g-12 ui-md-2 ui-lg-2"></div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <label for="sfd" class="label-info">
+          {{'device.config.sfd'|translate}}
+          <p-message severity="info" [pTooltip]="'device.config.sfd.tooltip'|translate"></p-message>
+        </label>
       </div>
-      <div class="ui-g-12 ui-md-6 ui-lg-6">
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
         <p-spinner
           formControlName="sfd"
           size="40"
@@ -108,11 +129,14 @@
     </div>
 
     <div class="ui-g">
-      <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
-      <div class="ui-g-12 ui-md-2 ui-lg-3">
-        <label>{{'device.config.nsfd'|translate}}</label>
+      <div class="ui-g-12 ui-md-2 ui-lg-2"></div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <label class="label-info">
+          {{'device.config.nsfd'|translate}}
+          <p-message severity="info" [pTooltip]="'device.config.nsfd.tooltip'|translate"></p-message>
+        </label>
       </div>
-      <div class="ui-g-12 ui-md-6 ui-lg-6">
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
         <p-inputSwitch
           formControlName="nsfd"></p-inputSwitch>
       </div>
