@@ -50,7 +50,6 @@
       <button pButton class="ui-button-info"
               id="battery" [appHasPermission]="editPermission"
               (click)="sendBatteryStatusRequest()"
-              [disabled]="updateMode"
               label="{{'device.reload.battery'|translate}}"
               icon="fa-battery-three-quarters" iconPos="left">
       </button>

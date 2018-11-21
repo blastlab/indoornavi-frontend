@@ -5,6 +5,6 @@
 
 export const environment = {
   production: false,
-  base_url: 'localhost:90',
+  base_url: '172.16.170.29:90',
   version: require('../../package.json').version
 };

@@ -137,6 +137,32 @@ export interface DeviceStatus {
   status: Status;
 }
 
+export interface BatteryUptime {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
+export interface DeviceBatteryReading {
+  deviceShortId: number;
+  percentage: number;
+  uptime: BatteryUptime
+}
+
+export interface FirmwareMessage {
+  type: string;
+  devices?: any[];
+  code?: string;
+  deviceStatus?: DeviceStatus;
+  batteryLevelList?: DeviceBatteryReading[]
+}
+
+export interface DeviceShortId {
+  shortId: number
+}
+
 export enum Status {
   ONLINE, OFFLINE, UPDATING, UPDATED
 }
+
