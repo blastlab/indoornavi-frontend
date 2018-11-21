@@ -34,6 +34,7 @@ export class TagOnMap {
         .transition()
         .attr('x', destination.x)
         .attr('y', destination.y)
+        .attr('z', destination.z)
         .on('start', () => {
           this.transitionEnded = false;
         })
