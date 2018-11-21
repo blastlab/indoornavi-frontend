@@ -87,15 +87,19 @@
 
           <div *ngIf="device.battery">
             <b>{{'device.battery'|translate}}:</b>
-            <p-progressBar [value]="device.battery"></p-progressBar>
+            <app-battery-indicator [batteryLevel]="device.battery"></app-battery-indicator>
           </div>
-          <div *ngIf="!device.battery">
+          <div *ngIf="!device.battery && !device.message">
             <b>{{'device.battery'|translate}}:</b>
             <p-progressSpinner [style]="{width: '15px', height: '15px'}"
                                strokeWidth="8"
                                fill="#EEEEEE"
                                animationDuration="1s">
             </p-progressSpinner>
+          </div>
+          <div *ngIf="!device.battery && device.message">
+            <b>{{'device.battery'|translate}}:</b>
+            <i class="fa fa-exclamation-triangle" pTooltip="{{device.message|translate}}"></i>
           </div>
         </div>
         <div class="ui-g-4 ui-md-4 ui-lg-4 device-published-details">

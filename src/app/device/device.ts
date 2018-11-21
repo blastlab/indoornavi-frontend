@@ -69,12 +69,12 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     this.confirmBodyTranslate = this.translate.get('confirm.body').first().subscribe((value: string): void => {
       this.confirmBody = value;
     });
-    this.translate.get(this.deviceType + '.header').first().subscribe((value: string) => {
+    this.translate.get(this.deviceType + '.header').first().subscribe((value: string): void => {
       this.breadcrumbService.publishIsReady([
         {label: value, disabled: true}
       ]);
     });
-    this.translate.get(`device.details.${this.deviceType}.remove`).first().subscribe((value: string) => {
+    this.translate.get(`device.details.${this.deviceType}.remove`).first().subscribe((value: string): void => {
       this.removeDialogTitle = value;
     });
     this.connectToRegistrationSocket();
@@ -418,7 +418,15 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   private handleCodeErrorMessage(message: FirmwareMessage): void {
-    this.messageService.failed(message.code);
+    this.verified.forEach((device: AnchorBatteryStatus): void => {
+      if (!device.battery) {
+        device.message = message.code;
+      }
+    });
+    this.notVerified.forEach((device: AnchorBatteryStatus): void => {
+      if (!device.battery) {
+        device.message = message.code;
+      }
+    });
   }
-
 }

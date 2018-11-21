@@ -1,3 +1,5 @@
+import {ɵstringify} from '@angular/core';
+
 export class Device {
   verified: boolean;
   id?: number;
@@ -64,6 +66,7 @@ export class Anchor extends UWB {
 
 export class AnchorBatteryStatus extends Anchor {
   battery?: number;
+  message?: string;
 
   constructor(
     verified: boolean,
