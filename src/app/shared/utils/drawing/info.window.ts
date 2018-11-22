@@ -5,6 +5,7 @@ import * as d3 from 'd3';
 import {APIObject} from './api.types';
 import Metadata = APIObject.Metadata;
 import Position = APIObject.Position;
+import {ModelsConfig} from '../../../map/models/models.config';
 
 export class InfoWindowGroupWrapper {
   private svgGroupWrapper: SvgGroupWrapper;
@@ -27,7 +28,8 @@ export class InfoWindowGroupWrapper {
 
   constructor(
     private appendable: d3.selection,
-    private configuration: DrawConfiguration
+    private configuration: DrawConfiguration,
+    private models: ModelsConfig
   ) {
     const drawBuilder =  new DrawBuilder(appendable, configuration);
     this.svgGroupWrapper = drawBuilder.createGroup();
@@ -86,12 +88,18 @@ export class InfoWindowGroupWrapper {
   }
 
   calculateInfoWindowPosition(object: d3.selection, position: Position): Point {
-    const box: Box = object.getGroup().node().getBBox();
+    const element: d3.selection = object.getGroup();
+    const box: Box = {
+      x: element.attr('x'),
+      y: element.attr('y'),
+      height: element.node().getBBox().height,
+      width: element.node().getBBox().width
+    };
     Object.keys(box).forEach((key: string): number => box[key] = Math.round(box[key]));
     const coordinates: Point = { x: 0, y: 0 };
     switch (position) {
       case Position.TOP:
-        coordinates.x = box.x + box.width / 2 - this.infoWindowSize.width / 2;
+        coordinates.x = box.x - this.infoWindowSize.width / 2 + this.models.iconSizeScalar / 2;
         coordinates.y = box.y - this.infoWindowSize.height;
         break;
       case Position.TOP_LEFT:
@@ -99,7 +107,7 @@ export class InfoWindowGroupWrapper {
         coordinates.y = box.y - this.infoWindowSize.height;
         break;
       case Position.TOP_RIGHT:
-        coordinates.x = box.x + box.width;
+        coordinates.x = box.x + box.width / 2;
         coordinates.y = box.y - this.infoWindowSize.height;
         break;
       case Position.LEFT:
@@ -107,11 +115,11 @@ export class InfoWindowGroupWrapper {
         coordinates.y = box.y + box.height / 2 - this.infoWindowSize.height / 2;
         break;
       case Position.RIGHT:
-        coordinates.x = box.x + box.width;
+        coordinates.x = box.x + box.width / 2;
         coordinates.y = box.y + box.height / 2 - this.infoWindowSize.height / 2;
         break;
       case Position.BOTTOM:
-        coordinates.x = box.x + box.width / 2 - this.infoWindowSize.width / 2;
+        coordinates.x = box.x - this.infoWindowSize.width / 2 + this.models.iconSizeScalar / 2;
         coordinates.y = box.y + box.height;
         break;
       case Position.BOTTOM_LEFT:
@@ -119,7 +127,7 @@ export class InfoWindowGroupWrapper {
         coordinates.y = box.y + box.height;
         break;
       case Position.BOTTOM_RIGHT:
-        coordinates.x = box.x + box.width;
+        coordinates.x = box.x + box.width / 2;
         coordinates.y = box.x + box.height;
         break;
     }

@@ -26,7 +26,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.isMobile = Helper.detectMobile();
-    this.isPublic = this.location.path().match(/embedded/) ? true : false;
+    this.isPublic = !!this.location.path().match(/embedded/);
     this.route.queryParams.subscribe((params: Params) => {
       if (!!params['api_key']) {
         this.isDisplayedInIFrame = true;

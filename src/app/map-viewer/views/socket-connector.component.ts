@@ -34,6 +34,7 @@ import {Complex} from '../../complex/complex.type';
 import {ComplexService} from '../../complex/complex.service';
 import {NavigationController} from '../../shared/utils/navigation/navigation.controller';
 import Metadata = APIObject.Metadata;
+import {ModelsConfig} from '../../map/models/models.config';
 import {Helper} from '../../shared/utils/helper/helper';
 
 @Component({
@@ -71,7 +72,9 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
               private navigationController: NavigationController,
               protected floorService: FloorService,
               protected tagToggleService: TagVisibilityTogglerService,
-              protected breadcrumbService: BreadcrumbService) {
+              protected breadcrumbService: BreadcrumbService,
+              protected models: ModelsConfig
+  ) {
 
     this.loadMapDeferred = new Deferred<boolean>();
   }
@@ -181,11 +184,12 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
   protected handleCoordinatesData(data: CoordinatesSocketData): void {
     const deviceId: number = data.coordinates.tagShortId;
     if (!this.isOnMap(deviceId) && this.visibleTags.get(deviceId)) {
-      const tagOnMap: TagOnMap = new TagOnMap(data.coordinates.point, this.d3map.container, {
-        id: `tag-${deviceId}`,
-        clazz: 'tag',
-        name: `${deviceId}`
-      });
+      const tagOnMap: TagOnMap = new TagOnMap(
+        data.coordinates.point,
+        this.d3map.container,
+        {id: `tag-${deviceId}`, clazz: 'tag', name: `${deviceId}`},
+        this.models
+        );
       SvgAnimator.startBlinking(tagOnMap.getIconElement());
       this.tagsOnMap.setValue(deviceId, tagOnMap.setShortId(deviceId));
     } else if (this.visibleTags.get(deviceId)) {
@@ -303,7 +307,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
           .addPolygon(area.points)
           .addBackground(textPoint)
           .hideElement(ElementType.RECT)
-          .addText(textPoint, `area-${area.id}`, '#fff')
+          .addText({coordinates: textPoint}, `area-${area.id}`, '#000')
           .hideElement(ElementType.TEXT);
         areaOnMap.getLastElement(ElementType.POLYGON)
           .style('opacity', Area.getCustomSettings().opacity)

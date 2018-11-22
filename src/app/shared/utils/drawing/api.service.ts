@@ -15,19 +15,18 @@ import Area = APIObject.Area;
 import Polyline = APIObject.Polyline;
 import Circle = APIObject.Circle;
 import InfoWindow = APIObject.InfoWindow;
+import {ModelsConfig} from '../../../map/models/models.config';
 
 @Injectable()
 export class ApiService {
   private objects: Map<number, SvgGroupWrapper> = new Map();
   private infoWindows: Map<number, InfoWindowGroupWrapper> = new Map();
-  // TODO: standardize pointRadius for all points that will be drawn on the map
-  private pointRadius: number = 5;
 
   private static getDefaultConfiguration(objectMetadata: Metadata): DrawConfiguration {
     return {id: `map-object-${objectMetadata.type}-${objectMetadata.object.id}`, clazz: 'map-object'};
   }
 
-  constructor() {
+  constructor(private models: ModelsConfig) {
   }
 
   create(): number {
@@ -86,7 +85,7 @@ export class ApiService {
 
   private placeMarkerOnMap(objectMetadata: Metadata, container: d3.selection, point: Point, originMessageEvent: MessageEvent): void {
     const marker: Marker = <Marker>objectMetadata.object;
-    const markerOnMap: MarkerOnMap = new MarkerOnMap(point, container, ApiService.getDefaultConfiguration(objectMetadata));
+    const markerOnMap: MarkerOnMap = new MarkerOnMap(point, container, ApiService.getDefaultConfiguration(objectMetadata), this.models);
     markerOnMap.setId(objectMetadata.object.id);
 
     if (!!marker.icon) {
@@ -98,6 +97,7 @@ export class ApiService {
     }
 
     if (!!marker.label) {
+      marker.label = marker.label.length > this.models.labelTextLength ? `${marker.label.slice(0, this.models.labelTextLength - 1)}...` : marker.label;
       markerOnMap.addLabel(marker.label);
     }
 
@@ -112,7 +112,11 @@ export class ApiService {
 
   private addInfoWindowToMapContainer(objectMetadata: Metadata, container: d3.selection): void {
     this.infoWindows.set(objectMetadata.object.id,
-      new InfoWindowGroupWrapper(container, {id: `map-object-${objectMetadata.type}-${objectMetadata.object.id}`, clazz: 'map-object'}));
+      new InfoWindowGroupWrapper(
+        container,
+        {id: `map-object-${objectMetadata.type}-${objectMetadata.object.id}`,
+          clazz: 'map-object'},
+        this.models));
   }
 
   private drawArea(objectMetadata: Metadata, container: d3.selection, points: Point[], originMessageEvent: MessageEvent): void {
@@ -146,7 +150,7 @@ export class ApiService {
   private drawLine(objectMetadata: Metadata, points: Point[]): void {
     const polyline: Polyline = <Polyline>objectMetadata.object;
     const type: LineType = !!objectMetadata.object['lineType'] ? objectMetadata.object['lineType'] : LineType.SOLID;
-    this.objects.get(polyline.id).addLineType(points, type, this.pointRadius);
+    this.objects.get(polyline.id).addLineType(points, type, this.models.pointRadius);
     const lines: d3.selection[] = this.objects.get(polyline.id).getElements(ElementType.LINE);
     const circles: d3.selection[] = this.objects.get(polyline.id).getElements(ElementType.CIRCLE);
     const lineType = {

@@ -24,6 +24,7 @@ import {TagOnMap} from '../../../map/models/tag';
 import {PathService} from '../../services/path/path.service';
 import {ComplexService} from '../../../complex/complex.service';
 import {NavigationController} from '../../../shared/utils/navigation/navigation.controller';
+import {ModelsConfig} from '../../../map/models/models.config';
 
 @Component({
   templateUrl: './analytics.html'
@@ -66,7 +67,8 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
               floorService: FloorService,
               tagTogglerService: TagVisibilityTogglerService,
               breadcrumbService: BreadcrumbService,
-              private heatMapControllerService: HeatMapControllerService
+              private heatMapControllerService: HeatMapControllerService,
+              models: ModelsConfig
               ) {
     super(
       ngZone,
@@ -83,7 +85,8 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       pathDisplayService,
       floorService,
       tagTogglerService,
-      breadcrumbService
+      breadcrumbService,
+      models
     );
   }
 
