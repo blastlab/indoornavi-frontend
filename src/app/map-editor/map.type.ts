@@ -18,6 +18,15 @@ export interface Transform {
   y: number;
 }
 
+export interface TextPosition {
+  coordinates: Point;
+  description?: number;
+}
+
+export enum PositionDescription {
+  CENTRE,
+}
+
 export enum LineType {
   SOLID = 'solid',
   DOTTED = 'dotted'
