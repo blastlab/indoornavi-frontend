@@ -47,38 +47,17 @@ export class NavigationController {
 
   handleNavigation(event: MessageEvent, floorId, container, scale) {
     const args: NavigationData = event.data.args.object;
-    switch (args.action) {
-      case 'stop':
-        this.stopNavigation();
-        break;
-      case 'update':
-        if (this.isNavigationReady) {
-          this.updatePosition(args.position);
-        } else {
-          this.setLastCoordinates(args.position);
-        }
-        break;
-      case 'start':
-        this.setNavigationPath(floorId, args.location, args.destination, args.accuracy, event, container, scale);
-        break;
-      case 'disableStart':
-        this.disableStartPoint = args.state;
-        break;
-      case 'disableEnd':
-        this.disableEndPoint = args.state;
-        break;
-      case 'startPoint':
-        this.startPointObject = args.navigationPoint;
-        break;
-      case 'endPoint':
-        this.endPointObject = args.navigationPoint;
-        break;
-      case 'setPathColor':
-        this.pathColor = args.pathColor;
-        break;
-      case 'setPathWidth':
-        this.pathWidth = args.pathWidth;
-        break;
+    if (args.action === 'stop') {
+      this.stopNavigation();
+    }
+    if (this.isNavigationReady) {
+      if (args.action === 'update') {
+        this.updatePosition(args.position);
+      }
+    } else if (args.action === 'start') {
+      this.setNavigationPath(floorId, args.location, args.destination, args.accuracy, event, container, scale);
+    } else if (args.action === 'update') {
+      this.setLastCoordinates(args.position);
     }
   }
 

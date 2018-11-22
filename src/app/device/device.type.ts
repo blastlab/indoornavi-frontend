@@ -1,5 +1,3 @@
-import {ɵstringify} from '@angular/core';
-
 export class Device {
   verified: boolean;
   id?: number;
@@ -153,12 +151,18 @@ export interface DeviceBatteryReading {
   uptime: BatteryUptime
 }
 
-export interface FirmwareMessage {
+export interface DeviceMessage {
   type: string;
   devices?: any[];
   code?: string;
-  deviceStatus?: DeviceStatus;
-  batteryLevelList?: DeviceBatteryReading[]
+}
+
+export interface FirmwareMessage extends DeviceMessage {
+  deviceStatus: DeviceStatus;
+}
+
+export interface BatteryMessage extends DeviceMessage {
+  batteryLevelList: DeviceBatteryReading[]
 }
 
 export interface DeviceShortId {

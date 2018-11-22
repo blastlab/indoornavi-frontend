@@ -5,7 +5,20 @@ import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute} from '@angular/router';
 import {DeviceService} from './device.service';
 import {CrudComponent, CrudHelper} from '../shared/components/crud/crud.component';
-import {Anchor, AnchorBatteryStatus, Device, DeviceBatteryReading, DeviceShortId, DeviceStatus, FirmwareMessage, Status, UpdateRequest, UWB} from './device.type';
+import {
+  Anchor,
+  AnchorBatteryStatus,
+  BatteryMessage,
+  Device,
+  DeviceBatteryReading,
+  DeviceMessage,
+  DeviceShortId,
+  DeviceStatus,
+  FirmwareMessage,
+  Status,
+  UpdateRequest,
+  UWB
+} from './device.type';
 import {NgForm} from '@angular/forms';
 import {Checkbox, ConfirmationService} from 'primeng/primeng';
 import {MessageServiceWrapper} from '../shared/services/message/message.service';
@@ -348,19 +361,19 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
 
   private openInfoClientSocketConnection(): void {
     this.socketStream = this.socketClientService.connect(`${Config.WEB_SOCKET_URL}info?client`);
-    this.firmwareSocketSubscription = this.socketStream.subscribe((message: FirmwareMessage): void => {
+    this.firmwareSocketSubscription = this.socketStream.subscribe((message: DeviceMessage|FirmwareMessage|BatteryMessage): void => {
       switch (message.type) {
         case 'INFO':
-          this.handleInfoMessage(message);
+          this.handleInfoMessage((<FirmwareMessage>message));
           break;
         case 'INFO_ERROR':
-          this.handleInfoErrorMessage(message);
+          this.handleInfoErrorMessage((<FirmwareMessage>message));
           break;
         case 'BATTERIES_LEVELS':
-          this.handleBatteryLevelMessage(message);
+          this.handleBatteryLevelMessage((<BatteryMessage>message));
           break;
         case 'COMMAND_ERROR':
-          this.handleCodeErrorMessage(message);
+          this.handleCodeErrorMessage((<DeviceMessage>message));
           break;
       }
     });
@@ -394,7 +407,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     this.messageService.failed(message.code);
   }
 
-  private handleBatteryLevelMessage(message: FirmwareMessage): void {
+  private handleBatteryLevelMessage(message: BatteryMessage): void {
     message.batteryLevelList.forEach((batteryReading: DeviceBatteryReading): void => {
       let found = false;
       this.verified.forEach((device: AnchorBatteryStatus): void => {
@@ -417,7 +430,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     });
   }
 
-  private handleCodeErrorMessage(message: FirmwareMessage): void {
+  private handleCodeErrorMessage(message: DeviceMessage): void {
     this.verified.forEach((device: AnchorBatteryStatus): void => {
       if (!device.battery) {
         device.message = message.code;
