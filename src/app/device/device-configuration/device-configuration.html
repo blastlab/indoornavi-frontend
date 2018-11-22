@@ -14,20 +14,24 @@
   </p-header>
 
   <p-tabView>
-    <p-tabPanel header="ranging time">
+    <p-tabPanel header="{{'device.config.tab.mac'|translate}}">
       <app-device-ranging-time></app-device-ranging-time>
     </p-tabPanel>
 
-    <p-tabPanel header="txset">
+    <p-tabPanel header="{{'device.config.tab.rangingTime'|translate}}">
+      <app-device-ranging-time></app-device-ranging-time>
+    </p-tabPanel>
+
+    <p-tabPanel header="{{'device.config.tab.txset'|translate}}">
       <app-device-txset></app-device-txset>
     </p-tabPanel>
 
-    <p-tabPanel header="rfset">
+    <p-tabPanel header="{{'device.config.tab.rfset'|translate}}">
       <app-device-rfset
         [rfsetConfigData]="rfsetConfigData"></app-device-rfset>
     </p-tabPanel>
 
-    <p-tabPanel header="imu" *ngIf="deviceType === 'tags'">
+    <p-tabPanel header="{{'device.config.tab.imu'|translate}}" *ngIf="deviceType === 'tags'">
       <app-device-imu></app-device-imu>
     </p-tabPanel>
   </p-tabView>
