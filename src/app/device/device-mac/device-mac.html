@@ -1,0 +1,20 @@
+<ngForm [formGroup]="macConfigForm">
+  <div formGroupName="macData">
+    <div class="ui-dialog-buttonpane ui-helper-clearfix">
+      <button
+        type="button"
+        pButton
+        icon="fa-cogs"
+        (click)="resetDevice()"
+        label="{{'Default settings'|translate}}"></button>
+
+      <button
+        type="button"
+        pButton
+        icon="fa-share-square"
+        (click)="sendToDevice()"
+        [disabled]="isButtonSendDisabled"
+        label="{{'Send to device'|translate}}"></button>
+    </div>
+  </div>
+</ngForm>

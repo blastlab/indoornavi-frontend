@@ -93,6 +93,7 @@ import {DeviceRfSetComponent} from 'app/device/device-rfset/device-rfset';
 import {DeviceTxSetComponent} from 'app/device/device-txset/device-txset';
 import {DeviceRangingTimeComponent} from 'app/device/device-ranging-time/device-ranging-time';
 import {DeviceImuComponent} from 'app/device/device-imu/device-imu';
+import {DeviceMacComponent} from './device/device-mac/device-mac';
 import {BluetoothComponent} from 'app/bluetooth/bluetooth';
 import {AcceptButtonsComponent} from 'app/shared/components/accept-buttons/accept-buttons';
 import {PermissionGroupComponent} from 'app/user/permissionGroup/permissionGroup';
@@ -169,6 +170,7 @@ export function HttpLoaderFactory(http: Http) {
     DeviceTxSetComponent,
     DeviceRangingTimeComponent,
     DeviceImuComponent,
+    DeviceMacComponent,
     LongIdValidatorDirective,
     NumberInRangeValidatorDirective,
     AppAutoFocusDirective,
