@@ -1,4 +1,4 @@
-import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.builder';
+import {BoxSize, DrawBuilder, ElementType, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.builder';
 import {Point, PositionDescription} from '../../map-editor/map.type';
 import {DrawConfiguration} from '../../map-viewer/publication.type';
 import * as d3 from 'd3';
