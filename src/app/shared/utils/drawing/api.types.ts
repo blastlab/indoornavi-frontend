@@ -80,4 +80,9 @@ export namespace APIObject {
     BOTTOM_RIGHT,
     BOTTOM_LEFT
   }
+
+  export enum NavigationErrorCodes {
+    'NoPath' = 'NV_001'
+  }
+
 }

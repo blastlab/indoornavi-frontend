@@ -13,6 +13,7 @@ import Metadata = APIObject.Metadata;
 import Path = APIObject.Path;
 import NavigationData = APIObject.NavigationData;
 import Circle = APIObject.Circle;
+import NavigationErrorCodes = APIObject.NavigationErrorCodes;
 
 @Injectable()
 export class NavigationController {
@@ -91,7 +92,7 @@ export class NavigationController {
                             event: MessageEvent, container: d3.selection, scale: Scale) {
     this.lastCoordinates = null;
     if (this.isNavigationReady) {
-      this.event.source.postMessage({type: 'navigation', action: 'recalculated'}, '*');
+      this.event.source.postMessage({type: 'navigation', status: 'recalculated'}, '*');
       this.stopNavigation();
     }
     this.container = container;
@@ -111,7 +112,7 @@ export class NavigationController {
       if (!!this.objectMetadataPolyline) {
         this.handlePathUpdate(pointUpdate);
       } else {
-        this.event.source.postMessage({type: 'navigation', action: 'unavailable'}, '*');
+        this.event.source.postMessage({type: 'navigation', status: 'unavailable'}, '*');
       }
     });
     if (this.lastCoordinates) {
@@ -132,7 +133,7 @@ export class NavigationController {
 
   private cancelNavigation() {
     if (!!this.event) {
-      this.event.source.postMessage({type: 'navigation', action: 'canceled'}, '*');
+      this.event.source.postMessage({type: 'navigation', status: 'canceled'}, '*');
     }
     if (this.isNavigationReady) {
       this.stopNavigation();
@@ -141,7 +142,7 @@ export class NavigationController {
 
   private finishNavigation() {
     if (!!this.event) {
-      this.event.source.postMessage({type: 'navigation', action: 'finished'}, '*');
+      this.event.source.postMessage({type: 'navigation', status: 'finished'}, '*');
     }
     this.stopNavigation();
   }
@@ -207,10 +208,10 @@ export class NavigationController {
     const path: Line[] = this.navigationService.calculateDijkstraShortestPath(lines, location, destination);
     if (path.length === 0) {
       this.isNavigationReady = false;
-      this.event.source.postMessage({type: 'navigation', action: 'error'},  '*');
+      this.event.source.postMessage({type: 'navigation', status: 'error', code: NavigationErrorCodes.NoPath},  '*');
     } else {
       const pathLength: number = this.calculatePathLength(path);
-      this.event.source.postMessage({type: 'navigation', action: 'created', pathLength: pathLength}, '*');
+      this.event.source.postMessage({type: 'navigation', status: 'created', pathLength: pathLength}, '*');
       path.reverse();
       this.setNavigationMetadata(path);
       this.redrawPath();
