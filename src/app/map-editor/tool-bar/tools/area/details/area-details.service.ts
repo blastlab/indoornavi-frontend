@@ -9,6 +9,7 @@ export class AreaDetailsService {
   private visibilityChanged: Subject<boolean> = new Subject<boolean>();
   private decisionMade: Subject<AreaBag> = new Subject<AreaBag>();
   private hasBeenSet: Subject<AreaBag> = new Subject<AreaBag>();
+  private hasBeenRemoved: Subject<void> = new Subject<void>();
 
   show(): void {
     this.visibilityChanged.next(true);
@@ -30,6 +31,10 @@ export class AreaDetailsService {
     this.hasBeenSet.next(area);
   }
 
+  remove(): void {
+    this.hasBeenRemoved.next();
+  }
+
   onVisibilityChange(): Observable<boolean> {
     return this.visibilityChanged.asObservable();
   }
@@ -41,4 +46,9 @@ export class AreaDetailsService {
   onSet(): Observable<AreaBag> {
     return this.hasBeenSet.asObservable();
   }
+
+  onRemove(): Observable<void> {
+    return this.hasBeenRemoved.asObservable();
+  }
+
 }
