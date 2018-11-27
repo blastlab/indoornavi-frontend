@@ -115,7 +115,7 @@ export interface BatteryUptime {
   seconds: number;
 }
 
-export interface DeviceBatteryReading {
+export interface BatteryState {
   deviceShortId: number;
   percentage: number;
   uptime: BatteryUptime
@@ -136,7 +136,7 @@ export interface FirmwareMessage extends DeviceMessage {
 }
 
 export interface BatteryMessage extends DeviceMessage {
-  batteryLevelList: DeviceBatteryReading[]
+  batteryLevelList: BatteryState[]
 }
 
 export interface DeviceShortId {

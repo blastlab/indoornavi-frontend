@@ -9,7 +9,7 @@ import {
   Anchor,
   BatteryMessage, BatteryStatus, ClientRequest, CommandType,
   Device,
-  DeviceBatteryReading,
+  BatteryState,
   DeviceMessage,
   DeviceShortId,
   DeviceStatus,
@@ -423,7 +423,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   private handleBatteryLevelMessage(message: BatteryMessage): void {
-    message.batteryLevelList.forEach((batteryReading: DeviceBatteryReading): void => {
+    message.batteryLevelList.forEach((batteryReading: BatteryState): void => {
       let found = false;
       this.deviceBatteryStatus.forEach((status: BatteryStatus, id: number): void => {
         if (id === batteryReading.deviceShortId) {
