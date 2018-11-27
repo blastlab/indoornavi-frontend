@@ -93,7 +93,7 @@
           </button>
           <button pButton class="ui-button-secondary"
                   id="terminal" [appHasPermission]="editPermission"
-                  (click)="terminal(device)"
+                  (click)="initializeTerminal(device)"
                   [ngClass]="{'ui-state-active': displayTerminalWindow, 'ui-state-default': !displayTerminalWindow}"
                   pTooltip="{{'device.terminal'|translate}}"
                   icon="fa-terminal" iconPos="left">

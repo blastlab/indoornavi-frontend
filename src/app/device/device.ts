@@ -277,6 +277,10 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
             this.devicesUpdating.length = 0;
           }
           this.messageService.failed(message.code);
+        } else if (this.displayTerminalWindow &&
+          message.type === 'SERVER_COMMAND' &&
+          message.sinkShortId === this.terminalActiveDeviceId) {
+          this.handleServerCommandResponse(message.value)
         }
       });
     } else {
@@ -285,7 +289,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     }
   }
 
-  terminal(device: UWB): void {
+  initializeTerminal(device: UWB): void {
     this.terminalActiveDeviceId = device.shortId;
     this.displayTerminalWindow = !this.displayTerminalWindow;
     this.terminalSuperUser = false;
@@ -293,7 +297,11 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     this.terminalComponent = null;
     this.activeCommand = null;
     this.clearTerminal();
-    this.fakeWebSocket();
+    // this.fakeWebSocket();
+  }
+
+  private handleServerCommandResponse(command): void {
+    console.log(command);
   }
 
   private clearTerminal(): void {
