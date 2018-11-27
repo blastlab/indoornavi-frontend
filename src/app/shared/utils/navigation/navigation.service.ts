@@ -23,7 +23,7 @@ export class NavigationService {
   }
 
   private calculateGraphWithPathParameters(start, finish): void {
-    if (this.lines.length === 0) {
+    if (!this.lines.length) {
       return;
     }
     const startPointCoordinatesOnLines: Point = Geometry.pickClosestNodeCoordinates(this.lines, start);
