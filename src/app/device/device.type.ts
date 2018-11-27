@@ -62,41 +62,6 @@ export class Anchor extends UWB {
   }
 }
 
-export class AnchorBatteryStatus extends Anchor {
-  battery?: number;
-  message?: string;
-
-  constructor(
-    verified: boolean,
-    shortId: number,
-    id?: number,
-    name?: string,
-    macAddress?: string,
-    firmwareVersion?: string,
-    x?: number,
-    y?: number,
-    z?: number,
-    xInPixels?: number,
-    yInPixels?: number,
-    floorId?: number
-  ) {
-    super(
-      verified,
-      shortId,
-      id,
-      name,
-      macAddress,
-      firmwareVersion,
-      x,
-      y,
-      z,
-      xInPixels,
-      yInPixels,
-      floorId
-    )
-  }
-}
-
 export class Tag extends UWB {
 }
 
@@ -132,6 +97,11 @@ export class UpdateRequest {
   }
 }
 
+export interface ClientRequest {
+  type: string;
+  args: any
+}
+
 export interface DeviceStatus {
   device: Device;
   anchor: Anchor;
@@ -149,6 +119,10 @@ export interface DeviceBatteryReading {
   deviceShortId: number;
   percentage: number;
   uptime: BatteryUptime
+}
+
+export class BatteryStatus {
+  constructor(public percentage: number, public message: string) {}
 }
 
 export interface DeviceMessage {
@@ -173,3 +147,7 @@ export enum Status {
   ONLINE, OFFLINE, UPDATING, UPDATED
 }
 
+export enum CommandType {
+  BatteryUpdate = 'CHECK_BATTERY_LEVEL',
+  FirmwareUpdate = 'UPDATE_FIRMWARE'
+}

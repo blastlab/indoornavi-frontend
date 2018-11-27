@@ -13,6 +13,7 @@ import Metadata = APIObject.Metadata;
 import Path = APIObject.Path;
 import NavigationData = APIObject.NavigationData;
 import Circle = APIObject.Circle;
+import {Helper} from '../helper/helper';
 
 @Injectable()
 export class NavigationController {
@@ -209,29 +210,25 @@ export class NavigationController {
     }
   }
 
-  private assignId(type: string): Metadata {
-    return {
-      object: {
-        id: Math.round(new Date().getTime() * Math.random() * 1000)
-      },
-      type: type
-    };
-  }
-
   private setNavigationMetadata(path: Line[]): void {
-    this.objectMetadataPolyline = this.assignId('POLYLINE');
+    this.objectMetadataPolyline = Helper.assignId('POLYLINE');
     this.objectMetadataPolyline.object['points'] = this.createPointPathFromLinePath(this.scale, path);
     this.objectMetadataPolyline.object = Object.assign((<Path>this.objectMetadataPolyline.object), {lines: path, color: this.pathColor, width: this.pathWidth, lineType: 'dotted'});
 
     if (!this.disableStartPoint) {
-      this.objectMetadataStart = this.assignId('CIRCLE');
-      this.objectMetadataStart.object['position'] = Object.assign((<Circle>this.objectMetadataStart.object), this.objectMetadataPolyline.object['points'][0]);
+      this.objectMetadataStart = Helper.assignId('CIRCLE');
+      this.objectMetadataStart.object['position'] = Object.assign(
+        (<Circle>this.objectMetadataStart.object), this.objectMetadataPolyline.object['points'][0]
+      );
       this.objectMetadataStart.object = Object.assign((<Circle>this.objectMetadataStart.object), this.startPointObject);
     }
 
     if (!this.disableEndPoint) {
-      this.objectMetadataFinish = this.assignId('CIRCLE');
-      this.objectMetadataFinish.object['position'] = Object.assign((<Circle>this.objectMetadataFinish.object), this.objectMetadataPolyline.object['points'][this.objectMetadataPolyline.object['points'].length - 1]);
+      this.objectMetadataFinish = Helper.assignId('CIRCLE');
+      this.objectMetadataFinish.object['position'] = Object.assign(
+        (<Circle>this.objectMetadataFinish.object),
+        this.objectMetadataPolyline.object['points'][this.objectMetadataPolyline.object['points'].length - 1]
+      );
       this.objectMetadataFinish.object = Object.assign((<Circle>this.objectMetadataFinish.object), this.endPointObject);
     }
 
