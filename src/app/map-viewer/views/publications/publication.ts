@@ -14,6 +14,7 @@ import {MapClickService} from '../../../shared/services/map-click/map-click.serv
 import {PathService} from '../../services/path/path.service';
 import {ComplexService} from '../../../complex/complex.service';
 import {NavigationController} from '../../../shared/utils/navigation/navigation.controller';
+import {ModelsConfig} from '../../../map/models/models.config';
 
 
 @Component({
@@ -36,7 +37,8 @@ export class PublishedComponent extends SocketConnectorComponent implements OnIn
               complexService: ComplexService,
               floorService: FloorService,
               tagToggler: TagVisibilityTogglerService,
-              breadcrumbService: BreadcrumbService
+              breadcrumbService: BreadcrumbService,
+              models: ModelsConfig
   ) {
 
     super(
@@ -54,7 +56,8 @@ export class PublishedComponent extends SocketConnectorComponent implements OnIn
       pathDisplayService,
       floorService,
       tagToggler,
-      breadcrumbService
+      breadcrumbService,
+      models
     );
   }
 }

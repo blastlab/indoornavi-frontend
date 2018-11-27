@@ -46,6 +46,14 @@
               icon="fa-briefcase" iconPos="left">
       </button>
     </div>
+    <div>
+      <button pButton class="ui-button-info"
+              id="battery" [appHasPermission]="editPermission"
+              (click)="sendBatteryStatusRequest()"
+              label="{{'device.reload.battery'|translate}}"
+              icon="fa-battery-three-quarters" iconPos="left">
+      </button>
+    </div>
   </div>
   <div *ngIf="devicesUpdating.length > 0" class="right">
     <span>{{"device.firmware.updating"|translate}}</span>
@@ -60,7 +68,7 @@
   <ng-template let-device pTemplate="item">
     <div class="ui-helper-clearfix">
       <div class="ui-g">
-        <div [ngClass]="{'ui-g-9 ui-md-9 ui-lg-9': !device.floorId, 'ui-g-5 ui-md-5 ui-lg-5': device.floorId}" class="device-details">
+        <div class="ui-g-5 ui-md-5 ui-lg-5 device-details">
           <div><b>{{'device.shortId'|translate}}:</b> {{device['shortId']}}</div>
           <div><b>{{'device.macAddress'|translate}}:</b> {{device['macAddress']}}</div>
           <div><b>{{'device.name'|translate}}:</b> {{device['name']}}</div>
@@ -76,9 +84,26 @@
                                animationDuration="1s">
             </p-progressSpinner>
           </div>
+
+          <div *ngIf="!!batteryPercentage(device.shortId)">
+            <b>{{'device.battery'|translate}}:</b>
+            <app-battery-indicator [batteryLevel]="batteryPercentage(device.shortId)"></app-battery-indicator>
+          </div>
+          <div *ngIf="!batteryPercentage(device.shortId) && !batteryMessage(device.shortId)">
+            <b>{{'device.battery'|translate}}:</b>
+            <p-progressSpinner [style]="{width: '15px', height: '15px'}"
+                               strokeWidth="8"
+                               fill="#EEEEEE"
+                               animationDuration="1s">
+            </p-progressSpinner>
+          </div>
+          <div *ngIf="!batteryPercentage(device.shortId) && !!batteryMessage(device.shortId)">
+            <b>{{'device.battery'|translate}}:</b>
+            <i class="fa fa-exclamation-triangle" pTooltip="{{batteryMessage(device.shortId)|translate}}"></i>
+          </div>
         </div>
-        <div *ngIf="device.floorId" class="ui-g-4 ui-md-4 ui-lg-4 device-published-details">
-          <div><b>{{'device.publishedOnFloorWithId'|translate}}:</b> {{device.floorId}}</div>
+        <div class="ui-g-4 ui-md-4 ui-lg-4 device-published-details">
+          <div *ngIf="device.floorId" ><b>{{'device.publishedOnFloorWithId'|translate}}:</b> {{device.floorId}}</div>
         </div>
         <div class="ui-g-3 ui-md-3 ui-lg-3">
           <button

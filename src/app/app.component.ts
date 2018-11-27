@@ -5,6 +5,7 @@ import {MenuItem} from 'primeng/primeng';
 import {Subscription} from 'rxjs/Subscription';
 import {BreadcrumbService} from './shared/services/breadcrumbs/breadcrumb.service';
 import {Location} from '@angular/common';
+import {Helper} from './shared/utils/helper/helper';
 
 @Component({
   selector: 'app-root',
@@ -17,13 +18,15 @@ export class AppComponent implements OnInit, OnDestroy {
   sidebar: boolean = false;
   breadcrumbs: MenuItem[];
   isPublic: boolean = false;
+  isMobile = false;
   private userLoggedInSubscription: Subscription;
   private breadcrumbIsReadySubscription: Subscription;
 
   constructor(private authGuard: AuthGuard, private route: ActivatedRoute, private breadcrumbService: BreadcrumbService, private cd: ChangeDetectorRef, private location: Location) {}
 
   ngOnInit() {
-    this.isPublic = this.location.path().match(/embedded/) ? true : false;
+    this.isMobile = Helper.detectMobile();
+    this.isPublic = !!this.location.path().match(/embedded/);
     this.route.queryParams.subscribe((params: Params) => {
       if (!!params['api_key']) {
         this.isDisplayedInIFrame = true;

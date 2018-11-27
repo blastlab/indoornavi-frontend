@@ -56,6 +56,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
   private scaleCalculations: ScaleCalculations;
   private containerBox: Box;
   private currentAreaInContainerBox: boolean;
+  private edited: boolean;
   private backupPolygonPoints: Point[] = [];
 
   private editLabel: string;
@@ -131,7 +132,6 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
         this.toggleActivity();
       }
     });
-
     this.setTranslations();
   }
 
@@ -155,6 +155,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
   setActive(): void {
     if (!this.active) {
       this.active = true;
+      this.edited = false;
 
       this.container.style('cursor', 'crosshair');
 
@@ -523,6 +524,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     this.actionBarService.setAreas(this.areas.map((areaBag: AreaBag): Area => {
       return areaBag.dto;
     }));
+    this.areaDetailsService.remove();
   }
 
   private findSelectedAreaBagIndex(): number {
@@ -586,10 +588,15 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
 
     area.editable.on({
       edit: () => {
+        this.edited = true;
         this.setEditableToItemContextMenu();
       },
       remove: (): void => {
         this.setRemoveToItemContextMenu();
+        if (this.edited) {
+          this.toggleActivity();
+        }
+        this.edited = false;
       }
     });
   }

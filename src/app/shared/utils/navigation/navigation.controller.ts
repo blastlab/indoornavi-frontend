@@ -13,6 +13,7 @@ import Metadata = APIObject.Metadata;
 import Path = APIObject.Path;
 import NavigationData = APIObject.NavigationData;
 import Circle = APIObject.Circle;
+import {Helper} from '../helper/helper';
 
 @Injectable()
 export class NavigationController {
@@ -30,12 +31,20 @@ export class NavigationController {
   private positionChanged: Subject<Point> = new Subject<Point>();
   private lines: Line[];
   private stoppedBeforeIsNavigationReady: boolean = false;
+  private disableStartPoint: boolean = false;
+  private disableEndPoint: boolean = false;
+
+  private startPointObject: Object = {radius: 10, border: {width: 2, color: '#007FFF '}, opacity: 1, color: '#007FFF '};
+  private endPointObject: Object = {radius: 10, border: {width: 2, color: '#007FFF '}, opacity: 1, color: '#007FFF '};
+  private pathColor: string = '#007FFF';
+  private pathWidth: number = 5;
 
   constructor(
     private pathService: PathService,
     private mapObjectService: ApiService,
     private navigationService: NavigationService,
-  ) {}
+  ) {
+  }
 
   handleNavigation(event: MessageEvent, floorId, container, scale) {
     const args: NavigationData = event.data.args.object;
@@ -60,19 +69,23 @@ export class NavigationController {
   private setNavigationPath(floorId: number, location: Point, destination: Point, accuracy: number, event: MessageEvent, container: d3.selection, scale: Scale) {
     this.container = container;
     this.destination = destination;
-    this.accuracy =  (accuracy && accuracy > 0) ? accuracy : Infinity;
+    this.accuracy = (accuracy && accuracy > 0) ? accuracy : Infinity;
     this.scale = scale;
     if (this.isNavigationReady) {
-      this.event.source.postMessage({type: 'navigation', action: 'working'}, this.event.origin);
+      this.event.source.postMessage({type: 'navigation', action: 'working'}, '*');
       return;
     }
     this.event = event;
     this.pathService.getPathByFloorId(floorId).subscribe((lines: Line[]): void => {
       this.calculateNavigationPath(lines, location, destination);
       this.onPositionChanged().subscribe((pointUpdate: Point): void => {
-        this.handlePathUpdate(pointUpdate);
+        if (!!this.objectMetadataPolyline) {
+          this.handlePathUpdate(pointUpdate);
+        } else {
+          this.event.source.postMessage({type: 'navigation', action: 'unavailable'}, '*');
+        }
       });
-      if (this.lastCoordinates) {
+      if (this.lastCoordinates && this.isNavigationReady) {
         this.updatePosition(this.lastCoordinates);
       }
       if (this.stoppedBeforeIsNavigationReady) {
@@ -91,7 +104,7 @@ export class NavigationController {
 
   private stopNavigation() {
     if (!!this.event) {
-      this.event.source.postMessage({type: 'navigation', action: 'finished'}, this.event.origin);
+      this.event.source.postMessage({type: 'navigation', action: 'finished'}, '*');
     }
     if (this.isNavigationReady) {
       this.isNavigationReady = false;
@@ -128,12 +141,14 @@ export class NavigationController {
 
       this.objectMetadataPolyline.object['points'] = this.createPointPathFromLinePath(this.scale, this.lines);
       this.objectMetadataPolyline.object['lines'] = this.lines;
-      this.objectMetadataStart.object['position'] = Object.assign(
-        (<Circle>this.objectMetadataStart.object),
-        this.objectMetadataPolyline.object['points'][0]);
-      this.objectMetadataFinish.object['position'] = Object.assign(
-        (<Circle>this.objectMetadataFinish.object),
-        this.objectMetadataPolyline.object['points'][this.objectMetadataPolyline.object['points'].length - 1]);
+      const startPointCirclePosition: Point = this.objectMetadataPolyline.object['points'][0];
+      const finishPointCirclePosition: Point = this.objectMetadataPolyline.object['points'][this.objectMetadataPolyline.object['points'].length - 1];
+      if (!this.disableStartPoint) {
+        this.objectMetadataStart.object['position'] = Object.assign((<Circle>this.objectMetadataStart.object), startPointCirclePosition);
+      }
+      if (!this.disableEndPoint) {
+        this.objectMetadataFinish.object['position'] = Object.assign((<Circle>this.objectMetadataFinish.object), finishPointCirclePosition);
+      }
       this.redrawPath();
     }
   }
@@ -151,15 +166,28 @@ export class NavigationController {
     const path: Line[] = this.navigationService.calculateDijkstraShortestPath(lines, location, destination);
     if (path.length === 0) {
       this.isNavigationReady = false;
-      this.event.source.postMessage({type: 'navigation', action: 'error'}, this.event.origin);
+      this.event.source.postMessage({type: 'navigation', action: 'error'},  '*');
       this.stopNavigation();
     } else {
-      this.event.source.postMessage({type: 'navigation', action: 'created'}, this.event.origin);
+      const pathLength: number = this.calculatePathLength(path);
+      this.event.source.postMessage({type: 'navigation', action: 'created', pathLength: pathLength}, '*');
       path.reverse();
       this.setNavigationMetadata(path);
       this.redrawPath();
       this.isNavigationReady = true;
     }
+  }
+
+  private calculatePathLength(path: Line[]): number {
+    let pathLength = 0;
+    path.forEach((line: Line): void => {
+      pathLength += Geometry.getDistanceBetweenTwoPoints(line.startPoint, line.endPoint);
+    });
+    return Math.round(Geometry.calculateDistanceInCentimeters(
+      Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
+      this.scale.realDistance,
+      pathLength
+    ));
   }
 
   private createPointPathFromLinePath(scale: Scale, path: Line[]): Point[] {
@@ -171,42 +199,38 @@ export class NavigationController {
   }
 
   private redrawPath(): void {
-    if (!!this.objectMetadataPolyline && this.objectMetadataStart && this.objectMetadataFinish) {
+    if (!!this.objectMetadataPolyline) {
       this.mapObjectService.draw(this.objectMetadataPolyline, this.scale, this.event, this.container);
-      this.mapObjectService.draw(this.objectMetadataStart, this.scale, this.event, this.container);
-      this.mapObjectService.draw(this.objectMetadataFinish, this.scale, this.event, this.container);
+      if (!this.disableStartPoint && this.objectMetadataStart) {
+        this.mapObjectService.draw(this.objectMetadataStart, this.scale, this.event, this.container);
+      }
+      if (!this.disableEndPoint && this.objectMetadataFinish) {
+        this.mapObjectService.draw(this.objectMetadataFinish, this.scale, this.event, this.container);
+      }
     }
   }
 
   private setNavigationMetadata(path: Line[]): void {
-    this.objectMetadataPolyline = {
-      object: {
-        id: Math.round(new Date().getTime() * Math.random() * 1000)
-      },
-      type: 'POLYLINE'
-    };
-    this.objectMetadataStart = {
-      object: {
-        id: Math.round(new Date().getTime() * Math.random() * 1000)
-      },
-      type: 'CIRCLE'
-    };
-    this.objectMetadataFinish = {
-      object: {
-        id: Math.round(new Date().getTime() * Math.random() * 1000)
-      },
-      type: 'CIRCLE'
-    };
+    this.objectMetadataPolyline = Helper.assignId('POLYLINE');
     this.objectMetadataPolyline.object['points'] = this.createPointPathFromLinePath(this.scale, path);
-    this.objectMetadataPolyline.object = Object.assign((<Path>this.objectMetadataPolyline.object), {lines: path, color: '#0000ff', lineType: 'dotted'});
-    const startPointCirclePosition: Point = this.objectMetadataPolyline.object['points'][0];
-    const finishPointCirclePosition: Point = this.objectMetadataPolyline.object['points'][this.objectMetadataPolyline.object['points'].length - 1];
-    const startPointCircleFeatures: Object = {radius: 10, border: {width: 2, color: '#00ff00'}, opacity: 1, color: '#00ff00'};
-    const finishPointCircleFeatures: Object = {radius: 15, border: {width: 2, color: '#ff0000'}, opacity: 1, color: '#ff0000'};
-    this.objectMetadataStart.object['position'] = Object.assign((<Circle>this.objectMetadataStart.object), startPointCirclePosition);
-    this.objectMetadataStart.object = Object.assign((<Circle>this.objectMetadataStart.object), startPointCircleFeatures);
-    this.objectMetadataFinish.object['position'] = Object.assign((<Circle>this.objectMetadataFinish.object), finishPointCircleFeatures);
-    this.objectMetadataFinish.object = Object.assign((<Circle>this.objectMetadataFinish.object), finishPointCirclePosition);
-  }
+    this.objectMetadataPolyline.object = Object.assign((<Path>this.objectMetadataPolyline.object), {lines: path, color: this.pathColor, width: this.pathWidth, lineType: 'dotted'});
 
+    if (!this.disableStartPoint) {
+      this.objectMetadataStart = Helper.assignId('CIRCLE');
+      this.objectMetadataStart.object['position'] = Object.assign(
+        (<Circle>this.objectMetadataStart.object), this.objectMetadataPolyline.object['points'][0]
+      );
+      this.objectMetadataStart.object = Object.assign((<Circle>this.objectMetadataStart.object), this.startPointObject);
+    }
+
+    if (!this.disableEndPoint) {
+      this.objectMetadataFinish = Helper.assignId('CIRCLE');
+      this.objectMetadataFinish.object['position'] = Object.assign(
+        (<Circle>this.objectMetadataFinish.object),
+        this.objectMetadataPolyline.object['points'][this.objectMetadataPolyline.object['points'].length - 1]
+      );
+      this.objectMetadataFinish.object = Object.assign((<Circle>this.objectMetadataFinish.object), this.endPointObject);
+    }
+
+  }
 }
