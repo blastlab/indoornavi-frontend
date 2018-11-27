@@ -20,14 +20,17 @@
   height: 500px;
   max-height: 600px;
   overflow: scroll;
-  color: #008800;
 }
 
-.terminal-super-active {
+.terminal-response-internal {
   color: #880000;
 }
 
-.terminal-super-deactivated {
+.terminal-response-external {
+  color: #008800;
+}
+
+.terminal-text {
   color: #000;
 }
 

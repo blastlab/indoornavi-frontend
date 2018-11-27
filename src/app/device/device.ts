@@ -1,6 +1,5 @@
 import {Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild, ViewChildren, ViewEncapsulation} from '@angular/core';
-import {Subject, Subscription} from 'rxjs/Rx';
-import {Observable, Subscription} from 'rxjs/Rx';
+import {Observable, Subject, Subscription} from 'rxjs/Rx';
 import {Config} from '../../config';
 import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute} from '@angular/router';
@@ -8,14 +7,17 @@ import {DeviceService} from './device.service';
 import {CrudComponent, CrudHelper} from '../shared/components/crud/crud.component';
 import {
   Anchor,
-  BatteryMessage, BatteryStatus, ClientRequest, CommandType,
-  Device,
+  BatteryMessage,
   BatteryState,
+  BatteryStatus,
+  ClientRequest, CommandArguments,
+  CommandType,
+  Device,
   DeviceMessage,
   DeviceShortId,
   DeviceStatus,
   FirmwareMessage,
-  Status,
+  Status, TerminalMessageToDisplay,
   UpdateRequest,
   UWB
 } from './device.type';
@@ -45,7 +47,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   public displayDialog: boolean = false;
   public displayTerminalWindow = false;
   public terminalWelcomeMessage: string;
-  public terminalResponseMessage: string[] = [];
+  public terminalResponseMessage: TerminalMessageToDisplay[] = [];
   public terminalActiveDeviceId: number = 0;
   public device: UWB;
   public updateMode: boolean = false;
@@ -53,7 +55,6 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   public devicesUpdating: UWB[] = [];
   public allSelected: boolean = false;
   public displayInfoDialog: boolean = false;
-  public terminalSuperUser: boolean = false;
   @ViewChildren('updateCheckbox') public deviceCheckboxes: Checkbox[];
   @ViewChild('firmwareInput') public firmwareInput: ElementRef;
   @ViewChild('firmwareButton') public firmwareButton: ElementRef;
@@ -77,7 +78,6 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   private terminalComponent: Element;
   private commandIndex: number;
   private activeCommand: string;
-  private menuCommands: string[] = ['help, su', 'exit', 'freeze', 'unfreeze', 'clear', 'use'];
   private scrolledTop: boolean = true;
   private terminalResponseWindow: Element;
   private terminalResponseWindowHeight: number;
@@ -128,8 +128,6 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   ngOnDestroy() {
     this.subscriptionDestructor.next();
     this.subscriptionDestructor = null;
-    if (this.socketSubscription) {
-      this.socketSubscription.unsubscribe();
     if (this.socketRegistrationSubscription) {
       this.socketRegistrationSubscription.unsubscribe();
     }
@@ -308,18 +306,19 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   initializeTerminal(device: UWB): void {
+    this.terminalResponseMessage = [];
     this.terminalActiveDeviceId = device.shortId;
     this.displayTerminalWindow = !this.displayTerminalWindow;
-    this.terminalSuperUser = false;
     this.connectedToWebSocket = false;
     this.terminalComponent = null;
     this.activeCommand = null;
     this.clearTerminal();
-    // this.fakeWebSocket();
   }
 
-  private handleServerCommandResponse(command): void {
-    console.log(command);
+  private handleServerCommandResponse(message: DeviceMessage): void {
+    if (this.displayTerminalWindow && message.sinkShortId === this.terminalActiveDeviceId) {
+      this.displayMessage(message.value, false)
+    }
   }
 
   private clearTerminal(): void {
@@ -340,32 +339,22 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       this.terminalResponseWindow.scrollTop = this.terminalResponseWindow.scrollHeight;
   }
 
-  private fakeWebSocket(): void {
-    this.terminalResponseMessage = [];
-    this.terminalResponseMessage.push('CONNECTING TO DEVICE...');
+  private displayMessage(value: string, internal: boolean): void {
+    const message: TerminalMessageToDisplay = {
+      message: value,
+      internal: internal
+    };
+    this.terminalResponseMessage.push(message);
     this.terminalResponseWindow = document.getElementById('informationWindow');
-    let counter = 0;
-    const looper = () => setTimeout(() => {
-      this.setScrollReaction();
-      if (!this.terminalPause) {
-        counter++;
-        this.terminalResponseMessage.push(`Information from ${counter}`);
-        if (this.terminalResponseMessage.length > 1000) {
-          this.terminalResponseMessage.splice(0, 1);
-        }
-        if (this.scrolledTop) {
-          this.zeroScrollTop();
-        }
+    this.setScrollReaction();
+    if (!this.terminalPause) {
+      if (this.terminalResponseMessage.length > 1000) {
+        this.terminalResponseMessage.splice(0, 1);
       }
-      if (this.connectedToWebSocket) {
-        looper();
+      if (this.scrolledTop) {
+        this.zeroScrollTop();
       }
-    }, 200);
-    setTimeout(() => {
-      this.terminalResponseMessage.push('CONNECTED');
-      this.connectedToWebSocket = true;
-      looper();
-    }, 2000);
+    }
   }
 
   private setTerminalCommandHandler(): void {
@@ -373,23 +362,13 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       let responseMessage = '';
       let responseData = '';
       switch (command.toLowerCase()) {
-        case 'su':
-          responseMessage = 'terminal.response.superUser.on';
-          this.terminalSuperUser = true;
-          this.sendResponseToTerminal(responseMessage, responseData);
-          break;
         case 'help':
           responseMessage = 'terminal.response.commands';
-          responseData = this.menuCommands.join(', ') + this.availableCommands.join(', ');
+          responseData = this.availableCommands.join(', ');
           break;
         case 'exit':
-          if (this.terminalSuperUser) {
-            this.terminalSuperUser = false;
-            responseMessage = 'terminal.response.superUser.off';
-          } else {
-            this.displayTerminalWindow = false;
-            this.connectedToWebSocket = false;
-          }
+          this.displayTerminalWindow = false;
+          this.connectedToWebSocket = false;
           break;
         case 'freeze':
           this.terminalPause = true;
@@ -413,15 +392,11 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
           }
           break;
         default:
-          if (this.checkCommandExists(command)) {
-            responseMessage = 'terminal.command.sent.to.device';
-            this.handleDeviceCommand(command);
-          } else {
-            responseMessage = 'terminal.response.wrong.command';
-          }
-      }
-      if (!this.terminalSuperUser && this.displayTerminalWindow) {
-        this.sendResponseToTerminal(responseMessage, responseData);
+          responseMessage = 'terminal.command.sent.to.device';
+          this.sendResponseToTerminal(responseMessage, responseData);
+          this.handleDeviceCommand(command);
+          this.usedCommands.push(command);
+          this.displayMessage(command, true)
       }
     });
   }
@@ -455,29 +430,30 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   private setCommands(): void {
-    // collect available commands from back end
     this.availableCommands = [
-      'set',
-      'add',
-      'remove',
-      'update',
-      'connect'
+      'help',
+      'freeze',
+      'unfreeze',
+      'clear',
+      'exit',
+      'use'
     ];
   }
 
   private handleDeviceCommand(command: string): void {
-    this.usedCommands.push(command);
     this.commandIndex = this.usedCommands.length;
     if (this.usedCommands.length > 100) {
       this.usedCommands.splice(0, 1);
     }
-    console.log(`Sending * ${command} * over web socket to * ${this.terminalActiveDeviceId} *`);
-  }
-
-  private checkCommandExists(command: string): boolean {
-    const commandSplit: string[] = command.split(' ');
-    const commandIndex = this.availableCommands.indexOf(commandSplit[0]);
-    return commandIndex > -1;
+    const commandArguments: CommandArguments = {
+      value: command,
+      sinkShortId: this.terminalActiveDeviceId
+    };
+    const socketPayload: ClientRequest = {
+      type: CommandType.TerminalCommand,
+      args: commandArguments
+    };
+    this.socketClientService.send(socketPayload);
   }
 
   private sendResponseToTerminal(responseMessage: string, responseData: string): void {
@@ -486,8 +462,6 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       this.terminalService.sendResponse(value);
     });
   }
-
-  private updateFirmwareVersion(deviceStatus: DeviceStatus) {
 
   private updateFirmwareVersion(deviceStatus: DeviceStatus): void {
     let deviceToChangeFirmware: UWB;
@@ -607,6 +581,9 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
           break;
         case 'COMMAND_ERROR':
           this.handleCodeErrorMessage((<DeviceMessage>message));
+          break;
+        case 'SERVER_COMMAND':
+          this.handleServerCommandResponse((<DeviceMessage>message));
           break;
       }
     });

@@ -282,7 +282,7 @@ export function HttpLoaderFactory(http: Http) {
     PathService,
     NavigationService,
     NavigationController,
-    TerminalService
+    TerminalService,
     NavigationController,
     ModelsConfig
   ], bootstrap: [AppComponent]

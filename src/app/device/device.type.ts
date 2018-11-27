@@ -97,6 +97,11 @@ export class UpdateRequest {
   }
 }
 
+export interface CommandArguments {
+  value: string;
+  sinkShortId: number;
+}
+
 export interface ClientRequest {
   type: string;
   args: any
@@ -129,6 +134,13 @@ export interface DeviceMessage {
   type: string;
   devices?: any[];
   code?: string;
+  value?: string;
+  sinkShortId?: number;
+}
+
+export interface TerminalMessageToDisplay {
+  message: string;
+  internal: boolean;
 }
 
 export interface FirmwareMessage extends DeviceMessage {
@@ -149,5 +161,6 @@ export enum Status {
 
 export enum CommandType {
   BatteryUpdate = 'CHECK_BATTERY_LEVEL',
-  FirmwareUpdate = 'UPDATE_FIRMWARE'
+  FirmwareUpdate = 'UPDATE_FIRMWARE',
+  TerminalCommand = 'RAW_COMMAND'
 }
