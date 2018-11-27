@@ -85,11 +85,11 @@
             </p-progressSpinner>
           </div>
 
-          <div *ngIf="batteryPercentage(device.shortId) !== null">
+          <div *ngIf="!!batteryPercentage(device.shortId)">
             <b>{{'device.battery'|translate}}:</b>
             <app-battery-indicator [batteryLevel]="batteryPercentage(device.shortId)"></app-battery-indicator>
           </div>
-          <div *ngIf="batteryPercentage(device.shortId) === null && batteryMessage(device.shortId) === null">
+          <div *ngIf="!batteryPercentage(device.shortId) && !batteryMessage(device.shortId)">
             <b>{{'device.battery'|translate}}:</b>
             <p-progressSpinner [style]="{width: '15px', height: '15px'}"
                                strokeWidth="8"
@@ -97,7 +97,7 @@
                                animationDuration="1s">
             </p-progressSpinner>
           </div>
-          <div *ngIf="batteryPercentage(device.shortId) === null && batteryMessage(device.shortId) !== null">
+          <div *ngIf="!batteryPercentage(device.shortId) && !!batteryMessage(device.shortId)">
             <b>{{'device.battery'|translate}}:</b>
             <i class="fa fa-exclamation-triangle" pTooltip="{{batteryMessage(device.shortId)|translate}}"></i>
           </div>
