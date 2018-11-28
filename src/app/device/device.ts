@@ -437,7 +437,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     });
   }
 
-  private handleCodeErrorMessage(message: any): void {
+  private handleCodeErrorMessage(message: DeviceMessage): void {
     this.deviceBatteryStatus.forEach((status: BatteryStatus, id: number): void => {
       if (message.shortId === id) {
         status.message = message.code;

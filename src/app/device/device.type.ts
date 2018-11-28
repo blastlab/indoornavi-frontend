@@ -129,6 +129,7 @@ export interface DeviceMessage {
   type: string;
   devices?: any[];
   code?: string;
+  shortId?: number;
 }
 
 export interface FirmwareMessage extends DeviceMessage {
