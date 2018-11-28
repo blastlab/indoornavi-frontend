@@ -14,6 +14,7 @@ import Path = APIObject.Path;
 import NavigationData = APIObject.NavigationData;
 import Circle = APIObject.Circle;
 import {Helper} from '../helper/helper';
+import {ApiHelper} from '../drawing/api.helper';
 
 @Injectable()
 export class NavigationController {
@@ -211,12 +212,12 @@ export class NavigationController {
   }
 
   private setNavigationMetadata(path: Line[]): void {
-    this.objectMetadataPolyline = Helper.assignId('POLYLINE');
+    this.objectMetadataPolyline = ApiHelper.assignId('POLYLINE');
     this.objectMetadataPolyline.object['points'] = this.createPointPathFromLinePath(this.scale, path);
     this.objectMetadataPolyline.object = Object.assign((<Path>this.objectMetadataPolyline.object), {lines: path, color: this.pathColor, width: this.pathWidth, lineType: 'dotted'});
 
     if (!this.disableStartPoint) {
-      this.objectMetadataStart = Helper.assignId('CIRCLE');
+      this.objectMetadataStart = ApiHelper.assignId('CIRCLE');
       this.objectMetadataStart.object['position'] = Object.assign(
         (<Circle>this.objectMetadataStart.object), this.objectMetadataPolyline.object['points'][0]
       );
@@ -224,7 +225,7 @@ export class NavigationController {
     }
 
     if (!this.disableEndPoint) {
-      this.objectMetadataFinish = Helper.assignId('CIRCLE');
+      this.objectMetadataFinish = ApiHelper.assignId('CIRCLE');
       this.objectMetadataFinish.object['position'] = Object.assign(
         (<Circle>this.objectMetadataFinish.object),
         this.objectMetadataPolyline.object['points'][this.objectMetadataPolyline.object['points'].length - 1]

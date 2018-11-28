@@ -139,6 +139,7 @@ export class ApiService {
     if (!!area.events) {
       area.events.forEach((event: string): void => {
         areaSelection.getGroup().on(event, (): void => {
+          // @ts-ignore
             originMessageEvent.source.postMessage({type: `${event}-${area.id}`, objectId: area.id}, '*');
           });
         });
