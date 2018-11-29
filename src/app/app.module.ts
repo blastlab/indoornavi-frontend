@@ -124,7 +124,8 @@ import {TagFollowerComponent} from './map-viewer/views/tagfollower/tag-follower'
 import {NavigationService} from './shared/utils/navigation/navigation.service';
 import {NavigationController} from './shared/utils/navigation/navigation.controller';
 import {ModelsConfig} from './map/models/models.config';
-import {CsvCreatorComponent} from './csv-creator-hidden/csv-creator.component';
+import {DebugCreatorComponent} from './debug-creator-hidden/debug-creator.component';
+import {DebugCreatorService} from './debug-creator-hidden/debug-creator.service';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -184,7 +185,7 @@ export function HttpLoaderFactory(http: Http) {
     PathComponent,
     TagsFinderComponent,
     TagFollowerComponent,
-    CsvCreatorComponent
+    DebugCreatorComponent
   ],
   entryComponents: [
     PublicationDialogComponent,
@@ -277,7 +278,8 @@ export function HttpLoaderFactory(http: Http) {
     PathService,
     NavigationService,
     NavigationController,
-    ModelsConfig
+    ModelsConfig,
+    DebugCreatorService
   ], bootstrap: [AppComponent]
 })
 

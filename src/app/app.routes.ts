@@ -17,7 +17,7 @@ import {AnalyticsComponent} from './map-viewer/views/analytics/analytics';
 import {NotSupportedBrowserComponent} from './not-supported-browser/not-supported-browser';
 import {TagsFinderComponent} from './tags-finder/tags-finder.component';
 import {TagFollowerComponent} from './map-viewer/views/tagfollower/tag-follower';
-import {CsvCreatorComponent} from './csv-creator-hidden/csv-creator.component';
+import {DebugCreatorComponent} from './debug-creator-hidden/debug-creator.component';
 
 export const appRoutes: Routes = [
   {path: '', redirectTo: '/complexes', pathMatch: 'full'},
@@ -48,6 +48,6 @@ export const appRoutes: Routes = [
   },
   {path: 'unauthorized', component: UnauthorizedComponent},
   {path: 'notSupportedBrowser', component: NotSupportedBrowserComponent},
-  {path: 'hidden', component: CsvCreatorComponent},
+  {path: 'hidden', component: DebugCreatorComponent, data: {permission: 'DEBUG'}},
   {path: '**', redirectTo: '/complexes'}
 ];
