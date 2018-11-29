@@ -10,6 +10,7 @@ import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
 import {DebugCreatorService} from './debug-creator.service';
 import {MessageServiceWrapper} from '../shared/services/message/message.service';
+import {Observable} from 'rxjs/Observable';
 
 @Component({
   templateUrl: './debug-creator.html',
@@ -59,7 +60,11 @@ export class DebugCreatorComponent implements OnInit, OnDestroy {
   }
 
   download(fileIndex): void {
-    console.log(fileIndex);
+    const stream: Observable<File> = this.debugService.downloadReport(fileIndex);
+    stream.first().subscribe((file: File) => {
+      console.log('save here');
+      console.log(file);
+    });
   }
 
   startRecording(): void {
@@ -112,6 +117,4 @@ export class DebugCreatorComponent implements OnInit, OnDestroy {
       this.messageService.failed(value);
     });
   }
-
-
 }
