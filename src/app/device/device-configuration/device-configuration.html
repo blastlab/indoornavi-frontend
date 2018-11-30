@@ -14,11 +14,6 @@
   </p-header>
 
   <p-tabView>
-    <p-tabPanel header="{{'device.config.tab.mac'|translate}}">
-      <app-device-mac
-        [deviceType]="deviceType"></app-device-mac>
-    </p-tabPanel>
-
     <p-tabPanel header="{{'device.config.tab.rangingTime'|translate}}">
       <app-device-ranging-time></app-device-ranging-time>
     </p-tabPanel>
@@ -28,8 +23,12 @@
     </p-tabPanel>
 
     <p-tabPanel header="{{'device.config.tab.rfset'|translate}}">
-      <app-device-rfset
-        [rfsetConfigData]="rfsetConfigData"></app-device-rfset>
+      <app-device-rfset></app-device-rfset>
+    </p-tabPanel>
+
+    <p-tabPanel header="{{'device.config.tab.mac'|translate}}">
+      <app-device-mac
+        [deviceType]="deviceType"></app-device-mac>
     </p-tabPanel>
 
     <p-tabPanel header="{{'device.config.tab.imu'|translate}}" *ngIf="deviceType === 'tags'">
