@@ -25,7 +25,7 @@ export class NavigationService {
     return [];
   }
 
-  private calculateGraphWithPathParameters(start, finish): void {
+  private calculateGraphWithPathParametersIfPossible(start, finish): boolean {
     if (!this.lines.length) {
       return;
     }
