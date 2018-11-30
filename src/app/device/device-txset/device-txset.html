@@ -4,7 +4,10 @@
     <div class="ui-g">
       <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
       <div class="ui-g-12 ui-md-3 ui-lg-3">
-        <label>{{'device.config.p1c'|translate}} (dB): {{txConfigForm.value.txPower.p1c}}</label>
+        <label class="label-info">
+          {{'device.config.p1c'|translate}} (dB): {{txConfigForm.value.txPower.p1c}}
+          <p-message severity="info" [pTooltip]="'device.config.pc.tooltip'|translate"></p-message>
+        </label>
       </div>
       <div class="ui-g-12 ui-md-6 ui-lg-6">
         <p-slider
@@ -18,7 +21,10 @@
     <div class="ui-g">
       <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
       <div class="ui-g-12 ui-md-3 ui-lg-3">
-        <label>{{'device.config.p1f'|translate}} (dB): {{txConfigForm.value.txPower.p1f/dividePNFByStep}}</label>
+        <label class="label-info">
+          {{'device.config.p1f'|translate}} (dB): {{txConfigForm.value.txPower.p1f/dividePNFByStep}}
+          <p-message severity="info" [pTooltip]="'device.config.pf.tooltip'|translate"></p-message>
+        </label>
       </div>
       <div class="ui-g-12 ui-md-6 ui-lg-6">
         <p-slider
@@ -32,7 +38,10 @@
     <div class="ui-g">
       <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
       <div class="ui-g-12 ui-md-3 ui-lg-3">
-        <label>{{'device.config.p1'|translate}} (dB): {{p1}}</label>
+        <label class="label-info">
+          {{'device.config.p1'|translate}} (dB): {{p1}}
+          <p-message severity="info" [pTooltip]="'device.config.p1.tooltip'|translate"></p-message>
+        </label>
       </div>
       <div class="ui-g-12 ui-md-6 ui-lg-6"></div>
     </div>
@@ -42,7 +51,10 @@
     <div class="ui-g">
       <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
       <div class="ui-g-12 ui-md-3 ui-lg-3">
-        <label>{{'device.config.p2c'|translate}} (dB): {{txConfigForm.value.txPower.p2c}}</label>
+        <label class="label-info">
+          {{'device.config.p2c'|translate}} (dB): {{txConfigForm.value.txPower.p2c}}
+          <p-message severity="info" [pTooltip]="'device.config.pc.tooltip'|translate"></p-message>
+        </label>
       </div>
       <div class="ui-g-12 ui-md-6 ui-lg-6">
         <p-slider
@@ -56,7 +68,10 @@
     <div class="ui-g">
       <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
       <div class="ui-g-12 ui-md-3 ui-lg-3">
-        <label>{{'device.config.p2f'|translate}} (dB): {{txConfigForm.value.txPower.p2f/dividePNFByStep}}</label>
+        <label class="label-info">
+          {{'device.config.p2f'|translate}} (dB): {{txConfigForm.value.txPower.p2f/dividePNFByStep}}
+          <p-message severity="info" [pTooltip]="'device.config.pf.tooltip'|translate"></p-message>
+        </label>
       </div>
       <div class="ui-g-12 ui-md-6 ui-lg-6">
         <p-slider
@@ -70,7 +85,10 @@
     <div class="ui-g">
       <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
       <div class="ui-g-12 ui-md-3 ui-lg-3">
-        <label>{{'device.config.p2'|translate}} (dB): {{p2}}</label>
+        <label class="label-info">
+          {{'device.config.p2'|translate}} (dB): {{p2}}
+          <p-message severity="info" [pTooltip]="'device.config.p2.tooltip'|translate"></p-message>
+        </label>
       </div>
       <div class="ui-g-12 ui-md-6 ui-lg-6"></div>
     </div>
@@ -80,7 +98,10 @@
     <div class="ui-g">
       <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
       <div class="ui-g-12 ui-md-3 ui-lg-3">
-        <label>{{'device.config.p3c'|translate}} (dB): {{txConfigForm.value.txPower.p3c}}</label>
+        <label class="label-info">
+          {{'device.config.p3c'|translate}} (dB): {{txConfigForm.value.txPower.p3c}}
+          <p-message severity="info" [pTooltip]="'device.config.pc.tooltip'|translate"></p-message>
+        </label>
       </div>
       <div class="ui-g-12 ui-md-6 ui-lg-6">
         <p-slider
@@ -94,7 +115,10 @@
     <div class="ui-g">
       <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
       <div class="ui-g-12 ui-md-3 ui-lg-3">
-        <label>{{'device.config.p3f'|translate}} (dB): {{txConfigForm.value.txPower.p3f/dividePNFByStep}}</label>
+        <label class="label-info">
+          {{'device.config.p3f'|translate}} (dB): {{txConfigForm.value.txPower.p3f/dividePNFByStep}}
+          <p-message severity="info" [pTooltip]="'device.config.pf.tooltip'|translate"></p-message>
+        </label>
       </div>
       <div class="ui-g-12 ui-md-6 ui-lg-6">
         <p-slider
@@ -108,7 +132,10 @@
     <div class="ui-g">
       <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
       <div class="ui-g-12 ui-md-3 ui-lg-3">
-        <label>{{'device.config.p3'|translate}} (dB): {{p3}}</label>
+        <label class="label-info">
+          {{'device.config.p3'|translate}} (dB): {{p3}}
+          <p-message severity="info" [pTooltip]="'device.config.p3.tooltip'|translate"></p-message>
+        </label>
       </div>
       <div class="ui-g-12 ui-md-6 ui-lg-6"></div>
     </div>
@@ -118,7 +145,10 @@
     <div class="ui-g">
       <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
       <div class="ui-g-12 ui-md-3 ui-lg-3">
-        <label>{{'device.config.p4c'|translate}} (dB): {{txConfigForm.value.txPower.p4c}}</label>
+        <label class="label-info">
+          {{'device.config.p4c'|translate}} (dB): {{txConfigForm.value.txPower.p4c}}
+          <p-message severity="info" [pTooltip]="'device.config.pc.tooltip'|translate"></p-message>
+        </label>
       </div>
       <div class="ui-g-12 ui-md-6 ui-lg-6">
         <p-slider
@@ -132,7 +162,10 @@
     <div class="ui-g">
       <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
       <div class="ui-g-12 ui-md-3 ui-lg-3">
-        <label>{{'device.config.p4f'|translate}} (dB): {{txConfigForm.value.txPower.p4f/dividePNFByStep}}</label>
+        <label class="label-info">
+          {{'device.config.p4f'|translate}} (dB): {{txConfigForm.value.txPower.p4f/dividePNFByStep}}
+          <p-message severity="info" [pTooltip]="'device.config.pf.tooltip'|translate"></p-message>
+        </label>
       </div>
       <div class="ui-g-12 ui-md-6 ui-lg-6">
         <p-slider
@@ -146,7 +179,10 @@
     <div class="ui-g">
       <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
       <div class="ui-g-12 ui-md-3 ui-lg-3">
-        <label>{{'device.config.p4'|translate}} (dB): {{p4}}</label>
+        <label class="label-info">
+          {{'device.config.p4'|translate}} (dB): {{p4}}
+          <p-message severity="info" [pTooltip]="'device.config.p4.tooltip'|translate"></p-message>
+        </label>
       </div>
       <div class="ui-g-12 ui-md-6 ui-lg-6"></div>
     </div>

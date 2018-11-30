@@ -238,3 +238,10 @@ svg {
   background: #fff;
   border-color: #d4d4d4;
 }
+
+@media screen and (min-width: 641px) {
+  .label-info {
+    text-align: right;
+    display: block;
+  }
+}
