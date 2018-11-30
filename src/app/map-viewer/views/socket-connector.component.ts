@@ -165,7 +165,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
           // } else {
           //   event.source.postMessage({type: 'error', message: 'Origin not verified. Make sure you use your own API KEY.'}, '*');
           // }
-      //   });
+        // });
       });
     }, false);
   }
