@@ -98,12 +98,13 @@ export class DebugCreatorComponent implements OnInit, OnDestroy {
     this.debugService.getSinks().takeUntil(this.subscriptionDestructor).subscribe((devices: Array<UWB>): void => {
       devices.forEach((device: UWB): void => {
         this.sinks.push({
-          label: device.shortId.toString(),
+          label: `${device.shortId.toString()} / ${device.shortId.toString(16)}`,
           value: device.id
         })
       });
     });
   }
+
 
   private displayToastOfFailure(): void {
     if (!this.selectedSink) {
