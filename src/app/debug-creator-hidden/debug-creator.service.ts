@@ -22,7 +22,7 @@ export class DebugCreatorService {
   }
 
   startRecording(id: number): Observable<void> {
-    return this.httpService.doPost(this.debugUrl + id, {});
+    return this.httpService.doPost(this.debugUrl + id, null);
   }
 
   stopRecording(fileName: DebugFileName): Observable<any> {

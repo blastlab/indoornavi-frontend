@@ -48,6 +48,6 @@ export const appRoutes: Routes = [
   },
   {path: 'unauthorized', component: UnauthorizedComponent},
   {path: 'notSupportedBrowser', component: NotSupportedBrowserComponent},
-  {path: 'hidden', component: DebugCreatorComponent},
+  {path: 'debug', component: DebugCreatorComponent},
   {path: '**', redirectTo: '/complexes'}
 ];

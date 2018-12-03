@@ -34,10 +34,12 @@ export class DebugCreatorComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.translate.setDefaultLang('en');
-    this.breadcrumbService.publishIsReady([
-      {label: 'hidden', disabled: true}
-    ]);
-    this.fetchFiles();
+    this.translate.get('debug').first().subscribe((value: string): void => {
+      this.breadcrumbService.publishIsReady([
+        {label: value, disabled: true}
+      ]);
+    });
+    this.fetchSinks();
     this.fetchFileList();
     this.checkRecordingIsStarted();
   }
@@ -54,7 +56,7 @@ export class DebugCreatorComponent implements OnInit, OnDestroy {
   }
 
   download(fileIndex): void {
-    this.debugService.downloadReport(fileIndex).subscribe((file: any): void => {
+    this.debugService.downloadReport(fileIndex).first().subscribe((file: any): void => {
       const blob: Blob = new Blob([file], { type: 'text/csv' });
       const url: string = window.URL.createObjectURL(blob);
       window.open(url);
@@ -63,7 +65,7 @@ export class DebugCreatorComponent implements OnInit, OnDestroy {
 
   startRecordingForActiveSink(): void {
     if (!!this.selectedSink && !this.isRecording) {
-      this.debugService.startRecording(this.selectedSink).first().subscribe(() => {
+      this.debugService.startRecording(this.selectedSink).first().subscribe((): void => {
         this.isRecording = true;
       });
     } else {
@@ -92,8 +94,8 @@ export class DebugCreatorComponent implements OnInit, OnDestroy {
     });
   }
 
-  private fetchFiles(): void {
-    this.debugService.getSinks().takeUntil(this.subscriptionDestructor).subscribe((devices: Array<UWB>) => {
+  private fetchSinks(): void {
+    this.debugService.getSinks().takeUntil(this.subscriptionDestructor).subscribe((devices: Array<UWB>): void => {
       devices.forEach((device: UWB): void => {
         this.sinks.push({
           label: device.shortId.toString(),
@@ -110,7 +112,7 @@ export class DebugCreatorComponent implements OnInit, OnDestroy {
   }
 
   private displayToastFailureMsg(msg: string): void {
-    this.translate.get(msg).first().subscribe((value: string) => {
+    this.translate.get(msg).first().subscribe((value: string): void => {
       this.messageService.failed(value);
     });
   }
