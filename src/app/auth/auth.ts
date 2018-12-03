@@ -22,9 +22,12 @@ export class AuthComponent implements OnInit {
 
   ngOnInit(): void {
     if (localStorage.getItem('currentUser')) {
-      this.authService.logout();
-      localStorage.removeItem('currentUser');
+      console.log(localStorage.getItem('currentUser'));
+      this.authService.logout().first().subscribe((): void => {
+        console.log('logget out');
+      });
       this.authGuard.toggleUserLoggedIn(false);
+      localStorage.removeItem('currentUser');
       this.router.navigate(['/login']);
     }
   }
