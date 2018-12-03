@@ -13,15 +13,19 @@ export class DebugCreatorService {
   constructor(private httpService: HttpService) {
   }
 
+  getRecordingStartedInfo(): Observable<boolean> {
+    return this.httpService.doGet(`${this.debugUrl}isStarted`)
+  }
+
   getReports(): Observable<DebugReport[]> {
     return this.httpService.doGet(this.debugUrl);
   }
 
-  startRecording(id: number): void {
-    this.httpService.doPost(`${this.debugUrl}${id}`, {a: 'a'});
+  startRecording(id: number): Observable<void> {
+    return this.httpService.doPost(this.debugUrl + id, {});
   }
 
-  stopRecording(fileName: DebugFileName): any {
+  stopRecording(fileName: DebugFileName): Observable<any> {
     return this.httpService.doPost(this.debugUrl, fileName);
   }
 

@@ -4,10 +4,8 @@ import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.servi
 import {DebugFileName, DebugReport} from './debug-creator.types';
 import {SelectItem} from 'primeng/primeng';
 import {UWB} from '../device/device.type';
-import {Config} from '../../config';
 import {SocketService} from '../shared/services/socket/socket.service';
 import {Subject} from 'rxjs/Subject';
-import {Subscription} from 'rxjs/Subscription';
 import {DebugCreatorService} from './debug-creator.service';
 import {MessageServiceWrapper} from '../shared/services/message/message.service';
 
@@ -24,7 +22,6 @@ export class DebugCreatorComponent implements OnInit, OnDestroy {
   rawDataFileName: string;
   isRecording = false;
   private subscriptionDestructor: Subject<void> = new Subject<void>();
-  private socketSubscription: Subscription;
 
   constructor(
     private translate: TranslateService,
@@ -42,6 +39,7 @@ export class DebugCreatorComponent implements OnInit, OnDestroy {
     ]);
     this.fetchFiles();
     this.fetchFileList();
+    this.checkRecordingIsStarted();
   }
 
   ngOnDestroy() {
@@ -50,7 +48,9 @@ export class DebugCreatorComponent implements OnInit, OnDestroy {
   }
 
   remove(fileIndex): void {
-    console.log(fileIndex);
+    this.debugService.removeReport(fileIndex).first().subscribe((): void => {
+      this.fetchFileList();
+    });
   }
 
   download(fileIndex): void {
@@ -61,33 +61,33 @@ export class DebugCreatorComponent implements OnInit, OnDestroy {
     });
   }
 
-  startRecording(): void {
-    if (!!this.selectedSink && !this.isRecording && !!this.coordinatesFileName && !!this.rawDataFileName) {
-      this.isRecording = true;
-      this.debugService.startRecording(this.selectedSink);
+  startRecordingForActiveSink(): void {
+    if (!!this.selectedSink && !this.isRecording) {
+      this.debugService.startRecording(this.selectedSink).first().subscribe(() => {
+        this.isRecording = true;
+      });
     } else {
       this.displayToastOfFailure();
     }
   }
 
-  stopRecording(): void {
-    if (this.isRecording) {
+  stopRecordingForActiveSink(): void {
+    this.isRecording = false;
+    const recordFileName: DebugFileName = new DebugFileName(this.rawDataFileName, this.coordinatesFileName);
+    this.debugService.stopRecording(recordFileName).first().subscribe((): void => {
       this.isRecording = false;
-      const recordFileName: DebugFileName = new DebugFileName(this.rawDataFileName, this.coordinatesFileName);
-      console.log(recordFileName);
-      this.debugService.stopRecording(recordFileName)
-      .subscribe(data => {
-        console.log(data);
-      });
       this.fetchFileList();
-    } else {
-      this.displayToastOfFailure();
-    }
+    });
+  }
+
+  private checkRecordingIsStarted(): void {
+    this.debugService.getRecordingStartedInfo().takeUntil(this.subscriptionDestructor).subscribe((isRecording: boolean): void => {
+      this.isRecording = isRecording
+    });
   }
 
   private fetchFileList(): void {
     this.debugService.getReports().first().subscribe((fileList: Array<DebugReport>): void => {
-      console.log(fileList);
       this.files = (<DebugReport[]>fileList);
     });
   }
