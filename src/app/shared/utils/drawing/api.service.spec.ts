@@ -62,7 +62,7 @@ describe('info window', () => {
     expect(infoWindowGroupWrapper.calculateInfoWindowPosition(mapObject, Position.TOP).y).toEqual(-190);
   });
   it('should return coordinates on the BOTTOM of given object', () => {
-    expect(infoWindowGroupWrapper.calculateInfoWindowPosition(mapObject, Position.BOTTOM).x).toEqual(-40);
+    expect(infoWindowGroupWrapper.calculateInfoWindowPosition(mapObject, Position.BOTTOM).x).toEqual(-67.5);
     expect(infoWindowGroupWrapper.calculateInfoWindowPosition(mapObject, Position.BOTTOM).y).toEqual(110);
   });
   it('should return coordinates on the TOP_RIGHT of given object', () => {
