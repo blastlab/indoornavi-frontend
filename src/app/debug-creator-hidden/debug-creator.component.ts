@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
-import {DebugFileName, DebugReport, DebugReportType} from './debug-creator.types';
+import {DebugFileName, DebugReport} from './debug-creator.types';
 import {SelectItem} from 'primeng/primeng';
 import {UWB} from '../device/device.type';
 import {Config} from '../../config';
@@ -10,7 +10,6 @@ import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
 import {DebugCreatorService} from './debug-creator.service';
 import {MessageServiceWrapper} from '../shared/services/message/message.service';
-import {Observable} from 'rxjs/Observable';
 
 @Component({
   templateUrl: './debug-creator.html',
@@ -18,18 +17,12 @@ import {Observable} from 'rxjs/Observable';
 })
 export class DebugCreatorComponent implements OnInit, OnDestroy {
 
-  files: Array<DebugReport> = [
-    {id: 231231, name: 'file 001', reportType: DebugReportType.COORDINATES},
-    {id: 23112231, name: 'file 002', reportType: DebugReportType.RAW_DATA},
-    {id: 2312445531, name: 'file 003', reportType: DebugReportType.RAW_DATA},
-    {id: 23123455641, name: 'file 004', reportType: DebugReportType.COORDINATES},
-  ];
+  files: Array<DebugReport>;
   sinks: SelectItem[] = [];
-  selectedSink: SelectItem;
+  selectedSink: number;
   coordinatesFileName: string;
   rawDataFileName: string;
   isRecording = false;
-  private activeRecordingId: number;
   private subscriptionDestructor: Subject<void> = new Subject<void>();
   private socketSubscription: Subscription;
 
@@ -47,7 +40,8 @@ export class DebugCreatorComponent implements OnInit, OnDestroy {
     this.breadcrumbService.publishIsReady([
       {label: 'hidden', disabled: true}
     ]);
-    this.connectToRegistrationSocket();
+    this.fetchFiles();
+    this.fetchFileList();
   }
 
   ngOnDestroy() {
@@ -60,18 +54,17 @@ export class DebugCreatorComponent implements OnInit, OnDestroy {
   }
 
   download(fileIndex): void {
-    const stream: Observable<File> = this.debugService.downloadReport(fileIndex);
-    stream.first().subscribe((file: File) => {
-      console.log('save here');
-      console.log(file);
+    this.debugService.downloadReport(fileIndex).subscribe((file: any): void => {
+      const blob: Blob = new Blob([file], { type: 'text/csv' });
+      const url: string = window.URL.createObjectURL(blob);
+      window.open(url);
     });
   }
 
   startRecording(): void {
     if (!!this.selectedSink && !this.isRecording && !!this.coordinatesFileName && !!this.rawDataFileName) {
       this.isRecording = true;
-      this.activeRecordingId = parseInt(`${new Date().getTime()}`.toString() + `${this.selectedSink}`.toString(), 10);
-      this.debugService.startRecording(this.activeRecordingId);
+      this.debugService.startRecording(this.selectedSink);
     } else {
       this.displayToastOfFailure();
     }
@@ -81,32 +74,36 @@ export class DebugCreatorComponent implements OnInit, OnDestroy {
     if (this.isRecording) {
       this.isRecording = false;
       const recordFileName: DebugFileName = new DebugFileName(this.rawDataFileName, this.coordinatesFileName);
-      this.debugService.stopRecording(recordFileName);
+      console.log(recordFileName);
+      this.debugService.stopRecording(recordFileName)
+      .subscribe(data => {
+        console.log(data);
+      });
+      this.fetchFileList();
     } else {
       this.displayToastOfFailure();
     }
   }
 
-  private connectToRegistrationSocket() {
-    const stream = this.socketService.connect(Config.WEB_SOCKET_URL + `devices/registration?sinks`);
-    this.socketSubscription = stream.takeUntil(this.subscriptionDestructor).subscribe((devices: Array<UWB>): void => {
-      console.log(devices);
+  private fetchFileList(): void {
+    this.debugService.getReports().first().subscribe((fileList: Array<DebugReport>): void => {
+      console.log(fileList);
+      this.files = (<DebugReport[]>fileList);
+    });
+  }
+
+  private fetchFiles(): void {
+    this.debugService.getSinks().takeUntil(this.subscriptionDestructor).subscribe((devices: Array<UWB>) => {
       devices.forEach((device: UWB): void => {
         this.sinks.push({
           label: device.shortId.toString(),
-          value: device.shortId
+          value: device.id
         })
       });
     });
   }
 
   private displayToastOfFailure(): void {
-    if (!this.coordinatesFileName) {
-      this.displayToastFailureMsg('set.name.coordinates');
-    }
-    if (!this.rawDataFileName) {
-      this.displayToastFailureMsg('set.name.raw');
-    }
     if (!this.selectedSink) {
       this.displayToastFailureMsg('set.sink');
     }

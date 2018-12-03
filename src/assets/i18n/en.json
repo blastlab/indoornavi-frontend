@@ -255,8 +255,6 @@
   "resetToPrevious": "Reset draft to previous publication",
   "S_000": "Unknown error occurred. Please contact support.",
   "S_001": "Error. Object not found.",
-  "set.name.raw": "Set raw file names first.",
-  "set.name.coordinates": "Set coordinates file name first.",
   "set.sink": "Set sink for data recording.",
   "save": "Save",
   "saveDraft": "Save draft",

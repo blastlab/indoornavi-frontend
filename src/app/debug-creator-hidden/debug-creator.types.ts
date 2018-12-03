@@ -13,10 +13,10 @@ export enum DebugReportType {
 }
 
 export class DebugFileName {
-  rawMeasurements: string;
+  rawMeasures: string;
   coordinates: string;
-  constructor(rawMeasurements, coordinates) {
-    this.rawMeasurements = rawMeasurements;
+  constructor(rawMeasures, coordinates) {
+    this.rawMeasures = rawMeasures;
     this.coordinates = coordinates;
   }
 }
