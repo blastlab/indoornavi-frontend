@@ -57,14 +57,14 @@
       <p-column header="{{'actions'|translate}}" styleClass="col-button">
         <ng-template let-file="rowData" pTemplate="body">
           <button
-            [appHasPermission]="'SINK_UPDATE'"
+            [appHasPermission]="DEBUG"
             pTooltip="{{'download'|translate}}"
             type="button" pButton (click)="download(file.id)"
             icon="fa-arrow-down"
             class="ui-button-info">
           </button>
           <button
-            [appHasPermission]="'SINK_UPDATE'"
+            [appHasPermission]="DEBUG"
             pTooltip="{{'remove'|translate}}" type="button" pButton
             (click)="remove(file.id)" icon="fa-trash"
             class="ui-button-danger">

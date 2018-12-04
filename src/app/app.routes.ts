@@ -47,7 +47,7 @@ export const appRoutes: Routes = [
     data: {permission: 'FLOOR'}
   },
   {path: 'unauthorized', component: UnauthorizedComponent},
-  {path: 'notSupportedBrowser', component: NotSupportedBrowserComponent},
+  {path: 'notSupportedBrowser', component: NotSupportedBrowserComponent, data: {permissions: 'DEBUG'}},
   {path: 'debug', component: DebuggerComponent},
   {path: '**', redirectTo: '/complexes'}
 ];
