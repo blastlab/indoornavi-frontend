@@ -24,7 +24,6 @@ export class HttpService {
   }
 
   private static errorHandler(err: any): Observable<any> {
-    console.log(err);
     if (err instanceof Response && err.status === 401) {
       HttpService.authGuard.toggleUserLoggedIn(false);
     }
