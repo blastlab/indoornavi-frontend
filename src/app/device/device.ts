@@ -17,7 +17,7 @@ import {
   DeviceShortId,
   DeviceStatus,
   FirmwareMessage,
-  Status, TerminalMessageToDisplay,
+  Status, TerminalMessage,
   UpdateRequest,
   UWB
 } from './device.type';
@@ -47,7 +47,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   public displayDialog: boolean = false;
   public displayTerminalWindow = false;
   public terminalWelcomeMessage: string;
-  public terminalResponseMessage: TerminalMessageToDisplay[] = [];
+  public terminalResponseMessage: TerminalMessage[] = [];
   public terminalActiveDeviceId: number = 0;
   public device: UWB;
   public updateMode: boolean = false;
@@ -340,7 +340,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   private displayMessage(value: string, internal: boolean): void {
-    const message: TerminalMessageToDisplay = {
+    const message: TerminalMessage = {
       message: value,
       internal: internal
     };

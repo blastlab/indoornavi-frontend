@@ -72,7 +72,7 @@ export class Sink extends Anchor {
 export class Bluetooth extends Device {
   major: number;
   minor?: number;
-  powerTransmition?: number;
+  powerTransmission?: number;
 
   constructor(
     verified: boolean,
@@ -81,12 +81,12 @@ export class Bluetooth extends Device {
     name?: string,
     macAddress?: string,
     minor?: number,
-    powerTransmition?: number
+    powerTransmission?: number
   ) {
     super(verified, id, name, macAddress);
     this.major = major;
     this.minor = minor;
-    this.powerTransmition = powerTransmition;
+    this.powerTransmission = powerTransmission;
   }
 }
 
@@ -138,7 +138,7 @@ export interface DeviceMessage {
   sinkShortId?: number;
 }
 
-export interface TerminalMessageToDisplay {
+export interface TerminalMessage {
   message: string;
   internal: boolean;
 }
