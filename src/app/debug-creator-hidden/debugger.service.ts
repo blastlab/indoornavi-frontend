@@ -29,7 +29,7 @@ export class DebuggerService {
     return this.httpService.doPost(this.debugUrl, fileName);
   }
 
-  downloadReport(id: number): Observable<any> {
+  downloadReport(id: number): Observable<Blob> {
     return this.httpService.doGetFile(this.debugUrl + id);
   }
 
