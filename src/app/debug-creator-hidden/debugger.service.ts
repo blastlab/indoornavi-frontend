@@ -5,7 +5,7 @@ import {DebugFileName, DebugReport} from './debug-creator.types';
 import {UWB} from '../device/device.type';
 
 @Injectable()
-export class DebugCreatorService {
+export class DebuggerService {
 
   private debugUrl = 'debug/';
   private sinksUrl = 'sinks/';
@@ -21,11 +21,11 @@ export class DebugCreatorService {
     return this.httpService.doGet(this.debugUrl);
   }
 
-  startRecording(id: number): Observable<void> {
+  sendStartRecording(id: number): Observable<void> {
     return this.httpService.doPost(this.debugUrl + id, null);
   }
 
-  stopRecording(fileName: DebugFileName): Observable<any> {
+  sendStopRecording(fileName: DebugFileName): Observable<any> {
     return this.httpService.doPost(this.debugUrl, fileName);
   }
 

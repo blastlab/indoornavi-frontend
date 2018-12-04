@@ -6,14 +6,14 @@ import {SelectItem} from 'primeng/primeng';
 import {UWB} from '../device/device.type';
 import {SocketService} from '../shared/services/socket/socket.service';
 import {Subject} from 'rxjs/Subject';
-import {DebugCreatorService} from './debug-creator.service';
+import {DebuggerService} from './debugger.service';
 import {MessageServiceWrapper} from '../shared/services/message/message.service';
 
 @Component({
-  templateUrl: './debug-creator.html',
-  selector: 'app-csv-creator'
+  templateUrl: './debugger.html',
+  selector: 'app-debugger'
 })
-export class DebugCreatorComponent implements OnInit, OnDestroy {
+export class DebuggerComponent implements OnInit, OnDestroy {
 
   files: Array<DebugReport>;
   sinks: SelectItem[] = [];
@@ -27,14 +27,14 @@ export class DebugCreatorComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private breadcrumbService: BreadcrumbService,
     private socketService: SocketService,
-    private debugService: DebugCreatorService,
+    private debugService: DebuggerService,
     private messageService: MessageServiceWrapper
   ) {
   }
 
   ngOnInit() {
     this.translate.setDefaultLang('en');
-    this.translate.get('debug').first().subscribe((value: string): void => {
+    this.translate.get('debug').subscribe((value: string): void => {
       this.breadcrumbService.publishIsReady([
         {label: value, disabled: true}
       ]);
@@ -49,34 +49,37 @@ export class DebugCreatorComponent implements OnInit, OnDestroy {
     this.subscriptionDestructor = null;
   }
 
-  remove(fileIndex): void {
-    this.debugService.removeReport(fileIndex).first().subscribe((): void => {
-      this.fetchFileList();
+  remove(fileId): void {
+    this.debugService.removeReport(fileId).first().subscribe((): void => {
+      const index: number =  this.files.findIndex((file: DebugReport): boolean => {
+        return fileId === file.id;
+      });
+      this.files.splice(index, 1);
+      this.files = Object.assign([], this.files);
     });
   }
 
-  download(fileIndex): void {
-    this.debugService.downloadReport(fileIndex).first().subscribe((file: any): void => {
-      const blob: Blob = new Blob([file], { type: 'text/csv' });
-      const url: string = window.URL.createObjectURL(blob);
+  download(fileId): void {
+    this.debugService.downloadReport(fileId).first().subscribe((file: Blob): void => {
+      const url: string = window.URL.createObjectURL(file);
       window.open(url);
     });
   }
 
-  startRecordingForActiveSink(): void {
+  startRecording(): void {
     if (!!this.selectedSink && !this.isRecording) {
-      this.debugService.startRecording(this.selectedSink).first().subscribe((): void => {
+      this.debugService.sendStartRecording(this.selectedSink).first().subscribe((): void => {
         this.isRecording = true;
       });
     } else {
-      this.displayToastOfFailure();
+      this.displayToastSinkNotSet();
     }
   }
 
-  stopRecordingForActiveSink(): void {
+  stopRecording(): void {
     this.isRecording = false;
     const recordFileName: DebugFileName = new DebugFileName(this.rawDataFileName, this.coordinatesFileName);
-    this.debugService.stopRecording(recordFileName).first().subscribe((): void => {
+    this.debugService.sendStopRecording(recordFileName).first().subscribe((): void => {
       this.isRecording = false;
       this.fetchFileList();
     });
@@ -84,13 +87,13 @@ export class DebugCreatorComponent implements OnInit, OnDestroy {
 
   private checkRecordingIsStarted(): void {
     this.debugService.getRecordingStartedInfo().takeUntil(this.subscriptionDestructor).subscribe((isRecording: boolean): void => {
-      this.isRecording = isRecording
+      this.isRecording = isRecording;
     });
   }
 
   private fetchFileList(): void {
     this.debugService.getReports().first().subscribe((fileList: Array<DebugReport>): void => {
-      this.files = (<DebugReport[]>fileList);
+      this.files = (fileList);
     });
   }
 
@@ -105,16 +108,11 @@ export class DebugCreatorComponent implements OnInit, OnDestroy {
     });
   }
 
-
-  private displayToastOfFailure(): void {
+  private displayToastSinkNotSet(): void {
     if (!this.selectedSink) {
-      this.displayToastFailureMsg('set.sink');
+      this.translate.get('set.sink').first().subscribe((value: string): void => {
+        this.messageService.failed(value);
+      });
     }
-  }
-
-  private displayToastFailureMsg(msg: string): void {
-    this.translate.get(msg).first().subscribe((value: string): void => {
-      this.messageService.failed(value);
-    });
   }
 }

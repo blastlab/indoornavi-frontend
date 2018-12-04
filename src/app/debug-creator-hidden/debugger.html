@@ -38,13 +38,13 @@
     <button class="ui-button-info" pButton
             type="button"
             label="{{'start.recording'|translate}}"
-            (click)="startRecordingForActiveSink()"
+            (click)="startRecording()"
             [disabled]="isRecording"
             icon="fa-circle"></button>
     <button class="ui-button-info" pButton
             type="button"
             label="{{'stop.recording'|translate}}"
-            (click)="stopRecordingForActiveSink()"
+            (click)="stopRecording()"
             [disabled]="!isRecording"
             icon="fa-square"></button>
   </div>
