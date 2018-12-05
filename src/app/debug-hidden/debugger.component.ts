@@ -61,8 +61,21 @@ export class DebuggerComponent implements OnInit, OnDestroy {
 
   download(fileId): void {
     this.debugService.downloadReport(fileId).first().subscribe((file: Blob): void => {
-      const url: string = window.URL.createObjectURL(file);
-      window.open(url);
+      const fileLink = document.createElement('a');
+      fileLink.setAttribute('id', 'temporaryLinkForFileDownload');
+      document.body.appendChild(fileLink);
+      const json: string = JSON.stringify(file);
+      const blob: Blob = new Blob([json], {type: 'octet/stream'});
+      const url: string = window.URL.createObjectURL(blob);
+      const index: number =  this.files.findIndex((f: DebugReport): boolean => {
+        return fileId === f.id;
+      });
+      const fileName = this.files[index].name;
+      fileLink.href = url;
+      fileLink.download = fileName;
+      fileLink.click();
+      window.URL.revokeObjectURL(url);
+      document.getElementById('temporaryLinkForFileDownload').remove();
     });
   }
 
