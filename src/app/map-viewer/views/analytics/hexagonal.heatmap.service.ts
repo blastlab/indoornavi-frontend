@@ -70,12 +70,12 @@ export class HexagonalHeatMap implements HeatMap {
     this.temperatureTimeStepForCooling = value;
   }
 
-  private coolDownActiveHeatPoints(coorninatesArrivalTime: number): void {
+  private coolDownActiveHeatPoints(coordinatesArrivalTime: number): void {
     this.gridTable.forEach((heatPoint: HeatPoint): void => {
-      if (coorninatesArrivalTime - heatPoint.timeHeated > this.temperatureTimeStepForCooling) {
+      if (coordinatesArrivalTime - heatPoint.timeHeated > this.temperatureTimeStepForCooling) {
         if (heatPoint.heat > 0) {
           heatPoint.heat--;
-          heatPoint.timeHeated = coorninatesArrivalTime;
+          heatPoint.timeHeated = coordinatesArrivalTime;
           const color = this.heatColors[heatPoint.heat];
           const heatPointNode = d3.select(heatPoint.element);
           heatPointNode

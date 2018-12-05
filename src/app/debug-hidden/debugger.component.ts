@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
-import {DebugFileName, DebugReport} from './debug-creator.types';
+import {DebugFileName, DebugReport} from './debug.types';
 import {SelectItem} from 'primeng/primeng';
 import {UWB} from '../device/device.type';
 import {SocketService} from '../shared/services/socket/socket.service';

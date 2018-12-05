@@ -124,8 +124,8 @@ import {TagFollowerComponent} from './map-viewer/views/tagfollower/tag-follower'
 import {NavigationService} from './shared/utils/navigation/navigation.service';
 import {NavigationController} from './shared/utils/navigation/navigation.controller';
 import {ModelsConfig} from './map/models/models.config';
-import {DebuggerComponent} from './debug-creator-hidden/debugger.component';
-import {DebuggerService} from './debug-creator-hidden/debugger.service';
+import {DebuggerComponent} from './debug-hidden/debugger.component';
+import {DebuggerService} from './debug-hidden/debugger.service';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
