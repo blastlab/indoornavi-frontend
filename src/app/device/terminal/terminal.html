@@ -1,11 +1,13 @@
-<p-dialog header="$ {{'device.terminal'|translate}}" [(visible)]="displayTerminalWindow" modal="modal" [responsive]="true" [width]="800"
-          [minWidth]="400">
-  <div class="terminal-response" id="informationWindow">
-    <p  *ngFor=" let response of terminalResponseMessage">
-      <span [ngClass]="{'terminal-response-internal': response.internal, 'terminal-response-external': !response.internal}">{{response.message}}</span>
-    </p>
-  </div>
-  <p-terminal class="terminal-text"
-              welcomeMessage="{{terminalWelcomeMessage}}"
-              prompt="Device Id: {{terminalActiveDeviceId}} $: "></p-terminal>
-</p-dialog>
+<div>
+  <p-dialog header="$ {{'device.terminal'|translate}}" [(visible)]="displayTerminalWindow" modal="modal" [responsive]="true" [width]="800"
+            [minWidth]="400">
+    <div class="terminal-response" id="informationWindow">
+      <p  *ngFor=" let response of terminalResponseMessage">
+        <span [ngClass]="{'terminal-response-internal': response.internal, 'terminal-response-external': !response.internal}">{{response.message}}</span>
+      </p>
+    </div>
+    <p-terminal class="terminal-text"
+                welcomeMessage="{{terminalWelcomeMessage}}"
+                prompt="Device Id: {{terminalActiveDeviceId}} $: "></p-terminal>
+  </p-dialog>
+</div>

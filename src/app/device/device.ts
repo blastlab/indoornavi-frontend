@@ -10,14 +10,13 @@ import {
   BatteryMessage,
   BatteryState,
   BatteryStatus,
-  ClientRequest, CommandArguments,
+  ClientRequest,
   CommandType,
-  Device,
-  DeviceMessage,
+  Device, DeviceMessage,
   DeviceShortId,
   DeviceStatus,
   FirmwareMessage,
-  Status, TerminalMessage,
+  Status,
   UpdateRequest,
   UWB
 } from './device.type';
@@ -27,7 +26,7 @@ import {MessageServiceWrapper} from '../shared/services/message/message.service'
 import {SocketService} from '../shared/services/socket/socket.service';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
 import {Md5} from 'ts-md5/dist/md5';
-import {TerminalService} from 'primeng/components/terminal/terminalservice';
+import {TerminalMessageService} from './terminal/terminal-message.service';
 
 @Component({
   templateUrl: './device.html',
@@ -45,10 +44,6 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   public deletePermission: string;
   public editPermission: string;
   public displayDialog: boolean = false;
-  public displayTerminalWindow = false;
-  public terminalWelcomeMessage: string;
-  public terminalResponseMessage: TerminalMessage[] = [];
-  public terminalActiveDeviceId: number = 0;
   public device: UWB;
   public updateMode: boolean = false;
   public devicesToUpdate: UWB[] = [];
@@ -61,26 +56,16 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
 
   @ViewChild('deviceForm') deviceForm: NgForm;
 
+  private socketStream: Observable<any>;
+  private firmwareSocketSubscription: Subscription;
   private socketRegistrationSubscription: Subscription;
   private translateUploadingFirmwareMessage: Subscription;
-  private firmwareSocketSubscription: Subscription;
   private confirmBodyTranslate: Subscription;
   private uploadBodyTranslate: Subscription;
   private subscriptionDestructor: Subject<void> = new Subject<void>();
   private confirmBody: string;
   private devicesWaitingForNewFirmwareVersion: DeviceStatus[] = [];
   private deviceHash: string | Int32Array;
-  private socketStream: Observable<any>;
-  private terminalPause: boolean = false;
-  private availableCommands: string[];
-  private connectedToWebSocket: boolean = false;
-  private usedCommands: string[] = [];
-  private terminalComponent: Element;
-  private commandIndex: number;
-  private activeCommand: string;
-  private scrolledTop: boolean = true;
-  private terminalResponseWindow: Element;
-  private terminalResponseWindowHeight: number;
 
   constructor(public translate: TranslateService,
               private socketRegistrationService: SocketService,
@@ -91,12 +76,11 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
               private deviceService: DeviceService,
               private confirmationService: ConfirmationService,
               private breadcrumbService: BreadcrumbService,
-              private terminalService: TerminalService
+              private terminalMessageService: TerminalMessageService
   ) {
   }
 
   ngOnInit() {
-    this.setCommands();
     this.deviceType = this.route.snapshot.routeConfig.path;
     this.setPermissions();
     this.translate.setDefaultLang('en');
@@ -112,17 +96,9 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     this.translate.get(`device.details.${this.deviceType}.remove`).first().subscribe((value: string): void => {
       this.removeDialogTitle = value;
     });
-    this.translate.get('device.terminal.welcome').first().subscribe((value: string) => {
-      this.terminalWelcomeMessage = value;
-    });
-    this.ngZone.runOutsideAngular(() => {
-      this.connectToRegistrationSocket();
-    });
-    this.setTerminalCommandHandler();
-    this.listenToTerminalKeyDown();
-    this.terminalResponseWindowHeight = document.getElementById('informationWindow').scrollHeight;
-    this.connectToRegistrationSocket();
     this.openInfoClientSocketConnection();
+    this.connectToRegistrationSocket();
+    this.listenForTerminalClientRequest();
   }
 
   ngOnDestroy() {
@@ -143,7 +119,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     if (this.firmwareSocketSubscription) {
       this.firmwareSocketSubscription.unsubscribe();
     }
-    this.removeTerminalKeyDownListener();
+    this.socketStream = null;
   }
 
   save(isValid: boolean): void {
@@ -227,12 +203,12 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   selectAllToUpload(): void {
     this.devicesToUpdate = [];
     if (this.allSelected) {
-      this.verified.forEach((device: UWB) => {
+      this.verified.forEach((device: UWB): void => {
         if (!this.getCheckboxById(device.shortId).disabled) {
           this.devicesToUpdate.push(device);
         }
       });
-      this.notVerified.forEach((device: UWB) => {
+      this.notVerified.forEach((device: UWB): void => {
         if (!this.getCheckboxById(device.shortId).disabled) {
           this.devicesToUpdate.push(device);
         }
@@ -306,161 +282,14 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   initializeTerminal(device: UWB): void {
-    this.terminalResponseMessage = [];
-    this.terminalActiveDeviceId = device.shortId;
-    this.displayTerminalWindow = !this.displayTerminalWindow;
-    this.connectedToWebSocket = false;
-    this.terminalComponent = null;
-    this.activeCommand = null;
-    this.clearTerminal();
+    this.terminalMessageService.setTerminalForDevice(device.shortId);
   }
 
-  private handleServerCommandResponse(message: DeviceMessage): void {
-    if (this.displayTerminalWindow && message.sinkShortId === this.terminalActiveDeviceId) {
-      this.displayMessage(message.value, false)
-    }
-  }
-
-  private clearTerminal(): void {
-    const components: Element[] = [].slice.call(document.getElementsByClassName('ui-terminal-command'));
-    components.forEach((element: Element) => {
-      const elementFather: Node = element.parentNode;
-      while (elementFather.firstChild) {
-        elementFather.removeChild(elementFather.firstChild);
-      }
-    });
-  }
-
-  private setScrollReaction(): void {
-    this.scrolledTop = (this.terminalResponseWindow.scrollTop + this.terminalResponseWindowHeight - this.terminalResponseWindow.scrollHeight > -40);
-  }
-
-  private zeroScrollTop(): void {
-      this.terminalResponseWindow.scrollTop = this.terminalResponseWindow.scrollHeight;
-  }
-
-  private displayMessage(value: string, internal: boolean): void {
-    const message: TerminalMessage = {
-      message: value,
-      internal: internal
-    };
-    this.terminalResponseMessage.push(message);
-    this.terminalResponseWindow = document.getElementById('informationWindow');
-    this.setScrollReaction();
-    if (!this.terminalPause) {
-      if (this.terminalResponseMessage.length > 1000) {
-        this.terminalResponseMessage.splice(0, 1);
-      }
-      if (this.scrolledTop) {
-        this.zeroScrollTop();
-      }
-    }
-  }
-
-  private setTerminalCommandHandler(): void {
-    this.terminalService.commandHandler.takeUntil(this.subscriptionDestructor).subscribe(command => {
-      let responseMessage = '';
-      let responseData = '';
-      switch (command.toLowerCase()) {
-        case 'help':
-          responseMessage = 'terminal.response.commands';
-          responseData = this.availableCommands.join(', ');
-          break;
-        case 'exit':
-          this.displayTerminalWindow = false;
-          this.connectedToWebSocket = false;
-          break;
-        case 'freeze':
-          this.terminalPause = true;
-          responseMessage = 'terminal.window.pause';
-          break;
-        case 'unfreeze':
-          this.terminalPause = false;
-          responseMessage = 'terminal.window.resume';
-          break;
-        case 'clear':
-          responseMessage = 'terminal.clear';
-          this.clearTerminal();
-          break;
-        case 'use':
-          if (!!this.activeCommand) {
-            responseMessage = 'terminal.command.sent.to.device';
-            this.handleDeviceCommand(this.activeCommand);
-            this.activeCommand = null;
-          } else {
-            responseMessage = 'terminal.not.active.command';
-          }
-          break;
-        default:
-          responseMessage = 'terminal.command.sent.to.device';
-          this.sendResponseToTerminal(responseMessage, responseData);
-          this.handleDeviceCommand(command);
-          this.usedCommands.push(command);
-          this.displayMessage(command, true)
-      }
-    });
-  }
-
-  private listenToTerminalKeyDown(): void {
-    this.terminalComponent = [].slice.call(document.getElementsByClassName('ui-terminal-input'))[0];
-    this.terminalComponent.addEventListener('keyup', this.handleKeyDown.bind(this), false);
-  }
-
-  private removeTerminalKeyDownListener(): void {
-    this.terminalComponent.removeEventListener('keyup', this.handleKeyDown.bind(this), false);
-    this.terminalComponent = null;
-  }
-
-  private handleKeyDown(event: KeyboardEvent): void {
-    if (this.commandIndex === null || this.commandIndex === undefined) {
-      return;
-    }
-    if (event.keyCode === 38 && this.commandIndex > 0) {
-      this.insertCommandToTerminal(this.usedCommands[--this.commandIndex])
-    } else if (event.keyCode === 40 && this.commandIndex < this.usedCommands.length - 1) {
-      this.insertCommandToTerminal(this.usedCommands[++this.commandIndex])
-    } else if (event.keyCode === 38 || event.keyCode === 40) {
-      this.insertCommandToTerminal(this.usedCommands[this.commandIndex]);
-    }
-  }
-
-  private insertCommandToTerminal(command: string): void {
-    this.activeCommand = command;
-    this.sendResponseToTerminal('terminal.active.command', command);
-  }
-
-  private setCommands(): void {
-    this.availableCommands = [
-      'help',
-      'freeze',
-      'unfreeze',
-      'clear',
-      'exit',
-      'use'
-    ];
-  }
-
-  private handleDeviceCommand(command: string): void {
-    this.commandIndex = this.usedCommands.length;
-    if (this.usedCommands.length > 100) {
-      this.usedCommands.splice(0, 1);
-    }
-    const commandArguments: CommandArguments = {
-      value: command,
-      sinkShortId: this.terminalActiveDeviceId
-    };
-    const socketPayload: ClientRequest = {
-      type: CommandType.TerminalCommand,
-      args: commandArguments
-    };
-    this.socketClientService.send(socketPayload);
-  }
-
-  private sendResponseToTerminal(responseMessage: string, responseData: string): void {
-    this.translate.get(responseMessage).first().subscribe((message: string) => {
-      const value = `${message} ${responseData}`;
-      this.terminalService.sendResponse(value);
-    });
+  private listenForTerminalClientRequest(): void {
+    this.terminalMessageService
+      .onClientRequest().takeUntil(this.subscriptionDestructor).subscribe((socketPayload: ClientRequest): void => {
+        this.socketClientService.send(socketPayload);
+      });
   }
 
   private updateFirmwareVersion(deviceStatus: DeviceStatus): void {
@@ -527,10 +356,10 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   private isAlreadyOnAnyList(device: Device): boolean {
-    return this.verified.findIndex((d: Device) => {
+    return this.verified.findIndex((d: Device): boolean => {
         return d.id === device.id;
       }) >= 0 ||
-      this.notVerified.findIndex((d: Device) => {
+      this.notVerified.findIndex((d: Device): boolean => {
         return d.id === device.id;
       }) >= 0;
   }
@@ -583,7 +412,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
           this.handleCodeErrorMessage((<DeviceMessage>message));
           break;
         case 'SERVER_COMMAND':
-          this.handleServerCommandResponse((<DeviceMessage>message));
+          this.terminalMessageService.sendCommandToTerminal((<DeviceMessage>message));
           break;
       }
     });
