@@ -34,6 +34,8 @@ import {Complex} from '../../complex/complex.type';
 import {ComplexService} from '../../complex/complex.service';
 import {NavigationController} from '../../shared/utils/navigation/navigation.controller';
 import Metadata = APIObject.Metadata;
+import {ModelsConfig} from '../../map/models/models.config';
+import {Helper} from '../../shared/utils/helper/helper';
 
 @Component({
   templateUrl: './socket-connector.component.html'
@@ -49,6 +51,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
   private areasOnMap: Dictionary<number, SvgGroupWrapper> = new Dictionary<number, SvgGroupWrapper>();
   private originListeningOnEvent: Dictionary<string, MessageEvent[]> = new Dictionary<string, MessageEvent[]>();
   private originListeningOnClickMapEvent: Array<MessageEvent> = [];
+  private pathFromConfiguration: Line[];
   protected tags: Tag[] = [];
   protected visibleTags: Map<number, boolean> = new Map();
   protected scaleCalculations: ScaleCalculations;
@@ -69,7 +72,9 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
               private navigationController: NavigationController,
               protected floorService: FloorService,
               protected tagToggleService: TagVisibilityTogglerService,
-              protected breadcrumbService: BreadcrumbService) {
+              protected breadcrumbService: BreadcrumbService,
+              protected models: ModelsConfig
+  ) {
 
     this.loadMapDeferred = new Deferred<boolean>();
   }
@@ -114,6 +119,9 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
       const floorId = +params['id'];
       this.floorService.getFloor(floorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
         this.floor = floor;
+        if (this.floor) {
+          this.subscribeToPathOnFloor();
+        }
         if (!!floor.scale) {
           this.scale = new Scale(this.floor.scale);
           this.scaleCalculations = {
@@ -132,7 +140,9 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
               });
               this.tagToggleService.setTags(tags);
               if (!!floor.scale) {
-                this.drawAreas(floor.id);
+                if (!Helper.detectMobile()) {
+                  this.drawAreas(floor.id);
+                }
                 this.initializeSocketConnection();
               }
             });
@@ -148,14 +158,14 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
         if (event.origin === window.location.origin) {
           return;
         }
-        this.publishedService.checkOrigin(params['api_key'], event.origin).takeUntil(this.subscriptionDestructor)
-          .subscribe((verified: boolean): void => {
+        // this.publishedService.checkOrigin(params['api_key'], event.origin).takeUntil(this.subscriptionDestructor)
+        //   .subscribe((verified: boolean): void => {
           // if (verified && !!this.scale) {
           this.handleCommands(event);
           // } else {
           //   event.source.postMessage({type: 'error', message: 'Origin not verified. Make sure you use your own API KEY.'}, '*');
           // }
-        });
+        // });
       });
     }, false);
   }
@@ -174,11 +184,12 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
   protected handleCoordinatesData(data: CoordinatesSocketData): void {
     const deviceId: number = data.coordinates.tagShortId;
     if (!this.isOnMap(deviceId) && this.visibleTags.get(deviceId)) {
-      const tagOnMap: TagOnMap = new TagOnMap(data.coordinates.point, this.d3map.container, {
-        id: `tag-${deviceId}`,
-        clazz: 'tag',
-        name: `${deviceId}`
-      });
+      const tagOnMap: TagOnMap = new TagOnMap(
+        data.coordinates.point,
+        this.d3map.container,
+        {id: `tag-${deviceId}`, clazz: 'tag', name: `${deviceId}`},
+        this.models
+        );
       SvgAnimator.startBlinking(tagOnMap.getIconElement());
       this.tagsOnMap.setValue(deviceId, tagOnMap.setShortId(deviceId));
     } else if (this.visibleTags.get(deviceId)) {
@@ -202,6 +213,12 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
 
   protected whenTransitionEnded(): Observable<number> {
     return this.transitionEnded.asObservable();
+  }
+
+  private subscribeToPathOnFloor(): void {
+    this.pathService.getPathByFloorId(this.floor.id).first().subscribe((pathFromConfiguration: Line[]): void => {
+      this.pathFromConfiguration = pathFromConfiguration;
+    });
   }
 
   private isCoordinatesData(data: MeasureSocketData): boolean {
@@ -290,7 +307,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
           .addPolygon(area.points)
           .addBackground(textPoint)
           .hideElement(ElementType.RECT)
-          .addText(textPoint, `area-${area.id}`, '#fff')
+          .addText({coordinates: textPoint}, `area-${area.id}`, '#000')
           .hideElement(ElementType.TEXT);
         areaOnMap.getLastElement(ElementType.POLYGON)
           .style('opacity', Area.getCustomSettings().opacity)
@@ -358,10 +375,10 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   private getPointOnPath(event: MessageEvent) {
-    this.pathService.getPathByFloorId(this.floor.id).first().subscribe((pathFromConfiguration: Line[]): void => {
+
       let calculatedPosition: Point = null;
-      if (!!pathFromConfiguration && pathFromConfiguration.length > 0) {
-        calculatedPosition = Geometry.findPointOnPathInGivenRange(pathFromConfiguration, event.data['args'].point, event.data['args'].accurac);
+      if (!!this.pathFromConfiguration && this.pathFromConfiguration.length > 0) {
+        calculatedPosition = Geometry.findPointOnPathInGivenRange(this.pathFromConfiguration, event.data['args'].point, event.data['args'].accurac);
       }
       // @ts-ignore
       event.source.postMessage({
@@ -369,7 +386,6 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
         mapObjectId: 'map',
         calculatedPosition
       }, '*');
-    });
   }
 
 

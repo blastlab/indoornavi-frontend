@@ -22,6 +22,7 @@ import {Geometry} from '../../../shared/utils/helper/geometry';
 import {Tag} from '../../../device/device.type';
 import {ComplexService} from '../../../complex/complex.service';
 import {NavigationController} from '../../../shared/utils/navigation/navigation.controller';
+import {ModelsConfig} from '../../../map/models/models.config';
 
 
 @Component({
@@ -50,7 +51,8 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
     tagToggler: TagVisibilityTogglerService,
     breadcrumbService: BreadcrumbService,
     private messageService: MessageServiceWrapper,
-    private router: Router
+    private router: Router,
+    protected models: ModelsConfig
   ) {
 
     super(
@@ -68,7 +70,8 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
       pathDisplayService,
       floorService,
       tagToggler,
-      breadcrumbService
+      breadcrumbService,
+      models
     );
   }
 

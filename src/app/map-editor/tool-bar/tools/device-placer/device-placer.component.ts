@@ -22,6 +22,7 @@ import {ToolbarService} from '../../toolbar.service';
 import {ConfirmationService} from 'primeng/primeng';
 import {Subject} from 'rxjs/Subject';
 import {Box} from '../../../../shared/utils/drawing/drawing.builder';
+import {ModelsConfig} from '../../../../map/models/models.config';
 
 @Component({
   selector: 'app-device-placer',
@@ -51,7 +52,8 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     private contextMenuService: ContextMenuService,
     private translateService: TranslateService,
     private zoomService: ZoomService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private models: ModelsConfig
   ) {
   }
 
@@ -278,7 +280,8 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
       this.devicePlacerService,
       this.contextMenuService,
       this.translateService,
-      this.containerBox
+      this.containerBox,
+      this.models
     );
     sinkOnMap.setOutOfGroupScope();
     sinkOnMap.contextMenuOff();
@@ -305,6 +308,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
       this.contextMenuService,
       this.translateService,
       this.containerBox,
+      this.models
     );
     anchorInEditor.setOutOfGroupScope();
     anchorInEditor.contextMenuOff();
