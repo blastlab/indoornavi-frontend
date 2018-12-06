@@ -12,6 +12,7 @@ export class DeviceRangingTimeComponent implements OnInit {
 
   rangingTimeConfigForm: FormGroup;
   isRangingPeriodDisabled = false;
+  isButtonSendDisabled = true;
   rangingPeriod = 1;
 
   constructor(private fb: FormBuilder) {}
@@ -43,11 +44,29 @@ export class DeviceRangingTimeComponent implements OnInit {
   }
 
   sendToDevice() {
+    this.setIsButtonDisabled(true);
     console.log(this.rangingTimeConfigForm.value);
+  }
+
+  resetDevice() {
+    this.rangingTimeConfigForm.setValue({
+      rangingTimeData: {
+        rangingPeriod: 12,
+        rangingTimeOneSlot: 6,
+        numberOfMeasurement: 2,
+        typeRangingTime: this.rangingTimeConfigForm.value.rangingTimeData.typeRangingTime
+      }
+    });
+    this.setIsButtonDisabled(false);
+    this.calculateRangingPeriod();
   }
 
   get inputRangingPeriod(): AbstractControl {
     return this.rangingTimeConfigForm.get('rangingTimeData.rangingPeriod');
+  }
+
+  private setIsButtonDisabled(isDisabled: boolean): void {
+    this.isButtonSendDisabled = isDisabled;
   }
 
   private createRangingTimeForm(): void {

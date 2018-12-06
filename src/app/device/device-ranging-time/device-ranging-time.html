@@ -75,6 +75,7 @@
         pButton
         icon="fa-share-square"
         (click)="sendToDevice()"
+        [disabled]="isButtonSendDisabled"
         label="{{'Send to device'|translate}}"></button>
     </div>
   </div>
