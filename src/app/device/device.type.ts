@@ -201,3 +201,15 @@ export interface MacData {
   newDeviceAddress: number;
   reportAnchorToAnchorDistances: boolean;
 }
+
+export interface RangingTimeData {
+  rangingPeriod: number;
+  rangingTimeOneSlot: number;
+  numberOfMeasurement: number;
+  typeRangingTime: RangingTimeType
+}
+
+export enum RangingTimeType {
+  Time = 'TIME',
+  Measurments = 'MEASURMENTS'
+}

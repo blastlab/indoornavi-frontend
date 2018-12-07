@@ -1,5 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup} from '@angular/forms';
+import {RangingTimeData, RangingTimeType} from '../device.type';
 
 @Component({
   selector: 'app-device-ranging-time',
@@ -14,6 +15,7 @@ export class DeviceRangingTimeComponent implements OnInit {
   isRangingPeriodDisabled = false;
   isButtonSendDisabled = true;
   rangingPeriod = 1;
+  rangingTimeType = RangingTimeType;
 
   constructor(private fb: FormBuilder) {}
 
@@ -22,7 +24,7 @@ export class DeviceRangingTimeComponent implements OnInit {
   }
 
   changeType(value) {
-    this.isRangingPeriodDisabled = value === 'time' ? false : true;
+    this.isRangingPeriodDisabled = value === RangingTimeType.Time ? false : true;
     this.calculateRangingPeriod();
   }
 
@@ -49,14 +51,14 @@ export class DeviceRangingTimeComponent implements OnInit {
   }
 
   resetDevice() {
-    this.rangingTimeConfigForm.setValue({
-      rangingTimeData: {
-        rangingPeriod: 12,
-        rangingTimeOneSlot: 6,
-        numberOfMeasurement: 2,
-        typeRangingTime: this.rangingTimeConfigForm.value.rangingTimeData.typeRangingTime
-      }
-    });
+    const rangingTimeData: RangingTimeData = {
+      rangingPeriod: 12,
+      rangingTimeOneSlot: 6,
+      numberOfMeasurement: 2,
+      typeRangingTime: this.rangingTimeConfigForm.value.rangingTimeData.typeRangingTime
+    };
+
+    this.rangingTimeConfigForm.setValue({ rangingTimeData });
     this.setIsButtonDisabled(false);
     this.calculateRangingPeriod();
   }
@@ -70,13 +72,15 @@ export class DeviceRangingTimeComponent implements OnInit {
   }
 
   private createRangingTimeForm(): void {
+    const rangingTimeData: RangingTimeData = {
+      rangingPeriod: 1,
+      rangingTimeOneSlot: 1,
+      numberOfMeasurement: 1,
+      typeRangingTime: RangingTimeType.Time
+    };
+
     this.rangingTimeConfigForm = this.fb.group({
-      rangingTimeData: this.fb.group({
-        rangingPeriod: 1,
-        rangingTimeOneSlot: 1,
-        numberOfMeasurement: 1,
-        typeRangingTime: 'time'
-      })
+      rangingTimeData: this.fb.group(rangingTimeData)
     });
   }
 
