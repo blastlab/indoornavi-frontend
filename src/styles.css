@@ -239,6 +239,10 @@ svg {
   border-color: #d4d4d4;
 }
 
+.input-config {
+  min-width: 100%;
+}
+
 @media screen and (min-width: 641px) {
   .label-info {
     text-align: right;

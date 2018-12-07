@@ -11,7 +11,7 @@
       <div class="ui-g-12 ui-md-5 ui-lg-5">
         <p-dropdown [options]="rfsetConfigData.radioChannels"
                     formControlName="radioChannel"
-                    [style]="{ width: '100%' }"
+                    styleClass="input-config"
                     id="radioChanel"
                     placeholder="Select radio channel">
         </p-dropdown>
@@ -29,7 +29,7 @@
       <div class="ui-g-12 ui-md-5 ui-lg-5">
         <p-dropdown [options]="rfsetConfigData.radioBaudRate"
                     formControlName="radioBaudRate"
-                    [style]="{ width: '100%' }"
+                    styleClass="input-config"
                     id="radioBaudRate"
                     placeholder="Select radio baud rate">
         </p-dropdown>
@@ -47,7 +47,7 @@
       <div class="ui-g-12 ui-md-5 ui-lg-5">
         <p-dropdown [options]="rfsetConfigData.preambleLength"
                     formControlName="preambleLength"
-                    [style]="{ width: '100%' }"
+                    styleClass="input-config"
                     id="preambleLength"
                     placeholder="Select preamble length">
         </p-dropdown>
@@ -65,7 +65,7 @@
       <div class="ui-g-12 ui-md-5 ui-lg-5">
         <p-dropdown [options]="rfsetConfigData.pulseRepetitionFrequency"
                     formControlName="pulseRepetitionFrequency"
-                    [style]="{ width: '100%' }"
+                    styleClass="input-config"
                     id="pulseRepetitionFrequency"
                     placeholder="Select pulse repetition frequency">
         </p-dropdown>
@@ -83,7 +83,7 @@
       <div class="ui-g-12 ui-md-5 ui-lg-5">
         <p-dropdown [options]="rfsetConfigData.preambleAcquisitionChunk"
                     formControlName="preambleAcquisitionChunk"
-                    [style]="{ width: '100%' }"
+                    styleClass="input-config"
                     id="preambleAcquisitionChunk"
                     placeholder="Select preamble acquisition chunk">
         </p-dropdown>
@@ -102,7 +102,6 @@
         <p-spinner
           formControlName="communicationCode"
           size="40"
-          [style]="{ width: '100%' }"
           [min]="1"
           [max]="24"
           id="communicationCode"></p-spinner>
