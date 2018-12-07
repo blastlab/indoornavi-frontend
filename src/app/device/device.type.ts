@@ -213,3 +213,8 @@ export enum RangingTimeType {
   Time = 'TIME',
   Measurments = 'MEASURMENTS'
 }
+
+export interface ImuData {
+  toggleImu?: boolean;
+  delayBeforeAssleep: number;
+}

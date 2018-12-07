@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
+import {ImuData} from '../device.type';
 
 @Component({
   selector: 'app-device-imu',
@@ -31,7 +32,8 @@ export class DeviceImuComponent implements OnInit {
   }
 
   resetDevice(): void {
-    this.imuConfigForm.patchValue({ imuData: { delayBeforeAssleep: 23 } });
+    const imuData: ImuData = { delayBeforeAssleep: 23 };
+    this.imuConfigForm.patchValue({ imuData });
     this.setIsButtonDisabled(false);
   }
 
@@ -52,11 +54,13 @@ export class DeviceImuComponent implements OnInit {
   }
 
   private createRfForm(): void {
+    const imuData: ImuData = {
+      toggleImu: false,
+      delayBeforeAssleep: 10
+    };
+
     this.imuConfigForm = this.fb.group({
-      imuData: this.fb.group({
-        toggleImu: false,
-        delayBeforeAssleep: 10
-      })
+      imuData: this.fb.group(imuData)
     });
   }
 }
