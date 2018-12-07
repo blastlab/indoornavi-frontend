@@ -13,7 +13,7 @@
                     formControlName="radioChannel"
                     styleClass="input-config"
                     id="radioChanel"
-                    placeholder="Select radio channel">
+                    placeholder="{{'device.config.radioChannel.placeholder'|translate}}">
         </p-dropdown>
       </div>
     </div>
@@ -31,7 +31,7 @@
                     formControlName="radioBaudRate"
                     styleClass="input-config"
                     id="radioBaudRate"
-                    placeholder="Select radio baud rate">
+                    placeholder="{{'device.config.radioBaudRate.placeholder'|translate}}">
         </p-dropdown>
       </div>
     </div>
@@ -49,7 +49,7 @@
                     formControlName="preambleLength"
                     styleClass="input-config"
                     id="preambleLength"
-                    placeholder="Select preamble length">
+                    placeholder="{{'device.config.preambleLength.placeholder'|translate}}">
         </p-dropdown>
       </div>
     </div>
@@ -67,7 +67,7 @@
                     formControlName="pulseRepetitionFrequency"
                     styleClass="input-config"
                     id="pulseRepetitionFrequency"
-                    placeholder="Select pulse repetition frequency">
+                    placeholder="{{'device.config.pulseRepetition.placeholder'|translate}}">
         </p-dropdown>
       </div>
     </div>
@@ -85,7 +85,7 @@
                     formControlName="preambleAcquisitionChunk"
                     styleClass="input-config"
                     id="preambleAcquisitionChunk"
-                    placeholder="Select preamble acquisition chunk">
+                    placeholder="{{'device.config.preambleAcquisitionChunk.placeholder'|translate}}">
         </p-dropdown>
       </div>
     </div>
@@ -147,7 +147,7 @@
         pButton
         icon="fa-cogs"
         (click)="resetDevice()"
-        label="{{'Default settings'|translate}}"></button>
+        label="{{'device.config.default'|translate}}"></button>
 
       <button
         type="button"
@@ -155,7 +155,7 @@
         icon="fa-share-square"
         (click)="sendToDevice()"
         [disabled]="isButtonSendDisabled"
-        label="{{'Send to device'|translate}}"></button>
+        label="{{'device.config.save'|translate}}"></button>
     </div>
   </div>
 </ngForm>
