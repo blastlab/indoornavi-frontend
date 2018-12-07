@@ -10,10 +10,10 @@ export class DeviceTxSetComponent implements OnInit {
   readonly divideByStep = 2;
   txConfigForm: FormGroup;
   isButtonSendDisabled = true;
-  p1: number;
-  p2: number;
-  p3: number;
-  p4: number;
+  powerTransmitter1: number;
+  powerTransmitter2: number;
+  powerTransmitter3: number;
+  powerTransmitter4: number;
 
   constructor(private fb: FormBuilder) {}
 
@@ -28,14 +28,14 @@ export class DeviceTxSetComponent implements OnInit {
   }
 
   sendTxDataToDevice(): void {
-    const { p1f, p2f, p3f, p4f }  = this.txConfigForm.value.txPower;
-    const txConfigData = {
+    const { transmitterFine1, transmitterFine2, transmitterFine3, transmitterFine4 } = this.txConfigForm.value.txPower as TxPower;
+    const txConfigData: TxConfigData = {
       txPower: {
         ...this.txConfigForm.value.txPower,
-        p1f: this.calculateDatabasePf(p1f, this.dividePNFByStep),
-        p2f: this.calculateDatabasePf(p2f, this.dividePNFByStep),
-        p3f: this.calculateDatabasePf(p3f, this.dividePNFByStep),
-        p4f: this.calculateDatabasePf(p4f, this.dividePNFByStep)
+        transmitterFine1: this.calculateDatabaseTransmitterFine(transmitterFine1, this.dividePNFByStep),
+        transmitterFine2: this.calculateDatabaseTransmitterFine(transmitterFine2, this.dividePNFByStep),
+        transmitterFine3: this.calculateDatabaseTransmitterFine(transmitterFine3, this.dividePNFByStep),
+        transmitterFine4: this.calculateDatabaseTransmitterFine(transmitterFine4, this.dividePNFByStep)
       }
     };
     console.log(txConfigData);
@@ -56,69 +56,89 @@ export class DeviceTxSetComponent implements OnInit {
   }
 
   private setSumDefaultPower() {
-    const { p1c, p1f, p2c, p2f, p3c, p3f, p4c, p4f } = this.txConfigForm.value.txPower;
-    this.p1 = this.calculatePn(p1c, p1f);
-    this.p2 = this.calculatePn(p2c, p2f);
-    this.p3 = this.calculatePn(p3c, p3f);
-    this.p4 = this.calculatePn(p4c, p4f);
+    const {
+      transmitterCoarse1, transmitterFine1,
+      transmitterCoarse2, transmitterFine2,
+      transmitterCoarse3, transmitterFine3,
+      transmitterCoarse4, transmitterFine4
+    } = this.txConfigForm.value.txPower;
+    this.powerTransmitter1 = this.calculateTransmitterCoarse(transmitterCoarse1, transmitterFine1);
+    this.powerTransmitter2 = this.calculateTransmitterCoarse(transmitterCoarse2, transmitterFine2);
+    this.powerTransmitter3 = this.calculateTransmitterCoarse(transmitterCoarse3, transmitterFine3);
+    this.powerTransmitter4 = this.calculateTransmitterCoarse(transmitterCoarse4, transmitterFine4);
   }
 
-  private calculateStepPf(power: number, step: number): number {
+  private calculateStepTransmitterFine(power: number, step: number): number {
     return power * step;
   }
 
-  private calculateDatabasePf(power: number, step: number): number {
+  private calculateDatabaseTransmitterFine(power: number, step: number): number {
     return power / step;
   }
 
-  private calculatePn(pf: number, pc: number): number {
-    return pf + pc / this.dividePNFByStep;
+  private calculateTransmitterCoarse(transmitterFine: number, transmitterCoarse: number): number {
+    return transmitterFine + transmitterCoarse / this.dividePNFByStep;
   }
 
   private createTxForm(): void {
-    this.txConfigForm = this.fb.group({
-      txPower: this.fb.group({
-        p1c: null,
-        p1f: null,
-        p2c: null,
-        p2f: null,
-        p3c: null,
-        p3f: null,
-        p4c: null,
-        p4f: null
-      })
+    const txPower: FormGroup = this.fb.group({
+      transmitterCoarse1: null,
+      transmitterFine1: null,
+      transmitterCoarse2: null,
+      transmitterFine2: null,
+      transmitterCoarse3: null,
+      transmitterFine3: null,
+      transmitterCoarse4: null,
+      transmitterFine4: null
     });
+
+    this.txConfigForm = this.fb.group({ txPower });
 
     this.setTxDataFromDataBase();
   }
 
   private setTxDefaultData(): void {
-    this.txConfigForm.patchValue({
-      txPower: {
-        p1c: 6,
-        p1f: this.calculateStepPf(10.5, this.dividePNFByStep),
-        p2c: 9,
-        p2f: this.calculateStepPf(3.5, this.dividePNFByStep),
-        p3c: 3,
-        p3f: this.calculateStepPf(12.5, this.dividePNFByStep),
-        p4c: 12,
-        p4f: this.calculateStepPf(4.5, this.dividePNFByStep)
-      }
-    });
+    const txPower: TxPower = {
+      transmitterCoarse1: 6,
+      transmitterFine1: this.calculateStepTransmitterFine(10.5, this.dividePNFByStep),
+      transmitterCoarse2: 9,
+      transmitterFine2: this.calculateStepTransmitterFine(3.5, this.dividePNFByStep),
+      transmitterCoarse3: 3,
+      transmitterFine3: this.calculateStepTransmitterFine(12.5, this.dividePNFByStep),
+      transmitterCoarse4: 12,
+      transmitterFine4: this.calculateStepTransmitterFine(4.5, this.dividePNFByStep)
+    };
+
+    this.txConfigForm.patchValue({ txPower });
   }
 
   private setTxDataFromDataBase(): void {
-    this.txConfigForm.setValue({
-      txPower: {
-        p1c: 8,
-        p1f: this.calculateStepPf(5, this.dividePNFByStep),
-        p2c: 6,
-        p2f: this.calculateStepPf(10.5, this.dividePNFByStep),
-        p3c: 9,
-        p3f: this.calculateStepPf(2.5, this.dividePNFByStep),
-        p4c: 3,
-        p4f: this.calculateStepPf(14.5, this.dividePNFByStep)
-      }
-    });
+    const txPower: TxPower = {
+      transmitterCoarse1: 8,
+      transmitterFine1: this.calculateStepTransmitterFine(5, this.dividePNFByStep),
+      transmitterCoarse2: 6,
+      transmitterFine2: this.calculateStepTransmitterFine(10.5, this.dividePNFByStep),
+      transmitterCoarse3: 9,
+      transmitterFine3: this.calculateStepTransmitterFine(2.5, this.dividePNFByStep),
+      transmitterCoarse4: 3,
+      transmitterFine4: this.calculateStepTransmitterFine(14.5, this.dividePNFByStep)
+    };
+
+    this.txConfigForm.setValue({ txPower });
   }
+}
+
+export interface TxConfigData {
+  txPower: TxPower
+}
+
+export interface TxPower {
+  transmitterCoarse1: number;
+  transmitterFine1: number;
+  transmitterCoarse2: number;
+  transmitterFine2: number;
+  transmitterCoarse3: number;
+  transmitterFine3: number;
+  transmitterCoarse4: number;
+  transmitterFine4: number;
 }
