@@ -167,3 +167,27 @@ export interface TxPower {
   transmitterCoarse4: number;
   transmitterFine4: number;
 }
+
+export interface RfData {
+  radioChannel: number;
+  radioBaudRate: number;
+  preambleLength: number;
+  pulseRepetitionFrequency: number;
+  preambleAcquisitionChunk: number;
+  communicationCode: number;
+  sfd: number;
+  nsfd: boolean;
+}
+
+export interface RfsetConfigData {
+  radioChannels: FormSelectData[];
+  radioBaudRate: FormSelectData[];
+  preambleLength: FormSelectData[];
+  pulseRepetitionFrequency: FormSelectData[];
+  preambleAcquisitionChunk: FormSelectData[];
+}
+
+export interface FormSelectData {
+  label: string;
+  value: number;
+}

@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
+import {RfData, RfsetConfigData} from '../device.type';
 
 @Component({
   selector: 'app-device-rfset',
@@ -8,7 +9,7 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 })
 export class DeviceRfSetComponent implements OnInit {
 
-  rfsetConfigData: {} = {};
+  rfsetConfigData: RfsetConfigData = null;
   rfConfigForm: FormGroup;
   isButtonSendDisabled = true;
 
@@ -26,34 +27,38 @@ export class DeviceRfSetComponent implements OnInit {
   }
 
   resetDevice(): void {
-    this.rfConfigForm.patchValue({ rfData: {
-        radioChannel: 3,
-        radioBaudRate: 850,
-        preambleLength: 512,
-        pulseRepetitionFrequency: 64,
-        preambleAcquisitionChunk: 32,
-        communicationCode: 5,
-        sfd: 483,
-        nsfd: false
-      }});
+    const rfData: RfData = {
+      radioChannel: 3,
+      radioBaudRate: 850,
+      preambleLength: 512,
+      pulseRepetitionFrequency: 64,
+      preambleAcquisitionChunk: 32,
+      communicationCode: 5,
+      sfd: 483,
+      nsfd: false
+    };
+
+    this.rfConfigForm.patchValue({ rfData });
   }
 
   private createRfForm(): void {
+    const rfData: RfData = {
+      radioChannel: 5,
+      radioBaudRate: 6800,
+      preambleLength: 1546,
+      pulseRepetitionFrequency: 16,
+      preambleAcquisitionChunk: 16,
+      communicationCode: 21,
+      sfd: 100,
+      nsfd: true
+    };
+
     this.rfConfigForm = this.fb.group({
-      rfData: this.fb.group({
-        radioChannel: 5,
-        radioBaudRate: 6800,
-        preambleLength: 1546,
-        pulseRepetitionFrequency: 16,
-        preambleAcquisitionChunk: 16,
-        communicationCode: 21,
-        sfd: 100,
-        nsfd: true
-      })
+      rfData: this.fb.group(rfData)
     });
   }
 
-  private rfsetConfigurationData() {
+  private rfsetConfigurationData(): void {
     this.rfsetConfigData = {
       radioChannels: [
         { label: '1', value: 1 }, { label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 }, { label: '5', value: 5 }, { label: '7', value: 7 }
