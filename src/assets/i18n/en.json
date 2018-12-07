@@ -112,6 +112,7 @@
   "device.config.rangingTime": "Ranging time one slot time (ms)",
   "device.config.numberOfMeasurments": "Number of ranging slot in one period (ms)",
   "device.config.motionlessAsleep": "Enable motionless asleep",
+  "device.config.delayBeforeAsleep": "Delay before asleep in motionless state",
   "device.config.default": "Default settings",
   "device.config.guardTime": "Guard time",
   "device.config.slotPeriod": "Slot period time",
