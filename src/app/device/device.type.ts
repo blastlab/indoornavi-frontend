@@ -191,3 +191,13 @@ export interface FormSelectData {
   label: string;
   value: number;
 }
+
+export interface MacData {
+  beaconTimerInterval: number;
+  slotPeriod: number;
+  slotTime: number;
+  guardTime: number;
+  devicePersonalAreaNetwork: number;
+  newDeviceAddress: number;
+  reportAnchorToAnchorDistances: boolean;
+}
