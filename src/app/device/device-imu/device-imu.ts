@@ -28,7 +28,6 @@ export class DeviceImuComponent implements OnInit {
 
   sendToDevice(): void {
     this.setIsButtonDisabled(true);
-    console.log(this.imuConfigForm.value);
   }
 
   resetDevice(): void {
