@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
+import { TxConfigData, TxPower } from '../device.type';
 
 @Component({
   selector: 'app-device-txset',
@@ -55,13 +56,14 @@ export class DeviceTxSetComponent implements OnInit {
     this.isButtonSendDisabled = isDisabled;
   }
 
-  private setSumDefaultPower() {
+  private setSumDefaultPower(): void {
     const {
       transmitterCoarse1, transmitterFine1,
       transmitterCoarse2, transmitterFine2,
       transmitterCoarse3, transmitterFine3,
       transmitterCoarse4, transmitterFine4
-    } = this.txConfigForm.value.txPower;
+    } = this.txConfigForm.value.txPower as TxPower;
+
     this.powerTransmitter1 = this.calculateTransmitterCoarse(transmitterCoarse1, transmitterFine1);
     this.powerTransmitter2 = this.calculateTransmitterCoarse(transmitterCoarse2, transmitterFine2);
     this.powerTransmitter3 = this.calculateTransmitterCoarse(transmitterCoarse3, transmitterFine3);
@@ -126,19 +128,4 @@ export class DeviceTxSetComponent implements OnInit {
 
     this.txConfigForm.setValue({ txPower });
   }
-}
-
-export interface TxConfigData {
-  txPower: TxPower
-}
-
-export interface TxPower {
-  transmitterCoarse1: number;
-  transmitterFine1: number;
-  transmitterCoarse2: number;
-  transmitterFine2: number;
-  transmitterCoarse3: number;
-  transmitterFine3: number;
-  transmitterCoarse4: number;
-  transmitterFine4: number;
 }

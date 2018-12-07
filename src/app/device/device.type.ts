@@ -152,3 +152,18 @@ export enum CommandType {
   BatteryUpdate = 'CHECK_BATTERY_LEVEL',
   FirmwareUpdate = 'UPDATE_FIRMWARE'
 }
+
+export interface TxConfigData {
+  txPower: TxPower
+}
+
+export interface TxPower {
+  transmitterCoarse1: number;
+  transmitterFine1: number;
+  transmitterCoarse2: number;
+  transmitterFine2: number;
+  transmitterCoarse3: number;
+  transmitterFine3: number;
+  transmitterCoarse4: number;
+  transmitterFine4: number;
+}
