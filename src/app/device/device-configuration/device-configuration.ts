@@ -5,6 +5,7 @@ import {Device} from '../device.type';
 
 @Component({
   selector: 'app-device-configuration',
+  styleUrls: ['./device-configuration.css'],
   templateUrl: './device-configuration.html'
 })
 export class DeviceConfigurationComponent implements OnInit, OnDestroy {

@@ -20,16 +20,22 @@
     </p-tabPanel>
 
     <p-tabPanel header="{{'device.config.tab.txset'|translate}}">
-      <app-device-txset></app-device-txset>
+      <perfect-scrollbar class="container scrollbar-height" [config]="config">
+        <app-device-txset></app-device-txset>
+      </perfect-scrollbar>
     </p-tabPanel>
 
     <p-tabPanel header="{{'device.config.tab.rfset'|translate}}">
-      <app-device-rfset></app-device-rfset>
+      <perfect-scrollbar class="container scrollbar-height" [config]="config">
+        <app-device-rfset></app-device-rfset>
+      </perfect-scrollbar>
     </p-tabPanel>
 
     <p-tabPanel header="{{'device.config.tab.mac'|translate}}">
-      <app-device-mac
-        [deviceType]="deviceType"></app-device-mac>
+      <perfect-scrollbar class="container scrollbar-height" [config]="config">
+        <app-device-mac
+          [deviceType]="deviceType"></app-device-mac>
+      </perfect-scrollbar>
     </p-tabPanel>
 
     <p-tabPanel header="{{'device.config.tab.imu'|translate}}" *ngIf="deviceType === 'tags'">

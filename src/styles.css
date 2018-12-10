@@ -243,6 +243,30 @@ svg {
   min-width: 100%;
 }
 
+.scrollbar-height .ps__rail-x,
+.scrollbar-height .ps__rail-y {
+  opacity: 1;
+  border: 1px solid #2790b0;
+  border-radius: 3px;
+}
+
+.scrollbar-height .ps__thumb-x,
+.scrollbar-height .ps__thumb-y,
+.scrollbar-height .ps__rail-y:focus > .ps__thumb-y,
+.scrollbar-height .ps__rail-y:hover > .ps__thumb-y {
+  background-color: #2790b0;
+}
+
+.scrollbar-height .ps__thumb-y {
+  border-top: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+}
+
+.scrollbar-height .ps__thumb-y {
+  right: 1px;
+}
+
+
 @media screen and (min-width: 641px) {
   .label-info {
     text-align: right;

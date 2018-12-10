@@ -63,6 +63,7 @@ import {
   MessagesModule,
   MessageModule
 } from 'primeng/primeng';
+
 import {HintBarService} from './map-editor/hint-bar/hintbar.service';
 import {ToolbarService} from './map-editor/tool-bar/toolbar.service';
 import {AppComponent} from './app.component';
@@ -136,6 +137,13 @@ import {NavigationService} from './shared/utils/navigation/navigation.service';
 import {NavigationController} from './shared/utils/navigation/navigation.controller';
 import {ModelsConfig} from './map/models/models.config';
 import {BatteryIndicatorComponent} from './device/battery-indicator';
+import {PerfectScrollbarModule} from 'ngx-perfect-scrollbar';
+import {PerfectScrollbarConfigInterface} from 'ngx-perfect-scrollbar';
+
+
+const PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
+  suppressScrollX: true
+};
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -219,6 +227,7 @@ export function HttpLoaderFactory(http: Http) {
         deps: [Http]
       }
     }),
+    PerfectScrollbarModule.forRoot(PERFECT_SCROLLBAR_CONFIG),
     RouterModule.forRoot(appRoutes),
     ImageUploadModule.forRoot(),
     CoreModule,
