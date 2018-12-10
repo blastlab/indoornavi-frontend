@@ -245,7 +245,8 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     this.updateMode = !this.updateMode;
   }
 
-  openDeviceConfigDialog(): void {
+  openDeviceConfigDialog(device): void {
+    this.deviceService.sendDevice(device);
     this.displayDeviceConfig = true;
   }
 

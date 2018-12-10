@@ -1,5 +1,7 @@
 import {Component, OnInit, Input, Output, EventEmitter, OnDestroy} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
+import {DeviceService} from '../device.service';
+import {Device} from '../device.type';
 
 @Component({
   selector: 'app-device-configuration',
@@ -13,12 +15,16 @@ export class DeviceConfigurationComponent implements OnInit, OnDestroy {
   @Input() deviceType: string;
   @Output() deviceConfigClosed: EventEmitter<boolean> = new EventEmitter<boolean>();
   titleHeader: string;
+  device: Device;
 
-  constructor() {}
+  constructor(private deviceService: DeviceService) {}
 
   ngOnInit() {
     this.titleHeader = `device.details.${this.deviceType}.config`;
     this.setRtfConfig();
+    this.deviceService.getDevice()
+      .takeUntil(this.subscribtionDestructor)
+      .subscribe(device => this.device = device);
   }
 
   ngOnDestroy() {

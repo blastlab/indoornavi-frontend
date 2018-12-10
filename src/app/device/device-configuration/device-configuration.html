@@ -10,7 +10,8 @@
   (onHide)="closeDeviceConfig()">
 
   <p-header>
-    {{titleHeader|translate}}
+    {{titleHeader|translate}} -
+    <span *ngIf="device">{{device.shortId}}</span>
   </p-header>
 
   <p-tabView>
