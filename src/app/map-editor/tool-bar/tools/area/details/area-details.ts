@@ -81,10 +81,15 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
     });
     this.areaDetailsService.onDecisionMade().takeUntil(this.subscriptionDestroyer).subscribe((area: AreaBag) => {
       if (!area) { // rejected
+        this.cleanUp();
         this.toolDetails.hide();
       }
     });
     this.setTranslations();
+    this.areaDetailsService.onRemove().takeUntil(this.subscriptionDestroyer).subscribe((): void => {
+      this.cleanUp();
+      this.toolDetails.hide();
+    })
   }
 
   ngOnDestroy() {
@@ -106,7 +111,6 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
         const selector = `${!!this.editable ? '#' + this.editable.groupWrapper.getGroup().attr('id') : '#' + AreaComponent.NEW_AREA_ID}`;
         const svgGroup = d3.select(selector);
         const pointsSelection: d3.selection = svgGroup.selectAll('circle');
-
         // we need to add shift since coordinates of points are within svg group and when user moves svg group we need to shift coordinates
         this.shift = (<Point>{x: +svgGroup.attr('x'), y: +svgGroup.attr('y')});
         let firstPoint: d3.selection;

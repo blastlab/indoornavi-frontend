@@ -1,4 +1,6 @@
 import * as d3 from 'd3';
+import {APIObject} from './api.types';
+import Metadata = APIObject.Metadata;
 
 export class ApiHelper {
   static setFillColor(element: d3.selection, color: string): void {
@@ -24,9 +26,22 @@ export class ApiHelper {
   static setDottedPolyline(element: d3.selection, color: string, width: number): void {
     ApiHelper.setStrokeColor(element, color);
     ApiHelper.setStrokeWidth(element, width);
-    element.attr('stroke-dasharray', '0.1, 15');
-    element.attr('stroke-linecap', 'round')
-    element.attr('fill', 'none');
-    ApiHelper.setStrokeColor(element, '#ff0000');
+    element
+      .attr('stroke-dasharray', '0.1, 15')
+      .attr('stroke-linecap', 'round')
+      .attr('fill', 'none');
+  }
+
+  static setRoundCorners(element: d3.selection): void {
+    element.attr('stroke-linejoin', 'round');
+  }
+
+  static assignId(type: string): Metadata {
+    return {
+      object: {
+        id: Math.round(new Date().getTime() * Math.random() * 1000)
+      },
+      type: type
+    };
   }
 }

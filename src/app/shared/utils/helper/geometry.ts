@@ -1,6 +1,7 @@
 import {Line, Point} from '../../../map-editor/map.type';
 import * as d3 from 'd3';
 import {Box} from '../drawing/drawing.builder';
+import {Area, AreaBag} from '../../../map-editor/tool-bar/tools/area/area.type';
 
 export class Geometry {
 
@@ -251,17 +252,34 @@ export class Geometry {
   }
 
   static isPointOnLineBetweenTwoPoints(line: Line, point: Point): boolean {
-    const { startPoint, endPoint } = line;
+    const {startPoint, endPoint} = line;
 
     const onLine: boolean = ((point.y - startPoint.y) * (endPoint.x - startPoint.x)) - ((endPoint.y - startPoint.y) * (point.x - startPoint.x)) <= 10;
     const inRange: boolean = (point.x >= Math.min(startPoint.x, endPoint.x) && point.x <= Math.max(startPoint.x, endPoint.x) &&
       point.y >= Math.min(startPoint.y, endPoint.y) && point.y <= Math.max(startPoint.y, endPoint.y));
+    return onLine && inRange;
+  }
 
-    if (onLine && inRange) {
-      return true;
+
+  static isPointWithinArea(point: Point, area: Area): boolean {
+    const areaPoints = area.points;
+    let inside = false;
+    let intersect = false;
+    let xi, yi, xj, yj = null;
+    if (areaPoints === null) {
+      throw new Error('points of the object are null');
     }
-
-    return false;
+    for (let i = 0, j = areaPoints.length - 1; i < areaPoints.length; j = i++) {
+      xi = areaPoints[i].x;
+      yi = areaPoints[i].y;
+      xj = areaPoints[j].x;
+      yj = areaPoints[j].y;
+      intersect = ((yi > point.y) !== (yj > point.y)) && (point.x < (xj - xi) * (point.y - yi) / (yj - yi) + xi);
+      if (intersect) {
+        inside = !inside;
+      }
+    }
+    return inside;
   }
 }
 
@@ -269,4 +287,3 @@ export interface NearestPoint {
   coordinates: Point;
   distance: number;
 }
-

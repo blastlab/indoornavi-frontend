@@ -22,6 +22,7 @@ import {Geometry} from '../../../shared/utils/helper/geometry';
 import {Tag} from '../../../device/device.type';
 import {ComplexService} from '../../../complex/complex.service';
 import {NavigationController} from '../../../shared/utils/navigation/navigation.controller';
+import {ModelsConfig} from '../../../map/models/models.config';
 
 
 @Component({
@@ -50,7 +51,8 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
     tagToggler: TagVisibilityTogglerService,
     breadcrumbService: BreadcrumbService,
     private messageService: MessageServiceWrapper,
-    private router: Router
+    private router: Router,
+    protected models: ModelsConfig
   ) {
 
     super(
@@ -68,7 +70,8 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
       pathDisplayService,
       floorService,
       tagToggler,
-      breadcrumbService
+      breadcrumbService,
+      models
     );
   }
 
@@ -82,22 +85,23 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
   protected subscribeToMapParametersChange(): void {
     const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}tagTracer?client`);
     stream.takeUntil(this.subscriptionDestructor).subscribe((tagData: MeasureSocketDataTag): void => {
-      if (!this.tagFloorId) {
+      if (this.tagFloorId && this.tagShortId === +tagData.tag.shortId) {
+        if (this.tagFloorId !== +tagData.floor.id) {
+          this.redirectTo(this.router.url);
+        }
+      } else if (this.tagShortId === +tagData.tag.shortId) {
         this.tagFloorId = +tagData.floor.id;
-        this.setCorrespondingFloor();
-      } else if (this.tagFloorId !== +tagData.floor.id) {
-        this.tagFloorId = null;
-        this.messageService.success('map.switch.floor');
-        this.router.navigate(['follower/', tagData.tag.shortId]);
+        this.setCorrespondingFloorParameters();
       }
     });
   }
-  private setCorrespondingFloor(): void {
+
+  private setCorrespondingFloorParameters(): void {
     if (this.tagFloorId) {
       this.floorService.getFloor(this.tagFloorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
         this.floor = floor;
         if (!this.breadcrumbsSet) {
-          this.setBreadcrumbs(floor);
+          this.setBreadcrumbs();
         }
         if (!!floor.scale) {
           this.setScale();
@@ -113,7 +117,7 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
     this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg) => {
       this.d3map = mapSvg;
       this.loadMapDeferred.resolve();
-      this.publishedService.getTagsAvailableForUser(floor.id).takeUntil(this.subscriptionDestructor).subscribe((tags: Tag[]): void => {
+      this.publishedService.getTagsAvailableForUser(floor.id).first().subscribe((tags: Tag[]): void => {
         this.tags = tags;
         this.tags.forEach((tag: Tag) => {
           this.visibleTags.set(tag.shortId, true);
@@ -127,20 +131,18 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
     });
   }
 
-  private setBreadcrumbs(floor: Floor): void {
+  private setBreadcrumbs(): void {
     this.breadcrumbService.publishIsReady([
-      {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
       {
-        label: floor.building.complex.name,
-        routerLink: `/complexes/${floor.building.complex.id}/buildings`,
+        label: 'Tagsfinder',
+        routerLink: '/tagsfinder',
         routerLinkActiveOptions: {exact: true}
       },
       {
-        label: floor.building.name,
-        routerLink: `/complexes/${floor.building.complex.id}/buildings/${floor.building.id}/floors`,
-        routerLinkActiveOptions: {exact: true}
-      },
-      {label: `${(floor.name.length ? floor.name : floor.level)}`, disabled: true}
+        label: 'Follower',
+        routerLink: `/complexes/follower/${this.tagShortId}`,
+        disabled: true
+      }
     ]);
     this.breadcrumbsSet = true;
   }
@@ -151,6 +153,11 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
       scaleLengthInPixels: Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
       scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
     };
+  }
+
+  private redirectTo(uri: string): void {
+    this.router.navigateByUrl('/', {skipLocationChange: true}).then(() =>
+      this.router.navigate([uri]));
   }
 
 }

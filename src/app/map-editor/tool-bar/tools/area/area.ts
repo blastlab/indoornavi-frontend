@@ -22,7 +22,8 @@ import {Geometry} from '../../../../shared/utils/helper/geometry';
 import {Scale, ScaleCalculations, ScaleDto} from '../scale/scale.type';
 import {ScaleService} from '../../../../shared/services/scale/scale.service';
 import {Helper} from '../../../../shared/utils/helper/helper';
-
+import {TranslateService} from '@ngx-translate/core';
+import {MenuItem} from 'primeng/primeng';
 
 @Component({
   selector: 'app-area',
@@ -55,7 +56,11 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
   private scaleCalculations: ScaleCalculations;
   private containerBox: Box;
   private currentAreaInContainerBox: boolean;
+  private edited: boolean;
   private backupPolygonPoints: Point[] = [];
+
+  private editLabel: string;
+  private removeLabel: string;
 
   constructor(private toolbarService: ToolbarService,
               private mapLoaderInformer: MapLoaderInformerService,
@@ -64,7 +69,8 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
               private contextMenuService: ContextMenuService,
               private actionBarService: ActionBarService,
               private hintBarService: HintBarService,
-              private scaleService: ScaleService) {
+              private scaleService: ScaleService,
+              private translateService: TranslateService) {
   }
 
   ngOnInit(): void {
@@ -126,6 +132,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
         this.toggleActivity();
       }
     });
+    this.setTranslations();
   }
 
   ngOnDestroy(): void {
@@ -148,6 +155,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
   setActive(): void {
     if (!this.active) {
       this.active = true;
+      this.edited = false;
 
       this.container.style('cursor', 'crosshair');
 
@@ -172,17 +180,29 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
 
       this.currentAreaGroup = this.createBuilder().createGroup();
 
-      this.container.on('contextmenu', (): void => {
-        d3.event.preventDefault();
-        this.cleanGroup();
-        this.firstPointSelection = null;
-        this.lastPoint = null;
-        this.tempLine = null;
-        this.areas.forEach((areaBag: AreaBag): void => {
-          this.applyRightMouseButtonClick(areaBag.editable);
-        });
-      });
+      this.openAreaContextMenu();
     }
+  }
+
+  openAreaContextMenu() {
+    this.container.on('contextmenu', (): void => {
+      d3.event.preventDefault();
+      this.cleanGroup();
+      this.firstPointSelection = null;
+      this.lastPoint = null;
+      this.tempLine = null;
+
+      if (this.getClickedAreas(this.areas).length === 0) {
+        this.contextMenuService.hide();
+        return;
+      }
+
+      if (this.getClickedAreas(this.areas).length > 1) {
+        this.applyContextMenuToAreas();
+      } else {
+        this.applyContextMenuToSingleArea();
+      }
+    });
   }
 
   setInactive(): void {
@@ -457,7 +477,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     const selector = `${!!this.selectedEditable ? '#' + this.selectedEditable.groupWrapper.getGroup().attr('id') : '#' + AreaComponent.NEW_AREA_ID}`;
     const svgGroup = d3.select(selector);
     return (<Point>{x: +svgGroup.attr('x'), y: +svgGroup.attr('y')});
-}
+  }
 
   private applyHover(points: Point[]): void {
     points.forEach((point: Point) => {
@@ -474,39 +494,37 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     });
   }
 
-  private applyRightMouseButtonClick(editable: Editable): void {
-    editable.on({
-      edit: () => {
-        const index = this.findSelectedAreaBagIndex();
-        this.cleanMapViewFromDrawnAreas();
-        this.setView();
-        this.areaDetailsService.hide();
-        const areaBag: AreaBag = this.areas[index];
-        this.areaDetailsService.set(areaBag);
-        this.areaDetailsService.show();
-        this.container.style('cursor', 'move');
-        this.container.on('contextmenu', null);
-        this.layer.on('click', null);
-        this.layer.on('mousemove', null);
-        if (this.isCurrentAreaGroupNew()) {
-          this.currentAreaGroup.remove();
-        }
-        this.currentAreaGroup.getGroup().selectAll('circle').remove();
-        this.currentAreaGroup.getGroup().on('.drag', null);
-        this.currentAreaGroup = areaBag.editable.groupWrapper;
-        const points: Point[] = this.getCurrentAreaPoints(areaBag);
-        this.applyHover(points);
-        this.applyDrag();
-      },
-      remove: (): void => {
-        this.cleanGroup(this.selectedEditable.groupWrapper);
-        const index = this.findSelectedAreaBagIndex();
-        this.areas.splice(index, 1);
-        this.actionBarService.setAreas(this.areas.map((areaBag: AreaBag): Area => {
-          return areaBag.dto;
-        }));
-      }
-    });
+  private setEditableToItemContextMenu(): void {
+    const index = this.findSelectedAreaBagIndex();
+    this.cleanMapViewFromDrawnAreas();
+    this.setView();
+    this.areaDetailsService.hide();
+    const areaBag: AreaBag = this.areas[index];
+    this.areaDetailsService.set(areaBag);
+    this.areaDetailsService.show();
+    this.container.style('cursor', 'move');
+    this.container.on('contextmenu', null);
+    this.layer.on('click', null);
+    this.layer.on('mousemove', null);
+    if (this.isCurrentAreaGroupNew()) {
+      this.currentAreaGroup.remove();
+    }
+    this.currentAreaGroup.getGroup().selectAll('circle').remove();
+    this.currentAreaGroup.getGroup().on('.drag', null);
+    this.currentAreaGroup = areaBag.editable.groupWrapper;
+    const points: Point[] = this.getCurrentAreaPoints(areaBag);
+    this.applyHover(points);
+    this.applyDrag();
+  }
+
+  private setRemoveToItemContextMenu(): void {
+    const index = this.findSelectedAreaBagIndex();
+    this.cleanGroup(this.selectedEditable.groupWrapper);
+    this.areas.splice(index, 1);
+    this.actionBarService.setAreas(this.areas.map((areaBag: AreaBag): Area => {
+      return areaBag.dto;
+    }));
+    this.areaDetailsService.remove();
   }
 
   private findSelectedAreaBagIndex(): number {
@@ -544,12 +562,90 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     let index = 0;
     this.areas.forEach((areaBag: AreaBag): void => {
       areaBag.editable = new Editable(this.createBuilder(index).createGroup(), this.contextMenuService);
-      this.applyRightMouseButtonClick(areaBag.editable);
+      this.applyContextMenuToSingleArea(areaBag);
       areaBag.editable.onSelected().subscribe((selected: Editable) => {
         this.selectedEditable = selected;
       });
       this.drawPolygon(areaBag.dto.points, areaBag.editable.groupWrapper);
       index++;
+    });
+  }
+
+  private getClickedAreas(areas: AreaBag[]): AreaBag[] {
+    const mouseClickPosition: Array<number> = d3.mouse(this.container.node());
+    const mouseClickPoint: Point = {x: mouseClickPosition[0], y: mouseClickPosition[1]};
+    return areas.filter((area: AreaBag) => {
+      return Geometry.isPointWithinArea(mouseClickPoint, area.dto);
+    });
+  }
+
+  private applyContextMenuToSingleArea(areaBag?: AreaBag): void {
+    let area = areaBag;
+
+    if (!area) {
+      area = this.getClickedAreas(this.areas)[0];
+    }
+
+    area.editable.on({
+      edit: () => {
+        this.edited = true;
+        this.setEditableToItemContextMenu();
+      },
+      remove: (): void => {
+        this.setRemoveToItemContextMenu();
+        if (this.edited) {
+          this.toggleActivity();
+        }
+        this.edited = false;
+      }
+    });
+  }
+
+  private applyContextMenuToAreas(): void {
+    const areas: AreaBag[] = this.getClickedAreas(this.areas);
+    const labels: MenuItem[] = areas.map((area: AreaBag) => {
+      return {
+        label: area.dto.name,
+        items: [
+          {
+            label: this.editLabel,
+            command: () => {
+              this.selectedEditable = area.editable;
+              this.setEditableToItemContextMenu();
+            }
+          },
+          {
+            label: this.removeLabel,
+            command: () => {
+              this.selectedEditable = area.editable;
+              this.setRemoveToItemContextMenu();
+            }
+          }
+        ]
+      }
+    });
+
+    this.contextMenuService.setItems(labels);
+
+    areas.forEach((area) => {
+      this.selectedEditable = area.editable;
+    });
+
+    if (!!this.selectedEditable) {
+      this.selectedEditable.groupWrapper.getGroup().on('contextmenu', (): void => {
+        d3.event.preventDefault();
+        this.contextMenuService.openContextMenu();
+      });
+    }
+  }
+
+  private setTranslations(): void {
+    this.translateService.get('edit').subscribe((value: string) => {
+      this.editLabel = value;
+    });
+
+    this.translateService.get('remove').subscribe((value: string) => {
+      this.removeLabel = value;
     });
   }
 }

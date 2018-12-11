@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild, OnDestroy} from '@angular/core';
 import {ActivatedRoute, Params} from '@angular/router';
 import {FloorService} from '../floor/floor.service';
 import {Floor} from '../floor/floor.type';
@@ -8,14 +8,17 @@ import {BuildingService} from '../building/building.service';
 import {ContextMenu, MenuItem} from 'primeng/primeng';
 import {ContextMenuService} from '../shared/wrappers/editable/editable.service';
 import * as d3 from 'd3';
+import {Subject} from 'rxjs/Subject';
 
 @Component({
   templateUrl: 'map.controller.html'
 })
-export class MapControllerComponent implements OnInit, AfterViewInit {
+export class MapControllerComponent implements OnInit, OnDestroy, AfterViewInit {
   imageUploaded: boolean;
   floor: Floor;
   contextMenuItems: MenuItem[] = [];
+  private subscribtionDestructor: Subject<void> = new Subject<void>();
+
   @ViewChild('contextMenu') contextMenu: ContextMenu;
 
   constructor(private route: ActivatedRoute,
@@ -46,15 +49,26 @@ export class MapControllerComponent implements OnInit, AfterViewInit {
         });
       });
 
-    this.contextMenuService.onItemsSet().subscribe((items: MenuItem[]) => {
+    this.contextMenuService.onItemsSet().takeUntil(this.subscribtionDestructor).subscribe((items: MenuItem[]) => {
       this.contextMenuItems = items;
     });
   }
 
+  ngOnDestroy() {
+    this.subscribtionDestructor.next();
+    this.subscribtionDestructor.unsubscribe();
+  }
+
   ngAfterViewInit(): void {
-    this.contextMenuService.onToggle().subscribe(() => {
+    this.contextMenuService.onToggle().takeUntil(this.subscribtionDestructor).subscribe(() => {
       if (!!this.contextMenu) {
         this.contextMenu.toggle(d3.event);
+      }
+    });
+
+    this.contextMenuService.onHide().subscribe(() => {
+      if (this.contextMenu) {
+        this.contextMenu.hide();
       }
     });
   }

@@ -1,5 +1,6 @@
 import {Geometry, NearestPoint} from './geometry';
 import {Line, Point} from '../../../map-editor/map.type';
+import {Area} from '../../../map-editor/tool-bar/tools/area/area.type';
 
 const precisionRound = (number: number, precision: number): number => {
   const factor = Math.pow(10, precision);
@@ -13,6 +14,26 @@ const p1: Point = {x: 1, y: 1},
       p4: Point = {x: 1, y: 2},
       p5: Point = {x: 5, y: 5},
       p6: Point = {x: 4, y: 5};
+
+const area: Area = {
+  id: null,
+  name: null,
+  configurations: [],
+  buffer: null,
+  heightMin: null,
+  heightMax: null,
+  floorId: null,
+    points: [
+      {x: 966, y: 82},
+      {x: 1067, y: 160},
+      {x: 1073, y: 247},
+      {x: 1037, y: 316},
+      {x: 873, y: 308},
+      {x: 854, y: 199},
+      {x: 936, y: 135},
+      {x: 881, y: 68}
+    ]
+};
 
 describe('Geometry', () => {
   it('should return slope value', () => {
@@ -361,4 +382,39 @@ describe('Geometry', () => {
     });
   });
 
+
+  it('should return true if the point is within the area', () => {
+    // given
+    const points = [
+      {point: {x: 886, y: 72}},
+      {point: {x: 854, y: 199}},
+      {point: {x: 966.5, y: 82.5}},
+      {point: {x: 964, y: 237}}
+    ];
+
+    points.forEach((item) => {
+      // when
+      const isPointWithinArea = Geometry.isPointWithinArea(item.point, area);
+      // then
+      expect(isPointWithinArea).toBeTruthy();
+    });
+  });
+
+  it('should return false if the point is out of the area', () => {
+    // given
+    const points = [
+      {point: {x: 0, y: 0}},
+      {point: {x: 966, y: 82}},
+      {point: {x: 853.5, y: 198.5}},
+      {point: {x: Infinity, y: -Infinity}},
+      {point: {x: -40, y: -20}}
+    ];
+
+    points.forEach((item) => {
+      // when
+      const isPointWithinArea = Geometry.isPointWithinArea(item.point, area);
+      // then
+      expect(isPointWithinArea).toBeFalsy();
+    });
+  });
 });

@@ -14,8 +14,10 @@ export namespace APIObject {
   }
 
   export interface Area extends Base {
+    events: string[];
     color: string;
     opacity: number;
+    border: Border;
   }
 
   export interface Circle extends Base {
@@ -32,6 +34,7 @@ export namespace APIObject {
 
   export interface Marker extends Base {
     events: string[];
+    isUrl: boolean;
     icon: string;
     label: string;
     points: Point[];
@@ -61,6 +64,10 @@ export namespace APIObject {
     location?: Point;
     destination?: Point;
     accuracy?: number;
+    navigationPoint?: Metadata;
+    pathColor?: string;
+    state?: boolean;
+    pathWidth?: number;
   }
 
   export enum Position {
@@ -73,4 +80,9 @@ export namespace APIObject {
     BOTTOM_RIGHT,
     BOTTOM_LEFT
   }
+
+  export enum NavigationErrorCodes {
+    'NoPath' = 'NV_001'
+  }
+
 }

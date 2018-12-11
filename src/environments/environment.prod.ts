@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
-  base_url: '172.16.170.20:90',
+  base_url: '',
+  ws_url: 'wss://',
   version: require('../../package.json').version
 };
