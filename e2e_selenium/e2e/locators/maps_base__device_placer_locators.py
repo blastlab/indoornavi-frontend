@@ -20,8 +20,9 @@ class MapsBaseDevicePlacerLocators(object):
     DEVICE_PLACER_ANCHOR_33333 = (By.XPATH, '//td[contains(text(), "TestAnchor33333")]')
     DEVICE_PLACER_ANCHOR_44444 = (By.XPATH, '//td[contains(text(), "TestAnchor44444")]')
     #TODO CHANGE SINK HOVER SELECTOR
-    DEVICE_PLACER_SINK_HOVER_SELECTOR = (By.CSS_SELECTOR, 'svg.sink text:nth-child(3)')
-    DEVICE_PLACER_ANCHOR_HOVER_SELECTOR = (By.CSS_SELECTOR, 'svg.anchor text:nth-child(3)')
+    DEVICE_PLACER_SINK_HOVER_SELECTOR = (By.CSS_SELECTOR, 'svg.sink text:nth-child(2)')
+    DEVICE_PLACER_SINK222222_HOVER_SELECTOR = (By.CSS_SELECTOR, 'svg#sink-222222 text:nth-child(2)')
+    DEVICE_PLACER_ANCHOR_HOVER_SELECTOR = (By.CSS_SELECTOR, 'svg.anchor text:nth-child(2)')
     DEVICE_PLACER_HEIGHT_SLIDER_CONTENT = (By.CSS_SELECTOR, 'p-slider div.ui-slider')
     DEVICE_PLACER_HEIGHT_SLIDER = (By.CLASS_NAME, 'ui-slider-handle')
     DEVICE_PLACER_HEIGHT_LABEL =  (By.ID, 'height-label')

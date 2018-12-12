@@ -185,7 +185,7 @@ class TestMapsPageDevicePlacer(unittest.TestCase, MapsPageDevicePlacer):
 
         self.test_failed = False
 
-    def test_04_set_2_sinks_with_1_anchor_for_each(self):
+    def _test_04_set_2_sinks_with_1_anchor_for_each(self):
 
         log_tc04 = logging.getLogger(' TEST_04 ')
 
@@ -237,7 +237,7 @@ class TestMapsPageDevicePlacer(unittest.TestCase, MapsPageDevicePlacer):
 
         self.test_failed = False
 
-    def test_05_unset_single_sink(self):
+    def _test_05_unset_single_sink(self):
 
         log_tc05 = logging.getLogger(' TEST_05 ')
         # log_tc02.info('START')
@@ -280,7 +280,7 @@ class TestMapsPageDevicePlacer(unittest.TestCase, MapsPageDevicePlacer):
 
         self.test_failed = False
 
-    def test_06_unset_single_anchor(self):
+    def _test_06_unset_single_anchor(self):
 
         log_tc06 = logging.getLogger(' TEST_06 ')
         # log_tc02.info('START')
@@ -341,7 +341,7 @@ class TestMapsPageDevicePlacer(unittest.TestCase, MapsPageDevicePlacer):
 
         self.test_failed = False
 
-    def test_07_unset_all_anchors_from_sink(self):
+    def _test_07_unset_all_anchors_from_sink(self):
 
         log_tc07 = logging.getLogger(' TEST_07 ')
 
@@ -386,7 +386,7 @@ class TestMapsPageDevicePlacer(unittest.TestCase, MapsPageDevicePlacer):
 
         self.test_failed = False
 
-    def test_08_unset_sink_with_all_anchors(self):
+    def _test_08_unset_sink_with_all_anchors(self):
 
         log_tc08 = logging.getLogger(' TEST_08 ')
 
@@ -509,7 +509,6 @@ class TestMapsPageDevicePlacer(unittest.TestCase, MapsPageDevicePlacer):
         log_tc10.info('Step 7 : Click on device displayed on map')
         self.device_placer_page.click_on_device('map111111')
 
-        # TODO AFTER SOLVE BUG WITH DEVICES IDS PLACED ON MAP
         log_tc10.info('Step 8 : Get information of device from map & assert information is correctly displayed')
         device_inf = self.device_placer_page.get_data_device_on_hover('map111111', 'sink')
         assert device_inf == "sink-111111 (5m)"
@@ -527,18 +526,15 @@ class TestMapsPageDevicePlacer(unittest.TestCase, MapsPageDevicePlacer):
         is_displayed = self.device_placer_page.is_text_displayed_after_change_height("Height 3m")
         assert is_displayed == True, "Incorrect height displayed"
 
-        log_tc10.info('Step 13 : Set anchor [33333] on map')
+        log_tc10.info('Step 13 : Set sink [222222] on map')
         self.device_placer_page.set_device_on_map(600, 600)
 
         log_tc10.info('Step 14 : Move Device On Map')
-        self.device_placer_page.move_device_on_map('map33333')
+        self.device_placer_page.move_device_on_map('map222222')
 
-        log_tc10.info('Step 15 : Click on device displayed on map')
-        self.device_placer_page.click_on_device('map33333')
-
-        log_tc10.info('Step 16 : Get information of device from map & assert information is correctly displayed')
-        device_inf = self.device_placer_page.get_data_device_on_hover('map33333', 'anchor')
-        assert device_inf == "anchor-33333 (3m)"
+        log_tc10.info('Step 15 : Get information of device from map & assert information is correctly displayed')
+        device_inf = self.device_placer_page.get_data_device_on_hover('map222222', 'sink222222')
+        assert device_inf == "sink-222222 (3m)"
 
         self.test_failed = False
 

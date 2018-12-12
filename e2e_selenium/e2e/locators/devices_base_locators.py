@@ -10,8 +10,9 @@ class DevicesBaseLocators(object):
         self.new_device_short_id = '123999' if self.module_query != 'tag' else '123'
         self.negative_device_short_id = '999123' if self.module_query != 'tag' else '999'
         # self.new_device_long_id = '1234'
-        self.new_device_mac_address = "fa:09:91:d5:e4:5a"
-        self.another_mac_address = "f3:a9:1e:1e:e4:da"
+        # blank space to correctly verification in this input
+        self.new_device_mac_address = " fa:09:91:d5:e4:5a"
+        self.another_mac_address = " f3:a9:1e:1e:e4:da"
         self.edit_device_name = 'TestEdit' + self.module
         self.illegal_name = '!@#^&$*()*&^@'
         self.xml_filename = 'src/test-devices.xml'

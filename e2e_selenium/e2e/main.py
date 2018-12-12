@@ -17,7 +17,7 @@ from tests.maps.test_maps_page import TestMapsPage
 from tests.maps.test_maps_page__scale import TestMapsPageScale
 from tests.maps.test_maps_page__area import TestMapsPageArea
 from tests.maps.test_maps_page__device_placer import TestMapsPageDevicePlacer
-from tests.maps.test_maps_page__path import TestMapsPagePath
+# from tests.maps.test_maps_page__path import TestMapsPagePath
 if __name__ == '__main__':
 
     # suite = unittest.TestSuite()

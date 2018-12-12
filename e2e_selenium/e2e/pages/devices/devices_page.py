@@ -132,7 +132,8 @@ class DevicesPage(BasePage, DevicesBaseLocators):
     def if_new_device_is_displayed(self):
         # Expected properties
         expect_short_id = 'Short Id: ' + self.new_device_short_id
-        expect_mac_address = 'Address Mac: ' + self.new_device_mac_address
+        # Here is used substr to cut empty space on string start
+        expect_mac_address = 'Address Mac: ' + self.new_device_mac_address[1:]
         expect_device_name = 'Device Name: ' + self.new_device_name
         # Result properties
         result_short_id = self.get_text(self.last_row_short_id)

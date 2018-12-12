@@ -111,7 +111,7 @@ class MapsPageDevicePlacer(BasePage, MapsPageUtils):
 
     def move_device_on_map(self, device_id):
         web_element = self.wait_for_element(self.__select_device_helper(device_id))
-        ActionChains(self.__driver).drag_and_drop_by_offset(web_element, 100, 0).perform()
+        ActionChains(self.__driver).move_to_element(web_element).drag_and_drop_by_offset(web_element, 500, 0).perform()
 
     def simulate_drag_and_drop_jquery(self, source, target, offsetX, offsetY):
         """
@@ -183,12 +183,11 @@ class MapsPageDevicePlacer(BasePage, MapsPageUtils):
         ActionChains(self.__driver).move_to_element(element).perform()
         set_selector = {
           'sink': self.DEVICE_PLACER_SINK_HOVER_SELECTOR,
+          'sink222222': self.DEVICE_PLACER_SINK222222_HOVER_SELECTOR,
           'anchor': self.DEVICE_PLACER_ANCHOR_HOVER_SELECTOR
         }
-        info =self.get_text(set_selector[set_device])
+        info = self.get_text(set_selector[set_device])
         return info
-
-
 
 
 

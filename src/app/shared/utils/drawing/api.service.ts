@@ -15,19 +15,18 @@ import Area = APIObject.Area;
 import Polyline = APIObject.Polyline;
 import Circle = APIObject.Circle;
 import InfoWindow = APIObject.InfoWindow;
+import {ModelsConfig} from '../../../map/models/models.config';
 
 @Injectable()
 export class ApiService {
   private objects: Map<number, SvgGroupWrapper> = new Map();
   private infoWindows: Map<number, InfoWindowGroupWrapper> = new Map();
-  // TODO: standardize pointRadius for all points that will be drawn on the map
-  private pointRadius: number = 5;
 
   private static getDefaultConfiguration(objectMetadata: Metadata): DrawConfiguration {
     return {id: `map-object-${objectMetadata.type}-${objectMetadata.object.id}`, clazz: 'map-object'};
   }
 
-  constructor() {
+  constructor(private models: ModelsConfig) {
   }
 
   create(): number {
@@ -44,7 +43,7 @@ export class ApiService {
   }
 
   removeObject(objectMetadata: Metadata): void {
-    if (this.objects.has(objectMetadata.object.id)) {
+    if (objectMetadata != null && this.objects.has(objectMetadata.object.id)) {
       this.objects.get(objectMetadata.object.id).remove();
       this.objects.delete(objectMetadata.object.id);
     }
@@ -59,6 +58,7 @@ export class ApiService {
 
   draw(objectMetadata: Metadata, scale: Scale, originMessageEvent: MessageEvent, container: d3.selection): void {
     if (!!this.objects.get(objectMetadata.object.id)) {
+      console.log(objectMetadata);
       this.removeObject(objectMetadata);
     }
     switch (objectMetadata.type) {
@@ -67,8 +67,7 @@ export class ApiService {
         this.drawLine(objectMetadata, this.getCalculatedPoints(objectMetadata.object['points'], scale));
         break;
       case 'AREA':
-        this.addToMapContainer(objectMetadata, container);
-        this.drawArea(objectMetadata, this.getCalculatedPoints(objectMetadata.object['points'], scale));
+        this.drawArea(objectMetadata, container, this.getCalculatedPoints(objectMetadata.object['points'], scale), originMessageEvent);
         break;
       case 'MARKER':
         this.placeMarkerOnMap(objectMetadata, container, this.getCalculatedPoints([objectMetadata.object['position']], scale)[0], originMessageEvent);
@@ -87,21 +86,18 @@ export class ApiService {
 
   private placeMarkerOnMap(objectMetadata: Metadata, container: d3.selection, point: Point, originMessageEvent: MessageEvent): void {
     const marker: Marker = <Marker>objectMetadata.object;
-    const markerOnMap: MarkerOnMap = new MarkerOnMap(point, container, ApiService.getDefaultConfiguration(objectMetadata));
+    const markerOnMap: MarkerOnMap = new MarkerOnMap(point, container, ApiService.getDefaultConfiguration(objectMetadata), this.models);
     markerOnMap.setId(objectMetadata.object.id);
-
     if (!!marker.icon) {
-      markerOnMap.setIcon(marker.icon);
+      marker.isUrl ? markerOnMap.setIconFromUrl(marker.icon) : markerOnMap.setIconFromBase64(marker.icon);
     }
-
     if (!!marker.events) {
       markerOnMap.addEvents(marker.events, originMessageEvent);
     }
-
     if (!!marker.label) {
+      marker.label = marker.label.length > this.models.labelTextLength ? `${marker.label.slice(0, this.models.labelTextLength - 1)}...` : marker.label;
       markerOnMap.addLabel(marker.label);
     }
-
     this.objects.set(objectMetadata.object.id, markerOnMap.getGroup());
   }
 
@@ -113,26 +109,46 @@ export class ApiService {
 
   private addInfoWindowToMapContainer(objectMetadata: Metadata, container: d3.selection): void {
     this.infoWindows.set(objectMetadata.object.id,
-      new InfoWindowGroupWrapper(container, {id: `map-object-${objectMetadata.type}-${objectMetadata.object.id}`, clazz: 'map-object'}));
+      new InfoWindowGroupWrapper(
+        container,
+        {id: `map-object-${objectMetadata.type}-${objectMetadata.object.id}`,
+          clazz: 'map-object'},
+        this.models));
   }
 
-  private drawArea(objectMetadata: Metadata, points: Point[]): void {
+  private drawArea(objectMetadata: Metadata, container: d3.selection, points: Point[], originMessageEvent: MessageEvent): void {
     const area: Area = <Area>objectMetadata.object;
-    const areaSelection: d3.selection = this.objects.get(area.id).getGroup();
-    this.objects.get(area.id).addPolygon(points);
+    const areaSelection: SvgGroupWrapper  = new DrawBuilder(container, ApiService.getDefaultConfiguration(objectMetadata)).createGroup();
+
+    if (!!area.border) {
+      ApiHelper.setStrokeColor(areaSelection.getGroup(), area.border.color);
+      ApiHelper.setStrokeWidth(areaSelection.getGroup(), area.border.width);
+      ApiHelper.setRoundCorners(areaSelection.getGroup());
+    }
     if (!!area.color) {
-      ApiHelper.setFillColor(areaSelection, area.color);
+      ApiHelper.setFillColor(areaSelection.getGroup(), area.color);
     }
     if (!!area.opacity) {
-      ApiHelper.setStrokeOpacity(areaSelection, area.opacity);
-      ApiHelper.setFillOpacity(areaSelection, area.opacity);
+      ApiHelper.setFillOpacity(areaSelection.getGroup(), area.opacity);
     }
+
+    if (!!area.events) {
+      area.events.forEach((event: string): void => {
+        areaSelection.getGroup().on(event, (): void => {
+          // @ts-ignore
+            originMessageEvent.source.postMessage({type: `${event}-${area.id}`, objectId: area.id}, '*');
+          });
+        });
+    }
+    areaSelection.addPolygon(points);
+
+    this.objects.set(objectMetadata.object.id, areaSelection);
   }
 
   private drawLine(objectMetadata: Metadata, points: Point[]): void {
     const polyline: Polyline = <Polyline>objectMetadata.object;
     const type: LineType = !!objectMetadata.object['lineType'] ? objectMetadata.object['lineType'] : LineType.SOLID;
-    this.objects.get(polyline.id).addLineType(points, type, this.pointRadius);
+    this.objects.get(polyline.id).addLineType(points, type, this.models.pointRadius);
     const lines: d3.selection[] = this.objects.get(polyline.id).getElements(ElementType.LINE);
     const circles: d3.selection[] = this.objects.get(polyline.id).getElements(ElementType.CIRCLE);
     const lineType = {
@@ -158,7 +174,7 @@ export class ApiService {
 
   private drawDottedPolyline(lines: d3.selection, circles: d3.selection, polyline): void {
      lines.forEach((line: d3.selection) => {
-      ApiHelper.setDottedPolyline(line, polyline.color, 5)
+      ApiHelper.setDottedPolyline(line, polyline.color, polyline.width)
     });
   }
 

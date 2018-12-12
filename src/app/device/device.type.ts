@@ -97,12 +97,58 @@ export class UpdateRequest {
   }
 }
 
+export interface ClientRequest {
+  type: string;
+  args: any
+}
+
 export interface DeviceStatus {
   device: Device;
   anchor: Anchor;
   status: Status;
 }
 
+export interface BatteryUptime {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
+export interface BatteryState {
+  deviceShortId: number;
+  percentage: number;
+  uptime: BatteryUptime
+}
+
+export class BatteryStatus {
+  constructor(public percentage: number, public message: string) {}
+}
+
+export interface DeviceMessage {
+  type: string;
+  devices?: any[];
+  code?: string;
+  shortId?: number;
+}
+
+export interface FirmwareMessage extends DeviceMessage {
+  deviceStatus: DeviceStatus;
+}
+
+export interface BatteryMessage extends DeviceMessage {
+  batteryLevelList: BatteryState[]
+}
+
+export interface DeviceShortId {
+  shortId: number
+}
+
 export enum Status {
   ONLINE, OFFLINE, UPDATING, UPDATED
+}
+
+export enum CommandType {
+  BatteryUpdate = 'CHECK_BATTERY_LEVEL',
+  FirmwareUpdate = 'UPDATE_FIRMWARE'
 }

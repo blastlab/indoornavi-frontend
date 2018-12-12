@@ -16,3 +16,7 @@
   font-weight: bold;
   margin-bottom: 5px;
 }
+
+.tag-toggler-hide {
+  display: none;
+}

@@ -98,7 +98,7 @@ class TestBuildingsPage(unittest.TestCase):
         self.buildings_page.cancel_add_new_construction()
         self.test_failed = False
 
-    def test_05_delete_building_correctly(self):
+    def _test_05_delete_building_correctly(self):
         """Test that building will be deleted correctly"""
 
         self.assertTrue(self.buildings_page.is_remove_button_clickable())

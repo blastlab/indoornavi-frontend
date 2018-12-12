@@ -73,7 +73,7 @@ class TestComplexesPage(unittest.TestCase, ComplexesPage):
         self.complexes_page.cancel_add_new_construction()
         self.test_failed = False
 
-    def test_03_delete_complex_correctly(self):
+    def _test_03_delete_complex_correctly(self):
 
         """Test deleting complex correctly"""
 

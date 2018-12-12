@@ -73,7 +73,7 @@ class TestFloorsPage(unittest.TestCase):
     # def test_add_floor_with_negative_minmax_charaters(self):
 
     # TC[004]
-    def test_04_delete_floor_correctly(self):
+    def _test_04_delete_floor_correctly(self):
         """Test that deleting floor is correct"""
 
         self.assertTrue(self.floors_page.is_remove_button_clickable())
