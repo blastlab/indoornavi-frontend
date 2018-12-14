@@ -103,8 +103,7 @@ export interface ClientRequest {
 }
 
 export interface DeviceStatus {
-  device: Device;
-  anchor: Anchor;
+  device: UWB;
   status: Status;
 }
 
