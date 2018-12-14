@@ -9,30 +9,30 @@ const precisionRound = (number: number, precision: number): number => {
 
 // given, when
 const p1: Point = {x: 1, y: 1},
-      p2: Point = {x: 2, y: 2},
-      p3: Point = {x: 3, y: 1},
-      p4: Point = {x: 1, y: 2},
-      p5: Point = {x: 5, y: 5},
-      p6: Point = {x: 4, y: 5};
+  p2: Point = {x: 2, y: 2},
+  p3: Point = {x: 3, y: 1},
+  p4: Point = {x: 1, y: 2},
+  p5: Point = {x: 5, y: 5},
+  p6: Point = {x: 4, y: 5};
 
 const area: Area = {
   id: null,
   name: null,
   configurations: [],
-  buffer: null,
   heightMin: null,
   heightMax: null,
   floorId: null,
-    points: [
-      {x: 966, y: 82},
-      {x: 1067, y: 160},
-      {x: 1073, y: 247},
-      {x: 1037, y: 316},
-      {x: 873, y: 308},
-      {x: 854, y: 199},
-      {x: 936, y: 135},
-      {x: 881, y: 68}
-    ]
+  points: [],
+  pointsInPixels: [
+    {x: 966, y: 82},
+    {x: 1067, y: 160},
+    {x: 1073, y: 247},
+    {x: 1037, y: 316},
+    {x: 873, y: 308},
+    {x: 854, y: 199},
+    {x: 936, y: 135},
+    {x: 881, y: 68}
+  ]
 };
 
 describe('Geometry', () => {
@@ -255,7 +255,7 @@ describe('Geometry', () => {
     expect(Math.round(foundLocation.distance)).toEqual(4);
   });
 
-  it('should to return same point as given as closest point on path' , () => {
+  it('should to return same point as given as closest point on path', () => {
     // given
     const lines: Line[] = [];
     for (let x = 0; x <= 10; x++) {

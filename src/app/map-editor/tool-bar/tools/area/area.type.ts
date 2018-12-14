@@ -7,7 +7,7 @@ export class Area {
   name: string;
   configurations: AreaConfiguration[] = [];
   points: Point[] = [];
-  buffer: Point[];
+  pointsInPixels: Point[] = [];
   heightMin: number;
   heightMax: number;
   floorId: number;
