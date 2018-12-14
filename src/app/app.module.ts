@@ -124,6 +124,7 @@ import {TagFollowerComponent} from './map-viewer/views/tagfollower/tag-follower'
 import {NavigationService} from './shared/utils/navigation/navigation.service';
 import {NavigationController} from './shared/utils/navigation/navigation.controller';
 import {ModelsConfig} from './map/models/models.config';
+import {DebuggerComponent} from './debug-hidden/debugger.component';
 import {BatteryIndicatorComponent} from './device/battery-indicator';
 
 export function HttpLoaderFactory(http: Http) {
@@ -184,7 +185,9 @@ export function HttpLoaderFactory(http: Http) {
     PathComponent,
     TagsFinderComponent,
     TagFollowerComponent,
-    BatteryIndicatorComponent
+    BatteryIndicatorComponent,
+    TagFollowerComponent,
+    DebuggerComponent
   ],
   entryComponents: [
     PublicationDialogComponent,

@@ -102,7 +102,6 @@ export class SvgGroupWrapper {
   }
 
   addText(position: TextPosition, text: string, color: string = this.groupDefaultColor): SvgGroupWrapper {
-    console.log(position, text, color);
     const element: d3.selection = this.group
       .append('text')
       .attr('x', position.coordinates.x)

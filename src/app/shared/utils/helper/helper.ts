@@ -8,4 +8,5 @@ export class Helper {
     const mobileDevices = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i;
     return mobileDevices.test(navigator.userAgent);
   }
+
 }
