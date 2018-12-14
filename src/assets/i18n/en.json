@@ -114,6 +114,7 @@
   "device.details.tags.add": "Add Tag",
   "device.details.tags.edit": "Edit Tag",
   "device.details.tags.remove": "Delete Tag",
+  "device.disabled.tooltip": "The device is not connected to any network. Try to turn it on and off. If it's an anchor/tag you have to turn on and off sink, which the device is assigned to, first",
   "device.firmware.updating": "Updating firmware...",
   "device.firmware.version": "Firmware Version",
   "device.id": "Id",
