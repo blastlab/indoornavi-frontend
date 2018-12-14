@@ -42,7 +42,7 @@ export class TerminalComponent implements OnInit, OnDestroy {
     this.setTerminalCommandHandler();
     this.terminalResponseWindowHeight = document.getElementById('informationWindow').scrollHeight;
     this.translate.setDefaultLang('en');
-    this.translate.get('device.terminal.welcome').first().subscribe((value: string): void => {
+    this.translate.get('terminal.window.welcome').first().subscribe((value: string): void => {
       this.terminalWelcomeMessage = value;
     });
     this.terminalMessageService.onTerminalInitialized().takeUntil(this.subscriptionDestructor).subscribe((deviceId: number): void => {
@@ -71,7 +71,7 @@ export class TerminalComponent implements OnInit, OnDestroy {
       let responseData = '';
       switch (command.toLowerCase()) {
         case 'help':
-          responseMessage = 'terminal.response.commands';
+          responseMessage = 'terminal.activeCommandsList';
           responseData = this.availableCommands.join(', ');
           break;
         case 'exit':
@@ -87,20 +87,20 @@ export class TerminalComponent implements OnInit, OnDestroy {
           responseMessage = 'terminal.window.resume';
           break;
         case 'clear':
-          responseMessage = 'terminal.clear';
+          responseMessage = 'terminal.window.clear';
           this.clearTerminal();
           break;
         case 'use':
           if (!!this.activeCommand) {
-            responseMessage = 'terminal.command.sent.to.device';
+            responseMessage = 'terminal.command.sentToDevice.active';
             this.handleDeviceCommand(this.activeCommand);
             this.activeCommand = null;
           } else {
-            responseMessage = 'terminal.not.active.command';
+            responseMessage = 'terminal.command.notActive';
           }
           break;
         default:
-          responseMessage = 'terminal.command.sent.to.device';
+          responseMessage = 'terminal.command.sentToDevice.active';
           this.sendResponseToTerminal(responseMessage, responseData);
           this.handleDeviceCommand(command);
           this.usedCommands.push(command);
@@ -176,7 +176,7 @@ export class TerminalComponent implements OnInit, OnDestroy {
 
   private insertCommandToTerminal(command: string): void {
     this.activeCommand = command;
-    this.sendResponseToTerminal('terminal.active.command', command);
+    this.sendResponseToTerminal('terminal.command.sentToDevice.active', command);
   }
 
   private setCommands(): void {
@@ -200,7 +200,7 @@ export class TerminalComponent implements OnInit, OnDestroy {
       sinkShortId: this.terminalActiveDeviceId
     };
     const socketPayload: ClientRequest = {
-      type: CommandType.TerminalCommand,
+      type: CommandType[CommandType.RAW_COMMAND],
       args: commandArguments
     };
     this.terminalMessageService.sendClientRequest(socketPayload);

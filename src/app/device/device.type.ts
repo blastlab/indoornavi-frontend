@@ -160,7 +160,7 @@ export enum Status {
 }
 
 export enum CommandType {
-  BatteryUpdate = 'CHECK_BATTERY_LEVEL',
-  FirmwareUpdate = 'UPDATE_FIRMWARE',
-  TerminalCommand = 'RAW_COMMAND'
+  CHECK_BATTERY_LEVEL,
+  UPDATE_FIRMWARE,
+  RAW_COMMAND
 }

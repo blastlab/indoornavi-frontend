@@ -241,7 +241,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
 
     this.getBase64(files[0]).then((base64: string): void => {
       const payload: ClientRequest = {
-        type: CommandType.FirmwareUpdate,
+        type: CommandType[CommandType.UPDATE_FIRMWARE],
         args: new UpdateRequest(this.devicesToUpdate.map((device: UWB): number => device.shortId), base64)
       };
       this.socketRegistrationService.send(payload);
@@ -261,7 +261,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       }
     });
     const socketPayload: ClientRequest = {
-        type: CommandType.BatteryUpdate,
+        type: CommandType[CommandType.CHECK_BATTERY_LEVEL],
         args: noBatteryStatus
       };
     this.socketClientService.send(socketPayload);
