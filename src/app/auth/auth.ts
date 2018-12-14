@@ -9,7 +9,7 @@ import {AuthGuard} from './auth.guard';
   selector: 'app-auth',
   templateUrl: 'auth.html'
 })
-export class AuthComponent implements OnInit, OnDestroy {
+export class AuthComponent implements OnInit {
   invalidCredentials: boolean = false;
 
   constructor(private authService: AuthService,
@@ -25,13 +25,8 @@ export class AuthComponent implements OnInit, OnDestroy {
       this.authService.logout().first().subscribe(() => {});
       localStorage.removeItem('currentUser');
       this.authGuard.toggleUserLoggedIn(false);
-      localStorage.removeItem('currentUser');
       this.router.navigate(['/login']);
     }
-  }
-
-  ngOnDestroy() {
-    localStorage.removeItem('currentUser');
   }
 
   login(username: string, password: string): void {

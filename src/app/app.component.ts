@@ -25,6 +25,9 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(private authGuard: AuthGuard, private route: ActivatedRoute, private breadcrumbService: BreadcrumbService, private cd: ChangeDetectorRef, private location: Location) {}
 
   ngOnInit() {
+    if (localStorage.getItem('currentUser')) {
+      localStorage.removeItem('currentUser');
+    }
     this.isMobile = Helper.detectMobile();
     this.isPublic = !!this.location.path().match(/embedded/);
     this.route.queryParams.subscribe((params: Params) => {
