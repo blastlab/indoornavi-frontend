@@ -26,29 +26,30 @@ export class NavigationService {
   }
 
   private calculateGraphWithPathParametersIfPossible(start, finish): boolean {
-    if (this.lines.length === 0) {
-      return false;
+    if (!this.lines.length) {
+      return;
     }
     const startPointCoordinatesOnLines: Point = Geometry.pickClosestNodeCoordinates(this.lines, start);
     const endPointCoordinatesOnLines: Point = Geometry.pickClosestNodeCoordinates(this.lines, finish);
-    if (startPointCoordinatesOnLines.x === endPointCoordinatesOnLines.x && startPointCoordinatesOnLines.y === endPointCoordinatesOnLines.y) {
-      return false;
+    const isSamePoint: boolean = startPointCoordinatesOnLines.x === endPointCoordinatesOnLines.x && startPointCoordinatesOnLines.y === endPointCoordinatesOnLines.y;
+    if (isSamePoint) {
+      return;
+    } else {
+      this.createDijkstraVertexMatrix();
+      this.startPointIndex = this.dijkstraVertexMatrix.findIndex((vertex: Vertex): boolean => {
+        return vertex.coordinates.x === startPointCoordinatesOnLines.x && vertex.coordinates.y === startPointCoordinatesOnLines.y;
+      });
+      this.endPointIndex = this.dijkstraVertexMatrix.findIndex((vertex: Vertex): boolean => {
+        return vertex.coordinates.x === endPointCoordinatesOnLines.x && vertex.coordinates.y === endPointCoordinatesOnLines.y;
+      });
+      this.costs = {
+        [this.startPointIndex]: 0,
+        [this.endPointIndex]: Infinity
+      };
+      this.processed = [this.startPointIndex];
+      this.parents = {[this.endPointIndex]: null};
+      this.cheapestVertexIndex = this.startPointIndex;
     }
-    this.createDijkstraVertexMatrix();
-    this.startPointIndex = this.dijkstraVertexMatrix.findIndex((vertex: Vertex): boolean => {
-      return vertex.coordinates.x === startPointCoordinatesOnLines.x && vertex.coordinates.y === startPointCoordinatesOnLines.y;
-    });
-    this.endPointIndex = this.dijkstraVertexMatrix.findIndex((vertex: Vertex): boolean => {
-      return vertex.coordinates.x === endPointCoordinatesOnLines.x && vertex.coordinates.y === endPointCoordinatesOnLines.y;
-    });
-    this.costs = {
-      [this.startPointIndex]: 0,
-      [this.endPointIndex]: Infinity
-    };
-    this.processed = [this.startPointIndex];
-    this.parents = {[this.endPointIndex]: null};
-    this.cheapestVertexIndex = this.startPointIndex;
-    return true;
   }
 
   private updateVertexMatrix(vertexIndexToUpdate: number, relatedVertexIndex: number, cost: number): void {

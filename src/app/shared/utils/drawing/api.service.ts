@@ -58,6 +58,7 @@ export class ApiService {
 
   draw(objectMetadata: Metadata, scale: Scale, originMessageEvent: MessageEvent, container: d3.selection): void {
     if (!!this.objects.get(objectMetadata.object.id)) {
+      console.log(objectMetadata);
       this.removeObject(objectMetadata);
     }
     switch (objectMetadata.type) {
@@ -134,6 +135,7 @@ export class ApiService {
     if (!!area.events) {
       area.events.forEach((event: string): void => {
         areaSelection.getGroup().on(event, (): void => {
+          // @ts-ignore
             originMessageEvent.source.postMessage({type: `${event}-${area.id}`, objectId: area.id}, '*');
           });
         });

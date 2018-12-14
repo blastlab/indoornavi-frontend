@@ -14,6 +14,8 @@ import Path = APIObject.Path;
 import NavigationData = APIObject.NavigationData;
 import Circle = APIObject.Circle;
 import NavigationErrorCodes = APIObject.NavigationErrorCodes;
+import {Helper} from '../helper/helper';
+import {ApiHelper} from '../drawing/api.helper';
 
 @Injectable()
 export class NavigationController {
@@ -101,26 +103,21 @@ export class NavigationController {
     this.scale = scale;
     this.event = event;
     this.pathService.getPathByFloorId(floorId).subscribe((lines: Line[]): void => {
-      this.maze = lines;
-      this.startNavigationForGivenMaze(location, destination);
-    });
-  }
-
-  private startNavigationForGivenMaze(location, destination) {
-    this.calculateNavigationPath(this.maze, location, destination);
-    this.onPositionChanged().subscribe((pointUpdate: Point): void => {
-      if (!!this.objectMetadataPolyline) {
-        this.handlePathUpdate(pointUpdate);
-      } else {
-        this.event.source.postMessage({type: 'navigation', status: 'unavailable'}, '*');
+      this.calculateNavigationPath(lines, location, destination);
+      this.onPositionChanged().subscribe((pointUpdate: Point): void => {
+        if (!!this.objectMetadataPolyline) {
+          this.handlePathUpdate(pointUpdate);
+        } else {
+          this.event.source.postMessage({type: 'navigation', action: 'unavailable'}, '*');
+        }
+      });
+      if (this.lastCoordinates && this.isNavigationReady) {
+        this.updatePosition(this.lastCoordinates);
+      }
+      if (this.stoppedBeforeIsNavigationReady) {
+        this.stopNavigation();
       }
     });
-    if (this.lastCoordinates) {
-      this.updatePosition(this.lastCoordinates);
-    }
-    if (this.stoppedBeforeIsNavigationReady) {
-      this.stopNavigation();
-    }
   }
 
   private updatePosition(position: Point): void {
@@ -251,32 +248,25 @@ export class NavigationController {
     }
   }
 
-  private assignId(type: string): Metadata {
-    return {
-      object: {
-        id: Math.round(new Date().getTime() * Math.random() * 1000)
-      },
-      type: type
-    };
-  }
-
   private setNavigationMetadata(path: Line[]): void {
-    this.objectMetadataPolyline = this.assignId('POLYLINE');
+    this.objectMetadataPolyline = ApiHelper.assignId('POLYLINE');
     this.objectMetadataPolyline.object['points'] = this.createPointPathFromLinePath(this.scale, path);
     this.objectMetadataPolyline.object = Object.assign((<Path>this.objectMetadataPolyline.object),
       {lines: path, color: this.pathColor, width: this.pathWidth, lineType: 'dotted'});
     if (!this.disableStartPoint) {
-      this.objectMetadataStart = this.assignId('CIRCLE');
-      this.objectMetadataStart.object['position'] = Object.assign((<Circle>this.objectMetadataStart.object),
-        this.objectMetadataPolyline.object['points'][0]);
+      this.objectMetadataStart = ApiHelper.assignId('CIRCLE');
+      this.objectMetadataStart.object['position'] = Object.assign(
+        (<Circle>this.objectMetadataStart.object), this.objectMetadataPolyline.object['points'][0]
+      );
       this.objectMetadataStart.object = Object.assign((<Circle>this.objectMetadataStart.object), this.startPointObject);
     }
 
     if (!this.disableEndPoint) {
-      this.objectMetadataFinish = this.assignId('CIRCLE');
+      this.objectMetadataFinish = ApiHelper.assignId('CIRCLE');
       this.objectMetadataFinish.object['position'] = Object.assign(
         (<Circle>this.objectMetadataFinish.object),
-        this.objectMetadataPolyline.object['points'][this.objectMetadataPolyline.object['points'].length - 1]);
+        this.objectMetadataPolyline.object['points'][this.objectMetadataPolyline.object['points'].length - 1]
+      );
       this.objectMetadataFinish.object = Object.assign((<Circle>this.objectMetadataFinish.object), this.endPointObject);
     }
 

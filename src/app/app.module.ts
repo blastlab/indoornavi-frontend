@@ -126,6 +126,7 @@ import {NavigationController} from './shared/utils/navigation/navigation.control
 import {ModelsConfig} from './map/models/models.config';
 import {DebuggerComponent} from './debug-hidden/debugger.component';
 import {DebuggerService} from './debug-hidden/debugger.service';
+import {BatteryIndicatorComponent} from './device/battery-indicator';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -184,6 +185,8 @@ export function HttpLoaderFactory(http: Http) {
     NotSupportedBrowserComponent,
     PathComponent,
     TagsFinderComponent,
+    TagFollowerComponent,
+    BatteryIndicatorComponent
     TagFollowerComponent,
     DebuggerComponent
   ],
@@ -278,8 +281,7 @@ export function HttpLoaderFactory(http: Http) {
     PathService,
     NavigationService,
     NavigationController,
-    ModelsConfig,
-    DebuggerService
+    ModelsConfig
   ], bootstrap: [AppComponent]
 })
 
