@@ -23,7 +23,7 @@ export class Scale extends ScaleDto {
     return !!this.realDistance && !!this.measure && !!this.start && !!this.stop;
   }
 
-  getLenInPix(): number {
+  getDistanceInPixels(): number {
     return Math.sqrt(Math.pow(this.start.x - this.stop.x, 2)) + Math.sqrt(Math.pow(this.start.y - this.stop.y, 2));
   }
 }

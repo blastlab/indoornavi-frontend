@@ -83,11 +83,6 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
         if (!!configuration.data.areas) {
           const configurationCopy = Helper.deepCopy(configuration);
           configurationCopy.data.areas.forEach((area: Area): void => {
-            const pointsInPixels: Point[] = [];
-            area.points.forEach((point: Point): void => {
-              pointsInPixels.push(point);
-            });
-            area.points = pointsInPixels;
             this.areas.push({
               dto: area,
               editable: null
@@ -125,7 +120,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
           }
 
           this.actionBarService.setAreas(this.areas.map((areaBag: AreaBag): Area => {
-            return areaBag.dto;
+            return this.setPointsRealDimensionsInCentimeters(areaBag.dto);
           }));
         }
 
@@ -234,6 +229,14 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
 
   setDisabled(value: boolean): void {
     this.disabled = value;
+  }
+
+  private setPointsRealDimensionsInCentimeters(area: Area): Area {
+    const points: Point[] = area.pointsInPixels.map((point: Point) => {
+      return Geometry.calculatePointPositionInCentimeters(this.scale.getDistanceInPixels(), this.scale.getRealDistanceInCentimeters(), point)
+    });
+    area.points = Object.assign([], points);
+    return area;
   }
 
   private handleShiftKeyEvent(coordinates: Point): Point {
@@ -349,7 +352,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
         });
       });
     } else {
-      points = areaBag.dto.points;
+      points = areaBag.dto.pointsInPixels;
     }
     return points;
   }
@@ -522,7 +525,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     this.cleanGroup(this.selectedEditable.groupWrapper);
     this.areas.splice(index, 1);
     this.actionBarService.setAreas(this.areas.map((areaBag: AreaBag): Area => {
-      return areaBag.dto;
+      return this.setPointsRealDimensionsInCentimeters(areaBag.dto);
     }));
     this.areaDetailsService.remove();
   }
@@ -566,7 +569,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
       areaBag.editable.onSelected().subscribe((selected: Editable) => {
         this.selectedEditable = selected;
       });
-      this.drawPolygon(areaBag.dto.points, areaBag.editable.groupWrapper);
+      this.drawPolygon(areaBag.dto.pointsInPixels, areaBag.editable.groupWrapper);
       index++;
     });
   }
