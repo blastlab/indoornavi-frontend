@@ -18,6 +18,7 @@ import {NotSupportedBrowserComponent} from './not-supported-browser/not-supporte
 import {TagsFinderComponent} from './tags-finder/tags-finder.component';
 import {TagFollowerComponent} from './map-viewer/views/tagfollower/tag-follower';
 import {DebuggerComponent} from './debug-hidden/debugger.component';
+import {OverviewComponent} from './overview/overview-component';
 
 export const appRoutes: Routes = [
   {path: '', redirectTo: '/complexes', pathMatch: 'full'},
@@ -36,6 +37,8 @@ export const appRoutes: Routes = [
   {path: 'embedded/:id', component: PublishedComponent, data: {isPublic: true}},
   {path: 'analytics', component: AnalyticsComponent, canActivate: [CanRead], data: {permission: 'PUBLICATION'}},
   {path: 'analytics/:id', component: AnalyticsComponent, canActivate: [CanRead], data: {permission: 'PUBLICATION'}},
+  {path: 'overview/', component: OverviewComponent, canActivate: [CanRead], data: {permission: 'PUBLICATION'}},
+  {path: 'overview/:id', component: OverviewComponent, canActivate: [CanRead], data: {permission: 'PUBLICATION'}},
   {path: 'users', component: UserComponent, canActivate: [CanRead], data: {permission: 'USER'}},
   {path: 'changePassword', component: ChangePasswordComponent, canActivate: [CanRead]},
   {path: 'permissionGroups', component: PermissionGroupComponent, canActivate: [CanRead], data: {permission: 'PERMISSION_GROUP'}},

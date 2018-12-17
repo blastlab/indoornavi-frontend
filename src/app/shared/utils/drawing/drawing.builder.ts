@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import {Point, TextPosition, PositionDescription} from '../../../map-editor/map.type';
+import {Point, PositionDescription, TextPosition} from '../../../map-editor/map.type';
 import {DrawConfiguration} from '../../../map-viewer/publication.type';
 
 export enum ElementType {
@@ -10,7 +10,8 @@ export enum ElementType {
   LINE,
   DRAG_AREA,
   IMAGE,
-  RECT
+  RECT,
+  CANVAS
 }
 
 export class SvgGroupWrapper {
@@ -198,6 +199,15 @@ export class SvgGroupWrapper {
       .attr('stroke-width', 1)
       .attr('stroke', 'black');
     this.addElement(ElementType.LINE, element);
+    return this;
+  }
+
+  addCanvas(id: string): SvgGroupWrapper {
+    const element: d3.selection = this.group
+      .append('canvas')
+      .attr('id', id)
+      .attr('class', 'echart');
+    this.addElement(ElementType.CANVAS, element);
     return this;
   }
 

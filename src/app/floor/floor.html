@@ -19,8 +19,12 @@
               type="button" pButton (click)="goToMap(floor)" icon="fa-eye">
       </button>
       <button [appHasPermission]="'PUBLICATION_READ'"
-              pTooltip="{{'go.to.analytics'|translate}}"
+              pTooltip="{{'go.to.analytics.live'|translate}}"
               type="button" pButton (click)="goToHeatMap(floor)" icon="fa-area-chart">
+      </button>
+      <button [appHasPermission]="'PUBLICATION_READ'"
+              pTooltip="{{'go.to.analytics.historical'|translate}}"
+              type="button" pButton (click)="goToOverview(floor)" icon="fa-television">
       </button>
       <button [appHasPermission]="'FLOOR_UPDATE'"
               pTooltip="{{'go.to.mapEditor'|translate}}" type="button" pButton
