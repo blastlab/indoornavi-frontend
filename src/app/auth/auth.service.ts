@@ -14,7 +14,7 @@ export class AuthService {
     return this.httpService.doPost(this.url, credentials);
   }
 
-  logout() {
-    this.httpService.doPost(this.url + 'logout', {});
+  logout(): Observable<any> {
+    return this.httpService.doPost(this.url + 'logout', {});
   }
 }
