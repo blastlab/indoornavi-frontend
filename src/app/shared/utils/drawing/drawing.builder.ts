@@ -11,7 +11,7 @@ export enum ElementType {
   DRAG_AREA,
   IMAGE,
   RECT,
-  CANVAS
+  HTML
 }
 
 export class SvgGroupWrapper {
@@ -202,12 +202,10 @@ export class SvgGroupWrapper {
     return this;
   }
 
-  addCanvas(id: string): SvgGroupWrapper {
+  injectHtml(): SvgGroupWrapper {
     const element: d3.selection = this.group
-      .append('canvas')
-      .attr('id', id)
-      .attr('class', 'echart');
-    this.addElement(ElementType.CANVAS, element);
+      .html('<div echarts class="demo-chart" [options]="chartOptions" (chartInit)="onChartInit($event)"></div>');
+    this.addElement(ElementType.HTML, element);
     return this;
   }
 

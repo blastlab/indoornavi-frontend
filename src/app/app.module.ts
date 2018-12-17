@@ -127,6 +127,8 @@ import {ModelsConfig} from './map/models/models.config';
 import {DebuggerComponent} from './debug-hidden/debugger.component';
 import {BatteryIndicatorComponent} from './device/battery-indicator';
 import {OverviewComponent} from './overview/overview-component';
+import {NgxEchartsModule} from 'ngx-echarts';
+
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -234,7 +236,8 @@ export function HttpLoaderFactory(http: Http) {
     FileUploadModule,
     RadioButtonModule,
     InputMaskModule,
-    SelectButtonModule
+    SelectButtonModule,
+    NgxEchartsModule
   ],
   providers: [
     BuildingService,

@@ -1,2 +1,3 @@
 <app-map *ngIf="!!floor" [floor]="floor">
 </app-map>
+<div echarts class="demo-chart" [options]="chartOptions" (chartInit)="onChartInit($event)"></div>
