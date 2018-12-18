@@ -1,3 +1,10 @@
-<app-map *ngIf="!!floor" [floor]="floor">
-</app-map>
-<div echarts class="demo-chart" [options]="chartOptions" (chartInit)="onChartInit($event)"></div>
+<div>
+
+</div>
+<div echarts
+     #canvasParent
+     id="heatmap-canvas" class="demo-chart"
+     [options]="chartOptions"
+     (chartInit)="onChartInit($event)"
+     [ngStyle]="{'width': '2200px', 'height': '1200px'}"
+></div>

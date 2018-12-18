@@ -93,7 +93,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
 
   protected setCorrespondingFloorParams(): void {
     this.route.params.takeUntil(this.subscriptionDestructor)
-      .subscribe((params: Params) => {
+      .subscribe((params: Params): void => {
         const floorId = +params['id'];
         this.floorService.getFloor(floorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
           this.breadcrumbService.publishIsReady([
@@ -114,7 +114,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
       });
   }
 
-  protected subscribeToMapParametersChange() {
+  protected subscribeToMapParametersChange(): void {
     this.route.params.takeUntil(this.subscriptionDestructor).subscribe((params: Params): void => {
       const floorId = +params['id'];
       this.floorService.getFloor(floorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
@@ -130,7 +130,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
           };
         }
         if (!!floor.imageId) {
-          this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg) => {
+          this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg): void => {
             this.d3map = mapSvg;
             this.loadMapDeferred.resolve();
             this.publishedService.getTagsAvailableForUser(floor.id).takeUntil(this.subscriptionDestructor).subscribe((tags: Tag[]): void => {
