@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AuthService} from './auth.service';
 import {AuthResponse} from './auth.type';
 import {TranslateService} from '@ngx-translate/core';
@@ -22,7 +22,7 @@ export class AuthComponent implements OnInit {
 
   ngOnInit(): void {
     if (localStorage.getItem('currentUser')) {
-      this.authService.logout(); // TODO: resolve bug here (subscription needed) navi-530
+      this.authService.logout().first().subscribe(() => {});
       localStorage.removeItem('currentUser');
       this.authGuard.toggleUserLoggedIn(false);
       this.router.navigate(['/login']);
@@ -30,7 +30,7 @@ export class AuthComponent implements OnInit {
   }
 
   login(username: string, password: string): void {
-    this.authService.login({username: username, plainPassword: password}).subscribe((authResponse: AuthResponse) => {
+    this.authService.login({username: username, plainPassword: password}).first().subscribe((authResponse: AuthResponse) => {
       localStorage.setItem('currentUser', JSON.stringify({username: username, token: authResponse.token, permissions: authResponse.permissions}));
       this.authGuard.toggleUserLoggedIn(true);
       this.invalidCredentials = false;
