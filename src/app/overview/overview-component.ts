@@ -41,11 +41,11 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
       calculable: true,
       realtime: false,
       inRange: {
-        color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
+        color: ['rgba(22,0,229,0.4)', 'rgba(42,196,252,0.4)', 'rgba(76,239,136,0.4)', 'rgba(238,255,50,0.4)', 'rgba(255,206,30,0.4)', 'rgba(225,156,30,0.4)', 'rgba(225,109,30,0.4)', 'rgba(225,64,30,0.4)', 'rgba(225,64,3,0.4)', 'rgba(225,64,229,0.4)', 'rgba(225,0,0,0.4)']
       }
     },
     series: [{
-      name: 'Gaussian',
+      name: 'Time span',
       type: 'heatmap',
       data: [],
       itemStyle: {
