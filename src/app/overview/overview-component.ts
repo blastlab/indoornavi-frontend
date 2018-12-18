@@ -155,12 +155,9 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
     this.chartOptions.yAxis.data = data[1];
     this.chartOptions.series[0].data = data[2];
     this.chartOptions = Object.assign({}, this.chartOptions);
-    console.log('map logged');
     const canvas = document.getElementsByTagName('canvas').item(0);
     const newCanvas = document.createElement('canvas');
     newCanvas.setAttribute('id', 'image-heatmap-canvas');
-    newCanvas.setAttribute('width', '2200px');
-    newCanvas.setAttribute('hight', '1200px');
     canvas.parentElement.appendChild(newCanvas);
     const ctx = newCanvas.getContext('2d');
     const background = new Image();
@@ -168,6 +165,9 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
     background.onload = function () {
       ctx.drawImage(background, 0, 0);
     };
+    newCanvas.setAttribute('width', '2200px');
+    newCanvas.setAttribute('height', '1200px');
+    // canvas.parentNode.insertBefore(newCanvas, canvas.nextSibling);
     // this.canvasParent.nativeElement.appendChild()
   }
 }
