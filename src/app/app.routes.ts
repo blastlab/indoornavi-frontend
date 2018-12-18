@@ -18,6 +18,7 @@ import {NotSupportedBrowserComponent} from './not-supported-browser/not-supporte
 import {TagsFinderComponent} from './tags-finder/tags-finder.component';
 import {TagFollowerComponent} from './map-viewer/views/tagfollower/tag-follower';
 import {DebuggerComponent} from './debug-hidden/debugger.component';
+import {DashboardComponent} from './dashboard/dashboard';
 
 export const appRoutes: Routes = [
   {path: '', redirectTo: '/complexes', pathMatch: 'full'},
@@ -49,5 +50,6 @@ export const appRoutes: Routes = [
   {path: 'unauthorized', component: UnauthorizedComponent},
   {path: 'notSupportedBrowser', component: NotSupportedBrowserComponent, canActivate: [CanRead], data: {permissions: 'DEBUG'}},
   {path: 'debug', component: DebuggerComponent},
+  {path: 'dashboard', component: DashboardComponent},
   {path: '**', redirectTo: '/complexes'}
 ];

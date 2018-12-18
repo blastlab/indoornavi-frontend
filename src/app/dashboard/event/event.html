@@ -1,0 +1,16 @@
+<div class="ui-g header">
+  <div class="ui-g-12">
+    {{'dashboard.event.header'|translate}}
+  </div>
+</div>
+<div *ngFor="let event of events" class="ui-g item">
+  <div class="ui-g-5 {{event.level.toString()}} text">
+    {{event.message}}
+  </div>
+  <div class="ui-g-3">
+    <span class="muted text">{{'dashboard.event.area'|translate}}:</span> {{event.areaName}}
+  </div>
+  <div class="ui-g-4 text muted">
+    {{event.deviceName}}
+  </div>
+</div>

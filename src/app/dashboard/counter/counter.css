@@ -1,0 +1,19 @@
+#counter-container {
+  display: flex;
+}
+
+.item {
+  align-self: flex-start;
+  flex: auto;
+}
+
+.number {
+  font-size: 3em;
+  color: #5bf;
+  display: inline-block;
+}
+
+.text {
+  display: inline-block;
+  font-size: 0.8em;
+}

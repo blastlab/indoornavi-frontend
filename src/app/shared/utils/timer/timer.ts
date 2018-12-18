@@ -1,7 +1,7 @@
 export class Timer {
-  private interval: any;
+  protected interval: any;
 
-  constructor(private callback: Function, private millis: number) {
+  constructor(protected callback: Function, protected millis: number) {
     this.interval = setInterval(callback, millis);
   }
 

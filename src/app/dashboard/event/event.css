@@ -1,0 +1,22 @@
+.header {
+  margin-top: 15px;
+}
+
+.text {
+  font-size: 0.8em;
+}
+
+.warning {
+  color: #f22;
+}
+
+.danger {
+  color: #f82;
+}
+
+.item {
+  box-shadow: 0 3px 4px 0 #b8b8b8;
+  border: 1px solid rgba(184, 184, 184, 0.5);
+  border-radius: 8px;
+  margin-bottom: 5px;
+}
