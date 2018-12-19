@@ -1,10 +1,8 @@
-<div>
-
-</div>
 <div echarts
      #canvasParent
-     id="heatmap-canvas" class="demo-chart"
+     id="heatmap-canvas" class="ui-corner-all"
      [options]="chartOptions"
      (chartInit)="onChartInit($event)"
-     [ngStyle]="{'width': '2200px', 'height': '1200px'}"
+     [style.width.px]="heatMapWidth"
+     [style.height.px]="heatMapHeight"
 ></div>
