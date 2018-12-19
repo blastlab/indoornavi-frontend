@@ -6,21 +6,21 @@ import {FloorService} from '../floor/floor.service';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
 import {TranslateService} from '@ngx-translate/core';
 import {Scale, ScaleCalculations} from '../map-editor/tool-bar/tools/scale/scale.type';
-import {MapSvg} from '../map/map.type';
 import {Geometry} from '../shared/utils/helper/geometry';
-import {DrawBuilder} from '../shared/utils/drawing/drawing.builder';
 import {EChartOption} from 'echarts';
 import {MapService} from '../map-editor/uploader/map.uploader.service';
+import {echartHeatmapConfig} from './echart.config';
+import {CoordinatesIncident, CoordinatesRequest, ReportService} from './services/coordinates.service';
 
 @Component({
   templateUrl: './overview.html'
 })
 export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
 
-  floor: Floor;
-  echartsInstance: any;
   heatMapWidth = 1200;
   heatMapHeight = 800;
+  private echartsInstance: any;
+  private floor: Floor;
   private heatmapOffsetX: number;
   private heatmapOffsetY: number;
   private imageUrl: string;
@@ -28,48 +28,8 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
   private imageHeight: number;
   private scale: Scale;
   private scaleCalculations: ScaleCalculations;
-  private heatmap: DrawBuilder;
   private subscriptionDestructor: Subject<void> = new Subject<void>();
-  chartOptions: EChartOption = {
-    tooltip: {},
-    xAxis: {
-      type: 'category',
-      data: []
-    },
-    yAxis: {
-      type: 'category',
-      data: []
-    },
-    visualMap: {
-      min: 0,
-      max: 1,
-      calculable: true,
-      realtime: false,
-      inRange: {
-        color: [
-          'rgba(22,0,229,0.4)',
-          'rgba(42,196,252,0.4)',
-          'rgba(76,239,136,0.4)',
-          'rgba(238,255,50,0.4)',
-          'rgba(255,206,30,0.4)',
-          'rgba(225,156,30,0.4)',
-          'rgba(225,109,30,0.4)',
-          'rgba(225,64,30,0.4)',
-          'rgba(225,64,3,0.4)',
-          'rgba(225,64,229,0.4)',
-          'rgba(225,0,0,0.4)'
-        ]
-      }
-    },
-    series: [{
-      name: 'Time span',
-      type: 'heatmap',
-      data: [],
-      pointSize: 1,
-      blurSize: 6,
-      animation: false
-    }]
-  };
+  chartOptions: EChartOption = echartHeatmapConfig;
 
   @ViewChild('canvasParent') canvasParent;
 
@@ -77,12 +37,13 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
               private floorService: FloorService,
               private breadcrumbService: BreadcrumbService,
               private translateService: TranslateService,
-              private mapService: MapService) {
+              private mapService: MapService,
+              private reportService: ReportService
+  ) {
   }
 
   ngOnInit() {
-    this.heatmapOffsetX = this.heatMapWidth * 0.1;
-    this.heatmapOffsetY = this.heatMapHeight * 0.115;
+    this.calculateEChartOffset();
     this.setCorrespondingFloorParams();
     this.translateService.setDefaultLang('en');
   }
@@ -98,6 +59,11 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onChartInit(ec) {
     this.echartsInstance = ec;
+  }
+
+  private calculateEChartOffset(): void {
+    this.heatmapOffsetX = this.heatMapWidth * 0.1;
+    this.heatmapOffsetY = this.heatMapHeight * 0.115;
   }
   private setCorrespondingFloorParams(): void {
     this.route.params.takeUntil(this.subscriptionDestructor)
@@ -143,9 +109,6 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
               this.loadData();
             });
           });
-            // this.heatmap
-            //   .createGroup()
-            //   .injectHtml();
         }
       });
     });
@@ -180,6 +143,26 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private loadData(): void {
     const data: number[][] = this.mockGenerateData();
+    const hours = new Date().getHours();
+    let minutes: string = new Date().getMinutes().toString();
+    minutes = parseInt(minutes, 10) > 9 ? minutes : `0${minutes}`;
+    const dateNow: string =  `${new Date().getFullYear()}-${(parseInt(new Date().getMonth().toString(), 10) + 1)}` +
+      `-${new Date().getDate()}T${hours}:${minutes}:00`;
+    console.log(dateNow);
+    const request: CoordinatesRequest = {
+      from: '2018-12-18T11:23:56',
+      to: dateNow,
+      floorId: this.floor.id
+    };
+    this.reportService.getCoordinates(request).first().subscribe((payload: CoordinatesIncident[]): void => {
+      let i = true;
+      payload.forEach((incident: CoordinatesIncident) => {
+        if (i) {
+          i = false;
+          console.log(incident);
+        }
+      });
+    });
     this.chartOptions.xAxis.data = data[0];
     this.chartOptions.yAxis.data = data[1];
     this.chartOptions.series[0].data = data[2];
@@ -187,17 +170,16 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private mockGenerateData(): number[][] {
-    console.log(this.imageHeight, this.imageHeight);
     const data = [];
     const xData = [];
     const yData = [];
-    for (let i = 0; i <= 100; i++) {
-      for (let j = 0; j <= 100; j++) {
+    for (let i = 0; i <= 200; i++) {
+      for (let j = 0; j <= 200; j++) {
         data.push([i, j, data.push([i, j, (i + j) * (Math.random() * 10) - 500])]);
       }
       xData.push(i);
     }
-    for (let j = 0; j < 100; j++) {
+    for (let j = 0; j < 200; j++) {
       yData.push(j);
     }
     return [xData, yData, data];

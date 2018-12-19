@@ -10,8 +10,7 @@ export enum ElementType {
   LINE,
   DRAG_AREA,
   IMAGE,
-  RECT,
-  HTML
+  RECT
 }
 
 export class SvgGroupWrapper {
@@ -199,13 +198,6 @@ export class SvgGroupWrapper {
       .attr('stroke-width', 1)
       .attr('stroke', 'black');
     this.addElement(ElementType.LINE, element);
-    return this;
-  }
-
-  injectHtml(): SvgGroupWrapper {
-    const element: d3.selection = this.group
-      .html('<div echarts class="demo-chart" [options]="chartOptions" (chartInit)="onChartInit($event)"></div>');
-    this.addElement(ElementType.HTML, element);
     return this;
   }
 

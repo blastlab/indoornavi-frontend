@@ -128,6 +128,7 @@ import {DebuggerComponent} from './debug-hidden/debugger.component';
 import {BatteryIndicatorComponent} from './device/battery-indicator';
 import {OverviewComponent} from './overview/overview-component';
 import {NgxEchartsModule} from 'ngx-echarts';
+import {ReportService} from './overview/services/coordinates.service';
 
 
 export function HttpLoaderFactory(http: Http) {
@@ -285,7 +286,8 @@ export function HttpLoaderFactory(http: Http) {
     PathService,
     NavigationService,
     NavigationController,
-    ModelsConfig
+    ModelsConfig,
+    ReportService
   ], bootstrap: [AppComponent]
 })
 
