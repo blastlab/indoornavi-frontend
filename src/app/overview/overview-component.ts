@@ -21,6 +21,13 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   heatMapWidth = 1200;
   heatMapHeight = 800;
+  dateFrom: string;
+  dateTo: string;
+  dateToMaxValue: Date;
+  dateFromMaxValue: Date;
+  dateFromRequestFormat: string;
+  dateToRequestFormat: string;
+  private imageLoaded = false;
   private echartsInstance: any;
   private floor: Floor;
   private gradientsInX: number = 200;
@@ -51,6 +58,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.calculateEChartOffset();
     this.setCorrespondingFloorParams();
+    this.setTimeDateAllowedToChooseFrom();
     this.translateService.setDefaultLang('en');
   }
 
@@ -67,10 +75,41 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
     this.echartsInstance = ec;
   }
 
+  renderNewHeatmap() {
+    if (this.imageLoaded && !!this.dateFrom && !!this.dateTo) {
+      this.setDateRequestFormat();
+      this.loadData();
+    }
+  }
+
+  private setDateRequestFormat(): void {
+    const hoursFrom = new Date(this.dateFrom).getHours();
+    let minutesFrom: string = new Date(this.dateFrom).getMinutes().toString();
+    const hoursTo = new Date(this.dateFrom).getHours();
+    let minutesTo: string = new Date(this.dateFrom).getMinutes().toString();
+    minutesFrom = parseInt(minutesFrom, 10) > 9 ? minutesFrom : `0${minutesFrom}`;
+    minutesTo = parseInt(minutesTo, 10) > 9 ? minutesTo : `0${minutesTo}`;
+    this.dateFromRequestFormat = `${new Date(this.dateFrom).getFullYear()}-${(parseInt(new Date(this.dateFrom).getMonth().toString(), 10) + 1)}` +
+      `-${new Date(this.dateFrom).getDate()}T${hoursFrom}:${minutesFrom}:00`;
+    this.dateToRequestFormat = `${new Date(this.dateTo).getFullYear()}-${(parseInt(new Date(this.dateTo).getMonth().toString(), 10) + 1)}` +
+      `-${new Date(this.dateTo).getDate()}T${hoursTo}:${minutesTo}:00`;
+  }
+
   private calculateEChartOffset(): void {
     this.heatmapOffsetX = this.heatMapWidth * 0.1;
     this.heatmapOffsetY = this.heatMapHeight * 0.075;
   }
+
+  private setTimeDateAllowedToChooseFrom(): void {
+    const today: Date = new Date();
+    const hour: number = today.getHours();
+    const prevHour = (hour === 0) ? 23 : hour - 1;
+    this.dateFromMaxValue = new Date();
+    this.dateFromMaxValue.setHours(prevHour);
+    this.dateToMaxValue = new Date();
+  }
+
+
   private setCorrespondingFloorParams(): void {
     this.route.params.takeUntil(this.subscriptionDestructor)
       .subscribe((params: Params) => {
@@ -107,14 +146,13 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
           };
         }
         if (!!floor.imageId) {
-          console.log(floor);
           this.mapService.getImage(floor.imageId).subscribe((blob: Blob) => {
             this.imageUrl = URL.createObjectURL(blob);
             this.loadMapImage().then((imageSize: number[]): void => {
               this.imageHeight = imageSize[0];
               this.imageWidth = imageSize[1];
               this.calculateDataToHeatmapScaleFactorChange();
-              this.loadData();
+              this.imageLoaded = true;
             });
           });
         }
@@ -168,36 +206,26 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private loadData(): void {
-    const data: number[][] = this.mockGenerateData();
-    const hours = new Date().getHours();
-    let minutes: string = new Date().getMinutes().toString();
-    minutes = parseInt(minutes, 10) > 9 ? minutes : `0${minutes}`;
-    const dateNow: string =  `${new Date().getFullYear()}-${(parseInt(new Date().getMonth().toString(), 10) + 1)}` +
-      `-${new Date().getDate()}T${hours}:${minutes}:00`;
-    console.log(dateNow);
     const request: CoordinatesRequest = {
-      from: '2018-12-18T11:23:56',
-      to: dateNow,
+      from: this.dateFromRequestFormat,
+      to: this.dateToRequestFormat,
       floorId: this.floor.id
     };
     this.reportService.getCoordinates(request).first().subscribe((payload: CoordinatesIncident[]): void => {
-      let i = true;
-      console.log(payload.length);
-      payload.forEach((incident: CoordinatesIncident) => {
-        if (i) {
-          i = false;
-          console.log(incident);
-        }
-      });
+      // build data array from received payload
+      // payload.forEach((incident: CoordinatesIncident) => {
+      // });
+      const data: number[][] = this.mockGenerateData();
+      this.chartOptions.xAxis.data = data[0];
+      this.chartOptions.yAxis.data = data[1];
+      this.chartOptions.series[0].data = data[2];
+      this.chartOptions = Object.assign({}, this.chartOptions);
     });
-    this.chartOptions.xAxis.data = data[0];
-    this.chartOptions.yAxis.data = data[1];
-    this.chartOptions.series[0].data = data[2];
-    this.chartOptions = Object.assign({}, this.chartOptions);
   }
 
   private mockGenerateData(): number[][] {
     const noise = getNoiseHelper();
+    noise.seed(Math.random());
     const data = [];
     const xData = [];
     const yData = [];

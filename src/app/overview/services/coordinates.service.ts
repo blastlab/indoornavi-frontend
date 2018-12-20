@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpService} from '../../shared/services/http/http.service';
 import {Observable} from 'rxjs/Rx';
-import {Point, Point3d} from '../../map-editor/map.type';
+import {Point3d} from '../../map-editor/map.type';
 
 @Injectable()
 export class ReportService {

@@ -176,6 +176,7 @@
   "group": "Group",
   "growl.failed.summary": "Failed",
   "growl.success.summary": "Success",
+  "heatmap.generate": "Generate Heat Map",
   "heat.gap": "Heat up event separation time",
   "heat.map.tool": "Heat Map Controller",
   "heat.persistence": "Heat Persistence",

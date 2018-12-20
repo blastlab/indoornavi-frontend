@@ -56,7 +56,8 @@ import {
   SidebarModule,
   SliderModule,
   ToolbarModule,
-  TooltipModule
+  TooltipModule,
+  CalendarModule
 } from 'primeng/primeng';
 import {HintBarService} from './map-editor/hint-bar/hintbar.service';
 import {ToolbarService} from './map-editor/tool-bar/toolbar.service';
@@ -230,6 +231,7 @@ export function HttpLoaderFactory(http: Http) {
     SidebarModule,
     BreadcrumbModule,
     TooltipModule,
+    CalendarModule,
     GrowlModule,
     ProgressSpinnerModule,
     OverlayPanelModule,

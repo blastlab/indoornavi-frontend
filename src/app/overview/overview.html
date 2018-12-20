@@ -6,3 +6,10 @@
      [style.width.px]="heatMapWidth"
      [style.height.px]="heatMapHeight"
 ></div>
+<p-calendar [(ngModel)]="dateFrom" showTime="true" hourFormat="24" [maxDate]="dateFromMaxValue"></p-calendar>
+<p-calendar [(ngModel)]="dateTo" showTime="true" hourFormat="24" [maxDate]="dateToMaxValue"></p-calendar>
+<button pButton class="ui-button-secondary"
+        (click)="renderNewHeatmap()"
+        pTooltip="{{'heatmap.generate'|translate}}"
+        icon="fa-refresh">
+</button>
