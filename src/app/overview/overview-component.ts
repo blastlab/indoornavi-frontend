@@ -12,6 +12,7 @@ import {MapService} from '../map-editor/uploader/map.uploader.service';
 import {echartHeatmapConfig} from './echart.config';
 import {CoordinatesIncident, CoordinatesRequest, ReportService} from './services/coordinates.service';
 import {Point} from '../map-editor/map.type';
+import {getNoiseHelper} from './services/mock_helper';
 
 @Component({
   templateUrl: './overview.html'
@@ -22,6 +23,8 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
   heatMapHeight = 800;
   private echartsInstance: any;
   private floor: Floor;
+  private gradientsInX: number = 200;
+  private gradientsInY: number = 200;
   private heatmapOffsetX: number;
   private heatmapOffsetY: number;
   private imageUrl: string;
@@ -165,7 +168,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private loadData(): void {
-      const data: number[][] = this.mockGenerateData();
+    const data: number[][] = this.mockGenerateData();
     const hours = new Date().getHours();
     let minutes: string = new Date().getMinutes().toString();
     minutes = parseInt(minutes, 10) > 9 ? minutes : `0${minutes}`;
@@ -194,16 +197,19 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private mockGenerateData(): number[][] {
-      const data = [];
-      const xData = [];
-      const yData = [];
-      for (let i = 0; i <= 200; i++) {
-        for (let j = 0; j <= 200; j++) {
-          data.push([i, j, data.push([i, j, (i + j) * (Math.random() * 10) - 500])]);
+    const noise = getNoiseHelper();
+    const data = [];
+    const xData = [];
+    const yData = [];
+    for (let i = 0; i <= this.gradientsInX; i++) {
+      for (let j = 0; j <= this.gradientsInY; j++) {
+        let noiseValue = noise.perlin2(i / 40, j / 20) * 10 + 3;
+        noiseValue = noiseValue > .5 ? noiseValue : .5;
+        data.push([i, j, noiseValue]);
         }
         xData.push(i);
       }
-      for (let j = 0; j < 200; j++) {
+    for (let j = 0; j < this.gradientsInY; j++) {
         yData.push(j);
       }
       return [xData, yData, data];

@@ -9,30 +9,37 @@ export const echartHeatmapConfig = {
     data: []
   },
   visualMap: {
-    show: false,
+    type: 'piecewise',
+    show: true,
     min: 0,
-    max: 1,
+    max: 10,
     seriesIndex: 0,
+    splitNumber: 20,
     calculable: true,
-    realtime: false,
+    realtime: true,
     inRange: {
       color: [
-        'rgba(255, 255, 255, 0)',
-        'rgba(255, 255, 153, 0.1)',
-        'rgba(255, 204, 102, 0.2)',
-        'rgba(255, 153, 51, 0.3)',
-        'rgba(255, 102, 0, 0.3)',
-        'rgba(255, 51, 0, 0.4)',
-        'rgba(255, 0, 0,0.5)'
+        'rgba(0, 0, 204, .2)',
+        'rgba(0, 51, 204, .2)',
+        'rgba(0, 204, 255, .2)',
+        'rgba(0, 255, 204, .2)',
+        'rgba(0, 255, 153, .2)',
+        'rgba(102, 255, 102, .2)',
+        'rgba(153, 255, 51, .2)',
+        'rgba(255, 255, 0, .3)',
+        'rgba(255, 153, 0, .3)',
+        'rgba(255, 51, 0, .4)',
+        'rgba(255, 0, 0, .5)'
       ]
     }
   },
   series: [{
-    name: '',
+    coordinateSystem: 'cartesian2d' ,
+    name: 'Distribution of time spent in given location',
     type: 'heatmap',
     data: [],
     pointSize: 1,
-    blurSize: 6,
-    animation: false
+    animation: true,
+    progressive: 10000,
   }]
 };
