@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpService} from '../../shared/services/http/http.service';
 import {Observable} from 'rxjs/Rx';
-import {Point3d} from '../../map-editor/map.type';
+import {CoordinatesIncident, CoordinatesRequest} from '../overview.type';
 
 @Injectable()
 export class ReportService {
@@ -13,19 +13,4 @@ export class ReportService {
   getCoordinates(request: CoordinatesRequest): Observable<CoordinatesIncident[]> {
     return this.httpService.doPost(`${this.baseUrl}`, request);
   }
-}
-
-
-export interface CoordinatesRequest {
-  from: string;
-  to: string;
-  floorId: number;
-}
-
-export interface CoordinatesIncident {
-  anchorShortId: number;
-  date: number;
-  floorId: number;
-  point: Point3d;
-  tagShortId: number;
 }

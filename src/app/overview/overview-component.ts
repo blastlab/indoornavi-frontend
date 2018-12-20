@@ -10,9 +10,11 @@ import {Geometry} from '../shared/utils/helper/geometry';
 import {EChartOption} from 'echarts';
 import {MapService} from '../map-editor/uploader/map.uploader.service';
 import {echartHeatmapConfig} from './echart.config';
-import {CoordinatesIncident, CoordinatesRequest, ReportService} from './services/coordinates.service';
+import {CoordinatesIncident, CoordinatesRequest} from './overview.type';
 import {Point} from '../map-editor/map.type';
 import {getNoiseHelper} from './services/mock_helper';
+import {ReportService} from './services/coordinates.service';
+import {MessageServiceWrapper} from '../shared/services/message/message.service';
 
 @Component({
   templateUrl: './overview.html'
@@ -25,13 +27,14 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
   dateTo: string;
   dateToMaxValue: Date;
   dateFromMaxValue: Date;
-  dateFromRequestFormat: string;
-  dateToRequestFormat: string;
+  displayDialog = false;
+  private dateFromRequestFormat: string;
+  private dateToRequestFormat: string;
   private imageLoaded = false;
   private echartsInstance: any;
   private floor: Floor;
-  private gradientsInX: number = 200;
-  private gradientsInY: number = 200;
+  private gradientsInX: number = 400;
+  private gradientsInY: number = 400;
   private heatmapOffsetX: number;
   private heatmapOffsetY: number;
   private imageUrl: string;
@@ -51,7 +54,8 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
               private breadcrumbService: BreadcrumbService,
               private translateService: TranslateService,
               private mapService: MapService,
-              private reportService: ReportService
+              private reportService: ReportService,
+              private messageService: MessageServiceWrapper
   ) {
   }
 
@@ -76,11 +80,22 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   renderNewHeatmap() {
-    if (this.imageLoaded && !!this.dateFrom && !!this.dateTo) {
-      this.setDateRequestFormat();
-      this.loadData();
+    if (this.imageLoaded) {
+      if (!!this.dateFrom && !!this.dateTo) {
+        this.displayDialog = true;
+        this.setDateRequestFormat();
+        this.loadData();
+      } else {
+        this.messageService.failed('overview.message.setDate');
+      }
+    } else {
+      this.messageService.failed('overview.message.imageNotLoaded');
     }
   }
+
+  cancel(): void {
+    this.displayDialog = false;
+}
 
   private setDateRequestFormat(): void {
     const hoursFrom = new Date(this.dateFrom).getHours();
@@ -212,14 +227,20 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
       floorId: this.floor.id
     };
     this.reportService.getCoordinates(request).first().subscribe((payload: CoordinatesIncident[]): void => {
-      // build data array from received payload
-      // payload.forEach((incident: CoordinatesIncident) => {
-      // });
-      const data: number[][] = this.mockGenerateData();
-      this.chartOptions.xAxis.data = data[0];
-      this.chartOptions.yAxis.data = data[1];
-      this.chartOptions.series[0].data = data[2];
-      this.chartOptions = Object.assign({}, this.chartOptions);
+      if (this.displayDialog) {
+        // build data array from received payload
+        // });
+        const data: number[][] = this.mockGenerateData();
+        this.chartOptions.xAxis.data = data[0];
+        this.chartOptions.yAxis.data = data[1];
+        this.chartOptions.series[0].data = data[2];
+        this.chartOptions = Object.assign({}, this.chartOptions);
+        // payload.forEach((incident: CoordinatesIncident) => {
+        this.messageService.success('overview.message.loadedSuccess');
+        this.displayDialog = false;
+      } else {
+        this.messageService.failed('overview.message.loadCanceled');
+      }
     });
   }
 

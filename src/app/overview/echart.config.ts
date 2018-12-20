@@ -2,17 +2,23 @@ export const echartHeatmapConfig = {
   animation: false,
   xAxis: {
     type: 'category',
-    data: []
+    data: [],
+    show: false
   },
   yAxis: {
     type: 'category',
-    data: []
+    data: [],
+    show: false
   },
   visualMap: {
     type: 'piecewise',
+    itemHeight: 10,
+    itemWidth: 20,
     show: true,
     min: 0,
     max: 10,
+    top: 60,
+    left: 0,
     seriesIndex: 0,
     splitNumber: 20,
     calculable: true,

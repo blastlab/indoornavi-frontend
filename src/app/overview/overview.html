@@ -1,3 +1,16 @@
+<div class="ui-g-12 ui-md-6 ui-lg-4"></div>
+<div class="ui-g-12 ui-md-12 ui-lg-12">
+  <span>{{'from'|translate}}:</span>
+  <p-calendar [(ngModel)]="dateFrom" showTime="true" hourFormat="24" [maxDate]="dateFromMaxValue"></p-calendar>
+  <span>{{'from'|translate}}:</span>
+  <p-calendar [(ngModel)]="dateTo" showTime="true" hourFormat="24" [maxDate]="dateToMaxValue"></p-calendar>
+  <button pButton class="ui-button-secondary"
+          (click)="renderNewHeatmap()"
+          pTooltip="{{'heatmap.generate'|translate}}"
+          icon="fa-refresh">
+  </button>
+</div>
+<div class="ui-g-12 ui-md-6 ui-lg-4"></div>
 <div echarts
      #canvasParent
      id="heatmap-canvas" class="ui-corner-all"
@@ -6,10 +19,23 @@
      [style.width.px]="heatMapWidth"
      [style.height.px]="heatMapHeight"
 ></div>
-<p-calendar [(ngModel)]="dateFrom" showTime="true" hourFormat="24" [maxDate]="dateFromMaxValue"></p-calendar>
-<p-calendar [(ngModel)]="dateTo" showTime="true" hourFormat="24" [maxDate]="dateToMaxValue"></p-calendar>
-<button pButton class="ui-button-secondary"
-        (click)="renderNewHeatmap()"
-        pTooltip="{{'heatmap.generate'|translate}}"
-        icon="fa-refresh">
-</button>
+<p-dialog
+  [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
+  [contentStyle]="{ overflow: 'visible' }"
+  [width]="300"
+  dismissableMask="true" (onHide)="cancel()">
+  <p-progressSpinner [style]="{width: '60px', height: '60px'}"
+                     strokeWidth="8"
+                     fill="#EEEEEE"
+                     animationDuration="1s">
+  </p-progressSpinner>
+  <div class="ui-g-12 ui-md-12 ui-lg-12"></div>
+  <span>{{'overview.dialog.waiting'|translate}}</span>
+  <span class="ui-g-12 ui-md-6 ui-lg-4"></span>
+  <button pButton class="ui-button-secondary ui-g-12 ui-md-6 ui-lg-4"
+          (click)="cancel()"
+          label="{{'cancel'|translate}}">
+    </button>
+  <span class="ui-g-12 ui-md-6 ui-lg-4"></span>
+  <div class="ui-g-12 ui-md-12 ui-lg-12"></div>
+</p-dialog>
