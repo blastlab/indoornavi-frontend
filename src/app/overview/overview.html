@@ -2,7 +2,7 @@
 <div class="ui-g-12 ui-md-12 ui-lg-12">
   <span>{{'from'|translate}}:</span>
   <p-calendar [(ngModel)]="dateFrom" showTime="true" hourFormat="24" [maxDate]="dateFromMaxValue"></p-calendar>
-  <span>{{'from'|translate}}:</span>
+  <span>{{'to'|translate}}:</span>
   <p-calendar [(ngModel)]="dateTo" showTime="true" hourFormat="24" [maxDate]="dateToMaxValue"></p-calendar>
   <button pButton class="ui-button-secondary"
           (click)="renderNewHeatmap()"
@@ -22,15 +22,18 @@
 <p-dialog
   [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
   [contentStyle]="{ overflow: 'visible' }"
-  [width]="300"
+  [width]="400"
+  header="{{'overview.dialog.waiting'|translate}}"
   dismissableMask="true" (onHide)="cancel()">
-  <p-progressSpinner [style]="{width: '60px', height: '60px'}"
+  <div class="ui-g-12 ui-md-6 ui-lg-4"></div>
+  <p-progressSpinner [style]="{width: '80px', height: '80px'}"
+                     class="ui-g-6 ui-md-6 ui-lg-4"
                      strokeWidth="8"
                      fill="#EEEEEE"
                      animationDuration="1s">
   </p-progressSpinner>
+  <div class="ui-g-12 ui-md-6 ui-lg-4"></div>
   <div class="ui-g-12 ui-md-12 ui-lg-12"></div>
-  <span>{{'overview.dialog.waiting'|translate}}</span>
   <span class="ui-g-12 ui-md-6 ui-lg-4"></span>
   <button pButton class="ui-button-secondary ui-g-12 ui-md-6 ui-lg-4"
           (click)="cancel()"
