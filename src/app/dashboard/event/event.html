@@ -3,14 +3,24 @@
     {{'dashboard.event.header'|translate}}
   </div>
 </div>
-<div *ngFor="let event of events" class="ui-g item">
-  <div class="ui-g-5 {{event.level.toString()}} text">
-    {{event.message}}
+<ng-container *ngIf="events.length > 0; then hasContent else noContent;"></ng-container>
+<ng-template #hasContent>
+  <div *ngFor="let event of events" class="ui-g item">
+    <div class="ui-g-5 {{event.level.toString()}} text">
+      {{event.message}}
+    </div>
+    <div class="ui-g-3 muted text">
+      {{'dashboard.event.area'|translate}}: <b>{{event.areaName}}</b>
+    </div>
+    <div class="ui-g-4 text muted text-right">
+      {{event.device.name}}
+    </div>
   </div>
-  <div class="ui-g-3">
-    <span class="muted text">{{'dashboard.event.area'|translate}}:</span> {{event.areaName}}
+</ng-template>
+<ng-template #noContent>
+  <div class="ui-g">
+    <div class="ui-g-12">
+      <span class="muted">{{'dashboard.event.noContent'|translate}}</span>
+    </div>
   </div>
-  <div class="ui-g-4 text muted">
-    {{event.deviceName}}
-  </div>
-</div>
+</ng-template>

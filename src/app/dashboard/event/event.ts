@@ -1,6 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {Event, EventLevel} from './event.type';
+import {BatteryState} from '../../device/device.type';
+import {DashboardEventService} from './event.service';
+import {DashboardService} from '../dashboard.service';
 
 @Component({
   templateUrl: 'event.html',
@@ -11,31 +14,47 @@ export class EventComponent implements OnInit {
 
   events: Event[] = [];
 
-  constructor(public translateService: TranslateService) {
+  private eventsMap: Map<number, Event> = new Map<number, Event>();
+  private notApplicable: string;
+
+  constructor(public translateService: TranslateService,
+              private eventService: DashboardEventService,
+              private dashboardService: DashboardService) {
     this.translateService.setDefaultLang('en');
   }
 
   ngOnInit(): void {
-    // TODO: connect to info websocket
-    this.events.push({
-      level: EventLevel[EventLevel.DANGER].toLowerCase(),
-      message: 'Battery level is 15%',
-      areaName: 'N/a',
-      deviceName: 'Tag no. 1'
+    this.translateService.get('dashboard.event.notApplicable').subscribe((translated: string) => {
+      this.notApplicable = translated;
     });
+  }
 
-    this.events.push({
-      level: EventLevel[EventLevel.WARNING].toLowerCase(),
-      message: 'Battery level is 55%',
-      areaName: 'N/a',
-      deviceName: 'Tag no. 2'
+  addBatteryStateEvent(batteryStates: BatteryState[]): void {
+    batteryStates.forEach((batteryState: BatteryState) => {
+      if (batteryState.percentage < 75 && !this.eventsMap.has(batteryState.deviceShortId)) {
+        this.translateService.get(
+          'dashboard.event.batteryLevelLow',
+          {percentage: batteryState.percentage.toFixed(0)}).subscribe((translated: string) => {
+          this.eventsMap.set(batteryState.deviceShortId, {
+            level: (batteryState.percentage < 75 && batteryState.percentage > 50 ? EventLevel[EventLevel.WARNING] : EventLevel[EventLevel.DANGER]).toLowerCase(),
+            message: translated,
+            areaName: this.notApplicable,
+            device: {
+              shortId: batteryState.deviceShortId,
+              name: this.dashboardService.getDeviceName(batteryState.deviceShortId)
+            }
+          });
+          this.eventService.emitEventAdded();
+        });
+      } else if (this.eventsMap.has(batteryState.deviceShortId)) {
+        this.eventsMap.delete(batteryState.deviceShortId);
+        this.eventService.emitEventRemoved();
+      }
     });
+    this.convertEventsMapToArray();
+  }
 
-    this.events.push({
-      level: EventLevel[EventLevel.WARNING].toLowerCase(),
-      message: 'Battery level is 75%',
-      areaName: 'N/a',
-      deviceName: 'Tag no. 3'
-    });
+  private convertEventsMapToArray() {
+    this.events = Array.from(this.eventsMap, ([key, value]) => value);
   }
 }

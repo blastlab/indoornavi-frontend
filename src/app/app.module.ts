@@ -129,6 +129,8 @@ import {BatteryIndicatorComponent} from './device/battery-indicator';
 import {DashboardComponent} from './dashboard/dashboard';
 import {CounterComponent} from './dashboard/counter/counter';
 import {EventComponent} from './dashboard/event/event';
+import {DashboardEventService} from './dashboard/event/event.service';
+import {DashboardService} from './dashboard/dashboard.service';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -286,7 +288,9 @@ export function HttpLoaderFactory(http: Http) {
     PathService,
     NavigationService,
     NavigationController,
-    ModelsConfig
+    ModelsConfig,
+    DashboardEventService,
+    DashboardService
   ], bootstrap: [AppComponent]
 })
 

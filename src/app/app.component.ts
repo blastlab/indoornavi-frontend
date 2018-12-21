@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewChecked, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {AuthGuard} from './auth/auth.guard';
 import {ActivatedRoute, Params} from '@angular/router';
 import {MenuItem} from 'primeng/primeng';
@@ -12,22 +12,24 @@ import {Helper} from './shared/utils/helper/helper';
   templateUrl: './app.html',
   styleUrls: ['./app.css']
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements OnInit, OnDestroy, AfterViewChecked {
   isUserLoggedIn: boolean;
   isDisplayedInIFrame: boolean = false;
   sidebar: boolean = false;
-  breadcrumbs: MenuItem[];
+  breadcrumbs: MenuItem[] = [];
   isPublic: boolean = false;
   isMobile = false;
   private userLoggedInSubscription: Subscription;
   private breadcrumbIsReadySubscription: Subscription;
 
-  constructor(private authGuard: AuthGuard, private route: ActivatedRoute, private breadcrumbService: BreadcrumbService, private cd: ChangeDetectorRef, private location: Location) {}
+  constructor(private authGuard: AuthGuard,
+              private route: ActivatedRoute,
+              private breadcrumbService: BreadcrumbService,
+              private cd: ChangeDetectorRef,
+              private location: Location) {
+  }
 
   ngOnInit() {
-    if (localStorage.getItem('currentUser')) {
-      localStorage.removeItem('currentUser');
-    }
     this.isMobile = Helper.detectMobile();
     this.isPublic = !!this.location.path().match(/embedded/);
     this.route.queryParams.subscribe((params: Params) => {
@@ -37,13 +39,21 @@ export class AppComponent implements OnInit, OnDestroy {
     });
     this.isUserLoggedIn = !!localStorage.getItem('currentUser');
     this.userLoggedInSubscription = this.authGuard.userLoggedIn().subscribe((loggedIn: boolean) => {
+      this.isUserLoggedIn = loggedIn;
       if (!loggedIn) {
         localStorage.removeItem('currentUser');
       }
-      this.isUserLoggedIn = loggedIn;
     });
     this.breadcrumbIsReadySubscription = this.breadcrumbService.isReady().subscribe((breadcrumbs: MenuItem[]) => {
       this.breadcrumbs = breadcrumbs;
+      if (breadcrumbs.findIndex((breadcrumb: MenuItem) => {
+        return breadcrumb.label === 'Dashboard';
+      }) < 0) {
+        this.breadcrumbs.unshift({
+          label: 'Dashboard',
+          routerLink: '/dashboard', routerLinkActiveOptions: {exact: true}
+        });
+      }
       this.cd.detectChanges();
     });
     this.hideSidebar();
@@ -65,5 +75,9 @@ export class AppComponent implements OnInit, OnDestroy {
   logout(): void {
     this.isUserLoggedIn = false;
     this.hideSidebar();
+  }
+
+  ngAfterViewChecked(): void {
+    this.cd.detectChanges();
   }
 }

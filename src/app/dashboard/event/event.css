@@ -1,16 +1,12 @@
-.header {
-  margin-top: 15px;
-}
-
 .text {
   font-size: 0.8em;
 }
 
-.warning {
+.danger {
   color: #f22;
 }
 
-.danger {
+.warning {
   color: #f82;
 }
 

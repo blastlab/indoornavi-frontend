@@ -71,7 +71,8 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   private socketStream: Observable<any>;
 
   constructor(public translate: TranslateService,
-              private socketService: SocketService,
+              private deviceRegistrationSocket: SocketService,
+              private infoSocket: SocketService,
               private messageService: MessageServiceWrapper,
               private ngZone: NgZone,
               private route: ActivatedRoute,
@@ -244,7 +245,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
         type: CommandType.FirmwareUpdate,
         args: new UpdateRequest(this.devicesToUpdate.map((device: UWB): number => device.shortId), base64)
       };
-      this.socketService.send(payload);
+      this.infoSocket.send(payload);
       this.messageService.success('uploading.firmware.message');
     });
   }
@@ -264,7 +265,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       type: CommandType.BatteryUpdate,
       args: noBatteryStatus
     };
-    this.socketService.send(socketPayload);
+    this.infoSocket.send(socketPayload);
   }
 
   batteryPercentage(deviceId: number): number {
@@ -364,7 +365,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   private connectToRegistrationSocket(): void {
-    const stream = this.socketService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.deviceType}`);
+    const stream = this.deviceRegistrationSocket.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.deviceType}`);
     this.socketRegistrationSubscription = stream.subscribe((devices: Array<UWB>): void => {
       this.ngZone.run((): void => {
         devices.forEach((device: UWB): void => {
@@ -386,7 +387,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   private openInfoClientSocketConnection(): void {
-    this.socketStream = this.socketService.connect(`${Config.WEB_SOCKET_URL}info?client&${this.deviceType}`);
+    this.socketStream = this.infoSocket.connect(`${Config.WEB_SOCKET_URL}info?client&${this.deviceType}`);
     this.firmwareSocketSubscription = this.socketStream.subscribe((message: DeviceMessage | FirmwareMessage | BatteryMessage): void => {
       switch (message.type) {
         case 'INFO':
