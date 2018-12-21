@@ -95,7 +95,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   cancel(): void {
     this.displayDialog = false;
-}
+  }
 
   private setDateRequestFormat(): void {
     let hoursFrom = new Date(this.dateFrom).getHours().toString();
@@ -194,32 +194,32 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private loadMapImage(): Promise<number[]> {
-      return new Promise((resolve) => {
-        const canvas = document.getElementsByTagName('canvas').item(0);
-        const newCanvas = document.createElement('canvas');
-        newCanvas.setAttribute('id', 'image-heatmap-canvas');
-        canvas.parentElement.appendChild(newCanvas);
-        const ctx = newCanvas.getContext('2d');
-        const background = new Image();
-        background.src = this.imageUrl;
-        const result: number[] = [];
-        let width = 0;
-        let height = 0;
-        const self = this;
-        background.onload = function () {
-          width += background.width;
-          height += background.height;
-          self.heatmapImageEdgePoint.x = self.heatMapWidth - self.heatmapOffsetX * 2;
-          self.heatmapImageEdgePoint.y = self.heatMapHeight - self.heatmapOffsetY * 2;
-          ctx.drawImage(background, self.heatmapOffsetX, self.heatmapOffsetY,
-            self.heatmapImageEdgePoint.x, self.heatmapImageEdgePoint.y);
-          result.push(width);
-          result.push(height);
-          resolve(result);
-        }.bind(self);
-        newCanvas.setAttribute('width', `${this.heatMapWidth}px`);
-        newCanvas.setAttribute('height', `${this.heatMapHeight}px`);
-      });
+    return new Promise((resolve) => {
+      const canvas = document.getElementsByTagName('canvas').item(0);
+      const newCanvas = document.createElement('canvas');
+      newCanvas.setAttribute('id', 'image-heatmap-canvas');
+      canvas.parentElement.appendChild(newCanvas);
+      const ctx = newCanvas.getContext('2d');
+      const background = new Image();
+      background.src = this.imageUrl;
+      const result: number[] = [];
+      let width = 0;
+      let height = 0;
+      const self = this;
+      background.onload = function () {
+        width += background.width;
+        height += background.height;
+        self.heatmapImageEdgePoint.x = self.heatMapWidth - self.heatmapOffsetX * 2;
+        self.heatmapImageEdgePoint.y = self.heatMapHeight - self.heatmapOffsetY * 2;
+        ctx.drawImage(background, self.heatmapOffsetX, self.heatmapOffsetY,
+          self.heatmapImageEdgePoint.x, self.heatmapImageEdgePoint.y);
+        result.push(width);
+        result.push(height);
+        resolve(result);
+      }.bind(self);
+      newCanvas.setAttribute('width', `${this.heatMapWidth}px`);
+      newCanvas.setAttribute('height', `${this.heatMapHeight}px`);
+    });
   }
 
   private loadData(): void {
@@ -230,14 +230,12 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
     };
     this.reportService.getCoordinates(request).first().subscribe((payload: CoordinatesIncident[]): void => {
       if (this.displayDialog) {
-        // build data array from received payload
-        // });
+        // TODO:  build data array from received payload
         const data: number[][] = this.mockGenerateData();
         this.chartOptions.xAxis.data = data[0];
         this.chartOptions.yAxis.data = data[1];
         this.chartOptions.series[0].data = data[2];
         this.chartOptions = Object.assign({}, this.chartOptions);
-        // payload.forEach((incident: CoordinatesIncident) => {
         this.messageService.success('overview.message.loadedSuccess');
         this.displayDialog = false;
       } else {
@@ -255,15 +253,16 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
     for (let i = 0; i <= this.gradientsInX; i++) {
       for (let j = 0; j <= this.gradientsInY; j++) {
         let noiseValue = noise.perlin2(i / 40, j / 20) * 10 + 3;
-        noiseValue = noiseValue > .5 ? noiseValue : .5;
+        noiseValue = noiseValue > .4 ? noiseValue : .4;
+        noiseValue = noiseValue < 10 ? noiseValue : 10;
         data.push([i, j, noiseValue]);
-        }
-        xData.push(i);
       }
-    for (let j = 0; j < this.gradientsInY; j++) {
-        yData.push(j);
-      }
-      return [xData, yData, data];
+      xData.push(i);
     }
-
+    for (let j = 0; j < this.gradientsInY; j++) {
+      yData.push(j);
+    }
+    return [xData, yData, data];
   }
+
+}
