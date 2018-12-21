@@ -88,20 +88,16 @@ export class ApiService {
     const marker: Marker = <Marker>objectMetadata.object;
     const markerOnMap: MarkerOnMap = new MarkerOnMap(point, container, ApiService.getDefaultConfiguration(objectMetadata), this.models);
     markerOnMap.setId(objectMetadata.object.id);
-
     if (!!marker.icon) {
-      markerOnMap.setIcon(marker.icon);
+      marker.isUrl ? markerOnMap.setIconFromUrl(marker.icon) : markerOnMap.setIconFromBase64(marker.icon);
     }
-
     if (!!marker.events) {
       markerOnMap.addEvents(marker.events, originMessageEvent);
     }
-
     if (!!marker.label) {
       marker.label = marker.label.length > this.models.labelTextLength ? `${marker.label.slice(0, this.models.labelTextLength - 1)}...` : marker.label;
       markerOnMap.addLabel(marker.label);
     }
-
     this.objects.set(objectMetadata.object.id, markerOnMap.getGroup());
   }
 
@@ -139,6 +135,7 @@ export class ApiService {
     if (!!area.events) {
       area.events.forEach((event: string): void => {
         areaSelection.getGroup().on(event, (): void => {
+          // @ts-ignore
             originMessageEvent.source.postMessage({type: `${event}-${area.id}`, objectId: area.id}, '*');
           });
         });

@@ -17,12 +17,15 @@ export class NavigationService {
 
   calculateDijkstraShortestPath(lines: Line[], start: Point, finish: Point): Line[] {
     this.lines = lines;
-    this.calculateGraphWithPathParameters(start, finish);
-    this.searchForShortestPathInGraph();
-    return this.composeLinesFromParentsSchema();
+    const isPossibleToCalculatePath: boolean = this.calculateGraphWithPathParametersIfPossible(start, finish);
+    if (isPossibleToCalculatePath) {
+      this.searchForShortestPathInGraph();
+      return this.composeLinesFromParentsSchema();
+    }
+    return [];
   }
 
-  private calculateGraphWithPathParameters(start, finish): void {
+  private calculateGraphWithPathParametersIfPossible(start, finish): boolean {
     if (!this.lines.length) {
       return;
     }
@@ -136,7 +139,7 @@ export class NavigationService {
   }
 
   private composeLinesFromParentsSchema(): Line[] {
-    if (!this.cheapestVertexIndex) {
+    if (this.cheapestVertexIndex === null) {
       return [];
     }
     const shortestPathLine: Line[] = [];

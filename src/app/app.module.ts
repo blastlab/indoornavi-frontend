@@ -127,6 +127,7 @@ import {NavigationController} from './shared/utils/navigation/navigation.control
 import {TerminalService} from 'primeng/components/terminal/terminalservice';
 import {PanelModule} from 'primeng/components/panel/panel';
 import {ModelsConfig} from './map/models/models.config';
+import {DebuggerComponent} from './debug-hidden/debugger.component';
 import {BatteryIndicatorComponent} from './device/battery-indicator';
 import {TerminalMessageService} from './device/terminal/terminal-message.service';
 import {TerminalComponent} from './device/terminal/terminal';
@@ -190,7 +191,9 @@ export function HttpLoaderFactory(http: Http) {
     TagsFinderComponent,
     TagFollowerComponent,
     BatteryIndicatorComponent,
-    TerminalComponent
+    TerminalComponent,
+    TagFollowerComponent,
+    DebuggerComponent
   ],
   entryComponents: [
     PublicationDialogComponent,

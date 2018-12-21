@@ -5,9 +5,9 @@ import {Subject} from 'rxjs/Subject';
 
 @Injectable()
 export class ContextMenuService {
-  private itemsSet = new Subject<MenuItem[]>();
-  private menuToggled = new Subject<void>();
-  private hideMenu = new Subject<void>();
+  private itemsSet: Subject<MenuItem[]> = new Subject<MenuItem[]>();
+  private menuToggled: Subject<void> = new Subject<void>();
+  private hideMenu: Subject<void> = new Subject<void>();
 
   onItemsSet(): Observable<MenuItem[]> {
     return this.itemsSet.asObservable();

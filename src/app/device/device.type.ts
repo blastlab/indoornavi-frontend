@@ -108,8 +108,7 @@ export interface ClientRequest {
 }
 
 export interface DeviceStatus {
-  device: Device;
-  anchor: Anchor;
+  device: UWB;
   status: Status;
 }
 
@@ -141,6 +140,7 @@ export interface DeviceMessage {
 export interface TerminalMessage {
   message: string;
   internal: boolean;
+  shortId?: number;
 }
 
 export interface FirmwareMessage extends DeviceMessage {

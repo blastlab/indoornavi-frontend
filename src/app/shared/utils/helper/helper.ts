@@ -1,6 +1,3 @@
-import {APIObject} from '../drawing/api.types';
-import Metadata = APIObject.Metadata;
-
 export class Helper {
 
   static deepCopy<T>(obj: T): T {
@@ -12,12 +9,4 @@ export class Helper {
     return mobileDevices.test(navigator.userAgent);
   }
 
-  static assignId(type: string): Metadata {
-    return {
-      object: {
-        id: Math.round(new Date().getTime() * Math.random() * 1000)
-      },
-      type: type
-    };
-  }
 }

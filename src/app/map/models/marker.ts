@@ -1,4 +1,4 @@
-import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.builder';
+import {BoxSize, DrawBuilder, ElementType, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.builder';
 import {Point, PositionDescription} from '../../map-editor/map.type';
 import {DrawConfiguration} from '../../map-viewer/publication.type';
 import * as d3 from 'd3';
@@ -8,6 +8,11 @@ export class MarkerOnMap {
   protected svgGroupWrapper: SvgGroupWrapper;
 
   private id: number;
+  private markerUnicode = '\uf041'; // fa-map-marker
+  private customIconSize: BoxSize = {
+    width: 55,
+    height: 55
+  };
 
   constructor(
     protected coordinates: Point,
@@ -51,7 +56,7 @@ export class MarkerOnMap {
     });
   }
 
-  setIcon(icon: string): void {
+  setIconFromUrl(iconUrl: string): void {
     this.getGroup().removeElements(ElementType.ICON);
     const element: d3.selection = this.svgGroupWrapper
       .place({
@@ -60,7 +65,7 @@ export class MarkerOnMap {
       })
       .getGroup()
       .append('svg:image')
-      .attr('xlink:href', icon)
+      .attr('xlink:href', iconUrl)
       .attr('x', 0)
       .attr('y', 0)
       .attr('width', this.models.customIconSize.width)
@@ -68,6 +73,23 @@ export class MarkerOnMap {
       .attr('stroke', 'black')
       .attr('fill', 'black')
       .attr('cursor', 'pointer');
+    this.svgGroupWrapper.getElements(ElementType.ICON).push(element);
+  }
+
+  setIconFromBase64(iconBase64String: string): void {
+    this.getGroup().removeElements(ElementType.ICON);
+    const element: d3.selection = this.svgGroupWrapper
+      .place({
+        x: this.coordinates.x - this.customIconSize.width / 2,
+        y: this.coordinates.y - this.customIconSize.height
+      })
+      .getGroup()
+      .append('svg:image')
+      .attr('xlink:href', 'data:image/png;base64,' + iconBase64String)
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('width', this.customIconSize.width)
+      .attr('height', this.customIconSize.height);
     this.svgGroupWrapper.getElements(ElementType.ICON).push(element);
   }
 
