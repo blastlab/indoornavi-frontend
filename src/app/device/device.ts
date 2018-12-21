@@ -56,7 +56,6 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
 
   @ViewChild('deviceForm') deviceForm: NgForm;
 
-  private socketStream: Observable<any>;
   private firmwareSocketSubscription: Subscription;
   private socketRegistrationSubscription: Subscription;
   private translateUploadingFirmwareMessage: Subscription;
@@ -68,8 +67,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   private deviceHash: string | Int32Array;
 
   constructor(public translate: TranslateService,
-              private socketRegistrationService: SocketService,
-              private socketClientService: SocketService,
+              private socketService: SocketService,
               private messageService: MessageServiceWrapper,
               private ngZone: NgZone,
               private route: ActivatedRoute,
@@ -96,7 +94,9 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     this.translate.get(`device.details.${this.deviceType}.remove`).first().subscribe((value: string): void => {
       this.removeDialogTitle = value;
     });
-    this.openInfoClientSocketConnection();
+    this.terminalMessageService.onTerminalClose().takeUntil(this.subscriptionDestructor).subscribe(() => {
+      this.connectToRegistrationSocket();
+    });
     this.connectToRegistrationSocket();
     this.listenForTerminalClientRequest();
   }
@@ -119,7 +119,6 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     if (this.firmwareSocketSubscription) {
       this.firmwareSocketSubscription.unsubscribe();
     }
-    this.socketStream = null;
   }
 
   save(isValid: boolean): void {
@@ -244,7 +243,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
         type: CommandType[CommandType.UPDATE_FIRMWARE],
         args: new UpdateRequest(this.devicesToUpdate.map((device: UWB): number => device.shortId), base64)
       };
-      this.socketRegistrationService.send(payload);
+      this.socketService.send(payload);
       this.messageService.success('uploading.firmware.message');
     });
   }
@@ -264,7 +263,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
         type: CommandType[CommandType.CHECK_BATTERY_LEVEL],
         args: noBatteryStatus
       };
-    this.socketClientService.send(socketPayload);
+    this.socketService.send(socketPayload);
   }
 
   batteryPercentage(deviceId: number): number {
@@ -282,13 +281,14 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   initializeTerminal(device: UWB): void {
+    this.openInfoClientSocketConnection();
     this.terminalMessageService.setTerminalForDevice(device.shortId);
   }
 
   private listenForTerminalClientRequest(): void {
     this.terminalMessageService
       .onClientRequest().takeUntil(this.subscriptionDestructor).subscribe((socketPayload: ClientRequest): void => {
-        this.socketClientService.send(socketPayload);
+        this.socketService.send(socketPayload);
       });
   }
 
@@ -375,7 +375,13 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   private connectToRegistrationSocket(): void {
-    const stream = this.socketRegistrationService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.deviceType}`);
+    if (this.socketRegistrationSubscription) {
+      this.socketRegistrationSubscription.unsubscribe();
+    }
+    if (this.firmwareSocketSubscription) {
+      this.firmwareSocketSubscription.unsubscribe();
+    }
+    const stream = this.socketService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.deviceType}`);
     this.socketRegistrationSubscription = stream.subscribe((devices: Array<UWB>): void => {
       this.ngZone.run((): void => {
         devices.forEach((device: UWB): void => {
@@ -396,8 +402,14 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   private openInfoClientSocketConnection(): void {
-    this.socketStream = this.socketClientService.connect(`${Config.WEB_SOCKET_URL}info?client`);
-    this.firmwareSocketSubscription = this.socketStream.subscribe((message: DeviceMessage|FirmwareMessage|BatteryMessage): void => {
+    if (this.socketRegistrationSubscription) {
+      this.socketRegistrationSubscription.unsubscribe();
+    }
+    if (this.firmwareSocketSubscription) {
+      this.firmwareSocketSubscription.unsubscribe();
+    }
+    const socketStream: Observable<any> = this.socketService.connect(`${Config.WEB_SOCKET_URL}info?client`);
+    this.firmwareSocketSubscription = socketStream.subscribe((message: DeviceMessage|FirmwareMessage|BatteryMessage): void => {
       switch (message.type) {
         case 'INFO':
           this.handleInfoMessage((<FirmwareMessage>message));
