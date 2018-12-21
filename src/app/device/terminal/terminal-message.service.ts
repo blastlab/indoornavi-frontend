@@ -8,18 +8,9 @@ export class TerminalMessageService {
   private terminalOnDeviceInitialize: Subject<number> = new Subject<number>();
   private terminalCommand: Subject<DeviceMessage> = new Subject<DeviceMessage>();
   private clientRequest: Subject<ClientRequest> = new Subject<ClientRequest>();
-  private terminalOnClose: Subject<void> = new Subject<void>();
 
   setTerminalForDevice(deviceId: number): void {
     this.terminalOnDeviceInitialize.next(deviceId);
-  }
-
-  setTerminalClosed(): void {
-    this.terminalOnClose.next();
-  }
-
-  onTerminalClose(): Observable<void> {
-    return this.terminalOnClose.asObservable();
   }
 
   onTerminalInitialized(): Observable<number> {

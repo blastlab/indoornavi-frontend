@@ -65,10 +65,6 @@ export class TerminalComponent implements OnInit, OnDestroy {
     this.removeTerminalKeyDownListener();
   }
 
-  closed(): void {
-    this.terminalMessageService.setTerminalClosed();
-  }
-
   private setTerminalCommandHandler(): void {
     this.terminalService.commandHandler.takeUntil(this.subscriptionDestructor).subscribe((command: string): void => {
       let responseMessage = '';

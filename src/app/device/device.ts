@@ -65,6 +65,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   private translateUploadingFirmwareMessage: Subscription;
   private confirmBodyTranslate: Subscription;
   private uploadBodyTranslate: Subscription;
+  private socketStream: Observable<any>;
   private subscriptionDestructor: Subject<void> = new Subject<void>();
   private confirmBody: string;
   private devicesWaitingForNewFirmwareVersion: DeviceStatus[] = [];
@@ -72,6 +73,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
 
   constructor(public translate: TranslateService,
               private socketService: SocketService,
+              private socketClientService: SocketService,
               private messageService: MessageServiceWrapper,
               private ngZone: NgZone,
               private route: ActivatedRoute,
@@ -98,10 +100,6 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     this.translate.get(`device.details.${this.deviceType}.remove`).first().subscribe((value: string): void => {
       this.removeDialogTitle = value;
     });
-    this.terminalMessageService.onTerminalClose().takeUntil(this.subscriptionDestructor).subscribe(() => {
-      this.connectToRegistrationSocket();
-    });
-    this.connectToRegistrationSocket();
     this.listenForTerminalClientRequest();
     this.translate.get('device.disabled.tooltip').subscribe(value => {
       this.checkBoxDisabledTooltip = value;
@@ -291,7 +289,6 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   initializeTerminal(device: UWB): void {
-    this.openInfoClientSocketConnection();
     this.terminalMessageService.setTerminalForDevice(device.shortId);
   }
 
@@ -385,12 +382,6 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   private connectToRegistrationSocket(): void {
-    if (this.socketRegistrationSubscription) {
-      this.socketRegistrationSubscription.unsubscribe();
-    }
-    if (this.firmwareSocketSubscription) {
-      this.firmwareSocketSubscription.unsubscribe();
-    }
     const stream = this.socketService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.deviceType}`);
     this.socketRegistrationSubscription = stream.subscribe((devices: Array<UWB>): void => {
       this.ngZone.run((): void => {
@@ -482,7 +473,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
 
   private handleCodeErrorMessage(message: DeviceMessage): void {
     this.deviceBatteryStatus.forEach((status: BatteryStatus, id: number): void => {
-      if (message.shortId === id) {
+      if (message.sinkShortId === id) {
         status.message = message.code;
         status.percentage = null;
       }
