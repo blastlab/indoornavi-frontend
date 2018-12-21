@@ -102,14 +102,18 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
     let minutesFrom: string = new Date(this.dateFrom).getMinutes().toString();
     let hoursTo = new Date(this.dateFrom).getHours().toString();
     let minutesTo: string = new Date(this.dateFrom).getMinutes().toString();
+    let dayFrom: string = new Date(this.dateFrom).getDate().toString();
+    let dayTo: string = new Date(this.dateTo).getDate().toString();
+    dayFrom = parseInt(dayFrom, 10) > 9 ? dayFrom : `0${dayFrom}`;
+    dayTo = parseInt(dayTo, 10) > 9 ? dayTo : `0${dayTo}`;
     hoursFrom = parseInt(hoursFrom, 10) > 9 ? hoursFrom : `0${hoursFrom}`;
     hoursTo = parseInt(hoursTo, 10) > 9 ? hoursTo : `0${hoursTo}`;
     minutesFrom = parseInt(minutesFrom, 10) > 9 ? minutesFrom : `0${minutesFrom}`;
     minutesTo = parseInt(minutesTo, 10) > 9 ? minutesTo : `0${minutesTo}`;
     this.dateFromRequestFormat = `${new Date(this.dateFrom).getFullYear()}-${(parseInt(new Date(this.dateFrom).getMonth().toString(), 10) + 1)}` +
-      `-${new Date(this.dateFrom).getDate()}T${hoursFrom}:${minutesFrom}:00`;
+      `-${dayFrom}T${hoursFrom}:${minutesFrom}:00`;
     this.dateToRequestFormat = `${new Date(this.dateTo).getFullYear()}-${(parseInt(new Date(this.dateTo).getMonth().toString(), 10) + 1)}` +
-      `-${new Date(this.dateTo).getDate()}T${hoursTo}:${minutesTo}:00`;
+      `-${dayTo}T${hoursTo}:${minutesTo}:00`;
   }
 
   private calculateEChartOffset(): void {
@@ -213,6 +217,12 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
         self.heatmapImageEdgePoint.y = self.heatMapHeight - self.heatmapOffsetY * 2;
         ctx.drawImage(background, self.heatmapOffsetX, self.heatmapOffsetY,
           self.heatmapImageEdgePoint.x, self.heatmapImageEdgePoint.y);
+        // todo: heat map should to have dimension set from img map not the other way around, or maybe zooming can be applied.
+        self.echartsInstance.resize({
+          width: self.heatMapWidth,
+          height: self.heatMapHeight,
+          silent: false
+        });
         result.push(width);
         result.push(height);
         resolve(result);

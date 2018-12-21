@@ -1,5 +1,6 @@
 export const echartHeatmapConfig = {
   animation: false,
+  renderAsImage: true,
   xAxis: {
     type: 'category',
     data: [],
