@@ -98,10 +98,12 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
 }
 
   private setDateRequestFormat(): void {
-    const hoursFrom = new Date(this.dateFrom).getHours();
+    let hoursFrom = new Date(this.dateFrom).getHours().toString();
     let minutesFrom: string = new Date(this.dateFrom).getMinutes().toString();
-    const hoursTo = new Date(this.dateFrom).getHours();
+    let hoursTo = new Date(this.dateFrom).getHours().toString();
     let minutesTo: string = new Date(this.dateFrom).getMinutes().toString();
+    hoursFrom = parseInt(hoursFrom, 10) > 9 ? hoursFrom : `0${hoursFrom}`;
+    hoursTo = parseInt(hoursTo, 10) > 9 ? hoursTo : `0${hoursTo}`;
     minutesFrom = parseInt(minutesFrom, 10) > 9 ? minutesFrom : `0${minutesFrom}`;
     minutesTo = parseInt(minutesTo, 10) > 9 ? minutesTo : `0${minutesTo}`;
     this.dateFromRequestFormat = `${new Date(this.dateFrom).getFullYear()}-${(parseInt(new Date(this.dateFrom).getMonth().toString(), 10) + 1)}` +
