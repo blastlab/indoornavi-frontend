@@ -72,7 +72,7 @@ export class Sink extends Anchor {
 export class Bluetooth extends Device {
   major: number;
   minor?: number;
-  powerTransmition?: number;
+  powerTransmission?: number;
 
   constructor(
     verified: boolean,
@@ -81,12 +81,12 @@ export class Bluetooth extends Device {
     name?: string,
     macAddress?: string,
     minor?: number,
-    powerTransmition?: number
+    powerTransmission?: number
   ) {
     super(verified, id, name, macAddress);
     this.major = major;
     this.minor = minor;
-    this.powerTransmition = powerTransmition;
+    this.powerTransmission = powerTransmission;
   }
 }
 
@@ -95,6 +95,11 @@ export class UpdateRequest {
     this.devicesShortIds = devicesShortIds;
     this.base64file = base64file;
   }
+}
+
+export interface CommandArguments {
+  value: string;
+  sinkShortId: number;
 }
 
 export interface ClientRequest {
@@ -128,6 +133,13 @@ export interface DeviceMessage {
   type: string;
   devices?: any[];
   code?: string;
+  value?: string;
+  sinkShortId?: number;
+}
+
+export interface TerminalMessage {
+  message: string;
+  internal: boolean;
   shortId?: number;
 }
 
@@ -148,6 +160,7 @@ export enum Status {
 }
 
 export enum CommandType {
-  BatteryUpdate = 'CHECK_BATTERY_LEVEL',
-  FirmwareUpdate = 'UPDATE_FIRMWARE'
+  CHECK_BATTERY_LEVEL,
+  UPDATE_FIRMWARE,
+  RAW_COMMAND
 }
