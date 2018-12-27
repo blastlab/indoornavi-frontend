@@ -7,8 +7,9 @@ export class CounterTimer extends Timer {
 
   public start(): void {
     if (!this.interval) {
-      this.interval = setInterval(() => {
+      this.interval = setTimeout(() => {
         this.callback(this.shortId);
+        this.start();
       }, this.millis);
     }
   }

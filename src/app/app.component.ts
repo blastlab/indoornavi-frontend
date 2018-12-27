@@ -46,9 +46,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewChecked {
     });
     this.breadcrumbIsReadySubscription = this.breadcrumbService.isReady().subscribe((breadcrumbs: MenuItem[]) => {
       this.breadcrumbs = breadcrumbs;
-      if (breadcrumbs.findIndex((breadcrumb: MenuItem) => {
-        return breadcrumb.label === 'Dashboard';
-      }) < 0) {
+      if (!this.hasDashboardInBreadcrumbsAlready()) {
         this.breadcrumbs.unshift({
           label: 'Dashboard',
           routerLink: '/dashboard', routerLinkActiveOptions: {exact: true}
@@ -79,5 +77,11 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   ngAfterViewChecked(): void {
     this.cd.detectChanges();
+  }
+
+  hasDashboardInBreadcrumbsAlready(): boolean {
+    return (this.breadcrumbs.findIndex((breadcrumb: MenuItem) => {
+      return breadcrumb.label === 'Dashboard';
+    }) >= 0);
   }
 }
