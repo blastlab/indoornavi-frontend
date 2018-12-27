@@ -1,4 +1,4 @@
-import {Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild, ViewChildren, ViewEncapsulation} from '@angular/core';
+import {Component, ElementRef, Inject, NgZone, OnDestroy, OnInit, ViewChild, ViewChildren, ViewEncapsulation} from '@angular/core';
 import {Observable, Subject, Subscription} from 'rxjs/Rx';
 import {Config} from '../../config';
 import {TranslateService} from '@ngx-translate/core';
@@ -12,7 +12,8 @@ import {
   BatteryStatus,
   ClientRequest,
   CommandType,
-  Device, DeviceMessage,
+  Device,
+  DeviceMessage,
   DeviceShortId,
   DeviceStatus,
   FirmwareMessage,
@@ -31,7 +32,11 @@ import {TerminalMessageService} from './terminal/terminal-message.service';
 @Component({
   templateUrl: './device.html',
   styleUrls: ['./device.css'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  providers: [
+    { provide: 'registration', useClass: SocketService },
+    { provide: 'info', useClass: SocketService }
+  ]
 })
 export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   public verified: Anchor[] = [];
@@ -72,8 +77,8 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   private deviceHash: string | Int32Array;
 
   constructor(public translate: TranslateService,
-              private socketService: SocketService,
-              private socketClientService: SocketService,
+              @Inject('info') private infoSocketService: SocketService,
+              @Inject('registration') private registrationSocketService: SocketService,
               private messageService: MessageServiceWrapper,
               private ngZone: NgZone,
               private route: ActivatedRoute,
@@ -251,7 +256,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
         type: CommandType[CommandType.UPDATE_FIRMWARE],
         args: new UpdateRequest(this.devicesToUpdate.map((device: UWB): number => device.shortId), base64)
       };
-      this.socketService.send(payload);
+      this.infoSocketService.send(payload);
       this.messageService.success('uploading.firmware.message');
     });
   }
@@ -271,7 +276,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
         type: CommandType[CommandType.CHECK_BATTERY_LEVEL],
         args: noBatteryStatus
       };
-    this.socketService.send(socketPayload);
+    this.infoSocketService.send(socketPayload);
   }
 
   batteryPercentage(deviceId: number): number {
@@ -295,7 +300,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   private listenForTerminalClientRequest(): void {
     this.terminalMessageService
       .onClientRequest().takeUntil(this.subscriptionDestructor).subscribe((socketPayload: ClientRequest): void => {
-        this.socketService.send(socketPayload);
+        this.infoSocketService.send(socketPayload);
       });
   }
 
@@ -382,7 +387,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   private connectToRegistrationSocket(): void {
-    const stream = this.socketService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.deviceType}`);
+    const stream = this.registrationSocketService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.deviceType}`);
     this.socketRegistrationSubscription = stream.subscribe((devices: Array<UWB>): void => {
       this.ngZone.run((): void => {
         devices.forEach((device: UWB): void => {
@@ -404,7 +409,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   private openInfoClientSocketConnection(): void {
-    this.socketStream = this.socketClientService.connect(`${Config.WEB_SOCKET_URL}info?client&${this.deviceType}`);
+    this.socketStream = this.infoSocketService.connect(`${Config.WEB_SOCKET_URL}info?client&${this.deviceType}`);
     this.firmwareSocketSubscription = this.socketStream.subscribe((message: DeviceMessage | FirmwareMessage | BatteryMessage): void => {
       switch (message.type) {
         case 'INFO':
@@ -478,5 +483,12 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
         status.percentage = null;
       }
     });
+  }
+
+  preventDoubleClick(event: Event) {
+    // workaround to prevent double click on checkbox moving item from one list to another
+    if (event.srcElement.classList.contains('ui-chkbox-box')) {
+      event.stopPropagation();
+    }
   }
 }
