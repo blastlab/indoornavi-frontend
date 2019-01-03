@@ -299,7 +299,7 @@ export function HttpLoaderFactory(http: Http) {
     TerminalService,
     NavigationController,
     ModelsConfig,
-    TerminalMessageServic,
+    TerminalMessageService,
     DashboardEventService,
     DashboardService
   ], bootstrap: [AppComponent]

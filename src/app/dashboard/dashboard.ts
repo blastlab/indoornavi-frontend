@@ -81,7 +81,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         });
 
         const socketPayload: ClientRequest = {
-          type: CommandType.BatteryUpdate,
+          type: CommandType[CommandType.CHECK_BATTERY_LEVEL],
           args: checkBatteryStatuses
         };
         this.infoSocket.send(socketPayload);
