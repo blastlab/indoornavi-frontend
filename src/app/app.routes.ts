@@ -18,9 +18,10 @@ import {NotSupportedBrowserComponent} from './not-supported-browser/not-supporte
 import {TagsFinderComponent} from './tags-finder/tags-finder.component';
 import {TagFollowerComponent} from './map-viewer/views/tagfollower/tag-follower';
 import {DebuggerComponent} from './debug-hidden/debugger.component';
+import {DashboardComponent} from './dashboard/dashboard';
 
 export const appRoutes: Routes = [
-  {path: '', redirectTo: '/complexes', pathMatch: 'full'},
+  {path: '', redirectTo: '/dashboard', pathMatch: 'full'},
   {path: 'login', component: AuthComponent},
   {path: 'logout', component: AuthComponent},
   {path: 'tagsfinder', component: TagsFinderComponent, canActivate: [CanRead], data: {permission: 'TAG'}},
@@ -47,7 +48,8 @@ export const appRoutes: Routes = [
     data: {permission: 'FLOOR'}
   },
   {path: 'unauthorized', component: UnauthorizedComponent},
-  {path: 'notSupportedBrowser', component: NotSupportedBrowserComponent, canActivate: [CanRead], data: {permissions: 'DEBUG'}},
-  {path: 'debug', component: DebuggerComponent},
+  {path: 'notSupportedBrowser', component: NotSupportedBrowserComponent},
+  {path: 'debug', component: DebuggerComponent, canActivate: [CanRead], data: {permissions: 'DEBUG'}},
+  {path: 'dashboard', component: DashboardComponent},
   {path: '**', redirectTo: '/complexes'}
 ];

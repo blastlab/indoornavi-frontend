@@ -13,7 +13,6 @@ import {BreadcrumbService} from '../../../shared/services/breadcrumbs/breadcrumb
 import {MapClickService} from '../../../shared/services/map-click/map-click.service';
 import {PathService} from '../../services/path/path.service';
 import {Floor} from '../../../floor/floor.type';
-import {MeasureSocketDataTag} from '../../publication.type';
 import {Config} from '../../../../config';
 import {MessageServiceWrapper} from '../../../shared/services/message/message.service';
 import {Scale} from '../../../map-editor/tool-bar/tools/scale/scale.type';
@@ -23,6 +22,7 @@ import {Tag} from '../../../device/device.type';
 import {ComplexService} from '../../../complex/complex.service';
 import {NavigationController} from '../../../shared/utils/navigation/navigation.controller';
 import {ModelsConfig} from '../../../map/models/models.config';
+import {TagTracerData} from '../../../tags-finder/tags-finder.type';
 
 
 @Component({
@@ -84,7 +84,7 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
 
   protected subscribeToMapParametersChange(): void {
     const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}tagTracer?client`);
-    stream.takeUntil(this.subscriptionDestructor).subscribe((tagData: MeasureSocketDataTag): void => {
+    stream.takeUntil(this.subscriptionDestructor).subscribe((tagData: TagTracerData): void => {
       if (this.tagFloorId && this.tagShortId === +tagData.tag.shortId) {
         if (this.tagFloorId !== +tagData.floor.id) {
           this.redirectTo(this.router.url);

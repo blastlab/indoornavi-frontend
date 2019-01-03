@@ -1,5 +1,5 @@
 export class Device {
-  verified: boolean;
+  verified?: boolean;
   id?: number;
   name?: string;
   macAddress?: string;

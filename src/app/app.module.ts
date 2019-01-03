@@ -129,6 +129,11 @@ import {PanelModule} from 'primeng/components/panel/panel';
 import {ModelsConfig} from './map/models/models.config';
 import {DebuggerComponent} from './debug-hidden/debugger.component';
 import {BatteryIndicatorComponent} from './device/battery-indicator';
+import {DashboardComponent} from './dashboard/dashboard';
+import {CounterComponent} from './dashboard/counter/counter';
+import {EventComponent} from './dashboard/event/event';
+import {DashboardEventService} from './dashboard/event/event.service';
+import {DashboardService} from './dashboard/dashboard.service';
 import {TerminalMessageService} from './device/terminal/terminal-message.service';
 import {TerminalComponent} from './device/terminal/terminal';
 
@@ -193,7 +198,10 @@ export function HttpLoaderFactory(http: Http) {
     BatteryIndicatorComponent,
     TerminalComponent,
     TagFollowerComponent,
-    DebuggerComponent
+    DebuggerComponent,
+    DashboardComponent,
+    CounterComponent,
+    EventComponent
   ],
   entryComponents: [
     PublicationDialogComponent,
@@ -291,7 +299,9 @@ export function HttpLoaderFactory(http: Http) {
     TerminalService,
     NavigationController,
     ModelsConfig,
-    TerminalMessageService
+    TerminalMessageServic,
+    DashboardEventService,
+    DashboardService
   ], bootstrap: [AppComponent]
 })
 

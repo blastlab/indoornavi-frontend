@@ -1,20 +1,26 @@
 export class Timer {
-  private interval: any;
+  protected interval: any;
 
-  constructor(private callback: Function, private millis: number) {
-    this.interval = setInterval(callback, millis);
+  constructor(protected callback: Function, protected millis: number) {
+    this.interval = setTimeout(() => {
+      this.callback();
+      this.start();
+    }, millis);
   }
 
   public stop(): void {
     if (this.interval) {
-      clearInterval(this.interval);
+      clearTimeout(this.interval);
       this.interval = null;
     }
   }
 
   public start(): void {
     if (!this.interval) {
-      this.interval = setInterval(this.callback, this.millis);
+      this.interval = setTimeout(() => {
+        this.callback();
+        this.start();
+      }, this.millis);
     }
   }
 
