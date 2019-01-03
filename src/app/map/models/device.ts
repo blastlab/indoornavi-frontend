@@ -184,6 +184,7 @@ export class DeviceInEditor {
         };
         element = null;
         if (!!coordinates && !!coordinatesBackUp) {
+          coordinatesBackUp = null;
           this.devicePlacerService.emitDevicePositionChanged();
         }
       });
