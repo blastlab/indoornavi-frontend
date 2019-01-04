@@ -1,5 +1,5 @@
-import {Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild, ViewChildren, ViewEncapsulation} from '@angular/core';
-import {Observable, Subscription} from 'rxjs/Rx';
+import {Component, ElementRef, Inject, NgZone, OnDestroy, OnInit, ViewChild, ViewChildren, ViewEncapsulation} from '@angular/core';
+import {Observable, Subject, Subscription} from 'rxjs/Rx';
 import {Config} from '../../config';
 import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute} from '@angular/router';
@@ -7,9 +7,12 @@ import {DeviceService} from './device.service';
 import {CrudComponent, CrudHelper} from '../shared/components/crud/crud.component';
 import {
   Anchor,
-  BatteryMessage, BatteryStatus, ClientRequest, CommandType,
-  Device,
+  BatteryMessage,
   BatteryState,
+  BatteryStatus,
+  ClientRequest,
+  CommandType,
+  Device,
   DeviceMessage,
   DeviceShortId,
   DeviceStatus,
@@ -24,11 +27,16 @@ import {MessageServiceWrapper} from '../shared/services/message/message.service'
 import {SocketService} from '../shared/services/socket/socket.service';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
 import {Md5} from 'ts-md5/dist/md5';
+import {TerminalMessageService} from './terminal/terminal-message.service';
 
 @Component({
   templateUrl: './device.html',
   styleUrls: ['./device.css'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  providers: [
+    { provide: 'registration', useClass: SocketService },
+    { provide: 'info', useClass: SocketService }
+  ]
 })
 export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   public verified: Anchor[] = [];
@@ -47,31 +55,38 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   public devicesUpdating: UWB[] = [];
   public allSelected: boolean = false;
   public displayInfoDialog: boolean = false;
+  public checkBoxDisabledTooltip: string;
+  public checkBoxEnabledTooltip: string = '';
+  public checkBoxTooltipMap: Map<number, string> = new Map();
+
   @ViewChildren('updateCheckbox') public deviceCheckboxes: Checkbox[];
   @ViewChild('firmwareInput') public firmwareInput: ElementRef;
   @ViewChild('firmwareButton') public firmwareButton: ElementRef;
 
   @ViewChild('deviceForm') deviceForm: NgForm;
 
+  private firmwareSocketSubscription: Subscription;
   private socketRegistrationSubscription: Subscription;
   private translateUploadingFirmwareMessage: Subscription;
-  private firmwareSocketSubscription: Subscription;
   private confirmBodyTranslate: Subscription;
   private uploadBodyTranslate: Subscription;
+  private socketStream: Observable<any>;
+  private subscriptionDestructor: Subject<void> = new Subject<void>();
   private confirmBody: string;
   private devicesWaitingForNewFirmwareVersion: DeviceStatus[] = [];
   private deviceHash: string | Int32Array;
-  private socketStream: Observable<any>;
 
   constructor(public translate: TranslateService,
-              private socketRegistrationService: SocketService,
-              private socketClientService: SocketService,
+              @Inject('info') private infoSocketService: SocketService,
+              @Inject('registration') private registrationSocketService: SocketService,
               private messageService: MessageServiceWrapper,
               private ngZone: NgZone,
               private route: ActivatedRoute,
               private deviceService: DeviceService,
               private confirmationService: ConfirmationService,
-              private breadcrumbService: BreadcrumbService) {
+              private breadcrumbService: BreadcrumbService,
+              private terminalMessageService: TerminalMessageService
+  ) {
   }
 
   ngOnInit() {
@@ -90,11 +105,18 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     this.translate.get(`device.details.${this.deviceType}.remove`).first().subscribe((value: string): void => {
       this.removeDialogTitle = value;
     });
-    this.connectToRegistrationSocket();
+    this.listenForTerminalClientRequest();
+    this.translate.get('device.disabled.tooltip').subscribe(value => {
+      this.checkBoxDisabledTooltip = value;
+      // this is here for a reason (tooltip needs to be translated), don't move it down
+      this.connectToRegistrationSocket();
+    });
     this.openInfoClientSocketConnection();
   }
 
   ngOnDestroy() {
+    this.subscriptionDestructor.next();
+    this.subscriptionDestructor = null;
     if (this.socketRegistrationSubscription) {
       this.socketRegistrationSubscription.unsubscribe();
     }
@@ -123,7 +145,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
         this.removeFromList(this.device);
       }
       // if user clicks mac address field it fills up with empty string, but db unique constraint doesn't allow empty strings
-      if (this.device.macAddress !== undefined && this.device.macAddress.length === 0) {
+      if (!!this.device.macAddress) {
         this.device.macAddress = null;
       }
       (!!this.device.id ?
@@ -193,12 +215,12 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   selectAllToUpload(): void {
     this.devicesToUpdate = [];
     if (this.allSelected) {
-      this.verified.forEach((device: UWB) => {
+      this.verified.forEach((device: UWB): void => {
         if (!this.getCheckboxById(device.shortId).disabled) {
           this.devicesToUpdate.push(device);
         }
       });
-      this.notVerified.forEach((device: UWB) => {
+      this.notVerified.forEach((device: UWB): void => {
         if (!this.getCheckboxById(device.shortId).disabled) {
           this.devicesToUpdate.push(device);
         }
@@ -231,10 +253,10 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
 
     this.getBase64(files[0]).then((base64: string): void => {
       const payload: ClientRequest = {
-        type: CommandType.FirmwareUpdate,
+        type: CommandType[CommandType.UPDATE_FIRMWARE],
         args: new UpdateRequest(this.devicesToUpdate.map((device: UWB): number => device.shortId), base64)
       };
-      this.socketRegistrationService.send(payload);
+      this.infoSocketService.send(payload);
       this.messageService.success('uploading.firmware.message');
     });
   }
@@ -251,10 +273,10 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       }
     });
     const socketPayload: ClientRequest = {
-        type: CommandType.BatteryUpdate,
+        type: CommandType[CommandType.CHECK_BATTERY_LEVEL],
         args: noBatteryStatus
       };
-    this.socketClientService.send(socketPayload);
+    this.infoSocketService.send(socketPayload);
   }
 
   batteryPercentage(deviceId: number): number {
@@ -271,10 +293,21 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     return null;
   }
 
+  initializeTerminal(device: UWB): void {
+    this.terminalMessageService.setTerminalForDevice(device.shortId);
+  }
+
+  private listenForTerminalClientRequest(): void {
+    this.terminalMessageService
+      .onClientRequest().takeUntil(this.subscriptionDestructor).subscribe((socketPayload: ClientRequest): void => {
+        this.infoSocketService.send(socketPayload);
+      });
+  }
+
   private updateFirmwareVersion(deviceStatus: DeviceStatus): void {
     let deviceToChangeFirmware: UWB;
     const index = this.devicesWaitingForNewFirmwareVersion.findIndex((ds: DeviceStatus): boolean => {
-      return ds.anchor.shortId === deviceStatus.anchor.shortId;
+      return ds.device.shortId === deviceStatus.device.shortId;
     });
     if (index >= 0) {
       this.removeFromUpdating(deviceStatus);
@@ -282,18 +315,18 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       this.checkAllSelected();
 
       deviceToChangeFirmware = this.verified.find((device: UWB): boolean => {
-        return device.shortId === deviceStatus.anchor.shortId;
+        return device.shortId === deviceStatus.device.shortId;
       });
       if (!!deviceToChangeFirmware) {
-        deviceToChangeFirmware.firmwareVersion = deviceStatus.anchor.firmwareVersion;
+        deviceToChangeFirmware.firmwareVersion = deviceStatus.device.firmwareVersion;
         this.devicesWaitingForNewFirmwareVersion.splice(index, 1);
         return;
       }
       deviceToChangeFirmware = this.notVerified.find((device: UWB): boolean => {
-        return device.shortId === deviceStatus.anchor.shortId;
+        return device.shortId === deviceStatus.device.shortId;
       });
       if (!!deviceToChangeFirmware) {
-        deviceToChangeFirmware.firmwareVersion = deviceStatus.anchor.firmwareVersion;
+        deviceToChangeFirmware.firmwareVersion = deviceStatus.device.firmwareVersion;
         this.devicesWaitingForNewFirmwareVersion.splice(index, 1);
         return;
       }
@@ -302,13 +335,13 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
 
   private removeFromUpdating(deviceStatus: DeviceStatus): void {
     this.devicesUpdating = this.devicesUpdating.filter((device: UWB): boolean => {
-      return device.shortId !== deviceStatus.anchor.shortId;
+      return device.shortId !== deviceStatus.device.shortId;
     });
   }
 
   private removeFromToUpdate(deviceStatus: DeviceStatus): void {
     this.devicesToUpdate = this.devicesToUpdate.filter((device: UWB): boolean => {
-      return device.shortId !== deviceStatus.anchor.shortId;
+      return device.shortId !== deviceStatus.device.shortId;
     });
   }
 
@@ -335,10 +368,10 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   private isAlreadyOnAnyList(device: Device): boolean {
-    return this.verified.findIndex((d: Device) => {
+    return this.verified.findIndex((d: Device): boolean => {
         return d.id === device.id;
       }) >= 0 ||
-      this.notVerified.findIndex((d: Device) => {
+      this.notVerified.findIndex((d: Device): boolean => {
         return d.id === device.id;
       }) >= 0;
   }
@@ -354,10 +387,11 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   private connectToRegistrationSocket(): void {
-    const stream = this.socketRegistrationService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.deviceType}`);
+    const stream = this.registrationSocketService.connect(Config.WEB_SOCKET_URL + `devices/registration?${this.deviceType}`);
     this.socketRegistrationSubscription = stream.subscribe((devices: Array<UWB>): void => {
       this.ngZone.run((): void => {
         devices.forEach((device: UWB): void => {
+          this.checkBoxTooltipMap[device.shortId] = this.checkBoxDisabledTooltip;
           const status: BatteryStatus = new BatteryStatus(null, null);
           this.deviceBatteryStatus.set(device.shortId, status);
           if (this.isAlreadyOnAnyList(device)) {
@@ -375,8 +409,8 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   private openInfoClientSocketConnection(): void {
-    this.socketStream = this.socketClientService.connect(`${Config.WEB_SOCKET_URL}info?client`);
-    this.firmwareSocketSubscription = this.socketStream.subscribe((message: DeviceMessage|FirmwareMessage|BatteryMessage): void => {
+    this.socketStream = this.infoSocketService.connect(`${Config.WEB_SOCKET_URL}info?client&${this.deviceType}`);
+    this.firmwareSocketSubscription = this.socketStream.subscribe((message: DeviceMessage | FirmwareMessage | BatteryMessage): void => {
       switch (message.type) {
         case 'INFO':
           this.handleInfoMessage((<FirmwareMessage>message));
@@ -390,6 +424,9 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
         case 'COMMAND_ERROR':
           this.handleCodeErrorMessage((<DeviceMessage>message));
           break;
+        case 'SERVER_COMMAND':
+          this.terminalMessageService.sendCommandToTerminal((<DeviceMessage>message));
+          break;
       }
     });
   }
@@ -397,13 +434,15 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   private handleInfoMessage(message: FirmwareMessage): void {
     (<DeviceStatus[]>message.devices).forEach((deviceStatus: DeviceStatus): void => {
       if (deviceStatus.status.toString() === Status[Status.ONLINE] || deviceStatus.status.toString() === Status[Status.OFFLINE]) {
-        const checkbox: Checkbox = this.getCheckboxById(deviceStatus.anchor.shortId);
+        const checkbox: Checkbox = this.getCheckboxById(deviceStatus.device.shortId);
         if (!!checkbox) {
-          checkbox.setDisabledState(deviceStatus.status.toString() === Status[Status.OFFLINE]);
+          const isOffline: boolean = deviceStatus.status.toString() === Status[Status.OFFLINE];
+          checkbox.setDisabledState(isOffline);
+          this.checkBoxTooltipMap[deviceStatus.device.shortId] = isOffline ? this.checkBoxDisabledTooltip : this.checkBoxEnabledTooltip;
         }
         this.updateFirmwareVersion(deviceStatus);
       } else if (deviceStatus.status.toString() === Status[Status.UPDATING]) {
-        this.devicesUpdating.push(deviceStatus.anchor);
+        this.devicesUpdating.push(deviceStatus.device);
       } else if (deviceStatus.status.toString() === Status[Status.UPDATED]) {
         this.devicesWaitingForNewFirmwareVersion.push(deviceStatus);
       }
@@ -439,10 +478,17 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
 
   private handleCodeErrorMessage(message: DeviceMessage): void {
     this.deviceBatteryStatus.forEach((status: BatteryStatus, id: number): void => {
-      if (message.shortId === id) {
+      if (message.sinkShortId === id) {
         status.message = message.code;
         status.percentage = null;
       }
     });
+  }
+
+  preventDoubleClick(event: Event) {
+    // workaround to prevent double click on checkbox moving item from one list to another
+    if (event.srcElement.classList.contains('ui-chkbox-box')) {
+      event.stopPropagation();
+    }
   }
 }

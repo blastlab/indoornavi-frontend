@@ -72,11 +72,6 @@ table th.col-button, table td.col-button, table th.col-checkbox, table td.col-ch
   height: 400px;
 }
 
-.device-list .ui-picklist-listwrapper button {
-  display: inline-block;
-  float: right;
-}
-
 .device-list .device-details,
 .device-list .device-published-details {
   font-size: 0.8em;
@@ -212,4 +207,12 @@ svg {
   border-radius: 10px;
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .1);
   background-color: #6f6f6f;
+}
+
+.muted {
+  color: #6c757d;
+}
+
+.text-right {
+  text-align: right;
 }

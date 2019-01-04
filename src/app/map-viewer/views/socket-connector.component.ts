@@ -304,7 +304,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
         };
         const areaOnMap = drawBuilder
           .createGroup()
-          .addPolygon(area.points)
+          .addPolygon(area.pointsInPixels)
           .addBackground(textPoint)
           .hideElement(ElementType.RECT)
           .addText({coordinates: textPoint}, `area-${area.id}`, '#000')

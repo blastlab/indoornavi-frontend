@@ -2,9 +2,15 @@
   height: 400px;
 }
 
-.device-list .ui-picklist-listwrapper button, .device-list .ui-chkbox {
-  display: inline-block;
-  float: right;
+#device-action-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-content: center;
+}
+
+.device-action-item {
+  align-self: flex-start;
 }
 
 .device-list .ui-chkbox {
@@ -13,6 +19,25 @@
 
 .device-list .device-details {
   font-size: 0.8em;
+}
+
+.terminal-response {
+  width: 100%;
+  height: 500px;
+  max-height: 600px;
+  overflow: scroll;
+}
+
+.terminal-response-internal {
+  color: #800;
+}
+
+.terminal-response-external {
+  color: #080;
+}
+
+.terminal-text {
+  color: #000;
 }
 
 #hint {

@@ -19,6 +19,6 @@ export class MapService {
   }
 
   getImage(id: number): Observable<Blob> {
-    return this.httpService.doGetImage('images/' + id);
+    return this.httpService.doGetFile('images/' + id);
   }
 }

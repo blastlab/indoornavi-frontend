@@ -55,6 +55,7 @@ import {
   RadioButtonModule,
   SidebarModule,
   SliderModule,
+  TerminalModule,
   ToolbarModule,
   TooltipModule
 } from 'primeng/primeng';
@@ -123,8 +124,19 @@ import {SelectButtonModule} from 'primeng/components/selectbutton/selectbutton';
 import {TagFollowerComponent} from './map-viewer/views/tagfollower/tag-follower';
 import {NavigationService} from './shared/utils/navigation/navigation.service';
 import {NavigationController} from './shared/utils/navigation/navigation.controller';
+import {TerminalService} from 'primeng/components/terminal/terminalservice';
+import {PanelModule} from 'primeng/components/panel/panel';
 import {ModelsConfig} from './map/models/models.config';
+import {DebuggerComponent} from './debug-hidden/debugger.component';
 import {BatteryIndicatorComponent} from './device/battery-indicator';
+import {DashboardComponent} from './dashboard/dashboard';
+import {CounterComponent} from './dashboard/counter/counter';
+import {EventComponent} from './dashboard/event/event';
+import {DashboardEventService} from './dashboard/event/event.service';
+import {DashboardService} from './dashboard/dashboard.service';
+import {TerminalMessageService} from './device/terminal/terminal-message.service';
+import {TerminalComponent} from './device/terminal/terminal';
+import {DebuggerService} from './debug-hidden/debugger.service';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -184,7 +196,13 @@ export function HttpLoaderFactory(http: Http) {
     PathComponent,
     TagsFinderComponent,
     TagFollowerComponent,
-    BatteryIndicatorComponent
+    BatteryIndicatorComponent,
+    TerminalComponent,
+    TagFollowerComponent,
+    DebuggerComponent,
+    DashboardComponent,
+    CounterComponent,
+    EventComponent
   ],
   entryComponents: [
     PublicationDialogComponent,
@@ -229,7 +247,9 @@ export function HttpLoaderFactory(http: Http) {
     FileUploadModule,
     RadioButtonModule,
     InputMaskModule,
-    SelectButtonModule
+    SelectButtonModule,
+    TerminalModule,
+    PanelModule
   ],
   providers: [
     BuildingService,
@@ -277,7 +297,13 @@ export function HttpLoaderFactory(http: Http) {
     PathService,
     NavigationService,
     NavigationController,
-    ModelsConfig
+    TerminalService,
+    NavigationController,
+    ModelsConfig,
+    TerminalMessageService,
+    DashboardEventService,
+    DashboardService,
+    DebuggerService
   ], bootstrap: [AppComponent]
 })
 
