@@ -1,0 +1,22 @@
+<div>
+  <div class="ui-g">
+    <div class="ui-g-5 dashboard-item-container">
+      <div class="dashboard-item">
+        <app-dashboard-counter></app-dashboard-counter>
+      </div>
+      <div class="dashboard-item">
+        <app-dashboard-event #eventComponent></app-dashboard-event>
+      </div>
+    </div>
+    <div class="ui-g-7 dashboard-item-container">
+      <div class="dashboard-item">
+        <div class="header">{{'go.to.map'|translate}}</div>
+        <img (click)="goToMap()" class="image-link" src="assets/images/map.png" />
+      </div>
+      <div class="dashboard-item">
+        <div class="header">{{'go.to.analytics'|translate}}</div>
+        <img (click)="goToHeatMap()" class="image-link" src="assets/images/heatmap.png" />
+      </div>
+    </div>
+  </div>
+</div>

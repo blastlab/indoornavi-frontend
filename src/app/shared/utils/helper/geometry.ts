@@ -1,7 +1,7 @@
 import {Line, Point} from '../../../map-editor/map.type';
 import * as d3 from 'd3';
 import {Box} from '../drawing/drawing.builder';
-import {Area, AreaBag} from '../../../map-editor/tool-bar/tools/area/area.type';
+import {Area} from '../../../map-editor/tool-bar/tools/area/area.type';
 
 export class Geometry {
 
@@ -48,11 +48,11 @@ export class Geometry {
   }
 
   static calculateDistanceInPixels(lengthInPixels: number, lengthInCentimeters: number, realDistance: number): number {
-    return lengthInPixels / lengthInCentimeters * realDistance;
+    return (lengthInPixels / lengthInCentimeters) * realDistance;
   }
 
   static calculateDistanceInCentimeters(lengthInPixels: number, lengthInCentimeters: number, pixelDistance: number): number {
-    return lengthInCentimeters / lengthInPixels * pixelDistance;
+    return (lengthInCentimeters / lengthInPixels) * pixelDistance;
   }
 
   static calculatePointPositionInPixels(lengthInPixels: number, lengthInCentimeters: number, point: Point): Point {
@@ -262,7 +262,7 @@ export class Geometry {
 
 
   static isPointWithinArea(point: Point, area: Area): boolean {
-    const areaPoints = area.points;
+    const areaPoints = area.pointsInPixels;
     let inside = false;
     let intersect = false;
     let xi, yi, xj, yj = null;
