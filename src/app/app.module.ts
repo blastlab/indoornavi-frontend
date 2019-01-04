@@ -136,6 +136,7 @@ import {DashboardEventService} from './dashboard/event/event.service';
 import {DashboardService} from './dashboard/dashboard.service';
 import {TerminalMessageService} from './device/terminal/terminal-message.service';
 import {TerminalComponent} from './device/terminal/terminal';
+import {DebuggerService} from './debug-hidden/debugger.service';
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -301,7 +302,8 @@ export function HttpLoaderFactory(http: Http) {
     ModelsConfig,
     TerminalMessageService,
     DashboardEventService,
-    DashboardService
+    DashboardService,
+    DebuggerService
   ], bootstrap: [AppComponent]
 })
 
