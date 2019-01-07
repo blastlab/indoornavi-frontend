@@ -33,7 +33,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
   private floor: Floor;
   private gradientsInX: number = 400;
   private gradientsInY: number = 400;
-  private heatmapOffsetX: number = 170;
+  private heatmapOffsetX: number = 175;
   private heatmapOffsetY: number = 60;
   private imageUrl: string;
   private imageWidth = 0;
@@ -116,7 +116,6 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
   private calculateEChartOffset(): void {
     this.heatmapOffsetX = this.imageWidth * 0.1;
     this.heatmapOffsetY = this.imageHeight * 0.075;
-    console.log(this.heatmapOffsetX, this.heatmapOffsetY);
   }
 
   private setTimeDateAllowedToChooseFrom(): void {
@@ -235,7 +234,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
         this.loadMapImage().then((): void => {
           this.calculateEChartOffset();
           this.echartsInstance.resize({
-            width: this.imageWidth + this.heatmapOffsetX,
+            width: this.imageWidth + this.heatmapOffsetX + 15,
             height: this.imageHeight + this.heatmapOffsetY,
             silent: false
           });
