@@ -70,6 +70,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptionDestructor.next();
     this.subscriptionDestructor = null;
+    this.imageIsSet = false;
   }
 
   onChartInit(ec) {
@@ -117,7 +118,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
     this.heatmapOffsetX = this.windowWidth * 0.1;
     this.heatmapImageEdgePoint.x = this.windowWidth;
     this.heatmapImageEdgePoint.y = this.windowWidth * this.imageHeight / this.imageWidth;
-    this.heatmapOffsetY = this.heatmapImageEdgePoint.y * 0.075;
+    this.heatmapOffsetY = 58;
   }
 
   private setTimeDateAllowedToChooseFrom(): void {
@@ -212,11 +213,11 @@ export class OverviewComponent implements OnInit, OnDestroy {
       background.onload = function () {
         ctx.drawImage(background, self.heatmapOffsetX, self.heatmapOffsetY,
           self.heatmapImageEdgePoint.x - self.heatmapOffsetX,
-          self.heatmapImageEdgePoint.y);
+          self.heatmapImageEdgePoint.y - self.heatmapOffsetY);
         resolve();
       }.bind(self);
       newCanvas.setAttribute('width', `${this.heatmapImageEdgePoint.x - this.heatmapOffsetX}px`);
-      newCanvas.setAttribute('height', `${this.heatmapImageEdgePoint.y}px`);
+      newCanvas.setAttribute('height', `${this.heatmapImageEdgePoint.y - this.heatmapOffsetY}px`);
     });
   }
 
