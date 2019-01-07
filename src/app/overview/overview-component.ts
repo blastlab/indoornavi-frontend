@@ -20,14 +20,12 @@ import {MessageServiceWrapper} from '../shared/services/message/message.service'
   templateUrl: './overview.html'
 })
 export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
-
-  heatMapWidth = 1200;
-  heatMapHeight = 800;
   dateFrom: string;
   dateTo: string;
   dateToMaxValue: Date;
   dateFromMaxValue: Date;
   displayDialog = false;
+  imageIsSet = false;
   private dateFromRequestFormat: string;
   private dateToRequestFormat: string;
   private imageLoaded = false;
@@ -35,11 +33,11 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
   private floor: Floor;
   private gradientsInX: number = 400;
   private gradientsInY: number = 400;
-  private heatmapOffsetX: number;
-  private heatmapOffsetY: number;
+  private heatmapOffsetX: number = 170;
+  private heatmapOffsetY: number = 60;
   private imageUrl: string;
-  private imageWidth: number;
-  private imageHeight: number;
+  private imageWidth = 0;
+  private imageHeight = 0;
   private heatmapImageEdgePoint: Point = {x: 0, y: 0};
   private scaleMinificationFactor: ScaleDto;
   private scale: Scale;
@@ -60,7 +58,6 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
-    this.calculateEChartOffset();
     this.setCorrespondingFloorParams();
     this.setTimeDateAllowedToChooseFrom();
     this.translateService.setDefaultLang('en');
@@ -80,16 +77,12 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   renderNewHeatmap() {
-    if (this.imageLoaded) {
-      if (!!this.dateFrom && !!this.dateTo) {
-        this.displayDialog = true;
-        this.setDateRequestFormat();
-        this.loadData();
-      } else {
-        this.messageService.failed('overview.message.setDate');
-      }
+    if (!!this.dateFrom && !!this.dateTo) {
+      this.displayDialog = true;
+      this.setDateRequestFormat();
+      this.loadData();
     } else {
-      this.messageService.failed('overview.message.imageNotLoaded');
+      this.messageService.failed('overview.message.setDate');
     }
   }
 
@@ -121,8 +114,9 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private calculateEChartOffset(): void {
-    this.heatmapOffsetX = this.heatMapWidth * 0.1;
-    this.heatmapOffsetY = this.heatMapHeight * 0.075;
+    this.heatmapOffsetX = this.imageWidth * 0.1;
+    this.heatmapOffsetY = this.imageHeight * 0.075;
+    console.log(this.heatmapOffsetX, this.heatmapOffsetY);
   }
 
   private setTimeDateAllowedToChooseFrom(): void {
@@ -171,14 +165,16 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
           };
         }
         if (!!floor.imageId) {
-          this.mapService.getImage(floor.imageId).subscribe((blob: Blob) => {
+          this.mapService.getImage(floor.imageId).first().subscribe((blob: Blob) => {
             this.imageUrl = URL.createObjectURL(blob);
-            this.loadMapImage().then((imageSize: number[]): void => {
-              this.imageHeight = imageSize[0];
-              this.imageWidth = imageSize[1];
-              this.calculateDataToHeatmapScaleFactorChange();
-              this.imageLoaded = true;
-            });
+            this.imageIsSet = true;
+            const self = this;
+            const img = new Image();
+            img.src = this.imageUrl;
+            img.onload = function () {
+              self.imageWidth += img.width;
+              self.imageHeight += img.height;
+            }.bind(self);
           });
         }
       });
@@ -201,7 +197,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
     this.scaleMinificationFactor = new ScaleDto({x: 0, y: 0}, stop, this.scale.realDistance, this.scale.measure);
   }
 
-  private loadMapImage(): Promise<number[]> {
+  private loadMapImage(): Promise<void> {
     return new Promise((resolve) => {
       const canvas = document.getElementsByTagName('canvas').item(0);
       const newCanvas = document.createElement('canvas');
@@ -210,29 +206,19 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
       const ctx = newCanvas.getContext('2d');
       const background = new Image();
       background.src = this.imageUrl;
-      const result: number[] = [];
+      const self = this;
       let width = 0;
       let height = 0;
-      const self = this;
       background.onload = function () {
         width += background.width;
         height += background.height;
-        self.heatmapImageEdgePoint.x = self.heatMapWidth - self.heatmapOffsetX * 2;
-        self.heatmapImageEdgePoint.y = self.heatMapHeight - self.heatmapOffsetY * 2;
-        ctx.drawImage(background, self.heatmapOffsetX, self.heatmapOffsetY,
-          self.heatmapImageEdgePoint.x, self.heatmapImageEdgePoint.y);
-        // todo: heat map should to have dimension set from img map not the other way around, or maybe zooming can be applied.
-        self.echartsInstance.resize({
-          width: self.heatMapWidth,
-          height: self.heatMapHeight,
-          silent: false
-        });
-        result.push(width);
-        result.push(height);
-        resolve(result);
+        self.heatmapImageEdgePoint.x = width - self.heatmapOffsetX * 2;
+        self.heatmapImageEdgePoint.y = height - self.heatmapOffsetY * 2;
+        ctx.drawImage(background, self.heatmapOffsetX, self.heatmapOffsetY);
+        resolve();
       }.bind(self);
-      newCanvas.setAttribute('width', `${this.heatMapWidth}px`);
-      newCanvas.setAttribute('height', `${this.heatMapHeight}px`);
+      newCanvas.setAttribute('width', `${this.imageWidth}px`);
+      newCanvas.setAttribute('height', `${this.imageHeight}px`);
     });
   }
 
@@ -244,6 +230,19 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
     };
     console.log(request);
     this.reportService.getCoordinates(request).first().subscribe((payload: CoordinatesIncident[]): void => {
+      console.log(payload);
+      if (!this.imageLoaded) {
+        this.loadMapImage().then((): void => {
+          this.calculateEChartOffset();
+          this.echartsInstance.resize({
+            width: this.imageWidth + this.heatmapOffsetX,
+            height: this.imageHeight + this.heatmapOffsetY,
+            silent: false
+          });
+          this.calculateDataToHeatmapScaleFactorChange();
+          this.imageLoaded = true;
+        });
+      }
       if (this.displayDialog) {
         // TODO:  build data array from received payload
         const data: number[][] = this.mockGenerateData();

@@ -1,3 +1,4 @@
+<div *ngIf="imageIsSet">
 <div class="ui-g-12 ui-md-6 ui-lg-4"></div>
 <div class="ui-g-12 ui-md-12 ui-lg-12">
   <span>{{'from'|translate}}:</span>
@@ -16,8 +17,8 @@
      id="heatmap-canvas" class="ui-corner-all"
      [options]="chartOptions"
      (chartInit)="onChartInit($event)"
-     [style.width.px]="heatMapWidth"
-     [style.height.px]="heatMapHeight"
+     [style.width.px]="heatmapImageEdgePoint.x"
+     [style.height.px]="heatmapImageEdgePoint.y"
 ></div>
 <p-dialog
   [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
@@ -42,3 +43,4 @@
   <span class="ui-g-12 ui-md-6 ui-lg-4"></span>
   <div class="ui-g-12 ui-md-12 ui-lg-12"></div>
 </p-dialog>
+</div>
