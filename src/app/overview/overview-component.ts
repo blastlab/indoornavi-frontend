@@ -33,8 +33,8 @@ export class OverviewComponent implements OnInit, OnDestroy {
   private floor: Floor;
   private gradientsInX: number = 400;
   private gradientsInY: number = 400;
-  private heatmapOffsetX: number = 160;
-  private heatmapOffsetY: number = 60;
+  private heatmapOffsetX: number;
+  private heatmapOffsetY: number;
   private windowWidth: number;
   private imageWidth = 0;
   private imageHeight = 0;
@@ -114,8 +114,10 @@ export class OverviewComponent implements OnInit, OnDestroy {
   }
 
   private calculateEChartOffset(): void {
-    this.heatmapOffsetX = this.imageWidth * 0.1;
-    this.heatmapOffsetY = this.imageHeight * 0.075;
+    this.heatmapOffsetX = this.windowWidth * 0.1;
+    this.heatmapImageEdgePoint.x = this.windowWidth;
+    this.heatmapImageEdgePoint.y = this.windowWidth * this.imageHeight / this.imageWidth;
+    this.heatmapOffsetY = this.heatmapImageEdgePoint.y * 0.075;
   }
 
   private setTimeDateAllowedToChooseFrom(): void {
@@ -151,11 +153,6 @@ export class OverviewComponent implements OnInit, OnDestroy {
       });
   }
 
-  private calculateHeatmapEdgePoint() {
-    this.heatmapImageEdgePoint.x = this.windowWidth;
-    this.heatmapImageEdgePoint.y = this.heatmapImageEdgePoint.x * this.imageHeight / this.imageWidth;
-  }
-
   private subscribeToMapParametersChange() {
     this.route.params.takeUntil(this.subscriptionDestructor).subscribe((params: Params): void => {
       const floorId = +params['id'];
@@ -177,7 +174,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
             img.onload = function () {
               self.imageWidth += img.width;
               self.imageHeight += img.height;
-              self.calculateHeatmapEdgePoint();
+              self.calculateEChartOffset();
               self.imageIsSet = true;
             }.bind(self);
           });
@@ -215,11 +212,11 @@ export class OverviewComponent implements OnInit, OnDestroy {
       background.onload = function () {
         ctx.drawImage(background, self.heatmapOffsetX, self.heatmapOffsetY,
           self.heatmapImageEdgePoint.x - self.heatmapOffsetX,
-          self.heatmapImageEdgePoint.y - self.heatmapOffsetY);
+          self.heatmapImageEdgePoint.y);
         resolve();
       }.bind(self);
-      newCanvas.setAttribute('width', `${this.heatmapImageEdgePoint.x - self.heatmapOffsetX}px`);
-      newCanvas.setAttribute('height', `${this.heatmapImageEdgePoint.y - self.heatmapOffsetY}px`);
+      newCanvas.setAttribute('width', `${this.heatmapImageEdgePoint.x - this.heatmapOffsetX}px`);
+      newCanvas.setAttribute('height', `${this.heatmapImageEdgePoint.y}px`);
     });
   }
 
@@ -234,7 +231,6 @@ export class OverviewComponent implements OnInit, OnDestroy {
       console.log(payload);
       if (!this.imageLoaded) {
         this.loadMapImage().then((): void => {
-          this.calculateEChartOffset();
           this.echartsInstance.resize({
             width: this.heatmapImageEdgePoint.x,
             height: this.heatmapImageEdgePoint.y,
@@ -245,7 +241,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
         });
       }
       if (this.displayDialog) {
-        // TODO:  build data array from received payload
+        // TODO: build data array from received payload
         const data: number[][] = this.mockGenerateData();
         this.chartOptions.xAxis.data = data[0];
         this.chartOptions.yAxis.data = data[1];
