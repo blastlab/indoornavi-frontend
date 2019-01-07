@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Params} from '@angular/router';
 import {Floor} from '../floor/floor.type';
 import {Subject} from 'rxjs/Subject';
@@ -61,6 +61,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.windowWidth = window.innerWidth;
     this.windowWidth = this.windowWidth < 1000 ? this.windowWidth = 1000 : this.windowWidth; // prevent to load heat map for very small image by resizing
+    this.windowWidth = this.windowWidth > 2200 ? this.windowWidth = 2200 : this.windowWidth; // prevent to load heat map for very larger image by resizing
     this.setCorrespondingFloorParams();
     this.setTimeDateAllowedToChooseFrom();
     this.translateService.setDefaultLang('en');
@@ -227,9 +228,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
       to: this.dateToRequestFormat,
       floorId: this.floor.id
     };
-    console.log(request);
     this.reportService.getCoordinates(request).first().subscribe((payload: CoordinatesIncident[]): void => {
-      console.log(payload);
       if (!this.imageLoaded) {
         this.loadMapImage().then((): void => {
           this.echartsInstance.resize({
@@ -242,7 +241,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
         });
       }
       if (this.displayDialog) {
-        // TODO: build data array from received payload
+        console.log(payload); // TODO: build data array from received payload
         const data: number[][] = this.mockGenerateData();
         this.chartOptions.xAxis.data = data[0];
         this.chartOptions.yAxis.data = data[1];
