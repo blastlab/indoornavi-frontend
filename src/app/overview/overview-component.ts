@@ -104,15 +104,19 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
     let minutesTo: string = new Date(this.dateFrom).getMinutes().toString();
     let dayFrom: string = new Date(this.dateFrom).getDate().toString();
     let dayTo: string = new Date(this.dateTo).getDate().toString();
+    let monthTo: string = (new Date(this.dateTo).getMonth() + 1).toString();
+    let monthFrom: string = (new Date(this.dateFrom).getMonth() + 1).toString();
     dayFrom = parseInt(dayFrom, 10) > 9 ? dayFrom : `0${dayFrom}`;
     dayTo = parseInt(dayTo, 10) > 9 ? dayTo : `0${dayTo}`;
     hoursFrom = parseInt(hoursFrom, 10) > 9 ? hoursFrom : `0${hoursFrom}`;
     hoursTo = parseInt(hoursTo, 10) > 9 ? hoursTo : `0${hoursTo}`;
     minutesFrom = parseInt(minutesFrom, 10) > 9 ? minutesFrom : `0${minutesFrom}`;
     minutesTo = parseInt(minutesTo, 10) > 9 ? minutesTo : `0${minutesTo}`;
-    this.dateFromRequestFormat = `${new Date(this.dateFrom).getFullYear()}-${(parseInt(new Date(this.dateFrom).getMonth().toString(), 10) + 1)}` +
+    monthTo = parseInt(monthTo, 10) > 9 ? monthTo : `0${monthTo}`;
+    monthFrom = parseInt(monthFrom, 10) > 9 ? monthFrom : `0${monthFrom}`;
+    this.dateFromRequestFormat = `${new Date(this.dateFrom).getFullYear()}-${monthFrom}` +
       `-${dayFrom}T${hoursFrom}:${minutesFrom}:00`;
-    this.dateToRequestFormat = `${new Date(this.dateTo).getFullYear()}-${(parseInt(new Date(this.dateTo).getMonth().toString(), 10) + 1)}` +
+    this.dateToRequestFormat = `${new Date(this.dateTo).getFullYear()}-${monthTo}` +
       `-${dayTo}T${hoursTo}:${minutesTo}:00`;
   }
 
@@ -238,6 +242,7 @@ export class OverviewComponent implements OnInit, OnDestroy, AfterViewInit {
       to: this.dateToRequestFormat,
       floorId: this.floor.id
     };
+    console.log(request);
     this.reportService.getCoordinates(request).first().subscribe((payload: CoordinatesIncident[]): void => {
       if (this.displayDialog) {
         // TODO:  build data array from received payload
