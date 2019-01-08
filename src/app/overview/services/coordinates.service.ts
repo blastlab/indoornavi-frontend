@@ -13,4 +13,5 @@ export class ReportService {
   getCoordinates(request: CoordinatesRequest): Observable<CoordinatesIncident[]> {
     return this.httpService.doPost(`${this.baseUrl}`, request);
   }
+
 }

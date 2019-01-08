@@ -26,13 +26,14 @@ export class OverviewComponent implements OnInit, OnDestroy {
   dateFromMaxValue: Date;
   displayDialog = false;
   isImageSet = false;
+  chartOptions: EChartOption = echartHeatmapConfig;
   private dateFromRequestFormat: string;
   private dateToRequestFormat: string;
   private imageLoaded = false;
   private echartsInstance: any;
   private floor: Floor;
-  private gradientsInX: number = 400;
-  private gradientsInY: number = 400;
+  private gradientsNumber: number = 400;
+  private gradient: number;
   private heatmapOffsetX: number;
   private heatmapOffsetY: number;
   private windowWidth: number;
@@ -44,7 +45,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   private scale: Scale;
   private scaleCalculations: ScaleCalculations;
   private subscriptionDestructor: Subject<void> = new Subject<void>();
-  chartOptions: EChartOption = echartHeatmapConfig;
+  private maxPayloadLength = 10000; // ToDo: free it after getting data calculated by solver
 
   @ViewChild('canvasParent') canvasParent;
 
@@ -180,8 +181,10 @@ export class OverviewComponent implements OnInit, OnDestroy {
             img.onload = function () {
               self.imageWidth += img.width;
               self.imageHeight += img.height;
-              self.calculateEChartOffset();
               self.isImageSet = true;
+              self.calculateEChartOffset();
+              self.calculateScaleFactor();
+              self.calculateGradient();
             }.bind(self);
           });
         }
@@ -232,7 +235,8 @@ export class OverviewComponent implements OnInit, OnDestroy {
       to: this.dateToRequestFormat,
       floorId: this.floor.id
     };
-    this.reportService.getCoordinates(request).first().subscribe((payload: CoordinatesIncident[]): void => {
+    this.reportService.getCoordinates(request).first()
+      .subscribe((payload: CoordinatesIncident[]): void => {
       if (!this.imageLoaded) {
         this.loadMapImage().then((): void => {
           this.echartsInstance.resize({
@@ -240,24 +244,64 @@ export class OverviewComponent implements OnInit, OnDestroy {
             height: this.heatmapImageEdgePoint.y,
             silent: false
           });
-          this.calculateScaleFactor();
           this.imageLoaded = true;
         });
-      }
-      if (this.displayDialog) {
-        console.log(payload); // TODO: build data array from received payload
-        const data: number[][] = this.mockGenerateData();
-        console.log(data);
-        this.chartOptions.xAxis.data = data[0];
-        this.chartOptions.yAxis.data = data[1];
-        this.chartOptions.series[0].data = data[2];
-        this.chartOptions = Object.assign({}, this.chartOptions);
-        this.messageService.success('overview.message.loadedSuccess');
-        this.displayDialog = false;
+        this.displayHeatMap(payload);
       } else {
-        this.messageService.failed('overview.message.loadCanceled');
+        this.displayHeatMap(payload);
       }
     });
+  }
+
+  private displayHeatMap(payload: CoordinatesIncident[]): void {
+    if (this.displayDialog) {
+      const dataFaked: number[][] = this.mockGenerateData();
+      const data: (number[] |number[][])[] = this.calculateDataSet(payload);
+      console.log(dataFaked);
+      console.log(data);
+      this.chartOptions.xAxis.data = data[0];
+      this.chartOptions.yAxis.data = data[1];
+      this.chartOptions.series[0].data = data[2];
+      this.chartOptions = Object.assign({}, this.chartOptions);
+      this.messageService.success('overview.message.loadedSuccess');
+      this.displayDialog = false;
+    } else {
+      this.messageService.failed('overview.message.loadCanceled');
+    }
+  }
+
+  private calculateGradient(): void {
+    let determinant: number = this.imageWidth > this.imageHeight ? this.imageWidth : this.imageHeight;
+    determinant = determinant;
+    this.gradient = determinant / this.gradientsNumber;
+  }
+
+  private calculateDataSet(payload: CoordinatesIncident[]): (number[] | number[][])[] {
+    const dataForProcessing = payload.slice(0, this.maxPayloadLength); // TODO is going to be removed after solver implementation
+    const data: number[][] = [];
+    const xData: number[] = [];
+    const yData: number[] = [];
+    const distance: number = Geometry.getDistanceBetweenTwoPoints(this.scaleMinificationFactor.stop, this.scaleMinificationFactor.start);
+    const factor = this.scaleMinificationFactor.realDistance / distance;
+    console.log(factor);
+    const maxCoordinateInX: number = Math.round(this.imageWidth * this.gradient);
+    const maxCoordinateInY: number = Math.round(this.imageWidth * this.gradient);
+    if (distance < 1 || factor === Infinity) {
+      return [xData, yData, data];
+    }
+    for (let i = 0; i <= this.gradientsNumber; i++) {
+      xData.push(i);
+    }
+    for (let j = 0; j <= this.gradientsNumber; j++) {
+      yData.push(j);
+    }
+    dataForProcessing.forEach((coord: CoordinatesIncident) => {
+      let point: Point = Geometry.calculatePointPositionInPixels(distance, this.scaleMinificationFactor.realDistance, coord.point);
+      point = {x: Math.round(point.x / this.gradient), y: Math.round(point.y / this.gradient)};
+      data.push([point.x, point.y, 1])
+    });
+
+    return [xData, yData, data];
   }
 
   private mockGenerateData(): number[][] {
@@ -266,8 +310,8 @@ export class OverviewComponent implements OnInit, OnDestroy {
     const data = [];
     const xData = [];
     const yData = [];
-    for (let i = 0; i <= this.gradientsInX; i++) {
-      for (let j = 0; j <= this.gradientsInY; j++) {
+    for (let i = 0; i <= this.gradientsNumber; i++) {
+      for (let j = 0; j <= this.gradientsNumber; j++) {
         let noiseValue = noise.perlin2(i / 40, j / 20) * 10 + 3;
         noiseValue = noiseValue > .4 ? noiseValue : .4;
         noiseValue = noiseValue < 10 ? noiseValue : 10;
@@ -275,7 +319,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
       }
       xData.push(i);
     }
-    for (let j = 0; j < this.gradientsInY; j++) {
+    for (let j = 0; j < this.gradientsNumber; j++) {
       yData.push(j);
     }
     return [xData, yData, data];
