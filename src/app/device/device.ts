@@ -59,6 +59,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   public checkBoxEnabledTooltip: string = '';
   public checkBoxTooltipMap: Map<number, string> = new Map();
 
+  public displayDeviceConfig: boolean = false;
   @ViewChildren('updateCheckbox') public deviceCheckboxes: Checkbox[];
   @ViewChild('firmwareInput') public firmwareInput: ElementRef;
   @ViewChild('firmwareButton') public firmwareButton: ElementRef;
@@ -263,6 +264,15 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
 
   toggleUpdateMode(): void {
     this.updateMode = !this.updateMode;
+  }
+
+  openDeviceConfigDialog(device): void {
+    this.deviceService.sendDevice(device);
+    this.displayDeviceConfig = true;
+  }
+
+  closeDeviceConfig(eventData: boolean): void {
+    this.displayDeviceConfig = eventData;
   }
 
   sendBatteryStatusRequest(): void {

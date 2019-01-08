@@ -1,0 +1,161 @@
+<ngForm [formGroup]="rfConfigForm">
+  <div formGroupName="rfData">
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-2 ui-lg-2"></div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <label for="radioChanel" class="label-info">
+          {{'device.config.rch'|translate}}
+          <p-message severity="info" [pTooltip]="'device.config.radioChannel.tooltip'|translate"></p-message>
+        </label>
+      </div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <p-dropdown [options]="rfsetConfigData.radioChannels"
+                    formControlName="radioChannel"
+                    styleClass="input-config"
+                    id="radioChanel"
+                    placeholder="{{'device.config.radioChannel.placeholder'|translate}}">
+        </p-dropdown>
+      </div>
+    </div>
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-2 ui-lg-2"></div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <label for="radioChanel" class="label-info">
+          {{'device.config.rbr'|translate}}
+          <p-message severity="info" [pTooltip]="'device.config.radioBaudRate.tooltip'|translate"></p-message>
+        </label>
+      </div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <p-dropdown [options]="rfsetConfigData.radioBaudRate"
+                    formControlName="radioBaudRate"
+                    styleClass="input-config"
+                    id="radioBaudRate"
+                    placeholder="{{'device.config.radioBaudRate.placeholder'|translate}}">
+        </p-dropdown>
+      </div>
+    </div>
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-2 ui-lg-2"></div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <label for="preambleLength" class="label-info">
+          {{'device.config.plen'|translate}}
+          <p-message severity="info" [pTooltip]="'device.config.preambleLength.tooltip'|translate"></p-message>
+        </label>
+      </div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <p-dropdown [options]="rfsetConfigData.preambleLength"
+                    formControlName="preambleLength"
+                    styleClass="input-config"
+                    id="preambleLength"
+                    placeholder="{{'device.config.preambleLength.placeholder'|translate}}">
+        </p-dropdown>
+      </div>
+    </div>
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-2 ui-lg-2"></div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <label for="pulseRepetitionFrequency" class="label-info">
+          {{'device.config.prf'|translate}}
+          <p-message severity="info" [pTooltip]="'device.config.pulseRepetition.tooltip'|translate"></p-message>
+        </label>
+      </div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <p-dropdown [options]="rfsetConfigData.pulseRepetitionFrequency"
+                    formControlName="pulseRepetitionFrequency"
+                    styleClass="input-config"
+                    id="pulseRepetitionFrequency"
+                    placeholder="{{'device.config.pulseRepetition.placeholder'|translate}}">
+        </p-dropdown>
+      </div>
+    </div>
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-2 ui-lg-2"></div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <label for="preambleAcquisitionChunk" class="label-info">
+          {{'device.config.pac'|translate}}
+          <p-message severity="info" [pTooltip]="'device.config.preambleAcquisitionChunk.tooltip'|translate"></p-message>
+        </label>
+      </div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <p-dropdown [options]="rfsetConfigData.preambleAcquisitionChunk"
+                    formControlName="preambleAcquisitionChunk"
+                    styleClass="input-config"
+                    id="preambleAcquisitionChunk"
+                    placeholder="{{'device.config.preambleAcquisitionChunk.placeholder'|translate}}">
+        </p-dropdown>
+      </div>
+    </div>
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-2 ui-lg-2"></div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <label for="communicationCode" class="label-info">
+          {{'device.config.code'|translate}}
+          <p-message severity="info" [pTooltip]="'device.config.communicationCode.tooltip'|translate"></p-message>
+        </label>
+      </div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <p-spinner
+          formControlName="communicationCode"
+          size="40"
+          [min]="1"
+          [max]="24"
+          id="communicationCode"></p-spinner>
+      </div>
+    </div>
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-2 ui-lg-2"></div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <label for="sfd" class="label-info">
+          {{'device.config.sfd'|translate}}
+          <p-message severity="info" [pTooltip]="'device.config.sfd.tooltip'|translate"></p-message>
+        </label>
+      </div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <p-spinner
+          formControlName="sfd"
+          size="40"
+          [style]="{ width: '100%' }"
+          [min]="1"
+          [max]="65536"
+          id="sfd"></p-spinner>
+      </div>
+    </div>
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-2 ui-lg-2"></div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <label class="label-info">
+          {{'device.config.nsfd'|translate}}
+          <p-message severity="info" [pTooltip]="'device.config.nsfd.tooltip'|translate"></p-message>
+        </label>
+      </div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <p-inputSwitch
+          formControlName="nsfd"></p-inputSwitch>
+      </div>
+    </div>
+
+    <div class="ui-dialog-buttonpane ui-helper-clearfix">
+      <button
+        type="button"
+        pButton
+        icon="fa-cogs"
+        (click)="resetDevice()"
+        label="{{'device.config.default'|translate}}"></button>
+
+      <button
+        type="button"
+        pButton
+        icon="fa-share-square"
+        (click)="sendToDevice()"
+        [disabled]="isButtonSendDisabled"
+        label="{{'device.config.save'|translate}}"></button>
+    </div>
+  </div>
+</ngForm>

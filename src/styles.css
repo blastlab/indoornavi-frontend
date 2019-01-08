@@ -209,6 +209,66 @@ svg {
   background-color: #6f6f6f;
 }
 
+.ui-slider-handle.ui-state-default {
+  background: #1765A3;
+  border: 0;
+}
+
+.ui-slider.ui-widget-content {
+  border-color: #95bcda;
+}
+
+.ui-inputswitch .ui-inputswitch-off span {
+  background-color: #ccc;
+
+}
+
+.ui-inputswitch .ui-inputswitch-on span {
+  background-color: #1765A3;
+  color: #fff;
+}
+
+.ui-inputswitch-handle.ui-state-focus,
+.ui-inputswitch.ui-state-focus {
+  background: #fff;
+  border-color: #d4d4d4;
+}
+
+.input-config {
+  min-width: 100%;
+}
+
+.scrollbar-height .ps__rail-x,
+.scrollbar-height .ps__rail-y {
+  opacity: 1;
+  border: 1px solid #2790b0;
+  border-radius: 3px;
+}
+
+.scrollbar-height .ps__thumb-x,
+.scrollbar-height .ps__thumb-y,
+.scrollbar-height .ps__rail-y:focus > .ps__thumb-y,
+.scrollbar-height .ps__rail-y:hover > .ps__thumb-y {
+  background-color: #2790b0;
+}
+
+.scrollbar-height .ps__thumb-y {
+  border-top: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+}
+
+.scrollbar-height .ps__thumb-y {
+  right: 1px;
+}
+
+
+@media screen and (min-width: 641px) {
+  .label-info {
+    text-align: right;
+    display: block;
+  }
+}
+
 .muted {
   color: #6c757d;
 }

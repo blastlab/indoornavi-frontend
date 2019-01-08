@@ -164,3 +164,69 @@ export enum CommandType {
   UPDATE_FIRMWARE,
   RAW_COMMAND
 }
+
+export interface TxConfigData {
+  txPower: TxPower
+}
+
+export interface TxPower {
+  transmitterCoarse1: number;
+  transmitterFine1: number;
+  transmitterCoarse2: number;
+  transmitterFine2: number;
+  transmitterCoarse3: number;
+  transmitterFine3: number;
+  transmitterCoarse4: number;
+  transmitterFine4: number;
+}
+
+export interface RfData {
+  radioChannel: number;
+  radioBaudRate: number;
+  preambleLength: number;
+  pulseRepetitionFrequency: number;
+  preambleAcquisitionChunk: number;
+  communicationCode: number;
+  sfd: number;
+  nsfd: boolean;
+}
+
+export interface RfsetConfigData {
+  radioChannels: FormSelectData[];
+  radioBaudRate: FormSelectData[];
+  preambleLength: FormSelectData[];
+  pulseRepetitionFrequency: FormSelectData[];
+  preambleAcquisitionChunk: FormSelectData[];
+}
+
+export interface FormSelectData {
+  label: string;
+  value: number;
+}
+
+export interface MacData {
+  beaconTimerInterval: number;
+  slotPeriod: number;
+  slotTime: number;
+  guardTime: number;
+  devicePersonalAreaNetwork: number;
+  newDeviceAddress: number;
+  reportAnchorToAnchorDistances: boolean;
+}
+
+export interface RangingTimeData {
+  rangingPeriod: number;
+  rangingTimeOneSlot: number;
+  numberOfMeasurement: number;
+  typeRangingTime: RangingTimeType
+}
+
+export enum RangingTimeType {
+  Time = 'TIME',
+  Measurments = 'MEASURMENTS'
+}
+
+export interface ImuData {
+  toggleImu?: boolean;
+  delayBeforeAssleep: number;
+}

@@ -1,0 +1,127 @@
+<ngForm [formGroup]="macConfigForm">
+  <div formGroupName="macData">
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-4 ui-lg-4">
+        <label for="beaconTimerInterval" class="label-info">
+          {{'device.config.beaconTimerInterval'|translate}} (ms)
+        </label>
+      </div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <p-spinner
+          formControlName="beaconTimerInterval"
+          size="40"
+          [min]="1"
+          id="beaconTimerInterval"></p-spinner>
+      </div>
+    </div>
+
+    <div class="ui-g" *ngIf="!isDeviceTag">
+      <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-4 ui-lg-4">
+        <label for="beaconTimerInterval" class="label-info">
+          {{'device.config.slotPeriod'|translate}} (&#181;s)
+        </label>
+      </div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <p-spinner
+          formControlName="slotPeriod"
+          size="40"
+          [min]="1"
+          id="slotPeriod"></p-spinner>
+      </div>
+    </div>
+
+    <div class="ui-g" *ngIf="!isDeviceTag">
+      <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-4 ui-lg-4">
+        <label for="beaconTimerInterval" class="label-info">
+          {{'device.config.slotTime'|translate}} (&#181;s)
+        </label>
+      </div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <p-spinner
+          formControlName="slotTime"
+          size="40"
+          [min]="1"
+          id="slotTime"></p-spinner>
+      </div>
+    </div>
+
+    <div class="ui-g" *ngIf="!isDeviceTag">
+      <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-4 ui-lg-4">
+        <label for="beaconTimerInterval" class="label-info">
+          {{'device.config.guardTime'|translate}} (&#181;s)
+        </label>
+      </div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <p-spinner
+          formControlName="guardTime"
+          size="40"
+          [min]="1"
+          id="guardTime"></p-spinner>
+      </div>
+    </div>
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-3 ui-lg-4">
+        <label for="newDeviceAddress" class="label-info">{{'device.config.newDeviceAddress'|translate}}</label>
+      </div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <input
+          formControlName="newDeviceAddress"
+          pInputText
+          id="newDeviceAddress" />
+      </div>
+    </div>
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-2 ui-lg-2"></div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <label for="devicePersonalAreaNetwork" class="label-info">
+          {{'device.config.devicePersonalAreaNetwork'|translate}}
+        </label>
+      </div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <input
+          formControlName="devicePersonalAreaNetwork"
+          pInputText
+          id="devicePersonalAreaNetwork" />
+      </div>
+    </div>
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-2 ui-lg-2"></div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <label class="label-info">
+          {{'device.config.reportAnchorToAnchorDistances'|translate}}
+        </label>
+      </div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <p-inputSwitch
+          formControlName="reportAnchorToAnchorDistances"></p-inputSwitch>
+      </div>
+    </div>
+
+    <div class="ui-dialog-buttonpane ui-helper-clearfix">
+      <button
+        type="button"
+        pButton
+        icon="fa-cogs"
+        (click)="resetDevice()"
+        label="{{'device.config.default'|translate}}"></button>
+
+      <button
+        type="button"
+        pButton
+        icon="fa-share-square"
+        (click)="sendToDevice()"
+        [disabled]="isButtonSendDisabled"
+        label="{{'device.config.save'|translate}}"></button>
+    </div>
+
+  </div>
+</ngForm>

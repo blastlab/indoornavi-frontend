@@ -113,6 +113,15 @@
           <button
             [appHasPermission]="editPermission"
             [disabled]="updateMode"
+            pTooltip="{{'configuration'|translate}}"
+            type="button"
+            pButton
+            (click)="openDeviceConfigDialog(device)"
+            icon="fa-cog"
+            class="ui-button-warning device-action-item"></button>
+          <button
+            [appHasPermission]="editPermission"
+            [disabled]="updateMode"
             pTooltip="{{'edit'|translate}}" type="button"
             pButton (click)="openDialog(device)" icon="fa-edit"
             class="ui-button-info device-action-item">
@@ -135,6 +144,12 @@
     </div>
   </ng-template>
 </p-pickList>
+
+<!-- DEVICE CONFIGURATION -->
+<app-device-configuration
+  [displayDeviceConfig]="displayDeviceConfig"
+  [deviceType]="deviceType"
+  (deviceConfigClosed)="closeDeviceConfig($event)"></app-device-configuration>
 
 <p-dialog [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
           [contentStyle]="{ overflow: 'visible' }"
