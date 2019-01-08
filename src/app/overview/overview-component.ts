@@ -25,7 +25,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   dateToMaxValue: Date;
   dateFromMaxValue: Date;
   displayDialog = false;
-  imageIsSet = false;
+  isImageSet = false;
   private dateFromRequestFormat: string;
   private dateToRequestFormat: string;
   private imageLoaded = false;
@@ -59,9 +59,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.windowWidth = window.innerWidth;
-    this.windowWidth = this.windowWidth < 1000 ? this.windowWidth = 1000 : this.windowWidth; // prevent to load heat map for very small image by resizing
-    this.windowWidth = this.windowWidth > 2200 ? this.windowWidth = 2200 : this.windowWidth; // prevent to load heat map for very larger image by resizing
+    this.setImageToWindowSizeRelation();
     this.setCorrespondingFloorParams();
     this.setTimeDateAllowedToChooseFrom();
     this.translateService.setDefaultLang('en');
@@ -71,7 +69,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptionDestructor.next();
     this.subscriptionDestructor = null;
-    this.imageIsSet = false;
+    this.isImageSet = false;
   }
 
   onChartInit(ec) {
@@ -90,6 +88,12 @@ export class OverviewComponent implements OnInit, OnDestroy {
 
   cancel(): void {
     this.displayDialog = false;
+  }
+
+  private setImageToWindowSizeRelation() {
+    this.windowWidth = window.innerWidth;
+    this.windowWidth = this.windowWidth < 1000 ? this.windowWidth = 1000 : this.windowWidth; // prevent to load heat map for very small image by resizing up
+    this.windowWidth = this.windowWidth > 2200 ? this.windowWidth = 2200 : this.windowWidth; // prevent to load heat map for very larger image by resizing down
   }
 
   private setDateRequestFormat(): void {
@@ -136,7 +140,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
     this.route.params.takeUntil(this.subscriptionDestructor)
       .subscribe((params: Params) => {
         const floorId = +params['id'];
-        this.floorService.getFloor(floorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
+        this.floorService.getFloor(floorId).first().subscribe((floor: Floor): void => {
           this.breadcrumbService.publishIsReady([
             {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
             {
@@ -156,7 +160,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   }
 
   private subscribeToMapParametersChange() {
-    this.route.params.takeUntil(this.subscriptionDestructor).subscribe((params: Params): void => {
+    this.route.params.first().subscribe((params: Params): void => {
       const floorId = +params['id'];
       this.floorService.getFloor(floorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
         this.floor = floor;
@@ -177,7 +181,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
               self.imageWidth += img.width;
               self.imageHeight += img.height;
               self.calculateEChartOffset();
-              self.imageIsSet = true;
+              self.isImageSet = true;
             }.bind(self);
           });
         }
@@ -185,7 +189,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
     });
   }
 
-  private calculateDataToHeatmapScaleFactorChange(): void {
+  private calculateScaleFactor(): void {
     const mapSizeInPixels: Point = {
       x: this.heatmapImageEdgePoint.x - this.heatmapOffsetX,
       y: this.heatmapImageEdgePoint.y - this.heatmapOffsetY
@@ -236,13 +240,14 @@ export class OverviewComponent implements OnInit, OnDestroy {
             height: this.heatmapImageEdgePoint.y,
             silent: false
           });
-          this.calculateDataToHeatmapScaleFactorChange();
+          this.calculateScaleFactor();
           this.imageLoaded = true;
         });
       }
       if (this.displayDialog) {
         console.log(payload); // TODO: build data array from received payload
         const data: number[][] = this.mockGenerateData();
+        console.log(data);
         this.chartOptions.xAxis.data = data[0];
         this.chartOptions.yAxis.data = data[1];
         this.chartOptions.series[0].data = data[2];
