@@ -111,14 +111,14 @@
                       [(ngModel)]="devicesToUpdate" [disabled]="true" class="device-action-item">
           </p-checkbox>
           <button
-            [appHasPermission]="configPermission"
+            [appHasPermission]="editPermission"
             [disabled]="updateMode"
             pTooltip="{{'configuration'|translate}}"
             type="button"
             pButton
             (click)="openDeviceConfigDialog(device)"
             icon="fa-cog"
-            class="ui-button-warning"></button>
+            class="ui-button-warning device-action-item"></button>
           <button
             [appHasPermission]="editPermission"
             [disabled]="updateMode"

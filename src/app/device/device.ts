@@ -48,7 +48,6 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   public createPermission: string;
   public deletePermission: string;
   public editPermission: string;
-  public configPermission: string;
   public displayDialog: boolean = false;
   public device: UWB;
   public updateMode: boolean = false;
@@ -375,7 +374,6 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     const prefix: string = DeviceService.getDevicePermissionPrefix(this.deviceType);
     this.createPermission = `${prefix}_CREATE`;
     this.editPermission = `${prefix}_UPDATE`;
-    this.configPermission = `${prefix}_CONFIGURATION`;
     this.deletePermission = `${prefix}_DELETE`;
   }
 

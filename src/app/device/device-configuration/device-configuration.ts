@@ -1,4 +1,4 @@
-import {Component, OnInit, Input, Output, EventEmitter, OnDestroy} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewEncapsulation} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
 import {DeviceService} from '../device.service';
 import {Device} from '../device.type';
@@ -6,7 +6,8 @@ import {Device} from '../device.type';
 @Component({
   selector: 'app-device-configuration',
   styleUrls: ['./device-configuration.css'],
-  templateUrl: './device-configuration.html'
+  templateUrl: './device-configuration.html',
+  encapsulation: ViewEncapsulation.None
 })
 export class DeviceConfigurationComponent implements OnInit, OnDestroy {
 
