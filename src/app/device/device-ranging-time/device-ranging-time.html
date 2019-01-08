@@ -1,0 +1,82 @@
+<ngForm [formGroup]="rangingTimeConfigForm">
+  <div formGroupName="rangingTimeData">
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-3 ui-lg-4">
+        <label for="rangingTimeOneSlot">{{'device.config.rangingTime'|translate}}</label>
+      </div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <input
+          formControlName="rangingTimeOneSlot"
+          pInputText
+          #rangingTimeOneSlot
+          (input)="calculateRangingPeriod()"
+          id="rangingTimeOneSlot" />
+      </div>
+    </div>
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-5 ui-lg-5"></div>
+      <div class="ui-g-12 ui-md-7 ui-lg-7">
+        <p-radioButton
+          formControlName="typeRangingTime"
+          (click)="changeType(rangingTimeType.Time)"
+          label="{{'device.config.rangingPeriodRadio'|translate}}"
+          [value]="rangingTimeType.Time"
+          name="groupname"></p-radioButton>
+        <p-radioButton
+          formControlName="typeRangingTime"
+          (click)="changeType(rangingTimeType.Measurments)"
+          label="{{'device.config.numbeOfRanging'|translate}}"
+          [value]="rangingTimeType.Measurments"
+          name="groupname"></p-radioButton>
+      </div>
+    </div>
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-3 ui-lg-4">
+        <label for="rangingPeriod">{{'device.config.rangingPeriod'|translate}}</label>
+      </div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <input
+          formControlName="rangingPeriod"
+          *ngIf="!isRangingPeriodDisabled"
+          id="rangingPeriod" />
+        <span *ngIf="isRangingPeriodDisabled">{{ rangingPeriod }}</span>
+      </div>
+    </div>
+
+    <div class="ui-g" [ngClass]="{ 'hidden': !isRangingPeriodDisabled }">
+      <div class="ui-g-12 ui-md-4 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-3 ui-lg-4">
+        <label for="numberOfMeasurement">{{'device.config.numberOfMeasurments'|translate}}</label>
+      </div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <input
+          formControlName="numberOfMeasurement"
+          pInputText
+          #numberOfMeasurement
+          (input)="calculateRangingPeriod()"
+          id="numberOfMeasurement" />
+      </div>
+    </div>
+
+    <div class="ui-dialog-buttonpane ui-helper-clearfix">
+      <button
+        type="button"
+        pButton
+        icon="fa-cogs"
+        (click)="resetDevice()"
+        label="{{'device.config.default'|translate}}"></button>
+
+      <button
+        type="button"
+        pButton
+        icon="fa-share-square"
+        (click)="sendToDevice()"
+        [disabled]="isButtonSendDisabled"
+        label="{{'device.config.save'|translate}}"></button>
+    </div>
+  </div>
+</ngForm>

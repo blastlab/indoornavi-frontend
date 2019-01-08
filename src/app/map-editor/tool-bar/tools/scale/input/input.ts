@@ -5,7 +5,6 @@ import {ScaleService} from '../../../../../shared/services/scale/scale.service';
 import {MessageServiceWrapper} from '../../../../../shared/services/message/message.service';
 import {SelectItem} from 'primeng/primeng';
 import {Subscription} from 'rxjs/Subscription';
-import {TranslateService} from '@ngx-translate/core';
 import {ToolDetailsComponent} from '../../../shared/details/tool-details';
 
 @Component({
@@ -16,35 +15,21 @@ import {ToolDetailsComponent} from '../../../shared/details/tool-details';
 export class ScaleInputComponent implements OnInit, OnDestroy {
   @ViewChild('toolDetails')
   toolDetails: ToolDetailsComponent;
-
-  visible: boolean = false;
   scale: Scale;
+  visible: boolean = false;
   measures: SelectItem[] = [];
-  // workaround for this: https://github.com/primefaces/primeng/issues/4485
-  placeholder: string = '...';
 
   private scaleChangedSubscription: Subscription;
   private scaleVisibilityChangedSubscription: Subscription;
 
   constructor(private messageService: MessageServiceWrapper,
               private scaleService: ScaleService,
-              private scaleInputService: ScaleInputService,
-              private translateService: TranslateService) {
-    this.scale = <Scale>{
-      start: null,
-      stop: null,
-      realDistance: null,
-      measure: null
-    };
+              private scaleInputService: ScaleInputService) {
   }
 
   ngOnInit() {
-    // workaround for this: https://github.com/primefaces/primeng/issues/4485
-    this.translateService.get('scale.measure.select').subscribe((value: string) => {
-      this.placeholder = value;
-    });
     const objValues = Object.keys(Measure).map(k => Measure[k]);
-    this.measures = objValues.filter(v => typeof v === 'string').map((value: string) => {
+    this.measures = objValues.filter(v => typeof v === 'string').map((value: string, index: number) => {
       return {
         label: value,
         value: value
@@ -57,6 +42,10 @@ export class ScaleInputComponent implements OnInit, OnDestroy {
 
     this.scaleChangedSubscription = this.scaleService.scaleChanged.subscribe(scale => {
       this.scale = scale;
+      if (!this.scale.measure) {
+        // @ts-ignore
+        this.scale.measure = Measure[Measure.CENTIMETERS];
+      }
     });
   }
 

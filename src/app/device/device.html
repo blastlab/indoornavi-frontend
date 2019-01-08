@@ -66,7 +66,7 @@
             sourceFilterPlaceholder="{{'device.searchByShortId'|translate}}" targetFilterPlaceholder="{{'device.searchByShortId'|translate}}"
             (onMoveToTarget)="onItemMoved($event.items)" (onMoveToSource)="onItemMoved($event.items)">
   <ng-template let-device pTemplate="item">
-    <div class="ui-helper-clearfix">
+    <div class="ui-helper-clearfix" (dblclick)="preventDoubleClick($event)">
       <div class="ui-g">
         <div class="ui-g-5 ui-md-5 ui-lg-5 device-details">
           <div><b>{{'device.shortId'|translate}}:</b> {{device['shortId']}}</div>
@@ -105,25 +105,51 @@
         <div class="ui-g-4 ui-md-4 ui-lg-4 device-published-details">
           <div *ngIf="device.floorId" ><b>{{'device.publishedOnFloorWithId'|translate}}:</b> {{device.floorId}}</div>
         </div>
-        <div class="ui-g-3 ui-md-3 ui-lg-3">
+        <div class="ui-g-3 ui-md-3 ui-lg-3" id="device-action-container">
+          <p-checkbox pTooltip="{{checkBoxTooltipMap[device.shortId]}}" #updateCheckbox [hidden]="!(updateMode && devicesUpdating.length === 0)"
+                      name="deviceToUpdate" id="{{device.shortId}}" [value]="device" (onChange)="checkAllSelected()"
+                      [(ngModel)]="devicesToUpdate" [disabled]="true" class="device-action-item">
+          </p-checkbox>
           <button
             [appHasPermission]="editPermission"
             [disabled]="updateMode"
-            pTooltip="{{'edit'|translate}}" type="button" pButton (click)="openDialog(device)" icon="fa-edit" class="ui-button-info">
+            pTooltip="{{'configuration'|translate}}"
+            type="button"
+            pButton
+            (click)="openDeviceConfigDialog(device)"
+            icon="fa-cog"
+            class="ui-button-warning device-action-item"></button>
+          <button
+            [appHasPermission]="editPermission"
+            [disabled]="updateMode"
+            pTooltip="{{'edit'|translate}}" type="button"
+            pButton (click)="openDialog(device)" icon="fa-edit"
+            class="ui-button-info device-action-item">
           </button>
           <button
             [appHasPermission]="deletePermission"
             [disabled]="updateMode"
-            pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(device)" icon="fa-trash" class="ui-button-danger">
+            pTooltip="{{'remove'|translate}}" type="button"
+            pButton (click)="remove(device)" icon="fa-trash"
+            class="ui-button-danger device-action-item">
           </button>
-          <p-checkbox #updateCheckbox *ngIf="updateMode && devicesUpdating.length === 0" name="deviceToUpdate" id="{{device.shortId}}" [value]="device" (onChange)="checkAllSelected()"
-                      [(ngModel)]="devicesToUpdate" [disabled]="true">
-          </p-checkbox>
+          <button pButton class="ui-button-secondary device-action-item"
+                  id="terminal" [appHasPermission]="editPermission"
+                  (click)="initializeTerminal(device)"
+                  pTooltip="{{'device.terminal'|translate}}"
+                  icon="fa-terminal" iconPos="left">
+          </button>
         </div>
       </div>
     </div>
   </ng-template>
 </p-pickList>
+
+<!-- DEVICE CONFIGURATION -->
+<app-device-configuration
+  [displayDeviceConfig]="displayDeviceConfig"
+  [deviceType]="deviceType"
+  (deviceConfigClosed)="closeDeviceConfig($event)"></app-device-configuration>
 
 <p-dialog [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
           [contentStyle]="{ overflow: 'visible' }"
@@ -210,3 +236,5 @@
     <button type="button" pButton icon="fa-check" (click)="displayInfoDialog=false" label="{{'ok'|translate}}"></button>
   </p-footer>
 </p-dialog>
+
+<app-terminal-component></app-terminal-component>

@@ -1,6 +1,6 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {Http, HttpModule} from '@angular/http';
 import {ComplexComponent} from './complex/complex';
 import {RouterModule} from '@angular/router';
@@ -55,9 +55,16 @@ import {
   RadioButtonModule,
   SidebarModule,
   SliderModule,
+  TerminalModule,
   ToolbarModule,
-  TooltipModule
+  TooltipModule,
+  TabViewModule,
+  SpinnerModule,
+  InputSwitchModule,
+  MessagesModule,
+  MessageModule
 } from 'primeng/primeng';
+
 import {HintBarService} from './map-editor/hint-bar/hintbar.service';
 import {ToolbarService} from './map-editor/tool-bar/toolbar.service';
 import {AppComponent} from './app.component';
@@ -83,6 +90,12 @@ import {DataTableModule} from 'primeng/components/datatable/datatable';
 import {AppAutoFocusDirective} from './shared/directive/autofocus.directive';
 import {ProperNameDirective} from './shared/directive/propername.directive';
 import {DeviceComponent} from 'app/device/device';
+import {DeviceConfigurationComponent} from 'app/device/device-configuration/device-configuration';
+import {DeviceRfSetComponent} from 'app/device/device-rfset/device-rfset';
+import {DeviceTxSetComponent} from 'app/device/device-txset/device-txset';
+import {DeviceRangingTimeComponent} from 'app/device/device-ranging-time/device-ranging-time';
+import {DeviceImuComponent} from 'app/device/device-imu/device-imu';
+import {DeviceMacComponent} from './device/device-mac/device-mac';
 import {BluetoothComponent} from 'app/bluetooth/bluetooth';
 import {AcceptButtonsComponent} from 'app/shared/components/accept-buttons/accept-buttons';
 import {PermissionGroupComponent} from 'app/user/permissionGroup/permissionGroup';
@@ -123,8 +136,25 @@ import {SelectButtonModule} from 'primeng/components/selectbutton/selectbutton';
 import {TagFollowerComponent} from './map-viewer/views/tagfollower/tag-follower';
 import {NavigationService} from './shared/utils/navigation/navigation.service';
 import {NavigationController} from './shared/utils/navigation/navigation.controller';
+import {TerminalService} from 'primeng/components/terminal/terminalservice';
+import {PanelModule} from 'primeng/components/panel/panel';
 import {ModelsConfig} from './map/models/models.config';
+import {DebuggerComponent} from './debug-hidden/debugger.component';
 import {BatteryIndicatorComponent} from './device/battery-indicator';
+import {PerfectScrollbarModule} from 'ngx-perfect-scrollbar';
+import {PerfectScrollbarConfigInterface} from 'ngx-perfect-scrollbar';
+import {DashboardComponent} from './dashboard/dashboard';
+import {CounterComponent} from './dashboard/counter/counter';
+import {EventComponent} from './dashboard/event/event';
+import {DashboardEventService} from './dashboard/event/event.service';
+import {DashboardService} from './dashboard/dashboard.service';
+import {TerminalMessageService} from './device/terminal/terminal-message.service';
+import {TerminalComponent} from './device/terminal/terminal';
+import {DebuggerService} from './debug-hidden/debugger.service';
+
+const PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
+  suppressScrollX: true
+};
 
 export function HttpLoaderFactory(http: Http) {
   return new TranslateHttpLoader(http);
@@ -155,6 +185,12 @@ export function HttpLoaderFactory(http: Http) {
     PublishedListComponent,
     PublicationDialogComponent,
     DeviceComponent,
+    DeviceConfigurationComponent,
+    DeviceRfSetComponent,
+    DeviceTxSetComponent,
+    DeviceRangingTimeComponent,
+    DeviceImuComponent,
+    DeviceMacComponent,
     LongIdValidatorDirective,
     NumberInRangeValidatorDirective,
     AppAutoFocusDirective,
@@ -184,7 +220,13 @@ export function HttpLoaderFactory(http: Http) {
     PathComponent,
     TagsFinderComponent,
     TagFollowerComponent,
-    BatteryIndicatorComponent
+    BatteryIndicatorComponent,
+    TerminalComponent,
+    TagFollowerComponent,
+    DebuggerComponent,
+    DashboardComponent,
+    CounterComponent,
+    EventComponent
   ],
   entryComponents: [
     PublicationDialogComponent,
@@ -192,6 +234,7 @@ export function HttpLoaderFactory(http: Http) {
   imports: [
     BrowserModule,
     FormsModule,
+    ReactiveFormsModule,
     HttpModule,
     BrowserAnimationsModule,
     TranslateModule.forRoot({
@@ -201,6 +244,7 @@ export function HttpLoaderFactory(http: Http) {
         deps: [Http]
       }
     }),
+    PerfectScrollbarModule.forRoot(PERFECT_SCROLLBAR_CONFIG),
     RouterModule.forRoot(appRoutes),
     ImageUploadModule.forRoot(),
     CoreModule,
@@ -222,6 +266,11 @@ export function HttpLoaderFactory(http: Http) {
     SidebarModule,
     BreadcrumbModule,
     TooltipModule,
+    TabViewModule,
+    SpinnerModule,
+    InputSwitchModule,
+    MessagesModule,
+    MessageModule,
     GrowlModule,
     ProgressSpinnerModule,
     OverlayPanelModule,
@@ -229,7 +278,9 @@ export function HttpLoaderFactory(http: Http) {
     FileUploadModule,
     RadioButtonModule,
     InputMaskModule,
-    SelectButtonModule
+    SelectButtonModule,
+    TerminalModule,
+    PanelModule
   ],
   providers: [
     BuildingService,
@@ -277,7 +328,13 @@ export function HttpLoaderFactory(http: Http) {
     PathService,
     NavigationService,
     NavigationController,
-    ModelsConfig
+    TerminalService,
+    NavigationController,
+    ModelsConfig,
+    TerminalMessageService,
+    DashboardEventService,
+    DashboardService,
+    DebuggerService
   ], bootstrap: [AppComponent]
 })
 

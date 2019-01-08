@@ -6,11 +6,10 @@ export class UnauthorizedComponent implements OnInit {
 
   style = {'display': 'block'};
 
-  constructor(private translateService: TranslateService) {
+  constructor(public translateService: TranslateService) {
   }
 
   ngOnInit(): void {
     this.translateService.setDefaultLang('en');
-    this.translateService.get('')
   }
 }

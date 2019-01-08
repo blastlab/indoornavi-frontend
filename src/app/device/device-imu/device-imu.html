@@ -1,0 +1,49 @@
+<ngForm [formGroup]="imuConfigForm">
+  <div formGroupName="imuData">
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-4 ui-lg-4">
+        <label>{{'device.config.motionlessAsleep'|translate}}</label>
+      </div>
+      <div class="ui-g-12 ui-md-5 ui-lg-5">
+        <p-inputSwitch
+          formControlName="toggleImu"></p-inputSwitch>
+      </div>
+    </div>
+
+    <ng-container *ngIf="toggleImu">
+      <div class="ui-g">
+        <div class="ui-g-12 ui-md-2 ui-lg-2"></div>
+        <div class="ui-g-12 ui-md-5 ui-lg-5">
+          <label for="delayBeforeAssleep" class="label-info">
+            {{'device.config.delayBeforeAsleep'|translate}}
+          </label>
+        </div>
+        <div class="ui-g-12 ui-md-5 ui-lg-5">
+          <p-spinner
+            formControlName="delayBeforeAssleep"
+            size="40"
+            [min]="10"
+            id="delayBeforeAssleep"></p-spinner>
+        </div>
+      </div>
+
+      <div class="ui-dialog-buttonpane ui-helper-clearfix">
+        <button
+          type="button"
+          pButton
+          icon="fa-cogs"
+          (click)="resetDevice()"
+          label="{{'device.config.default'|translate}}"></button>
+
+        <button
+          type="button"
+          pButton
+          icon="fa-share-square"
+          (click)="sendToDevice()"
+          [disabled]="isButtonSendDisabled"
+          label="{{'device.config.save'|translate}}"></button>
+      </div>
+    </ng-container>
+  </div>
+</ngForm>

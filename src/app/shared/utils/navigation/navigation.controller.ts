@@ -230,8 +230,8 @@ export class NavigationController {
 
   private createPointPathFromLinePath(scale: Scale, path: Line[]): Point[] {
     return path.reduce((points, point) => {
-      points.push(Geometry.calculatePointPositionInCentimeters(scale.getLenInPix(), scale.getRealDistanceInCentimeters(), point.startPoint));
-      points.push(Geometry.calculatePointPositionInCentimeters(scale.getLenInPix(), scale.getRealDistanceInCentimeters(), point.endPoint));
+      points.push(Geometry.calculatePointPositionInCentimeters(scale.getDistanceInPixels(), scale.getRealDistanceInCentimeters(), point.startPoint));
+      points.push(Geometry.calculatePointPositionInCentimeters(scale.getDistanceInPixels(), scale.getRealDistanceInCentimeters(), point.endPoint));
       return points;
     }, []);
   }

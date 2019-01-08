@@ -5,12 +5,12 @@ import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.servi
 import {SelectItem} from 'primeng/primeng';
 import {SocketService} from '../shared/services/socket/socket.service';
 import {Config} from '../../config';
-import {MeasureSocketDataTag, Publication} from '../map-viewer/publication.type';
+import {Publication} from '../map-viewer/publication.type';
 import {Router} from '@angular/router';
 import {MessageServiceWrapper} from '../shared/services/message/message.service';
 import {HttpService} from '../shared/services/http/http.service';
 import {Floor} from '../floor/floor.type';
-import {TagListElement} from './tags-finder.type';
+import {TagListElement, TagTracerData} from './tags-finder.type';
 
 @Component({
   selector: 'app-localization',
@@ -126,7 +126,7 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
 
   private initializeSocketConnection(): void {
     const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}tagTracer?client`);
-    stream.takeUntil(this.subscriptionDestroyer).subscribe((tagData: MeasureSocketDataTag): void => {
+    stream.takeUntil(this.subscriptionDestroyer).subscribe((tagData: TagTracerData): void => {
       this.loading = false;
       let tagInTags = false;
       const { tag, floor } = tagData;

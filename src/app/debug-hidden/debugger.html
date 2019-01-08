@@ -1,0 +1,76 @@
+<div>
+  <h2>{{'debug.hidden.service'|translate}}:</h2>
+  <div class="ui-g-12 ui-md-6 ui-lg-3">
+    <h3>{{'raw.file.name'|translate}}</h3>
+    <span class="ui-float-label">
+    <input id="raw-data-input"
+           type="text" size="30"
+           pInputText
+           [(ngModel)]="rawDataFileName"
+           [disabled]="isRecording"
+           required>
+    <label for="raw-data-input">{{'raw.file.name'|translate}}</label>
+  </span>
+  </div>
+  <div class="ui-g-12 ui-md-6 ui-lg-3">
+    <h3>{{'coordinates.file.name'|translate}}:</h3>
+    <span class="ui-float-label">
+    <input id="coordinates-data-input"
+           type="text"
+           size="30"
+           pInputText
+           [disabled]="isRecording"
+           [(ngModel)]="coordinatesFileName"
+           required>
+    <label for="coordinates-data-input">{{'coordinates.file.name'|translate}}</label>
+  </span>
+  </div>
+  <div class="ui-g-12 ui-md-12 ui-lg-12">
+    <h3>{{'sink.id'|translate}}:</h3>
+    <p-dropdown [options]="sinks"
+                [style]="{'width':'260px'}"
+                required
+                [(ngModel)]="selectedSink"
+                [disabled]="isRecording"
+                placeholder="{{'select.sink.to.record'|translate}}"></p-dropdown>
+  </div>
+  <div class="ui-g-12 ui-md-12 ui-lg-12">
+    <button class="ui-button-info" pButton
+            type="button"
+            label="{{'start.recording'|translate}}"
+            (click)="startRecording()"
+            [disabled]="isRecording"
+            icon="fa-circle"></button>
+    <button class="ui-button-info" pButton
+            type="button"
+            label="{{'stop.recording'|translate}}"
+            (click)="stopRecording()"
+            [disabled]="!isRecording"
+            icon="fa-square"></button>
+  </div>
+  <div class="ui-g-12 ui-md-12 ui-lg-12">
+    <p-dataTable [value]="files" styleClass="auto">
+      <p-column field="name" header="{{'name'|translate}}">
+      </p-column>
+      <p-column field="reportType" header="{{'type'|translate}}">
+      </p-column>
+      <p-column header="{{'actions'|translate}}" styleClass="col-button">
+        <ng-template let-file="rowData" pTemplate="body">
+          <button
+            [appHasPermission]="'DEBUG_READ'"
+            pTooltip="{{'download'|translate}}"
+            type="button" pButton (click)="download(file.id)"
+            icon="fa-arrow-down"
+            class="ui-button-info">
+          </button>
+          <button
+            [appHasPermission]="'DEBUG_READ'"
+            pTooltip="{{'remove'|translate}}" type="button" pButton
+            (click)="remove(file.id)" icon="fa-trash"
+            class="ui-button-danger">
+          </button>
+        </ng-template>
+      </p-column>
+    </p-dataTable>
+  </div>
+</div>

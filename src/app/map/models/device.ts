@@ -155,8 +155,8 @@ export class DeviceInEditor {
     let coordinates: Point;
     const drag: d3.event = d3.drag()
       .on('drag', (): void => {
-          coordinatesBackUp = Object.assign({}, this.coordinates);
           if (this.reactiveToEvents) {
+            coordinatesBackUp = Object.assign({}, this.coordinates);
             coordinates = {
               x: d3.event.dx + parseInt(this.svgGroupWrapper.getGroup().attr('x'), 10),
               y: d3.event.dy + parseInt(this.svgGroupWrapper.getGroup().attr('y'), 10)
@@ -184,6 +184,7 @@ export class DeviceInEditor {
         };
         element = null;
         if (!!coordinates && !!coordinatesBackUp) {
+          coordinatesBackUp = null;
           this.devicePlacerService.emitDevicePositionChanged();
         }
       });

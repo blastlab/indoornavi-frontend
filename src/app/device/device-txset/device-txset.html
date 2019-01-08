@@ -1,0 +1,207 @@
+<ngForm [formGroup]="txConfigForm">
+  <div formGroupName="txPower">
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-3 ui-lg-3">
+        <label class="label-info">
+          {{'device.config.p1c'|translate}} (dB): {{txConfigForm.value.txPower.transmitterCoarse1}}
+          <p-message severity="info" [pTooltip]="'device.config.pc.tooltip'|translate"></p-message>
+        </label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
+        <p-slider
+          formControlName="transmitterCoarse1"
+          [step]="3"
+          [min]="0"
+          [max]="18"></p-slider>
+      </div>
+    </div>
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-3 ui-lg-3">
+        <label class="label-info">
+          {{'device.config.p1f'|translate}} (dB): {{txConfigForm.value.txPower.transmitterFine1/dividePNFByStep}}
+          <p-message severity="info" [pTooltip]="'device.config.pf.tooltip'|translate"></p-message>
+        </label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
+        <p-slider
+          formControlName="transmitterFine1"
+          [step]="1"
+          [min]="0"
+          [max]="30"></p-slider>
+      </div>
+    </div>
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-3 ui-lg-3">
+        <label class="label-info">
+          {{'device.config.p1'|translate}} (dB): {{powerTransmitter1}}
+          <p-message severity="info" [pTooltip]="'device.config.p1.tooltip'|translate"></p-message>
+        </label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6"></div>
+    </div>
+
+    <hr />
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-3 ui-lg-3">
+        <label class="label-info">
+          {{'device.config.p2c'|translate}} (dB): {{txConfigForm.value.txPower.transmitterCoarse2}}
+          <p-message severity="info" [pTooltip]="'device.config.pc.tooltip'|translate"></p-message>
+        </label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
+        <p-slider
+          formControlName="transmitterCoarse2"
+          [step]="3"
+          [min]="0"
+          [max]="18"></p-slider>
+      </div>
+    </div>
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-3 ui-lg-3">
+        <label class="label-info">
+          {{'device.config.p2f'|translate}} (dB): {{txConfigForm.value.txPower.transmitterFine2/dividePNFByStep}}
+          <p-message severity="info" [pTooltip]="'device.config.pf.tooltip'|translate"></p-message>
+        </label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
+        <p-slider
+          formControlName="transmitterFine2"
+          [step]="1"
+          [min]="0"
+          [max]="30"></p-slider>
+      </div>
+    </div>
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-3 ui-lg-3">
+        <label class="label-info">
+          {{'device.config.p2'|translate}} (dB): {{powerTransmitter2}}
+          <p-message severity="info" [pTooltip]="'device.config.p2.tooltip'|translate"></p-message>
+        </label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6"></div>
+    </div>
+
+    <hr />
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-3 ui-lg-3">
+        <label class="label-info">
+          {{'device.config.p3c'|translate}} (dB): {{txConfigForm.value.txPower.transmitterCoarse3}}
+          <p-message severity="info" [pTooltip]="'device.config.pc.tooltip'|translate"></p-message>
+        </label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
+        <p-slider
+          formControlName="transmitterCoarse3"
+          [step]="3"
+          [min]="0"
+          [max]="18"></p-slider>
+      </div>
+    </div>
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-3 ui-lg-3">
+        <label class="label-info">
+          {{'device.config.p3f'|translate}} (dB): {{txConfigForm.value.txPower.transmitterFine3/dividePNFByStep}}
+          <p-message severity="info" [pTooltip]="'device.config.pf.tooltip'|translate"></p-message>
+        </label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
+        <p-slider
+          formControlName="transmitterFine3"
+          [step]="1"
+          [min]="0"
+          [max]="30"></p-slider>
+      </div>
+    </div>
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-3 ui-lg-3">
+        <label class="label-info">
+          {{'device.config.p3'|translate}} (dB): {{powerTransmitter3}}
+          <p-message severity="info" [pTooltip]="'device.config.p3.tooltip'|translate"></p-message>
+        </label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6"></div>
+    </div>
+
+    <hr />
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-3 ui-lg-3">
+        <label class="label-info">
+          {{'device.config.p4c'|translate}} (dB): {{txConfigForm.value.txPower.transmitterCoarse4}}
+          <p-message severity="info" [pTooltip]="'device.config.pc.tooltip'|translate"></p-message>
+        </label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
+        <p-slider
+          formControlName="transmitterCoarse4"
+          [step]="3"
+          [min]="0"
+          [max]="18"></p-slider>
+      </div>
+    </div>
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-3 ui-lg-3">
+        <label class="label-info">
+          {{'device.config.p4f'|translate}} (dB): {{txConfigForm.value.txPower.transmitterFine4/dividePNFByStep}}
+          <p-message severity="info" [pTooltip]="'device.config.pf.tooltip'|translate"></p-message>
+        </label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
+        <p-slider
+          formControlName="transmitterFine4"
+          [step]="1"
+          [min]="0"
+          [max]="30"></p-slider>
+      </div>
+    </div>
+
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-3 ui-lg-3"></div>
+      <div class="ui-g-12 ui-md-3 ui-lg-3">
+        <label class="label-info">
+          {{'device.config.p4'|translate}} (dB): {{powerTransmitter4}}
+          <p-message severity="info" [pTooltip]="'device.config.p4.tooltip'|translate"></p-message>
+        </label>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-6"></div>
+    </div>
+
+    <div class="ui-dialog-buttonpane ui-helper-clearfix">
+      <button
+        type="button"
+        pButton
+        icon="fa-cogs"
+        (click)="setTxDeviceDefault()"
+        label="{{'device.config.default'|translate}}"></button>
+
+      <button
+        type="button"
+        pButton
+        icon="fa-share-square"
+        (click)="sendTxDataToDevice()"
+        [disabled]="isButtonSendDisabled"
+        label="{{'device.config.save'|translate}}"></button>
+    </div>
+  </div>
+</ngForm>

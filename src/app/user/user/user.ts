@@ -86,6 +86,7 @@ export class UserComponent implements OnInit, CrudComponent {
   cancel(): void {
     this.displayDialog = false;
     this.userForm.resetForm();
+    this.validatePasswords();
   }
 
   openDialog(user?: User): void {
