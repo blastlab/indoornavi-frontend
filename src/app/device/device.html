@@ -13,7 +13,8 @@
     <div *ngIf="devicesToUpdate.length === 0 && updateMode" id="hint">{{'device.update.hint'|translate}}</div>
     <div *ngIf="updateMode">
       <div>
-        <p-checkbox *ngIf="devicesUpdating.length === 0" name="deviceToUpdate" binary=true (onChange)="selectAllToUpload()"
+        <p-checkbox *ngIf="devicesUpdating.length === 0" name="deviceToUpdate" binary=true
+                    (onChange)="selectAllToUpload()"
                     label="{{'devices.select.all'|translate}}"
                     [(ngModel)]="allSelected">
         </p-checkbox>
@@ -63,12 +64,13 @@
 <p-pickList class="device-list" [source]="notVerified" [target]="verified" dragdrop="true" [responsive]="true"
             sourceHeader="{{'device.notVerified'|translate}}" targetHeader="{{'device.verified'|translate}}"
             [showSourceControls]="false" [showTargetControls]="false" filterBy="shortId"
-            sourceFilterPlaceholder="{{'device.searchByShortId'|translate}}" targetFilterPlaceholder="{{'device.searchByShortId'|translate}}"
+            sourceFilterPlaceholder="{{'device.searchByShortId'|translate}}"
+            targetFilterPlaceholder="{{'device.searchByShortId'|translate}}"
             (onMoveToTarget)="onItemMoved($event.items)" (onMoveToSource)="onItemMoved($event.items)">
   <ng-template let-device pTemplate="item">
     <div class="ui-helper-clearfix" (dblclick)="preventDoubleClick($event)">
       <div class="ui-g">
-        <div class="ui-g-5 ui-md-5 ui-lg-5 device-details">
+        <div class="ui-g-7 ui-md-7 ui-lg-7 device-details">
           <div><b>{{'device.shortId'|translate}}:</b> {{device['shortId']}}</div>
           <div><b>{{'device.macAddress'|translate}}:</b> {{device['macAddress']}}</div>
           <div><b>{{'device.name'|translate}}:</b> {{device['name']}}</div>
@@ -102,14 +104,21 @@
             <i class="fa fa-exclamation-triangle" pTooltip="{{batteryMessage(device.shortId)|translate}}"></i>
           </div>
         </div>
-        <div class="ui-g-4 ui-md-4 ui-lg-4 device-published-details">
-          <div *ngIf="device.floorId" ><b>{{'device.publishedOnFloorWithId'|translate}}:</b> {{device.floorId}}</div>
-        </div>
-        <div class="ui-g-3 ui-md-3 ui-lg-3" id="device-action-container">
-          <p-checkbox pTooltip="{{checkBoxTooltipMap[device.shortId]}}" #updateCheckbox [hidden]="!(updateMode && devicesUpdating.length === 0)"
+        <div class="ui-g-5 ui-md-5 ui-lg-5" id="device-action-container">
+          <p-checkbox pTooltip="{{checkBoxTooltipMap[device.shortId]}}" #updateCheckbox
+                      [hidden]="!(updateMode && devicesUpdating.length === 0)"
                       name="deviceToUpdate" id="{{device.shortId}}" [value]="device" (onChange)="checkAllSelected()"
                       [(ngModel)]="devicesToUpdate" [disabled]="true" class="device-action-item">
           </p-checkbox>
+          <button
+            [appHasPermission]="editPermission"
+            *ngIf="device.floor"
+            type="button"
+            pButton
+            [routerLink]="['/complexes', device.floor.building.complex.id, 'buildings', device.floor.building.id, 'floors', device.floor.id, 'map']"
+            icon="fa-eye"
+            pTooltip="{{'device.seeInEditor'|translate}}"
+            class="device-action-item"></button>
           <button
             [appHasPermission]="editPermission"
             [disabled]="updateMode"
@@ -159,7 +168,7 @@
     {{dialogTitle|translate}}
   </p-header>
   <form #deviceForm="ngForm" novalidate>
-   <div *ngIf="device">
+    <div *ngIf="device">
       <div class="ui-g">
         <div class="ui-g-12 ui-md-4 ui-lg-4">
           <div class="ui-message ui-messages-error ui-corner-all"
@@ -177,7 +186,9 @@
           <label for="shortId">{{'device.shortId'|translate}} *</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input name="shortId" [appProperNumberInRange]="deviceType" [translateKey]="'device.shortId'" required [appAutoFocus]="displayDialog" pInputText id="shortId" [(ngModel)]="device.shortId" #shortIdInput="ngModel"/>
+          <input name="shortId" [appProperNumberInRange]="deviceType" [translateKey]="'device.shortId'" required
+                 [appAutoFocus]="displayDialog" pInputText id="shortId" [(ngModel)]="device.shortId"
+                 #shortIdInput="ngModel"/>
         </div>
       </div>
       <div class="ui-g">
@@ -193,12 +204,12 @@
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
           <p-inputMask appProperMacAddress
-                 [autoClear]="false"
-                 mask="**:**:**:**:**:**"
-                 name="macAddress"
-                 id="macAddress"
-                 [(ngModel)]="device.macAddress"
-                 #macAddress="ngModel"></p-inputMask>
+                       [autoClear]="false"
+                       mask="**:**:**:**:**:**"
+                       name="macAddress"
+                       id="macAddress"
+                       [(ngModel)]="device.macAddress"
+                       #macAddress="ngModel"></p-inputMask>
         </div>
       </div>
       <div class="ui-g">
@@ -213,14 +224,16 @@
           <label for="name">{{'device.name'|translate}}</label>
         </div>
         <div class="ui-g-12 ui-md-6 ui-lg-6">
-          <input appProperNameValidator name="name" pInputText id="name" [(ngModel)]="device.name" #nameInput="ngModel"/>
+          <input appProperNameValidator name="name" pInputText id="name" [(ngModel)]="device.name"
+                 #nameInput="ngModel"/>
         </div>
       </div>
       <p-footer>
         <div class="ui-dialog-buttonpane ui-helper-clearfix">
           <button type="button" pButton icon="fa-close" (click)="cancel()"
                   label="{{'cancel'|translate}}"></button>
-          <button type="submit" pButton icon="fa-check" (click)="save(deviceForm.valid)" label="{{'save'|translate}}"></button>
+          <button type="submit" pButton icon="fa-check" (click)="save(deviceForm.valid)"
+                  label="{{'save'|translate}}"></button>
         </div>
       </p-footer>
     </div>
@@ -229,7 +242,8 @@
 
 <p-confirmDialog icon="fa fa-question-circle" width="425"></p-confirmDialog>
 
-<p-dialog header="{{'information.important'|translate}}" [(visible)]="displayInfoDialog" modal="modal" [responsive]="true" [width]="350"
+<p-dialog header="{{'information.important'|translate}}" [(visible)]="displayInfoDialog" modal="modal"
+          [responsive]="true" [width]="350"
           [minWidth]="200">
   <div>{{'device.update.hint'|translate}}</div>
   <p-footer>

@@ -206,6 +206,7 @@
   "device.save.success": "Device has been saved",
   "device.searchById": "Search by id",
   "device.searchByShortId": "Search by short id",
+  "device.seeInEditor": "See in editor",
   "device.shortId": "Short Id",
   "device.shortId.mustBeNumber": "Short Id must be a number.",
   "device.shortId.required": "Short Id is required.",
