@@ -11,7 +11,7 @@ import {Device} from '../device.type';
 })
 export class DeviceConfigurationComponent implements OnInit, OnDestroy {
 
-  private subscribtionDestructor: Subject<void> = new Subject<void>();
+  private subscriptionDestructor: Subject<void> = new Subject<void>();
 
   @Input() displayDeviceConfig: boolean;
   @Input() deviceType: string;
@@ -25,13 +25,13 @@ export class DeviceConfigurationComponent implements OnInit, OnDestroy {
     this.titleHeader = `device.details.${this.deviceType}.config`;
     this.setRtfConfig();
     this.deviceService.getDevice()
-      .takeUntil(this.subscribtionDestructor)
+      .takeUntil(this.subscriptionDestructor)
       .subscribe(device => this.device = device);
   }
 
   ngOnDestroy() {
-    this.subscribtionDestructor.next();
-    this.subscribtionDestructor.unsubscribe();
+    this.subscriptionDestructor.next();
+    this.subscriptionDestructor.unsubscribe();
   }
 
   closeDeviceConfig(): void {
