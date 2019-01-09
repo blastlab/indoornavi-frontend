@@ -8,7 +8,7 @@ from pages.constructions.buildings_page import BuildingsPage
 from pages.login_page import LoginPage
 
 
-class TestBuildingsPage(unittest.TestCase):
+class TestBuildingsPage(unittest.TestCase, BuildingsPage):
 
     @classmethod
     def setUpClass(cls):
@@ -27,6 +27,7 @@ class TestBuildingsPage(unittest.TestCase):
         # login before all tests
         cls.page.login_process(cls.option)
         # check the tested page is loaded correctly
+        cls.webdriver.get(cls.base_url+"/complexes")
         cls.building_page_is_loaded_correctly(cls)
 
     def building_page_is_loaded_correctly(self):

@@ -25,6 +25,7 @@ class TestComplexesPage(unittest.TestCase, ComplexesPage):
         # login before all tests
         cls.page.login_process(cls.option)
         # check the tested page is loaded correctly
+        cls.webdriver.get(cls.base_url+'/complexes')
         cls.complexes_page_is_loaded_correctly(cls)
 
     def complexes_page_is_loaded_correctly(self):

@@ -28,7 +28,7 @@ class TestLoginPage(unittest.TestCase):
 
         """Test login with valid credentials"""
 
-        self.assertEqual(self.page.login_process(self.option), 'Complexes')
+        self.assertEqual(self.page.login_process(self.option), 'Dashboard')
         self.test_failed = False
 
     # TC002 (invalid password) & TC003 (invalid username)
@@ -44,7 +44,7 @@ class TestLoginPage(unittest.TestCase):
 
         """Test logout"""
 
-        self.assertEqual(self.page.login_process(self.option), 'Complexes')
+        self.assertEqual(self.page.login_process(self.option), 'Dashboard')
         # click dropdown button
         self.assertTrue(self.page.is_dropdown_button_clickable())
         self.page.click_dropdown_button()
