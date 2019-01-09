@@ -99,6 +99,12 @@ class MapsPageArea(BasePage, MapsPageUtils):
     def enter_area_name(self):
         return self.clear_and_fill_input(self.TEST_ADD_AREA_NAME, self.AREA_ADD_NAME)
 
+    def enter_height(self, extreme='min'):
+        if extreme == 'max':
+            return self.clear_and_fill_input('100', self.AREA_ADD_HEIGHT_MAX)
+        else:
+            return self.clear_and_fill_input('0', self.AREA_ADD_HEIGHT_MIN)
+
     def enter_on_enter_offset(self):
         return self.clear_and_fill_input(self.TEST_ADD_AREA_ENTER_OFFSET, self.AREA_ADD_ENTER_OFF)
 
