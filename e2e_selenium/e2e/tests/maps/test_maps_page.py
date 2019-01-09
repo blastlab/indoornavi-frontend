@@ -27,6 +27,7 @@ class TestMapsPage(unittest.TestCase, MapsPage):
         self.maps_page.create_maps_db_env()
         # Login to app
         self.page.login_process(self.option, 1)
+        self.webdriver.get(self.base_url + "complexes")
         self.__get_maps_page()
 
     def tearDown(self):

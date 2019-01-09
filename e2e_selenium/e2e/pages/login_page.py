@@ -70,11 +70,10 @@ class LoginPage(BasePage):
         # click Login
         self.click_button(*self.button_locator)
 
-        # there should be complexes' page loaded & return complexes title
-        if additional == 1:
-            return
         if option == 1:
-            return self.wait_for_element(self.next_page_title_locator).text
+            element = self.wait_for_element(self.next_page_title_locator).text
+            return element
+
         elif option == 2:
             return self.is_element_present(self.login_warning)
 
