@@ -71,7 +71,7 @@ class TestMapsPagePath(unittest.TestCase, MapsPagePath):
         self.path_page.prepare_devices_in_db()
 
         log_setup.info('Step 7 : Check the login process is successfully')
-        assert LoginPage(self.webdriver).login_process() == 'Complexes'
+        assert LoginPage(self.webdriver).login_process() == 'Dashboard'
 
         log_setup.info('Step 8 : Refresh page')
         self.webdriver.refresh()
