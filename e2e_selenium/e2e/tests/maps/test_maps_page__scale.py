@@ -123,6 +123,8 @@ class TestMapsPageScale(unittest.TestCase, MapsPageScale):
 
     def __get_maps_page(self):
 
+        self.webdriver.get(self.base_url+"/complexes")
+
         assert self.floors_page.is_redirect_button_clickable()
         self.floors_page.redirect_button_click()
 
@@ -145,8 +147,9 @@ class TestMapsPageScale(unittest.TestCase, MapsPageScale):
 
         self.__add_scale_process_correctly(400, 0, 'meters', '995')
 
-    def test_04_add_scale_process_invalid_without_units(self):
-        self.__add_scale_process_invalid(distance='777', measurement=None)
+    # DEPRACATED
+    # def test_04_add_scale_process_invalid_without_units(self):
+    #     self.__add_scale_process_invalid(distance='777', measurement=None)
 
     def test_05_add_scale_process_invalid_without_distance(self):
         self.__add_scale_process_invalid(distance=None, measurement='meters')
