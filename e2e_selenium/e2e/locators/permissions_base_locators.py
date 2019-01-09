@@ -39,8 +39,8 @@ class PermissionsBaseLocators(object):
         self.delete_permission_button = (By.CSS_SELECTOR, 'tr:last-child > td.col-button > span > button:nth-last-child(1)')
         self.dropdown_permissions_button = (By.XPATH, '//button[@ng-reflect-router-link="./permissionGroups"]')
         self.dropdown_sinks_button = (By.XPATH, '//button[@ng-reflect-router-link="./sinks"]')
-
-        self.permission_title = (By.CLASS_NAME, 'ui-menuitem-text')
+        #
+        self.permission_title = (By.CSS_SELECTOR, "p-breadcrumb a.ui-state-disabled span.ui-menuitem-text")
         self.groups_list = (By.CLASS_NAME, 'ui-datatable-tablewrapper')
         self.modal_window = (By.CLASS_NAME, 'ui-dialog')
         self.confirm_window = (By.CLASS_NAME, 'ui-confirmdialog')

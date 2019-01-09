@@ -12,7 +12,7 @@ from tests.constructions.test_floors_page import TestFloorsPage
 # from tests.devices.test_sinks_page import TestSinksPage
 # from tests.devices.test_anchors_page import TestAnchorsPage
 # from tests.devices.test_tags_page import TestTagsPage
-# from tests.permissions.test_permissions_page import TestPermissionsPage
+from tests.permissions.test_permissions_page import TestPermissionsPage
 # from tests.maps.test_maps_page import TestMapsPage
 # from tests.maps.test_maps_page__scale import TestMapsPageScale
 #  from tests.maps.test_maps_page__area import TestMapsPageArea
