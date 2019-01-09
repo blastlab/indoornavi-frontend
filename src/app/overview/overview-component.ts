@@ -45,7 +45,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   private scale: Scale;
   private scaleCalculations: ScaleCalculations;
   private subscriptionDestructor: Subject<void> = new Subject<void>();
-  private maxPayloadLength = 10000; // ToDo: free it after getting data calculated by solver
+  private maxPayloadLength = 100000; // ToDo: consider to free this after getting data calculated by solver
 
   @ViewChild('canvasParent') canvasParent;
 
@@ -256,6 +256,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   private displayHeatMap(payload: CoordinatesIncident[]): void {
     if (this.displayDialog) {
       const dataFaked: number[][] = this.mockGenerateData();
+      // const data = dataFaked;
       const data: (number[] |number[][])[] = this.calculateDataSet(payload);
       console.log(dataFaked);
       console.log(data);
@@ -271,8 +272,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   }
 
   private calculateGradient(): void {
-    let determinant: number = this.imageWidth > this.imageHeight ? this.imageWidth : this.imageHeight;
-    determinant = determinant;
+    const determinant: number = this.imageWidth > this.imageHeight ? this.imageWidth : this.imageHeight;
     this.gradient = determinant / this.gradientsNumber;
   }
 
@@ -283,9 +283,6 @@ export class OverviewComponent implements OnInit, OnDestroy {
     const yData: number[] = [];
     const distance: number = Geometry.getDistanceBetweenTwoPoints(this.scaleMinificationFactor.stop, this.scaleMinificationFactor.start);
     const factor = this.scaleMinificationFactor.realDistance / distance;
-    console.log(factor);
-    const maxCoordinateInX: number = Math.round(this.imageWidth * this.gradient);
-    const maxCoordinateInY: number = Math.round(this.imageWidth * this.gradient);
     if (distance < 1 || factor === Infinity) {
       return [xData, yData, data];
     }
@@ -298,9 +295,8 @@ export class OverviewComponent implements OnInit, OnDestroy {
     dataForProcessing.forEach((coord: CoordinatesIncident) => {
       let point: Point = Geometry.calculatePointPositionInPixels(distance, this.scaleMinificationFactor.realDistance, coord.point);
       point = {x: Math.round(point.x / this.gradient), y: Math.round(point.y / this.gradient)};
-      data.push([point.x, point.y, 1])
+        data.push([point.x, point.y, 9]);
     });
-
     return [xData, yData, data];
   }
 
