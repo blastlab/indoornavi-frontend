@@ -130,6 +130,7 @@ import {BatteryIndicatorComponent} from './device/battery-indicator';
 import {OverviewComponent} from './overview/overview-component';
 import {NgxEchartsModule} from 'ngx-echarts';
 import {ReportService} from './overview/services/coordinates.service';
+import {HttpSolverService} from './shared/services/http/httpSolver.service';
 
 
 export function HttpLoaderFactory(http: Http) {
@@ -246,6 +247,7 @@ export function HttpLoaderFactory(http: Http) {
     BuildingService,
     FloorService,
     HttpService,
+    HttpSolverService,
     ComplexService,
     WebSocketService,
     SocketService,

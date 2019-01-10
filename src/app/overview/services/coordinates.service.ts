@@ -1,17 +1,17 @@
 import {Injectable} from '@angular/core';
-import {HttpService} from '../../shared/services/http/http.service';
 import {Observable} from 'rxjs/Rx';
-import {CoordinatesIncident, CoordinatesRequest} from '../overview.type';
+import {SolverCoordinatesRequest} from '../overview.type';
+import {HttpSolverService} from '../../shared/services/http/httpSolver.service';
 
 @Injectable()
 export class ReportService {
   private baseUrl = 'reports/coordinates/';
 
-  constructor(private httpService: HttpService) {
+  constructor(private httpSolverService: HttpSolverService) {
   }
 
-  getCoordinates(request: CoordinatesRequest): Observable<CoordinatesIncident[]> {
-    return this.httpService.doPost(`${this.baseUrl}`, request);
+  getCoordinates(request: SolverCoordinatesRequest): Observable<number[][]> {
+    return this.httpSolverService.doPost(`${this.baseUrl}`, request);
   }
 
 }

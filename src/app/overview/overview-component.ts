@@ -10,7 +10,7 @@ import {Geometry} from '../shared/utils/helper/geometry';
 import {EChartOption} from 'echarts';
 import {MapService} from '../map-editor/uploader/map.uploader.service';
 import {echartHeatmapConfig} from './echart.config';
-import {CoordinatesIncident, CoordinatesRequest} from './overview.type';
+import {SolverCoordinatesRequest} from './overview.type';
 import {Point} from '../map-editor/map.type';
 import {getNoiseHelper} from './services/mock_helper';
 import {ReportService} from './services/coordinates.service';
@@ -33,7 +33,6 @@ export class OverviewComponent implements OnInit, OnDestroy {
   private echartsInstance: any;
   private floor: Floor;
   private gradientsNumber: number = 400;
-  private gradient: number;
   private heatmapOffsetX: number;
   private heatmapOffsetY: number;
   private windowWidth: number;
@@ -45,9 +44,22 @@ export class OverviewComponent implements OnInit, OnDestroy {
   private scale: Scale;
   private scaleCalculations: ScaleCalculations;
   private subscriptionDestructor: Subject<void> = new Subject<void>();
-  private maxPayloadLength = 100000; // ToDo: consider to free this after getting data calculated by solver
 
   @ViewChild('canvasParent') canvasParent;
+
+  private static calculateGradient(box: Point): number[][] {
+    const noise = getNoiseHelper();
+    noise.seed(Math.random());
+    const xData = [];
+    const yData = [];
+    for (let i = 0; i <= box.x; i++) {
+      xData.push(i);
+    }
+    for (let j = 0; j < box.y; j++) {
+      yData.push(j);
+    }
+    return [xData, yData];
+  }
 
   constructor(private route: ActivatedRoute,
               private floorService: FloorService,
@@ -184,7 +196,6 @@ export class OverviewComponent implements OnInit, OnDestroy {
               self.isImageSet = true;
               self.calculateEChartOffset();
               self.calculateScaleFactor();
-              self.calculateGradient();
             }.bind(self);
           });
         }
@@ -230,13 +241,20 @@ export class OverviewComponent implements OnInit, OnDestroy {
   }
 
   private loadData(): void {
-    const request: CoordinatesRequest = {
+    const distance: number = Geometry.getDistanceBetweenTwoPoints(this.scaleMinificationFactor.stop, this.scaleMinificationFactor.start);
+    const request: SolverCoordinatesRequest = {
       from: this.dateFromRequestFormat,
       to: this.dateToRequestFormat,
-      floorId: this.floor.id
+      floorId: this.floor.id,
+      maxGradientsNum: this.gradientsNumber,
+      mapXLength: this.imageWidth,
+      mapYLength: this.imageHeight,
+      distanceInPix: distance,
+      distanceInCm: this.scaleMinificationFactor.realDistance
     };
+    console.log(request);
     this.reportService.getCoordinates(request).first()
-      .subscribe((payload: CoordinatesIncident[]): void => {
+      .subscribe((payload: number[][]): void => {
       if (!this.imageLoaded) {
         this.loadMapImage().then((): void => {
           this.echartsInstance.resize({
@@ -253,16 +271,22 @@ export class OverviewComponent implements OnInit, OnDestroy {
     });
   }
 
-  private displayHeatMap(payload: CoordinatesIncident[]): void {
+  private displayHeatMap(payload: number[][]): void {
     if (this.displayDialog) {
-      const dataFaked: number[][] = this.mockGenerateData();
-      // const data = dataFaked;
-      const data: (number[] |number[][])[] = this.calculateDataSet(payload);
-      console.log(dataFaked);
-      console.log(data);
-      this.chartOptions.xAxis.data = data[0];
-      this.chartOptions.yAxis.data = data[1];
-      this.chartOptions.series[0].data = data[2];
+      console.log(payload.length);
+      const gradientBoxed: Point = {
+        x: payload[0][0],
+        y: payload[0][1]
+      };
+      payload[1].forEach(p => {
+        if (p[2] > 0) {
+          console.log(p);
+        }
+      });
+      const heatMapGradient: number[][] = OverviewComponent.calculateGradient(gradientBoxed);
+      this.chartOptions.xAxis.data = heatMapGradient[0];
+      this.chartOptions.yAxis.data = heatMapGradient[1];
+      this.chartOptions.series[0].data = payload[1];
       this.chartOptions = Object.assign({}, this.chartOptions);
       this.messageService.success('overview.message.loadedSuccess');
       this.displayDialog = false;
@@ -270,55 +294,4 @@ export class OverviewComponent implements OnInit, OnDestroy {
       this.messageService.failed('overview.message.loadCanceled');
     }
   }
-
-  private calculateGradient(): void {
-    const determinant: number = this.imageWidth > this.imageHeight ? this.imageWidth : this.imageHeight;
-    this.gradient = determinant / this.gradientsNumber;
-  }
-
-  private calculateDataSet(payload: CoordinatesIncident[]): (number[] | number[][])[] {
-    const dataForProcessing = payload.slice(0, this.maxPayloadLength); // TODO is going to be removed after solver implementation
-    const data: number[][] = [];
-    const xData: number[] = [];
-    const yData: number[] = [];
-    const distance: number = Geometry.getDistanceBetweenTwoPoints(this.scaleMinificationFactor.stop, this.scaleMinificationFactor.start);
-    const factor = this.scaleMinificationFactor.realDistance / distance;
-    if (distance < 1 || factor === Infinity) {
-      return [xData, yData, data];
-    }
-    for (let i = 0; i <= this.gradientsNumber; i++) {
-      xData.push(i);
-    }
-    for (let j = 0; j <= this.gradientsNumber; j++) {
-      yData.push(j);
-    }
-    dataForProcessing.forEach((coord: CoordinatesIncident) => {
-      let point: Point = Geometry.calculatePointPositionInPixels(distance, this.scaleMinificationFactor.realDistance, coord.point);
-      point = {x: Math.round(point.x / this.gradient), y: Math.round(point.y / this.gradient)};
-        data.push([point.x, point.y, 9]);
-    });
-    return [xData, yData, data];
-  }
-
-  private mockGenerateData(): number[][] {
-    const noise = getNoiseHelper();
-    noise.seed(Math.random());
-    const data = [];
-    const xData = [];
-    const yData = [];
-    for (let i = 0; i <= this.gradientsNumber; i++) {
-      for (let j = 0; j <= this.gradientsNumber; j++) {
-        let noiseValue = noise.perlin2(i / 40, j / 20) * 10 + 3;
-        noiseValue = noiseValue > .4 ? noiseValue : .4;
-        noiseValue = noiseValue < 10 ? noiseValue : 10;
-        data.push([i, j, noiseValue]);
-      }
-      xData.push(i);
-    }
-    for (let j = 0; j < this.gradientsNumber; j++) {
-      yData.push(j);
-    }
-    return [xData, yData, data];
-  }
-
 }
