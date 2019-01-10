@@ -112,7 +112,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   private setDateRequestFormat(): void {
     let hoursFrom = new Date(this.dateFrom).getHours().toString();
     let minutesFrom: string = new Date(this.dateFrom).getMinutes().toString();
-    let hoursTo = new Date(this.dateFrom).getHours().toString();
+    let hoursTo = new Date(this.dateTo).getHours().toString();
     let minutesTo: string = new Date(this.dateFrom).getMinutes().toString();
     let dayFrom: string = new Date(this.dateFrom).getDate().toString();
     let dayTo: string = new Date(this.dateTo).getDate().toString();
