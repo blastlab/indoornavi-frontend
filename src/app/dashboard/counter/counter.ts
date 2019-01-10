@@ -48,9 +48,11 @@ export class CounterComponent implements OnInit, OnDestroy {
       } else {
         this.activeTags++;
         const timer = new CounterTimer((shortId) => {
-          this.activeTags--;
-          this.activeTagsMap.get(shortId).stop();
-          this.activeTagsMap.delete(shortId);
+          if (this.activeTagsMap.has(shortId)) {
+            this.activeTags--;
+            this.activeTagsMap.get(shortId).stop();
+            this.activeTagsMap.delete(shortId);
+          }
         }, 5000, tagData.tag.shortId);
         timer.start();
         this.activeTagsMap.set(tagData.tag.shortId, timer);

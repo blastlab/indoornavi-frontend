@@ -279,9 +279,6 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
             this.dataReceived.next(coordinateSocketData);
           } else if (this.isEventData(data)) {
             this.handleEventData(<EventSocketData> data);
-          } else {
-            // raw data to debug
-            console.log(data);
           }
         });
       });
