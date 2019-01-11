@@ -5,7 +5,7 @@ import {Subject} from 'rxjs/Subject';
 import {FloorService} from '../floor/floor.service';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
 import {TranslateService} from '@ngx-translate/core';
-import {Scale, ScaleCalculations, ScaleDto} from '../map-editor/tool-bar/tools/scale/scale.type';
+import {Scale, ScaleCalculations} from '../map-editor/tool-bar/tools/scale/scale.type';
 import {Geometry} from '../shared/utils/helper/geometry';
 import {EChartOption} from 'echarts';
 import {MapService} from '../map-editor/uploader/map.uploader.service';
@@ -32,7 +32,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   private imageLoaded = false;
   private echartsInstance: any;
   private floor: Floor;
-  private gradientsNumber: number = 400;
+  private gradientsNumber: number = 200;
   private heatmapOffsetX: number;
   private heatmapOffsetY: number;
   private windowWidth: number;
@@ -40,7 +40,6 @@ export class OverviewComponent implements OnInit, OnDestroy {
   private imageHeight = 0;
   private imageUrl: string;
   private heatmapImageEdgePoint: Point = {x: 0, y: 0};
-  private scaleMinificationFactor: ScaleDto;
   private scale: Scale;
   private scaleCalculations: ScaleCalculations;
   private subscriptionDestructor: Subject<void> = new Subject<void>();
@@ -113,7 +112,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
     let hoursFrom = new Date(this.dateFrom).getHours().toString();
     let minutesFrom: string = new Date(this.dateFrom).getMinutes().toString();
     let hoursTo = new Date(this.dateTo).getHours().toString();
-    let minutesTo: string = new Date(this.dateFrom).getMinutes().toString();
+    let minutesTo: string = new Date(this.dateTo).getMinutes().toString();
     let dayFrom: string = new Date(this.dateFrom).getDate().toString();
     let dayTo: string = new Date(this.dateTo).getDate().toString();
     let monthTo: string = (new Date(this.dateTo).getMonth() + 1).toString();
@@ -195,28 +194,11 @@ export class OverviewComponent implements OnInit, OnDestroy {
               self.imageHeight += img.height;
               self.isImageSet = true;
               self.calculateEChartOffset();
-              self.calculateScaleFactor();
             }.bind(self);
           });
         }
       });
     });
-  }
-
-  private calculateScaleFactor(): void {
-    const mapSizeInPixels: Point = {
-      x: this.heatmapImageEdgePoint.x - this.heatmapOffsetX,
-      y: this.heatmapImageEdgePoint.y - this.heatmapOffsetY
-    };
-    const sizeMinificationFactor: Point = {
-      x: mapSizeInPixels.x / this.imageWidth,
-      y: mapSizeInPixels.x / this.imageHeight
-    };
-    const stop: Point = {
-      x: Math.abs((this.scale.start.x - this.scale.stop.x) * sizeMinificationFactor.x),
-      y: Math.abs((this.scale.start.y - this.scale.stop.y) * sizeMinificationFactor.y)
-    };
-    this.scaleMinificationFactor = new ScaleDto({x: 0, y: 0}, stop, this.scale.realDistance, this.scale.measure);
   }
 
   private loadMapImage(): Promise<void> {
@@ -231,8 +213,8 @@ export class OverviewComponent implements OnInit, OnDestroy {
       const self = this;
       background.onload = function () {
         ctx.drawImage(background, self.heatmapOffsetX, self.heatmapOffsetY,
-          self.heatmapImageEdgePoint.x - self.heatmapOffsetX,
-          self.heatmapImageEdgePoint.y - self.heatmapOffsetY);
+          self.heatmapImageEdgePoint.x - 2 * self.heatmapOffsetX,
+          self.heatmapImageEdgePoint.y - 2 * self.heatmapOffsetY);
         resolve();
       }.bind(self);
       newCanvas.setAttribute('width', `${this.heatmapImageEdgePoint.x - this.heatmapOffsetX}px`);
@@ -241,48 +223,48 @@ export class OverviewComponent implements OnInit, OnDestroy {
   }
 
   private loadData(): void {
-    const distance: number = Geometry.getDistanceBetweenTwoPoints(this.scaleMinificationFactor.stop, this.scaleMinificationFactor.start);
+    const distancePix: number = this.scale.getDistanceInPixels();
+    const distanceCm = this.scale.getRealDistanceInCentimeters();
+    const mapXLength: number = this.heatmapImageEdgePoint.x - 2 * this.heatmapOffsetX;
+    const mapYLength: number = this.heatmapImageEdgePoint.y - 2 * this.heatmapOffsetY;
     const request: SolverCoordinatesRequest = {
       from: this.dateFromRequestFormat,
       to: this.dateToRequestFormat,
       floorId: this.floor.id,
       maxGradientsNum: this.gradientsNumber,
-      mapXLength: this.imageWidth,
-      mapYLength: this.imageHeight,
-      distanceInPix: distance,
-      distanceInCm: this.scaleMinificationFactor.realDistance
+      mapXLength: mapXLength,
+      mapYLength: mapYLength,
+      scaleInX: distancePix / distanceCm * mapXLength / this.imageWidth,
+      scaleInY: distancePix / distanceCm * mapYLength / this.imageHeight,
+      distanceInCm: distanceCm
     };
-    console.log(request);
     this.reportService.getCoordinates(request).first()
       .subscribe((payload: number[][]): void => {
-      if (!this.imageLoaded) {
-        this.loadMapImage().then((): void => {
-          this.echartsInstance.resize({
-            width: this.heatmapImageEdgePoint.x,
-            height: this.heatmapImageEdgePoint.y,
-            silent: false
+        if (payload.length === 0) {
+          this.messageService.success('overview.message.error');
+          this.displayDialog = false;
+        } else if (!this.imageLoaded) {
+          this.loadMapImage().then((): void => {
+            this.echartsInstance.resize({
+              width: this.heatmapImageEdgePoint.x,
+              height: this.heatmapImageEdgePoint.y,
+              silent: false
+            });
+            this.imageLoaded = true;
           });
-          this.imageLoaded = true;
-        });
-        this.displayHeatMap(payload);
-      } else {
-        this.displayHeatMap(payload);
-      }
+          this.displayHeatMap(payload);
+        } else {
+          this.displayHeatMap(payload);
+        }
     });
   }
 
   private displayHeatMap(payload: number[][]): void {
     if (this.displayDialog) {
-      console.log(payload.length);
       const gradientBoxed: Point = {
         x: payload[0][0],
         y: payload[0][1]
       };
-      payload[1].forEach(p => {
-        if (p[2] > 0) {
-          console.log(p);
-        }
-      });
       const heatMapGradient: number[][] = OverviewComponent.calculateGradient(gradientBoxed);
       this.chartOptions.xAxis.data = heatMapGradient[0];
       this.chartOptions.yAxis.data = heatMapGradient[1];

@@ -5,6 +5,7 @@ export interface SolverCoordinatesRequest {
   maxGradientsNum: number;
   mapXLength: number;
   mapYLength: number;
-  distanceInPix: number;
+  scaleInX: number;
+  scaleInY: number;
   distanceInCm: number;
 }

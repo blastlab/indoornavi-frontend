@@ -218,6 +218,7 @@
   "opacity": "Opacity",
   "open": "Open",
   "overview.dialog.waiting": "Processing data. This can take some time.",
+  "overview.message.error": "No valid data on server or bad request.",
   "overview.message.loadCanceled": "Data load has been canceled.",
   "overview.message.loadedSuccess": "Data loaded with success.",
   "overview.message.setDate": "Set time span to load data for.",
