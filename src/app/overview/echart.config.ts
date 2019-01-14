@@ -26,7 +26,7 @@ export const echartHeatmapConfig = {
     realtime: true,
     inRange: {
       color: [
-        'rgba(0, 0, 204, .2)',
+        'rgba(0, 0, 0, .0)',
         'rgba(0, 51, 204, .2)',
         'rgba(0, 204, 255, .2)',
         'rgba(0, 255, 204, .2)',

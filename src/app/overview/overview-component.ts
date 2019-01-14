@@ -10,7 +10,7 @@ import {Geometry} from '../shared/utils/helper/geometry';
 import {EChartOption} from 'echarts';
 import {MapService} from '../map-editor/uploader/map.uploader.service';
 import {echartHeatmapConfig} from './echart.config';
-import {SolverCoordinatesRequest} from './overview.type';
+import {SolverCoordinatesRequest, SolverHeatMapPayload} from './overview.type';
 import {Point} from '../map-editor/map.type';
 import {getNoiseHelper} from './services/mock_helper';
 import {ReportService} from './services/coordinates.service';
@@ -239,8 +239,8 @@ export class OverviewComponent implements OnInit, OnDestroy {
       distanceInCm: distanceCm
     };
     this.reportService.getCoordinates(request).first()
-      .subscribe((payload: number[][]): void => {
-        if (payload.length === 0) {
+      .subscribe((payload: SolverHeatMapPayload): void => {
+        if (payload.grad.length === 0) {
           this.messageService.success('overview.message.error');
           this.displayDialog = false;
         } else if (!this.imageLoaded) {
@@ -259,16 +259,16 @@ export class OverviewComponent implements OnInit, OnDestroy {
     });
   }
 
-  private displayHeatMap(payload: number[][]): void {
+  private displayHeatMap(payload: SolverHeatMapPayload): void {
     if (this.displayDialog) {
       const gradientBoxed: Point = {
-        x: payload[0][0],
-        y: payload[0][1]
+        x: payload.size[0],
+        y: payload.size[1]
       };
       const heatMapGradient: number[][] = OverviewComponent.calculateGradient(gradientBoxed);
       this.chartOptions.xAxis.data = heatMapGradient[0];
       this.chartOptions.yAxis.data = heatMapGradient[1];
-      this.chartOptions.series[0].data = payload[1];
+      this.chartOptions.series[0].data = payload.grad;
       this.chartOptions = Object.assign({}, this.chartOptions);
       this.messageService.success('overview.message.loadedSuccess');
       this.displayDialog = false;

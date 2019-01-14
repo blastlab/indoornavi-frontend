@@ -9,3 +9,8 @@ export interface SolverCoordinatesRequest {
   scaleInY: number;
   distanceInCm: number;
 }
+
+export interface SolverHeatMapPayload {
+  size: number[],
+  grad: number[][],
+}

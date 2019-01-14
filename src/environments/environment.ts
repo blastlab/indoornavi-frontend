@@ -7,6 +7,7 @@ export const environment = {
   production: false,
   base_url: 'http://172.16.170.47:90',
   ws_url: 'ws://172.16.170.47:90',
+  // solver_url: 'http://172.16.170.38:8000',
   solver_url: 'http://localhost:8080',
   // base_url: 'http://localhost:90',
   // ws_url: 'ws://localhost:90',
