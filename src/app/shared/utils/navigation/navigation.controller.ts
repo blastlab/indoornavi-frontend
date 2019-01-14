@@ -14,7 +14,6 @@ import Path = APIObject.Path;
 import NavigationData = APIObject.NavigationData;
 import Circle = APIObject.Circle;
 import NavigationErrorCodes = APIObject.NavigationErrorCodes;
-import {Helper} from '../helper/helper';
 import {ApiHelper} from '../drawing/api.helper';
 
 @Injectable()
