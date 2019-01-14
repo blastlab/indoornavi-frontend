@@ -47,8 +47,6 @@ export class OverviewComponent implements OnInit, OnDestroy {
   @ViewChild('canvasParent') canvasParent;
 
   private static calculateGradient(box: Point): number[][] {
-    const noise = getNoiseHelper();
-    noise.seed(Math.random());
     const xData = [];
     const yData = [];
     for (let i = 0; i <= box.x; i++) {
@@ -90,9 +88,10 @@ export class OverviewComponent implements OnInit, OnDestroy {
 
   renderNewHeatmap() {
     if (!!this.dateFrom && !!this.dateTo) {
-      this.displayDialog = true;
-      this.setDateRequestFormat();
-      this.loadData();
+      if (this.isDateRequestFormatSet()) {
+        this.displayDialog = true;
+        this.loadData();
+      }
     } else {
       this.messageService.failed('overview.message.setDate');
     }
@@ -108,7 +107,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
     this.windowWidth = this.windowWidth > 2200 ? this.windowWidth = 2200 : this.windowWidth; // prevent to load heat map for very larger image by resizing down
   }
 
-  private setDateRequestFormat(): void {
+  private isDateRequestFormatSet(): boolean {
     let hoursFrom = new Date(this.dateFrom).getHours().toString();
     let minutesFrom: string = new Date(this.dateFrom).getMinutes().toString();
     let hoursTo = new Date(this.dateTo).getHours().toString();
@@ -125,10 +124,15 @@ export class OverviewComponent implements OnInit, OnDestroy {
     minutesTo = parseInt(minutesTo, 10) > 9 ? minutesTo : `0${minutesTo}`;
     monthTo = parseInt(monthTo, 10) > 9 ? monthTo : `0${monthTo}`;
     monthFrom = parseInt(monthFrom, 10) > 9 ? monthFrom : `0${monthFrom}`;
+    if (new Date(this.dateFrom).valueOf() > new Date(this.dateTo).valueOf()) {
+      this.messageService.success('overview.message.wrongDataSpan');
+      return false;
+    }
     this.dateFromRequestFormat = `${new Date(this.dateFrom).getFullYear()}-${monthFrom}` +
       `-${dayFrom}T${hoursFrom}:${minutesFrom}:00`;
     this.dateToRequestFormat = `${new Date(this.dateTo).getFullYear()}-${monthTo}` +
       `-${dayTo}T${hoursTo}:${minutesTo}:00`;
+    return true;
   }
 
   private calculateEChartOffset(): void {

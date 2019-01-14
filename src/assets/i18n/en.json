@@ -223,6 +223,7 @@
   "overview.message.loadedSuccess": "Data loaded with success.",
   "overview.message.setDate": "Set time span to load data for.",
   "overview.message.imageNotLoaded": "Map is not loaded, please wait ...",
+  "overview.message.wrongDataSpan": "Date 'TO' should to have higher value than date 'FROM'.",
   "path": "Path",
   "path.contextMenu.removeAllLines": "Remove All Paths",
   "path.hint.first": "Click on the map to start drawing path.",
