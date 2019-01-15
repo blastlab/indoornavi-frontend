@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Rx';
-import {SolverCoordinatesRequest, SolverHeatMapPayload} from '../overview.type';
+import {SolverCoordinatesRequest, SolverHeatMapPayload} from '../graphical-report.type';
 import {HttpSolverService} from '../../shared/services/http/httpSolver.service';
 
 @Injectable()

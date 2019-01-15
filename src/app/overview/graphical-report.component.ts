@@ -10,16 +10,20 @@ import {Geometry} from '../shared/utils/helper/geometry';
 import {EChartOption} from 'echarts';
 import {MapService} from '../map-editor/uploader/map.uploader.service';
 import {echartHeatmapConfig} from './echart.config';
-import {SolverCoordinatesRequest, SolverHeatMapPayload} from './overview.type';
+import {EchartInstance, EchartResizeParameter, SolverCoordinatesRequest, SolverHeatMapPayload} from './graphical-report.type';
 import {Point} from '../map-editor/map.type';
 import {getNoiseHelper} from './services/mock_helper';
 import {ReportService} from './services/coordinates.service';
 import {MessageServiceWrapper} from '../shared/services/message/message.service';
 
 @Component({
-  templateUrl: './overview.html'
+  templateUrl: './graphical-report.html'
 })
-export class OverviewComponent implements OnInit, OnDestroy {
+export class GraphicalReportComponent implements OnInit, OnDestroy {
+  private static maxChartWidth = 2200;
+  private static minChartWidth = 1000;
+  private static heatMapOffsetFactorX = 0.1;
+  private static heatMapOffsetFactorY = 58;
   dateFrom: string;
   dateTo: string;
   dateToMaxValue: Date;
@@ -30,7 +34,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   private dateFromRequestFormat: string;
   private dateToRequestFormat: string;
   private imageLoaded = false;
-  private echartsInstance: any;
+  private echartsInstance: EchartInstance;
   private floor: Floor;
   private gradientsNumber: number = 200;
   private heatmapOffsetX: number;
@@ -46,13 +50,13 @@ export class OverviewComponent implements OnInit, OnDestroy {
 
   @ViewChild('canvasParent') canvasParent;
 
-  private static calculateGradient(box: Point): number[][] {
+  private static calculateGradient(boxPeripheralPoint: Point): number[][] {
     const xData = [];
     const yData = [];
-    for (let i = 0; i <= box.x; i++) {
+    for (let i = 0; i <= boxPeripheralPoint.x; i++) {
       xData.push(i);
     }
-    for (let j = 0; j < box.y; j++) {
+    for (let j = 0; j < boxPeripheralPoint.y; j++) {
       yData.push(j);
     }
     return [xData, yData];
@@ -70,8 +74,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.setImageToWindowSizeRelation();
-    this.setCorrespondingFloorParams();
-    this.setTimeDateAllowedToChooseFrom();
+    this.setAllowedDateRange();
     this.translateService.setDefaultLang('en');
     this.subscribeToMapParametersChange();
   }
@@ -82,7 +85,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
     this.isImageSet = false;
   }
 
-  onChartInit(ec) {
+  onChartInit(ec: EchartInstance) {
     this.echartsInstance = ec;
   }
 
@@ -103,46 +106,32 @@ export class OverviewComponent implements OnInit, OnDestroy {
 
   private setImageToWindowSizeRelation() {
     this.windowWidth = window.innerWidth;
-    this.windowWidth = this.windowWidth < 1000 ? this.windowWidth = 1000 : this.windowWidth; // prevent to load heat map for very small image by resizing up
-    this.windowWidth = this.windowWidth > 2200 ? this.windowWidth = 2200 : this.windowWidth; // prevent to load heat map for very larger image by resizing down
+    this.windowWidth = this.windowWidth < GraphicalReportComponent.minChartWidth ?
+      this.windowWidth = GraphicalReportComponent.minChartWidth : this.windowWidth; // prevent to load heat map for very small image by resizing up
+    this.windowWidth = this.windowWidth > GraphicalReportComponent.maxChartWidth ?
+      this.windowWidth = GraphicalReportComponent.maxChartWidth : this.windowWidth; // prevent to load heat map for very larger image by resizing down
   }
 
   private isDateRequestFormatSet(): boolean {
-    let hoursFrom = new Date(this.dateFrom).getHours().toString();
-    let minutesFrom: string = new Date(this.dateFrom).getMinutes().toString();
-    let hoursTo = new Date(this.dateTo).getHours().toString();
-    let minutesTo: string = new Date(this.dateTo).getMinutes().toString();
-    let dayFrom: string = new Date(this.dateFrom).getDate().toString();
-    let dayTo: string = new Date(this.dateTo).getDate().toString();
-    let monthTo: string = (new Date(this.dateTo).getMonth() + 1).toString();
-    let monthFrom: string = (new Date(this.dateFrom).getMonth() + 1).toString();
-    dayFrom = parseInt(dayFrom, 10) > 9 ? dayFrom : `0${dayFrom}`;
-    dayTo = parseInt(dayTo, 10) > 9 ? dayTo : `0${dayTo}`;
-    hoursFrom = parseInt(hoursFrom, 10) > 9 ? hoursFrom : `0${hoursFrom}`;
-    hoursTo = parseInt(hoursTo, 10) > 9 ? hoursTo : `0${hoursTo}`;
-    minutesFrom = parseInt(minutesFrom, 10) > 9 ? minutesFrom : `0${minutesFrom}`;
-    minutesTo = parseInt(minutesTo, 10) > 9 ? minutesTo : `0${minutesTo}`;
-    monthTo = parseInt(monthTo, 10) > 9 ? monthTo : `0${monthTo}`;
-    monthFrom = parseInt(monthFrom, 10) > 9 ? monthFrom : `0${monthFrom}`;
+    this.dateFromRequestFormat = new Date(this.dateFrom).toISOString();
+    this.dateFromRequestFormat = this.dateFromRequestFormat.slice(0, this.dateFromRequestFormat.length - 2);
+    this.dateToRequestFormat = new Date(this.dateTo).toISOString();
+    this.dateToRequestFormat = this.dateToRequestFormat.slice(0, this.dateToRequestFormat.length - 2);
     if (new Date(this.dateFrom).valueOf() > new Date(this.dateTo).valueOf()) {
-      this.messageService.success('overview.message.wrongDataSpan');
+      this.messageService.failed('overview.message.wrongDataSpan');
       return false;
     }
-    this.dateFromRequestFormat = `${new Date(this.dateFrom).getFullYear()}-${monthFrom}` +
-      `-${dayFrom}T${hoursFrom}:${minutesFrom}:00`;
-    this.dateToRequestFormat = `${new Date(this.dateTo).getFullYear()}-${monthTo}` +
-      `-${dayTo}T${hoursTo}:${minutesTo}:00`;
     return true;
   }
 
   private calculateEChartOffset(): void {
-    this.heatmapOffsetX = this.windowWidth * 0.1;
+    this.heatmapOffsetX = this.windowWidth * GraphicalReportComponent.heatMapOffsetFactorX;
     this.heatmapImageEdgePoint.x = this.windowWidth;
     this.heatmapImageEdgePoint.y = this.windowWidth * this.imageHeight / this.imageWidth;
-    this.heatmapOffsetY = 58;
+    this.heatmapOffsetY = GraphicalReportComponent.heatMapOffsetFactorY;
   }
 
-  private setTimeDateAllowedToChooseFrom(): void {
+  private setAllowedDateRange(): void {
     const today: Date = new Date();
     const hour: number = today.getHours();
     const prevHour = (hour === 0) ? 23 : hour - 1;
@@ -151,33 +140,25 @@ export class OverviewComponent implements OnInit, OnDestroy {
     this.dateToMaxValue = new Date();
   }
 
-
-  private setCorrespondingFloorParams(): void {
-    this.route.params.takeUntil(this.subscriptionDestructor)
-      .subscribe((params: Params) => {
-        const floorId = +params['id'];
-        this.floorService.getFloor(floorId).first().subscribe((floor: Floor): void => {
-          this.breadcrumbService.publishIsReady([
-            {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
-            {
-              label: floor.building.complex.name,
-              routerLink: `/complexes/${floor.building.complex.id}/buildings`,
-              routerLinkActiveOptions: {exact: true}
-            },
-            {
-              label: floor.building.name,
-              routerLink: `/complexes/${floor.building.complex.id}/buildings/${floor.building.id}/floors`,
-              routerLinkActiveOptions: {exact: true}
-            },
-            {label: `${(floor.name.length ? floor.name : floor.level)}`, disabled: true}
-          ]);
-        });
-      });
-  }
-
   private subscribeToMapParametersChange() {
     this.route.params.first().subscribe((params: Params): void => {
       const floorId = +params['id'];
+      this.floorService.getFloor(floorId).first().subscribe((floor: Floor): void => {
+        this.breadcrumbService.publishIsReady([
+          {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
+          {
+            label: floor.building.complex.name,
+            routerLink: `/complexes/${floor.building.complex.id}/buildings`,
+            routerLinkActiveOptions: {exact: true}
+          },
+          {
+            label: floor.building.name,
+            routerLink: `/complexes/${floor.building.complex.id}/buildings/${floor.building.id}/floors`,
+            routerLinkActiveOptions: {exact: true}
+          },
+          {label: `${(floor.name.length ? floor.name : floor.level)}`, disabled: true}
+        ]);
+      });
       this.floorService.getFloor(floorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
         this.floor = floor;
         if (!!floor.scale) {
@@ -238,8 +219,8 @@ export class OverviewComponent implements OnInit, OnDestroy {
       maxGradientsNum: this.gradientsNumber,
       mapXLength: mapXLength,
       mapYLength: mapYLength,
-      scaleInX: distancePix / distanceCm * mapXLength / this.imageWidth,
-      scaleInY: distancePix / distanceCm * mapYLength / this.imageHeight,
+      scaleInX: (distancePix / distanceCm) * (mapXLength / this.imageWidth),
+      scaleInY: (distancePix / distanceCm) * (mapYLength / this.imageHeight),
       distanceInCm: distanceCm
     };
     this.reportService.getCoordinates(request).first()
@@ -249,11 +230,12 @@ export class OverviewComponent implements OnInit, OnDestroy {
           this.displayDialog = false;
         } else if (!this.imageLoaded) {
           this.loadMapImage().then((): void => {
-            this.echartsInstance.resize({
+            const resizeEchartFactor: EchartResizeParameter = {
               width: this.heatmapImageEdgePoint.x,
               height: this.heatmapImageEdgePoint.y,
               silent: false
-            });
+            };
+            this.echartsInstance.resize(resizeEchartFactor);
             this.imageLoaded = true;
           });
           this.displayHeatMap(payload);
@@ -269,7 +251,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
         x: payload.size[0],
         y: payload.size[1]
       };
-      const heatMapGradient: number[][] = OverviewComponent.calculateGradient(gradientBoxed);
+      const heatMapGradient: number[][] = GraphicalReportComponent.calculateGradient(gradientBoxed);
       this.chartOptions.xAxis.data = heatMapGradient[0];
       this.chartOptions.yAxis.data = heatMapGradient[1];
       this.chartOptions.series[0].data = payload.grad;
