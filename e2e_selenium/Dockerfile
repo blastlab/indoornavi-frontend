@@ -27,8 +27,9 @@ RUN CHROMEDRIVER_VERSION=`curl -sS chromedriver.storage.googleapis.com/LATEST_RE
 RUN unzip chromedriver_linux64.zip -d /usr/bin
 RUN chmod +x /usr/bin/chromedriver
 
-RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-RUN dpkg -i google-chrome*.deb
+
+RUN wget https://www.slimjet.com/chrome/download-chrome.php?file=files%2F70.0.3538.77%2Fgoogle-chrome-stable_current_amd64.deb
+RUN dpkg -i *.deb
 RUN apt-get install -y -f
 
 
@@ -47,4 +48,3 @@ WORKDIR /$APP_HOME
 COPY . $APP_HOME/
 
 CMD tail -f /dev/null
-

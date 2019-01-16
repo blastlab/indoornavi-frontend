@@ -6,6 +6,7 @@ from pages.maps.maps_page__scale import MapsPageScale
 from pages.login_page import LoginPage
 from pages.constructions.floors_page import FloorsPage
 import time
+import logging
 from selenium.webdriver import ActionChains
 
 
@@ -23,11 +24,18 @@ class TestMapsPageScale(unittest.TestCase, MapsPageScale):
         self.maps_page = MapsPageScale(self.webdriver)
         self.option = 1
         # Prepare environment
+        log_setup = logging.getLogger(' SETUP ')
+
+        log_setup.info('Step 1 : Truncate db')
         self.maps_page.truncate_db()
+
+        log_setup.info('Step 2 : Create maps db env')
         self.maps_page.create_maps_db_env()
         # Login to app
         # self.page.login_process(self.option, 1)
+        log_setup.info('Step 3 : Login to app with valid credentials')
         self.login_test.test_login_valid_credentials(self)
+        log_setup.info('Step 4 - HELPER: Go to maps page')
         self.__get_maps_page()
 
     def tearDown(self):
@@ -35,24 +43,50 @@ class TestMapsPageScale(unittest.TestCase, MapsPageScale):
         self.webdriver.quit()
 
     def __set_before_scale_db_configuration(self):
+        set_before = logging.getLogger(' SETUP ')
+
+        set_before.info('Step 1: Insert scale configuration to database')
         self.maps_page.insert_conf_to_database('scale')
+
+        set_before.info('Step 2: Insert image to database')
         self.maps_page.insert_image_to_db()
+
+        set_before.info('Step 3: Set image to floor')
         self.maps_page.set_image_to_floor()
+
+        set_before.info('Step 4: Refresh page')
         self.webdriver.refresh()
 
+        set_before.info('Step 4: Check scale button is displayed')
         self.assertTrue(self.maps_page.is_scale_button_displayed())
+
+        set_before.info('Step 5 : Scale Button click')
         self.maps_page.scale_button_click()
+
+        set_before.info('Step 6 : Scale Modal window ' + self.__class__.__name__)
         self.assertTrue(self.maps_page.is_scale_modal_window_displayed())
+
+        set_before.info('Step 7 : Scale Line is displayed' + self.__class__.__name__)
         self.assertTrue(self.maps_page.is_scale_line_displayed())
 
     def __add_scale_process_correctly(self, x, y, measurement, distance):
+        scale_logger = logging.getLogger(' -- SCALE PROCCESS -- ')
 
+        scale_logger.info('Step 1: Insert image to database')
         self.maps_page.insert_image_to_db()
+
+        scale_logger.info('Step 2: Set image to floor')
         self.maps_page.set_image_to_floor()
+
+        scale_logger.info('Step 3: Refresh Page')
         self.webdriver.refresh()
+
+        scale_logger.info('Step 4: Check scale button is displayed')
         self.assertTrue(self.maps_page.is_scale_button_displayed())
 
+        scale_logger.info('Step 5: Scale button click')
         self.maps_page.scale_button_click()
+
         # Logic
         self.maps_page.draw_scale_line(x, y)
         self.assertTrue(self.maps_page.is_scale_line_drawn_correctly(x, y))
@@ -123,14 +157,20 @@ class TestMapsPageScale(unittest.TestCase, MapsPageScale):
 
     def __get_maps_page(self):
 
+        logger = logging.getLogger(' -- GET MAPS PAGE -- ')
+
+        logger.info('Step 1: Go to complexes page')
         self.webdriver.get(self.base_url+"/complexes")
 
+        logger.info('Step 2: Check redirect button is clickable - click redirect button')
         assert self.floors_page.is_redirect_button_clickable()
         self.floors_page.redirect_button_click()
 
+        logger.info('Step 3: Check redirect button is clickable - click redirect button')
         assert self.floors_page.is_redirect_button_clickable()
         self.floors_page.redirect_button_click()
 
+        logger.info('Step 4: Check multi assertion and floor update click ')
         assert self.floors_page.multi_assertion()
         self.maps_page.floor_update_button_click()
 
