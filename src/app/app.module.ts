@@ -151,6 +151,7 @@ import {DashboardService} from './dashboard/dashboard.service';
 import {TerminalMessageService} from './device/terminal/terminal-message.service';
 import {TerminalComponent} from './device/terminal/terminal';
 import {DebuggerService} from './debug-hidden/debugger.service';
+import {WatchdogService} from './shared/services/watchdog/watchdog.service';
 
 const PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
@@ -334,7 +335,8 @@ export function HttpLoaderFactory(http: Http) {
     TerminalMessageService,
     DashboardEventService,
     DashboardService,
-    DebuggerService
+    DebuggerService,
+    WatchdogService
   ], bootstrap: [AppComponent]
 })
 
