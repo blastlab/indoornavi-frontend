@@ -1,6 +1,6 @@
 {
   "name": "indoor-navi",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "license": "UNLICENSED",
   "scripts": {
     "ng": "ng",
