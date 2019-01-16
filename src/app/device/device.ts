@@ -473,16 +473,11 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
 
   private handleBatteryLevelMessage(message: BatteryMessage): void {
     message.batteryLevelList.forEach((batteryReading: BatteryState): void => {
-      let found = false;
       this.deviceBatteryStatus.forEach((status: BatteryStatus, id: number): void => {
-        if (id === batteryReading.deviceShortId) {
+        if (id === batteryReading.deviceShortId && batteryReading.percentage !== null && batteryReading.percentage !== undefined) {
           status.percentage = parseInt(batteryReading.percentage.toString(), 10);
-          found = true;
         }
       });
-      if (!found) {
-        this.messageService.failed('device.received.not.on.list');
-      }
     });
   }
 
