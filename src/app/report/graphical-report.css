@@ -1,0 +1,11 @@
+.report-dialog-button {
+  position: relative;
+  left: 40px;
+  top: 40px;
+}
+
+.report-dialog-spinner {
+  position: relative;
+  left: 120px;
+  top: 10px;
+}

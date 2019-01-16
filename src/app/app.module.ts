@@ -127,9 +127,9 @@ import {NavigationController} from './shared/utils/navigation/navigation.control
 import {ModelsConfig} from './map/models/models.config';
 import {DebuggerComponent} from './debug-hidden/debugger.component';
 import {BatteryIndicatorComponent} from './device/battery-indicator';
-import {GraphicalReportComponent} from './overview/graphical-report.component';
+import {GraphicalReportComponent} from './report/graphical-report.component';
 import {NgxEchartsModule} from 'ngx-echarts';
-import {ReportService} from './overview/services/coordinates.service';
+import {ReportService} from './report/services/report.service';
 import {HttpSolverService} from './shared/services/http/httpSolver.service';
 
 

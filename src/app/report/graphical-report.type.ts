@@ -12,7 +12,7 @@ export interface SolverCoordinatesRequest {
 
 export interface SolverHeatMapPayload {
   size: number[],
-  grad: number[][],
+  gradient: number[][],
 }
 
 export interface EchartInstance {

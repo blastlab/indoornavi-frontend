@@ -12,12 +12,12 @@ import {MapService} from '../map-editor/uploader/map.uploader.service';
 import {echartHeatmapConfig} from './echart.config';
 import {EchartInstance, EchartResizeParameter, SolverCoordinatesRequest, SolverHeatMapPayload} from './graphical-report.type';
 import {Point} from '../map-editor/map.type';
-import {getNoiseHelper} from './services/mock_helper';
-import {ReportService} from './services/coordinates.service';
+import {ReportService} from './services/report.service';
 import {MessageServiceWrapper} from '../shared/services/message/message.service';
 
 @Component({
-  templateUrl: './graphical-report.html'
+  templateUrl: './graphical-report.html',
+  styleUrls: ['./graphical-report.css']
 })
 export class GraphicalReportComponent implements OnInit, OnDestroy {
   private static maxChartWidth = 2200;
@@ -171,15 +171,14 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
         if (!!floor.imageId) {
           this.mapService.getImage(floor.imageId).first().subscribe((blob: Blob) => {
             this.imageUrl = URL.createObjectURL(blob);
-            const self = this;
             const img = new Image();
             img.src = this.imageUrl;
-            img.onload = function () {
-              self.imageWidth += img.width;
-              self.imageHeight += img.height;
-              self.isImageSet = true;
-              self.calculateEChartOffset();
-            }.bind(self);
+            img.onload = () => {
+              this.imageWidth += img.width;
+              this.imageHeight += img.height;
+              this.isImageSet = true;
+              this.calculateEChartOffset();
+            };
           });
         }
       });
@@ -195,13 +194,12 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
       const ctx = newCanvas.getContext('2d');
       const background = new Image();
       background.src = this.imageUrl;
-      const self = this;
-      background.onload = function () {
-        ctx.drawImage(background, self.heatmapOffsetX, self.heatmapOffsetY,
-          self.heatmapImageEdgePoint.x - 2 * self.heatmapOffsetX,
-          self.heatmapImageEdgePoint.y - 2 * self.heatmapOffsetY);
+      background.onload = () => {
+        ctx.drawImage(background, this.heatmapOffsetX, this.heatmapOffsetY,
+          this.heatmapImageEdgePoint.x - 2 * this.heatmapOffsetX,
+          this.heatmapImageEdgePoint.y - 2 * this.heatmapOffsetY);
         resolve();
-      }.bind(self);
+      };
       newCanvas.setAttribute('width', `${this.heatmapImageEdgePoint.x - this.heatmapOffsetX}px`);
       newCanvas.setAttribute('height', `${this.heatmapImageEdgePoint.y - this.heatmapOffsetY}px`);
     });
@@ -225,7 +223,7 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
     };
     this.reportService.getCoordinates(request).first()
       .subscribe((payload: SolverHeatMapPayload): void => {
-        if (payload.grad.length === 0) {
+        if (payload.gradient.length === 0) {
           this.messageService.success('overview.message.error');
           this.displayDialog = false;
         } else if (!this.imageLoaded) {
@@ -254,7 +252,7 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
       const heatMapGradient: number[][] = GraphicalReportComponent.calculateGradient(gradientBoxed);
       this.chartOptions.xAxis.data = heatMapGradient[0];
       this.chartOptions.yAxis.data = heatMapGradient[1];
-      this.chartOptions.series[0].data = payload.grad;
+      this.chartOptions.series[0].data = payload.gradient;
       this.chartOptions = Object.assign({}, this.chartOptions);
       this.messageService.success('overview.message.loadedSuccess');
       this.displayDialog = false;

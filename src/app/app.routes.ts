@@ -18,14 +18,14 @@ import {NotSupportedBrowserComponent} from './not-supported-browser/not-supporte
 import {TagsFinderComponent} from './tags-finder/tags-finder.component';
 import {TagFollowerComponent} from './map-viewer/views/tagfollower/tag-follower';
 import {DebuggerComponent} from './debug-hidden/debugger.component';
-import {GraphicalReportComponent} from './overview/graphical-report.component';
+import {GraphicalReportComponent} from './report/graphical-report.component';
 
 export const appRoutes: Routes = [
   {path: '', redirectTo: '/complexes', pathMatch: 'full'},
   {path: 'login', component: AuthComponent},
   {path: 'logout', component: AuthComponent},
   {path: 'tagsfinder', component: TagsFinderComponent, canActivate: [CanRead], data: {permission: 'TAG'}},
-  {path: 'tagsfinder/follower/:id', component: TagFollowerComponent, data: {isPublic: true}},
+  {path: 'tagsfinder/follower/:id', component: TagFollowerComponent, data: {isPublic: false}},
   {path: 'complexes', component: ComplexComponent, canActivate: [CanRead], data: {permission: 'COMPLEX'}},
   {path: 'complexes/:complexId/buildings', component: BuildingComponent, canActivate: [CanRead], data: {permission: 'BUILDING'}},
   {path: 'anchors', component: DeviceComponent, canActivate: [CanRead], data: {permission: 'ANCHOR'}},
