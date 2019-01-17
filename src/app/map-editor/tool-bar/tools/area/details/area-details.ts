@@ -71,11 +71,15 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
         if (areaConfiguration.mode.toString() === Mode[Mode.ON_LEAVE] || areaConfiguration.mode === Mode.ON_LEAVE) {
           this.areaConfigurationOnLeave = areaConfiguration;
           this.areaConfigurationOnLeave.offset /= 100;
-          this.tagsOnLeave = areaConfiguration.tags.map((tag: Tag) => { return tag.shortId; });
+          this.tagsOnLeave = areaConfiguration.tags.map((tag: Tag) => {
+            return tag.shortId;
+          });
         } else {
           this.areaConfigurationOnEnter = areaConfiguration;
           this.areaConfigurationOnEnter.offset /= 100;
-          this.tagsOnEnter = areaConfiguration.tags.map((tag: Tag) => { return tag.shortId; });
+          this.tagsOnEnter = areaConfiguration.tags.map((tag: Tag) => {
+            return tag.shortId;
+          });
         }
       });
     });
@@ -101,10 +105,12 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
     if (formIsValid) {
       let heightIsValid = true;
 
-      const isSetAreaHeightMax = !this.area.heightMax && this.area.heightMax >= 1;
-      const isSetAreaHeightMin = !this.area.heightMin && this.area.heightMin < 0;
+      const isAreaHeightMaxSet = !!this.area.heightMax;
+      const isAreaHeightMinSet = !!this.area.heightMin;
 
-      if (isSetAreaHeightMax || isSetAreaHeightMin) { // check if height values are set, if not or deleted than send null
+      if (!isAreaHeightMinSet && isAreaHeightMaxSet) { // someone has set max but forget about min
+        this.area.heightMin = 0;
+      } else if (!isAreaHeightMaxSet || !isAreaHeightMinSet) { // check if height values are set, if not then set null
         this.area.heightMax = null;
         this.area.heightMin = null;
       } else {
