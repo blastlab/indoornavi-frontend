@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpService} from '../shared/services/http/http.service';
+import {HttpAuthService} from '../shared/services/http/http-auth.service';
 import {Observable} from 'rxjs/Rx';
 import {Device} from './device.type';
 
@@ -21,7 +21,7 @@ export class DeviceService {
     }
   }
 
-  constructor(protected httpService: HttpService) {
+  constructor(protected httpService: HttpAuthService) {
   }
 
   setUrl(url: string) {

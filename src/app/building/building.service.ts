@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Building} from './building.type';
 import {Observable} from 'rxjs/Rx';
-import {HttpService} from '../shared/services/http/http.service';
+import {HttpAuthService} from '../shared/services/http/http-auth.service';
 import {Complex} from '../complex/complex.type';
 
 @Injectable()
@@ -9,7 +9,7 @@ export class BuildingService {
 
   private buildingsUrl = 'buildings/';
 
-  constructor(private httpService: HttpService) {
+  constructor(private httpService: HttpAuthService) {
   }
 
   getComplexWithBuildings(complexId: number): Observable<Complex> {

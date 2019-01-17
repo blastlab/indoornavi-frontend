@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Rx';
 import {SolverCoordinatesRequest, SolverHeatMapPayload} from '../graphical-report.type';
-import {HttpSolverService} from '../../shared/services/http/httpSolver.service';
+import {HttpBasicService} from '../../shared/services/http/http-basic.service';
 
 @Injectable()
 export class ReportService {
   private baseUrl = 'reports/heatmap/';
 
-  constructor(private httpSolverService: HttpSolverService) {
+  constructor(private httpSolverService: HttpBasicService) {
   }
 
   getCoordinates(request: SolverCoordinatesRequest): Observable<SolverHeatMapPayload> {

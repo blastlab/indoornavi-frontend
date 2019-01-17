@@ -8,7 +8,7 @@ import {Config} from '../../config';
 import {MeasureSocketDataTag, Publication} from '../map-viewer/publication.type';
 import {Router} from '@angular/router';
 import {MessageServiceWrapper} from '../shared/services/message/message.service';
-import {HttpService} from '../shared/services/http/http.service';
+import {HttpAuthService} from '../shared/services/http/http-auth.service';
 import {Floor} from '../floor/floor.type';
 import {TagListElement} from './tags-finder.type';
 
@@ -46,7 +46,7 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
     private breadcrumbService: BreadcrumbService,
     private router: Router,
     private messageService: MessageServiceWrapper,
-    protected httpService: HttpService,
+    protected httpService: HttpAuthService,
   ) { }
 
   ngOnInit() {

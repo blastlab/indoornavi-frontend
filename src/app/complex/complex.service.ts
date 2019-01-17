@@ -1,14 +1,14 @@
 import {Injectable} from '@angular/core';
 import {Complex} from './complex.type';
 import {Observable} from 'rxjs/Observable';
-import {HttpService} from '../shared/services/http/http.service';
+import {HttpAuthService} from '../shared/services/http/http-auth.service';
 
 @Injectable()
 export class ComplexService {
 
   private complexesUrl = 'complexes/';
 
-  constructor(private httpService: HttpService) {
+  constructor(private httpService: HttpAuthService) {
   }
 
   getComplexes(): Observable<Complex[]> {

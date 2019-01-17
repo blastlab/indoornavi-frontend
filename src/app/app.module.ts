@@ -72,7 +72,7 @@ import {MapLoaderInformerService} from './shared/services/map-loader-informer/ma
 import {AcceptButtonsService} from 'app/shared/components/accept-buttons/accept-buttons.service';
 import {SocketService} from 'app/shared/services/socket/socket.service';
 import {ComplexService} from './complex/complex.service';
-import {HttpService} from './shared/services/http/http.service';
+import {HttpAuthService} from './shared/services/http/http-auth.service';
 import {ProgressSpinnerModule} from 'primeng/components/progressspinner/progressspinner';
 import {OverlayPanelModule} from 'primeng/components/overlaypanel/overlaypanel';
 import {PickListModule} from 'primeng/components/picklist/picklist';
@@ -130,7 +130,7 @@ import {BatteryIndicatorComponent} from './device/battery-indicator';
 import {GraphicalReportComponent} from './report/graphical-report.component';
 import {NgxEchartsModule} from 'ngx-echarts';
 import {ReportService} from './report/services/report.service';
-import {HttpSolverService} from './shared/services/http/httpSolver.service';
+import {HttpBasicService} from './shared/services/http/http-basic.service';
 
 
 export function HttpLoaderFactory(http: Http) {
@@ -246,8 +246,8 @@ export function HttpLoaderFactory(http: Http) {
   providers: [
     BuildingService,
     FloorService,
-    HttpService,
-    HttpSolverService,
+    HttpAuthService,
+    HttpBasicService,
     ComplexService,
     WebSocketService,
     SocketService,

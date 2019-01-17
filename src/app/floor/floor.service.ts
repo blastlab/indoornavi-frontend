@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Floor} from './floor.type';
 import {Observable} from 'rxjs/Rx';
-import {HttpService} from '../shared/services/http/http.service';
+import {HttpAuthService} from '../shared/services/http/http-auth.service';
 import {Scale} from '../map-editor/tool-bar/tools/scale/scale.type';
 import {Building} from '../building/building.type';
 
@@ -10,7 +10,7 @@ export class FloorService {
 
   private floorsUrl = 'floors/';
 
-  constructor(private httpService: HttpService) {
+  constructor(private httpService: HttpAuthService) {
   }
 
   getBuildingWithFloors(buildingId: number): Observable<Building> {
