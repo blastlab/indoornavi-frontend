@@ -127,6 +127,10 @@ table th.col-button, table td.col-button, table th.col-checkbox, table td.col-ch
   padding: 10px 0 0;
 }
 
+.menu-sidebar-spacer:first-of-type {
+  padding: 0;
+}
+
 app-auth > div {
   width: 400px;
   height: 250px;
