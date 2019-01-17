@@ -2,10 +2,7 @@ export class Timer {
   protected interval: any;
 
   constructor(protected callback: Function, protected millis: number) {
-    this.interval = setTimeout(() => {
-      this.callback();
-      this.start();
-    }, millis);
+    this.start();
   }
 
   public stop(): void {
@@ -19,8 +16,17 @@ export class Timer {
     if (!this.interval) {
       this.interval = setTimeout(() => {
         this.callback();
-        this.start();
+        this.restart();
       }, this.millis);
+    }
+  }
+
+  public startNow(): void {
+    if (!this.interval) {
+      this.interval = setTimeout(() => {
+        this.callback();
+        this.restart();
+      }, 0);
     }
   }
 

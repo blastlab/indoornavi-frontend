@@ -50,6 +50,6 @@ export const appRoutes: Routes = [
   {path: 'unauthorized', component: UnauthorizedComponent},
   {path: 'notSupportedBrowser', component: NotSupportedBrowserComponent},
   {path: 'debug', component: DebuggerComponent, canActivate: [CanRead], data: {permissions: 'DEBUG'}},
-  {path: 'dashboard', component: DashboardComponent},
+  {path: 'dashboard', component: DashboardComponent, canActivate: [CanRead]},
   {path: '**', redirectTo: '/complexes'}
 ];
