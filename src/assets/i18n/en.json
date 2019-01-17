@@ -235,6 +235,7 @@
   "floor.details.remove": "Delete Floor",
   "floor.header": "Floors",
   "floor.level": "Floor level",
+  "floor.level.invalidRange": "Floor level out of range",
   "floor.level.required": "Floor level is required.",
   "floor.name": "Floor name",
   "floor.remove.success": "Floor has been removed.",
