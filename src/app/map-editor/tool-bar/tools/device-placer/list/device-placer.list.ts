@@ -25,6 +25,10 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   private sinks: Array<Sink> = [];
   private draggedDevice: Sink | Anchor;
 
+  private static isOnMap(device: Anchor): boolean {
+    return !!device.floor;
+  }
+
   constructor(
     private devicePlacerService: DevicePlacerService,
     private deviceService: DeviceService,
@@ -154,9 +158,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
     const sinksFetched = new Promise((resolve) => {
       this.deviceService.setUrl('sinks/');
       this.deviceService.getAll().takeUntil(this.subscriptionDestroyer).subscribe((sinks: Sink[]): void => {
-        sinks.forEach((sink: Sink): void => {
-          this.sinks.push(sink);
-        });
+        this.sinks = sinks.filter(sink => !DevicePlacerListComponent.isOnMap(sink));
         resolve();
       });
     });
@@ -164,9 +166,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
     const anchorsFetched = new Promise((resolve) => {
       this.deviceService.setUrl('anchors/');
       this.deviceService.getAll().takeUntil(this.subscriptionDestroyer).subscribe((anchors: Anchor[]): void => {
-        anchors.forEach((anchor: Anchor): void => {
-          this.anchors.push(anchor);
-        });
+        this.anchors = anchors.filter(anchor => !DevicePlacerListComponent.isOnMap(anchor));
         resolve();
       });
     });
