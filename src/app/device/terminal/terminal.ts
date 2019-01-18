@@ -61,6 +61,7 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
       this.activeCommand = null;
       this.clearTerminal();
       this.focusOnInput();
+      this.clearInput();
     });
     this.terminalMessageService.onTerminalCommand().takeUntil(this.subscriptionDestructor).subscribe((message: DeviceMessage): void => {
       this.handleServerCommandResponse(message);
@@ -89,6 +90,7 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
   private closeTerminal(): void {
     this.terminalPause = false;
     this.displayTerminalWindow = false;
+    this.clearInput();
   }
 
   private setTerminalCommandHandler(): void {
@@ -212,5 +214,9 @@ export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
     setTimeout(() => {
       this.terminal.focus(this.renderer.selectRootElement('.ui-terminal-input'));
     });
+  }
+
+  private clearInput(): void {
+    this.renderer.selectRootElement('.ui-terminal-input').value = '';
   }
 }
