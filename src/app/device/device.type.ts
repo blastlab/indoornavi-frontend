@@ -1,3 +1,5 @@
+import {Floor} from '../floor/floor.type';
+
 export class Device {
   verified?: boolean;
   id?: number;
@@ -36,7 +38,7 @@ export class Anchor extends UWB {
   z?: number;
   xInPixels?: number;
   yInPixels?: number;
-  floorId?: number;
+  floor?: Floor;
 
   constructor(
     verified: boolean,
@@ -50,7 +52,7 @@ export class Anchor extends UWB {
     z?: number,
     xInPixels?: number,
     yInPixels?: number,
-    floorId?: number
+    floor?: Floor
   ) {
     super(verified, shortId, id, name, macAddress, firmwareVersion);
     this.x = x;
@@ -58,7 +60,7 @@ export class Anchor extends UWB {
     this.z = z;
     this.xInPixels = xInPixels;
     this.yInPixels = yInPixels;
-    this.floorId = floorId;
+    this.floor = floor;
   }
 }
 

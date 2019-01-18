@@ -27,13 +27,13 @@ export class NavigationService {
 
   private calculateGraphWithPathParametersIfPossible(start, finish): boolean {
     if (!this.lines.length) {
-      return;
+      return false;
     }
     const startPointCoordinatesOnLines: Point = Geometry.pickClosestNodeCoordinates(this.lines, start);
     const endPointCoordinatesOnLines: Point = Geometry.pickClosestNodeCoordinates(this.lines, finish);
     const isSamePoint: boolean = startPointCoordinatesOnLines.x === endPointCoordinatesOnLines.x && startPointCoordinatesOnLines.y === endPointCoordinatesOnLines.y;
     if (isSamePoint) {
-      return;
+      return false;
     } else {
       this.createDijkstraVertexMatrix();
       this.startPointIndex = this.dijkstraVertexMatrix.findIndex((vertex: Vertex): boolean => {
@@ -50,6 +50,7 @@ export class NavigationService {
       this.parents = {[this.endPointIndex]: null};
       this.cheapestVertexIndex = this.startPointIndex;
     }
+    return true;
   }
 
   private updateVertexMatrix(vertexIndexToUpdate: number, relatedVertexIndex: number, cost: number): void {

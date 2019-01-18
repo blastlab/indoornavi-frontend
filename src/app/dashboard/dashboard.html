@@ -1,6 +1,6 @@
 <div>
   <div class="ui-g">
-    <div class="ui-g-5 dashboard-item-container">
+    <div class="ui-g-7 dashboard-item-container">
       <div class="dashboard-item">
         <app-dashboard-counter></app-dashboard-counter>
       </div>
@@ -8,14 +8,29 @@
         <app-dashboard-event #eventComponent></app-dashboard-event>
       </div>
     </div>
-    <div class="ui-g-7 dashboard-item-container">
+    <div class="ui-g-5 dashboard-item-container">
       <div class="dashboard-item">
-        <div class="header">{{'go.to.map'|translate}}</div>
-        <img (click)="goToMap()" class="image-link" src="assets/images/map.png" />
-      </div>
-      <div class="dashboard-item">
-        <div class="header">{{'go.to.analytics'|translate}}</div>
-        <img (click)="goToHeatMap()" class="image-link" src="assets/images/heatmap.png" />
+        <div class="ui-g header">
+          <div class="ui-g-12">
+            {{'dashboard.views.header'|translate}}
+          </div>
+        </div>
+        <div class="ui-g">
+          <div class="ui-g-7 muted">
+            {{'map'|translate}}
+          </div>
+          <div class="ui-g-5">
+            <button pButton (click)="goToMap()" class="ui-button-info pull-right" type="button" pTooltip="{{'go.to.map'|translate}}" icon="fa-level-down"></button>
+          </div>
+        </div>
+        <div class="ui-g">
+          <div class="ui-g-7 muted">
+            {{'heatMap'|translate}}
+          </div>
+          <div class="ui-g-5">
+            <button pButton (click)="goToHeatMap()" class="ui-button-info pull-right" type="button" pTooltip="{{'go.to.analytics'|translate}}" icon="fa-level-down"></button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
