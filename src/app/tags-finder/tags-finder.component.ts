@@ -160,7 +160,7 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
   }
 
   private isAccessAllowed(floorId: number): boolean {
-      return this.publications.some((publication: Publication): boolean  => {
+    return this.publications.some((publication: Publication): boolean  => {
         return !!publication.floors.find((floor: Floor): boolean => floor.id === floorId);
       });
     }
