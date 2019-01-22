@@ -31,6 +31,7 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
   displayDialog = false;
   isImageSet = false;
   chartOptions: EChartOption = echartHeatmapConfig;
+  private isLoadingFirstTime = true;
   private dateFromRequestFormat: string;
   private dateToRequestFormat: string;
   private imageLoaded = false;
@@ -87,6 +88,11 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
 
   onChartInit(ec: EchartInstance) {
     this.echartsInstance = ec;
+    this.isLoadingFirstTime = true;
+    this.displayHeatMap({
+      size: [0, 0],
+      gradient: [[0, 0, 0]]
+    });
   }
 
   renderNewHeatmap() {
@@ -244,7 +250,7 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
   }
 
   private displayHeatMap(payload: SolverHeatMapPayload): void {
-    if (this.displayDialog) {
+    if (this.isLoadingFirstTime || this.displayDialog) {
       const gradientBoxed: Point = {
         x: payload.size[0],
         y: payload.size[1]
@@ -254,10 +260,13 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
       this.chartOptions.yAxis.data = heatMapGradient[1];
       this.chartOptions.series[0].data = payload.gradient;
       this.chartOptions = Object.assign({}, this.chartOptions);
-      this.messageService.success('overview.message.loadedSuccess');
-      this.displayDialog = false;
+      if (this.displayDialog) {
+        this.messageService.success('overview.message.loadedSuccess');
+        this.displayDialog = false;
+      }
     } else {
       this.messageService.failed('overview.message.loadCanceled');
     }
+    this.isLoadingFirstTime = false;
   }
 }
