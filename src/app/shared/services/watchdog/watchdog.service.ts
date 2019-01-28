@@ -11,15 +11,15 @@ export class WatchdogService {
   }
 
   start(): void {
-    this.timer = new Timer(() => {
-      if (!document.hidden) {
-        this.ping();
-      }
-    }, WatchdogService.INTERVAL);
-    this.timer.startNow();
+    // this.timer = new Timer(() => {
+    //   if (!document.hidden) {
+    //     this.ping();
+    //   }
+    // }, WatchdogService.INTERVAL);
+    // this.timer.startNow();
   }
 
   ping(): void {
-    this.httpService.doGet('auth/watchdog').subscribe();
+    // this.httpService.doGet('auth/watchdog').subscribe();
   }
 }

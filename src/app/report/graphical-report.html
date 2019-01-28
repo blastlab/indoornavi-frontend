@@ -10,14 +10,6 @@
             icon="fa-refresh">
     </button>
   </div>
-  <div echarts
-       #canvasParent
-       id="heatmap-canvas" class="ui-corner-all"
-       [options]="chartOptions"
-       (chartInit)="onChartInit($event)"
-       [style.width.px]="heatmapImageEdgePoint.x"
-       [style.height.px]="heatmapImageEdgePoint.y"
-  ></div>
   <p-dialog
     [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
     [contentStyle]="{ overflow: 'visible' }"

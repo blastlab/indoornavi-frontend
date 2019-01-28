@@ -10,11 +10,12 @@ import {Geometry} from '../shared/utils/helper/geometry';
 import {EChartOption} from 'echarts';
 import {MapService} from '../map-editor/uploader/map.uploader.service';
 import {echartHeatmapConfig} from './echart.config';
-import {EchartInstance, EchartResizeParameter, SolverCoordinatesRequest, SolverHeatMapPayload} from './graphical-report.type';
+import {SolverCoordinatesRequest, SolverHeatMapPayload} from './graphical-report.type';
 import {Point} from '../map-editor/map.type';
 import {ReportService} from './services/report.service';
 import {MessageServiceWrapper} from '../shared/services/message/message.service';
 import * as p5 from 'p5';
+import {drawHeatMap} from './services/heatmap';
 
 @Component({
   templateUrl: './graphical-report.html',
@@ -36,7 +37,6 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
   private dateFromRequestFormat: string;
   private dateToRequestFormat: string;
   private imageLoaded = false;
-  private echartsInstance: EchartInstance;
   private floor: Floor;
   private gradientsNumber: number = 300;
   private heatmapOffsetX: number;
@@ -49,7 +49,20 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
   private scale: Scale;
   private scaleCalculations: ScaleCalculations;
   private subscriptionDestructor: Subject<void> = new Subject<void>();
-  private p5;
+  // todo: move in to config ts file
+  private config = {
+    heatSpread: 35,
+    brushRadius: 4,
+    brushIntensity: 80,
+    gridWidth: 200, // todo: dynamic set from picture size
+    gridHeight: 100, // todo: dynamic set from picture size
+    cellSize: 20,
+    cellSpacing: 20,
+    canApplyHeat: true,
+    isStatic: true,
+    displayToggle: 'square'
+  };
+
 
   @ViewChild('canvasParent') canvasParent;
 
@@ -80,26 +93,16 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
     this.setAllowedDateRange();
     this.translateService.setDefaultLang('en');
     this.subscribeToMapParametersChange();
-    this.createCanvas();
   }
 
   ngOnDestroy() {
     this.subscriptionDestructor.next();
     this.subscriptionDestructor = null;
     this.isImageSet = false;
-  }
-
-  onChartInit(ec: EchartInstance) {
-    this.echartsInstance = ec;
-    this.isLoadingFirstTime = true;
-    this.displayHeatMap({
-      size: [0, 0],
-      gradient: [[0, 0, 0]]
-    });
+    this.removeCanvas();
   }
 
   renderNewHeatmap() {
-    console.log(p5);
     if (!!this.dateFrom && !!this.dateTo) {
       if (this.isDateRequestFormatSet()) {
         this.displayDialog = true;
@@ -114,14 +117,26 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
     this.displayDialog = false;
   }
 
-  private createCanvas() {
-    this.p5 = new p5(this.sketch);
+  private removeCanvas(): void {
+    const canvas = document.getElementsByTagName('canvas').item(0);
+    if (!!canvas) {
+      canvas.parentNode.removeChild(canvas);
+    }
   }
 
-  private sketch(p5Referencer) {
-    p5Referencer.setup = () => {
-      console.log('setup');
+  private createCanvas(imgUrl: string) {
+    this.removeCanvas();
+    const data = [];
+    let counter = 100;
+    while (counter > 0) {
+      data.push({
+        x: Math.floor(Math.random() * 1000),
+        y: Math.floor(Math.random() * 1000)
+      });
+      counter--;
     }
+    this.config['imgUrl'] = imgUrl;
+    drawHeatMap(p5, this.config, data);
   }
 
   private setImageToWindowSizeRelation() {
@@ -197,7 +212,6 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
               this.imageWidth += img.width;
               this.imageHeight += img.height;
               this.isImageSet = true;
-              this.calculateEChartOffset();
             };
           });
         }
@@ -205,40 +219,34 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
     });
   }
 
-  private loadMapImage(): Promise<void> {
+  private loadMapImage(): Promise<string> {
     return new Promise((resolve) => {
-      const canvas = document.getElementsByTagName('canvas').item(0);
-      const newCanvas = document.createElement('canvas');
-      newCanvas.setAttribute('id', 'image-heatmap-canvas');
-      canvas.parentElement.appendChild(newCanvas);
-      const ctx = newCanvas.getContext('2d');
+      // const canvas = document.getElementsByTagName('canvas').item(0);
+      // const newCanvas = document.createElement('canvas');
+      // newCanvas.setAttribute('id', 'image-heatmap-canvas');
+      // canvas.parentElement.appendChild(newCanvas);
+      // const ctx = newCanvas.getContext('2d');
       const background = new Image();
       background.src = this.imageUrl;
       background.onload = () => {
-        ctx.drawImage(background, this.heatmapOffsetX, this.heatmapOffsetY,
-          this.heatmapImageEdgePoint.x - 2 * this.heatmapOffsetX,
-          this.heatmapImageEdgePoint.y - 2 * this.heatmapOffsetY);
-        resolve();
+        resolve(background.src);
       };
-      newCanvas.setAttribute('width', `${this.heatmapImageEdgePoint.x - this.heatmapOffsetX}px`);
-      newCanvas.setAttribute('height', `${this.heatmapImageEdgePoint.y - this.heatmapOffsetY}px`);
+      // newCanvas.setAttribute('width', `${this.heatmapImageEdgePoint.x - this.heatmapOffsetX}px`);
+      // newCanvas.setAttribute('height', `${this.heatmapImageEdgePoint.y - this.heatmapOffsetY}px`);
     });
   }
 
   private loadData(): void {
-    const distancePix: number = this.scale.getDistanceInPixels();
     const distanceCm = this.scale.getRealDistanceInCentimeters();
-    const mapXLength: number = this.heatmapImageEdgePoint.x - 2 * this.heatmapOffsetX;
-    const mapYLength: number = this.heatmapImageEdgePoint.y - 2 * this.heatmapOffsetY;
     const request: SolverCoordinatesRequest = {
       from: this.dateFromRequestFormat,
       to: this.dateToRequestFormat,
       floorId: this.floor.id,
       maxGradientsNum: this.gradientsNumber,
-      mapXLength: mapXLength,
-      mapYLength: mapYLength,
-      scaleInX: (distancePix / distanceCm) * (mapXLength / this.imageWidth),
-      scaleInY: (distancePix / distanceCm) * (mapYLength / this.imageHeight),
+      mapXLength: 1,
+      mapYLength: 1,
+      scaleInX: 1,
+      scaleInY: 1,
       distanceInCm: distanceCm
     };
     this.reportService.getCoordinates(request).first()
@@ -247,18 +255,10 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
           this.messageService.success('reports.message.error');
           this.displayDialog = false;
         } else if (!this.imageLoaded) {
-          this.loadMapImage().then((): void => {
-            const resizeEchartFactor: EchartResizeParameter = {
-              width: this.heatmapImageEdgePoint.x,
-              height: this.heatmapImageEdgePoint.y,
-              silent: false
-            };
-            this.echartsInstance.resize(resizeEchartFactor);
-            this.imageLoaded = true;
+          this.loadMapImage().then((imgUrl: string): void => {
+            this.createCanvas(imgUrl);
+            this.displayDialog = false;
           });
-          this.displayHeatMap(payload);
-        } else {
-          this.displayHeatMap(payload);
         }
     });
   }
