@@ -14,6 +14,7 @@ import {EchartInstance, EchartResizeParameter, SolverCoordinatesRequest, SolverH
 import {Point} from '../map-editor/map.type';
 import {ReportService} from './services/report.service';
 import {MessageServiceWrapper} from '../shared/services/message/message.service';
+import * as p5 from 'p5';
 
 @Component({
   templateUrl: './graphical-report.html',
@@ -48,6 +49,7 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
   private scale: Scale;
   private scaleCalculations: ScaleCalculations;
   private subscriptionDestructor: Subject<void> = new Subject<void>();
+  private p5;
 
   @ViewChild('canvasParent') canvasParent;
 
@@ -78,6 +80,7 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
     this.setAllowedDateRange();
     this.translateService.setDefaultLang('en');
     this.subscribeToMapParametersChange();
+    this.createCanvas();
   }
 
   ngOnDestroy() {
@@ -96,6 +99,7 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
   }
 
   renderNewHeatmap() {
+    console.log(p5);
     if (!!this.dateFrom && !!this.dateTo) {
       if (this.isDateRequestFormatSet()) {
         this.displayDialog = true;
@@ -108,6 +112,16 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
 
   cancel(): void {
     this.displayDialog = false;
+  }
+
+  private createCanvas() {
+    this.p5 = new p5(this.sketch);
+  }
+
+  private sketch(p5Referencer) {
+    p5Referencer.setup = () => {
+      console.log('setup');
+    }
   }
 
   private setImageToWindowSizeRelation() {

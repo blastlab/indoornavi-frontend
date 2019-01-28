@@ -37,6 +37,7 @@
     "material-design-icons": "3.0.1",
     "ngx-echarts": "^2.3.1",
     "ngx-perfect-scrollbar": "^4.9.6",
+    "p5": "^0.7.3",
     "primeng": "4.3.0",
     "queueing-subject": "0.1.1",
     "rxjs": "5.5.0",

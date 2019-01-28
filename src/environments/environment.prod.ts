@@ -10,6 +10,7 @@ ws_addr += loc.host;
 export const environment = {
   production: true,
   base_url: '',
+  solver_url: '',
   ws_url: ws_addr,
   version: require('../../package.json').version
 };
