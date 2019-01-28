@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import {Point, TextPosition, PositionDescription} from '../../../map-editor/map.type';
+import {Point, PositionDescription, TextPosition} from '../../../map-editor/map.type';
 import {DrawConfiguration} from '../../../map-viewer/publication.type';
 
 export enum ElementType {
