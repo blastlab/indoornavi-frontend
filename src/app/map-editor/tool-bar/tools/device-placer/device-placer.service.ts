@@ -19,7 +19,7 @@ export class DevicePlacerService {
   private mapClicked: Subject<void> = new Subject();
   private tableRendered: Subject<void> = new Subject();
   private devicePositionChanged: Subject<void> = new Subject<void>();
-  private dviceInActiveConfiguration: Subject<Sink | Anchor> = new Subject<Sink | Anchor>();
+  private deviceInActiveConfiguration: Subject<Sink | Anchor> = new Subject<Sink | Anchor>();
 
   onDragStarted: Observable<DeviceDto> = this.draggedStarted.asObservable();
   onDroppedOutside: Observable<void> = this.droppedOutside.asObservable();
@@ -31,7 +31,7 @@ export class DevicePlacerService {
   onMapClicked: Observable<void> = this.mapClicked.asObservable();
   onTableRendered: Observable<void> = this.tableRendered.asObservable();
   onDevicePositionChanged: Observable<void> = this.devicePositionChanged.asObservable();
-  onDeviceInActiveConfiguration: Observable<Sink | Anchor> = this.dviceInActiveConfiguration.asObservable();
+  onDeviceInActiveConfiguration: Observable<Sink | Anchor> = this.deviceInActiveConfiguration.asObservable();
   constructor() {
   }
 
@@ -76,6 +76,6 @@ export class DevicePlacerService {
   }
 
   emitDeviceInActiveConfiguration(device: Sink | Anchor): void {
-    this.dviceInActiveConfiguration.next(device);
+    this.deviceInActiveConfiguration.next(device);
   }
 }

@@ -1,5 +1,7 @@
+import {Floor} from '../floor/floor.type';
+
 export class Device {
-  verified: boolean;
+  verified?: boolean;
   id?: number;
   name?: string;
   macAddress?: string;
@@ -36,7 +38,7 @@ export class Anchor extends UWB {
   z?: number;
   xInPixels?: number;
   yInPixels?: number;
-  floorId?: number;
+  floor?: Floor;
 
   constructor(
     verified: boolean,
@@ -50,7 +52,7 @@ export class Anchor extends UWB {
     z?: number,
     xInPixels?: number,
     yInPixels?: number,
-    floorId?: number
+    floor?: Floor
   ) {
     super(verified, shortId, id, name, macAddress, firmwareVersion);
     this.x = x;
@@ -58,7 +60,7 @@ export class Anchor extends UWB {
     this.z = z;
     this.xInPixels = xInPixels;
     this.yInPixels = yInPixels;
-    this.floorId = floorId;
+    this.floor = floor;
   }
 }
 
@@ -72,7 +74,7 @@ export class Sink extends Anchor {
 export class Bluetooth extends Device {
   major: number;
   minor?: number;
-  powerTransmition?: number;
+  powerTransmission?: number;
 
   constructor(
     verified: boolean,
@@ -81,12 +83,12 @@ export class Bluetooth extends Device {
     name?: string,
     macAddress?: string,
     minor?: number,
-    powerTransmition?: number
+    powerTransmission?: number
   ) {
     super(verified, id, name, macAddress);
     this.major = major;
     this.minor = minor;
-    this.powerTransmition = powerTransmition;
+    this.powerTransmission = powerTransmission;
   }
 }
 
@@ -95,6 +97,11 @@ export class UpdateRequest {
     this.devicesShortIds = devicesShortIds;
     this.base64file = base64file;
   }
+}
+
+export interface CommandArguments {
+  value: string;
+  sinkShortId: number;
 }
 
 export interface ClientRequest {
@@ -128,6 +135,13 @@ export interface DeviceMessage {
   type: string;
   devices?: any[];
   code?: string;
+  value?: string;
+  sinkShortId?: number;
+}
+
+export interface TerminalMessage {
+  message: string;
+  internal: boolean;
   shortId?: number;
 }
 
@@ -148,6 +162,73 @@ export enum Status {
 }
 
 export enum CommandType {
-  BatteryUpdate = 'CHECK_BATTERY_LEVEL',
-  FirmwareUpdate = 'UPDATE_FIRMWARE'
+  CHECK_BATTERY_LEVEL,
+  UPDATE_FIRMWARE,
+  RAW_COMMAND
+}
+
+export interface TxConfigData {
+  txPower: TxPower
+}
+
+export interface TxPower {
+  transmitterCoarse1: number;
+  transmitterFine1: number;
+  transmitterCoarse2: number;
+  transmitterFine2: number;
+  transmitterCoarse3: number;
+  transmitterFine3: number;
+  transmitterCoarse4: number;
+  transmitterFine4: number;
+}
+
+export interface RfData {
+  radioChannel: number;
+  radioBaudRate: number;
+  preambleLength: number;
+  pulseRepetitionFrequency: number;
+  preambleAcquisitionChunk: number;
+  communicationCode: number;
+  sfd: number;
+  nsfd: boolean;
+}
+
+export interface RfsetConfigData {
+  radioChannels: FormSelectData[];
+  radioBaudRate: FormSelectData[];
+  preambleLength: FormSelectData[];
+  pulseRepetitionFrequency: FormSelectData[];
+  preambleAcquisitionChunk: FormSelectData[];
+}
+
+export interface FormSelectData {
+  label: string;
+  value: number;
+}
+
+export interface MacData {
+  beaconTimerInterval: number;
+  slotPeriod: number;
+  slotTime: number;
+  guardTime: number;
+  devicePersonalAreaNetwork: number;
+  newDeviceAddress: number;
+  reportAnchorToAnchorDistances: boolean;
+}
+
+export interface RangingTimeData {
+  rangingPeriod: number;
+  rangingTimeOneSlot: number;
+  numberOfMeasurement: number;
+  typeRangingTime: RangingTimeType
+}
+
+export enum RangingTimeType {
+  Time = 'TIME',
+  Measurments = 'MEASURMENTS'
+}
+
+export interface ImuData {
+  toggleImu?: boolean;
+  delayBeforeAssleep: number;
 }

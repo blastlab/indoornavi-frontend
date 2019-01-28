@@ -1,0 +1,61 @@
+<p-dialog
+  [(visible)]="displayDeviceConfig"
+  [draggable]="false"
+  [responsive]="true"
+  [modal]="true"
+  [dismissableMask]="true"
+  [contentStyle]="{ overflow: 'visible' }"
+  [width]="800"
+  breakpoint="640"
+  (onHide)="closeDeviceConfig()">
+
+  <p-header>
+    {{titleHeader|translate}} -
+    <span *ngIf="device">{{device.shortId}}</span>
+  </p-header>
+
+  <p-tabView>
+    <p-tabPanel header="{{'device.config.tab.rangingTime'|translate}}">
+      <app-device-ranging-time></app-device-ranging-time>
+    </p-tabPanel>
+
+    <p-tabPanel header="{{'device.config.tab.txset'|translate}}">
+      <perfect-scrollbar class="container scrollbar-height">
+        <app-device-txset></app-device-txset>
+      </perfect-scrollbar>
+    </p-tabPanel>
+
+    <p-tabPanel header="{{'device.config.tab.rfset'|translate}}">
+      <perfect-scrollbar class="container scrollbar-height">
+        <app-device-rfset></app-device-rfset>
+      </perfect-scrollbar>
+    </p-tabPanel>
+
+    <p-tabPanel header="{{'device.config.tab.mac'|translate}}">
+      <perfect-scrollbar class="container scrollbar-height">
+        <app-device-mac
+          [deviceType]="deviceType"></app-device-mac>
+      </perfect-scrollbar>
+    </p-tabPanel>
+
+    <p-tabPanel header="{{'device.config.tab.imu'|translate}}" *ngIf="deviceType === 'tags'">
+      <app-device-imu></app-device-imu>
+    </p-tabPanel>
+  </p-tabView>
+
+  <p-footer>
+    <div class="ui-dialog-buttonpane ui-helper-clearfix">
+      <button
+        type="button"
+        pButton icon="fa-close"
+        (click)="closeDeviceConfig()"
+        label="{{'cancel'|translate}}"></button>
+      <button
+        type="submit"
+        pButton
+        icon="fa-check"
+        (click)="saveDeviceConfig()"
+        label="{{'save'|translate}}"></button>
+    </div>
+  </p-footer>
+</p-dialog>

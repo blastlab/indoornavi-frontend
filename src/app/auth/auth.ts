@@ -22,7 +22,8 @@ export class AuthComponent implements OnInit {
 
   ngOnInit(): void {
     if (localStorage.getItem('currentUser')) {
-      this.authService.logout().first().subscribe(() => {});
+      this.authService.logout().first().subscribe(() => {
+      });
       localStorage.removeItem('currentUser');
       this.authGuard.toggleUserLoggedIn(false);
       this.router.navigate(['/login']);
@@ -30,7 +31,7 @@ export class AuthComponent implements OnInit {
   }
 
   login(username: string, password: string): void {
-    this.authService.login({username: username, plainPassword: password}).first().subscribe((authResponse: AuthResponse) => {
+    this.authService.login({username: username, plainPassword: password}).subscribe((authResponse: AuthResponse) => {
       localStorage.setItem('currentUser', JSON.stringify({username: username, token: authResponse.token, permissions: authResponse.permissions}));
       this.authGuard.toggleUserLoggedIn(true);
       this.invalidCredentials = false;

@@ -2,11 +2,13 @@ import {Injectable} from '@angular/core';
 import {HttpAuthService} from '../shared/services/http/http-auth.service';
 import {Observable} from 'rxjs/Rx';
 import {Device} from './device.type';
+import { Subject } from 'rxjs/Subject'
 
 @Injectable()
 export class DeviceService {
 
   private url: string;
+  private subject: Subject<Device> = new Subject<Device>();
 
   static getDevicePermissionPrefix(deviceType: string): string {
     switch (deviceType) {
@@ -42,5 +44,13 @@ export class DeviceService {
 
   getAll(): Observable<Device[]> {
     return this.httpService.doGet(this.url);
+  }
+
+  sendDevice(device: Device): void {
+    this.subject.next(device);
+  }
+
+  getDevice(): Observable<Device> {
+    return this.subject.asObservable();
   }
 }

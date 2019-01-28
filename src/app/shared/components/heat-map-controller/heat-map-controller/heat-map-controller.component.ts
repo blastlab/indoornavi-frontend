@@ -8,10 +8,10 @@ import {HeatMapControllerService} from './heat-map-controller.service';
   styleUrls: ['./heat-map-controller.component.css']
 })
 export class HeatMapControllerComponent {
-  public playingAnimation: boolean = false;
-  public pathLength: number = 25; // in seconds for user friendly units
+  public playingAnimation: boolean = true;
+  public pathLength: number = 2500; // in seconds for user friendly units
   public heatTimeWait: number = 5; // in seconds for user friendly units
-  public heatMapType: string = '0';
+  public heatMapType: string = '1';
   Hexagonal: HeatMapType = HeatMapType.HEXAGONAL;
   Square: HeatMapType = HeatMapType.SQUARE;
 

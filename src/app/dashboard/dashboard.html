@@ -1,0 +1,37 @@
+<div>
+  <div class="ui-g">
+    <div class="ui-g-7 dashboard-item-container">
+      <div class="dashboard-item">
+        <app-dashboard-counter></app-dashboard-counter>
+      </div>
+      <div class="dashboard-item">
+        <app-dashboard-event #eventComponent></app-dashboard-event>
+      </div>
+    </div>
+    <div class="ui-g-5 dashboard-item-container">
+      <div class="dashboard-item">
+        <div class="ui-g header">
+          <div class="ui-g-12">
+            {{'dashboard.views.header'|translate}}
+          </div>
+        </div>
+        <div class="ui-g">
+          <div class="ui-g-7 muted">
+            {{'map'|translate}}
+          </div>
+          <div class="ui-g-5">
+            <button pButton (click)="goToMap()" class="ui-button-info pull-right" type="button" pTooltip="{{'go.to.map'|translate}}" icon="fa-level-down"></button>
+          </div>
+        </div>
+        <div class="ui-g">
+          <div class="ui-g-7 muted">
+            {{'heatMap'|translate}}
+          </div>
+          <div class="ui-g-5">
+            <button pButton (click)="goToHeatMap()" class="ui-button-info pull-right" type="button" pTooltip="{{'go.to.analytics'|translate}}" icon="fa-level-down"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

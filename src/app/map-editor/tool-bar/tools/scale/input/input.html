@@ -1,5 +1,5 @@
 <app-tool-details #toolDetails (onHide)="emitScaleHide()">
-  <form novalidate>
+  <form *ngIf="scale" novalidate>
     <div class="ui-g-4">
       <div class="ui-inputgroup">
         <span class="ui-float-label">
@@ -12,7 +12,8 @@
       </div>
     </div>
     <div class="ui-g-5">
-      <p-dropdown name="measure" [placeholder]="placeholder" [options]="measures"
+      <p-dropdown name="measure"
+                  [options]="measures"
                   [(ngModel)]="scale.measure"
                   [style]="{ width: '100%' }" autoWidth="false"></p-dropdown>
     </div>

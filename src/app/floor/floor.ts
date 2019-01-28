@@ -138,4 +138,10 @@ export class FloorComponent implements OnInit, CrudComponent {
       return floor.level;
     })) : -1;
   }
+
+  onFloorLevelKeyDown() {
+    const control = this.floorForm.controls['level'];
+    control.markAsTouched({onlySelf: true});
+    control.markAsDirty({onlySelf: true});
+  }
 }
