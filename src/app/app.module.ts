@@ -230,7 +230,7 @@ export function HttpLoaderFactory(http: Http) {
     TerminalComponent,
     TagFollowerComponent,
     DebuggerComponent,
-    GraphicalReportComponent
+    GraphicalReportComponent,
     DashboardComponent,
     CounterComponent,
     EventComponent
@@ -286,8 +286,7 @@ export function HttpLoaderFactory(http: Http) {
     FileUploadModule,
     RadioButtonModule,
     InputMaskModule,
-    SelectButtonModule,
-    NgxEchartsModule
+    NgxEchartsModule,
     SelectButtonModule,
     TerminalModule,
     PanelModule
@@ -340,7 +339,7 @@ export function HttpLoaderFactory(http: Http) {
     NavigationService,
     NavigationController,
     ModelsConfig,
-    ReportService
+    ReportService,
     TerminalService,
     NavigationController,
     ModelsConfig,
