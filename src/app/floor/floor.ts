@@ -129,8 +129,8 @@ export class FloorComponent implements OnInit, CrudComponent {
     this.router.navigate(['/analytics', floor.id]);
   }
 
-  goToOverview(floor: Floor): void {
-    this.router.navigate(['/overview', floor.id]);
+  goToReports(floor: Floor): void {
+    this.router.navigate(['/reports', floor.id]);
   }
 
   private getCurrentMaxLevel(): number {

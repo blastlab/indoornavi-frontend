@@ -37,7 +37,7 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
   private imageLoaded = false;
   private echartsInstance: EchartInstance;
   private floor: Floor;
-  private gradientsNumber: number = 200;
+  private gradientsNumber: number = 300;
   private heatmapOffsetX: number;
   private heatmapOffsetY: number;
   private windowWidth: number;
@@ -102,7 +102,7 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
         this.loadData();
       }
     } else {
-      this.messageService.failed('overview.message.setDate');
+      this.messageService.failed('reports.message.setDate');
     }
   }
 
@@ -124,7 +124,7 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
     this.dateToRequestFormat = new Date(this.dateTo).toISOString();
     this.dateToRequestFormat = this.dateToRequestFormat.slice(0, this.dateToRequestFormat.length - 2);
     if (new Date(this.dateFrom).valueOf() > new Date(this.dateTo).valueOf()) {
-      this.messageService.failed('overview.message.wrongDataSpan');
+      this.messageService.failed('reports.message.wrongDataSpan');
       return false;
     }
     return true;
@@ -230,7 +230,7 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
     this.reportService.getCoordinates(request).first()
       .subscribe((payload: SolverHeatMapPayload): void => {
         if (payload.gradient.length === 0) {
-          this.messageService.success('overview.message.error');
+          this.messageService.success('reports.message.error');
           this.displayDialog = false;
         } else if (!this.imageLoaded) {
           this.loadMapImage().then((): void => {
@@ -261,11 +261,11 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
       this.chartOptions.series[0].data = payload.gradient;
       this.chartOptions = Object.assign({}, this.chartOptions);
       if (this.displayDialog) {
-        this.messageService.success('overview.message.loadedSuccess');
+        this.messageService.success('reports.message.loadedSuccess');
         this.displayDialog = false;
       }
     } else {
-      this.messageService.failed('overview.message.loadCanceled');
+      this.messageService.failed('reports.message.loadCanceled');
     }
     this.isLoadingFirstTime = false;
   }
