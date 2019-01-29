@@ -1,85 +1,108 @@
-export const drawHeatMap = function (_p5, config, data) {
+import {Point} from '../../map-editor/map.type';
 
-  let heatMap;
+export class HeatMapCanvas {
 
-  function isConfigOk(_config) {
-    if (!_config.displayToggle) {
-      if (_config.displayToggle !== 'square' || _config.displayToggle !== 'ellipse' || _config.displayToggle !== 'rounded' || _config.displayToggle !== 'square') {
+  private width: number;
+  private height: number;
+  private temps: number[][];
+  private newTemps: number[][];
+  private pFive: Function;
+  private heatMap: Function;
+  private startX: number;
+  private startY: number;
+  private coordinates: Point;
+
+  private static isConfigOk(configuration: any /* todo set type for heat map config */) {
+    if (!configuration.displayToggle) {
+      if (configuration.displayToggle !== 'square' || configuration.displayToggle !== 'ellipse'
+        || configuration.displayToggle !== 'rounded' || configuration.displayToggle !== 'square') {
         return false;
       }
     }
-    if (_config.canApplyHeat === 'undefined' || _config.canApplyHeat === 'null') {
+    if (configuration.canApplyHeat === 'undefined' || configuration.canApplyHeat === 'null') {
       return false;
     }
-    if (!_config.heatSpread || !_config.brushIntensity || !_config.brushRadius || !_config.gridWidth ||
-      !_config.gridHeight || !_config.cellSize || !_config.cellSpacing) {
+    if (!configuration.heatSpread || !configuration.brushIntensity || !configuration.brushRadius || !configuration.gridWidth ||
+      !configuration.gridHeight || !configuration.cellSize || !configuration.cellSpacing) {
       return false;
     }
-    if (_config.isStatic === 'undefined' || _config.isStatic === 'null' || !config.width || !config.height) {
-      return false;
-    }
-    return true;
+    return !(configuration.isStatic === 'undefined' && configuration.isStatic === 'null' && !configuration.width && !configuration.height);
   }
 
-  const loader = function (sketch) {
-    let heatSpread = config.heatSpread;
-    let brushRadius = config.brushRadius;
-    let brushIntensity = config.brushIntensity;
-    let gridWidth = config.gridHeight;
-    let gridHeight = config.gridHeight;
-    let cellSize = config.cellSize;
-    let cellSpacing = config.cellSpacing;
-    let canApplyHeat = config.canApplyHeat;
-    let isStatic = config.isStatic;
-    let displayToggle = config.displayToggle;
-    const width = config.width;
-    const height = config.height;
-    let img;
-    let imgUrl;
-    let coordinates;
-    if (!!config.imgUrl) {
-      imgUrl = config.imgUrl;
+  constructor(private P_5: any, private config: any/* todo set type for heat map config */, private data: Point[]) {
+    if (HeatMapCanvas.isConfigOk(config) && !!P_5) {
+      this.pFive = new P_5(this.loader.bind(this));
+    } else {
+      if (!!P_5.Color && !!P_5.Image) {
+        throw Error('Wrongly set configuration or configuration not available.');
+      } else {
+        throw Error('p5* library not available in current context or incompatible version used, use p5.js version 0.7.3');
+      }
+    }
+  }
+
+
+
+  private createGrid(): void {
+    this.width = this.config.gridWidth;
+    this.height = this.config.gridHeight;
+    this.temps = [];
+    this.newTemps = [];
+
+    for (let x = 0; x < this.width; x++) {
+      this.temps[x] = [];
+      this.newTemps[x] = [];
+      for (let y = 0; y < this.height; y++) {
+        this.temps[x][y] = this.newTemps[x][y] = 0;
+      }
+    }
+  }
+
+  private loader(sketch: any) {
+    let imgUrl: string;
+    let img: any;
+    if (!!this.config.imgUrl) {
+      imgUrl = this.config.imgUrl;
       sketch.preload = function () {
         img = sketch.loadImage(imgUrl);
       }
     }
-    sketch.setup = function () {
+    sketch.setup = () => {
       sketch.frameRate(60);
-      if (!!config.imgUrl) {
-        sketch.createCanvas(width, height);
+      if (!!this.config.imgUrl) {
+        sketch.createCanvas(this.config.width, this.config.height);
       } else {
-        sketch.createCanvas(width, height, sketch.WEBGL);
+        sketch.createCanvas(this.config.width, this.config.height, sketch.WEBGL);
       }
       sketch.colorMode(sketch.HSB);
       sketch.textAlign(sketch.CENTER);
       sketch.noStroke();
       sketch.strokeWeight(0);
-
-      heatMap = new HeatMap(gridWidth, gridHeight);
-      if (isStatic) {
+      this.createGrid();
+      if (this.config.isStatic) {
         sketch.noLoop();
-        data.forEach(coordDataPoint => {
-          coordinates = coordDataPoint;
-          heatMap.update();
+        this.data.forEach(coordDataPoint => {
+          this.coordinates = coordDataPoint;
+          this.update(sketch);
         });
         sketch.redraw();
       }
-    }
+    };
 
-    sketch.draw = function () {
-      if (gridWidth !== heatMap.width || gridHeight !== heatMap.height) {
-        heatMap = new HeatMap(gridWidth, gridHeight);
+    sketch.draw = () => {
+      if (this.config.gridWidth !== this.width || this.config.gridHeight !== this.height) {
+        this.createGrid();
       }
-      if (!isStatic) {
-        canApplyHeat = false;
-        if (data.length > 0) {
-          canApplyHeat = true;
-          coordinates = data.shift();
-          if (data.length === 0) { // avoiding GB to destroy reference
-            data = [];
+      if (!this.config.isStatic) {
+        this.config.canApplyHeat = false;
+        if (this.data.length > 0) {
+          this.config.canApplyHeat = true;
+          this.coordinates = this.data.shift();
+          if (this.data.length === 0) { // avoiding GB to destroy reference
+            this.data = [];
           }
         }
-        heatMap.update();
+        this.update(sketch);
       }
 
       sketch.background('rgba(255,255,255, 0.25)');
@@ -87,155 +110,118 @@ export const drawHeatMap = function (_p5, config, data) {
       if (!!img) {
         sketch.image(img, 0, 0);
       }
-      heatMap.update();
-      heatMap.display();
+      this.update(sketch);
+      this.display(sketch);
 
       sketch.fill('rgba(255,255,255, 0.25)');
       sketch.noStroke();
       sketch.strokeWeight(0);
-    }
+    };
 
     sketch.windowResized = function () {
       sketch.resizeCanvas(sketch.windowWidth, sketch.windowHeight);
     }
+  }
 
-    const HeatMap = function (mapWidth, mapHeight) {
-      this.width = mapWidth;
-      this.height = mapHeight;
-      this.temps = [];
-      this.newTemps = [];
-
-      for (let x = 0; x < this.width; x++) {
-        this.temps[x] = [];
-        this.newTemps[x] = [];
-        for (let y = 0; y < this.height; y++) {
-          this.temps[x][y] = this.newTemps[x][y] = 0;
-        }
+  private update (sketch: any) {
+    for (let x = 0; x < this.width; x++) {
+      for (let y = 0; y < this.height; y++) {
+        this.newTemps[x][y] = this.temps[x][y];
       }
-    };
-
-    HeatMap.prototype.update = function () {
-      for (let x = 0; x < this.width; x++)
-        for (let y = 0; y < this.height; y++)
-          this.newTemps[x][y] = this.temps[x][y];
-
-      this.startX = (sketch.width - ((this.width - 1) * cellSpacing)) / 2;
-      this.startY = (sketch.height - ((this.height - 1) * cellSpacing)) / 2;
-
-      for (let x = 0; x < this.width; x++) {
-        for (let y = 0; y < this.height; y++) {
-          this.newTemps[x][y]--;
-
-          // works out how to spread the heat in a cell to adjacent cells
-          if (this.temps[x][y] > 0) {
-            // keeps track of the cells that heat can be dissipated to
-            const dissipation = [];
-
-            // checks all four adjacent cells to see if they are lower in temperature
-            if (this.temps[x + 1] && this.temps[x + 1][y] < this.temps[x][y]) {
-              dissipation.push([x + 1, y]);
-            }
-            if (this.temps[x - 1] && this.temps[x - 1][y] < this.temps[x][y]) {
-              dissipation.push([x - 1, y]);
-            }
-            if (this.temps[x][y + 1] < this.temps[x][y]) {
-              dissipation.push([x, y + 1]);
-            }
-            if (this.temps[x][y - 1] < this.temps[x][y]) {
-              dissipation.push([x, y - 1]);
-            }
-
-            // calculates the average temperature of the cells around the current cell
-            let sum = 0;
-            for (let i = 0; i < dissipation.length; i++)
-              sum += this.temps[dissipation[i][0]][dissipation[i][1]];
-            let average = sketch.round(sum / dissipation.length);
-
-            // dissipates the heat into available cells until it either runs out of cells or the current cell has dropped below the average temp
-            while (dissipation.length > 0 && this.newTemps[x][y] > average) {
-              // picks a random cell (so there's no bias if not all cells end up getting heat)
-              let index = Math.floor(Math.random() * dissipation.length);
-              // calculates the amount of heat to dissipate to the adjacent cell depending on the temperature difference between them
-              let amount = sketch.ceil((sketch.abs(this.newTemps[x][y] - this.newTemps[dissipation[index][0]][dissipation[index][1]]) / 5) * (heatSpread / 100));
-              // updates cell temperatures and removes adjacent cell from the array
-              this.newTemps[dissipation[index][0]][dissipation[index][1]] += amount;
-              dissipation.splice(index, 1);
-              this.newTemps[x][y] -= amount;
-            }
+    }
+    this.startX = (sketch.width - ((this.width - 1) * this.config.cellSpacing)) / 2;
+    this.startY = (sketch.height - ((this.height - 1) * this.config.cellSpacing)) / 2;
+    for (let x = 0; x < this.width; x++) {
+      for (let y = 0; y < this.height; y++) {
+        this.newTemps[x][y]--;
+        if (this.temps[x][y] > 0) {
+          const dissipation = [];
+          if (this.temps[x + 1] && this.temps[x + 1][y] < this.temps[x][y]) {
+            dissipation.push([x + 1, y]);
           }
-
-          if (canApplyHeat) {
-            const distance = sketch.dist(coordinates.x, coordinates.y, x * cellSpacing + this.startX, y * cellSpacing + this.startY);
-            if (distance < brushRadius * cellSpacing) {
-              this.newTemps[x][y] += Math.round(sketch.map(distance, 0, brushRadius * cellSpacing, brushIntensity, 0));
-            }
+          if (this.temps[x - 1] && this.temps[x - 1][y] < this.temps[x][y]) {
+            dissipation.push([x - 1, y]);
           }
-
-          // cap the temp to between 0 and 240
-          if (this.newTemps[x][y] > 240) {
-            this.newTemps[x][y] = 240;
-          } else if (this.newTemps[x][y] < 0) {
-            this.newTemps[x][y] = 0;
+          if (this.temps[x][y + 1] < this.temps[x][y]) {
+            dissipation.push([x, y + 1]);
+          }
+          if (this.temps[x][y - 1] < this.temps[x][y]) {
+            dissipation.push([x, y - 1]);
+          }
+          let sum = 0;
+          for (let i = 0; i < dissipation.length; i++) {
+            sum += this.temps[dissipation[i][0]][dissipation[i][1]];
+          }
+          const average = sketch.round(sum / dissipation.length);
+          while (dissipation.length > 0 && this.newTemps[x][y] > average) {
+            const index = Math.floor(Math.random() * dissipation.length);
+            const amount = sketch.ceil((sketch.abs(this.newTemps[x][y] - this.newTemps[dissipation[index][0]][dissipation[index][1]]) / 5) *
+              (this.config.heatSpread / 100));
+            this.newTemps[dissipation[index][0]][dissipation[index][1]] += amount;
+            dissipation.splice(index, 1);
+            this.newTemps[x][y] -= amount;
           }
         }
-      }
-
-      // make the new temps the current ones and keep the old temps for use next frame
-      const temp = this.temps;
-      this.temps = this.newTemps;
-      this.newTemps = temp;
-    };
-
-    HeatMap.prototype.display = function () {
-      if (displayToggle) {
-        sketch.noFill();
-        sketch.strokeWeight(2);
-      } else {
-        sketch.strokeWeight(1);
-      }
-      for (let x = 0; x < this.width; x++) {
-        for (let y = 0; y < this.height; y++) {
-          let _value = this.temps[x][y];
-          if (_value !== 0 && displayToggle !== 'circle') {
-            sketch.fill(240 - _value, 255, 255, 0.5); // HSB
-          } else {
-            sketch.stroke(240, 255, 255, 0.0); // HSB
-            sketch.fill(240, 255, 255, 0.0); // HSB
+        if (this.config.canApplyHeat) {
+          const distance = sketch.dist(this.coordinates.x, this.coordinates.y, x * this.config.cellSpacing + this.startX,
+            y * this.config.cellSpacing + this.startY);
+          if (distance < this.config.brushRadius * this.config.cellSpacing) {
+            this.newTemps[x][y] += Math.round(sketch.map(distance, 0, this.config.brushRadius * this.config.cellSpacing,
+              this.config.brushIntensity, 0));
           }
-          switch (displayToggle) {
-            case 'square':
-              sketch.rect(x * cellSpacing + this.startX, y * cellSpacing + this.startY, cellSize, cellSize);
-              break;
-            case 'rounded':
-              sketch.rect(x * cellSpacing + this.startX, y * cellSpacing + this.startY, cellSize, cellSize, 2);
-              break;
-            case 'numbers':
-              _value = Math.floor(_value / 24);
-              sketch.text(_value, x * cellSpacing + this.startX, y * cellSpacing + this.startY, cellSize);
-              break;
-            case 'ellipse':
-              sketch.noStroke();
-              sketch.ellipse(x * cellSpacing + this.startX, y * cellSpacing + this.startY, cellSize, cellSize);
-              break;
-            case 'circle':
-              if (_value !== 0) {
-                sketch.stroke(240 - _value, 255, 255, 0.5);
-                sketch.circle(x * cellSpacing + this.startX, y * cellSpacing + this.startY, cellSize / 2);
-              }
-              break;
-          }
+        }
+        if (this.newTemps[x][y] > 240) {
+          this.newTemps[x][y] = 240;
+        } else if (this.newTemps[x][y] < 0) {
+          this.newTemps[x][y] = 0;
         }
       }
     }
-  };
+    const temp = this.temps;
+    this.temps = this.newTemps;
+    this.newTemps = temp;
+  }
 
-  if (_p5 && isConfigOk(config)) {
-    const five = new _p5(loader);
-  } else {
-    if (!!_p5 && !!_p5.Color && !!_p5.Image) {
-      throw Error('Wrongly set configuration or configuration not available.');
+  private display(sketch: any) {
+    if (this.config.displayToggle) {
+      sketch.noFill();
+      sketch.strokeWeight(2);
     } else {
-      throw Error('p5* library not available in current scope or incompatible version used, use p5.js version 0.7.3');
+      sketch.strokeWeight(1);
+    }
+    for (let x = 0; x < this.width; x++) {
+      for (let y = 0; y < this.height; y++) {
+        let _value = this.temps[x][y];
+        if (_value !== 0 && this.config.displayToggle !== 'circle') {
+          sketch.fill(240 - _value, 255, 255, 0.5); // HSB
+        } else {
+          sketch.stroke(240, 255, 255, 0.0); // HSB
+          sketch.fill(240, 255, 255, 0.0); // HSB
+        }
+        switch (this.config.displayToggle) {
+          case 'square':
+            sketch.rect(x * this.config.cellSpacing + this.startX, y * this.config.cellSpacing + this.startY, this.config.cellSize, this.config.cellSize);
+            break;
+          case 'rounded':
+            sketch.rect(x * this.config.cellSpacing + this.startX, y * this.config.cellSpacing + this.startY, this.config.cellSize, this.config.cellSize, 2);
+            break;
+          case 'numbers':
+            _value = Math.floor(_value / 24);
+            sketch.text(_value, x * this.config.cellSpacing + this.startX, y * this.config.cellSpacing + this.startY, this.config.cellSize);
+            break;
+          case 'ellipse':
+            sketch.noStroke();
+            sketch.ellipse(x * this.config.cellSpacing + this.startX, y * this.config.cellSpacing + this.startY, this.config.cellSize, this.config.cellSize);
+            break;
+          case 'circle':
+            if (_value !== 0) {
+              sketch.stroke(240 - _value, 255, 255, 0.5);
+              sketch.circle(x * this.config.cellSpacing + this.startX, y * this.config.cellSpacing + this.startY, this.config.cellSize / 2);
+            }
+            break;
+        }
+      }
     }
   }
-};
+}
+

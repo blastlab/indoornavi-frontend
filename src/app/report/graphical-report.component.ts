@@ -13,7 +13,7 @@ import {SolverCoordinatesRequest, SolverHeatMapPayload} from './graphical-report
 import {ReportService} from './services/report.service';
 import {MessageServiceWrapper} from '../shared/services/message/message.service';
 import * as p5 from 'p5';
-import {drawHeatMap} from './services/heatmap';
+import {HeatMapCanvas} from './services/heatmap';
 
 @Component({
   templateUrl: './graphical-report.html',
@@ -27,7 +27,7 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
   dateToMaxValue: Date;
   dateFromMaxValue: Date;
   displayDialog = false;
-  isImageSet = false;
+  isImageLoaded = false;
   private isLoadingFirstTime = true;
   private dateFromRequestFormat: string;
   private dateToRequestFormat: string;
@@ -39,18 +39,19 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
   private scale: Scale;
   private scaleCalculations: ScaleCalculations;
   private subscriptionDestructor: Subject<void> = new Subject<void>();
+  private heatMapCanvas: HeatMapCanvas;
   // todo: move in to config ts file
   private config = {
     heatSpread: 35,
     brushRadius: 4,
     brushIntensity: 80,
     gridWidth: 200, // todo: dynamic set from picture size
-    gridHeight: 100, // todo: dynamic set from picture size
+    gridHeight: 200, // todo: dynamic set from picture size
     cellSize: 20,
     cellSpacing: 20,
     canApplyHeat: true,
     isStatic: true,
-    displayToggle: 'square',
+    displayToggle: 'ellipse',
     width: 0,
     height: 0,
     imgUrl: null
@@ -76,7 +77,7 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptionDestructor.next();
     this.subscriptionDestructor = null;
-    this.isImageSet = false;
+    this.isImageLoaded = false;
     this.removeCanvas();
   }
 
@@ -96,6 +97,7 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
   }
 
   private removeCanvas(): void {
+    this.heatMapCanvas = null;
     const canvas = document.getElementsByTagName('canvas').item(0);
     if (!!canvas) {
       canvas.parentNode.removeChild(canvas);
@@ -115,18 +117,18 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
 
     // todo remove this ugly mock after proper data handle
     const data = [];
-    let counter = 100;
+    let counter = 500;
     while (counter > 0) {
       data.push({
-        x: Math.floor(Math.random() * 1000),
-        y: Math.floor(Math.random() * 1000)
+        x: Math.floor(Math.random() * this.config.width),
+        y: Math.floor(Math.random() * this.config.height)
       });
       counter--;
     }
     // todo remove till end of ugly mock
 
     this.config.imgUrl = imgUrl;
-    drawHeatMap(p5, this.config, data);
+    this.heatMapCanvas = new HeatMapCanvas(p5, this.config, data);
   }
 
   private setImageToWindowSizeRelation() {
@@ -201,7 +203,7 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
       img.onload = () => {
         this.config.width += img.width;
         this.config.height += img.height;
-        this.isImageSet = true;
+        this.isImageLoaded = true;
       };
     });
   }
