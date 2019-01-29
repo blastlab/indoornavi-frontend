@@ -3,10 +3,10 @@ import {ZoomService} from './zoom.service';
 import {MapEditorService} from '../../../map-editor/map.editor.service';
 import {inject, TestBed} from '@angular/core/testing';
 import {MapService} from '../../../map-editor/uploader/map.uploader.service';
-import {HttpAuthService} from '../http/http-auth.service';
 import {HttpModule} from '@angular/http';
 import {RouterTestingModule} from '@angular/router/testing';
 import {AuthGuard} from '../../../auth/auth.guard';
+import {HttpService} from '../http/http.service';
 
 
 describe('ZoomService', () => {
@@ -26,7 +26,7 @@ describe('ZoomService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ZoomService, MapEditorService, MapService, HttpAuthService, AuthGuard],
+      providers: [ZoomService, MapEditorService, MapService, HttpService, AuthGuard],
       imports: [HttpModule, RouterTestingModule]
     });
   });

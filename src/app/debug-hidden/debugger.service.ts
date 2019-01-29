@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-import {HttpAuthService} from '../shared/services/http/http-auth.service';
 import {DebugFileName, DebugReport} from './debug.types';
 import {UWB} from '../device/device.type';
+import {HttpService} from '../shared/services/http/http.service';
 
 @Injectable()
 export class DebuggerService {
@@ -10,7 +10,7 @@ export class DebuggerService {
   private debugUrl = 'debug/';
   private sinksUrl = 'sinks/';
 
-  constructor(private httpService: HttpAuthService) {
+  constructor(private httpService: HttpService) {
   }
 
   getRecordingStartedInfo(): Observable<boolean> {

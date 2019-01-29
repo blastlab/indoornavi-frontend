@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
 import {Timer} from '../../utils/timer/timer';
-import {HttpAuthService} from '../http/http-auth.service';
+import {HttpService} from '../http/http.service';
 
 @Injectable()
 export class WatchdogService {
   private static INTERVAL = 10_000; // ten seconds
   private timer: Timer;
 
-  constructor(private httpService: HttpAuthService) {
+  constructor(private httpService: HttpService) {
   }
 
   start(): void {

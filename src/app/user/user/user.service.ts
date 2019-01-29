@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
 import {User} from './user.type';
-import {HttpAuthService} from '../../shared/services/http/http-auth.service';
 import {Observable} from 'rxjs/Rx';
+import {HttpService} from '../../shared/services/http/http.service';
 
 @Injectable()
 export class UserService {
   private url = 'users/';
 
-  constructor(protected httpService: HttpAuthService) {
+  constructor(protected httpService: HttpService) {
   }
 
   create(user: User): Observable<User> {
