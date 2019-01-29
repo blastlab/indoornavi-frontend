@@ -7,7 +7,7 @@ class MapsBaseScaleLocators(object):
         db_maps_env_xml = 'src/test-complexes.xml'
 
         # LOCATORS
-        floor_update_button = (By.CSS_SELECTOR, 'tr:last-child > td.col-button > span > button:nth-child(4)')
+        floor_update_button = (By.CSS_SELECTOR, 'tr:last-child > td.col-button > span > button:nth-child(5)')
         choose_image_btn = (By.XPATH, "//div/app-map-uploader/p-fileupload/div/div[1]/span/input")
         upload_area = (By.CLASS_NAME, 'ui-fileupload-content')
 

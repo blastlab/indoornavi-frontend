@@ -4,6 +4,7 @@ import time
 import os
 import logging
 
+
 class TestDriver(object):
 
     def setUp(self, page_url):
@@ -26,7 +27,13 @@ class TestDriver(object):
         browser_log_content = self.webdriver.get_log('browser')
         log_teardown = logging.getLogger("TEARDOWN: ")
         log_teardown.info("BROWSER CONSOLE LOGS:\n{0}".format(browser_log_content))
+
         if self.test_failed:
+            self.fail_snapshot()
+
+    def fail_snapshot(self, optional=None):
+            snap = logging.getLogger("-- SNAPSHOT --")
+            snap.info(self.webdriver.current_url)
             _reports_path = 'test-reports/bug-screenshots'
             _browser_log_path = 'test-reports/browser-console'
             _browser_log_content = self.webdriver.get_log('browser')
@@ -36,9 +43,12 @@ class TestDriver(object):
             except OSError:
                 pass
 
+            debug_snapshot_name = optional if optional is not None else ''
             datetime = time.strftime(' %H:%M:%S %d_%m_%Y')
-            test_method_name = self._testMethodName + datetime
+            test_method_name = self._testMethodName + datetime + debug_snapshot_name
+
             self.webdriver.save_screenshot("{0}/{1}.png".format(_reports_path, test_method_name))
+
             if _browser_log_content:
                 with open("{0}/{1}.log".format(_browser_log_path, test_method_name), "w") as text_file:
                     print("Test Browser console log saved in : "
