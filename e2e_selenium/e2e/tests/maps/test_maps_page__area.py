@@ -285,7 +285,7 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.test_failed = False
 
     #TODO step with edit_area_click {context_menu}
-    def test_09_edit_area_with_all_parameters(self):
+    def _test_09_edit_area_with_all_parameters(self):
 
         self.__set_before_scale_db_configuration('edit')
         self.maps_page_area.is_area_button_displayed()
@@ -314,7 +314,7 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.test_failed = False
 
     # TODO step with edit_area_click {context_menu}
-    def test_10_edit_area_without_area_name(self):
+    def _test_10_edit_area_without_area_name(self):
 
         self.__set_before_scale_db_configuration('edit')
         self.maps_page_area.is_area_button_displayed()
@@ -341,7 +341,7 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
 
         self.test_failed = False
 
-    def test_11_edit_area_without_offsets(self):
+    def _test_11_edit_area_without_offsets(self):
 
         self.__set_before_scale_db_configuration('edit')
         self.maps_page_area.is_area_button_displayed()
@@ -355,7 +355,7 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         # TODO ON ENTER OFFSET / ON LEAVE IS REQUIRED
         self.test_failed = False
 
-    def test_12_remove_area(self):
+    def _test_12_remove_area(self):
         self.__set_before_scale_db_configuration('edit')
         self.maps_page_area.is_area_button_displayed()
         self.maps_page_area.area_button_click()
