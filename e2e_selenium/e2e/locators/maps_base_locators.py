@@ -17,7 +17,7 @@ class MapsBaseLocators(object):
         # QUERY
         self.select_last_configuration = 'SELECT data FROM configuration ORDER BY id DESC LIMIT 1'
 
-        self.floor_update_button = (By.CSS_SELECTOR, 'tr:last-child > td.col-button > span > button:nth-child(4)')
+        self.floor_update_button = (By.CSS_SELECTOR, 'tr:last-child > td.col-button > span > button:nth-child(5)')
         self.choose_image_btn = (By.XPATH, "//div/app-map-uploader/p-fileupload/div/div[1]/span/input")
         self.upload_area = (By.CLASS_NAME, 'ui-fileupload-content')
 
