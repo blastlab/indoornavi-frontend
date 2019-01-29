@@ -7,6 +7,7 @@ import {HttpModule} from '@angular/http';
 import {RouterTestingModule} from '@angular/router/testing';
 import {AuthGuard} from '../../../auth/auth.guard';
 import {HttpService} from '../http/http.service';
+import {HttpBackend} from '../http/http.backend';
 
 
 describe('ZoomService', () => {
@@ -26,7 +27,7 @@ describe('ZoomService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ZoomService, MapEditorService, MapService, HttpService, AuthGuard],
+      providers: [ZoomService, MapEditorService, MapService, {provide: HttpService, useClass: HttpBackend}, AuthGuard],
       imports: [HttpModule, RouterTestingModule]
     });
   });
