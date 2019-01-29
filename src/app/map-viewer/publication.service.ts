@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpService} from '../shared/services/http/http.service';
+import {HttpAuthService} from '../shared/services/http/http-auth.service';
 import {Publication} from './publication.type';
 import {Observable} from 'rxjs/Observable';
 
@@ -7,7 +7,7 @@ import {Observable} from 'rxjs/Observable';
 export class PublishedService {
   private url = 'publications/';
 
-  constructor(private httpService: HttpService) {
+  constructor(private httpService: HttpAuthService) {
   }
 
   getAll(): Observable<Publication[]> {

@@ -58,7 +58,6 @@ export class ApiService {
 
   draw(objectMetadata: Metadata, scale: Scale, originMessageEvent: MessageEvent, container: d3.selection): void {
     if (!!this.objects.get(objectMetadata.object.id)) {
-      console.log(objectMetadata);
       this.removeObject(objectMetadata);
     }
     switch (objectMetadata.type) {

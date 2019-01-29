@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpService} from '../../shared/services/http/http.service';
+import {HttpAuthService} from '../../shared/services/http/http-auth.service';
 import {Configuration, ConfigurationData} from './actionbar.type';
 import {Observable} from 'rxjs/Rx';
 import {Scale} from '../tool-bar/tools/scale/scale.type';
@@ -33,7 +33,7 @@ export class ActionBarService {
     });
   }
 
-  constructor(private httpService: HttpService) {
+  constructor(private httpService: HttpAuthService) {
   }
 
   configurationLoaded(): Observable<Configuration> {

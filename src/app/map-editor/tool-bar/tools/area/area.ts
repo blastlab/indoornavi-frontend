@@ -455,6 +455,10 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
             if (!!this.selectedEditable) {
               const idBackUp = this.selectedEditable.groupWrapper.getGroup().attr('id');
               this.currentAreaGroup.getGroup().attr('id', idBackUp);
+              const index = this.findSelectedAreaBagIndex();
+              if (index >= 0) {
+                this.areas[index].editable = new Editable(this.currentAreaGroup, this.contextMenuService);
+              }
             }
             this.drawPolygon(this.backupPolygonPoints);
             this.applyHover(this.backupPolygonPoints);

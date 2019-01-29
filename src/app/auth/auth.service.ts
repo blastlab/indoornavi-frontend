@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpService} from '../shared/services/http/http.service';
+import {HttpAuthService} from '../shared/services/http/http-auth.service';
 import {AuthResponse, Credentials} from './auth.type';
 import {Observable} from 'rxjs/Rx';
 
@@ -7,7 +7,7 @@ import {Observable} from 'rxjs/Rx';
 export class AuthService {
   private url = 'auth/';
 
-  constructor(private httpService: HttpService) {
+  constructor(private httpService: HttpAuthService) {
   }
 
   login(credentials: Credentials): Observable<AuthResponse> {

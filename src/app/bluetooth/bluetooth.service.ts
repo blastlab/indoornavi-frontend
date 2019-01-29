@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpService} from '../shared/services/http/http.service';
+import {HttpAuthService} from '../shared/services/http/http-auth.service';
 import {Observable} from 'rxjs/Rx';
 import {Bluetooth} from '../device/device.type';
 
@@ -8,7 +8,7 @@ export class BluetoothService {
 
   private url: string;
 
-  constructor(protected httpService: HttpService) {
+  constructor(protected httpService: HttpAuthService) {
   }
 
   setUrl(url: string) {

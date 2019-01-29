@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Rx';
 import {Permission, PermissionGroup} from '../user/user.type';
-import {HttpService} from '../../shared/services/http/http.service';
+import {HttpAuthService} from '../../shared/services/http/http-auth.service';
 
 @Injectable()
 export class PermissionGroupService {
@@ -9,7 +9,7 @@ export class PermissionGroupService {
   private static permission_url = 'permissions/';
   private static group_url = 'permissionGroups/';
 
-  constructor(private httpService: HttpService) {
+  constructor(private httpService: HttpAuthService) {
   }
 
   getPermissions(): Observable<Permission[]> {
