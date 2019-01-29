@@ -8,10 +8,6 @@ import {Config} from '../../../../config';
 @Injectable()
 export class HttpBackend extends HttpService {
   constructor(http: Http, route: ActivatedRoute, authGuard: AuthGuard) {
-    console.log('http backend is being created')
     super(http, route, authGuard, Config.API_URL, true);
   }
-  // constructor(protected http: Http, protected route: ActivatedRoute, protected authGuard: AuthGuard) {
-  //   super(http, route, authGuard, Config.API_URL, true);
-  // }
 }
