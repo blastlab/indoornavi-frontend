@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Params} from '@angular/router';
 import {Floor} from '../floor/floor.type';
 import {Subject} from 'rxjs/Subject';
@@ -13,15 +13,15 @@ import {SolverCoordinatesRequest, SolverHeatMapPayload} from './graphical-report
 import {ReportService} from './services/report.service';
 import {MessageServiceWrapper} from '../shared/services/message/message.service';
 import * as p5 from 'p5';
-import {HeatMapCanvas} from './services/heatmap';
+import {HeatMapCanvas, HeatMapCanvasConfig} from './canvas/heatmap';
+import {heatMapCanvasConfiguration} from './canvas/heatMapCanvas-config';
+import {Point} from '../map-editor/map.type';
 
 @Component({
   templateUrl: './graphical-report.html',
   styleUrls: ['./graphical-report.css']
 })
 export class GraphicalReportComponent implements OnInit, OnDestroy {
-  private static maxChartWidth = 2200;
-  private static minChartWidth = 1000;
   dateFrom: string;
   dateTo: string;
   dateToMaxValue: Date;
@@ -34,28 +34,13 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
   private imageLoaded = false;
   private floor: Floor;
   private gradientsNumber: number = 300;
-  private windowWidth: number;
   private imageUrl: string;
   private scale: Scale;
   private scaleCalculations: ScaleCalculations;
   private subscriptionDestructor: Subject<void> = new Subject<void>();
   private heatMapCanvas: HeatMapCanvas;
-  // todo: move in to config ts file
-  private config = {
-    heatSpread: 35,
-    brushRadius: 4,
-    brushIntensity: 80,
-    gridWidth: 200, // todo: dynamic set from picture size
-    gridHeight: 200, // todo: dynamic set from picture size
-    cellSize: 20,
-    cellSpacing: 20,
-    canApplyHeat: true,
-    isStatic: true,
-    displayToggle: 'ellipse',
-    width: 0,
-    height: 0,
-    imgUrl: null
-  };
+  private config: HeatMapCanvasConfig = heatMapCanvasConfiguration;
+  private data: Point[] = [];
 
   constructor(private route: ActivatedRoute,
               private floorService: FloorService,
@@ -68,7 +53,6 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.setImageToWindowSizeRelation();
     this.setAllowedDateRange();
     this.translateService.setDefaultLang('en');
     this.subscribeToMapParametersChange();
@@ -84,7 +68,7 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
   renderNewHeatmap() {
     if (!!this.dateFrom && !!this.dateTo) {
       if (this.isDateRequestFormatSet()) {
-        this.displayDialog = true;
+        this.cancelDialog();
         this.loadData();
       }
     } else {
@@ -92,8 +76,22 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
     }
   }
 
-  cancel(): void {
+  cancelDialog(): void {
     this.displayDialog = false;
+  }
+
+  private mockData(): void {
+    // todo remove this ugly mock after proper data handle
+    let counter = 500;
+    this.data = [];
+    while (counter > 0) {
+      this.data.push({
+        x: Math.floor(Math.random() * this.config.width),
+        y: Math.floor(Math.random() * this.config.height)
+      });
+      counter--;
+    }
+    // todo remove till end of ugly mock
   }
 
   private removeCanvas(): void {
@@ -104,39 +102,19 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
     }
   }
 
-  private createCanvas(imgUrl: string) {
+  private addCanvas(imgUrl: string) {
     if (this.isLoadingFirstTime || this.displayDialog) {
       if (this.displayDialog) {
         this.messageService.success('reports.message.loadedSuccess');
-        this.displayDialog = false;
+        this.cancelDialog();
       }
     } else {
       this.messageService.failed('reports.message.loadCanceled');
     }
     this.removeCanvas();
-
-    // todo remove this ugly mock after proper data handle
-    const data = [];
-    let counter = 500;
-    while (counter > 0) {
-      data.push({
-        x: Math.floor(Math.random() * this.config.width),
-        y: Math.floor(Math.random() * this.config.height)
-      });
-      counter--;
-    }
-    // todo remove till end of ugly mock
-
     this.config.imgUrl = imgUrl;
-    this.heatMapCanvas = new HeatMapCanvas(p5, this.config, data);
-  }
-
-  private setImageToWindowSizeRelation() {
-    this.windowWidth = window.innerWidth;
-    this.windowWidth = this.windowWidth < GraphicalReportComponent.minChartWidth ?
-      this.windowWidth = GraphicalReportComponent.minChartWidth : this.windowWidth; // prevent to load heat map for very small image by resizing up
-    this.windowWidth = this.windowWidth > GraphicalReportComponent.maxChartWidth ?
-      this.windowWidth = GraphicalReportComponent.maxChartWidth : this.windowWidth; // prevent to load heat map for very larger image by resizing down
+    console.log(this.config);
+    this.heatMapCanvas = new HeatMapCanvas(p5, this.config, this.data);
   }
 
   private isDateRequestFormatSet(): boolean {
@@ -204,6 +182,7 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
         this.config.width += img.width;
         this.config.height += img.height;
         this.isImageLoaded = true;
+        this.addCanvas(img.src);
       };
     });
   }
@@ -235,12 +214,13 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
       .subscribe((payload: SolverHeatMapPayload): void => {
         if (payload.gradient.length === 0) {
           this.messageService.success('reports.message.error');
-          this.displayDialog = false;
+          this.cancelDialog();
         } else if (!this.imageLoaded) {
           this.loadMapImage().then((imgUrl: string): void => {
-            // todo: use payload to compose payload data and recalculate using scale and picture dimensions
-            this.createCanvas(imgUrl);
-            this.displayDialog = false;
+            // todo: use payload to compose payload data and recalculate using scale and picture dimensions and remove mock
+            this.mockData();
+            this.addCanvas(imgUrl);
+            this.cancelDialog();
           });
         }
     });

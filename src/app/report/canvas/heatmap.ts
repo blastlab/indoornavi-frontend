@@ -7,29 +7,25 @@ export class HeatMapCanvas {
   private temps: number[][];
   private newTemps: number[][];
   private pFive: Function;
-  private heatMap: Function;
   private startX: number;
   private startY: number;
   private coordinates: Point;
+  private canApplyHeat = false;
 
-  private static isConfigOk(configuration: any /* todo set type for heat map config */) {
+  private static isConfigOk(configuration: HeatMapCanvasConfig) {
     if (!configuration.displayToggle) {
-      if (configuration.displayToggle !== 'square' || configuration.displayToggle !== 'ellipse'
-        || configuration.displayToggle !== 'rounded' || configuration.displayToggle !== 'square') {
+      if (!configuration.displayToggle) {
         return false;
       }
-    }
-    if (configuration.canApplyHeat === 'undefined' || configuration.canApplyHeat === 'null') {
-      return false;
     }
     if (!configuration.heatSpread || !configuration.brushIntensity || !configuration.brushRadius || !configuration.gridWidth ||
       !configuration.gridHeight || !configuration.cellSize || !configuration.cellSpacing) {
       return false;
     }
-    return !(configuration.isStatic === 'undefined' && configuration.isStatic === 'null' && !configuration.width && !configuration.height);
+    return !(!configuration.isStatic && !configuration.width && !configuration.height);
   }
 
-  constructor(private P_5: any, private config: any/* todo set type for heat map config */, private data: Point[]) {
+  constructor(private P_5: any /* todo: create dedicated advance P5 type*/, private config: HeatMapCanvasConfig, private data: Point[]) {
     if (HeatMapCanvas.isConfigOk(config) && !!P_5) {
       this.pFive = new P_5(this.loader.bind(this));
     } else {
@@ -40,7 +36,6 @@ export class HeatMapCanvas {
       }
     }
   }
-
 
 
   private createGrid(): void {
@@ -81,10 +76,13 @@ export class HeatMapCanvas {
       this.createGrid();
       if (this.config.isStatic) {
         sketch.noLoop();
-        this.data.forEach(coordDataPoint => {
-          this.coordinates = coordDataPoint;
-          this.update(sketch);
-        });
+        this.canApplyHeat = true;
+        if (this.data.length > 0) {
+          this.data.forEach(coordDataPoint => {
+            this.coordinates = coordDataPoint;
+            this.update(sketch);
+          });
+        }
         sketch.redraw();
       }
     };
@@ -94,15 +92,14 @@ export class HeatMapCanvas {
         this.createGrid();
       }
       if (!this.config.isStatic) {
-        this.config.canApplyHeat = false;
         if (this.data.length > 0) {
-          this.config.canApplyHeat = true;
+          this.canApplyHeat = true;
           this.coordinates = this.data.shift();
           if (this.data.length === 0) { // avoiding GB to destroy reference
             this.data = [];
           }
+          this.update(sketch);
         }
-        this.update(sketch);
       }
 
       sketch.background('rgba(255,255,255, 0.25)');
@@ -110,6 +107,7 @@ export class HeatMapCanvas {
       if (!!img) {
         sketch.image(img, 0, 0);
       }
+      this.canApplyHeat = false;
       this.update(sketch);
       this.display(sketch);
 
@@ -123,7 +121,7 @@ export class HeatMapCanvas {
     }
   }
 
-  private update (sketch: any) {
+  private update(sketch: any) {
     for (let x = 0; x < this.width; x++) {
       for (let y = 0; y < this.height; y++) {
         this.newTemps[x][y] = this.temps[x][y];
@@ -162,7 +160,7 @@ export class HeatMapCanvas {
             this.newTemps[x][y] -= amount;
           }
         }
-        if (this.config.canApplyHeat) {
+        if (this.canApplyHeat) {
           const distance = sketch.dist(this.coordinates.x, this.coordinates.y, x * this.config.cellSpacing + this.startX,
             y * this.config.cellSpacing + this.startY);
           if (distance < this.config.brushRadius * this.config.cellSpacing) {
@@ -192,28 +190,28 @@ export class HeatMapCanvas {
     for (let x = 0; x < this.width; x++) {
       for (let y = 0; y < this.height; y++) {
         let _value = this.temps[x][y];
-        if (_value !== 0 && this.config.displayToggle !== 'circle') {
+        if (_value !== 0 && this.config.displayToggle !== HeatDisplay.CIRCLE) {
           sketch.fill(240 - _value, 255, 255, 0.5); // HSB
         } else {
           sketch.stroke(240, 255, 255, 0.0); // HSB
           sketch.fill(240, 255, 255, 0.0); // HSB
         }
         switch (this.config.displayToggle) {
-          case 'square':
+          case HeatDisplay.SQUARE:
             sketch.rect(x * this.config.cellSpacing + this.startX, y * this.config.cellSpacing + this.startY, this.config.cellSize, this.config.cellSize);
             break;
-          case 'rounded':
+          case HeatDisplay.ROUNDED:
             sketch.rect(x * this.config.cellSpacing + this.startX, y * this.config.cellSpacing + this.startY, this.config.cellSize, this.config.cellSize, 2);
             break;
-          case 'numbers':
+          case HeatDisplay.TEXT:
             _value = Math.floor(_value / 24);
             sketch.text(_value, x * this.config.cellSpacing + this.startX, y * this.config.cellSpacing + this.startY, this.config.cellSize);
             break;
-          case 'ellipse':
+          case HeatDisplay.ELLIPSE:
             sketch.noStroke();
             sketch.ellipse(x * this.config.cellSpacing + this.startX, y * this.config.cellSpacing + this.startY, this.config.cellSize, this.config.cellSize);
             break;
-          case 'circle':
+          case HeatDisplay.CIRCLE:
             if (_value !== 0) {
               sketch.stroke(240 - _value, 255, 255, 0.5);
               sketch.circle(x * this.config.cellSpacing + this.startX, y * this.config.cellSpacing + this.startY, this.config.cellSize / 2);
@@ -225,3 +223,25 @@ export class HeatMapCanvas {
   }
 }
 
+export enum HeatDisplay {
+  ELLIPSE,
+  ROUNDED,
+  SQUARE,
+  TEXT,
+  CIRCLE
+}
+
+export interface HeatMapCanvasConfig {
+  heatSpread: number;
+  brushRadius: number;
+  brushIntensity: number;
+  gridWidth: number;
+  gridHeight: number;
+  cellSize: number;
+  cellSpacing: number;
+  isStatic: boolean;
+  displayToggle: HeatDisplay;
+  width: number;
+  height: number;
+  imgUrl: string;
+}

@@ -274,6 +274,7 @@
   "IWS_011": "The firmware you trying to upload is invalid. Please contact administration.",
   "IWS_012": "Invalid file format. Only IHS files are allowed.",
   "list.view": "List view",
+  "load": "Load",
   "login": "Login",
   "logout": "Logout",
   "locate.tag": "Locate Tag on Map",
