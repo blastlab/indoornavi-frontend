@@ -1,16 +1,18 @@
-import {Component, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild, ViewEncapsulation} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
 import {TerminalMessageService} from './terminal-message.service';
 import {ClientRequest, CommandArguments, CommandType, DeviceMessage, TerminalMessage} from '../device.type';
 import {TranslateService} from '@ngx-translate/core';
 import {TerminalService} from 'primeng/components/terminal/terminalservice';
+import {Terminal} from 'primeng/primeng';
+import Stack from 'typescript-collections/dist/lib/Stack';
 
 @Component({
   templateUrl: './terminal.html',
   selector: 'app-terminal-component',
   encapsulation: ViewEncapsulation.None
 })
-export class TerminalComponent implements OnInit, OnDestroy {
+export class TerminalComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public displayTerminalWindow = false;
   public terminalWelcomeMessage: string;
@@ -19,26 +21,33 @@ export class TerminalComponent implements OnInit, OnDestroy {
   private subscriptionDestructor: Subject<void> = new Subject<void>();
   private terminalPause: boolean = false;
   private availableCommands: string[];
-  private connectedToWebSocket: boolean = false;
   private usedCommands: string[] = [];
-  private terminalComponent: Element;
   private commandIndex: number;
   private activeCommand: string;
   private scrolledTop: boolean = true;
   private terminalResponseWindow: Element;
   private terminalResponseWindowHeight: number;
+  @ViewChild(Terminal) terminal: Terminal;
+
+  private static isArrowUp(event: KeyboardEvent): boolean {
+    return event.keyCode === 38;
+  }
+
+  private static isArrowDown(event: KeyboardEvent): boolean {
+    return event.keyCode === 40;
+  }
 
   constructor(
     public translate: TranslateService,
     private terminalMessageService: TerminalMessageService,
-    private terminalService: TerminalService
+    private terminalService: TerminalService,
+    private renderer: Renderer2
   ) {
 
   }
 
   ngOnInit() {
     this.setCommands();
-    this.listenToTerminalKeyDown();
     this.setTerminalCommandHandler();
     this.terminalResponseWindowHeight = document.getElementById('informationWindow').scrollHeight;
     this.translate.setDefaultLang('en');
@@ -49,20 +58,39 @@ export class TerminalComponent implements OnInit, OnDestroy {
       this.terminalResponseMessage = [];
       this.terminalActiveDeviceId = deviceId;
       this.displayTerminalWindow = !this.displayTerminalWindow;
-      this.connectedToWebSocket = false;
-      this.terminalComponent = null;
       this.activeCommand = null;
       this.clearTerminal();
+      this.focusOnInput();
+      this.clearInput();
     });
     this.terminalMessageService.onTerminalCommand().takeUntil(this.subscriptionDestructor).subscribe((message: DeviceMessage): void => {
       this.handleServerCommandResponse(message);
     });
   }
 
+  ngAfterViewInit(): void {
+    this.renderer.listen(this.renderer.selectRootElement('.ui-terminal-input'), 'keydown', (event: KeyboardEvent) => {
+      this.handleKeyDown(event);
+      if (TerminalComponent.isArrowUp(event) || TerminalComponent.isArrowDown(event)) {
+        this.terminal.command = this.activeCommand;
+        const commandLength = this.activeCommand.length;
+
+        setTimeout(() => {
+          this.renderer.selectRootElement('.ui-terminal-input').setSelectionRange(commandLength, commandLength);
+        });
+      }
+    });
+  }
+
   ngOnDestroy() {
     this.subscriptionDestructor.next();
     this.subscriptionDestructor = null;
-    this.removeTerminalKeyDownListener();
+  }
+
+  private closeTerminal(): void {
+    this.terminalPause = false;
+    this.displayTerminalWindow = false;
+    this.clearInput();
   }
 
   private setTerminalCommandHandler(): void {
@@ -73,10 +101,10 @@ export class TerminalComponent implements OnInit, OnDestroy {
         case 'help':
           responseMessage = 'terminal.activeCommandsList';
           responseData = this.availableCommands.join(', ');
+          this.terminal.commands.push({text: responseData});
           break;
         case 'exit':
-          this.displayTerminalWindow = false;
-          this.connectedToWebSocket = false;
+          this.closeTerminal();
           break;
         case 'freeze':
           this.terminalPause = true;
@@ -90,20 +118,12 @@ export class TerminalComponent implements OnInit, OnDestroy {
           responseMessage = 'terminal.window.clear';
           this.clearTerminal();
           break;
-        case 'use':
-          if (!!this.activeCommand) {
-            responseMessage = 'terminal.command.sentToDevice.active';
-            this.handleDeviceCommand(this.activeCommand);
-            this.activeCommand = null;
-          } else {
-            responseMessage = 'terminal.command.notActive';
-          }
-          break;
         default:
           responseMessage = 'terminal.command.sentToDevice.active';
-          this.sendResponseToTerminal(responseMessage, responseData);
           this.handleDeviceCommand(command);
-          this.usedCommands.push(command);
+          if (this.usedCommands[this.commandIndex] !== command) {
+            this.usedCommands.push(command);
+          }
           this.displayMessage(command, true)
       }
     });
@@ -151,32 +171,20 @@ export class TerminalComponent implements OnInit, OnDestroy {
     this.terminalResponseWindow.scrollTop = this.terminalResponseWindow.scrollHeight;
   }
 
-  private listenToTerminalKeyDown(): void {
-    this.terminalComponent = [].slice.call(document.getElementsByClassName('ui-terminal-input'))[0];
-    this.terminalComponent.addEventListener('keyup', this.handleKeyDown.bind(this), false);
-  }
-
-  private removeTerminalKeyDownListener(): void {
-    this.terminalComponent.removeEventListener('keyup', this.handleKeyDown.bind(this), false);
-    this.terminalComponent = null;
-  }
-
   private handleKeyDown(event: KeyboardEvent): void {
-    if (this.commandIndex === null || this.commandIndex === undefined) {
-      return;
+    let command: string;
+    if (TerminalComponent.isArrowUp(event) && this.commandIndex < this.usedCommands.length - 1) {
+      command = this.usedCommands[++this.commandIndex];
+    } else if (TerminalComponent.isArrowDown(event) && this.commandIndex > 0) {
+      command = this.usedCommands[--this.commandIndex];
+    } else if (TerminalComponent.isArrowDown(event) || TerminalComponent.isArrowUp(event)) {
+      command = this.usedCommands[this.commandIndex];
     }
-    if (event.keyCode === 38 && this.commandIndex > 0) {
-      this.insertCommandToTerminal(this.usedCommands[--this.commandIndex])
-    } else if (event.keyCode === 40 && this.commandIndex < this.usedCommands.length - 1) {
-      this.insertCommandToTerminal(this.usedCommands[++this.commandIndex])
-    } else if (event.keyCode === 38 || event.keyCode === 40) {
-      this.insertCommandToTerminal(this.usedCommands[this.commandIndex]);
-    }
+    this.insertCommandToTerminal(command);
   }
 
   private insertCommandToTerminal(command: string): void {
     this.activeCommand = command;
-    this.sendResponseToTerminal('terminal.command.sentToDevice.active', command);
   }
 
   private setCommands(): void {
@@ -185,16 +193,12 @@ export class TerminalComponent implements OnInit, OnDestroy {
       'freeze',
       'unfreeze',
       'clear',
-      'exit',
-      'use'
+      'exit'
     ];
   }
 
   private handleDeviceCommand(command: string): void {
     this.commandIndex = this.usedCommands.length;
-    if (this.usedCommands.length > 100) {
-      this.usedCommands.splice(0, 1);
-    }
     const commandArguments: CommandArguments = {
       value: command,
       sinkShortId: this.terminalActiveDeviceId
@@ -206,10 +210,13 @@ export class TerminalComponent implements OnInit, OnDestroy {
     this.terminalMessageService.sendClientRequest(socketPayload);
   }
 
-  private sendResponseToTerminal(responseMessage: string, responseData: string): void {
-    this.translate.get(responseMessage).first().subscribe((message: string) => {
-      const value = `${message} ${responseData}`;
-      this.terminalService.sendResponse(value);
+  private focusOnInput(): void {
+    setTimeout(() => {
+      this.terminal.focus(this.renderer.selectRootElement('.ui-terminal-input'));
     });
+  }
+
+  private clearInput(): void {
+    this.renderer.selectRootElement('.ui-terminal-input').value = '';
   }
 }
