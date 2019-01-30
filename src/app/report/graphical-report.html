@@ -1,5 +1,13 @@
-<div *ngIf="isImageLoaded" class="ui-g">
-  <div class="ui-g-12 ui-md-12 ui-lg-12">
+<div *ngIf="isImageLoaded" class="ui-g-12">
+  <p-toolbar>
+    <span>{{'device.tag'|translate}} {{'device.id'|translate}}:</span>
+    <p-multiSelect
+      id="tags"
+      class="tags-select"
+      [panelStyle] = "{minWidth: '15em', width: '12em'}"
+      [options]="tags" [(ngModel)]="selectedTags"
+      [resetFilterOnHide]="true"
+    ></p-multiSelect>
     <span>{{'from'|translate}}:</span>
     <p-calendar [(ngModel)]="dateFrom" showTime="true" hourFormat="24" [maxDate]="dateFromMaxValue"></p-calendar>
     <span>{{'to'|translate}}:</span>
@@ -9,14 +17,15 @@
             pTooltip="{{'heatmap.generate'|translate}}"
             label="{{'load'|translate}}">
     </button>
-  </div>
+  </p-toolbar>
+  <div id="heatmap-sketch"></div>
   <p-dialog
     [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
     [contentStyle]="{ overflow: 'visible' }"
     [width]="380"
     [height]="220"
     header="{{'reports.dialog.waiting'|translate}}"
-    dismissableMask="true" (onHide)="cancel()">
+    dismissableMask="true" (onHide)="cancelDialog()">
     <p-progressSpinner [style]="{width: '80px', height: '80px'}"
                        class="report-dialog-spinner"
                        strokeWidth="8"
@@ -24,7 +33,7 @@
                        animationDuration="1s">
     </p-progressSpinner>
     <button pButton class="ui-button-secondary report-dialog-button"
-            (click)="cancel()"
+            (click)="cancelDialog()"
             label="{{'cancel'|translate}}">
     </button>
   </p-dialog>

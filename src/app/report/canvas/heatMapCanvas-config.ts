@@ -9,8 +9,9 @@ export const heatMapCanvasConfiguration = {
     cellSize: 20,
     cellSpacing: 20,
     isStatic: true,
-    displayToggle: HeatDisplay.CIRCLE,
+    displayToggle: HeatDisplay.ELLIPSE,
     width: 0,
     height: 0,
-    imgUrl: null
+    imgUrl: null,
+    parentId: 'heatmap-sketch'
 };

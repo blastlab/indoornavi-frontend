@@ -13,10 +13,9 @@ export class HeatMapCanvas {
   private canApplyHeat = false;
 
   private static isConfigOk(configuration: HeatMapCanvasConfig) {
-    if (!configuration.displayToggle) {
-      if (!configuration.displayToggle) {
+    console.log(configuration);
+    if (configuration['displayToggle'] === null) {
         return false;
-      }
     }
     if (!configuration.heatSpread || !configuration.brushIntensity || !configuration.brushRadius || !configuration.gridWidth ||
       !configuration.gridHeight || !configuration.cellSize || !configuration.cellSpacing) {
@@ -64,11 +63,13 @@ export class HeatMapCanvas {
     }
     sketch.setup = () => {
       sketch.frameRate(60);
+      let canvasHeat;
       if (!!this.config.imgUrl) {
-        sketch.createCanvas(this.config.width, this.config.height);
+        canvasHeat = sketch.createCanvas(this.config.width, this.config.height);
       } else {
-        sketch.createCanvas(this.config.width, this.config.height, sketch.WEBGL);
+        canvasHeat = sketch.createCanvas(this.config.width, this.config.height, sketch.WEBGL);
       }
+      canvasHeat.parent(this.config.parentId);
       sketch.colorMode(sketch.HSB);
       sketch.textAlign(sketch.CENTER);
       sketch.noStroke();
@@ -223,7 +224,7 @@ export class HeatMapCanvas {
   }
 }
 
-export enum HeatDisplay {
+export const enum HeatDisplay {
   ELLIPSE,
   ROUNDED,
   SQUARE,
@@ -244,4 +245,5 @@ export interface HeatMapCanvasConfig {
   width: number;
   height: number;
   imgUrl: string;
+  parentId: string;
 }

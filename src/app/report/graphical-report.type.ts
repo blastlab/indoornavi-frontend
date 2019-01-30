@@ -1,22 +1,19 @@
+import {Point} from '../map-editor/map.type';
+
 export interface SolverCoordinatesRequest {
   from: string;
   to: string;
   floorId: number;
-  maxGradientsNum: number;
-  mapXLength: number;
-  mapYLength: number;
-  scaleInX: number;
-  scaleInY: number;
-  distanceInCm: number;
+  mapWidth: number;
+  mapHeight: number;
+  tagsIds: number[];
 }
 
 export interface SolverHeatMapPayload {
-  size: number[],
-  gradient: number[][],
+  distribution: HeatMapGradientPoint[],
 }
 
-export interface EchartResizeParameter {
-  width: number;
-  height: number;
-  silent: boolean
+export interface HeatMapGradientPoint extends Point {
+  heat: number;
 }
+

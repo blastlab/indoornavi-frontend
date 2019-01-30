@@ -1,7 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Params} from '@angular/router';
 import {Floor} from '../floor/floor.type';
-import {Subject} from 'rxjs/Subject';
 import {FloorService} from '../floor/floor.service';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
 import {TranslateService} from '@ngx-translate/core';
@@ -16,6 +15,11 @@ import * as p5 from 'p5';
 import {HeatMapCanvas, HeatMapCanvasConfig} from './canvas/heatmap';
 import {heatMapCanvasConfiguration} from './canvas/heatMapCanvas-config';
 import {Point} from '../map-editor/map.type';
+import {Tag} from '../device/device.type';
+import {PublishedService} from '../map-viewer/publication.service';
+
+class SelectItems {
+}
 
 @Component({
   templateUrl: './graphical-report.html',
@@ -28,19 +32,19 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
   dateFromMaxValue: Date;
   displayDialog = false;
   isImageLoaded = false;
+  tags: SelectItems[] = [];
+  selectedTags: string[] = [];
   private isLoadingFirstTime = true;
   private dateFromRequestFormat: string;
   private dateToRequestFormat: string;
-  private imageLoaded = false;
   private floor: Floor;
-  private gradientsNumber: number = 300;
   private imageUrl: string;
   private scale: Scale;
   private scaleCalculations: ScaleCalculations;
-  private subscriptionDestructor: Subject<void> = new Subject<void>();
   private heatMapCanvas: HeatMapCanvas;
   private config: HeatMapCanvasConfig = heatMapCanvasConfiguration;
   private data: Point[] = [];
+
 
   constructor(private route: ActivatedRoute,
               private floorService: FloorService,
@@ -48,7 +52,8 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
               private translateService: TranslateService,
               private mapService: MapService,
               private reportService: ReportService,
-              private messageService: MessageServiceWrapper
+              private messageService: MessageServiceWrapper,
+              private publishedService: PublishedService
   ) {
   }
 
@@ -59,8 +64,6 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subscriptionDestructor.next();
-    this.subscriptionDestructor = null;
     this.isImageLoaded = false;
     this.removeCanvas();
   }
@@ -68,7 +71,7 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
   renderNewHeatmap() {
     if (!!this.dateFrom && !!this.dateTo) {
       if (this.isDateRequestFormatSet()) {
-        this.cancelDialog();
+        this.displayDialog = true;
         this.loadData();
       }
     } else {
@@ -113,7 +116,6 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
     }
     this.removeCanvas();
     this.config.imgUrl = imgUrl;
-    console.log(this.config);
     this.heatMapCanvas = new HeatMapCanvas(p5, this.config, this.data);
   }
 
@@ -141,46 +143,64 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
   private subscribeToMapParametersChange() {
     this.route.params.first().subscribe((params: Params): void => {
       const floorId = +params['id'];
+      this.subscribeToTagsAvailableOnFloorForUser(floorId);
       this.floorService.getFloor(floorId).first().subscribe((floor: Floor): void => {
-        this.breadcrumbService.publishIsReady([
-          {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
-          {
-            label: floor.building.complex.name,
-            routerLink: `/complexes/${floor.building.complex.id}/buildings`,
-            routerLinkActiveOptions: {exact: true}
-          },
-          {
-            label: floor.building.name,
-            routerLink: `/complexes/${floor.building.complex.id}/buildings/${floor.building.id}/floors`,
-            routerLinkActiveOptions: {exact: true}
-          },
-          {label: `${(floor.name.length ? floor.name : floor.level)}`, disabled: true}
-        ]);
-      });
-      this.floorService.getFloor(floorId).takeUntil(this.subscriptionDestructor).subscribe((floor: Floor): void => {
         this.floor = floor;
+        this.subscribeToBreadcrumbService(floor);
         if (!!floor.scale) {
-          this.scale = new Scale(this.floor.scale);
-          this.scaleCalculations = {
-            scaleLengthInPixels: Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
-            scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
-          };
+          this.setScaleOfFloor();
         }
         if (!!floor.imageId) {
-          this.fetchImageFromServer(floor);
+          this.fetchImageFromServer();
         }
       });
     });
   }
 
-  private fetchImageFromServer(floor: Floor): void {
-    this.mapService.getImage(floor.imageId).first().subscribe((blob: Blob) => {
+  private subscribeToTagsAvailableOnFloorForUser(floorId): void {
+    this.publishedService.getTagsAvailableForUser(floorId).first().subscribe((tags: Tag[]): void => {
+      tags.forEach((tag: Tag): void => {
+        this.tags.push({
+          label: tag.shortId.toString(),
+          value: tag.id.toString()
+        });
+      });
+    });
+  }
+
+  private subscribeToBreadcrumbService(floor: Floor): void {
+      this.breadcrumbService.publishIsReady([
+        {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
+        {
+          label: floor.building.complex.name,
+          routerLink: `/complexes/${floor.building.complex.id}/buildings`,
+          routerLinkActiveOptions: {exact: true}
+        },
+        {
+          label: floor.building.name,
+          routerLink: `/complexes/${floor.building.complex.id}/buildings/${floor.building.id}/floors`,
+          routerLinkActiveOptions: {exact: true}
+        },
+        {label: `${(floor.name.length ? floor.name : floor.level)}`, disabled: true}
+      ]);
+  }
+
+  private setScaleOfFloor(): void {
+      this.scale = new Scale(this.floor.scale);
+      this.scaleCalculations = {
+        scaleLengthInPixels: Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
+        scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
+      };
+  }
+
+  private fetchImageFromServer(): void {
+    this.mapService.getImage(this.floor.imageId).first().subscribe((blob: Blob) => {
       this.imageUrl = URL.createObjectURL(blob);
       const img = new Image();
       img.src = this.imageUrl;
       img.onload = () => {
-        this.config.width += img.width;
-        this.config.height += img.height;
+        this.config.width = img.width;
+        this.config.height = img.height;
         this.isImageLoaded = true;
         this.addCanvas(img.src);
       };
@@ -198,26 +218,28 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
   }
 
   private loadData(): void {
-    // todo: change request according to new heatmap set
     const request: SolverCoordinatesRequest = {
       from: this.dateFromRequestFormat,
       to: this.dateToRequestFormat,
       floorId: this.floor.id,
-      maxGradientsNum: this.gradientsNumber,
-      mapXLength: 1,
-      mapYLength: 1,
-      scaleInX: 1,
-      scaleInY: 1,
-      distanceInCm: 11
+      mapHeight: Math.ceil(this.config.height * this.scale.getRealDistanceInCentimeters() / this.scale.getDistanceInPixels()),
+      mapWidth: Math.ceil(this.config.width * this.scale.getRealDistanceInCentimeters() / this.scale.getDistanceInPixels()),
+      tagsIds: this.selectedTags.map((tag: string) => {
+        return parseInt(tag, 10);
+      })
     };
     this.reportService.getCoordinates(request).first()
       .subscribe((payload: SolverHeatMapPayload): void => {
-        if (payload.gradient.length === 0) {
+        // TODO: recalculate (x and y) from real distance back to pixels
+        if (payload.distribution.length === 0) {
           this.messageService.success('reports.message.error');
-          this.cancelDialog();
-        } else if (!this.imageLoaded) {
+        } else if (this.isImageLoaded) {
+          payload.distribution.forEach(p => {
+            if (p.heat !== 0) {
+              console.log(p.heat);
+            }
+          });
           this.loadMapImage().then((imgUrl: string): void => {
-            // todo: use payload to compose payload data and recalculate using scale and picture dimensions and remove mock
             this.mockData();
             this.addCanvas(imgUrl);
             this.cancelDialog();

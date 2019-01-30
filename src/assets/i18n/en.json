@@ -212,6 +212,7 @@
   "device.shortId.mustBeNumber": "Short Id must be a number.",
   "device.shortId.required": "Short Id is required.",
   "device.shortId.numberInRange": "Short Id out of range.",
+  "device.tag": "Tag",
   "device.update.hint": "Choose a file from disk and select devices you'd like to update.",
   "device.update.mode": "Update Mode",
   "device.upload.choose": "Choose",

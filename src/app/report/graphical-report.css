@@ -9,3 +9,8 @@
   left: 120px;
   top: 10px;
 }
+
+.tags-select {
+  position: relative;
+  top: 8px;
+}
