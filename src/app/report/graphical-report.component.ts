@@ -8,7 +8,7 @@ import {Scale, ScaleCalculations} from '../map-editor/tool-bar/tools/scale/scale
 import {Geometry} from '../shared/utils/helper/geometry';
 import {EChartOption} from 'echarts';
 import {MapService} from '../map-editor/uploader/map.uploader.service';
-import {SolverCoordinatesRequest, SolverHeatMapPayload} from './graphical-report.type';
+import {HeatMapGradientPoint, SolverCoordinatesRequest, SolverHeatMapPayload} from './graphical-report.type';
 import {ReportService} from './services/report.service';
 import {MessageServiceWrapper} from '../shared/services/message/message.service';
 import * as p5 from 'p5';
@@ -228,19 +228,26 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
         return parseInt(tag, 10);
       })
     };
+    // TODO: check calculation for scale
     this.reportService.getCoordinates(request).first()
       .subscribe((payload: SolverHeatMapPayload): void => {
-        // TODO: recalculate (x and y) from real distance back to pixels
         if (payload.distribution.length === 0) {
           this.messageService.success('reports.message.error');
         } else if (this.isImageLoaded) {
-          payload.distribution.forEach(p => {
-            if (p.heat !== 0) {
-              console.log(p.heat);
+          this.data = [];
+          payload.distribution.forEach((gradinetPoint: HeatMapGradientPoint) => {
+            if (gradinetPoint.heat !== 0) {
+              // TODO: apply heat scaling config brushIntensity, heatSpread, brushRadius,
+              // for (let i = 0; i < gradinetPoint.heat; i++) {
+                this.data.push({
+                  x: Math.round(gradinetPoint.x * this.scale.getDistanceInPixels() / this.scale.getRealDistanceInCentimeters()),
+                  y: Math.round(gradinetPoint.y * this.scale.getDistanceInPixels() / this.scale.getRealDistanceInCentimeters())
+                });
+              // }
             }
           });
           this.loadMapImage().then((imgUrl: string): void => {
-            this.mockData();
+            // this.mockData();
             this.addCanvas(imgUrl);
             this.cancelDialog();
           });
