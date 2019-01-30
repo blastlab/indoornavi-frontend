@@ -8,6 +8,7 @@ from pages.constructions.floors_page import FloorsPage
 from selenium.webdriver import ActionChains
 import time
 
+
 class TestMapsPageArea(unittest.TestCase, MapsPageArea):
 
     def setUp(self):
@@ -375,9 +376,13 @@ class TestMapsPageArea(unittest.TestCase, MapsPageArea):
         self.maps_page_area.draw_square()
 
         browser_log = self.maps_page_area.get_browser_console_log()
+        warning_msg = "Error 4: is null or undefined"
         test_array = []
-        result = True if test_array == browser_log and len(browser_log) == 0 else False
-        assert True == result, browser_log
+        if test_array != browser_log:
+            browser_msg = browser_log[0]["message"]
+            print(browser_msg)
+        result = True if(test_array == browser_log and len(browser_log) == 0) or browser_msg != warning_msg else False
+        assert True == result
         self.test_failed = False
 
     def test_bug_NAVI_295(self):
