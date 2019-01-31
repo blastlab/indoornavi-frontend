@@ -175,14 +175,13 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
 
       this.currentAreaGroup = this.createBuilder().createGroup();
 
-      this.openAreaContextMenu();
+      this.applyContextMenu();
     }
   }
 
-  openAreaContextMenu() {
+  applyContextMenu() {
     this.container.on('contextmenu', (): void => {
       d3.event.preventDefault();
-      this.cleanGroup();
       this.firstPointSelection = null;
       this.lastPoint = null;
       this.tempLine = null;
@@ -513,7 +512,6 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     this.areaDetailsService.set(areaBag);
     this.areaDetailsService.show();
     this.container.style('cursor', 'move');
-    this.container.on('contextmenu', null);
     this.layer.on('click', null);
     this.layer.on('mousemove', null);
     if (this.isCurrentAreaGroupNew()) {
@@ -614,13 +612,6 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     });
 
     this.contextMenuService.setItems(labels);
-
-    if (!!this.selectedEditable) {
-      this.selectedEditable.groupWrapper.getGroup().on('contextmenu', (): void => {
-        d3.event.preventDefault();
-        this.contextMenuService.openContextMenu();
-      });
-    }
   }
 
   private applyContextMenuToSingleArea(areaBag?: AreaBag): void {
