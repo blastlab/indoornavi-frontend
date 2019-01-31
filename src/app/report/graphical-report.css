@@ -14,3 +14,8 @@
   position: relative;
   top: 8px;
 }
+
+.intensity {
+  display: inline;
+  width: 80px;
+}

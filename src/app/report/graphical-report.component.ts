@@ -14,7 +14,6 @@ import {MessageServiceWrapper} from '../shared/services/message/message.service'
 import * as p5 from 'p5';
 import {HeatMapCanvas, HeatMapCanvasConfig} from './canvas/heatmap';
 import {heatMapCanvasConfiguration} from './canvas/heatMapCanvas-config';
-import {Point} from '../map-editor/map.type';
 import {Tag} from '../device/device.type';
 import {PublishedService} from '../map-viewer/publication.service';
 
@@ -43,7 +42,7 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
   private scaleCalculations: ScaleCalculations;
   private heatMapCanvas: HeatMapCanvas;
   private config: HeatMapCanvasConfig = heatMapCanvasConfiguration;
-  private data: Point[] = [];
+  private data: HeatMapGradientPoint[] = [];
 
 
   constructor(private route: ActivatedRoute,
@@ -81,20 +80,6 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
 
   cancelDialog(): void {
     this.displayDialog = false;
-  }
-
-  private mockData(): void {
-    // todo remove this ugly mock after proper data handle
-    let counter = 500;
-    this.data = [];
-    while (counter > 0) {
-      this.data.push({
-        x: Math.floor(Math.random() * this.config.width),
-        y: Math.floor(Math.random() * this.config.height)
-      });
-      counter--;
-    }
-    // todo remove till end of ugly mock
   }
 
   private removeCanvas(): void {
@@ -201,6 +186,8 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
       img.onload = () => {
         this.config.width = img.width;
         this.config.height = img.height;
+        this.config.gridWidth = Math.ceil(this.config.width / this.config.cellSpacing);
+        this.config.gridHeight = Math.ceil(this.config.height / this.config.cellSpacing);
         this.isImageLoaded = true;
         this.addCanvas(img.src);
       };
@@ -228,30 +215,24 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
         return parseInt(tag, 10);
       })
     };
-    // TODO: check calculation for scale
     this.reportService.getCoordinates(request).first()
       .subscribe((payload: SolverHeatMapPayload): void => {
+        this.data = [];
         if (payload.distribution.length === 0) {
           this.messageService.success('reports.message.error');
         } else if (this.isImageLoaded) {
-          this.data = [];
-          payload.distribution.forEach((gradinetPoint: HeatMapGradientPoint) => {
-            if (gradinetPoint.heat !== 0) {
-              // TODO: apply heat scaling config brushIntensity, heatSpread, brushRadius,
-              // for (let i = 0; i < gradinetPoint.heat; i++) {
-                this.data.push({
-                  x: Math.round(gradinetPoint.x * this.scale.getDistanceInPixels() / this.scale.getRealDistanceInCentimeters()),
-                  y: Math.round(gradinetPoint.y * this.scale.getDistanceInPixels() / this.scale.getRealDistanceInCentimeters())
-                });
-              // }
+          payload.distribution.forEach((gradientPoint: HeatMapGradientPoint) => {
+            if (gradientPoint.heat !== 0) {
+              gradientPoint.x = gradientPoint.x * this.scale.getDistanceInPixels() / this.scale.getRealDistanceInCentimeters();
+              gradientPoint.y = gradientPoint.y * this.scale.getDistanceInPixels() / this.scale.getRealDistanceInCentimeters();
+              this.data.push(gradientPoint);
             }
           });
-          this.loadMapImage().then((imgUrl: string): void => {
-            // this.mockData();
-            this.addCanvas(imgUrl);
-            this.cancelDialog();
-          });
         }
+        this.loadMapImage().then((imgUrl: string): void => {
+          this.addCanvas(imgUrl);
+          this.cancelDialog();
+        });
     });
   }
 }

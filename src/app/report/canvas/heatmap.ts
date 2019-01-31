@@ -1,4 +1,4 @@
-import {Point} from '../../map-editor/map.type';
+import {HeatMapGradientPoint} from '../graphical-report.type';
 
 export class HeatMapCanvas {
 
@@ -9,11 +9,14 @@ export class HeatMapCanvas {
   private pFive: Function;
   private startX: number;
   private startY: number;
-  private coordinates: Point;
+  private coordinates: HeatMapGradientPoint;
   private canApplyHeat = false;
+  private heatSpread = 0;
+  private brushIntensity = 0;
+  private brushRadius = 0;
+
 
   private static isConfigOk(configuration: HeatMapCanvasConfig) {
-    console.log(configuration);
     if (configuration['displayToggle'] === null) {
         return false;
     }
@@ -24,7 +27,7 @@ export class HeatMapCanvas {
     return !(!configuration.isStatic && !configuration.width && !configuration.height);
   }
 
-  constructor(private P_5: any /* todo: create dedicated advance P5 type*/, private config: HeatMapCanvasConfig, private data: Point[]) {
+  constructor(private P_5: any /* todo: create dedicated advance P5 type*/, private config: HeatMapCanvasConfig, private data: HeatMapGradientPoint[]) {
     if (HeatMapCanvas.isConfigOk(config) && !!P_5) {
       this.pFive = new P_5(this.loader.bind(this));
     } else {
@@ -99,7 +102,10 @@ export class HeatMapCanvas {
           if (this.data.length === 0) { // avoiding GB to destroy reference
             this.data = [];
           }
-          this.update(sketch);
+          this.brushIntensity = this.config.brushIntensity;
+          this.brushRadius = this.config.brushRadius;
+          this.heatSpread = this.config.heatSpread;
+            this.update(sketch);
         }
       }
 
@@ -128,6 +134,11 @@ export class HeatMapCanvas {
         this.newTemps[x][y] = this.temps[x][y];
       }
     }
+    if (!!this.coordinates) {
+      this.brushIntensity = Math.floor(this.config.brushIntensity * this.coordinates.heat);
+      this.brushRadius = Math.floor(this.config.brushRadius * this.coordinates.heat);
+      this.heatSpread = Math.floor(this.config.heatSpread * this.coordinates.heat);
+    }
     this.startX = (sketch.width - ((this.width - 1) * this.config.cellSpacing)) / 2;
     this.startY = (sketch.height - ((this.height - 1) * this.config.cellSpacing)) / 2;
     for (let x = 0; x < this.width; x++) {
@@ -155,18 +166,20 @@ export class HeatMapCanvas {
           while (dissipation.length > 0 && this.newTemps[x][y] > average) {
             const index = Math.floor(Math.random() * dissipation.length);
             const amount = sketch.ceil((sketch.abs(this.newTemps[x][y] - this.newTemps[dissipation[index][0]][dissipation[index][1]]) / 5) *
-              (this.config.heatSpread / 100));
+              (this.heatSpread / 100));
             this.newTemps[dissipation[index][0]][dissipation[index][1]] += amount;
             dissipation.splice(index, 1);
-            this.newTemps[x][y] -= amount;
+            if (this.config.isStatic) {
+              this.newTemps[x][y] -= amount;
+            }
           }
         }
         if (this.canApplyHeat) {
           const distance = sketch.dist(this.coordinates.x, this.coordinates.y, x * this.config.cellSpacing + this.startX,
             y * this.config.cellSpacing + this.startY);
-          if (distance < this.config.brushRadius * this.config.cellSpacing) {
-            this.newTemps[x][y] += Math.round(sketch.map(distance, 0, this.config.brushRadius * this.config.cellSpacing,
-              this.config.brushIntensity, 0));
+          if (distance < this.brushRadius * this.config.cellSpacing) {
+            this.newTemps[x][y] += Math.round(sketch.map(distance, 0, this.brushRadius * this.config.cellSpacing,
+              this.brushIntensity, 0));
           }
         }
         if (this.newTemps[x][y] > 240) {
@@ -247,3 +260,4 @@ export interface HeatMapCanvasConfig {
   imgUrl: string;
   parentId: string;
 }
+
