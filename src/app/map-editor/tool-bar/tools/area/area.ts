@@ -187,15 +187,17 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
       this.lastPoint = null;
       this.tempLine = null;
 
-      if (this.getClickedAreas(this.areas).length === 0) {
+      const clickedAreas: AreaBag[] = this.getClickedAreas(this.areas);
+
+      if (clickedAreas.length === 0) {
         this.contextMenuService.hide();
         return;
       }
 
-      if (this.getClickedAreas(this.areas).length > 1) {
-        this.applyContextMenuToAreas();
+      if (clickedAreas.length > 1) {
+        this.applyContextMenuToAreas(clickedAreas);
       } else {
-        this.applyContextMenuToSingleArea();
+        this.applyContextMenuToSingleArea(clickedAreas[0]);
       }
     });
   }
@@ -261,6 +263,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
       this.areas.forEach((areaBag: AreaBag): void => {
         areaBag.editable.off();
       });
+      this.selectedEditable = null;
     } else {
       if (this.getCurrentAreaPoints().length < 2 && this.isFirstPoint()) {
         return;
@@ -522,6 +525,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     const points: Point[] = this.getCurrentAreaPoints(areaBag);
     this.applyHover(points);
     this.applyDrag();
+    this.currentAreaGroup.getGroup().raise();
   }
 
   private setRemoveToItemContextMenu(): void {
@@ -586,33 +590,10 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     });
   }
 
-  private applyContextMenuToSingleArea(areaBag?: AreaBag): void {
-    let area = areaBag;
-
-    if (!area) {
-      area = this.getClickedAreas(this.areas)[0];
-    }
-
-    area.editable.on({
-      edit: () => {
-        this.edited = true;
-        this.setEditableToItemContextMenu();
-      },
-      remove: (): void => {
-        this.setRemoveToItemContextMenu();
-        if (this.edited) {
-          this.toggleActivity();
-        }
-        this.edited = false;
-      }
-    });
-  }
-
-  private applyContextMenuToAreas(): void {
-    const areas: AreaBag[] = this.getClickedAreas(this.areas);
-    const labels: MenuItem[] = areas.map((area: AreaBag) => {
+  private applyContextMenuToAreas(clickedAreas: AreaBag[]): void {
+    const labels: MenuItem[] = clickedAreas.map((area: AreaBag, index: number) => {
       return {
-        label: area.dto.name,
+        label: !!area.dto.name ? area.dto.name : `#${index + 1}`,
         items: [
           {
             label: this.editLabel,
@@ -634,16 +615,28 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
 
     this.contextMenuService.setItems(labels);
 
-    areas.forEach((area) => {
-      this.selectedEditable = area.editable;
-    });
-
     if (!!this.selectedEditable) {
       this.selectedEditable.groupWrapper.getGroup().on('contextmenu', (): void => {
         d3.event.preventDefault();
         this.contextMenuService.openContextMenu();
       });
     }
+  }
+
+  private applyContextMenuToSingleArea(areaBag?: AreaBag): void {
+    areaBag.editable.on({
+      edit: () => {
+        this.edited = true;
+        this.setEditableToItemContextMenu();
+      },
+      remove: (): void => {
+        this.setRemoveToItemContextMenu();
+        if (this.edited) {
+          this.toggleActivity();
+        }
+        this.edited = false;
+      }
+    });
   }
 
   private setTranslations(): void {
