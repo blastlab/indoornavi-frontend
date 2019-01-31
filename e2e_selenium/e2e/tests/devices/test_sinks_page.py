@@ -25,6 +25,7 @@ class TestSinksPage(unittest.TestCase, TestDevicesPage):
         cls.devices_page.truncate_db()
         # cls.devices_page.create_devices_db_env()
         cls.page.login_process(cls.option)
+        cls.webdriver.get(cls.login_page_url+cls.module+'s')
 
     def tearDown(self):
         TestDriver.tearDown(self)

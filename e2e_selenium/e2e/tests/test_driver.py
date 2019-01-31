@@ -29,11 +29,16 @@ class TestDriver(object):
         log_teardown.info("BROWSER CONSOLE LOGS:\n{0}".format(browser_log_content))
 
         if self.test_failed:
-            self.fail_snapshot()
+            TestDriver.fail_snapshot(self)
 
     def fail_snapshot(self, optional=None):
-            snap = logging.getLogger("-- SNAPSHOT --")
+
+            debug_snapshot_name = optional if optional is not None else ''
+
+            snap = logging.getLogger("-- TEST FAILED - SNAPSHOT --")
             snap.info(self.webdriver.current_url)
+            snap.info(debug_snapshot_name)
+
             _reports_path = 'test-reports/bug-screenshots'
             _browser_log_path = 'test-reports/browser-console'
             _browser_log_content = self.webdriver.get_log('browser')
@@ -43,14 +48,19 @@ class TestDriver(object):
             except OSError:
                 pass
 
-            debug_snapshot_name = optional if optional is not None else ''
             datetime = time.strftime(' %H:%M:%S %d_%m_%Y')
-            test_method_name = self._testMethodName + datetime + debug_snapshot_name
+            temp_method_name = '_' if not hasattr(self.__class__, '_testMethodName') else self._testMethodName
+
+            snap.info(temp_method_name)
+
+            test_method_name = temp_method_name + datetime + debug_snapshot_name
 
             self.webdriver.save_screenshot("{0}/{1}.png".format(_reports_path, test_method_name))
 
             if _browser_log_content:
                 with open("{0}/{1}.log".format(_browser_log_path, test_method_name), "w") as text_file:
+                    snap.info("Test Browser console log saved in : {0}/{1}.log file\n\n {2}"
+                              .format(_browser_log_path, test_method_name, _browser_log_content))
                     print("Test Browser console log saved in : "
                           "{0}/{1}.log file\n\n {2}".format(_browser_log_path, test_method_name, _browser_log_content),
                           file=text_file)

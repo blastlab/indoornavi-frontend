@@ -23,7 +23,7 @@ class DevicesPage(BasePage, DevicesBaseLocators):
         return self.click_button(*self.dropdown_button)
 
     def dropdown_menu_device_click(self):
-        return self.click_button(*self.dropdown_menu_device_button)
+        return self.click_element(self.dropdown_menu_device_button)
 
     # Clickable elements
     def is_add_device_button_clickable(self):
@@ -85,7 +85,7 @@ class DevicesPage(BasePage, DevicesBaseLocators):
 
     # Devices Adding - Test methods
     def add_button_click(self):
-        return self.click_button(*self.add_button_device)
+        return self.click_element(self.add_button_device)
 
     def is_save_button_present(self):
         return self.wait_for_element_clickable(self.save_button)
@@ -124,7 +124,7 @@ class DevicesPage(BasePage, DevicesBaseLocators):
         return self.clear_and_fill_input(mac_address, self.mac_address_input)
 
     def save_add_device_click(self):
-        return self.click_button(*self.save_button)
+        return self.click_element(self.save_button)
 
     def cancel_add_new_device_click(self):
         return self.click_button(*self.cancel_button)
@@ -134,14 +134,26 @@ class DevicesPage(BasePage, DevicesBaseLocators):
         expect_short_id = 'Short Id: ' + self.new_device_short_id
         # Here is used substr to cut empty space on string start
         expect_mac_address = 'Address Mac: ' + self.new_device_mac_address[1:]
-        expect_device_name = 'Device Name: ' + self.new_device_name
+        expect_device_name = self.new_device_name
         # Result properties
         result_short_id = self.get_text(self.last_row_short_id)
         result_mac_address = self.get_text(self.last_mac_adress)
-        result_device_name = self.get_text(self.last_row_device_name)
-        # Comparison
+        result_device_name = self.get_text(self.last_row_device_name)[13:]
+        '''
+        This piece of code should compare two strings.
+        In this case it is possible when result_device length is not equal expected value.
+        Error: +-(2 characters)
+        :var expect_device_name 
+        :var result_device_name
+        
+        '''
+        print(expect_device_name, result_device_name)
+        result_len = len(result_device_name)
+        expect_len = len(expect_device_name)
+        condition = True if expect_len >= result_len >= (expect_len - 3) else False
+
         print(str(result_short_id), str(result_mac_address), str(result_device_name))
-        return True if(expect_short_id == result_short_id) and (expect_mac_address == result_mac_address) and (expect_device_name == result_device_name) else False
+        return result_device_name if(expect_short_id == result_short_id) and (expect_mac_address == result_mac_address) and condition else False
 
     def if_edited_device_is_displayed(self):
         expect_device_name = 'Device Name: ' + self.edit_device_name
@@ -153,7 +165,7 @@ class DevicesPage(BasePage, DevicesBaseLocators):
         return self.wait_for_element_clickable(self.edit_button_device)
 
     def edit_button_click(self):
-        return self.click_button(*self.edit_button_device)
+        return self.click_element(self.edit_button_device)
 
     # Devices Deleting - Test methods
     def delete_button_click(self):

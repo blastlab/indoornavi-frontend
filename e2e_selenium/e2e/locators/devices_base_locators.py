@@ -35,8 +35,8 @@ class DevicesBaseLocators(object):
         self.mac_address_input = (By.CSS_SELECTOR, '#macAddress input')
         # Adding method - Locators
 
-        self.save_button = (By.XPATH, '//button[@ng-reflect-label="Save"]')
-        self.cancel_button = (By.XPATH, '//button[@ng-reflect-label="Cancel"]')
+        self.save_button = (By.XPATH, '/html/body/app-root/div[2]/div/ng-component/p-dialog[1]/div/div[2]/form/div/p-footer/div/button[2]')
+        self.cancel_button = (By.XPATH, '/html/body/app-root/div[2]/div/ng-component/p-dialog[1]/div/div[2]/form/div/p-footer/div/button[1]')
 
         # self.devices_table = (By.XPATH, '//p-picklist')
 

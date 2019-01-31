@@ -15,20 +15,8 @@ class TestDevicesPage(object):
 
         """ Setup method before test adding / editing sink"""
 
-        click_button = self.devices_page.add_button_click
-        btn_clickable = self.devices_page.is_add_device_button_clickable
-
-        # Check which method will be tested
-        if test_method != 'add':
-            btn_clickable = self.devices_page.is_edit_device_button_clickable
-            click_button = self.devices_page.edit_button_click
-
-        self.assertTrue(btn_clickable())
+        click_button = self.devices_page.add_button_click if test_method == 'add' else self.devices_page.edit_button_click
         click_button()
-        self.assertTrue(self.devices_page.is_save_button_present())
-        self.assertTrue(self.devices_page.is_cancel_button_present())
-        # Inserting data
-        self.assertTrue(self.devices_page.is_input_clickable())
 
         if name == '':
             self.devices_page.clear_device_name_input()
@@ -163,12 +151,8 @@ class TestDevicesPage(object):
     def test_01_devices_page_is_loaded_correctly(self):
 
         """Test that devices page has been correctly loaded"""
-
-        # self.set_function_name(inspect.stack()[0][3]+'sinking')
-
-        self.assertTrue(self.devices_page.is_add_device_button_clickable())
         self.devices_page.dropdown_menu_click()
-        self.devices_page.is_dropdown_menu_device_clickable()
+        # self.devices_page.is_dropdown_menu_device_clickable()
         self.devices_page.dropdown_menu_device_click()
         self.assertTrue(TestBase.is_page_loaded_correctly(self))
         self.test_failed = False
@@ -187,9 +171,10 @@ class TestDevicesPage(object):
         # Check the add toast is disappeared
         self.assertTrue(self.devices_page.is_toast_disappear(self.devices_page.added_toast))
         # Check the new device is displayed
-        self.assertTrue(self.devices_page.if_new_device_is_displayed())
+        result = self.devices_page.if_new_device_is_displayed()
         # Check the new device saved in db
-        self.assertEqual(self.devices_page.if_saved_in_db(), self.devices_page.new_device_name)
+        self.assertEqual(self.devices_page.if_saved_in_db(), result)
+
         self.test_failed = False
 
     def test_03_add_new_device_negative_existing_short_id(self):
