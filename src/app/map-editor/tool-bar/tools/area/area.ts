@@ -190,6 +190,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
 
       if (clickedAreas.length === 0) {
         this.contextMenuService.hide();
+        this.cleanGroup();
         return;
       }
 
