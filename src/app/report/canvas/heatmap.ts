@@ -1,21 +1,31 @@
 import {HeatMapGradientPoint} from '../graphical-report.type';
+import {GridMatrix} from './grid-matrix';
 import * as p5 from 'p5';
+import {Point} from '../../map-editor/map.type';
 
 export class HeatMapCanvas {
-
+  private static MAX_RED_SATURATION = 240;
+  private static MAX_COLOUR_SATURATION = 255;
+  private static NO_OPACITY = 0.0;
+  private static MIN_OPACITY= 0.5;
+  private static COLOR_DIVIDER = 24;
+  private static SQUARE_EDGE = 2;
+  private static UPPER_STROKE_WEIGHT = 2;
+  private static LOWER_STROKE_WEIGHT = 1;
+  private static GRID_DIVIDER = 5;
+  private static MIL_VALUE = 100;
+  private static UPPER_TINT = 225;
+  private static LOWER_TINT = 120;
+  private static DYNAMIC_MODE_FRAME_RATE = 60;
   private width: number;
   private height: number;
-  private temps: number[][];
-  private newTemps: number[][];
-  private startX: number;
-  private startY: number;
-  private coordinates: HeatMapGradientPoint;
+  private colorGrid: GridMatrix;
+  private copyColorGrid: GridMatrix;
+  private start: Point = {x: null, y: null};
   private canApplyHeat = false;
   private heatSpread = 0;
   private brushIntensity = 0;
   private brushRadius = 0;
-  private p5 = p5;
-  private pFive: Function;
 
 
   private static isConfigOk(configuration: HeatMapCanvasConfig) {
@@ -31,39 +41,39 @@ export class HeatMapCanvas {
 
   constructor(private config: HeatMapCanvasConfig, private data: HeatMapGradientPoint[]) {
     if (HeatMapCanvas.isConfigOk(config)) {
-      this.pFive = new this.p5(this.loader.bind(this));
+      const pFive = new p5(this.loader.bind(this));
     } else {
       throw Error('Wrongly set configuration or configuration not available.');
     }
   }
 
+  pushCoordinates(coordinates: HeatMapGradientPoint) {
+    // this is for pushing coordinates while operating on dynamic heat map
+    if (!this.config.isStatic) {
+      this.data.push(coordinates);
+    }
+  }
 
   private createGrid(): void {
+    // set this way to not change grid with every update when config.isStatic = true
     this.width = this.config.gridWidth;
     this.height = this.config.gridHeight;
-    this.temps = [];
-    this.newTemps = [];
+
+    this.colorGrid = new GridMatrix();
+    this.copyColorGrid = new GridMatrix();
 
     for (let x = 0; x < this.width; x++) {
-      this.temps[x] = [];
-      this.newTemps[x] = [];
+      this.colorGrid.grid[x] = [];
+      this.copyColorGrid.grid[x] = [];
       for (let y = 0; y < this.height; y++) {
-        this.temps[x][y] = this.newTemps[x][y] = 0;
+        this.colorGrid.grid[x][y] = this.copyColorGrid.grid[x][y] = 0;
       }
     }
   }
 
-  private loader(sketch: any) {
-    let imgUrl: string;
-    let img: any;
-    if (!!this.config.imgUrl) {
-      imgUrl = this.config.imgUrl;
-      sketch.preload = function () {
-        img = sketch.loadImage(imgUrl);
-      }
-    }
+  private sketchSetup(sketch) {
     sketch.setup = () => {
-      sketch.frameRate(60);
+      sketch.frameRate(HeatMapCanvas.DYNAMIC_MODE_FRAME_RATE);
       let canvasHeat;
       if (!!this.config.imgUrl) {
         canvasHeat = sketch.createCanvas(this.config.width, this.config.height);
@@ -81,41 +91,50 @@ export class HeatMapCanvas {
         this.canApplyHeat = true;
         if (this.data.length > 0) {
           this.data.forEach(coordDataPoint => {
-            this.coordinates = coordDataPoint;
-            this.update(sketch);
+            this.update(sketch, coordDataPoint);
           });
         }
         sketch.redraw();
       }
     };
+  }
 
+  private loader(sketch: any) {
+    let imgUrl: string;
+    let img: any;
+    if (!!this.config.imgUrl) {
+      imgUrl = this.config.imgUrl;
+      sketch.preload = function () {
+        img = sketch.loadImage(imgUrl);
+      }
+    }
+    this.sketchSetup(sketch);
     sketch.draw = () => {
       if (this.config.gridWidth !== this.width || this.config.gridHeight !== this.height) {
         this.createGrid();
       }
       if (!this.config.isStatic) {
+        // this is run by p5 in loop with this.frameRate speed and tor each frame takes all coordinates and updates
         if (this.data.length > 0) {
           this.canApplyHeat = true;
-          this.coordinates = this.data.shift();
-          if (this.data.length === 0) { // avoiding GB to destroy reference
+          const coordinates = this.data.shift();
+          if (this.data.length === 0) { // to not let GB destroy reference
             this.data = [];
           }
           this.brushIntensity = this.config.brushIntensity;
           this.brushRadius = this.config.brushRadius;
           this.heatSpread = this.config.heatSpread;
-            this.update(sketch);
+            this.update(sketch, coordinates);
         }
       }
-
       sketch.background('rgba(255,255,255, 0.25)');
-      sketch.tint(225, 120);
+      sketch.tint(HeatMapCanvas.UPPER_TINT, HeatMapCanvas.LOWER_TINT);
       if (!!img) {
         sketch.image(img, 0, 0);
       }
       this.canApplyHeat = false;
       this.update(sketch);
       this.display(sketch);
-
       sketch.fill('rgba(255,255,255, 0.25)');
       sketch.noStroke();
       sketch.strokeWeight(0);
@@ -126,107 +145,179 @@ export class HeatMapCanvas {
     }
   }
 
-  private update(sketch: any) {
+  private update(sketch: p5, coordinates?: HeatMapGradientPoint) {
+    this.makeGridCopy();
+    if (!!coordinates) {
+      this.recalculateDistributionBasedOnCoordinates(coordinates);
+    }
+    this.start.x = (sketch.width - ((this.width - 1) * this.config.cellSpacing)) / 2;
+    this.start.y = (sketch.height - ((this.height - 1) * this.config.cellSpacing)) / 2;
     for (let x = 0; x < this.width; x++) {
       for (let y = 0; y < this.height; y++) {
-        this.newTemps[x][y] = this.temps[x][y];
+        this.applyGradientDissipation(sketch, x, y);
+        const coord = !!coordinates ? coordinates : {x: 0, y: 0, heat: 0};
+        this.distributeHeat(sketch, coord, x, y);
+      }
+      this.copyGridLayers();
+    }
+  }
+
+  private makeGridCopy() {
+    this.copyColorGrid.grid = this.colorGrid.grid;
+  }
+
+  private recalculateDistributionBasedOnCoordinates(coordinates: HeatMapGradientPoint) {
+    this.brushIntensity = Math.floor(this.config.brushIntensity * coordinates.heat);
+    this.brushRadius = Math.floor(this.config.brushRadius * coordinates.heat);
+    this.heatSpread = Math.floor(this.config.heatSpread * coordinates.heat);
+  }
+
+  private distributeHeat(sketch: p5, coordinates: HeatMapGradientPoint, x: number, y: number) {
+    if (this.canApplyHeat) {
+
+      const distanceFromCoordinates = sketch.dist(coordinates.x, coordinates.y, x * this.config.cellSpacing + this.start.x,
+        y * this.config.cellSpacing + this.start.y);
+      if (this.isInHeatDissipation(distanceFromCoordinates)) {
+        this.copyColorGrid.grid[x][y] += Math.round(sketch.map(distanceFromCoordinates, 0, this.brushRadius * this.config.cellSpacing,
+          this.brushIntensity, 0));
       }
     }
-    if (!!this.coordinates) {
-      this.brushIntensity = Math.floor(this.config.brushIntensity * this.coordinates.heat);
-      this.brushRadius = Math.floor(this.config.brushRadius * this.coordinates.heat);
-      this.heatSpread = Math.floor(this.config.heatSpread * this.coordinates.heat);
+    if (this.copyColorGrid.grid[x][y] > HeatMapCanvas.MAX_RED_SATURATION) {
+      this.copyColorGrid.grid[x][y] = HeatMapCanvas.MAX_RED_SATURATION;
+    } else if (this.copyColorGrid.grid[x][y] < 0) {
+      this.copyColorGrid.grid[x][y] = 0;
     }
-    this.startX = (sketch.width - ((this.width - 1) * this.config.cellSpacing)) / 2;
-    this.startY = (sketch.height - ((this.height - 1) * this.config.cellSpacing)) / 2;
-    for (let x = 0; x < this.width; x++) {
-      for (let y = 0; y < this.height; y++) {
-        this.newTemps[x][y]--;
-        if (this.temps[x][y] > 0) {
-          const dissipation = [];
-          if (this.temps[x + 1] && this.temps[x + 1][y] < this.temps[x][y]) {
-            dissipation.push([x + 1, y]);
-          }
-          if (this.temps[x - 1] && this.temps[x - 1][y] < this.temps[x][y]) {
-            dissipation.push([x - 1, y]);
-          }
-          if (this.temps[x][y + 1] < this.temps[x][y]) {
-            dissipation.push([x, y + 1]);
-          }
-          if (this.temps[x][y - 1] < this.temps[x][y]) {
-            dissipation.push([x, y - 1]);
-          }
-          let sum = 0;
-          for (let i = 0; i < dissipation.length; i++) {
-            sum += this.temps[dissipation[i][0]][dissipation[i][1]];
-          }
-          const average = sketch.round(sum / dissipation.length);
-          while (dissipation.length > 0 && this.newTemps[x][y] > average) {
-            const index = Math.floor(Math.random() * dissipation.length);
-            const amount = sketch.ceil((sketch.abs(this.newTemps[x][y] - this.newTemps[dissipation[index][0]][dissipation[index][1]]) / 5) *
-              (this.heatSpread / 100));
-            this.newTemps[dissipation[index][0]][dissipation[index][1]] += amount;
-            dissipation.splice(index, 1);
-            if (this.config.isStatic) {
-              this.newTemps[x][y] -= amount;
-            }
-          }
-        }
-        if (this.canApplyHeat) {
-          const distance = sketch.dist(this.coordinates.x, this.coordinates.y, x * this.config.cellSpacing + this.startX,
-            y * this.config.cellSpacing + this.startY);
-          if (distance < this.brushRadius * this.config.cellSpacing) {
-            this.newTemps[x][y] += Math.round(sketch.map(distance, 0, this.brushRadius * this.config.cellSpacing,
-              this.brushIntensity, 0));
-          }
-        }
-        if (this.newTemps[x][y] > 240) {
-          this.newTemps[x][y] = 240;
-        } else if (this.newTemps[x][y] < 0) {
-          this.newTemps[x][y] = 0;
-        }
+  }
+
+  private applyGradientDissipation(sketch: p5, x: number, y: number) {
+    this.copyColorGrid.grid[x][y]--;
+    if (this.colorGrid.grid[x][y] > 0) {
+      const gradientDissipation = new GridMatrix();
+      this.applyDissipation(gradientDissipation, x, y);
+      let sum = 0;
+      for (let i = 0; i < gradientDissipation.grid.length; i++) {
+        sum += this.colorGrid.grid[gradientDissipation.grid[i][0]][gradientDissipation.grid[i][1]];
+      }
+      const averageDissipation = sketch.round(sum / gradientDissipation.grid.length);
+      while (gradientDissipation.hasLength() && this.copyColorGrid.isAboveAverage(averageDissipation, x, y)) {
+        this.applyHeatToGradient(sketch, gradientDissipation, x, y);
       }
     }
-    const temp = this.temps;
-    this.temps = this.newTemps;
-    this.newTemps = temp;
+  }
+
+  private applyDissipation(gradientDissipation: GridMatrix, x, y) {
+    if (this.colorGrid.isSmallerThanNextGradient_X(x, y)) {
+      gradientDissipation.grid.push([x + 1, y]);
+    }
+    if (this.colorGrid.isSmallerThanBeforeGradient_X(x, y)) {
+      gradientDissipation.grid.push([x - 1, y]);
+    }
+    if (this.colorGrid.isSmallerThanNextGradient_Y(x, y)) {
+      gradientDissipation.grid.push([x, y + 1]);
+    }
+    if (this.colorGrid.isSmallerThanBeforeGradient_Y(x, y)) {
+      gradientDissipation.grid.push([x, y - 1]);
+    }
+  }
+
+  private applyHeatToGradient(sketch: p5, gradientDissipation: GridMatrix, x: number, y: number) {
+    const index = gradientDissipation.pickRandomIndexToAvoidBias();
+    const heatAmount = this.calculateHeatAmountToBeApplied(sketch, gradientDissipation, index, x, y);
+    this.copyColorGrid.grid[gradientDissipation.grid[index][0]][gradientDissipation.grid[index][1]] += heatAmount;
+    gradientDissipation.grid.splice(index, 1);
+    if (this.config.isStatic) {
+      this.copyColorGrid.grid[x][y] -= heatAmount;
+    }
+  }
+
+  private calculateHeatAmountToBeApplied(sketch: p5, gradientDissipation: GridMatrix, index: number, x: number, y: number): number {
+    return sketch.ceil((sketch.abs(this.copyColorGrid.grid[x][y] -
+      this.copyColorGrid.grid[gradientDissipation.grid[index][0]][gradientDissipation.grid[index][1]]) / HeatMapCanvas.GRID_DIVIDER) *
+      (this.heatSpread / HeatMapCanvas.MIL_VALUE));
+  }
+
+  private isInHeatDissipation(distanceFromCoordinates: number): boolean {
+    return distanceFromCoordinates < this.brushRadius * this.config.cellSpacing;
+  }
+
+  private copyGridLayers() {
+    const tempColorGrid: GridMatrix = this.colorGrid;
+    this.colorGrid.grid = this.copyColorGrid.grid;
+    this.copyColorGrid = tempColorGrid;
+  }
+
+  private setSketchFill(sketch) {
+    if (this.config.displayToggle) {
+      sketch.noFill();
+      sketch.strokeWeight(HeatMapCanvas.UPPER_STROKE_WEIGHT);
+    } else {
+      sketch.strokeWeight(HeatMapCanvas.LOWER_STROKE_WEIGHT);
+    }
+  }
+
+  private drawEllipse(sketch: p5, coordinates: Point, startingCoordinates: Point) {
+    sketch.noStroke();
+    sketch.ellipse(coordinates.x * this.config.cellSpacing + startingCoordinates.x, coordinates.y *
+      this.config.cellSpacing + startingCoordinates.y, this.config.cellSize, this.config.cellSize);
+  }
+
+  private drawCircle(sketch: p5, coordinates: Point, startingCoordinates: Point, colorGridValue: number) {
+    sketch.stroke(HeatMapCanvas.MAX_RED_SATURATION - colorGridValue, HeatMapCanvas.MAX_COLOUR_SATURATION, HeatMapCanvas.MAX_COLOUR_SATURATION, HeatMapCanvas.MIN_OPACITY);
+    sketch.circle(coordinates.x * this.config.cellSpacing + startingCoordinates.x, coordinates.y *
+      this.config.cellSpacing + startingCoordinates.y, this.config.cellSize / 2);
+  }
+
+  private drawRectangleSharpEdges(sketch: p5, coordinates: Point, startingCoordinates: Point) {
+    sketch.rect(coordinates.x * this.config.cellSpacing + startingCoordinates.y,
+      coordinates.y * this.config.cellSpacing + startingCoordinates.y,
+      this.config.cellSize, this.config.cellSize);
+  }
+
+  private drawRectangleRounded(sketch: p5, coordinates: Point, startingCoordinates: Point) {
+    sketch.rect(coordinates.x * this.config.cellSpacing + startingCoordinates.x,
+      coordinates.y * this.config.cellSpacing + startingCoordinates.y,
+      this.config.cellSize, this.config.cellSize, HeatMapCanvas.SQUARE_EDGE);
+  }
+
+  private addText(sketch: p5, coordinates: Point, startingCoordinates: Point, colorGridValue: number) {
+    colorGridValue = Math.floor(colorGridValue / HeatMapCanvas.COLOR_DIVIDER);
+    sketch.text(colorGridValue, coordinates.x * this.config.cellSpacing + startingCoordinates.x,
+      coordinates.y * this.config.cellSpacing + startingCoordinates.y, this.config.cellSize);
+  }
+
+  private setFillHeatColor(sketch: p5, colorGridValue: number) {
+    if (colorGridValue !== 0 && this.config.displayToggle !== HeatDisplay.CIRCLE) {
+      sketch.fill(HeatMapCanvas.MAX_RED_SATURATION - colorGridValue, HeatMapCanvas.MAX_COLOUR_SATURATION, HeatMapCanvas.MAX_COLOUR_SATURATION, HeatMapCanvas.MIN_OPACITY); // HSB
+    } else {
+      sketch.stroke(HeatMapCanvas.MAX_RED_SATURATION, HeatMapCanvas.MAX_COLOUR_SATURATION, HeatMapCanvas.MAX_COLOUR_SATURATION, HeatMapCanvas.NO_OPACITY); // HSB
+      sketch.fill(HeatMapCanvas.MAX_RED_SATURATION, HeatMapCanvas.MAX_COLOUR_SATURATION, HeatMapCanvas.MAX_COLOUR_SATURATION, HeatMapCanvas.NO_OPACITY); // HSB
+    }
   }
 
   private display(sketch: any) {
-    if (this.config.displayToggle) {
-      sketch.noFill();
-      sketch.strokeWeight(2);
-    } else {
-      sketch.strokeWeight(1);
-    }
+    this.setSketchFill(sketch);
     for (let x = 0; x < this.width; x++) {
       for (let y = 0; y < this.height; y++) {
-        let _value = this.temps[x][y];
-        if (_value !== 0 && this.config.displayToggle !== HeatDisplay.CIRCLE) {
-          sketch.fill(240 - _value, 255, 255, 0.5); // HSB
-        } else {
-          sketch.stroke(240, 255, 255, 0.0); // HSB
-          sketch.fill(240, 255, 255, 0.0); // HSB
-        }
+        let colorGridValue = this.colorGrid.grid[x][y];
+        this.setFillHeatColor(sketch, colorGridValue);
+        const coordinates: Point = {x: x, y: y};
         switch (this.config.displayToggle) {
           case HeatDisplay.SQUARE:
-            sketch.rect(x * this.config.cellSpacing + this.startX, y * this.config.cellSpacing + this.startY, this.config.cellSize, this.config.cellSize);
+            this.drawRectangleSharpEdges(sketch, coordinates, this.start);
             break;
           case HeatDisplay.ROUNDED:
-            sketch.rect(x * this.config.cellSpacing + this.startX, y * this.config.cellSpacing + this.startY, this.config.cellSize, this.config.cellSize, 2);
+            this.drawRectangleRounded(sketch, coordinates, this.start);
             break;
           case HeatDisplay.TEXT:
-            _value = Math.floor(_value / 24);
-            sketch.text(_value, x * this.config.cellSpacing + this.startX, y * this.config.cellSpacing + this.startY, this.config.cellSize);
+            colorGridValue = Math.floor(colorGridValue / 24);
+            this.addText(sketch, coordinates, this.start, colorGridValue);
             break;
           case HeatDisplay.ELLIPSE:
-            sketch.noStroke();
-            sketch.ellipse(x * this.config.cellSpacing + this.startX, y * this.config.cellSpacing + this.startY, this.config.cellSize, this.config.cellSize);
+            this.drawEllipse(sketch, coordinates, this.start);
             break;
           case HeatDisplay.CIRCLE:
-            if (_value !== 0) {
-              sketch.stroke(240 - _value, 255, 255, 0.5);
-              sketch.circle(x * this.config.cellSpacing + this.startX, y * this.config.cellSpacing + this.startY, this.config.cellSize / 2);
+            if (colorGridValue !== 0) {
+              this.drawCircle(sketch, coordinates, this.start, colorGridValue);
             }
             break;
         }
