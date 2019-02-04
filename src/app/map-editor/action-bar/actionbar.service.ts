@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {HttpService} from '../../shared/services/http/http.service';
 import {Configuration, ConfigurationData} from './actionbar.type';
 import {Observable} from 'rxjs/Rx';
 import {Scale} from '../tool-bar/tools/scale/scale.type';
@@ -10,6 +9,7 @@ import {Helper} from '../../shared/utils/helper/helper';
 import {Area} from '../tool-bar/tools/area/area.type';
 import {Anchor, Sink} from '../../device/device.type';
 import {Line} from '../map.type';
+import {HttpService} from '../../shared/services/http/http.service';
 
 @Injectable()
 export class ActionBarService {

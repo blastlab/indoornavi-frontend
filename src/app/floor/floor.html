@@ -19,8 +19,12 @@
               type="button" pButton (click)="goToMap(floor)" icon="fa-eye">
       </button>
       <button [appHasPermission]="'PUBLICATION_READ'"
-              pTooltip="{{'go.to.analytics'|translate}}"
+              pTooltip="{{'go.to.analytics.live'|translate}}"
               type="button" pButton (click)="goToHeatMap(floor)" icon="fa-area-chart">
+      </button>
+      <button [appHasPermission]="'PUBLICATION_READ'"
+              pTooltip="{{'go.to.analytics.historical'|translate}}"
+              type="button" pButton (click)="goToReports(floor)" icon="fa-television">
       </button>
       <button [appHasPermission]="'FLOOR_UPDATE'"
               pTooltip="{{'go.to.mapEditor'|translate}}" type="button" pButton
@@ -66,6 +70,11 @@
     <div class="ui-g">
       <div class="ui-g-12 ui-md-4 ui-lg-4">
         <div class="ui-message ui-messages-error ui-corner-all"
+             *ngIf="levelInput.errors?.pattern && levelInput.touched && levelInput.dirty">
+          <i class="fa fa-warning"></i>
+          {{'floor.level.invalidRange'|translate}}
+        </div>
+        <div class="ui-message ui-messages-error ui-corner-all"
              *ngIf="levelInput.errors?.required && levelInput.touched && levelInput.dirty">
           <i class="fa fa-warning"></i>
           {{'floor.level.required'|translate}}
@@ -75,7 +84,7 @@
         <label for="level">{{'floor.level'|translate}}&nbsp;*</label>
       </div>
       <div class="ui-g-12 ui-md-5 ui-lg-5">
-        <input required name="level" type="number" pInputText id="level" [(ngModel)]="floor.level" #levelInput="ngModel"/>
+        <input pattern="^-{0,1}[0-9]{0,5}$" required name="level" type="number" pInputText id="level" [(ngModel)]="floor.level" #levelInput="ngModel" (keydown)="onFloorLevelKeyDown()" />
       </div>
     </div>
     <p-footer>

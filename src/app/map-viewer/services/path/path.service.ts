@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
-import {HttpService} from '../../../shared/services/http/http.service';
 import {Observable} from 'rxjs/Rx';
 import {Line} from '../../../map-editor/map.type';
+import {HttpService} from '../../../shared/services/http/http.service';
 
 @Injectable()
 export class PathService {

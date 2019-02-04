@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
-import {HttpService} from '../shared/services/http/http.service';
 import {AuthResponse, Credentials} from './auth.type';
 import {Observable} from 'rxjs/Rx';
+import {HttpService} from '../shared/services/http/http.service';
 
 @Injectable()
 export class AuthService {

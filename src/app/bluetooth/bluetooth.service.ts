@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
-import {HttpService} from '../shared/services/http/http.service';
 import {Observable} from 'rxjs/Rx';
 import {Bluetooth} from '../device/device.type';
+import {HttpService} from '../shared/services/http/http.service';
 
 @Injectable()
 export class BluetoothService {

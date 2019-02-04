@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
-import {HttpService} from '../../../shared/services/http/http.service';
 import {Observable} from 'rxjs/Rx';
 import {Area} from '../../../map-editor/tool-bar/tools/area/area.type';
+import {HttpService} from '../../../shared/services/http/http.service';
 
 @Injectable()
 export class AreaService {

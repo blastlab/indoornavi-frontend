@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import {Building} from './building.type';
 import {Observable} from 'rxjs/Rx';
-import {HttpService} from '../shared/services/http/http.service';
 import {Complex} from '../complex/complex.type';
+import {HttpService} from '../shared/services/http/http.service';
 
 @Injectable()
 export class BuildingService {

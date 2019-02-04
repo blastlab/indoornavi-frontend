@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-import {HttpService} from '../shared/services/http/http.service';
 import {DebugFileName, DebugReport} from './debug.types';
 import {UWB} from '../device/device.type';
+import {HttpService} from '../shared/services/http/http.service';
 
 @Injectable()
 export class DebuggerService {

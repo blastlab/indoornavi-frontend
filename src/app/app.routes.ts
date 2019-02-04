@@ -18,6 +18,7 @@ import {NotSupportedBrowserComponent} from './not-supported-browser/not-supporte
 import {TagsFinderComponent} from './tags-finder/tags-finder.component';
 import {TagFollowerComponent} from './map-viewer/views/tagfollower/tag-follower';
 import {DebuggerComponent} from './debug-hidden/debugger.component';
+import {GraphicalReportComponent} from './report/graphical-report.component';
 import {DashboardComponent} from './dashboard/dashboard';
 
 export const appRoutes: Routes = [
@@ -25,7 +26,7 @@ export const appRoutes: Routes = [
   {path: 'login', component: AuthComponent},
   {path: 'logout', component: AuthComponent},
   {path: 'tagsfinder', component: TagsFinderComponent, canActivate: [CanRead], data: {permission: 'TAG'}},
-  {path: 'tagsfinder/follower/:id', component: TagFollowerComponent, data: {isPublic: true}},
+  {path: 'tagsfinder/follower/:id', component: TagFollowerComponent, data: {isPublic: false}},
   {path: 'complexes', component: ComplexComponent, canActivate: [CanRead], data: {permission: 'COMPLEX'}},
   {path: 'complexes/:complexId/buildings', component: BuildingComponent, canActivate: [CanRead], data: {permission: 'BUILDING'}},
   {path: 'anchors', component: DeviceComponent, canActivate: [CanRead], data: {permission: 'ANCHOR'}},
@@ -37,6 +38,8 @@ export const appRoutes: Routes = [
   {path: 'embedded/:id', component: PublishedComponent, data: {isPublic: true}},
   {path: 'analytics', component: AnalyticsComponent, canActivate: [CanRead], data: {permission: 'PUBLICATION'}},
   {path: 'analytics/:id', component: AnalyticsComponent, canActivate: [CanRead], data: {permission: 'PUBLICATION'}},
+  {path: 'reports/', component: GraphicalReportComponent, canActivate: [CanRead], data: {permission: 'PUBLICATION'}},
+  {path: 'reports/:id', component: GraphicalReportComponent, canActivate: [CanRead], data: {permission: 'PUBLICATION'}},
   {path: 'users', component: UserComponent, canActivate: [CanRead], data: {permission: 'USER'}},
   {path: 'changePassword', component: ChangePasswordComponent, canActivate: [CanRead]},
   {path: 'permissionGroups', component: PermissionGroupComponent, canActivate: [CanRead], data: {permission: 'PERMISSION_GROUP'}},
@@ -50,6 +53,6 @@ export const appRoutes: Routes = [
   {path: 'unauthorized', component: UnauthorizedComponent},
   {path: 'notSupportedBrowser', component: NotSupportedBrowserComponent},
   {path: 'debug', component: DebuggerComponent, canActivate: [CanRead], data: {permissions: 'DEBUG'}},
-  {path: 'dashboard', component: DashboardComponent},
+  {path: 'dashboard', component: DashboardComponent, canActivate: [CanRead]},
   {path: '**', redirectTo: '/complexes'}
 ];

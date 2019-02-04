@@ -62,7 +62,8 @@ import {
   SpinnerModule,
   InputSwitchModule,
   MessagesModule,
-  MessageModule
+  MessageModule,
+  CalendarModule
 } from 'primeng/primeng';
 
 import {HintBarService} from './map-editor/hint-bar/hintbar.service';
@@ -78,7 +79,6 @@ import {MapLoaderInformerService} from './shared/services/map-loader-informer/ma
 import {AcceptButtonsService} from 'app/shared/components/accept-buttons/accept-buttons.service';
 import {SocketService} from 'app/shared/services/socket/socket.service';
 import {ComplexService} from './complex/complex.service';
-import {HttpService} from './shared/services/http/http.service';
 import {ProgressSpinnerModule} from 'primeng/components/progressspinner/progressspinner';
 import {OverlayPanelModule} from 'primeng/components/overlaypanel/overlaypanel';
 import {PickListModule} from 'primeng/components/picklist/picklist';
@@ -141,6 +141,9 @@ import {PanelModule} from 'primeng/components/panel/panel';
 import {ModelsConfig} from './map/models/models.config';
 import {DebuggerComponent} from './debug-hidden/debugger.component';
 import {BatteryIndicatorComponent} from './device/battery-indicator';
+import {GraphicalReportComponent} from './report/graphical-report.component';
+import {NgxEchartsModule} from 'ngx-echarts';
+import {ReportService} from './report/services/report.service';
 import {PerfectScrollbarModule} from 'ngx-perfect-scrollbar';
 import {PerfectScrollbarConfigInterface} from 'ngx-perfect-scrollbar';
 import {DashboardComponent} from './dashboard/dashboard';
@@ -151,6 +154,10 @@ import {DashboardService} from './dashboard/dashboard.service';
 import {TerminalMessageService} from './device/terminal/terminal-message.service';
 import {TerminalComponent} from './device/terminal/terminal';
 import {DebuggerService} from './debug-hidden/debugger.service';
+import {WatchdogService} from './shared/services/watchdog/watchdog.service';
+import {HttpService} from './shared/services/http/http.service';
+import {HttpBackend} from './shared/services/http/http.backend';
+import {HttpSolver} from './shared/services/http/http.solver';
 
 const PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
@@ -224,6 +231,7 @@ export function HttpLoaderFactory(http: Http) {
     TerminalComponent,
     TagFollowerComponent,
     DebuggerComponent,
+    GraphicalReportComponent,
     DashboardComponent,
     CounterComponent,
     EventComponent
@@ -266,6 +274,7 @@ export function HttpLoaderFactory(http: Http) {
     SidebarModule,
     BreadcrumbModule,
     TooltipModule,
+    CalendarModule,
     TabViewModule,
     SpinnerModule,
     InputSwitchModule,
@@ -278,6 +287,7 @@ export function HttpLoaderFactory(http: Http) {
     FileUploadModule,
     RadioButtonModule,
     InputMaskModule,
+    NgxEchartsModule,
     SelectButtonModule,
     TerminalModule,
     PanelModule
@@ -285,7 +295,12 @@ export function HttpLoaderFactory(http: Http) {
   providers: [
     BuildingService,
     FloorService,
-    HttpService,
+    HttpBackend,
+    HttpSolver,
+    {
+      provide: HttpService,
+      useClass: HttpBackend
+    },
     ComplexService,
     WebSocketService,
     SocketService,
@@ -328,13 +343,16 @@ export function HttpLoaderFactory(http: Http) {
     PathService,
     NavigationService,
     NavigationController,
+    ModelsConfig,
+    ReportService,
     TerminalService,
     NavigationController,
     ModelsConfig,
     TerminalMessageService,
     DashboardEventService,
     DashboardService,
-    DebuggerService
+    DebuggerService,
+    WatchdogService
   ], bootstrap: [AppComponent]
 })
 

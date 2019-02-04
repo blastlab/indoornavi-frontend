@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
-import {HttpService} from '../shared/services/http/http.service';
 import {Publication} from './publication.type';
 import {Observable} from 'rxjs/Observable';
+import {HttpService} from '../shared/services/http/http.service';
 
 @Injectable()
 export class PublishedService {

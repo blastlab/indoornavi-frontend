@@ -6,6 +6,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {BreadcrumbService} from './shared/services/breadcrumbs/breadcrumb.service';
 import {Location} from '@angular/common';
 import {Helper} from './shared/utils/helper/helper';
+import {WatchdogService} from './shared/services/watchdog/watchdog.service';
 
 @Component({
   selector: 'app-root',
@@ -26,7 +27,8 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewChecked {
               private route: ActivatedRoute,
               private breadcrumbService: BreadcrumbService,
               private cd: ChangeDetectorRef,
-              private location: Location) {
+              private location: Location,
+              private watchdogService: WatchdogService) {
   }
 
   ngOnInit() {
@@ -55,6 +57,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.cd.detectChanges();
     });
     this.hideSidebar();
+    this.watchdogService.start();
   }
 
   ngOnDestroy() {

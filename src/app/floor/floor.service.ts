@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {Floor} from './floor.type';
 import {Observable} from 'rxjs/Rx';
-import {HttpService} from '../shared/services/http/http.service';
 import {Scale} from '../map-editor/tool-bar/tools/scale/scale.type';
 import {Building} from '../building/building.type';
+import {HttpService} from '../shared/services/http/http.service';
 
 @Injectable()
 export class FloorService {
