@@ -1,4 +1,5 @@
 import {HeatMapGradientPoint} from '../graphical-report.type';
+import * as p5 from 'p5';
 
 export class HeatMapCanvas {
 
@@ -6,7 +7,6 @@ export class HeatMapCanvas {
   private height: number;
   private temps: number[][];
   private newTemps: number[][];
-  private pFive: Function;
   private startX: number;
   private startY: number;
   private coordinates: HeatMapGradientPoint;
@@ -14,6 +14,8 @@ export class HeatMapCanvas {
   private heatSpread = 0;
   private brushIntensity = 0;
   private brushRadius = 0;
+  private p5 = p5;
+  private pFive: Function;
 
 
   private static isConfigOk(configuration: HeatMapCanvasConfig) {
@@ -27,15 +29,11 @@ export class HeatMapCanvas {
     return !(!configuration.isStatic && !configuration.width && !configuration.height);
   }
 
-  constructor(private P_5: any /* todo: create dedicated advance P5 type*/, private config: HeatMapCanvasConfig, private data: HeatMapGradientPoint[]) {
-    if (HeatMapCanvas.isConfigOk(config) && !!P_5) {
-      this.pFive = new P_5(this.loader.bind(this));
+  constructor(private config: HeatMapCanvasConfig, private data: HeatMapGradientPoint[]) {
+    if (HeatMapCanvas.isConfigOk(config)) {
+      this.pFive = new this.p5(this.loader.bind(this));
     } else {
-      if (!!P_5.Color && !!P_5.Image) {
-        throw Error('Wrongly set configuration or configuration not available.');
-      } else {
-        throw Error('p5* library not available in current context or incompatible version used, use p5.js version 0.7.3');
-      }
+      throw Error('Wrongly set configuration or configuration not available.');
     }
   }
 

@@ -11,7 +11,6 @@ import {MapService} from '../map-editor/uploader/map.uploader.service';
 import {HeatMapGradientPoint, SolverCoordinatesRequest, SolverHeatMapPayload} from './graphical-report.type';
 import {ReportService} from './services/report.service';
 import {MessageServiceWrapper} from '../shared/services/message/message.service';
-import * as p5 from 'p5';
 import {HeatMapCanvas, HeatMapCanvasConfig} from './canvas/heatmap';
 import {heatMapCanvasConfiguration} from './canvas/heatMapCanvas-config';
 import {Tag} from '../device/device.type';
@@ -101,7 +100,7 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
     }
     this.removeCanvas();
     this.config.imgUrl = imgUrl;
-    this.heatMapCanvas = new HeatMapCanvas(p5, this.config, this.data);
+    this.heatMapCanvas = new HeatMapCanvas(this.config, this.data);
   }
 
   private isDateRequestFormatSet(): boolean {
@@ -128,12 +127,12 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
   private subscribeToMapParametersChange() {
     this.route.params.first().subscribe((params: Params): void => {
       const floorId = +params['id'];
-      this.subscribeToTagsAvailableOnFloorForUser(floorId);
+      this.subscribeToTags(floorId);
       this.floorService.getFloor(floorId).first().subscribe((floor: Floor): void => {
         this.floor = floor;
         this.subscribeToBreadcrumbService(floor);
         if (!!floor.scale) {
-          this.setScaleOfFloor();
+          this.setScale();
         }
         if (!!floor.imageId) {
           this.fetchImageFromServer();
@@ -142,7 +141,7 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
     });
   }
 
-  private subscribeToTagsAvailableOnFloorForUser(floorId): void {
+  private subscribeToTags(floorId): void {
     this.publishedService.getTagsAvailableForUser(floorId).first().subscribe((tags: Tag[]): void => {
       tags.forEach((tag: Tag): void => {
         this.tags.push({
@@ -170,7 +169,7 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
       ]);
   }
 
-  private setScaleOfFloor(): void {
+  private setScale(): void {
       this.scale = new Scale(this.floor.scale);
       this.scaleCalculations = {
         scaleLengthInPixels: Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
@@ -223,8 +222,8 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
         } else if (this.isImageLoaded) {
           payload.distribution.forEach((gradientPoint: HeatMapGradientPoint) => {
             if (gradientPoint.heat !== 0) {
-              gradientPoint.x = gradientPoint.x * this.scale.getDistanceInPixels() / this.scale.getRealDistanceInCentimeters();
-              gradientPoint.y = gradientPoint.y * this.scale.getDistanceInPixels() / this.scale.getRealDistanceInCentimeters();
+              gradientPoint.x = Math.floor(gradientPoint.x * this.scale.getDistanceInPixels() / this.scale.getRealDistanceInCentimeters());
+              gradientPoint.y = Math.floor(gradientPoint.y * this.scale.getDistanceInPixels() / this.scale.getRealDistanceInCentimeters());
               this.data.push(gradientPoint);
             }
           });
