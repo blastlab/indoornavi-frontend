@@ -186,11 +186,14 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
       this.lastPoint = null;
       this.tempLine = null;
 
+      if (!this.selectedEditable) {
+        this.cleanGroup();
+      }
+
       const clickedAreas: AreaBag[] = this.getClickedAreas(this.areas);
 
       if (clickedAreas.length === 0) {
         this.contextMenuService.hide();
-        this.cleanGroup();
         return;
       }
 
