@@ -73,7 +73,7 @@ export class HeatMapCanvas {
     }
   }
 
-  private sketchSetup(sketch) {
+  private sketchSetup(sketch: p5) {
     sketch.setup = () => {
       sketch.frameRate(HeatMapCanvas.DYNAMIC_MODE_FRAME_RATE);
       let canvasHeat;
@@ -101,7 +101,7 @@ export class HeatMapCanvas {
     };
   }
 
-  private loader(sketch: any) {
+  private loader(sketch: p5) {
     let imgUrl: string;
     let img: any;
     if (!!this.config.imgUrl) {
@@ -248,7 +248,7 @@ export class HeatMapCanvas {
     this.copyColorGrid = tempColorGrid;
   }
 
-  private setSketchFill(sketch) {
+  private setSketchFill(sketch: p5) {
     if (this.config.displayToggle) {
       sketch.noFill();
       sketch.strokeWeight(HeatMapCanvas.UPPER_STROKE_WEIGHT);
@@ -296,7 +296,7 @@ export class HeatMapCanvas {
     }
   }
 
-  private display(sketch: any) {
+  private display(sketch: p5) {
     this.setSketchFill(sketch);
     for (let x = 0; x < this.width; x++) {
       for (let y = 0; y < this.height; y++) {
