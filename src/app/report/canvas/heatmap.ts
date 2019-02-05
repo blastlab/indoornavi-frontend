@@ -57,7 +57,7 @@ export class HeatMapCanvas {
 
   private createGrid(): void {
     // set this way to not change grid with every update when config.isStatic = true
-    // specially useful for while operating in dynamic mode
+    // specially useful while operating in dynamic mode
     this.width = this.config.gridWidth;
     this.height = this.config.gridHeight;
 
