@@ -49,6 +49,7 @@ export class HeatMapCanvas {
 
   pushCoordinates(coordinates: HeatMapGradientPoint) {
     // this is for pushing coordinates while operating on dynamic heat map
+    // heat map will apply heat automatically
     if (!this.config.isStatic) {
       this.data.push(coordinates);
     }
@@ -56,6 +57,7 @@ export class HeatMapCanvas {
 
   private createGrid(): void {
     // set this way to not change grid with every update when config.isStatic = true
+    // specially useful for while operating in dynamic mode
     this.width = this.config.gridWidth;
     this.height = this.config.gridHeight;
 
@@ -118,7 +120,8 @@ export class HeatMapCanvas {
         if (this.data.length > 0) {
           this.canApplyHeat = true;
           const coordinates = this.data.shift();
-          if (this.data.length === 0) { // to not let GB destroy reference
+          if (this.data.length === 0) {
+            // to not let GC destroy reference but this method is from stack overflow
             this.data = [];
           }
           this.brushIntensity = this.config.brushIntensity;
@@ -174,10 +177,9 @@ export class HeatMapCanvas {
 
   private distributeHeat(sketch: p5, coordinates: HeatMapGradientPoint, x: number, y: number) {
     if (this.canApplyHeat) {
-
       const distanceFromCoordinates = sketch.dist(coordinates.x, coordinates.y, x * this.config.cellSpacing + this.start.x,
         y * this.config.cellSpacing + this.start.y);
-      if (this.isInHeatDissipation(distanceFromCoordinates)) {
+      if (this.isInHeatDissipationRange(distanceFromCoordinates)) {
         this.copyColorGrid.grid[x][y] += Math.round(sketch.map(distanceFromCoordinates, 0, this.brushRadius * this.config.cellSpacing,
           this.brushIntensity, 0));
       }
@@ -205,7 +207,7 @@ export class HeatMapCanvas {
     }
   }
 
-  private applyDissipation(gradientDissipation: GridMatrix, x, y) {
+  private applyDissipation(gradientDissipation: GridMatrix, x: number, y: number) {
     if (this.colorGrid.isSmallerThanNextGradient_X(x, y)) {
       gradientDissipation.grid.push([x + 1, y]);
     }
@@ -236,7 +238,7 @@ export class HeatMapCanvas {
       (this.heatSpread / HeatMapCanvas.MIL_VALUE));
   }
 
-  private isInHeatDissipation(distanceFromCoordinates: number): boolean {
+  private isInHeatDissipationRange(distanceFromCoordinates: number): boolean {
     return distanceFromCoordinates < this.brushRadius * this.config.cellSpacing;
   }
 
@@ -309,7 +311,7 @@ export class HeatMapCanvas {
             this.drawRectangleRounded(sketch, coordinates, this.start);
             break;
           case HeatDisplay.TEXT:
-            colorGridValue = Math.floor(colorGridValue / 24);
+            colorGridValue = Math.floor(colorGridValue / HeatMapCanvas.COLOR_DIVIDER);
             this.addText(sketch, coordinates, this.start, colorGridValue);
             break;
           case HeatDisplay.ELLIPSE:
