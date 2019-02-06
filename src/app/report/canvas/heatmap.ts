@@ -7,7 +7,7 @@ export class HeatMapCanvas {
   private static MAX_RED_SATURATION = 240;
   private static MAX_COLOUR_SATURATION = 255;
   private static NO_OPACITY = 0.0;
-  private static MIN_OPACITY= 0.5;
+  private static MIN_OPACITY = 0.5;
   private static COLOR_DIVIDER = 24;
   private static SQUARE_EDGE = 2;
   private static UPPER_STROKE_WEIGHT = 2;
@@ -17,11 +17,11 @@ export class HeatMapCanvas {
   private static UPPER_TINT = 225;
   private static LOWER_TINT = 120;
   private static DYNAMIC_MODE_FRAME_RATE = 60;
-  private width: number;
-  private height: number;
-  private colorGrid: GridMatrix;
-  private copyColorGrid: GridMatrix;
-  private start: Point = {x: null, y: null};
+  private width: number = 0;
+  private height: number = 0;
+  private colorGrid: GridMatrix = new GridMatrix();
+  private copyColorGrid: GridMatrix = new GridMatrix();
+  private start: Point = {x: 0, y: 0};
   private canApplyHeat = false;
   private heatSpread = 0;
   private brushIntensity = 0;
@@ -30,7 +30,7 @@ export class HeatMapCanvas {
 
   private static isConfigOk(configuration: HeatMapCanvasConfig) {
     if (configuration['displayToggle'] === null) {
-        return false;
+      return false;
     }
     if (!configuration.heatSpread || !configuration.brushIntensity || !configuration.brushRadius || !configuration.gridWidth ||
       !configuration.gridHeight || !configuration.cellSize || !configuration.cellSpacing) {
@@ -57,7 +57,7 @@ export class HeatMapCanvas {
 
   private createGrid(): void {
     // set this way to not change grid with every update when config.isStatic = true
-    // specially useful while operating in dynamic mode
+    // specially useful for while operating in dynamic mode
     this.width = this.config.gridWidth;
     this.height = this.config.gridHeight;
 
@@ -101,14 +101,14 @@ export class HeatMapCanvas {
     };
   }
 
-  private loader(sketch: p5) {
+  private loader(sketch: any) {
     let imgUrl: string;
     let img: any;
     if (!!this.config.imgUrl) {
       imgUrl = this.config.imgUrl;
       sketch.preload = function () {
         img = sketch.loadImage(imgUrl);
-      }
+      };
     }
     this.sketchSetup(sketch);
     sketch.draw = () => {
@@ -127,7 +127,7 @@ export class HeatMapCanvas {
           this.brushIntensity = this.config.brushIntensity;
           this.brushRadius = this.config.brushRadius;
           this.heatSpread = this.config.heatSpread;
-            this.update(sketch, coordinates);
+          this.update(sketch, coordinates);
         }
       }
       sketch.background('rgba(255,255,255, 0.25)');
@@ -145,7 +145,7 @@ export class HeatMapCanvas {
 
     sketch.windowResized = function () {
       sketch.resizeCanvas(sketch.windowWidth, sketch.windowHeight);
-    }
+    };
   }
 
   private update(sketch: p5, coordinates?: HeatMapGradientPoint) {
@@ -289,14 +289,24 @@ export class HeatMapCanvas {
 
   private setFillHeatColor(sketch: p5, colorGridValue: number) {
     if (colorGridValue !== 0 && this.config.displayToggle !== HeatDisplay.CIRCLE) {
-      sketch.fill(HeatMapCanvas.MAX_RED_SATURATION - colorGridValue, HeatMapCanvas.MAX_COLOUR_SATURATION, HeatMapCanvas.MAX_COLOUR_SATURATION, HeatMapCanvas.MIN_OPACITY); // HSB
+      sketch.fill(
+        HeatMapCanvas.MAX_RED_SATURATION - colorGridValue,
+        HeatMapCanvas.MAX_COLOUR_SATURATION,
+        HeatMapCanvas.MAX_COLOUR_SATURATION, HeatMapCanvas.MIN_OPACITY
+      ); // HSB
     } else {
-      sketch.stroke(HeatMapCanvas.MAX_RED_SATURATION, HeatMapCanvas.MAX_COLOUR_SATURATION, HeatMapCanvas.MAX_COLOUR_SATURATION, HeatMapCanvas.NO_OPACITY); // HSB
-      sketch.fill(HeatMapCanvas.MAX_RED_SATURATION, HeatMapCanvas.MAX_COLOUR_SATURATION, HeatMapCanvas.MAX_COLOUR_SATURATION, HeatMapCanvas.NO_OPACITY); // HSB
+      sketch.stroke(
+        HeatMapCanvas.MAX_RED_SATURATION, HeatMapCanvas.MAX_COLOUR_SATURATION,
+        HeatMapCanvas.MAX_COLOUR_SATURATION, HeatMapCanvas.NO_OPACITY
+      ); // HSB
+      sketch.fill(
+        HeatMapCanvas.MAX_RED_SATURATION, HeatMapCanvas.MAX_COLOUR_SATURATION,
+        HeatMapCanvas.MAX_COLOUR_SATURATION, HeatMapCanvas.NO_OPACITY
+      ); // HSB
     }
   }
 
-  private display(sketch: p5) {
+  private display(sketch: any) {
     this.setSketchFill(sketch);
     for (let x = 0; x < this.width; x++) {
       for (let y = 0; y < this.height; y++) {
