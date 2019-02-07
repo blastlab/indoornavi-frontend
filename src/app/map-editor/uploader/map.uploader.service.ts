@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Floor} from '../../floor/floor.type';
-import {HttpAuthService} from '../../shared/services/http/http-auth.service';
 import {ImageConfiguration} from './map.configuration.type';
+import {HttpService} from '../../shared/services/http/http.service';
 
 @Injectable()
 export class MapService {
 
-  constructor(private httpService: HttpAuthService) {
+  constructor(private httpService: HttpService) {
   }
 
   uploadImage(id: number, formData: FormData): Observable<Floor> {

@@ -79,7 +79,6 @@ import {MapLoaderInformerService} from './shared/services/map-loader-informer/ma
 import {AcceptButtonsService} from 'app/shared/components/accept-buttons/accept-buttons.service';
 import {SocketService} from 'app/shared/services/socket/socket.service';
 import {ComplexService} from './complex/complex.service';
-import {HttpAuthService} from './shared/services/http/http-auth.service';
 import {ProgressSpinnerModule} from 'primeng/components/progressspinner/progressspinner';
 import {OverlayPanelModule} from 'primeng/components/overlaypanel/overlaypanel';
 import {PickListModule} from 'primeng/components/picklist/picklist';
@@ -145,7 +144,6 @@ import {BatteryIndicatorComponent} from './device/battery-indicator';
 import {GraphicalReportComponent} from './report/graphical-report.component';
 import {NgxEchartsModule} from 'ngx-echarts';
 import {ReportService} from './report/services/report.service';
-import {HttpBasicService} from './shared/services/http/http-basic.service';
 import {PerfectScrollbarModule} from 'ngx-perfect-scrollbar';
 import {PerfectScrollbarConfigInterface} from 'ngx-perfect-scrollbar';
 import {DashboardComponent} from './dashboard/dashboard';
@@ -157,6 +155,9 @@ import {TerminalMessageService} from './device/terminal/terminal-message.service
 import {TerminalComponent} from './device/terminal/terminal';
 import {DebuggerService} from './debug-hidden/debugger.service';
 import {WatchdogService} from './shared/services/watchdog/watchdog.service';
+import {HttpService} from './shared/services/http/http.service';
+import {HttpBackend} from './shared/services/http/http.backend';
+import {HttpSolver} from './shared/services/http/http.solver';
 
 const PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
@@ -294,8 +295,12 @@ export function HttpLoaderFactory(http: Http) {
   providers: [
     BuildingService,
     FloorService,
-    HttpAuthService,
-    HttpBasicService,
+    HttpBackend,
+    HttpSolver,
+    {
+      provide: HttpService,
+      useClass: HttpBackend
+    },
     ComplexService,
     WebSocketService,
     SocketService,

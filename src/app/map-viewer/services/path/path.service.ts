@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
-import {HttpAuthService} from '../../../shared/services/http/http-auth.service';
 import {Observable} from 'rxjs/Rx';
 import {Line} from '../../../map-editor/map.type';
+import {HttpService} from '../../../shared/services/http/http.service';
 
 @Injectable()
 export class PathService {
   private baseUrl = 'paths';
 
-  constructor(private httpService: HttpAuthService) {
+  constructor(private httpService: HttpService) {
   }
 
   getPathByFloorId(floorId: number): Observable<Line[]> {
