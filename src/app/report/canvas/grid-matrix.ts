@@ -16,6 +16,7 @@ export class GridMatrix {
   isSmallerThanNextGradient_Y(x: number, y: number): boolean {
     return this.grid[x][y + 1] < this.grid[x][y];
   }
+
   isSmallerThanBeforeGradient_Y(x: number, y: number): boolean {
     return this.grid[x][y - 1] < this.grid[x][y];
   }
@@ -24,8 +25,8 @@ export class GridMatrix {
     return this.grid[x][y] > average
   }
 
-  hasLength(): boolean {
-    return this.grid.length > 0;
+  isEmpty(): boolean {
+    return !(this.grid.length > 0);
   }
 
   pickRandomIndexToAvoidBias(): number {

@@ -201,7 +201,7 @@ export class HeatMapCanvas {
         sum += this.colorGrid.grid[gradientDissipation.grid[i][0]][gradientDissipation.grid[i][1]];
       }
       const averageDissipation = sketch.round(sum / gradientDissipation.grid.length);
-      while (gradientDissipation.hasLength() && this.copyColorGrid.isAboveAverage(averageDissipation, x, y)) {
+      while (!gradientDissipation.isEmpty() && this.copyColorGrid.isAboveAverage(averageDissipation, x, y)) {
         this.applyHeatToGradient(sketch, gradientDissipation, x, y);
       }
     }
