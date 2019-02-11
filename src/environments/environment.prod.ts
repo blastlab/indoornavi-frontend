@@ -13,7 +13,6 @@ export const environment = {
   production: true,
   solver_url: '',
   base_url: '',
-  solver_url: '',
   ws_url: ws_addr,
   version: require('../../package.json').version
 };
