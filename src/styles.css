@@ -13,6 +13,10 @@ body {
   margin: 3px;
 }
 
+#breadcrumbs .ui-widget {
+  font-family: 'Flama', sans-serif;
+}
+
 .error-toast {
   background: #d92020 !important;
 }
