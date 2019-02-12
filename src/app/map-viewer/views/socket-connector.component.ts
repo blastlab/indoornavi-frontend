@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, NgZone, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, Component, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
 import {AreaEventMode, CommandType, CoordinatesSocketData, CustomMessageEvent, EventSocketData, MeasureSocketData, MeasureSocketDataType} from '../publication.type';
 import {Subject} from 'rxjs/Subject';
@@ -36,6 +36,8 @@ import {NavigationController} from '../../shared/utils/navigation/navigation.con
 import Metadata = APIObject.Metadata;
 import {ModelsConfig} from '../../map/models/models.config';
 import {Helper} from '../../shared/utils/helper/helper';
+import {MapComponent} from '../../map/map';
+import {MapEditorService} from '../../map-editor/map.editor.service';
 
 @Component({
   templateUrl: './socket-connector.component.html'
@@ -57,6 +59,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
   protected scaleCalculations: ScaleCalculations;
   protected loadMapDeferred: Deferred<boolean>;
   protected subscriptionDestructor: Subject<void> = new Subject<void>();
+  @ViewChild(MapComponent) map;
 
   constructor(protected ngZone: NgZone,
               protected socketService: SocketService,
@@ -369,6 +372,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
         height,
         width,
         scale: this.scale,
+        zoomExtent: [MapEditorService.MIN_ZOOM_VALUE, MapEditorService.MAX_ZOOM_VALUE],
         tempId: event.data.tempId
       }, '*');
     });

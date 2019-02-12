@@ -10,6 +10,9 @@ import {Transform} from './map.type';
 @Injectable()
 export class MapEditorService {
 
+  public static MAX_ZOOM_VALUE: number = 2;
+  public static MIN_ZOOM_VALUE: number = 0.1;
+
   public static MAP_LAYER_SELECTOR_ID: string = 'map';
   public static MAP_UPPER_LAYER_SELECTOR_ID: string = 'map-upper-layer';
   private static MAP_CONTAINER_SELECTOR_ID: string = 'map-container';
@@ -37,7 +40,7 @@ export class MapEditorService {
   constructor(private mapService: MapService) {
   }
 
-  drawMap(floor: Floor): Promise<d3.selection> {
+  drawMap(floor: Floor, zoomValue: number): Promise<d3.selection> {
     return new Promise((resolve) => {
       const image = new Image();
       image.onload = () => {
@@ -51,7 +54,7 @@ export class MapEditorService {
         };
 
         const zoom = d3.zoom()
-          .scaleExtent([0.1, 2])
+          .scaleExtent([MapEditorService.MIN_ZOOM_VALUE, MapEditorService.MAX_ZOOM_VALUE])
           .translateExtent(MapEditorService.maxTranslate(mapContainer, image))
           .on('zoom', zoomed);
 
@@ -71,6 +74,7 @@ export class MapEditorService {
           .attr('height', image.height);
 
         zoom.translateBy(map, (mapContainer.offsetWidth - image.width) / 2, (mapContainer.offsetHeight - image.height) / 2);
+        zoom.scaleTo(map, zoomValue);
         map.call(zoom);
         map.on('dblclick.zoom', null);
 
