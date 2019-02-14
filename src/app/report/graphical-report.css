@@ -9,3 +9,18 @@
   left: 120px;
   top: 10px;
 }
+
+.tags-select {
+  position: relative;
+  top: 8px;
+}
+
+.intensity {
+  display: inline;
+  width: 80px;
+}
+
+
+.report-element {
+  margin: 20px;
+}
