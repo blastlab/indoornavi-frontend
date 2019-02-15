@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
-import {HttpAuthService} from '../../../shared/services/http/http-auth.service';
 import {Observable} from 'rxjs/Rx';
 import {Area} from '../../../map-editor/tool-bar/tools/area/area.type';
+import {HttpService} from '../../../shared/services/http/http.service';
 
 @Injectable()
 export class AreaService {
   private baseUrl = 'areas';
 
-  constructor(private httpService: HttpAuthService) {
+  constructor(private httpService: HttpService) {
   }
 
   getAllByFloor(floorId: number): Observable<Area[]> {

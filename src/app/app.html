@@ -1,97 +1,132 @@
 <ng-container *ngIf="isUserLoggedIn || isDisplayedInIFrame; then logged_in else not_logged_in"></ng-container>
 <ng-template #logged_in>
-  <div *ngIf="!isDisplayedInIFrame" class="ui-g">
-    <p-sidebar id="sidebar-menu" [(visible)]="sidebar" position="right"
-               [baseZIndex]="10000">
-      <div class="menu-sidebar-spacer">
-        <div class="ui-g">
-          <button pButton class="ui-button-secondary ui-g-12 ui-md-4 ui-lg-4 menu-button" [routerLink]="['./sinks']"
-                  (click)="hideSidebar()" icon="fa-share-alt fa-lg" [appHasPermission]="'SINK_UPDATE'">
-            <span>{{'sinks.header'|translate}}</span>
-          </button>
-          <button pButton class="ui-button-secondary ui-g-12 ui-md-4 ui-lg-4 menu-button" [routerLink]="['./anchors']"
-                  (click)="hideSidebar()" icon="fa-circle-o-notch fa-lg" [appHasPermission]="'ANCHOR_UPDATE'">
-            <span>{{'anchors.header'|translate}}</span>
-          </button>
-          <button pButton class="ui-button-secondary ui-g-12 ui-md-4 ui-lg-4 menu-button" [routerLink]="['./tags']"
-                  (click)="hideSidebar()" icon="fa-tag fa-lg" [appHasPermission]="'TAG_UPDATE'">
-            <span>{{'tags.header'|translate}}</span>
-          </button>
-        </div>
-        <div class="ui-g">
-          <button pButton class="ui-button-secondary ui-g-12 ui-md-12 ui-lg-12 menu-button"
-                  [routerLink]="['./bluetooth']"
-                  (click)="hideSidebar()" icon="fa-bluetooth fa-lg" [appHasPermission]="'BLUETOOTH_UPDATE'">
-            <span>{{'bluetooth.header'|translate}}</span>
-          </button>
-        </div>
+  <div class="ui-g">
+    <div id="top-panel" class="ui-g-12">
+      <div id="indoornavi-logo">
+        <img alt="IndooNavi" src="assets/images/logo.png" />
       </div>
-      <div class="menu-sidebar-spacer">
-        <div class="ui-g">
-          <button pButton class="ui-button-secondary ui-g-12 ui-md-12 ui-lg-12 menu-button"
-                  [routerLink]="['./tagsfinder']"
-                  (click)="hideSidebar()" icon="fa-bandcamp fa-lg" [appHasPermission]="'TAG_READ'">
-            <span>{{'tags.finder'|translate}}</span>
-          </button>
-        </div>
-        <div class="ui-g">
-          <button pButton class="ui-button-secondary ui-g-12 ui-md-12 ui-lg-12 menu-button"
-                  [routerLink]="['./complexes']"
-                  (click)="hideSidebar()" icon="fa-building fa-lg" [appHasPermission]="'COMPLEX_READ'">
-            <span>{{'complexes'|translate}}</span>
-          </button>
-        </div>
+      <div id="breadcrumbs">
+        <p-breadcrumb [model]="breadcrumbs"></p-breadcrumb>
       </div>
-      <div class="menu-sidebar-spacer">
-        <div class="ui-g">
-          <button pButton class="ui-button-secondary ui-g-12 ui-md-12 ui-lg-12 menu-button"
-                  [routerLink]="['./publications']"
-                  (click)="hideSidebar()" icon="fa-map fa-lg" [appHasPermission]="'PUBLICATION_UPDATE'">
-            <span>{{'publishedMaps'|translate}}</span>
-          </button>
-        </div>
-        <div class="ui-g">
-          <button pButton class="ui-button-secondary ui-g-12 ui-md-6 ui-lg-6 menu-button"
-                  [routerLink]="['./permissionGroups']"
-                  (click)="hideSidebar()" icon="fa-lock fa-lg" [appHasPermission]="'PERMISSION_GROUP_UPDATE'">
-            <span>{{'user.permissionGroups'|translate}}</span>
-          </button>
-          <button pButton class="ui-button-secondary ui-g-12 ui-md-6 ui-lg-6 menu-button" [routerLink]="['./users']"
-                  (click)="hideSidebar()" icon="fa-users fa-lg" [appHasPermission]="'USER_UPDATE'">
-            <span>{{'users.header'|translate}}</span>
-          </button>
-        </div>
-        <div class="ui-g">
-          <button pButton class="ui-button-secondary ui-g-12 ui-md-8 ui-lg-8 menu-button"
-                  [routerLink]="['./changePassword']"
-                  (click)="hideSidebar()" icon="fa-key fa-lg">
-            <span>{{'changePassword.header'|translate}}</span>
-          </button>
-          <button pButton class="ui-button-secondary ui-g-12 ui-md-4 ui-lg-4 menu-button" id="logout"
-                  [routerLink]="['./logout']"
-                  (click)="logout()" icon="fa-sign-out fa-lg">
-            <span>{{'logout'|translate}}</span>
-          </button>
-        </div>
+      <div id="mobile-header" class="muted">
+        IndoorNavi
       </div>
-    </p-sidebar>
-    <div class="ui-g-12 ui-md-11 ui-lg-11">
-      <p-breadcrumb [model]="breadcrumbs"></p-breadcrumb>
-    </div>
-    <div class="ui-g-12 ui-md-1 ui-lg-1">
-      <button pButton
-              id="menu" (click)="displaySidebar()"
-              icon="fa-bars">
-      </button>
+      <div id="username" [routerLink]="['./changePassword']">
+        <i class="fa fa-caret-right"></i>{{username}}
+      </div>
+      <div id="logout">
+        <a [routerLink]="['./logout']"
+           (click)="logout()">
+          <span>{{'logout'|translate}}</span>
+          <i class="fa fa-power-off"></i>
+        </a>
+      </div>
     </div>
   </div>
   <div class="ui-g">
-    <div class="ui-g-12 ui-md-12 ui-lg-12" [ngClass]="{'map-padding': isPublic, 'mobile-device-style': isMobile}">
+    <div id="left-panel" class="ui-g-2">
+      <div *ngIf="!isDisplayedInIFrame">
+        <div class="ui-g">
+          <div class="ui-g-1">
+            <i class="fa fa-home"></i>
+          </div>
+          <div class="ui-g-11">
+            <a class="menu-link menu-link-bold" [routerLink]="['./dashboard']">{{'menu.dashboard'|translate}}</a>
+          </div>
+        </div>
+        <div class="ui-g">
+          <div class="ui-g-1">
+            <i class="fa fa-map"></i>
+          </div>
+          <div class="ui-g-11">
+            <a class="menu-link menu-link-bold">{{'menu.maps'|translate}}</a>
+          </div>
+        </div>
+        <div class="ui-g" [appHasPermission]="'COMPLEX_READ'">
+          <div class="ui-g-11 ui-g-offset-1">
+            <a class="menu-link" [routerLink]="['./complexes']">{{'complexes'|translate}}</a>
+          </div>
+        </div>
+        <div class="ui-g" [appHasPermission]="'PUBLICATION_UPDATE'">
+          <div class="ui-g-11 ui-g-offset-1">
+            <a class="menu-link" [routerLink]="['./publications']">{{'publishedMaps'|translate}}</a>
+          </div>
+        </div>
+        <div class="ui-g" [appHasPermission]="'TAG_READ'">
+          <div class="ui-g-11 ui-g-offset-1">
+            <a class="menu-link" [routerLink]="['./tagsfinder']">{{'tags.finder'|translate}}</a>
+          </div>
+        </div>
+        <div class="ui-g">
+          <div class="ui-g-1">
+            <i class="fa fa-server"></i>
+          </div>
+          <div class="ui-g-11">
+            <span class="menu-link menu-link-bold">{{'menu.resources'|translate}}</span>
+          </div>
+        </div>
+        <div class="ui-g" [appHasPermission]="'SINK_UPDATE'">
+          <div class="ui-g-11 ui-g-offset-1">
+            <a class="menu-link" [routerLink]="['./sinks']">{{'sinks.header'|translate}}</a>
+          </div>
+        </div>
+        <div class="ui-g" [appHasPermission]="'ANCHOR_UPDATE'">
+          <div class="ui-g-11 ui-g-offset-1">
+            <a class="menu-link" [routerLink]="['./anchors']">{{'anchors.header'|translate}}</a>
+          </div>
+        </div>
+        <div class="ui-g" [appHasPermission]="'TAG_UPDATE'">
+          <div class="ui-g-11 ui-g-offset-1">
+            <a class="menu-link" [routerLink]="['./tags']">{{'tags.header'|translate}}</a>
+          </div>
+        </div>
+        <div class="ui-g" [appHasPermission]="'BLUETOOTH_UPDATE'">
+          <div class="ui-g-11 ui-g-offset-1">
+            <a class="menu-link" [routerLink]="['./bluetooth']">{{'bluetooth.header'|translate}}</a>
+          </div>
+        </div>
+        <div class="ui-g" [appHasPermission]="'USER_UPDATE'">
+          <div class="ui-g-11 ui-g-offset-1">
+            <a class="menu-link" [routerLink]="['./users']">{{'users.header'|translate}}</a>
+          </div>
+        </div>
+        <div class="ui-g">
+          <div class="ui-g-1">
+            <i class="fa fa-cogs"></i>
+          </div>
+          <div class="ui-g-11">
+            <span class="menu-link menu-link-bold">{{'menu.preferences'|translate}}</span>
+          </div>
+        </div>
+        <div class="ui-g" [appHasPermission]="'PERMISSION_GROUP_UPDATE'">
+          <div class="ui-g-11 ui-g-offset-1">
+            <a class="menu-link" [routerLink]="['./permissionGroups']">{{'user.permissionGroups'|translate}}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="content-panel" class="ui-g-10">
       <router-outlet></router-outlet>
-      <app-footer></app-footer>
+    </div>
+    <div class="ui-g-12" id="mobile-menu">
+      <div class="ui-g">
+        <div class="ui-g-4 first" [routerLink]="['./dashboard']">
+          <i class="fa fa-home"></i>
+          <span class="muted">{{'menu.dashboard'|translate}}</span>
+        </div>
+        <div class="ui-g-4" (click)="goToMap()">
+          <i class="fa fa-map"></i>
+          <span class="muted">{{'map'|translate}}</span>
+        </div>
+        <div class="ui-g-4 last" (click)="goToHeatMap()">
+          <i class="fa fa-fire"></i>
+          <span class="muted">{{'heatMap'|translate}}</span>
+        </div>
+      </div>
     </div>
   </div>
   <p-growl [life]="2500"></p-growl>
+  <app-footer></app-footer>
 </ng-template>
 <ng-template #not_logged_in>
   <app-auth></app-auth>

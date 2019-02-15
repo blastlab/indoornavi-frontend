@@ -15,7 +15,7 @@ class LoginPage(BasePage):
     next_page_title_locator = (By.CSS_SELECTOR, 'span.ui-menuitem-text')
     login_warning = (By.CSS_SELECTOR, 'div.ui-messages-error')
     dropdown_button = (By.CSS_SELECTOR, 'button#menu')
-    logout_button = (By.CSS_SELECTOR, 'button#logout')
+    logout_button = (By.CSS_SELECTOR, 'div#logout a')
     # input credentials
     valid_username = 'admin'
     valid_password = 'admin'
@@ -43,7 +43,7 @@ class LoginPage(BasePage):
         return self.wait_for_element_clickable(self.logout_button)
 
     def click_logout_button(self):
-        self.click_button(*self.logout_button)
+        self.click_element(self.logout_button)
 
     # There are 3 options :
     # 1. Login with valid credentials

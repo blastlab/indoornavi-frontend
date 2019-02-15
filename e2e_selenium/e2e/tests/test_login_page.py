@@ -45,15 +45,11 @@ class TestLoginPage(unittest.TestCase):
         """Test logout"""
 
         self.assertEqual(self.page.login_process(self.option), 'Dashboard')
-        # click dropdown button
-        self.assertTrue(self.page.is_dropdown_button_clickable())
-        self.page.click_dropdown_button()
-        # is logout button clickable
-        self.assertTrue(self.page.is_logout_button_clickable())
         # click logout button
         self.page.click_logout_button()
-        self.assertFalse(self.webdriver.execute_script("return window.localStorage.length;"))
-        self.assertEqual(self.webdriver.current_url[-5:], 'login')
+        # self.assertFalse(self.webdriver.execute_script("return window.localStorage.length;"))
+        assert self.page.check_page_loaded_correctly()
+        assert self.webdriver.current_url[-5:] =='login'
         self.test_failed = False
 
     def tearDown(self):

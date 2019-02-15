@@ -6,13 +6,10 @@
 <ng-container *ngIf="events.length > 0; then hasContent else noContent;"></ng-container>
 <ng-template #hasContent>
   <div *ngFor="let event of events" class="ui-g item">
-    <div class="ui-g-5 {{event.level.toString()}} text">
+    <div class="ui-g-7 {{event.level.toString()}} text">
       {{event.message}}
     </div>
-    <div class="ui-g-3 muted text">
-      {{'dashboard.event.area'|translate}}: <b>{{event.areaName}}</b>
-    </div>
-    <div class="ui-g-4 text muted text-right">
+    <div class="ui-g-5 text muted text-right">
       {{event.device.name}}
     </div>
   </div>

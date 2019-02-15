@@ -9,11 +9,19 @@
 
 .number {
   font-size: 3em;
-  color: #5bf;
+  color: #1E96FF;
   display: inline-block;
 }
 
 .text {
   display: inline-block;
   font-size: 0.8em;
+}
+
+.item.last {
+  text-align: right;
+}
+
+.item.second {
+  text-align: center;
 }

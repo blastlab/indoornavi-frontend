@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
-import {HttpAuthService} from '../shared/services/http/http-auth.service';
 import {Publication} from './publication.type';
 import {Observable} from 'rxjs/Observable';
+import {HttpService} from '../shared/services/http/http.service';
 
 @Injectable()
 export class PublishedService {
   private url = 'publications/';
 
-  constructor(private httpService: HttpAuthService) {
+  constructor(private httpService: HttpService) {
   }
 
   getAll(): Observable<Publication[]> {
