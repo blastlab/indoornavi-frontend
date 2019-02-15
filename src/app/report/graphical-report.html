@@ -1,8 +1,8 @@
 <div *ngIf="isImageLoaded" class="ui-g-12">
   <span>{{'from'|translate}}:</span>
-  <p-calendar [(ngModel)]="dateFrom" showTime="true" hourFormat="24" [maxDate]="dateFromMaxValue"></p-calendar>
+  <p-calendar [(ngModel)]="dateFrom" dateFormat="dd/mm/yy" showTime="true" hourFormat="24" [maxDate]="dateFromMaxValue"></p-calendar>
   <span>{{'to'|translate}}:</span>
-  <p-calendar [(ngModel)]="dateTo" showTime="true" hourFormat="24" [maxDate]="dateToMaxValue"></p-calendar>
+  <p-calendar [(ngModel)]="dateTo" dateFormat="dd/mm/yy" showTime="true" hourFormat="24" [maxDate]="dateToMaxValue"></p-calendar>
     <span>{{'device.tag'|translate}} {{'device.id'|translate}}:</span>
     <p-multiSelect
     id="tags"

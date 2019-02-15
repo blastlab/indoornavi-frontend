@@ -6,7 +6,6 @@ import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.servi
 import {TranslateService} from '@ngx-translate/core';
 import {Scale, ScaleCalculations} from '../map-editor/tool-bar/tools/scale/scale.type';
 import {Geometry} from '../shared/utils/helper/geometry';
-import {EChartOption} from 'echarts';
 import {MapService} from '../map-editor/uploader/map.uploader.service';
 import {HeatMapGradientPoint, SolverCoordinatesRequest, SolverHeatMapPayload} from './graphical-report.type';
 import {ReportService} from './services/report.service';

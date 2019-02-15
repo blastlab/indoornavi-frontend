@@ -45,7 +45,7 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
   ];
 
   private heatMapSettings: HeatMapPath = {
-    temperatureLifeTime: 25000,
+    temperatureLifeTime: 55000,
     temperatureWaitTime: 5000,
   };
   private playingAnimation: boolean = true;
