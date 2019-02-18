@@ -1,6 +1,6 @@
 import {AfterViewChecked, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {AuthGuard} from './auth/auth.guard';
-import {ActivatedRoute, Params} from '@angular/router';
+import {ActivatedRoute, Params, Router} from '@angular/router';
 import {MenuItem} from 'primeng/primeng';
 import {Subscription} from 'rxjs/Subscription';
 import {BreadcrumbService} from './shared/services/breadcrumbs/breadcrumb.service';
@@ -15,6 +15,7 @@ import {WatchdogService} from './shared/services/watchdog/watchdog.service';
 })
 export class AppComponent implements OnInit, OnDestroy, AfterViewChecked {
   isUserLoggedIn: boolean;
+  username: string;
   isDisplayedInIFrame: boolean = false;
   sidebar: boolean = false;
   breadcrumbs: MenuItem[] = [];
@@ -28,7 +29,8 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewChecked {
               private breadcrumbService: BreadcrumbService,
               private cd: ChangeDetectorRef,
               private location: Location,
-              private watchdogService: WatchdogService) {
+              private watchdogService: WatchdogService,
+              private router: Router) {
   }
 
   ngOnInit() {
@@ -40,8 +42,10 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewChecked {
       }
     });
     this.isUserLoggedIn = !!localStorage.getItem('currentUser');
+    this.setUsername();
     this.userLoggedInSubscription = this.authGuard.userLoggedIn().subscribe((loggedIn: boolean) => {
       this.isUserLoggedIn = loggedIn;
+      this.setUsername();
       if (!loggedIn) {
         localStorage.removeItem('currentUser');
       }
@@ -58,6 +62,12 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewChecked {
     });
     this.hideSidebar();
     this.watchdogService.start();
+  }
+
+  setUsername(): void {
+    if (this.isUserLoggedIn) {
+      this.username = JSON.parse(localStorage.getItem('currentUser'))['username'];
+    }
   }
 
   ngOnDestroy() {
@@ -86,5 +96,13 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewChecked {
     return (this.breadcrumbs.findIndex((breadcrumb: MenuItem) => {
       return breadcrumb.label === 'Dashboard';
     }) >= 0);
+  }
+
+  goToMap(): void {
+    this.router.navigate(['/publications', 1]);
+  }
+
+  goToHeatMap() {
+    this.router.navigate(['/analytics', 1]);
   }
 }

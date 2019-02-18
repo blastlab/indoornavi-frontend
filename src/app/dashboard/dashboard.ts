@@ -9,6 +9,8 @@ import {EventComponent} from './event/event';
 import {DashboardService} from './dashboard.service';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
 import {Router} from '@angular/router';
+import {Floor} from '../floor/floor.type';
+import {FloorService} from '../floor/floor.service';
 
 @Component({
   templateUrl: 'dashboard.html',
@@ -21,13 +23,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private devicesUrls = ['tags/', 'anchors/', 'sinks/'];
   @ViewChild('eventComponent') eventComponent: EventComponent;
   private timer: Timer;
+  floor: Floor;
 
   constructor(
     private infoSocket: SocketService,
     private deviceService: DeviceService,
     private dashboardService: DashboardService,
     private breadcrumbService: BreadcrumbService,
-    private router: Router) {
+    private floorService: FloorService) {
   }
 
   ngOnDestroy(): void {
@@ -43,15 +46,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.breadcrumbService.publishIsReady([
         {label: 'Dashboard', disabled: true}
       ]
-    )
-  }
-
-  goToMap(): void {
-    this.router.navigate(['/publications', 1]);
-  }
-
-  goToHeatMap() {
-    this.router.navigate(['/analytics', 1]);
+    );
+    this.floorService.getFloor(1).subscribe((floor: Floor) => {
+      this.floor = floor;
+    });
   }
 
   private handleBatteryStatusEvents(): void {

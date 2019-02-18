@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {Event, EventLevel} from './event.type';
-import {BatteryState} from '../../device/device.type';
+import {BatteryState, UWB} from '../../device/device.type';
 import {DashboardEventService} from './event.service';
 import {DashboardService} from '../dashboard.service';
 
@@ -12,7 +12,22 @@ import {DashboardService} from '../dashboard.service';
 })
 export class EventComponent implements OnInit {
 
-  events: Event[] = [];
+  events: Event[] = [{
+    level: EventLevel[EventLevel.WARNING].toLowerCase(),
+    message: 'Battery level low',
+    device: {
+      shortId: 1,
+      name: 'device #1'
+    }
+  },
+    {
+      level: EventLevel[EventLevel.DANGER].toLowerCase(),
+      message: 'Battery level very low',
+      device: {
+        shortId: 2,
+        name: 'device #2'
+      }
+    }];
 
   private eventsMap: Map<number, Event> = new Map<number, Event>();
   private notApplicable: string;
@@ -24,9 +39,6 @@ export class EventComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.translateService.get('dashboard.event.notApplicable').subscribe((translated: string) => {
-      this.notApplicable = translated;
-    });
   }
 
   addBatteryStateEvent(batteryStates: BatteryState[]): void {
@@ -38,7 +50,6 @@ export class EventComponent implements OnInit {
           this.eventsMap.set(batteryState.deviceShortId, {
             level: (batteryState.percentage < 75 && batteryState.percentage > 50 ? EventLevel[EventLevel.WARNING] : EventLevel[EventLevel.DANGER]).toLowerCase(),
             message: translated,
-            areaName: this.notApplicable,
             device: {
               shortId: batteryState.deviceShortId,
               name: this.dashboardService.getDeviceName(batteryState.deviceShortId)

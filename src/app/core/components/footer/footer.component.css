@@ -18,6 +18,13 @@
 
 .center-footer {
   justify-content: center;
-  paddign-top: 10px;
+  padding-top: 10px;
+}
+
+/* Landscape phones and down */
+@media (max-width: 480px) {
+  .app-footer {
+    display: none;
+  }
 }
 
