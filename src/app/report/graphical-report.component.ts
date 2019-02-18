@@ -91,7 +91,6 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
   private addCanvas(imgUrl: string) {
     if (this.isLoadingFirstTime || this.displayDialog) {
       if (this.displayDialog) {
-        this.messageService.success('reports.message.loadedSuccess');
         this.cancelDialog();
       }
     } else {
@@ -217,7 +216,7 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
       .subscribe((payload: SolverHeatMapPayload): void => {
         this.data = [];
         if (payload.distribution.length === 0) {
-          this.messageService.success('reports.message.error');
+          this.messageService.failed('reports.message.error');
         } else if (this.isImageLoaded) {
           payload.distribution.forEach((gradientPoint: HeatMapGradientPoint) => {
             if (gradientPoint.heat !== 0) {
@@ -226,11 +225,12 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
               this.data.push(gradientPoint);
             }
           });
+          this.messageService.success('reports.message.loadedSuccess');
+          this.loadMapImage().then((imgUrl: string): void => {
+            this.addCanvas(imgUrl);
+          });
         }
-        this.loadMapImage().then((imgUrl: string): void => {
-          this.addCanvas(imgUrl);
-          this.cancelDialog();
-        });
+        this.cancelDialog();
     });
   }
 }
