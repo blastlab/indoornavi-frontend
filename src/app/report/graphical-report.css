@@ -1,26 +1,22 @@
-.report-dialog-button {
-  position: relative;
-  left: 40px;
-  top: 40px;
-}
-
 .report-dialog-spinner {
-  position: relative;
-  left: 120px;
-  top: 10px;
+  display: flex;
 }
 
-.tags-select {
-  position: relative;
-  top: 8px;
-}
-
-.intensity {
-  display: inline;
+.processingSpinner {
   width: 80px;
+  height: 80px;
 }
 
+/* Landscape phones and down */
+@media (max-width: 480px) {
+  .processingDialog {
+    width: calc(100% - 60px);
+    min-width: auto;
+    font-size: 0.7em;
+  }
 
-.report-element {
-  margin: 20px;
+  .processingSpinner {
+    width: 60px;
+    height: 60px;
+  }
 }

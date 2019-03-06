@@ -158,6 +158,9 @@ import {WatchdogService} from './shared/services/watchdog/watchdog.service';
 import {HttpService} from './shared/services/http/http.service';
 import {HttpBackend} from './shared/services/http/http.backend';
 import {HttpSolver} from './shared/services/http/http.solver';
+import {MobileDatetimeSelectComponent} from './shared/components/mobile-datetime-select/mobile-datetime-select';
+import {HeatMapService} from './report/services/heatmap.service';
+import {HeatmapFilterPropertiesComponent} from './report/heatmap-filter-properties/heatmap-filter-properties.component';
 
 const PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
@@ -234,7 +237,9 @@ export function HttpLoaderFactory(http: Http) {
     GraphicalReportComponent,
     DashboardComponent,
     CounterComponent,
-    EventComponent
+    EventComponent,
+    MobileDatetimeSelectComponent,
+    HeatmapFilterPropertiesComponent
   ],
   entryComponents: [
     PublicationDialogComponent,
@@ -352,7 +357,8 @@ export function HttpLoaderFactory(http: Http) {
     DashboardEventService,
     DashboardService,
     DebuggerService,
-    WatchdogService
+    WatchdogService,
+    HeatMapService
   ], bootstrap: [AppComponent]
 })
 
