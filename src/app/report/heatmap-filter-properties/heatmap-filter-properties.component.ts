@@ -28,7 +28,7 @@ export class HeatmapFilterPropertiesComponent implements OnInit {
   private static WIDTH_ON_OPEN: string = '500px';
   private static WIDTH_ON_CLOSE: string = '200px';
   private static WIDTH_ON_CLOSE_MOBILE: string = 'calc(100% - 30px)';
-  private static HEIGHT_ON_OPEN: string = 'calc(100% - 30px)';
+  private static HEIGHT_ON_OPEN: string = '220px';
   private static HEIGHT_ON_OPEN_MOBILE: string = 'calc(100% - 60px)';
   private static HEIGHT_ON_CLOSE: string = '60px';
 
