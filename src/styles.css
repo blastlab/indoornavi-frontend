@@ -528,4 +528,11 @@ svg text{
     min-width: auto;
     width: 100%;
   }
+
+  .ui-growl {
+    bottom: 70px;
+    top: auto;
+    left: 50%;
+    margin-left: -10em;
+  }
 }
