@@ -7,6 +7,10 @@
   height: 80px;
 }
 
+.processingDialog .ui-dialog-content {
+  min-height: 130px;
+}
+
 /* Landscape phones and down */
 @media (max-width: 480px) {
   .processingDialog {
