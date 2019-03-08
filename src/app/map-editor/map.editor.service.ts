@@ -40,8 +40,8 @@ export class MapEditorService {
   constructor() {
   }
 
-  drawMap(imageBlob: Blob, zoomValue: number): Promise<d3.selection> {
-    return new Promise((resolve) => {
+  drawMap(imageBlob: Blob, zoomValue: number): Observable<d3.selection> {
+    return Observable.create(observer => {
       const image = new Image();
       image.onload = () => {
 
@@ -86,14 +86,9 @@ export class MapEditorService {
             .attr('height', mapContainer.offsetHeight);
         });
 
-        resolve(<MapSvg>{layer: map, container: this.mapLayer});
+        observer.next(<MapSvg>{layer: map, container: this.mapLayer});
       };
       image.src = URL.createObjectURL(imageBlob);
     });
-  }
-
-  redrawMap(blobImage: Blob, zoom: number): Promise<d3.selection> {
-    this.mapLayer.remove();
-    return this.drawMap(blobImage, zoom);
   }
 }

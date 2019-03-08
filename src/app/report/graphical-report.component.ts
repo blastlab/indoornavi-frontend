@@ -19,6 +19,7 @@ import {MapComponent} from '../map/map';
 import {HeatMapService} from './services/heatmap.service';
 import {Subject} from 'rxjs/Subject';
 import {HeatmapFilterProperties} from './heatmap-filter-properties/heatmap-filter-properties.type';
+import {ZoomService} from '../shared/services/zoom/zoom.service';
 
 @Component({
   templateUrl: './graphical-report.html',
@@ -50,7 +51,8 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
               private reportService: ReportService,
               private messageService: MessageServiceWrapper,
               private publishedService: PublishedService,
-              private heatMapService: HeatMapService
+              private heatMapService: HeatMapService,
+              private zoomService: ZoomService
   ) {
   }
 
@@ -89,11 +91,11 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
     this.config.imgUrl = imgUrl;
     this.heatMapCanvas = new HeatMapCanvas(this.config, this.data, this.heatMapService);
     if (redrawImage) {
-      this.heatMapService.drawn().takeUntil(this.subscribeDestroyer).subscribe(() => {
+      this.heatMapService.drawn().first().subscribe(() => {
         const canvas = document.getElementsByTagName('canvas').item(0);
         if (!!canvas) {
           canvas.toBlob((blob: Blob) => {
-            this.mapComponent.redrawImage(blob);
+            this.mapComponent.redrawImage(blob, this.zoomService.getCurrentZoomValue());
             if (this.displayDialog) {
               this.messageService.success('reports.message.loadedSuccess');
               this.cancelDialog();
@@ -210,7 +212,6 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
         }
         this.loadMapImage().then((imgUrl: string): void => {
           this.addCanvas(imgUrl, true);
-          // this.cancelDialog();
         });
       });
   }
