@@ -103,6 +103,6 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   goToHeatMap() {
-    this.router.navigate(['/analytics', 1]);
+    this.router.navigate(['/reports', 1]);
   }
 }

@@ -8,6 +8,7 @@ import {MapClickService} from '../shared/services/map-click/map-click.service';
 import * as d3 from 'd3';
 import {DevicePlacerService} from '../map-editor/tool-bar/tools/device-placer/device-placer.service';
 import {zip} from 'rxjs/observable/zip';
+import {MapService} from '../map-editor/uploader/map.uploader.service';
 
 @Component({
   selector: 'app-map',
@@ -24,7 +25,8 @@ export class MapComponent implements OnInit {
               private mapEditorService: MapEditorService,
               private devicePlacerService: DevicePlacerService,
               private mapClick: MapClickService,
-              protected route: ActivatedRoute) {
+              protected route: ActivatedRoute,
+              private mapService: MapService) {
   }
 
   ngOnInit(): void {
@@ -33,15 +35,30 @@ export class MapComponent implements OnInit {
       this.isPublic = !!(data.isPublic);
       const zoom: number = !!queryParams.zoom ? queryParams.zoom : this.zoom;
 
-      this.mapEditorService.drawMap(this.floor, zoom).then((mapSvg: MapSvg) => {
-        this.imageLoaded = true;
-        this.mapLoaderInformer.publishIsLoaded(mapSvg);
+      this.mapService.getImage(this.floor.imageId).subscribe((blob: Blob) => {
+        this.mapEditorService.drawMap(blob, zoom).first().subscribe((mapSvg: MapSvg) => {
+          this.imageLoaded = true;
+          this.mapLoaderInformer.publishIsLoaded(mapSvg);
 
-        if (this.isPublic) {
-          this.applyOnClickListener(mapSvg);
-          this.applyOnTouchesListener(mapSvg);
-        }
+          if (this.isPublic) {
+            this.applyOnClickListener(mapSvg);
+            this.applyOnTouchesListener(mapSvg);
+          }
+        });
       });
+    });
+  }
+
+  redrawImage(blobImage: Blob, zoom: number = this.zoom): void {
+    d3.select(`#${MapEditorService.MAP_LAYER_SELECTOR_ID}`).remove();
+    this.mapEditorService.drawMap(blobImage, zoom).first().subscribe((mapSvg: MapSvg) => {
+      this.imageLoaded = true;
+      this.mapLoaderInformer.publishIsLoaded(mapSvg);
+
+      if (this.isPublic) {
+        this.applyOnClickListener(mapSvg);
+        this.applyOnTouchesListener(mapSvg);
+      }
     });
   }
 
