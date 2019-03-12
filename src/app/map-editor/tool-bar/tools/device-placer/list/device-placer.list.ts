@@ -3,11 +3,12 @@ import {Anchor, Sink} from '../../../../../device/device.type';
 import {DevicePlacerService} from '../device-placer.service';
 import {ToolDetailsComponent} from '../../../shared/details/tool-details';
 import {DeviceService} from '../../../../../device/device.service';
-import {AnchorBag, DeviceDto, DeviceType, SinkBag} from '../device-placer.types';
+import {AnchorBag, DeviceDto, DeviceType, PlacementResult, SinkBag} from '../device-placer.types';
 import {ActionBarService} from '../../../../action-bar/actionbar.service';
 import {Configuration} from '../../../../action-bar/actionbar.type';
 import * as Collections from 'typescript-collections';
 import {Subject} from 'rxjs/Subject';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-device-placer-list',
@@ -24,6 +25,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   private anchors: Array<Anchor> = [];
   private sinks: Array<Sink> = [];
   private draggedDevice: Sink | Anchor;
+  private placementResult: PlacementResult;
 
   private static isOnMap(device: Anchor): boolean {
     return !!device.floor;
@@ -44,6 +46,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
     this.listenOnDeviceActivated();
     this.listenOnDeviceRemovedFromMap();
     this.listenOnTableRendered();
+    this.listenOnPlacementValidated();
     this.fetchAllDevices();
     this.listenOnDeviceInActiveConfiguration();
   }
@@ -216,4 +219,9 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
     }
   }
 
+  private listenOnPlacementValidated() {
+    this.devicePlacerService.onPlacementValidated.subscribe((placementResult: PlacementResult) => {
+      this.placementResult = placementResult;
+    });
+  }
 }

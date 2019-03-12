@@ -167,6 +167,7 @@
   "device-list.searchByAllFields": "Find by any field",
   "device-placer.confirmation.body": "Warning: You're about to unset sink which has connected anchors, this will unset sink and all his anchors.",
   "device-placer.confirmation.header": "Sink unset warning",
+  "device-placer.properPlacement.error": "There is too many anchors placed on the same height: {{z}}. Correct it or tag positioning may not work properly.",
   "device.create.success": "Device has been created",
   "device.battery": "Battery Level",
   "device.details": "Device details",

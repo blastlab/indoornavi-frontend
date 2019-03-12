@@ -1,4 +1,4 @@
-import {Anchor, Device, Sink} from '../../../../device/device.type';
+import {Anchor, Sink} from '../../../../device/device.type';
 import {SinkInEditor} from '../../../../map/models/sink';
 import {AnchorInEditor} from '../../../../map/models/anchor';
 import {DrawConfiguration} from '../../../../map-viewer/publication.type';
@@ -35,3 +35,7 @@ export interface DeviceCallbacks {
   unset: () => void;
 }
 
+export interface PlacementResult {
+  isValid: boolean;
+  message?: string;
+}

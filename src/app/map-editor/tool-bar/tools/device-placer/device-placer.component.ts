@@ -42,6 +42,15 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   private contextMenu: DeviceCallbacks;
   private confirmationBody: string;
   private containerBox: Box;
+  private properPlacementErrorMessage: string;
+  private devicesOnMap: Anchor[] = [];
+
+  private static average(data: number[]): number {
+    const sum = data.reduce((previous, current) => {
+      return previous + current;
+    }, 0);
+    return sum / data.length;
+  }
 
   constructor(
     private toolbarService: ToolbarService,
@@ -136,6 +145,13 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     this.configurationService.configurationLoaded().first().subscribe((configuration: Configuration): void => {
       this.floorId = configuration.floorId;
       this.drawFromConfiguration(configuration);
+      configuration.data.sinks.forEach((sink: Sink) => {
+        this.devicesOnMap.push(sink);
+        sink.anchors.forEach((anchor: Anchor) => {
+          this.devicesOnMap.push(anchor);
+        });
+      });
+      this.checkProperPlacement();
     });
   }
 
@@ -178,6 +194,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     this.devicePlacerService.onDroppedInside.takeUntil(this.subscriptionDestroyer).subscribe((coordinates: Point): void => {
       const dropTransitionCoordinates = this.zoomService.calculateTransition(coordinates);
       if (!!this.draggedDevice) {
+        this.devicesOnMap.push(this.draggedDevice.device);
         if (this.draggedDevice.type === DeviceType.SINK) {
           const sinkBag: SinkBag = this.placeSinkOnMap(<Sink>this.draggedDevice.device, dropTransitionCoordinates);
           sinkBag.deviceInEditor.activateForMouseEvents();
@@ -198,6 +215,8 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
           this.devicePlacerService.emitActivated(anchorBag.deviceInEditor);
           this.configurationService.addAnchor(<Sink>sinkBag.deviceInList, <Anchor>this.updateDevicePosition(anchorBag));
         }
+
+        this.checkProperPlacement();
       }
     });
   }
@@ -321,12 +340,20 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   }
 
   private removeFromMap(): void {
+    this.devicesOnMap = this.devicesOnMap.filter((anchor: Anchor) => {
+      return anchor.shortId !== this.activeDevice.deviceInList.shortId;
+    });
     if (this.activeDevice.deviceInEditor.type === DeviceType.SINK) {
       const sinkBag: SinkBag = <SinkBag>this.activeDevice;
       if (sinkBag.deviceInList.anchors.length > 0) {
         this.confirmationService.confirm({
           message: this.confirmationBody,
           accept: () => {
+            sinkBag.deviceInEditor.anchors.forEach((anchorBag: AnchorBag) => {
+              this.devicesOnMap = this.devicesOnMap.filter((anchor: Anchor) => {
+                return anchor.shortId !== anchorBag.deviceInList.shortId;
+              });
+            });
             this.removeSinkWithAnchors(sinkBag);
             this.configurationService.removeSink(sinkBag.deviceInList);
           }
@@ -372,6 +399,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     if (sinkIndex >= 0) {
       this.sinks[sinkIndex].deviceInEditor.removeAnchor(anchor);
     }
+    this.checkProperPlacement();
   }
 
   private removeSinkWithAnchors(sinkBag: SinkBag): void {
@@ -384,6 +412,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
       this.sinks.splice(index, 1);
     }
     sinkBag.deviceInList.anchors = [];
+    this.checkProperPlacement();
   }
 
   private setSinkGroupInScope(sinkBag: SinkBag): void {
@@ -455,5 +484,48 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     this.translateService.get('device-placer.confirmation.body').subscribe((value: string) => {
       this.confirmationBody = value;
     });
+    this.translateService.get('device-placer.properPlacement.error').subscribe((translated: string) => {
+      this.properPlacementErrorMessage = translated;
+    });
+  }
+
+  checkProperPlacement(): void {
+    if (this.devicesOnMap.length <= 1) {
+      this.devicePlacerService.emitPlacementValidated({
+        isValid: true
+      });
+      return;
+    }
+    const anchorsZ = this.devicesOnMap.map((anchor: Anchor) => anchor.z);
+    const avg = DevicePlacerComponent.average(anchorsZ);
+
+    const squareDiffs = anchorsZ.map((value: number) => {
+      const diff = value - avg;
+      return diff * diff;
+    });
+
+    const avgSquareDiff = DevicePlacerComponent.average(squareDiffs);
+
+    const isValid = Math.sqrt(avgSquareDiff) > 1;
+
+    this.devicePlacerService.emitPlacementValidated({
+      isValid: isValid,
+      message: isValid ? null : this.properPlacementErrorMessage.replace('{{z}}', this.getHeightOfTheMostPopulatedBin(anchorsZ).toString())
+    });
+  }
+
+  private getHeightOfTheMostPopulatedBin(anchorsZ: number[]): number {
+    const histogramGenerator = d3.histogram();
+    const bins = histogramGenerator(anchorsZ);
+    let indexOfMostPopulatedBin = 0;
+    bins.reduce((max, previous, index) => {
+      if (previous.length > max) {
+        indexOfMostPopulatedBin = index;
+        return previous.length;
+      } else {
+        return max;
+      }
+    }, bins[0].length);
+    return bins[indexOfMostPopulatedBin][0];
   }
 }

@@ -1,4 +1,9 @@
 <app-tool-details #toolDetails>
+  <div class="ui-g" *ngIf="placementResult && !placementResult.isValid">
+    <div class="ui-g-12">
+      <p-message severity="warn" [text]="placementResult.message"></p-message>
+    </div>
+  </div>
   <div class="ui-g">
     <div class="ui-g-7">
       <div class="ui-inputgroup">
