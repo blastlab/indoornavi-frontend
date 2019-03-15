@@ -15,7 +15,8 @@ export class DeviceInEditor {
 
   private reactiveToEvents: boolean = false;
   private appearance: DeviceAppearance = DeviceAppearance.IN_SCOPE;
-  private unsetLabel: string;
+  private removeLabel: string;
+  private editLabel: string;
 
   constructor(
     public shortId: number,
@@ -56,8 +57,12 @@ export class DeviceInEditor {
   contextMenuOn(callbacks: DeviceCallbacks): d3.selection {
     this.contextMenuService.setItems([
       {
-        label: this.unsetLabel,
-        command: callbacks.unset
+        label: this.removeLabel,
+        command: callbacks.remove
+      },
+      {
+        label: this.editLabel,
+        command: callbacks.edit
       }
     ]);
     this.svgGroupWrapper.getGroup().on('contextmenu', (): void => {
@@ -85,6 +90,11 @@ export class DeviceInEditor {
     this.svgGroupWrapper.getGroup().remove();
   }
 
+  updateHeight(height: number): void {
+    this.svgGroupWrapper.removeElements(ElementType.TEXT);
+    this.svgGroupWrapper.addText({coordinates: {x: 0, y: 40}}, this.getDeviceDescription(height), '#000');
+  }
+
   private createDeviceOnMapGroup(coordinates: Point, container: d3.selection, drawConfiguration: DeviceInEditorConfiguration) {
     const deviceDescription = this.getDeviceDescription();
     this.svgGroupWrapper = new DrawBuilder(container, drawConfiguration).createGroup()
@@ -100,10 +110,12 @@ export class DeviceInEditor {
       .attr('fill', color);
   }
 
-  private getDeviceDescription(): string {
+  private getDeviceDescription(height?: number): string {
     let text: string = this.drawConfiguration.id.toString();
-    if (!!this.drawConfiguration.heightInMeters) {
-      text += ` (${this.drawConfiguration.heightInMeters / 100}m)`
+    if (height !== null && height !== undefined) {
+      text += ` (${height}cm)`;
+    } else if (this.drawConfiguration.height !== null && this.drawConfiguration.height !== undefined) {
+      text += ` (${this.drawConfiguration.height}cm)`;
     }
     return text;
   }
@@ -192,8 +204,11 @@ export class DeviceInEditor {
   }
 
   private setTranslations() {
-    this.translateService.get('unset').subscribe((value: string) => {
-      this.unsetLabel = value;
+    this.translateService.get('remove.fromMap').subscribe((value: string) => {
+      this.removeLabel = value;
+    });
+    this.translateService.get('edit.height').subscribe((value: string) => {
+      this.editLabel = value;
     });
   }
 }

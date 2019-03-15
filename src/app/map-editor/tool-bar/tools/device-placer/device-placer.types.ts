@@ -24,7 +24,7 @@ export enum DeviceType {
 
 
 export interface DeviceInEditorConfiguration extends DrawConfiguration {
-  heightInMeters: number;
+  height: number;
 }
 
 export enum DeviceAppearance {
@@ -32,6 +32,7 @@ export enum DeviceAppearance {
 }
 
 export interface DeviceCallbacks {
-  unset: () => void;
+  remove: () => void;
+  edit: () => void;
 }
 

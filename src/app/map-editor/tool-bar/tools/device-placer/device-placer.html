@@ -30,3 +30,40 @@
     </button>
   </p-footer>
 </p-confirmDialog>
+
+<p-dialog *ngIf="!!activeDevice" [(visible)]="displayHeightDialog" [modal]="true" [closable]="false">
+  <p-header>
+    {{'heightDialog.header'|translate}} {{activeDevice.deviceInList.shortId}}
+  </p-header>
+
+  <div class="ui-g">
+    <div class="ui-g-5 text-right no-padding">
+      <label [ngStyle]="{ 'line-height': '30px', 'margin-right': '5px' }" for="height-in-centimeters">{{'device-list.label.height'|translate}}</label>
+    </div>
+    <div class="ui-g-7 no-padding">
+        <span class="ui-inputgroup">
+          <input [appAutoFocus]="true" id="height-in-centimeters" pInputText type="number" [(ngModel)]="heightInCentimeters" />
+          <span class="ui-inputgroup-addon">cm</span>
+        </span>
+    </div>
+  </div>
+
+  <p-footer>
+    <button
+      pButton
+      type="button"
+      class="ui-button-danger"
+      icon="fa-close"
+      label="{{'cancel'|translate}}"
+      (click)="heightDialogClosed(false)">
+    </button>
+    <button
+      pButton
+      type="submit"
+      class="ui-button-success"
+      icon="fa-check"
+      label="{{'ok'|translate}}"
+      (click)="heightDialogClosed(true)">
+    </button>
+  </p-footer>
+</p-dialog>

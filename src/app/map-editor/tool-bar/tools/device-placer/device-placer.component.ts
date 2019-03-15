@@ -31,17 +31,27 @@ import {ModelsConfig} from '../../../../map/models/models.config';
 export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   active: boolean = false;
   disabled: boolean = true;
+  activeDevice: SinkBag | AnchorBag;
+  displayHeightDialog: boolean = false;
+  heightInCentimeters: number = 200;
   private subscriptionDestroyer: Subject<void> = new Subject<void>();
   private map: d3.selection;
   private scale: Scale;
   private floorId: number;
   private scaleCalculations: ScaleCalculations;
   private sinks: SinkBag[] = [];
-  private activeDevice: SinkBag | AnchorBag;
   private draggedDevice: DeviceDto;
   private contextMenu: DeviceCallbacks;
   private confirmationBody: string;
   private containerBox: Box;
+  private devicesToAdd: [SinkBag, AnchorBag];
+
+  private static average(data: number[]): number {
+    const sum = data.reduce((previous, current) => {
+      return previous + current;
+    }, 0);
+    return sum / data.length;
+  }
 
   constructor(
     private toolbarService: ToolbarService,
@@ -59,8 +69,12 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
 
   ngOnInit() {
     this.contextMenu = {
-      unset: () => {
+      remove: () => {
         this.removeFromMap();
+      },
+      edit: () => {
+        this.displayHeightDialog = true;
+        this.heightInCentimeters = this.activeDevice.deviceInList.z;
       }
     };
     this.bindMapSelection();
@@ -118,6 +132,37 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
       this.map = mapLoaded.container;
       this.containerBox = this.map.node().getBBox();
     });
+  }
+
+
+  heightDialogClosed(confirmed: boolean): void {
+    if (!confirmed && !!this.devicesToAdd) {
+      this.removeFromMap();
+    } else if (!!this.devicesToAdd) {
+      const [sinkToAdd, anchorToAdd] = this.devicesToAdd;
+      if (this.draggedDevice.type === DeviceType.SINK) {
+        sinkToAdd.deviceInEditor.activateForMouseEvents();
+        sinkToAdd.deviceInEditor.contextMenuOn(this.contextMenu);
+        sinkToAdd.deviceInList.z = this.heightInCentimeters;
+        this.configurationService.addSink(<Sink>this.updateDevicePosition(sinkToAdd));
+      } else if (this.draggedDevice.type === DeviceType.ANCHOR) {
+        anchorToAdd.deviceInEditor.activateForMouseEvents();
+        anchorToAdd.deviceInEditor.contextMenuOn(this.contextMenu);
+        anchorToAdd.deviceInList.z = this.heightInCentimeters;
+        this.configurationService.addAnchor(<Sink>sinkToAdd.deviceInList, <Anchor>this.updateDevicePosition(anchorToAdd));
+      }
+    } else if (confirmed) {
+      this.activeDevice.deviceInList.z = this.heightInCentimeters;
+      if (this.activeDevice.deviceInEditor.type === DeviceType.ANCHOR) {
+        this.configurationService.updateAnchor(this.activeDevice.deviceInList);
+      } else if (this.activeDevice.deviceInEditor.type === DeviceType.SINK) {
+        this.configurationService.updateSink(<Sink>this.activeDevice.deviceInList);
+      }
+    }
+
+    this.activeDevice.deviceInEditor.updateHeight(this.activeDevice.deviceInList.z);
+    this.displayHeightDialog = false;
+    this.devicesToAdd = null;
   }
 
   private captureScaleChanges(): void {
@@ -178,12 +223,12 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     this.devicePlacerService.onDroppedInside.takeUntil(this.subscriptionDestroyer).subscribe((coordinates: Point): void => {
       const dropTransitionCoordinates = this.zoomService.calculateTransition(coordinates);
       if (!!this.draggedDevice) {
+        this.displayHeightDialog = true;
+        this.displayHeightDialog = true;
         if (this.draggedDevice.type === DeviceType.SINK) {
           const sinkBag: SinkBag = this.placeSinkOnMap(<Sink>this.draggedDevice.device, dropTransitionCoordinates);
-          sinkBag.deviceInEditor.activateForMouseEvents();
-          sinkBag.deviceInEditor.contextMenuOn(this.contextMenu);
           this.devicePlacerService.emitActivated(sinkBag.deviceInEditor);
-          this.configurationService.addSink(<Sink>this.updateDevicePosition(sinkBag));
+          this.devicesToAdd = [sinkBag, null];
         } else if (this.draggedDevice.type === DeviceType.ANCHOR) {
           if (this.activeDevice.deviceInEditor.type === DeviceType.ANCHOR) {
             const index: number = this.sinks.findIndex((sink: SinkBag): boolean => {
@@ -193,10 +238,8 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
           }
           const sinkBag: SinkBag = <SinkBag>this.activeDevice;
           const anchorBag: AnchorBag = this.placeAnchorOnMap(sinkBag, <Anchor>this.draggedDevice.device, dropTransitionCoordinates);
-          anchorBag.deviceInEditor.activateForMouseEvents();
-          anchorBag.deviceInEditor.contextMenuOn(this.contextMenu);
           this.devicePlacerService.emitActivated(anchorBag.deviceInEditor);
-          this.configurationService.addAnchor(<Sink>sinkBag.deviceInList, <Anchor>this.updateDevicePosition(anchorBag));
+          this.devicesToAdd = [sinkBag, anchorBag];
         }
       }
     });
@@ -270,7 +313,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     const sinkDrawConfiguration: DeviceInEditorConfiguration = {
       id: `sink-${sink.shortId}`,
       clazz: `sink`,
-      heightInMeters: sink.z
+      height: sink.z
     };
     const sinkOnMap: SinkInEditor = new SinkInEditor(
       sink.shortId,
@@ -297,7 +340,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     const anchorDrawConfiguration: DeviceInEditorConfiguration = {
       id: `anchor-${anchor.shortId}`,
       clazz: `anchor`,
-      heightInMeters: anchor.z
+      height: anchor.z
     };
     const anchorInEditor: AnchorInEditor = new AnchorInEditor(
       anchor.shortId,
