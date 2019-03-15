@@ -6,7 +6,27 @@
         [disabled]="disabled">
 </button>
 
-<p-confirmDialog acceptLabel="{{'ok'|translate}}"
-                 rejectLabel="{{'cancel'|translate}}"
-                 header="{{'device-placer.confirmation.header'|translate}}"
-                 icon="fa fa-exclamation-triangle" width="425"></p-confirmDialog>
+<p-confirmDialog #cd header="{{'device-placer.confirmation.header'|translate}}"
+                 icon="fa fa-exclamation-triangle" width="425" [closable]="false">
+
+  <p-footer>
+    <!--workaround because angular is focusing on first element and then cancel button is displaying in blue, not in red as expected-->
+    <button type="button" [hidden]="true"></button>
+    <button
+      pButton
+      type="button"
+      class="ui-button-danger"
+      icon="fa-close"
+      label="{{'cancel'|translate}}"
+      (click)="cd.reject()">
+    </button>
+    <button
+      pButton
+      type="submit"
+      class="ui-button-success"
+      icon="fa-check"
+      label="{{'ok'|translate}}"
+      (click)="cd.accept()">
+    </button>
+  </p-footer>
+</p-confirmDialog>
