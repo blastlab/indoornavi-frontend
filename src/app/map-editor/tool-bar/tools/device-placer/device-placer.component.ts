@@ -506,7 +506,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
 
     const avgSquareDiff = DevicePlacerComponent.average(squareDiffs);
 
-    const isValid = Math.sqrt(avgSquareDiff) > 1;
+    const isValid = Math.sqrt(avgSquareDiff) > 80;
 
     this.devicePlacerService.emitPlacementValidated({
       isValid: isValid,
