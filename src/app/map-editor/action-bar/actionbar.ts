@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, Input, NgZone, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, HostListener, Input, NgZone, OnDestroy, OnInit} from '@angular/core';
 import {ActionBarService} from './actionbar.service';
 import {Floor} from '../../floor/floor.type';
 import {MapLoaderInformerService} from '../../shared/services/map-loader-informer/map-loader-informer.service';
@@ -147,6 +147,13 @@ export class ActionBarComponent implements OnInit, OnDestroy {
     }
 
     this.configurationService.clear();
+  }
+
+  @HostListener('document:keydown.enter', [])
+  handleEnter(): void {
+    if (!this.publishButtonDisabled) {
+      this.saveDraft();
+    }
   }
 
   public saveDraft(): void {

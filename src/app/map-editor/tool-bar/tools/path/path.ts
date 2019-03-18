@@ -85,6 +85,13 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
     }
   }
 
+  onKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'Enter' || event.key === 'Escape') {
+      event.preventDefault();
+      this.toggleActivity();
+    }
+  }
+
   setDisabled(value: boolean): void {
     this.disabled = value;
   }

@@ -96,6 +96,13 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     }
   }
 
+  onKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'Enter' || event.key === 'Escape') {
+      event.preventDefault();
+      this.toggleActivity();
+    }
+  }
+
   setActive(): void {
     this.activatePlacerEvents();
     this.devicePlacerService.emitListVisibility(true);

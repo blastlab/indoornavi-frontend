@@ -175,6 +175,25 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     }
   }
 
+  onKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'Enter' || event.key === 'Escape') {
+      event.preventDefault();
+      this.onClick();
+    }
+  }
+
+  @HostListener('document:keydown.escape', [])
+  handleEscape(): void {
+    if (this.isDragging) {
+      this.rejectChanges(this.scaleSnapshot);
+      this.setScaleVisible();
+      this.isScaleSet = false;
+      this.isFirstPointDrawn = false;
+      this.scaleGroup.style('display', 'flex');
+      this.setScalePoints();
+    }
+  }
+
   private rejectChanges(scale: Scale) {
     if (!!scale) {
       this.scale = Helper.deepCopy(scale);
@@ -183,18 +202,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
       this.pointsArray = [];
       this.linesArray = [];
       this.drawScale(this.scale);
-    }
-  }
-
-  @HostListener('document:keydown.escape', [])
-  public handleEscape(): void {
-    if (this.isDragging) {
-      this.rejectChanges(this.scaleSnapshot);
-      this.setScaleVisible();
-      this.isScaleSet = false;
-      this.isFirstPointDrawn = false;
-      this.scaleGroup.style('display', 'flex');
-      this.setScalePoints();
     }
   }
 
