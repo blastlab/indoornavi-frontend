@@ -42,7 +42,7 @@
     </div>
     <div class="ui-g-7 no-padding">
         <span class="ui-inputgroup">
-          <input [appAutoFocus]="true" id="height-in-centimeters" pInputText type="number" [(ngModel)]="heightInCentimeters" />
+          <input #height=ngModel required pattern="^-{0,1}[0-9]{1,5}$" [appAutoFocus]="true" id="height-in-centimeters" pInputText type="number" [(ngModel)]="heightInCentimeters" />
           <span class="ui-inputgroup-addon">cm</span>
         </span>
     </div>
@@ -55,7 +55,7 @@
       class="ui-button-danger"
       icon="fa-close"
       label="{{'cancel'|translate}}"
-      (click)="heightDialogClosed(false)">
+      (click)="heightDialogClosed(false, true)">
     </button>
     <button
       pButton
@@ -63,7 +63,7 @@
       class="ui-button-success"
       icon="fa-check"
       label="{{'ok'|translate}}"
-      (click)="heightDialogClosed(true)">
+      (click)="heightDialogClosed(true, !height.invalid)">
     </button>
   </p-footer>
 </p-dialog>

@@ -29,11 +29,13 @@ import {ModelsConfig} from '../../../../map/models/models.config';
   templateUrl: './device-placer.html'
 })
 export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
+  private static defaultHeight = 100;
+
   active: boolean = false;
   disabled: boolean = true;
   activeDevice: SinkBag | AnchorBag;
   displayHeightDialog: boolean = false;
-  heightInCentimeters: number = 200;
+  heightInCentimeters: number = DevicePlacerComponent.defaultHeight;
   private subscriptionDestroyer: Subject<void> = new Subject<void>();
   private map: d3.selection;
   private scale: Scale;
@@ -135,7 +137,10 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   }
 
 
-  heightDialogClosed(confirmed: boolean): void {
+  heightDialogClosed(confirmed: boolean, isValid: boolean): void {
+    if (!isValid) {
+      return;
+    }
     if (!confirmed && !!this.devicesToAdd) {
       this.removeFromMap();
     } else if (!!this.devicesToAdd) {
@@ -223,7 +228,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     this.devicePlacerService.onDroppedInside.takeUntil(this.subscriptionDestroyer).subscribe((coordinates: Point): void => {
       const dropTransitionCoordinates = this.zoomService.calculateTransition(coordinates);
       if (!!this.draggedDevice) {
-        this.displayHeightDialog = true;
+        this.heightInCentimeters = this.draggedDevice.device.z == null ? DevicePlacerComponent.defaultHeight : this.draggedDevice.device.z;
         this.displayHeightDialog = true;
         if (this.draggedDevice.type === DeviceType.SINK) {
           const sinkBag: SinkBag = this.placeSinkOnMap(<Sink>this.draggedDevice.device, dropTransitionCoordinates);
