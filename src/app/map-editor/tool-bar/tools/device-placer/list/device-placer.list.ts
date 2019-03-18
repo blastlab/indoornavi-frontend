@@ -16,6 +16,7 @@ import {TranslateService} from '@ngx-translate/core';
 })
 export class DevicePlacerListComponent implements OnInit, OnDestroy {
   @ViewChild('toolDetails') private toolDetails: ToolDetailsComponent;
+  placementResult: PlacementResult;
   public activeList: Array<Anchor | Sink> = [];
   public queryString: string;
   public queryFields: string[] = ['shortId', 'longId', 'name'];
@@ -25,7 +26,6 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   private anchors: Array<Anchor> = [];
   private sinks: Array<Sink> = [];
   private draggedDevice: Sink | Anchor;
-  private placementResult: PlacementResult;
 
   private static isOnMap(device: Anchor): boolean {
     return !!device.floor;
