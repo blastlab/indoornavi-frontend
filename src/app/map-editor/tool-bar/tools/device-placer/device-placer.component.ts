@@ -142,7 +142,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
       return;
     }
     if (!confirmed && !!this.devicesToAdd) {
-      this.removeFromMap();
+      this.removeFromMap(false);
     } else if (!!this.devicesToAdd) {
       const [sinkToAdd, anchorToAdd] = this.devicesToAdd;
       if (this.draggedDevice.type === DeviceType.SINK) {
@@ -368,7 +368,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     return anchorBag;
   }
 
-  private removeFromMap(): void {
+  private removeFromMap(removeFromConfiguration: boolean = true): void {
     if (this.activeDevice.deviceInEditor.type === DeviceType.SINK) {
       const sinkBag: SinkBag = <SinkBag>this.activeDevice;
       if (sinkBag.deviceInList.anchors.length > 0) {
@@ -389,7 +389,9 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
         return sink.deviceInEditor.hasAnchor(anchorBag);
       });
       this.removeAnchorFromSink(sinkWithAnchor, anchorBag);
-      this.configurationService.removeAnchor(anchorBag.deviceInList);
+      if (removeFromConfiguration) {
+        this.configurationService.removeAnchor(anchorBag.deviceInList);
+      }
     }
     this.devicePlacerService.emitMapModeActivated();
     this.sinks.forEach((sinkBag: SinkBag) => {
