@@ -98,7 +98,7 @@ export class WizardComponent implements Tool, OnInit, OnDestroy {
     if (event.key === 'Enter') {
       event.preventDefault();
       this.nextStep();
-    } else if (event.key === 'Escape'){
+    } else if (event.key === 'Escape') {
       event.preventDefault();
       this.previousStep();
     }
