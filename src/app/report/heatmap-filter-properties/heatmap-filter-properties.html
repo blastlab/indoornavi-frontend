@@ -1,0 +1,63 @@
+<div id="heat-map-filter-properties"
+     [@toggle]="{ value: currentState, params: { width: width, height: height } }">
+  <div *ngIf="currentState === 'close'" class="button-text clickable" (click)="open()">
+    <i class="fa fa-calendar"></i>{{'reports.button.filter'|translate}}
+  </div>
+  <div *ngIf="currentState === 'open'" class="flex">
+    <div class="ui-g" id="filter-properties-from">
+      <ng-container *ngIf="isMobileView">
+        <div class="ui-g-5">
+          <app-mobile-datetime-select [triggerId]="'filter-properties-from'" [triggerText]="'dateFrom'"
+                                      [externalTrigger]="true"
+                                      [selectedDate]="fromDate"
+                                      (dateSelected)="updateDate($event, 'from')"></app-mobile-datetime-select>
+        </div>
+        <div class="ui-g-7 text-right">
+          {{fromDate.toLocaleString()}}
+        </div>
+      </ng-container>
+      <ng-container *ngIf="!isMobileView">
+        <div class="ui-g-5" [ngStyle]="{'line-height': '30px'}">
+          <label for="from">{{'dateFrom'|translate}}</label>
+        </div>
+        <div class="ui-g-7">
+          <p-calendar id="from" [(ngModel)]="fromDate" showTime="true" hourFormat="24" dateFormat="dd.mm.yy"
+                      styleClass="flex-item right"></p-calendar>
+        </div>
+      </ng-container>
+    </div>
+    <div class="ui-g" id="filter-properties-to">
+      <ng-container *ngIf="isMobileView">
+        <div class="ui-g-5">
+          <app-mobile-datetime-select [triggerId]="'filter-properties-to'" [triggerText]="'dateTo'"
+                                      [externalTrigger]="true"
+                                      [selectedDate]="toDate"
+                                      (dateSelected)="updateDate($event, 'from')"></app-mobile-datetime-select>
+        </div>
+        <div class="ui-g-7 text-right">
+          {{toDate.toLocaleString()}}
+        </div>
+      </ng-container>
+      <ng-container *ngIf="!isMobileView">
+        <div class="ui-g-5" [ngStyle]="{'line-height': '30px'}">
+          <label for="to">{{'dateTo'|translate}}</label>
+        </div>
+        <div class="ui-g-7">
+          <p-calendar id="to" [(ngModel)]="toDate" showTime="true" hourFormat="24" dateFormat="dd.mm.yy"
+                      styleClass="flex-item right"></p-calendar>
+        </div>
+      </ng-container>
+    </div>
+    <div class="ui-g">
+      <div class="ui-g-5">
+        <label for="tags">{{'publishedList.tags'|translate}}</label>
+      </div>
+      <div class="ui-g-7">
+        <p-multiSelect id="tags" [options]="tags" [(ngModel)]="selectedTags" [styleClass]="'tagsSelect right'"></p-multiSelect>
+      </div>
+    </div>
+    <div class="flex-item bottom button-text clickable" (click)="close()">
+      <i class="fa fa-search"></i>{{'generate'|translate}}
+    </div>
+  </div>
+</div>

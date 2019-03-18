@@ -1,6 +1,4 @@
 import {Injectable} from '@angular/core';
-import {Floor} from '../floor/floor.type';
-import {MapService} from './uploader/map.uploader.service';
 import * as d3 from 'd3';
 import {MapSvg} from '../map/map.type';
 import {Subject} from 'rxjs/Subject';
@@ -18,6 +16,8 @@ export class MapEditorService {
   private static MAP_CONTAINER_SELECTOR_ID: string = 'map-container';
   private transformation: Transform = {x: 0, y: 0, k: 1};
   private transformationInformer = new Subject<Transform>();
+
+  private mapLayer: d3.selection;
 
   static maxTranslate(mapContainer: HTMLElement, image: HTMLImageElement): [[number, number], [number, number]] {
     const width = Math.max(mapContainer.offsetWidth, image.width),
@@ -37,18 +37,18 @@ export class MapEditorService {
     this.transformationInformer.next(transformation);
   }
 
-  constructor(private mapService: MapService) {
+  constructor() {
   }
 
-  drawMap(floor: Floor, zoomValue: number): Promise<d3.selection> {
-    return new Promise((resolve) => {
+  drawMap(imageBlob: Blob, zoomValue: number): Observable<d3.selection> {
+    return Observable.create(observer => {
       const image = new Image();
       image.onload = () => {
 
         const mapContainer = document.getElementById(MapEditorService.MAP_CONTAINER_SELECTOR_ID);
 
         const zoomed = () => {
-          g.attr('transform', d3.event.transform);
+          this.mapLayer.attr('transform', d3.event.transform);
           this.transformation = d3.zoomTransform(document.getElementById(MapEditorService.MAP_UPPER_LAYER_SELECTOR_ID));
           this.changeTransformation(this.transformation);
         };
@@ -62,9 +62,9 @@ export class MapEditorService {
           .attr('width', mapContainer.offsetWidth)
           .attr('height', mapContainer.offsetHeight);
 
-        const g = map.append('g');
+        this.mapLayer = map.append('g');
 
-        g.attr('id', MapEditorService.MAP_LAYER_SELECTOR_ID)
+        this.mapLayer.attr('id', MapEditorService.MAP_LAYER_SELECTOR_ID)
           .append('svg:image')
           .attr('id', 'map-img')
           .attr('xlink:href', image.src)
@@ -86,11 +86,9 @@ export class MapEditorService {
             .attr('height', mapContainer.offsetHeight);
         });
 
-        resolve(<MapSvg>{layer: map, container: g});
+        observer.next(<MapSvg>{layer: map, container: this.mapLayer});
       };
-      this.mapService.getImage(floor.imageId).subscribe((blob: Blob) => {
-        image.src = URL.createObjectURL(blob);
-      });
+      image.src = URL.createObjectURL(imageBlob);
     });
   }
 }

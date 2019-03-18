@@ -8,13 +8,13 @@ export class ZoomService {
 
   private transformation: Transform = {x: 0, y: 0, k: 1};
 
-  constructor (private mapEditorService: MapEditorService) {
+  constructor(private mapEditorService: MapEditorService) {
     mapEditorService.mapIsTransformed().subscribe((transformation: Transform) => {
       this.transformation = transformation;
     });
   }
 
-  calculateTransition (point: Point): Point {
+  calculateTransition(point: Point): Point {
     // to understand zoom transformation think of it as of points distributed on surface of the balloon where
     // each point on the balloon surface has unique transformation vector when balloon is inflated.
     return {x: (point.x - this.transformation.x) / this.transformation.k, y: (point.y - this.transformation.y) / this.transformation.k};
@@ -29,6 +29,10 @@ export class ZoomService {
     point.y = (point.y > borderNorthWest.y + offset[0].y ? point.y : borderNorthWest.y + offset[0].y);
     point.y = (point.y < borderSouthEast.y + offset[1].y ? point.y : borderSouthEast.y + offset[1].y);
     return {x: point.x, y: point.y};
+  }
+
+  getCurrentZoomValue(): number {
+    return this.transformation.k;
   }
 
 }

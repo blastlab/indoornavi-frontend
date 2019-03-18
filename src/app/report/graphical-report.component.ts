@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {ActivatedRoute, Params} from '@angular/router';
 import {Floor} from '../floor/floor.type';
 import {FloorService} from '../floor/floor.service';
@@ -14,26 +14,21 @@ import {HeatMapCanvas, HeatMapCanvasConfig} from './canvas/heatmap';
 import {heatMapCanvasConfiguration} from './canvas/heatMapCanvas-config';
 import {Tag} from '../device/device.type';
 import {PublishedService} from '../map-viewer/publication.service';
-
-class SelectItems {
-}
+import {MapComponent} from '../map/map';
+import {HeatMapService} from './services/heatmap.service';
+import {Subject} from 'rxjs/Subject';
+import {HeatmapFilterProperties} from './heatmap-filter-properties/heatmap-filter-properties.type';
+import {ZoomService} from '../shared/services/zoom/zoom.service';
 
 @Component({
   templateUrl: './graphical-report.html',
-  styleUrls: ['./graphical-report.css']
+  styleUrls: ['./graphical-report.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class GraphicalReportComponent implements OnInit, OnDestroy {
-  dateFrom: string;
-  dateTo: string;
-  dateToMaxValue: Date;
-  dateFromMaxValue: Date;
+  @ViewChild('map') mapComponent: MapComponent;
   displayDialog = false;
   isImageLoaded = false;
-  tags: SelectItems[] = [];
-  selectedTags: string[] = [];
-  private isLoadingFirstTime = true;
-  private dateFromRequestFormat: string;
-  private dateToRequestFormat: string;
   private floor: Floor;
   private imageUrl: string;
   private scale: Scale;
@@ -41,7 +36,11 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
   private heatMapCanvas: HeatMapCanvas;
   private config: HeatMapCanvasConfig = heatMapCanvasConfiguration;
   private data: HeatMapGradientPoint[] = [];
+  private subscribeDestroyer: Subject<void> = new Subject<void>();
 
+  private static convertToIsoLocalDateString(date: Date): string {
+    return new Date(date.getTime() - (date.getTimezoneOffset() * 60_000)).toISOString().slice(0, -1);
+  }
 
   constructor(private route: ActivatedRoute,
               private floorService: FloorService,
@@ -50,12 +49,13 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
               private mapService: MapService,
               private reportService: ReportService,
               private messageService: MessageServiceWrapper,
-              private publishedService: PublishedService
+              private publishedService: PublishedService,
+              private heatMapService: HeatMapService,
+              private zoomService: ZoomService
   ) {
   }
 
   ngOnInit() {
-    this.setAllowedDateRange();
     this.translateService.setDefaultLang('en');
     this.subscribeToMapParametersChange();
   }
@@ -63,16 +63,13 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.isImageLoaded = false;
     this.removeCanvas();
+    this.subscribeDestroyer.next();
   }
 
-  renderNewHeatmap() {
-    if (!!this.dateFrom && !!this.dateTo) {
-      if (this.isDateRequestFormatSet()) {
-        this.displayDialog = true;
-        this.loadData();
-      }
-    } else {
-      this.messageService.failed('reports.message.setDate');
+  renderNewHeatMap(properties: HeatmapFilterProperties) {
+    if (this.validateDates(properties.from, properties.to)) {
+      this.displayDialog = true;
+      this.loadData(properties);
     }
   }
 
@@ -88,44 +85,41 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
     }
   }
 
-  private addCanvas(imgUrl: string) {
-    if (this.isLoadingFirstTime || this.displayDialog) {
-      if (this.displayDialog) {
-        this.cancelDialog();
-      }
-    } else {
-      this.messageService.failed('reports.message.loadCanceled');
-    }
+  private addCanvas(imgUrl: string, redrawImage: boolean = false) {
     this.removeCanvas();
     this.config.imgUrl = imgUrl;
-    this.heatMapCanvas = new HeatMapCanvas(this.config, this.data);
+    this.heatMapCanvas = new HeatMapCanvas(this.config, this.data, this.heatMapService);
+    if (redrawImage) {
+      this.heatMapService.drawn().first().subscribe(() => {
+        const canvas = document.getElementsByTagName('canvas').item(0);
+        if (!!canvas) {
+          canvas.toBlob((blob: Blob) => {
+            this.mapComponent.redrawImage(blob, this.zoomService.getCurrentZoomValue());
+            if (this.displayDialog) {
+              this.messageService.success('reports.message.loadedSuccess');
+              this.cancelDialog();
+            }
+          });
+        }
+      });
+    }
   }
 
-  private isDateRequestFormatSet(): boolean {
-    this.dateFromRequestFormat = new Date(this.dateFrom).toISOString();
-    this.dateFromRequestFormat = this.dateFromRequestFormat.slice(0, this.dateFromRequestFormat.length - 2);
-    this.dateToRequestFormat = new Date(this.dateTo).toISOString();
-    this.dateToRequestFormat = this.dateToRequestFormat.slice(0, this.dateToRequestFormat.length - 2);
-    if (new Date(this.dateFrom).valueOf() > new Date(this.dateTo).valueOf()) {
+  private validateDates(from: Date, to: Date): boolean {
+    if (!from && !to) {
+      this.messageService.failed('reports.message.setDate');
+      return false;
+    }
+    if (from.getTime() > to.getTime()) {
       this.messageService.failed('reports.message.wrongDataSpan');
       return false;
     }
     return true;
   }
 
-  private setAllowedDateRange(): void {
-    const today: Date = new Date();
-    const hour: number = today.getHours();
-    const prevHour = (hour === 0) ? 23 : hour - 1;
-    this.dateFromMaxValue = new Date();
-    this.dateFromMaxValue.setHours(prevHour);
-    this.dateToMaxValue = new Date();
-  }
-
   private subscribeToMapParametersChange() {
     this.route.params.first().subscribe((params: Params): void => {
       const floorId = +params['id'];
-      this.subscribeToTags(floorId);
       this.floorService.getFloor(floorId).first().subscribe((floor: Floor): void => {
         this.floor = floor;
         this.subscribeToBreadcrumbService(floor);
@@ -139,40 +133,29 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
     });
   }
 
-  private subscribeToTags(floorId): void {
-    this.publishedService.getTagsAvailableForUser(floorId).first().subscribe((tags: Tag[]): void => {
-      tags.forEach((tag: Tag): void => {
-        this.tags.push({
-          label: tag.shortId.toString(),
-          value: tag.id.toString()
-        });
-      });
-    });
-  }
-
   private subscribeToBreadcrumbService(floor: Floor): void {
-      this.breadcrumbService.publishIsReady([
-        {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
-        {
-          label: floor.building.complex.name,
-          routerLink: `/complexes/${floor.building.complex.id}/buildings`,
-          routerLinkActiveOptions: {exact: true}
-        },
-        {
-          label: floor.building.name,
-          routerLink: `/complexes/${floor.building.complex.id}/buildings/${floor.building.id}/floors`,
-          routerLinkActiveOptions: {exact: true}
-        },
-        {label: `${(floor.name.length ? floor.name : floor.level)}`, disabled: true}
-      ]);
+    this.breadcrumbService.publishIsReady([
+      {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
+      {
+        label: floor.building.complex.name,
+        routerLink: `/complexes/${floor.building.complex.id}/buildings`,
+        routerLinkActiveOptions: {exact: true}
+      },
+      {
+        label: floor.building.name,
+        routerLink: `/complexes/${floor.building.complex.id}/buildings/${floor.building.id}/floors`,
+        routerLinkActiveOptions: {exact: true}
+      },
+      {label: `${(floor.name.length ? floor.name : floor.level)}`, disabled: true}
+    ]);
   }
 
   private setScale(): void {
-      this.scale = new Scale(this.floor.scale);
-      this.scaleCalculations = {
-        scaleLengthInPixels: Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
-        scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
-      };
+    this.scale = new Scale(this.floor.scale);
+    this.scaleCalculations = {
+      scaleLengthInPixels: Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
+      scaleInCentimeters: this.scale.getRealDistanceInCentimeters()
+    };
   }
 
   private fetchImageFromServer(): void {
@@ -201,15 +184,15 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
     });
   }
 
-  private loadData(): void {
+  private loadData(properties: HeatmapFilterProperties): void {
     const request: SolverCoordinatesRequest = {
-      from: this.dateFromRequestFormat,
-      to: this.dateToRequestFormat,
+      from: GraphicalReportComponent.convertToIsoLocalDateString(properties.from),
+      to: GraphicalReportComponent.convertToIsoLocalDateString(properties.to),
       floorId: this.floor.id,
       mapHeight: Math.ceil(this.config.height * this.scale.getRealDistanceInCentimeters() / this.scale.getDistanceInPixels()),
       mapWidth: Math.ceil(this.config.width * this.scale.getRealDistanceInCentimeters() / this.scale.getDistanceInPixels()),
-      tagsIds: this.selectedTags.map((tag: string) => {
-        return parseInt(tag, 10);
+      tagsIds: properties.tags.map((tag: Tag) => {
+        return tag.id;
       })
     };
     this.reportService.getCoordinates(request).first()
