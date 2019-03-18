@@ -1,8 +1,6 @@
 import {ChangeDetectorRef, Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {AnimationEvent} from '@angular/animations';
 import {contentContainerAnimation, minimizeContainerAnimation, openCloseAnimation} from './animations/tool-details.animation';
-import {Subject} from 'rxjs/Subject';
-import {DevicePlacerService} from '../../tools/device-placer/device-placer.service';
 
 @Component({
   selector: 'app-tool-details',
@@ -14,7 +12,7 @@ import {DevicePlacerService} from '../../tools/device-placer/device-placer.servi
     minimizeContainerAnimation
   ]
 })
-export class ToolDetailsComponent implements OnDestroy, OnInit {
+export class ToolDetailsComponent {
 
   state: string = 'close';
   contentContainerState: string = 'maximized';
@@ -26,28 +24,9 @@ export class ToolDetailsComponent implements OnDestroy, OnInit {
   minimizeContainerShift: string = '0px';
   contentContainerShift: string = '0px';
 
-  subscriptionDestructor: Subject<void> = new Subject<void>();
-
   private buttonWidthAndPadding = 40;
 
-  constructor(private cd: ChangeDetectorRef, private devicePlacerService: DevicePlacerService) {
-  }
-
-  ngOnInit() {
-    this.devicePlacerService.onDragStarted.takeUntil(this.subscriptionDestructor).subscribe(() => {
-      this.contentContainerState = 'minimized'
-    });
-    this.devicePlacerService.onDroppedOutside.takeUntil(this.subscriptionDestructor).subscribe(() => {
-      this.minimizeContainerState = 'maximized'
-    });
-    this.devicePlacerService.onDroppedInside.takeUntil(this.subscriptionDestructor).subscribe(() => {
-      this.minimizeContainerState = 'maximized'
-    });
-  }
-
-  ngOnDestroy() {
-    this.subscriptionDestructor.next();
-    this.subscriptionDestructor = null;
+  constructor(private cd: ChangeDetectorRef) {
   }
 
   show(): void {
