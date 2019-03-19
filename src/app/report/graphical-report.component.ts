@@ -6,7 +6,6 @@ import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.servi
 import {TranslateService} from '@ngx-translate/core';
 import {Scale, ScaleCalculations} from '../map-editor/tool-bar/tools/scale/scale.type';
 import {Geometry} from '../shared/utils/helper/geometry';
-import {EChartOption} from 'echarts';
 import {MapService} from '../map-editor/uploader/map.uploader.service';
 import {HeatMapGradientPoint, SolverCoordinatesRequest, SolverHeatMapPayload} from './graphical-report.type';
 import {ReportService} from './services/report.service';
@@ -200,7 +199,7 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
       .subscribe((payload: SolverHeatMapPayload): void => {
         this.data = [];
         if (payload.distribution.length === 0) {
-          this.messageService.success('reports.message.error');
+          this.messageService.failed('reports.message.error');
         } else if (this.isImageLoaded) {
           payload.distribution.forEach((gradientPoint: HeatMapGradientPoint) => {
             if (gradientPoint.heat !== 0) {
@@ -209,10 +208,12 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
               this.data.push(gradientPoint);
             }
           });
+          this.messageService.success('reports.message.loadedSuccess');
+          this.loadMapImage().then((imgUrl: string): void => {
+            this.addCanvas(imgUrl, true);
+          });
         }
-        this.loadMapImage().then((imgUrl: string): void => {
-          this.addCanvas(imgUrl, true);
-        });
-      });
+        this.cancelDialog();
+    });
   }
 }
