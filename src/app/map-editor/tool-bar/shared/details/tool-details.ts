@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, EventEmitter, Output, ViewChild} from '@angular/core';
 import {AnimationEvent} from '@angular/animations';
 import {contentContainerAnimation, minimizeContainerAnimation, openCloseAnimation} from './animations/tool-details.animation';
 
