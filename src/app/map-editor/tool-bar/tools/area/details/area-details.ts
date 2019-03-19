@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, HostListener, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ToolDetailsComponent} from '../../../shared/details/tool-details';
 import {AreaDetailsService} from './area-details.service';
 import {Area, AreaBag, AreaConfiguration, Mode} from '../area.type';
@@ -27,6 +27,7 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
 
   @Input() floor: Floor;
   area: Area;
+  visible: boolean = false;
   tags: Tag[] = [];
   tagsOnEnter: number[] = [];
   tagsOnLeave: number[] = [];
@@ -62,6 +63,7 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
     this.areaDetailsService.onVisibilityChange().takeUntil(this.subscriptionDestroyer).subscribe((value: boolean): void => {
       if (value) {
         this.toolDetails.show();
+        this.visible = true;
       }
     });
     this.areaDetailsService.onSet().subscribe((area: AreaBag): void => {
@@ -99,6 +101,25 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptionDestroyer.next();
     this.subscriptionDestroyer.unsubscribe();
+  }
+
+  @HostListener('document:keydown.enter', [])
+  handleEnter(): void {
+    if (this.visible) {
+      document.onkeydown = (event: KeyboardEvent): void => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+        }
+      };
+      setTimeout(() => this.confirm(this.areaDetailsForm.valid));
+    }
+  }
+
+  @HostListener('document:keydown.escape', [])
+  handleEscape(): void {
+    if (this.visible) {
+      this.reject();
+    }
   }
 
   confirm(formIsValid: boolean): void {
@@ -156,11 +177,13 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
     } else {
       this.messageService.failed('area.form.invalid');
     }
+    this.visible = false;
   }
 
   reject(): void {
     this.cleanUp();
     this.areaDetailsService.reject();
+    this.visible = false;
   }
 
   private isHeightValid(): boolean {

@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, HostListener, Input, OnDestroy, OnInit} from '@angular/core';
 import {Tool} from '../tool';
 import {ToolName} from '../tools.enum';
 import {ToolbarService} from '../../toolbar.service';
@@ -139,6 +139,24 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     }
   }
 
+  @HostListener('document:keydown.enter', [])
+  handleEnter(): void {
+    if (this.active) {
+      document.onkeydown = (event: KeyboardEvent): void => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+        }
+      };
+    }
+  }
+
+  @HostListener('document:keydown.escape', [])
+  handleEscape(): void {
+    if (this.active) {
+      this.toggleActivity();
+    }
+  }
+
   getHintMessage(): string {
     return 'area.hint.first';
   }
@@ -229,13 +247,6 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
       this.toolbarService.emitToolChanged(null);
     } else {
       this.toolbarService.emitToolChanged(this);
-    }
-  }
-
-  onKeyDown(event: KeyboardEvent): void {
-    if (event.key === 'Enter' || event.key === 'Escape') {
-      event.preventDefault();
-      this.toggleActivity();
     }
   }
 

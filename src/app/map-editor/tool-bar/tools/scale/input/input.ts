@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ScaleInputService} from './input.service';
 import {Measure, Scale} from '../scale.type';
 import {ScaleService} from '../../../../../shared/services/scale/scale.service';
@@ -13,8 +13,7 @@ import {ToolDetailsComponent} from '../../../shared/details/tool-details';
   styleUrls: ['./input.css']
 })
 export class ScaleInputComponent implements OnInit, OnDestroy {
-  @ViewChild('toolDetails')
-  toolDetails: ToolDetailsComponent;
+  @ViewChild('toolDetails') toolDetails: ToolDetailsComponent;
   scale: Scale;
   visible: boolean = false;
   measures: SelectItem[] = [];
@@ -37,7 +36,13 @@ export class ScaleInputComponent implements OnInit, OnDestroy {
     });
 
     this.scaleVisibilityChangedSubscription = this.scaleService.scaleVisibilityChanged.subscribe((isScaleVisible: boolean) => {
-      isScaleVisible ? this.toolDetails.show() : this.toolDetails.hide();
+      if (isScaleVisible) {
+        this.toolDetails.show();
+        this.visible = true;
+      } else {
+        this.toolDetails.hide();
+        this.visible = false;
+      }
     });
 
     this.scaleChangedSubscription = this.scaleService.scaleChanged.subscribe(scale => {
@@ -55,6 +60,25 @@ export class ScaleInputComponent implements OnInit, OnDestroy {
     }
     if (!!this.scaleVisibilityChangedSubscription) {
       this.scaleVisibilityChangedSubscription.unsubscribe();
+    }
+  }
+
+  @HostListener('document:keydown.enter', [])
+  handleEnter(): void {
+    if (this.visible) {
+      document.onkeydown = (event: KeyboardEvent): void => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+        }
+      };
+      setTimeout(() => this.confirm()); // delay to next interpreter tick to allow angular set input to value
+    }
+  }
+
+  @HostListener('document:keydown.escape', [])
+  handleEscape(): void {
+    if (this.visible) {
+      this.reject();
     }
   }
 

@@ -4,7 +4,7 @@
       <div class="ui-g-2">
         <span class="ui-float-label">
           <input pInputText name="name" id="name" type="text"
-                 [(ngModel)]="area.name"/>
+                 [(ngModel)]="area.name" [appAutoFocus]="visible"/>
           <label for="name">{{'area.name.placeholder'|translate}}</label>
         </span>
       </div>

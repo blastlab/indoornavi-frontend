@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, HostListener, Input, OnDestroy, OnInit} from '@angular/core';
 import {Floor} from '../../../../floor/floor.type';
 import {MapSvg} from '../../../../map/map.type';
 import {Scale, ScaleCalculations, ScaleDto} from '../scale/scale.type';
@@ -75,6 +75,25 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptionDestroyer.next();
     this.subscriptionDestroyer.unsubscribe();
+  }
+
+  @HostListener('document:keydown.enter', [])
+  handleEnter(): void {
+    if (this.active) {
+      document.onkeydown = (event: KeyboardEvent): void => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+        }
+      };
+      this.toggleActivity();
+    }
+  }
+
+  @HostListener('document:keydown.escape', [])
+  handleEscape(): void {
+    if (this.active) {
+      this.toggleActivity();
+    }
   }
 
   toggleActivity(): void {

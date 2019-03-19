@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {Tool} from '../tool';
 import {ToolName} from '../tools.enum';
 import * as d3 from 'd3';
@@ -78,6 +78,25 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     this.contextMenu = null;
     this.subscriptionDestroyer.next();
     this.subscriptionDestroyer.unsubscribe();
+  }
+
+  @HostListener('document:keydown.enter', [])
+  handleEnter(): void {
+    if (this.active) {
+      document.onkeydown = (event: KeyboardEvent): void => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+        }
+      };
+      this.toggleActivity();
+    }
+  }
+
+  @HostListener('document:keydown.escape', [])
+  handleEscape(): void {
+    if (this.active) {
+      this.toggleActivity();
+    }
   }
 
   getToolName(): ToolName {

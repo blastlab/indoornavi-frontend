@@ -175,13 +175,6 @@ export class ScaleComponent implements Tool, OnDestroy, OnInit {
     }
   }
 
-  onKeyDown(event: KeyboardEvent): void {
-    if (event.key === 'Enter' || event.key === 'Escape') {
-      event.preventDefault();
-      this.onClick();
-    }
-  }
-
   @HostListener('document:keydown.escape', [])
   handleEscape(): void {
     if (this.isDragging) {

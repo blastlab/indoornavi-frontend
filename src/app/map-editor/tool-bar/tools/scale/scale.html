@@ -3,7 +3,6 @@
         pButton class="ui-button-secondary"
         [ngClass]="{'active-tool' : active}"
         (click)="onClick()"
-        (keydown)="onKeyDown($event)"
         pTooltip="{{'scale'|translate}}"
         icon="fa-arrows-h"
         [disabled]="disabled"

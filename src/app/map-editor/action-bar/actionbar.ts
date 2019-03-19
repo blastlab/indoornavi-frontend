@@ -149,13 +149,6 @@ export class ActionBarComponent implements OnInit, OnDestroy {
     this.configurationService.clear();
   }
 
-  @HostListener('document:keydown.enter', [])
-  handleEnter(): void {
-    if (!this.saveButtonDisabled) {
-      this.saveDraft();
-    }
-  }
-
   public saveDraft(): void {
     this.configurationService.saveDraft().then(() => {
       this.afterSaveDraftDone();

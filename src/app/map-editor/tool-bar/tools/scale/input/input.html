@@ -3,7 +3,7 @@
     <div class="ui-g-4">
       <div class="ui-inputgroup">
         <span class="ui-float-label">
-          <input name="distance" id="distance" type="number" pInputText min="0" [(ngModel)]="scale.realDistance"/>
+          <input [appAutoFocus]="visible" name="distance" id="distance" type="number" pInputText min="0" [(ngModel)]="scale.realDistance"/>
           <label for="distance">{{'scale.distance.placeholder'|translate}}</label>
         </span>
         <span class="ui-inputgroup-addon">
