@@ -210,7 +210,7 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
           });
           this.messageService.success('reports.message.loadedSuccess');
           this.loadMapImage().then((imgUrl: string): void => {
-            this.addCanvas(imgUrl);
+            this.addCanvas(imgUrl, true);
           });
         }
         this.cancelDialog();
