@@ -1,6 +1,4 @@
 import {Injectable} from '@angular/core';
-import {Floor} from '../floor/floor.type';
-import {MapService} from './uploader/map.uploader.service';
 import * as d3 from 'd3';
 import {MapSvg} from '../map/map.type';
 import {Subject} from 'rxjs/Subject';
@@ -10,11 +8,16 @@ import {Transform} from './map.type';
 @Injectable()
 export class MapEditorService {
 
+  public static MAX_ZOOM_VALUE: number = 2;
+  public static MIN_ZOOM_VALUE: number = 0.1;
+
   public static MAP_LAYER_SELECTOR_ID: string = 'map';
   public static MAP_UPPER_LAYER_SELECTOR_ID: string = 'map-upper-layer';
   private static MAP_CONTAINER_SELECTOR_ID: string = 'map-container';
   private transformation: Transform = {x: 0, y: 0, k: 1};
   private transformationInformer = new Subject<Transform>();
+
+  private mapLayer: d3.selection;
 
   static maxTranslate(mapContainer: HTMLElement, image: HTMLImageElement): [[number, number], [number, number]] {
     const width = Math.max(mapContainer.offsetWidth, image.width),
@@ -34,24 +37,24 @@ export class MapEditorService {
     this.transformationInformer.next(transformation);
   }
 
-  constructor(private mapService: MapService) {
+  constructor() {
   }
 
-  drawMap(floor: Floor): Promise<d3.selection> {
-    return new Promise((resolve) => {
+  drawMap(imageBlob: Blob, zoomValue: number): Observable<d3.selection> {
+    return Observable.create(observer => {
       const image = new Image();
       image.onload = () => {
 
         const mapContainer = document.getElementById(MapEditorService.MAP_CONTAINER_SELECTOR_ID);
 
         const zoomed = () => {
-          g.attr('transform', d3.event.transform);
+          this.mapLayer.attr('transform', d3.event.transform);
           this.transformation = d3.zoomTransform(document.getElementById(MapEditorService.MAP_UPPER_LAYER_SELECTOR_ID));
           this.changeTransformation(this.transformation);
         };
 
         const zoom = d3.zoom()
-          .scaleExtent([0.1, 2])
+          .scaleExtent([MapEditorService.MIN_ZOOM_VALUE, MapEditorService.MAX_ZOOM_VALUE])
           .translateExtent(MapEditorService.maxTranslate(mapContainer, image))
           .on('zoom', zoomed);
 
@@ -59,9 +62,9 @@ export class MapEditorService {
           .attr('width', mapContainer.offsetWidth)
           .attr('height', mapContainer.offsetHeight);
 
-        const g = map.append('g');
+        this.mapLayer = map.append('g');
 
-        g.attr('id', MapEditorService.MAP_LAYER_SELECTOR_ID)
+        this.mapLayer.attr('id', MapEditorService.MAP_LAYER_SELECTOR_ID)
           .append('svg:image')
           .attr('id', 'map-img')
           .attr('xlink:href', image.src)
@@ -71,6 +74,7 @@ export class MapEditorService {
           .attr('height', image.height);
 
         zoom.translateBy(map, (mapContainer.offsetWidth - image.width) / 2, (mapContainer.offsetHeight - image.height) / 2);
+        zoom.scaleTo(map, zoomValue);
         map.call(zoom);
         map.on('dblclick.zoom', null);
 
@@ -82,11 +86,9 @@ export class MapEditorService {
             .attr('height', mapContainer.offsetHeight);
         });
 
-        resolve(<MapSvg>{layer: map, container: g});
+        observer.next(<MapSvg>{layer: map, container: this.mapLayer});
       };
-      this.mapService.getImage(floor.imageId).subscribe((blob: Blob) => {
-        image.src = URL.createObjectURL(blob);
-      });
+      image.src = URL.createObjectURL(imageBlob);
     });
   }
 }

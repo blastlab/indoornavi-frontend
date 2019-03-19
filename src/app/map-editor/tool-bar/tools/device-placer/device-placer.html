@@ -6,7 +6,64 @@
         [disabled]="disabled">
 </button>
 
-<p-confirmDialog acceptLabel="{{'ok'|translate}}"
-                 rejectLabel="{{'cancel'|translate}}"
-                 header="{{'device-placer.confirmation.header'|translate}}"
-                 icon="fa fa-exclamation-triangle" width="425"></p-confirmDialog>
+<p-confirmDialog #cd header="{{'device-placer.confirmation.header'|translate}}"
+                 icon="fa fa-exclamation-triangle" width="425" [closable]="false">
+
+  <p-footer>
+    <!--workaround because angular is focusing on first element and then cancel button is displaying in blue, not in red as expected-->
+    <button type="button" [hidden]="true"></button>
+    <button
+      pButton
+      type="button"
+      class="ui-button-danger"
+      icon="fa-close"
+      label="{{'cancel'|translate}}"
+      (click)="cd.reject()">
+    </button>
+    <button
+      pButton
+      type="submit"
+      class="ui-button-success"
+      icon="fa-check"
+      label="{{'ok'|translate}}"
+      (click)="cd.accept()">
+    </button>
+  </p-footer>
+</p-confirmDialog>
+
+<p-dialog *ngIf="!!activeDevice" [(visible)]="displayHeightDialog" [modal]="true" [closable]="false">
+  <p-header>
+    {{'heightDialog.header'|translate}} {{activeDevice.deviceInList.shortId}}
+  </p-header>
+
+  <div class="ui-g">
+    <div class="ui-g-5 text-right no-padding">
+      <label [ngStyle]="{ 'line-height': '30px', 'margin-right': '5px' }" for="height-in-centimeters">{{'device-list.label.height'|translate}}</label>
+    </div>
+    <div class="ui-g-7 no-padding">
+        <span class="ui-inputgroup">
+          <input #height=ngModel required pattern="^-{0,1}[0-9]{1,5}$" [appAutoFocus]="true" id="height-in-centimeters" pInputText type="number" [(ngModel)]="heightInCentimeters" />
+          <span class="ui-inputgroup-addon">cm</span>
+        </span>
+    </div>
+  </div>
+
+  <p-footer>
+    <button
+      pButton
+      type="button"
+      class="ui-button-danger"
+      icon="fa-close"
+      label="{{'cancel'|translate}}"
+      (click)="heightDialogClosed(false, true)">
+    </button>
+    <button
+      pButton
+      type="submit"
+      class="ui-button-success"
+      icon="fa-check"
+      label="{{'ok'|translate}}"
+      (click)="heightDialogClosed(true, !height.invalid)">
+    </button>
+  </p-footer>
+</p-dialog>

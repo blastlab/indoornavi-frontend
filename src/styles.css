@@ -1,14 +1,29 @@
 @import '~@angular/material/core/theming/prebuilt/deeppurple-amber.css';
 @import '~primeng/resources/primeng.css';
-@import '~primeng/resources/themes/ludvig/theme.css';
+@import '~primeng/resources/themes/omega/theme.css';
 @import '~font-awesome/css/font-awesome.css';
+@import '~mobile-select/mobile-select.css';
+
+@font-face {
+  font-family: 'Flama';
+  src: url('assets/fonts/Flama/Flama Regular.otf');
+}
 
 body {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Flama', sans-serif;
+  margin: 3px;
+}
+
+#breadcrumbs .ui-widget {
+  font-family: 'Flama', sans-serif;
 }
 
 .error-toast {
   background: #d92020 !important;
+}
+
+.no-padding {
+  padding: 0;
 }
 
 .breadcrumb {
@@ -135,11 +150,10 @@ app-auth > div {
   width: 400px;
   height: 250px;
   position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 25px;
-  right: 0;
-  margin: auto;
+  top: 50%;
+  margin-top: -125px;
+  left: 50%;
+  margin-left: -200px;
 }
 
 .ui-toolbar {
@@ -273,8 +287,12 @@ svg {
   }
 }
 
+.tagsSelect {
+  min-width: 192px;
+}
+
 .muted {
-  color: #6c757d;
+  color: #909090;
 }
 
 .text-right {
@@ -286,4 +304,239 @@ svg text{
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+
+.menu-link {
+  text-decoration: none;
+  color: #909090;
+}
+
+.menu-link-bold {
+  font-weight: bold;
+  color: #0a0a0a;
+}
+
+#left-panel {
+  font-size: 0.8em;
+  box-shadow: 0 2px 4px rgba(212, 212, 212, 0.6);
+  width: 10%;
+}
+
+#left-panel .ui-g > div {
+  padding: 0.4em;
+}
+
+#left-panel .ui-g > .ui-g-11 {
+  padding: 0.4em 0 0.4em 0.7em;
+}
+
+#content-panel {
+  width: 90%;
+  padding-right: 0;
+}
+
+#top-panel {
+  box-shadow: 0 2px 4px #A6A8AB;
+  min-height: 90px;
+  align-items: center;
+  display: flex;
+}
+
+#indoornavi-logo {
+  width: 10%;
+}
+
+#indoornavi-logo img {
+  max-width: 50px;
+  padding-left: 6px;
+}
+
+#breadcrumbs {
+  width: 50%;
+}
+
+#mobile-header {
+  display: none;
+}
+
+#logout {
+  width: 15%;
+  text-align: right;
+  padding-right: .2em;
+}
+
+#logout i {
+  font-size: 2em;
+}
+
+#logout span {
+  margin-right: 15px;
+  vertical-align: super;
+}
+
+#logout a {
+  color: #0a0a0a;
+  text-decoration: none;
+}
+
+#logout a:hover {
+  color: #1E96FF;
+}
+
+#username {
+  padding: .3em;
+  width: 25%;
+  text-align: right;
+  cursor: pointer;
+}
+
+#username i.fa-caret-right {
+  margin-right: 5px;
+  color: #1E96FF;
+}
+
+@media screen and (max-width: 930px) {
+  #left-panel {
+    font-size: 0.6em;
+  }
+}
+
+.ui-widget-header.no-background {
+  border: none;
+  background-color: #fff;
+}
+
+.ui-breadcrumb-chevron {
+  vertical-align: unset;
+  font-size: .6em;
+}
+
+#mobile-menu {
+  display: none;
+}
+
+@media (max-width: 1500px) {
+  #indoornavi-logo {
+    width: 15%;
+  }
+
+  #content-panel {
+    width: 85%;
+  }
+
+  #left-panel {
+    width: 15%;
+  }
+
+  #username {
+    width: 20%;
+  }
+}
+
+@media (max-width: 720px) {
+  #indoornavi-logo {
+    width: 20%;
+  }
+
+  #content-panel {
+    width: 80%;
+  }
+
+  #left-panel {
+    width: 20%;
+  }
+
+  #username {
+    width: 15%;
+  }
+
+  #logout {
+    width: 20%;
+  }
+}
+
+/* Landscape phones and down */
+@media (max-width: 480px) {
+  #left-panel {
+    display: none;
+  }
+
+  #content-panel {
+    width: 100%;
+    padding: .5em;
+  }
+
+  body {
+    font-size: .9em;
+  }
+
+  #username {
+    display: none;
+  }
+
+  #indoornavi-logo {
+    display: none;
+  }
+
+  #breadcrumbs {
+    display: none;
+  }
+
+  #mobile-menu {
+    display: block;
+    font-size: 2em;
+    padding: 0;
+    text-align: center;
+    position: absolute;
+    top: 100%;
+    margin-top: -80px;
+    left: 0;
+    background-color: #fff;
+  }
+
+  #mobile-menu .first {
+    padding-left: 0;
+  }
+
+  #mobile-menu .last {
+    padding-right: 0;
+  }
+
+  #mobile-menu span {
+    font-size: .4em;
+    display: block;
+    padding-top: 5px;
+  }
+
+  app-auth > div {
+    width: 340px;
+    margin-left: -170px;
+  }
+
+  #top-panel {
+    box-shadow: none;
+    min-height: 70px;
+  }
+
+  #mobile-header {
+    display: block;
+    font-size: 1.3em;
+    width: 85%;
+  }
+
+  #logout span {
+    display: none;
+  }
+
+  .tagsSelect {
+    min-width: auto;
+    width: 100%;
+  }
+
+  .ui-growl {
+    bottom: 70px;
+    top: auto;
+    left: 50%;
+    margin-left: -10em;
+  }
 }

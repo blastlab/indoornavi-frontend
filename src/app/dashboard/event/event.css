@@ -7,12 +7,19 @@
 }
 
 .warning {
-  color: #f82;
+  color: #F5A623;
 }
 
 .item {
-  box-shadow: 0 3px 4px 0 #b8b8b8;
-  border: 1px solid rgba(184, 184, 184, 0.5);
-  border-radius: 8px;
-  margin-bottom: 5px;
+  box-shadow: 0 2px 4px #A6A8AB;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  padding: 2px 5px;
+}
+
+/* Landscape phones and down */
+@media (max-width: 480px) {
+  .header {
+    display: none;
+  }
 }

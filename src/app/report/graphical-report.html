@@ -1,39 +1,21 @@
-<div *ngIf="isImageSet" class="ui-g">
-  <div class="ui-g-12 ui-md-12 ui-lg-12">
-    <span>{{'from'|translate}}:</span>
-    <p-calendar [(ngModel)]="dateFrom" showTime="true" hourFormat="24" [maxDate]="dateFromMaxValue"></p-calendar>
-    <span>{{'to'|translate}}:</span>
-    <p-calendar [(ngModel)]="dateTo" showTime="true" hourFormat="24" [maxDate]="dateToMaxValue"></p-calendar>
-    <button pButton class="ui-button-secondary"
-            (click)="renderNewHeatmap()"
-            pTooltip="{{'heatmap.generate'|translate}}"
-            icon="fa-refresh">
-    </button>
-  </div>
-  <div echarts
-       #canvasParent
-       id="heatmap-canvas" class="ui-corner-all"
-       [options]="chartOptions"
-       (chartInit)="onChartInit($event)"
-       [style.width.px]="heatmapImageEdgePoint.x"
-       [style.height.px]="heatmapImageEdgePoint.y"
-  ></div>
+<div *ngIf="isImageLoaded" class="ui-g-12">
+  <div [hidden]="true" class="report-element" id="heatmap-sketch"></div>
+  <app-map #map *ngIf="!!floor" [floor]="floor">
+      <app-heatmap-filter-properties (onClose)="renderNewHeatMap($event)"></app-heatmap-filter-properties>
+  </app-map>
   <p-dialog
-    [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
-    [contentStyle]="{ overflow: 'visible' }"
-    [width]="380"
-    [height]="220"
+    [draggable]="false" [(visible)]="displayDialog" showEffect="fade" [modal]="true"
+    [resizable]="false"
+    [styleClass]="'processingDialog'"
     header="{{'reports.dialog.waiting'|translate}}"
-    dismissableMask="true" (onHide)="cancel()">
-    <p-progressSpinner [style]="{width: '80px', height: '80px'}"
+    dismissableMask="true" (onHide)="cancelDialog()">
+    <p-progressSpinner [styleClass]="'processingSpinner'"
                        class="report-dialog-spinner"
                        strokeWidth="8"
                        fill="#EEEEEE"
                        animationDuration="1s">
     </p-progressSpinner>
-    <button pButton class="ui-button-secondary report-dialog-button"
-            (click)="cancel()"
-            label="{{'cancel'|translate}}">
-    </button>
   </p-dialog>
 </div>
+
+
