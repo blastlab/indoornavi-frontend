@@ -9,6 +9,7 @@ import {Configuration} from '../../../../action-bar/actionbar.type';
 import * as Collections from 'typescript-collections';
 import {Subject} from 'rxjs/Subject';
 import {TranslateService} from '@ngx-translate/core';
+import {DeviceInEditor} from '../../../../../map/models/device';
 
 @Component({
   selector: 'app-device-placer-list',
@@ -20,7 +21,6 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   public activeList: Array<Anchor | Sink> = [];
   public queryString: string;
   public queryFields: string[] = ['shortId', 'longId', 'name'];
-  public heightInMeters: number = 2;
   public activeListType: DeviceType;
   private subscriptionDestroyer: Subject<void> = new Subject<void>();
   private anchors: Array<Anchor> = [];
@@ -57,7 +57,6 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   }
 
   deviceDragStarted(device: Anchor | Sink): void {
-    device.z = this.heightInMeters * 100;
     const deviceDto: DeviceDto = {
       device: device,
       type: this.activeListType
@@ -104,7 +103,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   }
 
   private listenOnDeviceActivated(): void {
-    this.devicePlacerService.onActivated.takeUntil(this.subscriptionDestroyer).subscribe((): void => {
+    this.devicePlacerService.onActivated.takeUntil(this.subscriptionDestroyer).subscribe((device: DeviceInEditor): void => {
       this.activeListType = DeviceType.ANCHOR;
       this.setActiveDevices();
     });
