@@ -153,6 +153,7 @@ export class WizardComponent implements Tool, OnInit, OnDestroy {
     this.displayDialog = false;
     this.map.style('cursor', 'crosshair');
     this.map.on('click', () => {
+      // TODO: check why this is still here
       const coordinates: Point = this.zoomService.calculateTransition({x: d3.event.offsetX, y: d3.event.offsetY});
       // const deviceConfig: CommonDeviceConfiguration = this.activeStep.getDrawConfiguration(this.selectedItemId);
       // const drawBuilder = new DrawBuilder(this.map, deviceConfig);
@@ -212,6 +213,7 @@ export class WizardComponent implements Tool, OnInit, OnDestroy {
       x: this.wizardData.secondAnchorPosition.x,
       y: this.wizardData.secondAnchorPosition.y
     });
+    // TODO: check why this is still here
     // this.actionBarService.setSink(<Sink>{
     //   shortId: this.wizardData.sinkShortId,
     //   x: this.wizardData.sinkPosition.x,

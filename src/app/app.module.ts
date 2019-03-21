@@ -207,7 +207,6 @@ export function HttpLoaderFactory(http: Http) {
     ProperNameDirective,
     MacAddressDirective,
     ToolDetailsComponent,
-    ToolDetailsComponent,
     DeviceComponent,
     BluetoothComponent,
     SocketConnectorComponent,

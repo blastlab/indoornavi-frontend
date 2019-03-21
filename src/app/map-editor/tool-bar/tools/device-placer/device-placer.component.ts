@@ -23,12 +23,13 @@ import {ConfirmationService} from 'primeng/primeng';
 import {Subject} from 'rxjs/Subject';
 import {Box} from '../../../../shared/utils/drawing/drawing.builder';
 import {ModelsConfig} from '../../../../map/models/models.config';
+import {MapEditorInput} from '../../shared/tool-input/map-editor-input';
 
 @Component({
   selector: 'app-device-placer',
   templateUrl: './device-placer.html'
 })
-export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
+export class DevicePlacerComponent extends MapEditorInput implements Tool, OnInit, OnDestroy {
   active: boolean = false;
   disabled: boolean = true;
   private subscriptionDestroyer: Subject<void> = new Subject<void>();
@@ -55,6 +56,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     private confirmationService: ConfirmationService,
     private models: ModelsConfig
   ) {
+    super();
   }
 
   ngOnInit() {
@@ -80,23 +82,12 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     this.subscriptionDestroyer.unsubscribe();
   }
 
-  @HostListener('document:keydown.enter', [])
-  handleEnter(): void {
-    if (this.active) {
-      document.onkeydown = (event: KeyboardEvent): void => {
-        if (event.key === 'Enter') {
-          event.preventDefault();
-        }
-      };
-      this.toggleActivity();
-    }
+  confirm() {
+    this.toggleActivity();
   }
 
-  @HostListener('document:keydown.escape', [])
-  handleEscape(): void {
-    if (this.active) {
-      this.toggleActivity();
-    }
+  reject() {
+    this.toggleActivity();
   }
 
   getToolName(): ToolName {

@@ -19,12 +19,13 @@ import {Line, Point} from '../../../map.type';
 import {TranslateService} from '@ngx-translate/core';
 import {Configuration} from '../../../action-bar/actionbar.type';
 import {IntersectionIdentifier, PathContextCallback, PathContextMenuLabels} from './path.type';
+import {MapEditorInput} from '../../shared/tool-input/map-editor-input';
 
 @Component({
   selector: 'app-path',
   templateUrl: './path.html'
 })
-export class PathComponent implements Tool, OnInit, OnDestroy {
+export class PathComponent extends MapEditorInput implements Tool, OnInit, OnDestroy {
   private static CIRCLE_R: number = 5;
   private static HOVER_COLOR: string = '#FF0000';
   private static STANDARD_COLOR: string = '#000000';
@@ -61,6 +62,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
               private scaleService: ScaleService,
               private translateService: TranslateService
   ) {
+    super();
   }
 
   ngOnInit() {
@@ -77,23 +79,12 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
     this.subscriptionDestroyer.unsubscribe();
   }
 
-  @HostListener('document:keydown.enter', [])
-  handleEnter(): void {
-    if (this.active) {
-      document.onkeydown = (event: KeyboardEvent): void => {
-        if (event.key === 'Enter') {
-          event.preventDefault();
-        }
-      };
-      this.toggleActivity();
-    }
+  confirm() {
+    this.toggleActivity();
   }
 
-  @HostListener('document:keydown.escape', [])
-  handleEscape(): void {
-    if (this.active) {
-      this.toggleActivity();
-    }
+  reject() {
+    this.toggleActivity();
   }
 
   toggleActivity(): void {

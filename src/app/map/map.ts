@@ -21,6 +21,7 @@ export class MapComponent implements OnInit {
   public isPublic: boolean = false;
   private imageLoaded: boolean = false;
 
+
   constructor(private mapLoaderInformer: MapLoaderInformerService,
               private mapEditorService: MapEditorService,
               private devicePlacerService: DevicePlacerService,

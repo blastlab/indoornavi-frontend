@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ScaleInputService} from './input.service';
 import {Measure, Scale} from '../scale.type';
 import {ScaleService} from '../../../../../shared/services/scale/scale.service';
@@ -6,13 +6,14 @@ import {MessageServiceWrapper} from '../../../../../shared/services/message/mess
 import {SelectItem} from 'primeng/primeng';
 import {Subscription} from 'rxjs/Subscription';
 import {ToolDetailsComponent} from '../../../shared/details/tool-details';
+import {MapEditorInput} from '../../../shared/tool-input/map-editor-input';
 
 @Component({
   selector: 'app-scale-input',
   templateUrl: './input.html',
   styleUrls: ['./input.css']
 })
-export class ScaleInputComponent implements OnInit, OnDestroy {
+export class ScaleInputComponent extends MapEditorInput implements OnInit, OnDestroy {
   @ViewChild('toolDetails') toolDetails: ToolDetailsComponent;
   scale: Scale;
   visible: boolean = false;
@@ -24,6 +25,7 @@ export class ScaleInputComponent implements OnInit, OnDestroy {
   constructor(private messageService: MessageServiceWrapper,
               private scaleService: ScaleService,
               private scaleInputService: ScaleInputService) {
+    super();
   }
 
   ngOnInit() {
@@ -60,25 +62,6 @@ export class ScaleInputComponent implements OnInit, OnDestroy {
     }
     if (!!this.scaleVisibilityChangedSubscription) {
       this.scaleVisibilityChangedSubscription.unsubscribe();
-    }
-  }
-
-  @HostListener('document:keydown.enter', [])
-  handleEnter(): void {
-    if (this.visible) {
-      document.onkeydown = (event: KeyboardEvent): void => {
-        if (event.key === 'Enter') {
-          event.preventDefault();
-        }
-      };
-      setTimeout(() => this.confirm()); // delay to next interpreter tick to allow angular set input to value
-    }
-  }
-
-  @HostListener('document:keydown.escape', [])
-  handleEscape(): void {
-    if (this.visible) {
-      this.reject();
     }
   }
 

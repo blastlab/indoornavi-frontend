@@ -15,13 +15,14 @@ import {NgForm} from '@angular/forms';
 import {SelectItem} from 'primeng/primeng';
 import {Subject} from 'rxjs/Subject';
 import {TranslateService} from '@ngx-translate/core';
+import {MapEditorInput} from '../../../shared/tool-input/map-editor-input';
 
 @Component({
   selector: 'app-area-details',
   templateUrl: './area-details.html',
   styleUrls: ['./area-details.css']
 })
-export class AreaDetailsComponent implements OnInit, OnDestroy {
+export class AreaDetailsComponent extends MapEditorInput implements OnInit, OnDestroy {
   @ViewChild('toolDetails') private toolDetails: ToolDetailsComponent;
   @ViewChild('areaDetailsForm') private areaDetailsForm: NgForm;
 
@@ -45,6 +46,7 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
               private tagService: DeviceService,
               private messageService: MessageServiceWrapper,
               private translateService: TranslateService) {
+    super();
   }
 
   ngOnInit(): void {
@@ -103,26 +105,11 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
     this.subscriptionDestroyer.unsubscribe();
   }
 
-  @HostListener('document:keydown.enter', [])
-  handleEnter(): void {
-    if (this.visible) {
-      document.onkeydown = (event: KeyboardEvent): void => {
-        if (event.key === 'Enter') {
-          event.preventDefault();
-        }
-      };
-      setTimeout(() => this.confirm(this.areaDetailsForm.valid));
-    }
+  confirm() {
+    this.confirmWithForm(this.areaDetailsForm.valid);
   }
 
-  @HostListener('document:keydown.escape', [])
-  handleEscape(): void {
-    if (this.visible) {
-      this.reject();
-    }
-  }
-
-  confirm(formIsValid: boolean): void {
+  confirmWithForm(formIsValid: boolean): void {
     if (formIsValid) {
       if (this.isHeightValid()) {
         this.area.pointsInPixels.length = 0;
