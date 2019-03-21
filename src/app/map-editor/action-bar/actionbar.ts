@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, HostListener, Input, NgZone, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, NgZone, OnDestroy, OnInit} from '@angular/core';
 import {ActionBarService} from './actionbar.service';
 import {Floor} from '../../floor/floor.type';
 import {MapLoaderInformerService} from '../../shared/services/map-loader-informer/map-loader-informer.service';

@@ -1,4 +1,4 @@
-import {Component, HostListener, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Tool} from '../tool';
 import {ToolName} from '../tools.enum';
 import {ToolbarService} from '../../toolbar.service';
@@ -136,24 +136,6 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     }
     if (!!this.scaleChangedSubscription) {
       this.scaleChangedSubscription.unsubscribe();
-    }
-  }
-
-  @HostListener('document:keydown.enter', [])
-  handleEnter(): void {
-    if (this.active) {
-      document.onkeydown = (event: KeyboardEvent): void => {
-        if (event.key === 'Enter') {
-          event.preventDefault();
-        }
-      };
-    }
-  }
-
-  @HostListener('document:keydown.escape', [])
-  handleEscape(): void {
-    if (this.active) {
-      this.toggleActivity();
     }
   }
 

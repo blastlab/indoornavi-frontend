@@ -28,7 +28,7 @@ export class AreaDetailsComponent extends MapEditorInput implements OnInit, OnDe
 
   @Input() floor: Floor;
   area: Area;
-  visible: boolean = false;
+  active: boolean = false;
   tags: Tag[] = [];
   tagsOnEnter: number[] = [];
   tagsOnLeave: number[] = [];
@@ -65,7 +65,7 @@ export class AreaDetailsComponent extends MapEditorInput implements OnInit, OnDe
     this.areaDetailsService.onVisibilityChange().takeUntil(this.subscriptionDestroyer).subscribe((value: boolean): void => {
       if (value) {
         this.toolDetails.show();
-        this.visible = true;
+        this.active = true;
       }
     });
     this.areaDetailsService.onSet().subscribe((area: AreaBag): void => {
@@ -164,13 +164,13 @@ export class AreaDetailsComponent extends MapEditorInput implements OnInit, OnDe
     } else {
       this.messageService.failed('area.form.invalid');
     }
-    this.visible = false;
+    this.active = false;
   }
 
   reject(): void {
     this.cleanUp();
     this.areaDetailsService.reject();
-    this.visible = false;
+    this.active = false;
   }
 
   private isHeightValid(): boolean {

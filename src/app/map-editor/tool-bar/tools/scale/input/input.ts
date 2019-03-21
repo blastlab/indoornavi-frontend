@@ -16,8 +16,8 @@ import {MapEditorInput} from '../../../shared/tool-input/map-editor-input';
 export class ScaleInputComponent extends MapEditorInput implements OnInit, OnDestroy {
   @ViewChild('toolDetails') toolDetails: ToolDetailsComponent;
   scale: Scale;
-  visible: boolean = false;
   measures: SelectItem[] = [];
+  active = false;
 
   private scaleChangedSubscription: Subscription;
   private scaleVisibilityChangedSubscription: Subscription;
@@ -40,10 +40,10 @@ export class ScaleInputComponent extends MapEditorInput implements OnInit, OnDes
     this.scaleVisibilityChangedSubscription = this.scaleService.scaleVisibilityChanged.subscribe((isScaleVisible: boolean) => {
       if (isScaleVisible) {
         this.toolDetails.show();
-        this.visible = true;
+        this.active = true;
       } else {
         this.toolDetails.hide();
-        this.visible = false;
+        this.active = false;
       }
     });
 

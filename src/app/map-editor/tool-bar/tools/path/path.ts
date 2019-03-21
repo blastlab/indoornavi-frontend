@@ -32,7 +32,8 @@ export class PathComponent extends MapEditorInput implements Tool, OnInit, OnDes
 
   @Input() floor: Floor;
 
-  active: boolean = false;
+  active = false;
+
   disabled: boolean = true;
 
   private subscriptionDestroyer: Subject<void> = new Subject<void>();
@@ -92,13 +93,6 @@ export class PathComponent extends MapEditorInput implements Tool, OnInit, OnDes
       this.toolbarService.emitToolChanged(null);
     } else {
       this.toolbarService.emitToolChanged(this);
-    }
-  }
-
-  onKeyDown(event: KeyboardEvent): void {
-    if (event.key === 'Enter' || event.key === 'Escape') {
-      event.preventDefault();
-      this.toggleActivity();
     }
   }
 

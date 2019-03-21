@@ -106,13 +106,6 @@ export class DevicePlacerComponent extends MapEditorInput implements Tool, OnIni
     }
   }
 
-  onKeyDown(event: KeyboardEvent): void {
-    if (event.key === 'Enter' || event.key === 'Escape') {
-      event.preventDefault();
-      this.toggleActivity();
-    }
-  }
-
   setActive(): void {
     this.activatePlacerEvents();
     this.devicePlacerService.emitListVisibility(true);
