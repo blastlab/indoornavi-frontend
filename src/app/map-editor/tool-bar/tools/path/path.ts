@@ -1,4 +1,4 @@
-import {Component, HostListener, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Floor} from '../../../../floor/floor.type';
 import {MapSvg} from '../../../../map/map.type';
 import {Scale, ScaleCalculations, ScaleDto} from '../scale/scale.type';

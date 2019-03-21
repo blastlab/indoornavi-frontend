@@ -1,4 +1,4 @@
-import {Component, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ScaleInputService} from './input.service';
 import {Measure, Scale} from '../scale.type';
 import {ScaleService} from '../../../../../shared/services/scale/scale.service';

@@ -1,4 +1,4 @@
-import {Component, HostListener, Input, OnDestroy, OnInit, QueryList, ViewChildren} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit, QueryList, ViewChildren} from '@angular/core';
 import {Tool} from './tools/tool';
 import {ToolbarService} from './toolbar.service';
 import {Subscription} from 'rxjs/Subscription';

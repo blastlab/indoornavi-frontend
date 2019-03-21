@@ -4,7 +4,8 @@ export abstract class MapEditorInput {
 
   visible: boolean;
 
-  protected constructor() {}
+  protected constructor() {
+  }
 
   @HostListener('document:keydown.enter', [])
   handleEnter(): void {
@@ -20,8 +21,10 @@ export abstract class MapEditorInput {
     }
   }
 
-  confirm() {}
+  protected abstract confirm()
 
-  reject() {}
+  protected abstract reject()
 
 }
+
+

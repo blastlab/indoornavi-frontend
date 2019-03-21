@@ -1,4 +1,4 @@
-import {Component, HostListener, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ToolDetailsComponent} from '../../../shared/details/tool-details';
 import {AreaDetailsService} from './area-details.service';
 import {Area, AreaBag, AreaConfiguration, Mode} from '../area.type';
