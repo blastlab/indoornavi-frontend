@@ -1,6 +1,6 @@
 {
   "name": "indoor-navi",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "license": "UNLICENSED",
   "scripts": {
     "ng": "ng",
@@ -44,7 +44,8 @@
     "rxjs": "5.5.0",
     "ts-md5": "1.2.2",
     "typescript-collections": "1.2.5",
-    "zone.js": "0.8.18"
+    "zone.js": "0.8.18",
+    "mobile-select": "1.1.2"
   },
   "devDependencies": {
     "@angular/cli": "1.4.9",

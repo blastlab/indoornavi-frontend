@@ -1,38 +1,21 @@
 <div *ngIf="isImageLoaded" class="ui-g-12">
-  <span>{{'from'|translate}}:</span>
-  <p-calendar [(ngModel)]="dateFrom" dateFormat="dd/mm/yy" showTime="true" hourFormat="24" [maxDate]="dateFromMaxValue"></p-calendar>
-  <span>{{'to'|translate}}:</span>
-  <p-calendar [(ngModel)]="dateTo" dateFormat="dd/mm/yy" showTime="true" hourFormat="24" [maxDate]="dateToMaxValue"></p-calendar>
-    <span>{{'device.tag'|translate}} {{'device.id'|translate}}:</span>
-    <p-multiSelect
-    id="tags"
-    class="tags-select"
-    [panelStyle] = "{minWidth: '15em', width: '12em'}"
-    [options]="tags" [(ngModel)]="selectedTags"
-    [resetFilterOnHide]="true"
-    ></p-multiSelect>
-    <button pButton class="ui-button-success"
-            (click)="renderNewHeatmap()"
-            pTooltip="{{'heatmap.generate'|translate}}"
-            label="{{'generate'|translate}}">
-    </button>
-  <div class="report-element" id="heatmap-sketch"></div>
+  <div [hidden]="true" class="report-element" id="heatmap-sketch"></div>
+  <app-map #map *ngIf="!!floor" [floor]="floor">
+      <app-heatmap-filter-properties (onClose)="renderNewHeatMap($event)"></app-heatmap-filter-properties>
+  </app-map>
   <p-dialog
-    [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
-    [contentStyle]="{ overflow: 'visible' }"
-    [width]="380"
-    [height]="220"
+    [draggable]="false" [(visible)]="displayDialog" showEffect="fade" [modal]="true"
+    [resizable]="false"
+    [styleClass]="'processingDialog'"
     header="{{'reports.dialog.waiting'|translate}}"
     dismissableMask="true" (onHide)="cancelDialog()">
-    <p-progressSpinner [style]="{width: '80px', height: '80px'}"
+    <p-progressSpinner [styleClass]="'processingSpinner'"
                        class="report-dialog-spinner"
                        strokeWidth="8"
                        fill="#EEEEEE"
                        animationDuration="1s">
     </p-progressSpinner>
-    <button pButton class="ui-button-secondary report-dialog-button"
-            (click)="cancelDialog()"
-            label="{{'cancel'|translate}}">
-    </button>
   </p-dialog>
 </div>
+
+

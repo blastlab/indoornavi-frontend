@@ -3,11 +3,13 @@ import {Anchor, Sink} from '../../../../../device/device.type';
 import {DevicePlacerService} from '../device-placer.service';
 import {ToolDetailsComponent} from '../../../shared/details/tool-details';
 import {DeviceService} from '../../../../../device/device.service';
-import {AnchorBag, DeviceDto, DeviceType, SinkBag} from '../device-placer.types';
+import {AnchorBag, DeviceDto, DeviceType, PlacementResult, SinkBag} from '../device-placer.types';
 import {ActionBarService} from '../../../../action-bar/actionbar.service';
 import {Configuration} from '../../../../action-bar/actionbar.type';
 import * as Collections from 'typescript-collections';
 import {Subject} from 'rxjs/Subject';
+import {TranslateService} from '@ngx-translate/core';
+import {DeviceInEditor} from '../../../../../map/models/device';
 
 @Component({
   selector: 'app-device-placer-list',
@@ -15,10 +17,10 @@ import {Subject} from 'rxjs/Subject';
 })
 export class DevicePlacerListComponent implements OnInit, OnDestroy {
   @ViewChild('toolDetails') private toolDetails: ToolDetailsComponent;
+  placementResult: PlacementResult;
   public activeList: Array<Anchor | Sink> = [];
   public queryString: string;
   public queryFields: string[] = ['shortId', 'longId', 'name'];
-  public heightInMeters: number = 2;
   public activeListType: DeviceType;
   private subscriptionDestroyer: Subject<void> = new Subject<void>();
   private anchors: Array<Anchor> = [];
@@ -44,6 +46,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
     this.listenOnDeviceActivated();
     this.listenOnDeviceRemovedFromMap();
     this.listenOnTableRendered();
+    this.listenOnPlacementValidated();
     this.fetchAllDevices();
     this.listenOnDeviceInActiveConfiguration();
   }
@@ -54,7 +57,6 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   }
 
   deviceDragStarted(device: Anchor | Sink): void {
-    device.z = this.heightInMeters * 100;
     const deviceDto: DeviceDto = {
       device: device,
       type: this.activeListType
@@ -104,7 +106,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
   }
 
   private listenOnDeviceActivated(): void {
-    this.devicePlacerService.onActivated.takeUntil(this.subscriptionDestroyer).subscribe((): void => {
+    this.devicePlacerService.onActivated.takeUntil(this.subscriptionDestroyer).subscribe((device: DeviceInEditor): void => {
       this.activeListType = DeviceType.ANCHOR;
       this.setActiveDevices();
     });
@@ -219,4 +221,9 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
     }
   }
 
+  private listenOnPlacementValidated() {
+    this.devicePlacerService.onPlacementValidated.subscribe((placementResult: PlacementResult) => {
+      this.placementResult = placementResult;
+    });
+  }
 }

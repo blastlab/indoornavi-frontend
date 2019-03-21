@@ -1,7 +1,8 @@
 @import '~@angular/material/core/theming/prebuilt/deeppurple-amber.css';
 @import '~primeng/resources/primeng.css';
-@import '~primeng/resources/themes/ludvig/theme.css';
+@import '~primeng/resources/themes/omega/theme.css';
 @import '~font-awesome/css/font-awesome.css';
+@import '~mobile-select/mobile-select.css';
 
 @font-face {
   font-family: 'Flama';
@@ -19,6 +20,10 @@ body {
 
 .error-toast {
   background: #d92020 !important;
+}
+
+.no-padding {
+  padding: 0;
 }
 
 .breadcrumb {
@@ -282,6 +287,10 @@ svg {
   }
 }
 
+.tagsSelect {
+  min-width: 192px;
+}
+
 .muted {
   color: #909090;
 }
@@ -517,5 +526,17 @@ svg text{
 
   #logout span {
     display: none;
+  }
+
+  .tagsSelect {
+    min-width: auto;
+    width: 100%;
+  }
+
+  .ui-growl {
+    bottom: 70px;
+    top: auto;
+    left: 50%;
+    margin-left: -10em;
   }
 }

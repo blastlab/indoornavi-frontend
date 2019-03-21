@@ -2,6 +2,7 @@ import {HeatMapGradientPoint} from '../graphical-report.type';
 import {GridMatrix} from './grid-matrix';
 import * as p5 from 'p5';
 import {Point} from '../../map-editor/map.type';
+import {HeatMapService} from '../services/heatmap.service';
 
 export class HeatMapCanvas {
   private static MAX_RED_SATURATION = 240;
@@ -39,7 +40,7 @@ export class HeatMapCanvas {
     return !(!configuration.isStatic && !configuration.width && !configuration.height);
   }
 
-  constructor(private config: HeatMapCanvasConfig, private data: HeatMapGradientPoint[]) {
+  constructor(private config: HeatMapCanvasConfig, private data: HeatMapGradientPoint[], private heatMapService: HeatMapService) {
     if (HeatMapCanvas.isConfigOk(config)) {
       const pFive = new p5(this.loader.bind(this));
     } else {
@@ -97,11 +98,12 @@ export class HeatMapCanvas {
           });
         }
         sketch.redraw();
+        this.heatMapService.publishIsDrawn();
       }
     };
   }
 
-  private loader(sketch: any) {
+  private loader(sketch: p5) {
     let imgUrl: string;
     let img: any;
     if (!!this.config.imgUrl) {
@@ -306,7 +308,7 @@ export class HeatMapCanvas {
     }
   }
 
-  private display(sketch: any) {
+  private display(sketch: p5) {
     this.setSketchFill(sketch);
     for (let x = 0; x < this.width; x++) {
       for (let y = 0; y < this.height; y++) {
