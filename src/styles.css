@@ -22,6 +22,10 @@ body {
   background: #d92020 !important;
 }
 
+.no-padding {
+  padding: 0;
+}
+
 .breadcrumb {
   list-style-type: none;
   overflow: hidden;

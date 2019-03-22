@@ -1,4 +1,4 @@
-import {Anchor, Device, Sink} from '../../../../device/device.type';
+import {Anchor, Sink} from '../../../../device/device.type';
 import {SinkInEditor} from '../../../../map/models/sink';
 import {AnchorInEditor} from '../../../../map/models/anchor';
 import {DrawConfiguration} from '../../../../map-viewer/publication.type';
@@ -24,7 +24,7 @@ export enum DeviceType {
 
 
 export interface DeviceInEditorConfiguration extends DrawConfiguration {
-  heightInMeters: number;
+  height: number;
 }
 
 export enum DeviceAppearance {
@@ -32,6 +32,11 @@ export enum DeviceAppearance {
 }
 
 export interface DeviceCallbacks {
-  unset: () => void;
+  remove: () => void;
+  edit: () => void;
 }
 
+export interface PlacementResult {
+  isValid: boolean;
+  message?: string;
+}
