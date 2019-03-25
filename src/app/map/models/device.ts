@@ -147,6 +147,7 @@ export class DeviceInEditor {
       })
       .on('mouseout', onMouseOut)
       .on('mousedown', (): void => {
+        this.contextMenuService.hide();
         this.svgGroupWrapper.getGroup().on('mouseout', null);
         if (this.reactiveToEvents) {
           this.devicePlacerService.emitActivated(this);
