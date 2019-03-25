@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {Event, EventLevel} from './event.type';
-import {BatteryState, UWB} from '../../device/device.type';
+import {BatteryState} from '../../device/device.type';
 import {DashboardEventService} from './event.service';
 import {DashboardService} from '../dashboard.service';
 
@@ -12,33 +12,17 @@ import {DashboardService} from '../dashboard.service';
 })
 export class EventComponent implements OnInit {
 
-  events: Event[] = [{
-    level: EventLevel[EventLevel.WARNING].toLowerCase(),
-    message: 'Battery level low',
-    device: {
-      shortId: 1,
-      name: 'device #1'
-    }
-  },
-    {
-      level: EventLevel[EventLevel.DANGER].toLowerCase(),
-      message: 'Battery level very low',
-      device: {
-        shortId: 2,
-        name: 'device #2'
-      }
-    }];
+  events: Event[] = [];
 
   private eventsMap: Map<number, Event> = new Map<number, Event>();
-  private notApplicable: string;
 
   constructor(public translateService: TranslateService,
               private eventService: DashboardEventService,
               private dashboardService: DashboardService) {
-    this.translateService.setDefaultLang('en');
   }
 
   ngOnInit(): void {
+    this.translateService.setDefaultLang('en');
   }
 
   addBatteryStateEvent(batteryStates: BatteryState[]): void {
