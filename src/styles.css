@@ -360,7 +360,7 @@ svg text{
 }
 
 #logout {
-  width: 15%;
+  width: 140px;
   text-align: right;
   padding-right: .2em;
 }
@@ -385,7 +385,7 @@ svg text{
 
 #username {
   padding: .3em;
-  width: 25%;
+  float: right;
   text-align: right;
   cursor: pointer;
 }
@@ -426,10 +426,6 @@ svg text{
 
   #left-panel {
     width: 15%;
-  }
-
-  #username {
-    width: 20%;
   }
 }
 

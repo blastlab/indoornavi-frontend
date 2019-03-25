@@ -11,8 +11,10 @@
       <div id="mobile-header" class="muted">
         IndoorNavi
       </div>
-      <div id="username" [routerLink]="['./changePassword']">
-        <i class="fa fa-caret-right"></i>{{username}}
+      <div class="ui-g-4">
+        <div id="username" [routerLink]="['./changePassword']">
+          <i class="fa fa-caret-right"></i>{{username}}
+        </div>
       </div>
       <div id="logout">
         <a [routerLink]="['./logout']"
