@@ -193,7 +193,8 @@ export class GraphicalReportComponent implements OnInit, OnDestroy {
       mapWidth: Math.ceil(this.config.width * this.scale.getRealDistanceInCentimeters() / this.scale.getDistanceInPixels()),
       tagsIds: properties.tags.map((tag: Tag) => {
         return tag.id;
-      })
+      }),
+      deviceType: 'uwb'
     };
     this.reportService.getCoordinates(request).first()
       .subscribe((payload: SolverHeatMapPayload): void => {

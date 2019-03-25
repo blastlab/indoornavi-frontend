@@ -82,12 +82,15 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
 
   private listenOnDeviceDragAndDrop(): void {
     this.devicePlacerService.onDragStarted.takeUntil(this.subscriptionDestroyer).subscribe((deviceDto: DeviceDto): void => {
+      this.toolDetails.hide();
       this.draggedDevice = deviceDto.device;
     });
     this.devicePlacerService.onDroppedOutside.takeUntil(this.subscriptionDestroyer).subscribe((): void => {
+      this.toolDetails.show();
       this.draggedDevice = null;
     });
     this.devicePlacerService.onDroppedInside.takeUntil(this.subscriptionDestroyer).subscribe((): void => {
+      this.toolDetails.show();
       this.removeDraggedDevice();
       if (this.activeListType === DeviceType.SINK) {
         this.activeListType = DeviceType.ANCHOR;

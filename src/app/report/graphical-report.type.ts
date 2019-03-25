@@ -7,6 +7,7 @@ export interface SolverCoordinatesRequest {
   mapWidth: number;
   mapHeight: number;
   tagsIds: number[];
+  deviceType: string;
 }
 
 export interface SolverHeatMapPayload {
