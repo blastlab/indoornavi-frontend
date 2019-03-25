@@ -385,8 +385,7 @@ svg text{
 
 #username {
   padding: .3em;
-  width: 25%;
-  text-align: right;
+  width: 50%;
   cursor: pointer;
 }
 
