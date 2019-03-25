@@ -58,12 +58,13 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   public checkBoxDisabledTooltip: string;
   public checkBoxEnabledTooltip: string = '';
   public checkBoxTooltipMap: Map<number, string> = new Map();
+  upgradeErrorText: string = '';
 
   public displayDeviceConfig: boolean = false;
   @ViewChildren('updateCheckbox') public deviceCheckboxes: Checkbox[];
   @ViewChild('firmwareInput') public firmwareInput: ElementRef;
   @ViewChild('firmwareButton') public firmwareButton: ElementRef;
-
+  @ViewChild('upgradeError') upgradeError: ElementRef;
   @ViewChild('deviceForm') deviceForm: NgForm;
 
   private firmwareSocketSubscription: Subscription;
@@ -468,7 +469,9 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       this.devicesToUpdate.length = 0;
       this.devicesUpdating.length = 0;
     }
-    this.messageService.failed(message.code);
+    this.translate.get(message.code, { id: !!deviceStatus ? deviceStatus.device.shortId : null }).subscribe((translated: string) => {
+      this.upgradeErrorText = translated;
+    });
   }
 
   private handleBatteryLevelMessage(message: BatteryMessage): void {

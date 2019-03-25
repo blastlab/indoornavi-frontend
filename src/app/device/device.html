@@ -61,6 +61,13 @@
   </div>
 </p-toolbar>
 
+<div class="ui-g" [ngStyle]="{'margin-bottom': '10px'}">
+  <div *ngIf="upgradeErrorText.length > 0" class="ui-message ui-widget ui-corner-all ui-messages-warn ui-g-12">
+    <span class="ui-message-icon fa fa-close"></span>
+    <span class="ui-message-text">{{upgradeErrorText}}</span>
+  </div>
+</div>
+
 <p-pickList class="device-list" [source]="notVerified" [target]="verified" dragdrop="true" [responsive]="true"
             sourceHeader="{{'device.notVerified'|translate}}" targetHeader="{{'device.verified'|translate}}"
             [showSourceControls]="false" [showTargetControls]="false" filterBy="shortId"
