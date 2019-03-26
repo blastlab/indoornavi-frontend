@@ -29,7 +29,6 @@ import {UserService} from './user/user/user.service';
 import {AuthComponent} from './auth/auth';
 import {AuthGuard, CanRead} from './auth/auth.guard';
 import {AuthService} from './auth/auth.service';
-import {WizardComponent} from './map-editor/tool-bar/tools/wizard/wizard';
 import {ActionBarService} from './map-editor/action-bar/actionbar.service';
 import {ScaleService} from './shared/services/scale/scale.service';
 import {PublishedListComponent} from './map-viewer/list/publication-list';
@@ -189,7 +188,6 @@ export function HttpLoaderFactory(http: Http) {
     UnauthorizedComponent,
     PermissionGroupComponent,
     ActionBarComponent,
-    WizardComponent,
     AcceptButtonsComponent,
     PublishedComponent,
     PublishedListComponent,
@@ -350,7 +348,6 @@ export function HttpLoaderFactory(http: Http) {
     ModelsConfig,
     ReportService,
     TerminalService,
-    NavigationController,
     ModelsConfig,
     TerminalMessageService,
     DashboardEventService,
