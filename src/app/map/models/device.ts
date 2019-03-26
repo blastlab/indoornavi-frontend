@@ -33,6 +33,7 @@ export class DeviceInEditor {
     this.addReactionToMouseEvents();
     this.setMovable();
     this.setTranslations();
+    this.setDedicatedZoomReaction();
   }
 
   getPosition(): Point {
@@ -147,7 +148,6 @@ export class DeviceInEditor {
       })
       .on('mouseout', onMouseOut)
       .on('mousedown', (): void => {
-        this.contextMenuService.hide();
         this.svgGroupWrapper.getGroup().on('mouseout', null);
         if (this.reactiveToEvents) {
           this.devicePlacerService.emitActivated(this);
@@ -160,6 +160,12 @@ export class DeviceInEditor {
       .on('mouseup', (): void => {
         this.svgGroupWrapper.getGroup().on('mouseout', onMouseOut);
       });
+  }
+
+  private setDedicatedZoomReaction (): void {
+    this.container.call(d3.zoom().on('zoom', () => {
+      this.contextMenuService.hide();
+    }));
   }
 
   private setMovable(): void {
@@ -180,6 +186,7 @@ export class DeviceInEditor {
         }
       )
       .on('start', (): void => {
+        this.contextMenuService.hide();
         element = d3.select(d3.event.sourceEvent.target);
         d3.event.sourceEvent.stopPropagation();
       })
