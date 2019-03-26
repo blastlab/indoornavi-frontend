@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Complex} from './complex.type';
 import {ComplexService} from './complex.service';
 import {NgForm} from '@angular/forms';
@@ -8,11 +8,12 @@ import {CrudComponent, CrudHelper} from '../shared/components/crud/crud.componen
 import {ConfirmationService} from 'primeng/primeng';
 import {MessageServiceWrapper} from '../shared/services/message/message.service';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
+import {Subject} from 'rxjs/Subject';
 
 @Component({
   templateUrl: 'complex.html'
 })
-export class ComplexComponent implements OnInit, CrudComponent {
+export class ComplexComponent implements OnInit, OnDestroy, CrudComponent {
   complex: Complex;
   complexes: Complex[] = [];
   dialogTitle: string;
@@ -20,6 +21,7 @@ export class ComplexComponent implements OnInit, CrudComponent {
 
   loading: boolean = true;
   displayDialog: boolean = false;
+  private subscriptionDestructor: Subject<void> = new Subject<void>();
   private confirmBody: string;
   @ViewChild('complexForm') complexForm: NgForm;
 
@@ -32,8 +34,9 @@ export class ComplexComponent implements OnInit, CrudComponent {
   }
 
   ngOnInit(): void {
-    this.complexService.getComplexes().subscribe((complexes: Array<Complex>) => {
-      this.complexes = complexes;
+    this.complexService.getComplexes().takeUntil(this.subscriptionDestructor)
+      .subscribe((complexes: Array<Complex>) => {
+        this.complexes = complexes;
       this.loading = false;
     });
 
@@ -43,12 +46,19 @@ export class ComplexComponent implements OnInit, CrudComponent {
         {label: value, disabled: true}
       ]);
     });
-    this.translate.get('confirm.body').subscribe((value: string) => {
+    this.translate.get('confirm.body').first()
+      .subscribe((value: string) => {
       this.confirmBody = value;
     });
-    this.translate.get('complex.details.remove').subscribe((value: string) => {
+    this.translate.get('complex.details.remove')
+      .first().subscribe((value: string) => {
       this.removeDialogTitle = value;
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptionDestructor.next();
+    this.subscriptionDestructor = null;
   }
 
   openDialog(complex?: Complex): void {
