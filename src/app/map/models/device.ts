@@ -154,7 +154,7 @@ export class DeviceInEditor {
       })
       .on('click', (): void => {
         // to stop map click event that deactivates selection
-        if (this.appearance === 2) {
+        if (this.appearance === DeviceAppearance.ACTIVE) {
           d3.event.stopPropagation();
         }
       })
