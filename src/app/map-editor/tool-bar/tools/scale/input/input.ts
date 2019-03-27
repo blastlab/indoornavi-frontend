@@ -6,14 +6,14 @@ import {MessageServiceWrapper} from '../../../../../shared/services/message/mess
 import {SelectItem} from 'primeng/primeng';
 import {Subscription} from 'rxjs/Subscription';
 import {ToolDetailsComponent} from '../../../shared/details/tool-details';
-import {MapEditorInput} from '../../../shared/tool-input/map-editor-input';
+import {KeyboardDefaultListener} from '../../../shared/tool-input/keyboard-default-listener';
 
 @Component({
   selector: 'app-scale-input',
   templateUrl: './input.html',
   styleUrls: ['./input.css']
 })
-export class ScaleInputComponent extends MapEditorInput implements OnInit, OnDestroy {
+export class ScaleInputComponent extends KeyboardDefaultListener implements OnInit, OnDestroy {
   @ViewChild('toolDetails') toolDetails: ToolDetailsComponent;
   scale: Scale;
   measures: SelectItem[] = [];

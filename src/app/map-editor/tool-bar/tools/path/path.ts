@@ -19,13 +19,13 @@ import {Line, Point} from '../../../map.type';
 import {TranslateService} from '@ngx-translate/core';
 import {Configuration} from '../../../action-bar/actionbar.type';
 import {IntersectionIdentifier, PathContextCallback, PathContextMenuLabels} from './path.type';
-import {MapEditorInput} from '../../shared/tool-input/map-editor-input';
+import {KeyboardDefaultListener} from '../../shared/tool-input/keyboard-default-listener';
 
 @Component({
   selector: 'app-path',
   templateUrl: './path.html'
 })
-export class PathComponent extends MapEditorInput implements Tool, OnInit, OnDestroy {
+export class PathComponent extends KeyboardDefaultListener implements Tool, OnInit, OnDestroy {
   private static CIRCLE_R: number = 5;
   private static HOVER_COLOR: string = '#FF0000';
   private static STANDARD_COLOR: string = '#000000';

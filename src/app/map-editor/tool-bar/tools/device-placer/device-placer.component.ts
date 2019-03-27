@@ -23,13 +23,13 @@ import {ConfirmationService} from 'primeng/primeng';
 import {Subject} from 'rxjs/Subject';
 import {Box} from '../../../../shared/utils/drawing/drawing.builder';
 import {ModelsConfig} from '../../../../map/models/models.config';
-import {MapEditorInput} from '../../shared/tool-input/map-editor-input';
+import {KeyboardDefaultListener} from '../../shared/tool-input/keyboard-default-listener';
 
 @Component({
   selector: 'app-device-placer',
   templateUrl: './device-placer.html'
 })
-export class DevicePlacerComponent extends MapEditorInput implements Tool, OnInit, OnDestroy {
+export class DevicePlacerComponent extends KeyboardDefaultListener implements Tool, OnInit, OnDestroy {
   active: boolean = false;
   disabled: boolean = true;
   private subscriptionDestroyer: Subject<void> = new Subject<void>();

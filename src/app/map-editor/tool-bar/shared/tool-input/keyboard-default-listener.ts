@@ -1,6 +1,6 @@
 import {HostListener} from '@angular/core';
 
-export abstract class MapEditorInput {
+export abstract class KeyboardDefaultListener {
 
   abstract active: boolean;
 

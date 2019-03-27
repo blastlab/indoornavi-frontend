@@ -15,14 +15,14 @@ import {NgForm} from '@angular/forms';
 import {SelectItem} from 'primeng/primeng';
 import {Subject} from 'rxjs/Subject';
 import {TranslateService} from '@ngx-translate/core';
-import {MapEditorInput} from '../../../shared/tool-input/map-editor-input';
+import {KeyboardDefaultListener} from '../../../shared/tool-input/keyboard-default-listener';
 
 @Component({
   selector: 'app-area-details',
   templateUrl: './area-details.html',
   styleUrls: ['./area-details.css']
 })
-export class AreaDetailsComponent extends MapEditorInput implements OnInit, OnDestroy {
+export class AreaDetailsComponent extends KeyboardDefaultListener implements OnInit, OnDestroy {
   @ViewChild('toolDetails') private toolDetails: ToolDetailsComponent;
   @ViewChild('areaDetailsForm') private areaDetailsForm: NgForm;
 
