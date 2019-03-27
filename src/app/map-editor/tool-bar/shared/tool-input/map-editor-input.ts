@@ -23,5 +23,3 @@ export abstract class MapEditorInput {
   protected abstract reject();
 
 }
-
-

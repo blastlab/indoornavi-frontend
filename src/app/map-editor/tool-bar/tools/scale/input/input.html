@@ -4,7 +4,6 @@
       <div class="ui-inputgroup">
         <span class="ui-float-label">
           <input (keydown)="handleKeyDown($event)"
-                 (keyup)="handleKeyUp($event)"
                  [appAutoFocus]="active" name="distance"
                  id="distance" type="number" pInputText min="0"
                  [(ngModel)]="scale.realDistance"/>

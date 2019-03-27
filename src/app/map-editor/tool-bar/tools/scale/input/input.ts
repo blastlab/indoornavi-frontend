@@ -19,7 +19,6 @@ export class ScaleInputComponent extends MapEditorInput implements OnInit, OnDes
   measures: SelectItem[] = [];
   active = false;
 
-  private isLocked = false;
   private scaleChangedSubscription: Subscription;
   private scaleVisibilityChangedSubscription: Subscription;
 
@@ -79,17 +78,12 @@ export class ScaleInputComponent extends MapEditorInput implements OnInit, OnDes
   }
 
   handleKeyDown(event: KeyboardEvent) {
-    this.isLocked = event.key === 'Enter';
-  }
-
-  handleKeyUp(event: KeyboardEvent) {
-    this.isLocked = !(event.key === 'Enter');
+    if (event.key === 'Enter') {
+      event.preventDefault();
+    }
   }
 
   reject() {
-    if (this.isLocked) {
-      return;
-    }
     this.messageService.success('scale.changesRejected');
     this.scaleInputService.publishSaveClicked(null);
     this.scaleInputService.publishChangesRejected();
