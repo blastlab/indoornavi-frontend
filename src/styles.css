@@ -360,9 +360,7 @@ svg text{
 }
 
 #logout {
-  width: 15%;
-  text-align: right;
-  padding-right: .2em;
+  margin-left: 2em;
 }
 
 #logout i {
@@ -384,11 +382,8 @@ svg text{
 }
 
 #username {
-  padding: .3em;
-  float: right;
-  text-align: right;
   cursor: pointer;
-  outline: none;
+  margin-left: auto;
 }
 
 #username i.fa-caret-right {
@@ -429,9 +424,9 @@ svg text{
     width: 15%;
   }
 
-  #username {
-    width: 20%;
-  }
+  /*#username {*/
+    /*width: 20%;*/
+  /*}*/
 }
 
 @media (max-width: 720px) {
