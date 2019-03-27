@@ -1,5 +1,6 @@
 const loc = window.location;
 let ws_addr;
+let hostname;
 
 if (loc.protocol === 'https:') {
   ws_addr = 'wss://';
