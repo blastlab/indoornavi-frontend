@@ -8,9 +8,10 @@ import {Timer} from '../shared/utils/timer/timer';
 import {EventComponent} from './event/event';
 import {DashboardService} from './dashboard.service';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
-import {Router} from '@angular/router';
 import {Floor} from '../floor/floor.type';
 import {FloorService} from '../floor/floor.service';
+import {PublishedService} from '../map-viewer/publication.service';
+import {Publication} from '../map-viewer/publication.type';
 
 @Component({
   templateUrl: 'dashboard.html',
@@ -24,13 +25,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
   @ViewChild('eventComponent') eventComponent: EventComponent;
   private timer: Timer;
   floor: Floor;
+  floorsConfigured: Floor[] = [];
 
   constructor(
     private infoSocket: SocketService,
     private deviceService: DeviceService,
     private dashboardService: DashboardService,
     private breadcrumbService: BreadcrumbService,
-    private floorService: FloorService) {
+    private floorService: FloorService,
+    private publishedService: PublishedService) {
   }
 
   ngOnDestroy(): void {
@@ -47,8 +50,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
         {label: 'Dashboard', disabled: true}
       ]
     );
-    this.floorService.getFloor(1).subscribe((floor: Floor) => {
-      this.floor = floor;
+    this.publishedService.getAll().subscribe((publications: Publication[]) => {
+      if (publications.length > 0) {
+        publications.forEach((publication: Publication): void => {
+          publication.floors.forEach((floor: Floor): void => {
+            if (!!floor.scale) {
+              this.floorsConfigured.push(floor);
+            }
+          });
+        });
+        if (this.floorsConfigured.length > 0) {
+          // take first floor that can be displayed.
+          // TODO: request from Product Owner how to select next available floor while in dashboard view
+          this.floorService.getFloor(this.floorsConfigured[0].id).subscribe((floor: Floor) => {
+            this.floor = floor;
+          });
+        }
+      }
     });
   }
 
