@@ -8,7 +8,6 @@ import {Timer} from '../shared/utils/timer/timer';
 import {EventComponent} from './event/event';
 import {DashboardService} from './dashboard.service';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
-import {Router} from '@angular/router';
 import {Floor} from '../floor/floor.type';
 import {FloorService} from '../floor/floor.service';
 
