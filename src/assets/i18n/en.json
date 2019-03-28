@@ -280,7 +280,7 @@
   "IWS_010": "Unknown error. Please contact administration.",
   "IWS_011": "The firmware you trying to upload is invalid. Please contact administration.",
   "IWS_012": "Invalid file format. Only IHS files are allowed.",
-  "IWS_013": "Firmware partition is invalid.",
+  "IWS_013": "Firmware partition is invalid. Please contact administration.",
   "list.view": "List view",
   "login": "Login",
   "logout": "Logout",

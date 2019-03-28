@@ -34,8 +34,8 @@ import {TerminalMessageService} from './terminal/terminal-message.service';
   styleUrls: ['./device.css'],
   encapsulation: ViewEncapsulation.None,
   providers: [
-    { provide: 'registration', useClass: SocketService },
-    { provide: 'info', useClass: SocketService }
+    {provide: 'registration', useClass: SocketService},
+    {provide: 'info', useClass: SocketService}
   ]
 })
 export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
@@ -244,6 +244,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   upload(): void {
+    this.upgradeErrorText = '';
     const files = this.firmwareInput.nativeElement.files;
 
     if (this.devicesToUpdate.length === 0 || files.length === 0) {
@@ -284,9 +285,9 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       }
     });
     const socketPayload: ClientRequest = {
-        type: CommandType[CommandType.CHECK_BATTERY_LEVEL],
-        args: noBatteryStatus
-      };
+      type: CommandType[CommandType.CHECK_BATTERY_LEVEL],
+      args: noBatteryStatus
+    };
     this.infoSocketService.send(socketPayload);
   }
 
@@ -311,8 +312,8 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   private listenForTerminalClientRequest(): void {
     this.terminalMessageService
       .onClientRequest().takeUntil(this.subscriptionDestructor).subscribe((socketPayload: ClientRequest): void => {
-        this.infoSocketService.send(socketPayload);
-      });
+      this.infoSocketService.send(socketPayload);
+    });
   }
 
   private updateFirmwareVersion(deviceStatus: DeviceStatus): void {
@@ -352,7 +353,13 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
 
   private removeFromToUpdate(deviceStatus: DeviceStatus): void {
     this.devicesToUpdate = this.devicesToUpdate.filter((device: UWB): boolean => {
-      return device.shortId !== deviceStatus.device.shortId;
+      if (device.shortId !== deviceStatus.device.shortId) {
+        return true;
+      } else {
+        const checkbox: Checkbox = this.getCheckboxById(deviceStatus.device.shortId);
+        checkbox.checked = false;
+        return false;
+      }
     });
   }
 
@@ -466,10 +473,14 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       this.removeFromUpdating(deviceStatus);
       this.removeFromToUpdate(deviceStatus);
     } else {
+      this.devicesToUpdate.forEach((device: UWB) => {
+        const checkbox: Checkbox = this.getCheckboxById(device.shortId);
+        checkbox.checked = false;
+      });
       this.devicesToUpdate.length = 0;
       this.devicesUpdating.length = 0;
     }
-    this.translate.get(message.code, { id: !!deviceStatus ? deviceStatus.device.shortId : null }).subscribe((translated: string) => {
+    this.translate.get(message.code, {id: !!deviceStatus ? deviceStatus.device.shortId : null}).subscribe((translated: string) => {
       this.upgradeErrorText = translated;
     });
   }
