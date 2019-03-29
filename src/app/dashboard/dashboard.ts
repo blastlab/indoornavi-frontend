@@ -25,7 +25,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   @ViewChild('eventComponent') eventComponent: EventComponent;
   private timer: Timer;
   floor: Floor;
-  floorsConfigured: Floor;
 
   constructor(
     private infoSocket: SocketService,
@@ -53,15 +52,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.publishedService.getAll().subscribe((publications: Publication[]) => {
       if (publications.length > 0) {
         publications.forEach((publication: Publication): void => {
-          this.floorsConfigured = publication.floors.find((floor: Floor): boolean => {
+          this.floor = publication.floors.find((floor: Floor): boolean => {
             return !!floor.scale;
           });
         });
-        if (!!this.floorsConfigured) {
-          this.floorService.getFloor(this.floorsConfigured.id).subscribe((floor: Floor) => {
-            this.floor = floor;
-          });
-        }
       }
     });
   }
