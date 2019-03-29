@@ -30,6 +30,8 @@ import {KeyboardDefaultListener} from '../../shared/tool-input/keyboard-default-
   templateUrl: './device-placer.html'
 })
 export class DevicePlacerComponent extends KeyboardDefaultListener implements Tool, OnInit, OnDestroy {
+  private static defaultHeight = 100;
+
   active: boolean = false;
   disabled: boolean = true;
   activeDevice: SinkBag | AnchorBag;
