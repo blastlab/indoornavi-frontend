@@ -381,12 +381,15 @@ svg text{
   color: #1E96FF;
 }
 
-#username {
+#username-link {
+  padding: .3em;
+  width: 25%;
+  text-align: right;
   cursor: pointer;
   margin-left: auto;
 }
 
-#username i.fa-caret-right {
+#username-link i.fa-caret-right {
   margin-right: 5px;
   color: #1E96FF;
 }
@@ -424,9 +427,6 @@ svg text{
     width: 15%;
   }
 
-  /*#username {*/
-    /*width: 20%;*/
-  /*}*/
 }
 
 @media (max-width: 720px) {
@@ -442,7 +442,7 @@ svg text{
     width: 20%;
   }
 
-  #username {
+  #username-link {
     width: 15%;
   }
 
@@ -466,7 +466,7 @@ svg text{
     font-size: .9em;
   }
 
-  #username {
+  #username-link {
     display: none;
   }
 
