@@ -481,6 +481,9 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   private activatePlacerEvents(): void {
     if (!!this.map) {
       this.map
+        .on('mouseover', () => { // TODO: tap and touch do not work, mousedown is for right click, find solution for left mouse down
+          this.devicePlacerService.emitMouseOverMap();
+        })
         .on('click', (): void => {
           this.sinks.forEach((sink: SinkBag): void => {
             this.setSinkGroupOutOfScope(sink);
@@ -500,7 +503,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
 
   private deactivatePlacerEvents(): void {
     if (!!this.map) {
-      this.map.on('click', null).on('contextmenu', null);
+      this.map.on('click', null).on('contextmenu', null).on('mouseover', null);
     }
     this.sinks.forEach((sink: SinkBag): void => {
       sink.deviceInEditor.contextMenuOff();

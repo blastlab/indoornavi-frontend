@@ -34,6 +34,7 @@ export class DeviceInEditor {
     this.setMovable();
     this.setTranslations();
     this.setDedicatedZoomReaction();
+    this.setDedicatedMapMouseDownReaction();
   }
 
   getPosition(): Point {
@@ -166,6 +167,12 @@ export class DeviceInEditor {
     this.container.call(d3.zoom().on('zoom', () => {
       this.contextMenuService.hide();
     }));
+  }
+
+  private setDedicatedMapMouseDownReaction (): void {
+    this.devicePlacerService.onMouseOverMap.subscribe(() => {
+      this.contextMenuService.hide();
+    });
   }
 
   private setMovable(): void {
