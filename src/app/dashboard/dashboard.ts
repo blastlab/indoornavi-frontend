@@ -25,7 +25,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   @ViewChild('eventComponent') eventComponent: EventComponent;
   private timer: Timer;
   floor: Floor;
-  floorsConfigured: Floor[] = [];
+  floorsConfigured: Floor;
 
   constructor(
     private infoSocket: SocketService,
@@ -53,16 +53,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.publishedService.getAll().subscribe((publications: Publication[]) => {
       if (publications.length > 0) {
         publications.forEach((publication: Publication): void => {
-          publication.floors.forEach((floor: Floor): void => {
-            if (!!floor.scale) {
-              this.floorsConfigured.push(floor);
-            }
+          this.floorsConfigured = publication.floors.find((floor: Floor): boolean => {
+            return !!floor.scale;
           });
         });
-        if (this.floorsConfigured.length > 0) {
-          // take first floor that can be displayed.
-          // TODO: request from Product Owner how to select next available floor while in dashboard view
-          this.floorService.getFloor(this.floorsConfigured[0].id).subscribe((floor: Floor) => {
+        if (!!this.floorsConfigured) {
+          this.floorService.getFloor(this.floorsConfigured.id).subscribe((floor: Floor) => {
             this.floor = floor;
           });
         }
