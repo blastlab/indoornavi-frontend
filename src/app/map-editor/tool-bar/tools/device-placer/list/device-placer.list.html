@@ -1,16 +1,17 @@
 <app-tool-details #toolDetails>
+  <div class="ui-g" *ngIf="placementResult && !placementResult.isValid">
+    <div class="ui-g-12">
+      <p-message severity="warn" [text]="placementResult.message"></p-message>
+    </div>
+  </div>
   <div class="ui-g">
-    <div class="ui-g-7">
+    <div class="ui-g-4 ui-g-offset-8">
       <div class="ui-inputgroup">
         <input pInputText [appAutoFocus]="active" autocomplete="off" type="text"
                id="deviceNameFilter" class="form-control"
                placeholder="{{'filter.findByAllFields'|translate}}" [(ngModel)]="queryString">
         <button pButton type="button" icon="fa-search" class="ui-button-secondary"></button>
       </div>
-    </div>
-    <div class="ui-g-5">
-      <div id="height-label">{{'device-list.label.height'|translate}} {{heightInMeters}}m</div>
-      <p-slider [(ngModel)]="heightInMeters" [step]="1" [min]="0" [max]="15"></p-slider>
     </div>
     <div class="ui-g-12">
       <h4 *ngIf="activeListType === 0">{{'anchors.header'|translate}}</h4>
@@ -29,7 +30,8 @@
           </thead>
           <tbody class="ui-datatable-data ui-widget-content">
 
-          <tr appDevicePlacerRow *ngFor="let device of activeList | allFieldsFilter: queryString: queryFields; let i = index; let last = last"
+          <tr appDevicePlacerRow
+              *ngFor="let device of activeList | allFieldsFilter: queryString: queryFields; let i = index; let last = last"
               pDraggable="devices" (onDragStart)="deviceDragStarted(device)" (onDragEnd)="deviceDragEnded()"
               [ready]="last"
               [ngClass]="{'ui-datatable-odd ui-widget-content': i % 2 === 1, 'ui-datatable-even ui-widget-content': i % 2 === 0}">
@@ -37,7 +39,8 @@
             <td>{{device.longId}}</td>
             <td>{{device.name}}</td>
           </tr>
-          <tr *ngIf="(activeList | allFieldsFilter: queryString: queryFields).length === 0" class="ui-datatable-even ui-widget-content">
+          <tr *ngIf="(activeList | allFieldsFilter: queryString: queryFields).length === 0"
+              class="ui-datatable-even ui-widget-content">
             <td colspan="3">
               {{'device-list.noRemainingDevicesLeft'|translate}}
             </td>

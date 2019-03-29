@@ -3,7 +3,7 @@ import {Subject} from 'rxjs/Subject';
 import {Point} from '../../../map.type';
 import {DeviceInEditor} from '../../../../map/models/device';
 import {Observable} from 'rxjs/Observable';
-import {AnchorBag, DeviceDto, SinkBag} from './device-placer.types';
+import {AnchorBag, DeviceDto, PlacementResult, SinkBag} from './device-placer.types';
 import {Anchor, Sink} from '../../../../device/device.type';
 
 
@@ -20,6 +20,7 @@ export class DevicePlacerService {
   private tableRendered: Subject<void> = new Subject();
   private devicePositionChanged: Subject<void> = new Subject<void>();
   private deviceInActiveConfiguration: Subject<Sink | Anchor> = new Subject<Sink | Anchor>();
+  private placementValidated: Subject<PlacementResult> = new Subject<PlacementResult>();
 
   onDragStarted: Observable<DeviceDto> = this.draggedStarted.asObservable();
   onDroppedOutside: Observable<void> = this.droppedOutside.asObservable();
@@ -32,6 +33,8 @@ export class DevicePlacerService {
   onTableRendered: Observable<void> = this.tableRendered.asObservable();
   onDevicePositionChanged: Observable<void> = this.devicePositionChanged.asObservable();
   onDeviceInActiveConfiguration: Observable<Sink | Anchor> = this.deviceInActiveConfiguration.asObservable();
+  onPlacementValidated: Observable<PlacementResult> = this.placementValidated.asObservable();
+
   constructor() {
   }
 
@@ -78,4 +81,9 @@ export class DevicePlacerService {
   emitDeviceInActiveConfiguration(device: Sink | Anchor): void {
     this.deviceInActiveConfiguration.next(device);
   }
+
+  emitPlacementValidated(placementResult: PlacementResult): void {
+    this.placementValidated.next(placementResult);
+  }
+
 }
