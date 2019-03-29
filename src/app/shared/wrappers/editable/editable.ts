@@ -3,23 +3,35 @@ import {ContextMenuService} from './editable.service';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {SvgGroupWrapper} from '../../utils/drawing/drawing.builder';
+import {TranslateService} from '@ngx-translate/core';
 
 export class Editable {
 
   private selected: Subject<Editable> = new Subject<Editable>();
+  private edit: string;
+  private remove: string;
 
-  constructor(public groupWrapper: SvgGroupWrapper, private contextMenuService: ContextMenuService) {
+  constructor(public groupWrapper: SvgGroupWrapper,
+              private contextMenuService: ContextMenuService,
+              private translate: TranslateService
+              ) {
+    this.translate.setDefaultLang('en');
+    this.translate.get('edit').first().subscribe((value: string) => {
+      this.edit = value;
+    });
+    this.translate.get('remove').first().subscribe((value: string) => {
+      this.remove = value;
+    });
   }
 
   on(callbacks: EditableCallbacks): d3.selection {
-    // todo: tłumaczenie
     this.contextMenuService.setItems([
       {
-        label: 'Edit',
+        label: this.edit,
         command: callbacks.edit
       },
       {
-        label: 'Remove',
+        label: this.remove,
         command: callbacks.remove
       }
     ]);

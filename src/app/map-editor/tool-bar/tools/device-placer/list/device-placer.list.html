@@ -7,7 +7,7 @@
   <div class="ui-g">
     <div class="ui-g-4 ui-g-offset-8">
       <div class="ui-inputgroup">
-        <input pInputText autofocus autocomplete="off" type="text"
+        <input pInputText [appAutoFocus]="active" autocomplete="off" type="text"
                id="deviceNameFilter" class="form-control"
                placeholder="{{'filter.findByAllFields'|translate}}" [(ngModel)]="queryString">
         <button pButton type="button" icon="fa-search" class="ui-button-secondary"></button>

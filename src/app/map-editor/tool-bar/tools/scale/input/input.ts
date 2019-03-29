@@ -6,18 +6,18 @@ import {MessageServiceWrapper} from '../../../../../shared/services/message/mess
 import {SelectItem} from 'primeng/primeng';
 import {Subscription} from 'rxjs/Subscription';
 import {ToolDetailsComponent} from '../../../shared/details/tool-details';
+import {KeyboardDefaultListener} from '../../../shared/tool-input/keyboard-default-listener';
 
 @Component({
   selector: 'app-scale-input',
   templateUrl: './input.html',
   styleUrls: ['./input.css']
 })
-export class ScaleInputComponent implements OnInit, OnDestroy {
-  @ViewChild('toolDetails')
-  toolDetails: ToolDetailsComponent;
+export class ScaleInputComponent extends KeyboardDefaultListener implements OnInit, OnDestroy {
+  @ViewChild('toolDetails') toolDetails: ToolDetailsComponent;
   scale: Scale;
-  visible: boolean = false;
   measures: SelectItem[] = [];
+  active = false;
 
   private scaleChangedSubscription: Subscription;
   private scaleVisibilityChangedSubscription: Subscription;
@@ -25,6 +25,7 @@ export class ScaleInputComponent implements OnInit, OnDestroy {
   constructor(private messageService: MessageServiceWrapper,
               private scaleService: ScaleService,
               private scaleInputService: ScaleInputService) {
+    super();
   }
 
   ngOnInit() {
@@ -37,7 +38,13 @@ export class ScaleInputComponent implements OnInit, OnDestroy {
     });
 
     this.scaleVisibilityChangedSubscription = this.scaleService.scaleVisibilityChanged.subscribe((isScaleVisible: boolean) => {
-      isScaleVisible ? this.toolDetails.show() : this.toolDetails.hide();
+      if (isScaleVisible) {
+        this.toolDetails.show();
+        this.active = true;
+      } else {
+        this.toolDetails.hide();
+        this.active = false;
+      }
     });
 
     this.scaleChangedSubscription = this.scaleService.scaleChanged.subscribe(scale => {
@@ -67,6 +74,12 @@ export class ScaleInputComponent implements OnInit, OnDestroy {
     } else {
       this.scaleInputService.publishSaveClicked(this.scale);
       this.messageService.success('scale.setSuccess');
+    }
+  }
+
+  handleKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
     }
   }
 

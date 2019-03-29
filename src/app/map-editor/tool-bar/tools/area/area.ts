@@ -112,7 +112,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
           if (index === -1) { // accepted new
             this.areas.push({
               dto: area.dto,
-              editable: new Editable(this.currentAreaGroup, this.contextMenuService)
+              editable: new Editable(this.currentAreaGroup, this.contextMenuService, this.translateService)
             });
             this.currentAreaGroup.getGroup().attr('id', 'area-' + this.areas.length);
           } else { // accepted edit
@@ -463,7 +463,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
               this.currentAreaGroup.getGroup().attr('id', idBackUp);
               const index = this.findSelectedAreaBagIndex();
               if (index >= 0) {
-                this.areas[index].editable = new Editable(this.currentAreaGroup, this.contextMenuService);
+                this.areas[index].editable = new Editable(this.currentAreaGroup, this.contextMenuService, this.translateService);
               }
             }
             this.drawPolygon(this.backupPolygonPoints);
@@ -574,7 +574,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
   private setView() {
     let index = 0;
     this.areas.forEach((areaBag: AreaBag): void => {
-      areaBag.editable = new Editable(this.createBuilder(index).createGroup(), this.contextMenuService);
+      areaBag.editable = new Editable(this.createBuilder(index).createGroup(), this.contextMenuService, this.translateService);
       this.applyContextMenuToSingleArea(areaBag);
       areaBag.editable.onSelected().subscribe((selected: Editable) => {
         this.selectedEditable = selected;
