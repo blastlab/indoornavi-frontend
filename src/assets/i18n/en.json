@@ -281,6 +281,7 @@
   "IWS_011": "The firmware you trying to upload is invalid. Please contact administration.",
   "IWS_012": "Invalid file format. Only IHS files are allowed.",
   "IWS_013": "Firmware partition is invalid. Please contact administration.",
+  "IWS_014": "The device [{{id}}] didn't get up after restarting. It may be offline.",
   "list.view": "List view",
   "login": "Login",
   "logout": "Logout",

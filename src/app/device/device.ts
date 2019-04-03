@@ -1,4 +1,4 @@
-import {Component, ElementRef, Inject, NgZone, OnDestroy, OnInit, ViewChild, ViewChildren, ViewEncapsulation} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Inject, NgZone, OnDestroy, OnInit, ViewChild, ViewChildren, ViewEncapsulation} from '@angular/core';
 import {Observable, Subject, Subscription} from 'rxjs/Rx';
 import {Config} from '../../config';
 import {TranslateService} from '@ngx-translate/core';
@@ -107,13 +107,12 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     this.translate.get(`device.details.${this.deviceType}.remove`).first().subscribe((value: string): void => {
       this.removeDialogTitle = value;
     });
-    this.listenForTerminalClientRequest();
     this.translate.get('device.disabled.tooltip').subscribe(value => {
       this.checkBoxDisabledTooltip = value;
       // this is here for a reason (tooltip needs to be translated), don't move it down
       this.connectToRegistrationSocket();
     });
-    this.openInfoClientSocketConnection();
+    this.listenForTerminalClientRequest();
   }
 
   ngOnDestroy() {
@@ -421,6 +420,8 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
             this.notVerified.push(device);
           }
         });
+
+        this.openInfoClientSocketConnection();
         this.sendBatteryStatusRequest();
       });
     });
@@ -510,4 +511,5 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       event.stopPropagation();
     }
   }
+
 }
