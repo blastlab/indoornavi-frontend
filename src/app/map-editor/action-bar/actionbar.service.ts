@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Configuration, ConfigurationData} from './actionbar.type';
+import {Configuration, ConfigurationData, PrePublishReport, PrePublishReportItem} from './actionbar.type';
 import {Observable} from 'rxjs/Rx';
 import {Scale} from '../tool-bar/tools/scale/scale.type';
 import {Floor} from '../../floor/floor.type';
@@ -110,6 +110,14 @@ export class ActionBarService {
         this.configurationHashes.push(this.hashConfiguration());
         this.sendConfigurationResetEvent();
         resolve(configuration);
+      });
+    });
+  }
+
+  prePublish(floorId: number): Promise<PrePublishReportItem[]> {
+    return new Promise<PrePublishReportItem[]>(resolve => {
+      this.httpService.doPost(`${ActionBarService.URL}${floorId}/pre`, {}).subscribe((report: PrePublishReport) => {
+        resolve(report.items);
       });
     });
   }

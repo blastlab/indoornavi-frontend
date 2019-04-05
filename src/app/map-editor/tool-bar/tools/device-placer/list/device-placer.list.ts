@@ -160,7 +160,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
     const sinksFetched = new Promise((resolve) => {
       this.deviceService.setUrl('sinks/');
       this.deviceService.getAll().takeUntil(this.subscriptionDestroyer).subscribe((sinks: Sink[]): void => {
-        this.sinks = sinks.filter(sink => !DevicePlacerListComponent.isOnMap(sink));
+        this.sinks = sinks;
         resolve();
       });
     });
@@ -168,7 +168,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
     const anchorsFetched = new Promise((resolve) => {
       this.deviceService.setUrl('anchors/');
       this.deviceService.getAll().takeUntil(this.subscriptionDestroyer).subscribe((anchors: Anchor[]): void => {
-        this.anchors = anchors.filter(anchor => !DevicePlacerListComponent.isOnMap(anchor));
+        this.anchors = anchors;
         resolve();
       });
     });
