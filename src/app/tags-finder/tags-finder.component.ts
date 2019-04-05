@@ -125,7 +125,7 @@ export class TagsFinderComponent implements OnInit, OnDestroy {
   }
 
   private initializeSocketConnection(): void {
-    const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}tagTracer?client`);
+    const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}tagTracer?frontend`);
     stream.takeUntil(this.subscriptionDestroyer).subscribe((tagData: TagTracerData): void => {
       this.loading = false;
       let tagInTags = false;

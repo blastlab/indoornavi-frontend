@@ -261,7 +261,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
 
   protected initializeSocketConnection(): void {
     this.ngZone.runOutsideAngular((): void => {
-      const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?client`);
+      const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?frontend`);
       this.setSocketConfiguration();
       this.tagToggleService.onToggleTag().takeUntil(this.subscriptionDestructor).subscribe((tagToggle: TagToggle) => {
         this.socketService.send({type: CommandType[CommandType.TOGGLE_TAG], args: tagToggle.tag.shortId});
