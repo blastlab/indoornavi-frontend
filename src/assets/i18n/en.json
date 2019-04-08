@@ -285,6 +285,7 @@
   "logout": "Logout",
   "locate.tag": "Locate Tag on Map",
   "map": "Map",
+  "map.not.set": "No map available to be displayed",
   "map.switch.view": "Switched to map view",
   "map.switch.floor": "Switched to different floor view",
   "map.upload.header": "Choose an image from disk or drag&drop it below. It will be used as a background for the floor.",

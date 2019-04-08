@@ -25,6 +25,27 @@
   margin-top: 15px;
 }
 
+.empty-thumbnail {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  border: #0f6ab4 dashed;
+  justify-content: center;
+  margin: 10px;
+  background: #909090;
+  width: 40vw;
+  height: 40vw;
+}
+
+/* Portrait tablets and down */
+@media (max-width: 640px) {
+  .empty-thumbnail {
+    margin: 5px;
+    width: 73vw;
+    height: 73vw;
+  }
+}
+
 /* Landscape phones and down */
 @media (max-width: 480px) {
   .dashboard-item-container {
@@ -41,3 +62,4 @@
   }
 
 }
+
