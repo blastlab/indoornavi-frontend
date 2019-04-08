@@ -40,7 +40,7 @@ export class DevicePlacerService {
   constructor() {
   }
 
-  emitMouseOverMap(): void {
+  emitMapDraggingStarted(): void {
     this.mouseOverMap.next();
   }
 
