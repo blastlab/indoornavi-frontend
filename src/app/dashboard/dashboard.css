@@ -45,6 +45,9 @@
     width: 73vw;
     height: 73vw;
   }
+  .dashboard-item-container {
+    width: 75vw;
+  }
 }
 
 /* Landscape phones and down */

@@ -52,9 +52,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.publishedService.getAll().subscribe((publications: Publication[]) => {
       if (publications.length > 0) {
         publications.forEach((publication: Publication): void => {
-          this.floor = publication.floors.find((floor: Floor): boolean => {
-            return !!floor.scale;
-          });
+          if (!this.floor) {
+            this.floor = publication.floors.find((floor: Floor): boolean => {
+              return !!floor.scale;
+            });
+          }
         });
       }
     });
