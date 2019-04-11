@@ -419,7 +419,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   private openInfoClientSocketConnection(): void {
-    this.socketStream = this.infoSocketService.connect(`${Config.WEB_SOCKET_URL}info?frontend&${this.deviceType}`);
+    this.socketStream = this.infoSocketService.connect(`${Config.WEB_SOCKET_URL}info?${Config.WS_KEY_FRONTEND}&${this.deviceType}`);
     this.firmwareSocketSubscription = this.socketStream.subscribe((message: DeviceMessage | FirmwareMessage | BatteryMessage): void => {
       switch (message.type) {
         case 'INFO':

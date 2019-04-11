@@ -83,7 +83,7 @@ export class TagFollowerComponent extends SocketConnectorComponent implements On
   }
 
   protected subscribeToMapParametersChange(): void {
-    const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}tagTracer?frontend`);
+    const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}tagTracer?${Config.WS_KEY_FRONTEND}`);
     stream.takeUntil(this.subscriptionDestructor).subscribe((tagData: TagTracerData): void => {
       if (this.tagFloorId && this.tagShortId === +tagData.tag.shortId) {
         if (this.tagFloorId !== +tagData.floor.id) {
