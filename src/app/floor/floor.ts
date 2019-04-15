@@ -88,6 +88,8 @@ export class FloorComponent implements OnInit, CrudComponent {
         const isNew = !(!!this.floor.id);
         if (isNew) {
           this.messageService.success('floor.create.success');
+        } else if (this.floor.archived) {
+          this.messageService.success('floor.archive.success');
         } else {
           this.messageService.success('floor.save.success');
         }
@@ -125,9 +127,10 @@ export class FloorComponent implements OnInit, CrudComponent {
       header: this.removeDialogTitle,
       message: this.confirmBody,
       accept: () => {
-        const floorId: number = this.archived[index].id;
+        const floorId: number = !!this.archived[index] ? this.archived[index].id : this.active[index].id;
         this.floorService.removeFloor(floorId).subscribe(() => {
           this.archived = <Floor[]>CrudHelper.remove(index, this.archived);
+          this.active = <Floor[]>CrudHelper.remove(index, this.active);
           this.messageService.success('floor.remove.success');
         }, (msg: string) => {
           this.messageService.failed(msg);
