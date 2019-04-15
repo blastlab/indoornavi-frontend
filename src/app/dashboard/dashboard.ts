@@ -52,7 +52,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private handleBatteryStatusEvents(): void {
-    const stream = this.infoSocket.connect(`${Config.WEB_SOCKET_URL}info?client`);
+    const stream = this.infoSocket.connect(`${Config.WEB_SOCKET_URL}info?${Config.WS_KEY_FRONTEND}`);
     stream.takeUntil(this.subscriptionDestroyer).subscribe((message: BatteryMessage) => {
       if (message.hasOwnProperty('batteryLevelList')) {
         this.eventComponent.addBatteryStateEvent(message.batteryLevelList);
