@@ -8,7 +8,6 @@ import {ActionBarService} from '../../../../action-bar/actionbar.service';
 import {Configuration} from '../../../../action-bar/actionbar.type';
 import * as Collections from 'typescript-collections';
 import {Subject} from 'rxjs/Subject';
-import {TranslateService} from '@ngx-translate/core';
 import {DeviceInEditor} from '../../../../../map/models/device';
 
 @Component({
