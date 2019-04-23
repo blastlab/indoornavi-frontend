@@ -53,6 +53,7 @@ export class SvgGroupWrapper {
       .attr('x', coordinates.x - x)
       .attr('y', coordinates.y - y)
       .attr('font-family', 'FontAwesome')
+      .attr('cursor', 'inherit')
       .text(iconCode);
 
     // set icon size

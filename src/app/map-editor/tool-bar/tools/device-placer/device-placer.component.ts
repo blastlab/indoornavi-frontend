@@ -23,12 +23,13 @@ import {ConfirmationService} from 'primeng/primeng';
 import {Subject} from 'rxjs/Subject';
 import {Box} from '../../../../shared/utils/drawing/drawing.builder';
 import {ModelsConfig} from '../../../../map/models/models.config';
+import {KeyboardDefaultListener} from '../../shared/tool-input/keyboard-default-listener';
 
 @Component({
   selector: 'app-device-placer',
   templateUrl: './device-placer.html'
 })
-export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
+export class DevicePlacerComponent extends KeyboardDefaultListener implements Tool, OnInit, OnDestroy {
   private static defaultHeight = 100;
 
   active: boolean = false;
@@ -69,6 +70,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     private confirmationService: ConfirmationService,
     private models: ModelsConfig
   ) {
+    super();
   }
 
   ngOnInit() {
@@ -96,6 +98,14 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
     this.contextMenu = null;
     this.subscriptionDestroyer.next();
     this.subscriptionDestroyer.unsubscribe();
+  }
+
+  confirm() {
+    this.toggleActivity();
+  }
+
+  reject() {
+    this.toggleActivity();
   }
 
   getToolName(): ToolName {
@@ -481,6 +491,9 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
   private activatePlacerEvents(): void {
     if (!!this.map) {
       this.map
+        .on('selectstart', () => {
+          this.devicePlacerService.emitMapDraggingStarted();
+        })
         .on('click', (): void => {
           this.sinks.forEach((sink: SinkBag): void => {
             this.setSinkGroupOutOfScope(sink);
@@ -500,7 +513,7 @@ export class DevicePlacerComponent implements Tool, OnInit, OnDestroy {
 
   private deactivatePlacerEvents(): void {
     if (!!this.map) {
-      this.map.on('click', null).on('contextmenu', null);
+      this.map.on('click', null).on('contextmenu', null).on('mouseover', null);
     }
     this.sinks.forEach((sink: SinkBag): void => {
       sink.deviceInEditor.contextMenuOff();
