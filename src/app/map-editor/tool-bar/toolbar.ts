@@ -42,7 +42,7 @@ export class ToolbarComponent implements OnInit, OnDestroy {
       }
     });
     this.toolChangedSubscription = this.toolbarService.onToolChanged().subscribe((tool: Tool) => {
-      const activate: boolean = (tool && this.activeTool !== tool)
+      const activate: boolean = (tool && this.activeTool !== tool);
       if (!!this.activeTool) {
         this.activeTool.setInactive();
         this.activeTool = undefined;

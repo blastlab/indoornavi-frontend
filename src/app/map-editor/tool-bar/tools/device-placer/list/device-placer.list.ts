@@ -8,7 +8,6 @@ import {ActionBarService} from '../../../../action-bar/actionbar.service';
 import {Configuration} from '../../../../action-bar/actionbar.type';
 import * as Collections from 'typescript-collections';
 import {Subject} from 'rxjs/Subject';
-import {TranslateService} from '@ngx-translate/core';
 import {DeviceInEditor} from '../../../../../map/models/device';
 
 @Component({
@@ -17,6 +16,7 @@ import {DeviceInEditor} from '../../../../../map/models/device';
 })
 export class DevicePlacerListComponent implements OnInit, OnDestroy {
   @ViewChild('toolDetails') private toolDetails: ToolDetailsComponent;
+  active: boolean = false;
   placementResult: PlacementResult;
   public activeList: Array<Anchor | Sink> = [];
   public queryString: string;
@@ -76,7 +76,13 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
 
   private listenOnVisibilityChanged(): void {
     this.devicePlacerService.onListVisibilityChanged.takeUntil(this.subscriptionDestroyer).subscribe((visible: boolean): void => {
-      visible ? this.toolDetails.show() : this.toolDetails.hide();
+      if (visible) {
+        this.active = true;
+        this.toolDetails.show();
+      } else {
+        this.active = false;
+        this.toolDetails.hide();
+      }
     });
   }
 

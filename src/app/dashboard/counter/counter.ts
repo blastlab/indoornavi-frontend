@@ -41,7 +41,7 @@ export class CounterComponent implements OnInit, OnDestroy {
   }
 
   private handleTagsCounter() {
-    const stream = this.tagTracerSocket.connect(`${Config.WEB_SOCKET_URL}tagTracer?client`);
+    const stream = this.tagTracerSocket.connect(`${Config.WEB_SOCKET_URL}tagTracer?${Config.WS_KEY_FRONTEND}`);
     stream.takeUntil(this.subscriptionDestroyer).subscribe((tagData: TagTracerData): void => {
       if (this.activeTagsMap.has(tagData.tag.shortId)) {
         this.activeTagsMap.get(tagData.tag.shortId).restart();

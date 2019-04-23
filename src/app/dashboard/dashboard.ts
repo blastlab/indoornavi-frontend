@@ -8,7 +8,6 @@ import {Timer} from '../shared/utils/timer/timer';
 import {EventComponent} from './event/event';
 import {DashboardService} from './dashboard.service';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
-import {Router} from '@angular/router';
 import {Floor} from '../floor/floor.type';
 import {FloorService} from '../floor/floor.service';
 
@@ -53,7 +52,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private handleBatteryStatusEvents(): void {
-    const stream = this.infoSocket.connect(`${Config.WEB_SOCKET_URL}info?client`);
+    const stream = this.infoSocket.connect(`${Config.WEB_SOCKET_URL}info?${Config.WS_KEY_FRONTEND}`);
     stream.takeUntil(this.subscriptionDestroyer).subscribe((message: BatteryMessage) => {
       if (message.hasOwnProperty('batteryLevelList')) {
         this.eventComponent.addBatteryStateEvent(message.batteryLevelList);
