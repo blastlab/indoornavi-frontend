@@ -13,6 +13,36 @@ export enum ElementType {
   RECT
 }
 
+export class SvgGroupLayer {
+
+  private name: String;
+
+  constructor(private readonly group: d3.selection,
+              container: d3.selection,
+              name?: String
+  ) {}
+
+  getLayerGroup(): d3.selection {
+    return this.group;
+  }
+
+  getLayerName(): String {
+    return !!this.name ? this.name : null;
+  }
+
+  setVisible(): this {
+    this.group
+      .attr('visibility', 'visible');
+    return this;
+  }
+
+  setHidden(): this {
+    this.group
+      .attr('visibility', 'hidden');
+    return this;
+  }
+}
+
 export class SvgGroupWrapper {
   container: d3.selection;
   private elements: Map<ElementType, d3.selection[]> = new Map();
@@ -285,9 +315,15 @@ export class SvgGroupWrapper {
 
 export class DrawBuilder {
   protected group: d3.selection;
+  protected layer: d3.selection;
 
   constructor(protected appendable: d3.selection,
               protected configuration: DrawConfiguration) {
+  }
+
+  createLayer(): SvgGroupLayer {
+    this.layer = this.appendable;
+    return new SvgGroupLayer(this.layer, this.appendable, this.configuration.name);
   }
 
   createGroup(): SvgGroupWrapper {
