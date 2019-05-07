@@ -1,6 +1,7 @@
 import * as d3 from 'd3';
 import {Point, PositionDescription, TextPosition} from '../../../map-editor/map.type';
 import {DrawConfiguration} from '../../../map-viewer/publication.type';
+import {LayersOwner} from './layers.owner';
 
 export enum ElementType {
   ICON,
@@ -15,10 +16,9 @@ export enum ElementType {
 
 export class SvgGroupLayer {
 
-  private name: String;
+  private name: string;
 
   constructor(private readonly group: d3.selection,
-              container: d3.selection,
               name?: String
   ) {}
 
@@ -26,7 +26,7 @@ export class SvgGroupLayer {
     return this.group;
   }
 
-  getLayerName(): String {
+  getLayerName(): string {
     return !!this.name ? this.name : null;
   }
 
@@ -315,15 +315,27 @@ export class SvgGroupWrapper {
 
 export class DrawBuilder {
   protected group: d3.selection;
-  protected layer: d3.selection;
+  private layerOwner: LayersOwner;
 
   constructor(protected appendable: d3.selection,
               protected configuration: DrawConfiguration) {
+    this.layerOwner = LayersOwner.getInstance();
   }
 
-  createLayer(): SvgGroupLayer {
-    this.layer = this.appendable;
-    return new SvgGroupLayer(this.layer, this.appendable, this.configuration.name);
+  createLayer(layer: d3.selection): number {
+    if (!this.configuration.name) {
+      this.configuration.name = this.configuration.id;
+    }
+    console.log(layer);
+    return this.layerOwner.addLayer(new SvgGroupLayer(layer, this.configuration.name));
+  }
+
+  updateLayer(layerId: number, layer: d3.selection) {
+    this.layerOwner.updateLayerById(layerId, layer);
+  }
+
+  removeLayer(layerId: number) {
+    this.layerOwner.removeLayerById(layerId);
   }
 
   createGroup(): SvgGroupWrapper {
@@ -359,4 +371,9 @@ export interface BoxSize {
 export interface Box extends BoxSize {
   x: number;
   y: number;
+}
+
+export interface ListLayerEntity {
+  id: number;
+  name: string;
 }

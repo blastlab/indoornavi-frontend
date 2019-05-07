@@ -71,8 +71,4 @@ export class ToolDetailsComponent {
       this.cd.detectChanges();
     }
   }
-
 }
-
-
-

@@ -14,13 +14,12 @@ import {Subject} from 'rxjs/Subject';
 import {Tool} from '../tool';
 import {ToolName} from '../tools.enum';
 import * as d3 from 'd3';
-import {Box, DrawBuilder, ElementType, SvgGroupLayer, SvgGroupWrapper} from '../../../../shared/utils/drawing/drawing.builder';
+import {Box, DrawBuilder, ElementType, SvgGroupWrapper} from '../../../../shared/utils/drawing/drawing.builder';
 import {Line, Point} from '../../../map.type';
 import {TranslateService} from '@ngx-translate/core';
 import {Configuration} from '../../../action-bar/actionbar.type';
 import {IntersectionIdentifier, PathContextCallback, PathContextMenuLabels} from './path.type';
 import {KeyboardDefaultListener} from '../../shared/tool-input/keyboard-default-listener';
-import {LayersOwner} from '../../../../shared/utils/drawing/layers.owner';
 
 @Component({
   selector: 'app-path',
@@ -54,8 +53,7 @@ export class PathComponent extends KeyboardDefaultListener implements Tool, OnIn
     removeAll: '',
   };
   private containerBox: Box;
-  private layersOwner: LayersOwner;
-  private layerId: number;
+  private layerId: number = null;
 
   constructor(private toolbarService: ToolbarService,
               private mapLoaderInformer: MapLoaderInformerService,
@@ -67,7 +65,6 @@ export class PathComponent extends KeyboardDefaultListener implements Tool, OnIn
               private translateService: TranslateService
   ) {
     super();
-    this.layersOwner = LayersOwner.getInstance();
   }
 
   ngOnInit() {
@@ -114,7 +111,11 @@ export class PathComponent extends KeyboardDefaultListener implements Tool, OnIn
 
   setActive(): void {
     this.currentLineGroup = this.createBuilder().createGroup();
-    this.layerId = this.layersOwner.addLayer(this.createLayer());
+    if (this.layerId === null) {
+      this.layerId = this.createBuilder().createLayer(this.currentLineGroup.getGroup())
+    } else {
+      this.createBuilder().updateLayer(this.layerId, this.currentLineGroup.getGroup());
+    }
     this.drawLinesFromConfiguration();
 
     this.active = true;
@@ -250,22 +251,15 @@ export class PathComponent extends KeyboardDefaultListener implements Tool, OnIn
     }
     if (createNew) {
       this.currentLineGroup = this.createBuilder().createGroup();
-      this.layersOwner.updateLayerById(this.layerId, this.createLayer());
+      this.layerId = this.createBuilder().createLayer(this.currentLineGroup.getGroup())
     }
-  }
-
-  private createLayer(): SvgGroupLayer {
-    return new DrawBuilder(this.currentLineGroup.getGroup(), {
-      id: `path`,
-      clazz: `path`,
-      name: `path`
-    }).createLayer();
   }
 
   private createBuilder(index?: number): DrawBuilder {
     return new DrawBuilder(this.container, {
       id: `path`,
-      clazz: `path`
+      clazz: `path`,
+      name: `path`
     });
   }
 
@@ -445,7 +439,7 @@ export class PathComponent extends KeyboardDefaultListener implements Tool, OnIn
     this.lines = this.lines.concat(this.intersectCurrent(point, intersections));
     this.currentLineGroup.getGroup().remove();
     this.currentLineGroup = this.createBuilder().createGroup();
-    this.layersOwner.updateLayerById(this.layerId, this.createLayer());
+    this.createBuilder().updateLayer(this.layerId, this.currentLineGroup.getGroup());
     this.drawLinesFromConfiguration();
   }
 

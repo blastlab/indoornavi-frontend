@@ -160,7 +160,9 @@ import {HttpSolver} from './shared/services/http/http.solver';
 import {MobileDatetimeSelectComponent} from './shared/components/mobile-datetime-select/mobile-datetime-select';
 import {HeatMapService} from './report/services/heatmap.service';
 import {HeatmapFilterPropertiesComponent} from './report/heatmap-filter-properties/heatmap-filter-properties.component';
-import {LayersControllerComponent} from './map-editor/tool-bar/tools/layers-list/layers-controller.component';
+import {LayersControllerComponent} from './map-editor/tool-bar/tools/layers/layers-controller.component';
+import {LayersService} from './map-editor/tool-bar/tools/layers/layers.service';
+import {LayersListComponent} from './map-editor/tool-bar/tools/layers/list/layers-list.component';
 
 const PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
@@ -238,7 +240,8 @@ export function HttpLoaderFactory(http: Http) {
     EventComponent,
     MobileDatetimeSelectComponent,
     HeatmapFilterPropertiesComponent,
-    LayersControllerComponent
+    LayersControllerComponent,
+    LayersListComponent
   ],
   entryComponents: [
     PublicationDialogComponent,
@@ -357,6 +360,7 @@ export function HttpLoaderFactory(http: Http) {
     DebuggerService,
     WatchdogService,
     HeatMapService,
+    LayersService,
   ], bootstrap: [AppComponent]
 })
 

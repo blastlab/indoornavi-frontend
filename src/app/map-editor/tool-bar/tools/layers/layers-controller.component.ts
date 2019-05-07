@@ -1,39 +1,28 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {Tool} from '../tool';
 import {KeyboardDefaultListener} from '../../shared/tool-input/keyboard-default-listener';
 import {ToolName} from '../tools.enum';
-import {MapSvg} from '../../../../map/map.type';
-import {MapLoaderInformerService} from '../../../../shared/services/map-loader-informer/map-loader-informer.service';
 import {ToolbarService} from '../../toolbar.service';
-import {Subject} from 'rxjs/Subject';
 import {LayersOwner} from '../../../../shared/utils/drawing/layers.owner';
+import {LayersService} from './layers.service';
 
 
 @Component({
   selector: 'app-layers-controller',
   templateUrl: './layers-controller.html'
 })
-export class LayersControllerComponent extends KeyboardDefaultListener implements Tool, OnInit, OnDestroy {
+export class LayersControllerComponent extends KeyboardDefaultListener implements Tool {
   active = false;
 
   disabled: boolean = true;
+  private readonly layersOwner: LayersOwner;
 
-  private subscriptionDestroyer: Subject<void> = new Subject<void>();
-  private layersOwner: LayersOwner;
-
-  constructor(private toolbarService: ToolbarService,
-              private mapLoaderInformer: MapLoaderInformerService,
+  constructor(
+    private toolbarService: ToolbarService,
+    private layersService: LayersService
   ) {
     super();
     this.layersOwner = LayersOwner.getInstance();
-  }
-  ngOnInit() {
-    this.listenOnMapLoaded();
-  }
-
-  ngOnDestroy() {
-    this.subscriptionDestroyer.next();
-    this.subscriptionDestroyer.unsubscribe();
   }
 
   confirm() {
@@ -45,11 +34,10 @@ export class LayersControllerComponent extends KeyboardDefaultListener implement
   }
 
   toggleActivity(): void {
-    console.log('toggle active layers-controller');
-    console.log(this.layersOwner);
     if (this.active) {
       this.toolbarService.emitToolChanged(null);
     } else {
+      this.layersService.emitLayersListUpdate(this.layersOwner.getIdsAndNames()); // todo: check it should be emitted each time
       this.toolbarService.emitToolChanged(this);
     }
   }
@@ -72,12 +60,6 @@ export class LayersControllerComponent extends KeyboardDefaultListener implement
 
   setInactive(): void {
     this.active = false;
-  }
-
-  private listenOnMapLoaded(): void {
-    this.mapLoaderInformer.loadCompleted().first().subscribe((mapSvg: MapSvg): void => {
-      console.log(mapSvg);
-    });
   }
 
 }

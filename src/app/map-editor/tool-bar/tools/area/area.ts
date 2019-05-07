@@ -24,7 +24,6 @@ import {ScaleService} from '../../../../shared/services/scale/scale.service';
 import {Helper} from '../../../../shared/utils/helper/helper';
 import {TranslateService} from '@ngx-translate/core';
 import {MenuItem} from 'primeng/primeng';
-import {LayersOwner} from '../../../../shared/utils/drawing/layers.owner';
 
 @Component({
   selector: 'app-area',
@@ -62,7 +61,6 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
 
   private editLabel: string;
   private removeLabel: string;
-  private layersOwner: LayersOwner;
   private layerId: number;
 
   constructor(private toolbarService: ToolbarService,
@@ -74,7 +72,6 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
               private hintBarService: HintBarService,
               private scaleService: ScaleService,
               private translateService: TranslateService) {
-    this.layersOwner = LayersOwner.getInstance();
   }
 
   ngOnInit(): void {
@@ -407,14 +404,6 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     });
   }
 
-  private createLayer(): SvgGroupLayer {
-    return new DrawBuilder(this.currentAreaGroup.getGroup(), {
-      id: `path`,
-      clazz: `path`,
-      name: `path`
-    }).createLayer();
-  }
-
   private isFirstPoint(): boolean {
     return d3.event.target.nodeName === 'circle' &&
       parseInt(this.firstPointSelection.attr('cx'), 10) === parseInt(d3.event.target.cx.baseVal.valueAsString, 10) &&
@@ -468,7 +457,6 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
           if (!isInRange) {
             this.currentAreaGroup.remove();
             this.currentAreaGroup = this.createBuilder().createGroup();
-            this.layersOwner.updateLayerById(this.layerId, this.createLayer());
             if (!!this.selectedEditable) {
               const idBackUp = this.selectedEditable.groupWrapper.getGroup().attr('id');
               this.currentAreaGroup.getGroup().attr('id', idBackUp);

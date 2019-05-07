@@ -1,4 +1,4 @@
-import {SvgGroupLayer} from './drawing.builder';
+import {ListLayerEntity, SvgGroupLayer} from './drawing.builder';
 
 export class LayersOwner {
   private static instance: LayersOwner;
@@ -14,18 +14,16 @@ export class LayersOwner {
 
   private constructor() {}
 
-  getIdsAndNames(): Map<number, String> {
-    const layersNamed: Map<number, String> = new Map();
+  getIdsAndNames(): ListLayerEntity[] {
+    const layersEntities: ListLayerEntity[] = [];
     this.layers.forEach((value: SvgGroupLayer, key: number) => {
-      layersNamed.set(key, value.getLayerName());
+      layersEntities.push({id: key, name: value.getLayerName()});
     });
-    return layersNamed;
+    return layersEntities;
   }
 
   addLayer(layer: SvgGroupLayer): number {
-    console.log(layer);
     const id = this.findIdFromAvailableIds();
-    console.log(id);
     this.layers.set(id, layer);
     return id;
   }
