@@ -1,31 +1,37 @@
 <app-tool-details #toolDetails>
-    <div class="ui-datatable ui-widget ui-g-12">
-      <div class="ui-datatable-tablewrapper">
-        <table>
-          <thead class="ui-datatable-thead">
-          <tr class="ui-state-default">
-            <th>{{'layer.name'|translate}}</th>
-            <th>{{'layer.id'|translate}}</th>
-            <th>{{'layer.visibility'|translate}}</th>
-          </tr>
-          </thead>
-          <tbody class="ui-datatable-data ui-widget-content">
-
-          <tr
-              *ngFor="let layer of activeList | allFieldsFilter: queryString: queryFields; let i = index; let last = last"
-              [ngClass]="{'ui-datatable-odd ui-widget-content': i % 2 === 1, 'ui-datatable-even ui-widget-content': i % 2 === 0}">
-            <td>{{layer.name}}</td>
-            <td>{{layer.id}}</td>
-            <td>{{layer.visibility}}</td>
-          </tr>
-          <tr *ngIf="(activeList | allFieldsFilter: queryString: queryFields).length === 0"
-              class="ui-datatable-even ui-widget-content">
-            <td colspan="3">
-              {{'device-list.noRemainingDevicesLeft'|translate}}
-            </td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+  <!--<div class="ui-datatable">-->
+    <!--<div class="ui-datatable-tablewrapper">-->
+      <table>
+        <thead class="ui-datatable-thead">
+        <tr class="ui-state-default">
+          <th style="padding-right: 10px">{{'layer.id'|translate}}</th>
+          <th style="padding-right: 10px">{{'layer.name'|translate}}</th>
+          <th>{{'layer.visibility'|translate}}</th>
+        </tr>
+        </thead>
+        <tbody class="ui-datatable-data ui-widget-content">
+        <tr appDevicePlacerRow
+            *ngFor="let layer of layers | allFieldsFilter: queryString: queryFields; let i = index; let last = last"
+            [ngClass]="{'ui-datatable-odd ui-widget-content': i % 2 === 1, 'ui-datatable-even ui-widget-content': i % 2 === 0}">
+          <td>{{layer.id}}</td>
+          <td>{{layer.name}}</td>
+          <td>
+            <button
+              pButton
+              [icon]="layer.visible === true ? 'fa-eye' : 'fa-eye-slash'"
+              id="{{layer.id}}"
+              (click)="changeVisibility(layer.id)" >
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="(layers | allFieldsFilter: queryString: queryFields).length === 0"
+            class="ui-datatable-even ui-widget-content">
+          <td colspan="3">
+            {{'layers.noLayersSet'|translate}}
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    <!--</div>-->
+  <!--</div>-->
 </app-tool-details>

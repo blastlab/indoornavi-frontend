@@ -4,5 +4,6 @@ export enum ToolName {
   WIZARD,
   DEVICES,
   AREAS,
-  PATH
+  PATH,
+  LAYERS
 }

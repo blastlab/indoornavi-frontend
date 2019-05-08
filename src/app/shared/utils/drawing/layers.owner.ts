@@ -17,15 +17,25 @@ export class LayersOwner {
   getIdsAndNames(): ListLayerEntity[] {
     const layersEntities: ListLayerEntity[] = [];
     this.layers.forEach((value: SvgGroupLayer, key: number) => {
-      layersEntities.push({id: key, name: value.getLayerName()});
+      layersEntities.push({id: key, name: value.getLayerName(), visible: value.getVisibility()});
     });
     return layersEntities;
   }
 
+  getLayerVisibilityById(id: number): boolean {
+    return this.layers.get(id).getVisibility();
+  }
+
   addLayer(layer: SvgGroupLayer): number {
     const id = this.findIdFromAvailableIds();
+    layer.setVisible();
     this.layers.set(id, layer);
     return id;
+  }
+
+  updateLayerById(id: number, layer: SvgGroupLayer) {
+    layer.setVisible();
+    this.layers.set(id, layer);
   }
 
   showLayerById(id: number) {
@@ -34,10 +44,6 @@ export class LayersOwner {
 
   hideLayerById(id: number) {
     this.layers.get(id).setHidden();
-  }
-
-  updateLayerById(id: number, layer: SvgGroupLayer) {
-    this.layers.set(id, layer);
   }
 
   removeLayerById(id: number): boolean {

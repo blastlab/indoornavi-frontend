@@ -70,7 +70,6 @@ export class PathComponent extends KeyboardDefaultListener implements Tool, OnIn
   ngOnInit() {
     this.listenOnMapLoaded();
     this.listenOnScaleChange();
-    this.fetchPathFromConfiguration();
     this.setTranslationsDependencies();
     this.setContextMenuCallbacks();
     this.listenOnConfigurationReset();
@@ -110,14 +109,6 @@ export class PathComponent extends KeyboardDefaultListener implements Tool, OnIn
   }
 
   setActive(): void {
-    this.currentLineGroup = this.createBuilder().createGroup();
-    if (this.layerId === null) {
-      this.layerId = this.createBuilder().createLayer(this.currentLineGroup.getGroup())
-    } else {
-      this.createBuilder().updateLayer(this.layerId, this.currentLineGroup.getGroup());
-    }
-    this.drawLinesFromConfiguration();
-
     this.active = true;
 
     this.container.style('cursor', 'crosshair');
@@ -164,8 +155,8 @@ export class PathComponent extends KeyboardDefaultListener implements Tool, OnIn
     if (!!this.tempLine) {
       this.cleanTempLine();
     }
-    this.clearDrawnPath();
-    this.currentLineGroup.removeElements(ElementType.CIRCLE);
+    // this.clearDrawnPath();
+    // this.currentLineGroup.removeElements(ElementType.CIRCLE);
   }
 
   private listenOnMapLoaded(): void {
@@ -173,6 +164,7 @@ export class PathComponent extends KeyboardDefaultListener implements Tool, OnIn
       this.container = mapSvg.container;
       this.layer = mapSvg.layer;
       this.containerBox = mapSvg.container.node().getBBox();
+      this.fetchPathFromConfiguration();
     });
   }
 
@@ -186,6 +178,14 @@ export class PathComponent extends KeyboardDefaultListener implements Tool, OnIn
         };
       }
     });
+  }
+
+  private drawPathFromConfiguration(): void {
+    if (!this.currentLineGroup) {
+      this.currentLineGroup = this.createBuilder().createGroup();
+      this.layerId = this.createBuilder().createLayer(this.currentLineGroup.getGroup())
+      this.drawLinesFromConfiguration();
+    }
   }
 
   private listenOnConfigurationReset(): void {
@@ -205,6 +205,7 @@ export class PathComponent extends KeyboardDefaultListener implements Tool, OnIn
           this.lines.push(line);
         });
       }
+      this.drawPathFromConfiguration();
     });
   }
 

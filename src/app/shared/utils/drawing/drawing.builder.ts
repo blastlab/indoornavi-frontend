@@ -16,10 +16,8 @@ export enum ElementType {
 
 export class SvgGroupLayer {
 
-  private name: string;
-
   constructor(private readonly group: d3.selection,
-              name?: String
+              private readonly name: string
   ) {}
 
   getLayerGroup(): d3.selection {
@@ -27,7 +25,11 @@ export class SvgGroupLayer {
   }
 
   getLayerName(): string {
-    return !!this.name ? this.name : null;
+    return this.name;
+  }
+
+  getVisibility(): boolean {
+    return this.group.attr('visibility') === 'visible';
   }
 
   setVisible(): this {
@@ -323,10 +325,9 @@ export class DrawBuilder {
   }
 
   createLayer(layer: d3.selection): number {
-    if (!this.configuration.name) {
+    if (this.configuration.name === null) {
       this.configuration.name = this.configuration.id;
     }
-    console.log(layer);
     return this.layerOwner.addLayer(new SvgGroupLayer(layer, this.configuration.name));
   }
 
@@ -376,4 +377,5 @@ export interface Box extends BoxSize {
 export interface ListLayerEntity {
   id: number;
   name: string;
+  visible: boolean;
 }

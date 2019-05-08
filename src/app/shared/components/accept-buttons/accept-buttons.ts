@@ -14,14 +14,9 @@ export class AcceptButtonsComponent implements OnInit {
   declineTextKey: string = 'cancel';
 
   constructor(private acceptButtonsService: AcceptButtonsService) {
-
   }
 
   ngOnInit() {
-    this.acceptButtonsService.visibilityChanged.subscribe((value: boolean) => {
-      value ? this.toolDetails.show() : this.toolDetails.hide();
-    });
-
     this.acceptButtonsService.translationsChanged.subscribe((value: AcceptButtonsTranslations) => {
       if (!!value.bodyTextKey) {
         this.bodyTextKey = value.bodyTextKey;
