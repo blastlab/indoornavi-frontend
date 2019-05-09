@@ -22,8 +22,7 @@ export class LayersControllerComponent extends KeyboardDefaultListener implement
 
   constructor(
     private toolbarService: ToolbarService,
-    private layersService: LayersService,
-    private acceptButtonsService: AcceptButtonsService
+    private layersService: LayersService
   ) {
     super();
     this.layersOwner = LayersOwner.getInstance();
@@ -52,10 +51,10 @@ export class LayersControllerComponent extends KeyboardDefaultListener implement
   toggleActivity(): void {
     if (this.active) {
       this.toolbarService.emitToolChanged(null);
-      this.acceptButtonsService.publishVisibility(false);
+      this.layersService.emitListVisibility(false);
     } else {
-      this.acceptButtonsService.publishVisibility(true);
       this.layersService.emitLayersListUpdate(this.layersOwner.getIdsAndNames()); // todo: check it should be emitted each time
+      this.layersService.emitListVisibility(true);
       this.toolbarService.emitToolChanged(this);
     }
   }
@@ -74,9 +73,11 @@ export class LayersControllerComponent extends KeyboardDefaultListener implement
 
   setActive(): void {
     this.active = true;
+    this.layersService.emitListVisibility(true);
   }
 
   setInactive(): void {
+    this.layersService.emitListVisibility(false);
     this.active = false;
   }
 

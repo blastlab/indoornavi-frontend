@@ -332,7 +332,7 @@ export class DrawBuilder {
   }
 
   updateLayer(layerId: number, layer: d3.selection) {
-    this.layerOwner.updateLayerById(layerId, layer);
+    this.layerOwner.updateLayerById(layerId, new SvgGroupLayer(layer, this.configuration.name));
   }
 
   removeLayer(layerId: number) {

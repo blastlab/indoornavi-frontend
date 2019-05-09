@@ -54,6 +54,7 @@ export class PathComponent extends KeyboardDefaultListener implements Tool, OnIn
   };
   private containerBox: Box;
   private layerId: number = null;
+  private drawable = false;
 
   constructor(private toolbarService: ToolbarService,
               private mapLoaderInformer: MapLoaderInformerService,
@@ -110,27 +111,10 @@ export class PathComponent extends KeyboardDefaultListener implements Tool, OnIn
 
   setActive(): void {
     this.active = true;
-
     this.container.style('cursor', 'crosshair');
-
-    this.layer.on('click', (_, i: number, nodes: d3.selection[]): void => {
-      const coordinates: Point = this.zoomService.calculateTransition({x: d3.mouse(nodes[i])[0], y: d3.mouse(nodes[i])[1]});
-      const coordinatesInRange: boolean = Geometry.areCoordinatesInGivenRange(coordinates, this.containerBox);
-      if (coordinatesInRange) {
-        this.draw(coordinates);
-      }
-    });
-
-    this.layer.on('mousemove', (_, i: number, nodes: d3.selection[]): void => {
-      if (!!this.firstPointSelection) {
-        const coordinates: Point = this.zoomService.calculateTransition({x: d3.mouse(nodes[i])[0], y: d3.mouse(nodes[i])[1]});
-        if (!!this.tempLine) {
-          this.moveTempLine(coordinates);
-        } else {
-          this.drawTempLine();
-        }
-      }
-    });
+    if (this.lines.length === 0) {
+      this.setDrawable();
+    }
 
     this.container.on('contextmenu', (): void => {
       d3.event.preventDefault();
@@ -155,8 +139,29 @@ export class PathComponent extends KeyboardDefaultListener implements Tool, OnIn
     if (!!this.tempLine) {
       this.cleanTempLine();
     }
-    // this.clearDrawnPath();
-    // this.currentLineGroup.removeElements(ElementType.CIRCLE);
+    this.drawable = false;
+  }
+
+  private setDrawable(): void {
+    this.drawable = true;
+    this.layer.on('click', (_, i: number, nodes: d3.selection[]): void => {
+      const coordinates: Point = this.zoomService.calculateTransition({x: d3.mouse(nodes[i])[0], y: d3.mouse(nodes[i])[1]});
+      const coordinatesInRange: boolean = Geometry.areCoordinatesInGivenRange(coordinates, this.containerBox);
+      if (coordinatesInRange) {
+        this.draw(coordinates);
+      }
+    });
+
+    this.layer.on('mousemove', (_, i: number, nodes: d3.selection[]): void => {
+      if (!!this.firstPointSelection) {
+        const coordinates: Point = this.zoomService.calculateTransition({x: d3.mouse(nodes[i])[0], y: d3.mouse(nodes[i])[1]});
+        if (!!this.tempLine) {
+          this.moveTempLine(coordinates);
+        } else {
+          this.drawTempLine();
+        }
+      }
+    });
   }
 
   private listenOnMapLoaded(): void {
@@ -183,7 +188,7 @@ export class PathComponent extends KeyboardDefaultListener implements Tool, OnIn
   private drawPathFromConfiguration(): void {
     if (!this.currentLineGroup) {
       this.currentLineGroup = this.createBuilder().createGroup();
-      this.layerId = this.createBuilder().createLayer(this.currentLineGroup.getGroup())
+      this.layerId = this.createBuilder().createLayer(this.currentLineGroup.getGroup());
       this.drawLinesFromConfiguration();
     }
   }
@@ -225,6 +230,9 @@ export class PathComponent extends KeyboardDefaultListener implements Tool, OnIn
         this.lines = [];
         this.actionBarService.clearPath();
         this.hintBarService.sendHintMessage('path.hint.first');
+        if (!this.drawable) {
+          this.setDrawable();
+        }
       }
     }
   }
@@ -252,7 +260,11 @@ export class PathComponent extends KeyboardDefaultListener implements Tool, OnIn
     }
     if (createNew) {
       this.currentLineGroup = this.createBuilder().createGroup();
-      this.layerId = this.createBuilder().createLayer(this.currentLineGroup.getGroup())
+      if (this.layerId !== null) {
+        this.createBuilder().updateLayer(this.layerId, this.currentLineGroup.getGroup());
+      } else {
+        this.layerId = this.createBuilder().createLayer(this.currentLineGroup.getGroup())
+      }
     }
   }
 

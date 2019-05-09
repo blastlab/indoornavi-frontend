@@ -141,14 +141,6 @@ export class DevicePlacerComponent extends KeyboardDefaultListener implements To
     return 'devices.hint.first';
   }
 
-  private bindMapSelection(): void {
-    this.mapLoaderInformer.loadCompleted().takeUntil(this.subscriptionDestroyer).subscribe((mapLoaded): void => {
-      this.map = mapLoaded.container;
-      this.containerBox = this.map.node().getBBox();
-    });
-  }
-
-
   heightDialogClosed(confirmed: boolean, isValid: boolean): void {
     if (!isValid) {
       return;
@@ -180,6 +172,13 @@ export class DevicePlacerComponent extends KeyboardDefaultListener implements To
     this.activeDevice.deviceInEditor.updateHeight(this.activeDevice.deviceInList.z);
     this.displayHeightDialog = false;
     this.devicesToAdd = null;
+  }
+
+  private bindMapSelection(): void {
+    this.mapLoaderInformer.loadCompleted().takeUntil(this.subscriptionDestroyer).subscribe((mapLoaded): void => {
+      this.map = mapLoaded.container;
+      this.containerBox = this.map.node().getBBox();
+    });
   }
 
   private captureScaleChanges(): void {

@@ -7,9 +7,22 @@ import {ListLayerEntity} from '../../../../shared/utils/drawing/drawing.builder'
 export class LayersService {
   private layersListUpdate: Subject<ListLayerEntity[]> = new Subject<ListLayerEntity[]>();
   private layerVisibilityChange: Subject<number> = new Subject<number>();
+  private listVisibility: Subject<boolean> = new Subject<boolean>();
+
+  onListVisibilityChange(): Observable<boolean> {
+    return this.listVisibility.asObservable();
+  }
+
+  onLayerVisibilityChange(): Observable<number> {
+    return this.layerVisibilityChange.asObservable();
+  }
 
   onLayerListUpdate(): Observable<ListLayerEntity[]> {
     return this.layersListUpdate.asObservable();
+  }
+
+  emitListVisibility(value: boolean): void {
+    this.listVisibility.next(value);
   }
 
   emitLayersListUpdate(layersList: ListLayerEntity[]): void {
@@ -18,9 +31,5 @@ export class LayersService {
 
   emitLayerVisibilityChange(id: number): void {
     this.layerVisibilityChange.next(id);
-  }
-
-  onLayerVisibilityChange(): Observable<number> {
-    return this.layerVisibilityChange.asObservable();
   }
 }
