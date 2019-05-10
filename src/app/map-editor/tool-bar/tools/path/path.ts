@@ -188,8 +188,9 @@ export class PathComponent extends KeyboardDefaultListener implements Tool, OnIn
   private drawPathFromConfiguration(): void {
     if (!this.currentLineGroup) {
       this.currentLineGroup = this.createBuilder().createGroup();
-      this.layerId = this.createBuilder().createLayer(this.currentLineGroup.getGroup());
-      this.drawLinesFromConfiguration();
+      if (this.lines.length > 0) {
+        this.drawLinesFromConfiguration();
+      }
     }
   }
 
@@ -238,6 +239,9 @@ export class PathComponent extends KeyboardDefaultListener implements Tool, OnIn
   }
 
   private drawLinesFromConfiguration(): void {
+    if (this.layerId === null) {
+      this.layerId = this.createBuilder().createLayer(this.currentLineGroup.getGroup());
+    }
     this.lines.forEach((line: Line): void => {
       this.lastPoint = line.startPoint;
       this.drawPoint(this.lastPoint);
@@ -263,7 +267,7 @@ export class PathComponent extends KeyboardDefaultListener implements Tool, OnIn
       if (this.layerId !== null) {
         this.createBuilder().updateLayer(this.layerId, this.currentLineGroup.getGroup());
       } else {
-        this.layerId = this.createBuilder().createLayer(this.currentLineGroup.getGroup())
+        this.layerId = this.createBuilder().createLayer(this.currentLineGroup.getGroup());
       }
     }
   }
@@ -297,6 +301,9 @@ export class PathComponent extends KeyboardDefaultListener implements Tool, OnIn
   }
 
   private drawLine(point: Point): void {
+    if (this.layerId === null) {
+      this.layerId = this.createBuilder().createLayer(this.currentLineGroup.getGroup());
+    }
     this.currentLineGroup
       .addLine(this.lastPoint, point)
       .getLastElement(ElementType.LINE)
