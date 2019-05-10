@@ -90,6 +90,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
             });
           });
         }
+        this.setView();
       });
     });
 
@@ -172,13 +173,31 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
           }
         }
       });
-      this.setView();
       this.currentAreaGroup = this.createBuilder().createGroup();
       this.applyContextMenu();
     }
   }
 
-  applyContextMenu() {
+  setInactive(): void {
+    this.active = false;
+    this.container.style('cursor', 'move');
+    this.layer.on('click', null);
+    this.layer.on('mousemove', null);
+    this.firstPointSelection = null;
+    this.lastPoint = null;
+    this.tempLine = null;
+    this.draggingElement = null;
+    this.selectedEditable = null;
+
+    this.cleanMapViewFromDrawnAreas();
+    this.areaDetailsService.reject();
+
+    if (this.isCurrentAreaGroupNew()) {
+      this.currentAreaGroup.remove();
+    }
+  }
+
+  private applyContextMenu() {
     this.container.on('contextmenu', (): void => {
       d3.event.preventDefault();
       this.firstPointSelection = null;
@@ -202,25 +221,6 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
         this.applyContextMenuToSingleArea(clickedAreas[0]);
       }
     });
-  }
-
-  setInactive(): void {
-    this.active = false;
-    this.container.style('cursor', 'move');
-    this.layer.on('click', null);
-    this.layer.on('mousemove', null);
-    this.firstPointSelection = null;
-    this.lastPoint = null;
-    this.tempLine = null;
-    this.draggingElement = null;
-    this.selectedEditable = null;
-
-    this.cleanMapViewFromDrawnAreas();
-    this.areaDetailsService.reject();
-
-    if (this.isCurrentAreaGroupNew()) {
-      this.currentAreaGroup.remove();
-    }
   }
 
   toggleActivity(): void {
@@ -343,6 +343,8 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
       .on('mouseout', () => {
         polygon.style('fill', 'grey');
       });
+    console.log(group.getGroup());
+    this.createBuilder().createLayer(group.getGroup());
     return points;
   }
 
@@ -397,10 +399,11 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     this.applyDrag();
   }
 
-  private createBuilder(index?: number): DrawBuilder {
+  private createBuilder(index?: number, name?: string): DrawBuilder {
     return new DrawBuilder(this.container, {
       id: `area-${isNumber(index) ? index : 'new'}`,
-      clazz: `area`
+      clazz: `area`,
+      name: `${!!name ? name : 'area'}`
     });
   }
 

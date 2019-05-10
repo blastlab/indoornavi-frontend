@@ -30,6 +30,7 @@ export class LayersOwner {
     const id = this.findIdFromAvailableIds();
     layer.setVisible();
     this.layers.set(id, layer);
+    console.log(this.layers);
     return id;
   }
 
@@ -54,7 +55,7 @@ export class LayersOwner {
     const ids: number[] = Array.from(this.layers.keys()).sort();
     let id = Math.max(...ids) + 1;
     for (let i = 1; i <= id; i++) {
-      if (ids[i - 1] !== i) {
+      if (ids[i] !== i) {
         id = i;
         break;
       }
