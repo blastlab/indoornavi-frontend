@@ -5,7 +5,6 @@ import {ToolName} from '../tools.enum';
 import {ToolbarService} from '../../toolbar.service';
 import {LayersOwner} from '../../../../shared/utils/drawing/layers.owner';
 import {LayersService} from './layers.service';
-import {AcceptButtonsService} from '../../../../shared/components/accept-buttons/accept-buttons.service';
 import {Subject} from 'rxjs/Subject';
 
 

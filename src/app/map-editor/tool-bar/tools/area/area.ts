@@ -61,7 +61,6 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
 
   private editLabel: string;
   private removeLabel: string;
-  private layerId: number;
 
   constructor(private toolbarService: ToolbarService,
               private mapLoaderInformer: MapLoaderInformerService,
@@ -173,8 +172,15 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
           }
         }
       });
-      this.currentAreaGroup = this.createBuilder().createGroup();
-      this.applyContextMenu();
+      if (!this.currentAreaGroup) {
+        this.currentAreaGroup = this.createBuilder().createGroup();
+        this.applyContextMenu();
+      }
+      if (this.areas.length < 0) {
+        this.areas.forEach((areaBag: AreaBag) => {
+          this.applyContextMenuToSingleArea(areaBag);
+        });
+      }
     }
   }
 
@@ -189,12 +195,17 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     this.draggingElement = null;
     this.selectedEditable = null;
 
-    this.cleanMapViewFromDrawnAreas();
+    // this.cleanMapViewFromDrawnAreas();
     this.areaDetailsService.reject();
-
-    if (this.isCurrentAreaGroupNew()) {
-      this.currentAreaGroup.remove();
+    this.container.on('contextmenu', null);
+    if (this.areas.length > 0) {
+      this.areas.forEach((areaBag: AreaBag) => {
+        this.disableContextMenuToSingleArea(areaBag);
+      });
     }
+    // if (this.isCurrentAreaGroupNew()) {
+    //   this.currentAreaGroup.remove();
+    // }
   }
 
   private applyContextMenu() {
@@ -343,7 +354,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
       .on('mouseout', () => {
         polygon.style('fill', 'grey');
       });
-    console.log(group.getGroup());
+    console.log('drawing polygon from', points);
     this.createBuilder().createLayer(group.getGroup());
     return points;
   }
@@ -577,7 +588,6 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     let index = 0;
     this.areas.forEach((areaBag: AreaBag): void => {
       areaBag.editable = new Editable(this.createBuilder(index).createGroup(), this.contextMenuService, this.translateService);
-      this.applyContextMenuToSingleArea(areaBag);
       areaBag.editable.onSelected().subscribe((selected: Editable) => {
         this.selectedEditable = selected;
       });
@@ -634,6 +644,10 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
         this.edited = false;
       }
     });
+  }
+
+  private disableContextMenuToSingleArea(areaBag: AreaBag): void {
+    areaBag.editable.off();
   }
 
   private setTranslations(): void {

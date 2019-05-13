@@ -14,6 +14,10 @@ export class LayersOwner {
 
   private constructor() {}
 
+  setAsNewOwner(): void {
+    this.layers.clear();
+  }
+
   getIdsAndNames(): ListLayerEntity[] {
     const layersEntities: ListLayerEntity[] = [];
     this.layers.forEach((value: SvgGroupLayer, key: number) => {

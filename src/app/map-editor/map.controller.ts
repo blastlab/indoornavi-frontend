@@ -9,6 +9,8 @@ import {ContextMenu, MenuItem} from 'primeng/primeng';
 import {ContextMenuService} from '../shared/wrappers/editable/editable.service';
 import * as d3 from 'd3';
 import {Subject} from 'rxjs/Subject';
+import {LayersService} from './tool-bar/tools/layers/layers.service';
+import {LayersOwner} from '../shared/utils/drawing/layers.owner';
 
 @Component({
   templateUrl: 'map.controller.html'
@@ -19,6 +21,7 @@ export class MapControllerComponent implements OnInit, OnDestroy, AfterViewInit 
   contextMenuItems: MenuItem[] = [];
 
   private subscriptionsDestructor: Subject<void> = new Subject<void>();
+  private layersOwner: LayersOwner;
 
   @ViewChild('contextMenu') contextMenu: ContextMenu;
 
@@ -31,6 +34,8 @@ export class MapControllerComponent implements OnInit, OnDestroy, AfterViewInit 
   ) {}
 
   ngOnInit(): void {
+    this.layersOwner = LayersOwner.getInstance();
+    this.layersOwner.setAsNewOwner();
     this.route.params
       .subscribe((params: Params) => {
         const floorId = parseInt(params['floorId'], 10);
