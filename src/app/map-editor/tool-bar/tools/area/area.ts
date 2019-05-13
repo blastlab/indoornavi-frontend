@@ -49,7 +49,8 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
 
   private draggingElement: d3.selection;
   private selectedEditable: Editable;
-  private onDecisionMadeSubscription: Subscription;
+  private onDecisionAcceptedSubscription: Subscription;
+  private onDecisionRejectedSubscription: Subscription;
 
   private scaleChangedSubscription: Subscription;
   private scale: Scale;
@@ -103,37 +104,42 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
       }
     });
 
-    this.onDecisionMadeSubscription = this.areaDetailsService.onDecisionMade().subscribe((area: AreaBag): void => {
-      if (!!this.currentAreaGroup) {
-        if (!area) { // rejected
-          this.currentAreaGroup.remove();
-          this.currentAreaGroup = null;
-        } else {
-          const index = this.findSelectedAreaBagIndex();
-          if (index === -1) { // accepted new
-            this.areas.push({
-              dto: area.dto,
-              editable: new Editable(this.currentAreaGroup, this.contextMenuService, this.translateService)
-            });
-            this.currentAreaGroup.getGroup().attr('id', 'area-' + this.areas.length);
-          } else { // accepted edit
-            this.areas[index] = area;
-          }
-
-          this.actionBarService.setAreas(this.areas.map((areaBag: AreaBag): Area => {
-            return this.setPointsRealDimensionsInCentimeters(areaBag.dto);
-          }));
+    this.onDecisionAcceptedSubscription = this.areaDetailsService.onDecisionAccepted().subscribe((areaBagPayload: AreaBag): void => {
+        if (!!this.currentAreaGroup && !!areaBagPayload) {
+          areaBagPayload.editable.off();
+            const index = this.findSelectedAreaBagIndex();
+            if (index === -1) { // accepted new
+              this.areas.push({
+                dto: areaBagPayload.dto,
+                editable: new Editable(this.currentAreaGroup, this.contextMenuService, this.translateService)
+              });
+              this.currentAreaGroup.getGroup().attr('id', 'area-' + this.areas.length);
+            } else { // accepted edit
+              this.areas[index] = areaBagPayload;
+            }
+            this.actionBarService.setAreas(this.areas.map((areaBag: AreaBag): Area => {
+              return this.setPointsRealDimensionsInCentimeters(areaBag.dto);
+            }));
+            this.toggleActivity();
         }
-
-        this.toggleActivity();
+    });
+    this.onDecisionRejectedSubscription = this.areaDetailsService.onDecisionRejected().subscribe(() => {
+      if (!this.edited) {
+        this.currentAreaGroup.remove();
+        this.currentAreaGroup = null;
+      } else {
+        this.redrawPolygonFromBackup();
       }
     });
     this.setTranslations();
   }
 
   ngOnDestroy(): void {
-    if (!!this.onDecisionMadeSubscription) {
-      this.onDecisionMadeSubscription.unsubscribe();
+    if (!!this.onDecisionAcceptedSubscription) {
+      this.onDecisionAcceptedSubscription.unsubscribe();
+    }
+    if (!!this.onDecisionRejectedSubscription) {
+      this.onDecisionRejectedSubscription.unsubscribe();
     }
     if (!!this.scaleChangedSubscription) {
       this.scaleChangedSubscription.unsubscribe();
@@ -192,6 +198,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     this.firstPointSelection = null;
     this.lastPoint = null;
     this.tempLine = null;
+    console.log(this.draggingElement);
     this.draggingElement = null;
     this.selectedEditable = null;
 
@@ -343,6 +350,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
   }
 
   private drawPolygon(points: Point[], group: SvgGroupWrapper = this.currentAreaGroup): Point[] {
+    console.log(group);
     const polygon: d3.selection = group.addPolygon(points)
       .getLastElement(ElementType.POLYGON);
     polygon
@@ -354,7 +362,6 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
       .on('mouseout', () => {
         polygon.style('fill', 'grey');
       });
-    console.log('drawing polygon from', points);
     this.createBuilder().createLayer(group.getGroup());
     return points;
   }
@@ -468,23 +475,28 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
               isInRange = false;
             }
           });
+          console.log(isInRange);
           if (!isInRange) {
-            this.currentAreaGroup.remove();
-            this.currentAreaGroup = this.createBuilder().createGroup();
-            if (!!this.selectedEditable) {
-              const idBackUp = this.selectedEditable.groupWrapper.getGroup().attr('id');
-              this.currentAreaGroup.getGroup().attr('id', idBackUp);
-              const index = this.findSelectedAreaBagIndex();
-              if (index >= 0) {
-                this.areas[index].editable = new Editable(this.currentAreaGroup, this.contextMenuService, this.translateService);
-              }
-            }
-            this.drawPolygon(this.backupPolygonPoints);
-            this.applyHover(this.backupPolygonPoints);
-            this.applyDrag();
+            this.redrawPolygonFromBackup();
           }
         })
     );
+  }
+
+  private redrawPolygonFromBackup(): void {
+    this.currentAreaGroup.remove();
+    this.currentAreaGroup = this.createBuilder().createGroup();
+    if (!!this.selectedEditable) {
+      const idBackUp = this.selectedEditable.groupWrapper.getGroup().attr('id');
+      this.currentAreaGroup.getGroup().attr('id', idBackUp);
+      const index = this.findSelectedAreaBagIndex();
+      if (index >= 0) {
+        this.areas[index].editable = new Editable(this.currentAreaGroup, this.contextMenuService, this.translateService);
+      }
+    }
+    this.drawPolygon(this.backupPolygonPoints);
+    this.applyHover(this.backupPolygonPoints);
+    this.applyDrag();
   }
 
   private applyShiftToPolygon(): Point[] {
@@ -522,8 +534,8 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
 
   private setEditableToItemContextMenu(): void {
     const index = this.findSelectedAreaBagIndex();
-    this.cleanMapViewFromDrawnAreas();
-    this.setView();
+    // this.cleanMapViewFromDrawnAreas();
+    // this.setView();
     this.areaDetailsService.hide();
     const areaBag: AreaBag = this.areas[index];
     this.areaDetailsService.set(areaBag);

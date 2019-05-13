@@ -7,9 +7,10 @@ import {AreaBag} from '../area.type';
 export class AreaDetailsService {
 
   private visibilityChanged: Subject<boolean> = new Subject<boolean>();
-  private decisionMade: Subject<AreaBag> = new Subject<AreaBag>();
+  private decisionAccepted: Subject<AreaBag> = new Subject<AreaBag>();
   private hasBeenSet: Subject<AreaBag> = new Subject<AreaBag>();
   private hasBeenRemoved: Subject<void> = new Subject<void>();
+  private decisionRejected: Subject<void> = new Subject<void>();
 
   show(): void {
     this.visibilityChanged.next(true);
@@ -20,11 +21,11 @@ export class AreaDetailsService {
   }
 
   reject(): void {
-    this.decisionMade.next(null);
+    this.decisionRejected.next(null);
   }
 
   accept(area: AreaBag): void {
-    this.decisionMade.next(area);
+    this.decisionAccepted.next(area);
   }
 
   set(area: AreaBag): void {
@@ -39,8 +40,12 @@ export class AreaDetailsService {
     return this.visibilityChanged.asObservable();
   }
 
-  onDecisionMade(): Observable<AreaBag> {
-    return this.decisionMade.asObservable();
+  onDecisionRejected(): Observable<void> {
+    return this.decisionRejected.asObservable();
+  }
+
+  onDecisionAccepted(): Observable<AreaBag> {
+    return this.decisionAccepted.asObservable();
   }
 
   onSet(): Observable<AreaBag> {

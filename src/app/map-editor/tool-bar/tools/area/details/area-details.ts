@@ -87,17 +87,15 @@ export class AreaDetailsComponent extends KeyboardDefaultListener implements OnI
         }
       });
     });
-    this.areaDetailsService.onDecisionMade().takeUntil(this.subscriptionDestroyer).subscribe((area: AreaBag) => {
-      if (!area) { // rejected
-        this.cleanUp();
-        this.toolDetails.hide();
-      }
+    this.areaDetailsService.onDecisionRejected().takeUntil(this.subscriptionDestroyer).subscribe(() => {
+      this.cleanUp();
+      this.toolDetails.hide();
     });
     this.setTranslations();
     this.areaDetailsService.onRemove().takeUntil(this.subscriptionDestroyer).subscribe((): void => {
       this.cleanUp();
       this.toolDetails.hide();
-    })
+    });
   }
 
   ngOnDestroy() {
