@@ -34,7 +34,6 @@ export class LayersOwner {
     const id = this.findIdFromAvailableIds();
     layer.setVisible();
     this.layers.set(id, layer);
-    console.log(this.layers);
     return id;
   }
 

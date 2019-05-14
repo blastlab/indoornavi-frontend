@@ -27,7 +27,6 @@ export class Editable {
 
   setId(id: number) {
     this.id = id;
-    console.log(this.id);
   }
 
   getId(): number {
