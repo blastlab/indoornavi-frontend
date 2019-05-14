@@ -487,7 +487,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
       this.currentAreaGroup.getGroup().attr('id', idBackUp);
       const index = this.findSelectedAreaBagIndex();
       if (index >= 0) {
-        this.areas[index].editable = new Editable(this.currentAreaGroup, this.contextMenuService, this.translateService);
+        this.areas[index].editable.groupWrapper = this.currentAreaGroup;
       }
     }
     this.drawPolygon(this.backupPolygonPoints, this.currentAreaGroup);
@@ -554,6 +554,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
   private setRemoveToItemContextMenu(): void {
     const index = this.findSelectedAreaBagIndex();
     this.cleanGroup(this.selectedEditable.groupWrapper);
+    this.createBuilder().removeLayer(this.selectedEditable.getId());
     this.areas.splice(index, 1);
     this.actionBarService.setAreas(this.areas.map((areaBag: AreaBag): Area => {
       return this.setPointsRealDimensionsInCentimeters(areaBag.dto);
