@@ -105,23 +105,25 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     });
 
     this.onDecisionAcceptedSubscription = this.areaDetailsService.onDecisionAccepted().subscribe((areaBagPayload: AreaBag): void => {
-        if (!!this.currentAreaGroup && !!areaBagPayload) {
+      if (!!this.currentAreaGroup) {
+        if (!!areaBagPayload.editable) {
           areaBagPayload.editable.off();
-            const index = this.findSelectedAreaBagIndex();
-            if (index === -1) { // accepted new
-              this.areas.push({
-                dto: areaBagPayload.dto,
-                editable: new Editable(this.currentAreaGroup, this.contextMenuService, this.translateService)
-              });
-              this.currentAreaGroup.getGroup().attr('id', 'area-' + this.areas.length);
-            } else { // accepted edit
-              this.areas[index] = areaBagPayload;
-            }
-            this.actionBarService.setAreas(this.areas.map((areaBag: AreaBag): Area => {
-              return this.setPointsRealDimensionsInCentimeters(areaBag.dto);
-            }));
-            this.toggleActivity();
         }
+        const index = this.findSelectedAreaBagIndex();
+        if (index === -1) { // accepted new
+          this.areas.push({
+            dto: areaBagPayload.dto,
+            editable: new Editable(this.currentAreaGroup, this.contextMenuService, this.translateService)
+          });
+          this.currentAreaGroup.getGroup().attr('id', 'area-' + this.areas.length);
+        } else { // accepted edit
+          this.areas[index] = areaBagPayload;
+        }
+        this.actionBarService.setAreas(this.areas.map((areaBag: AreaBag): Area => {
+          return this.setPointsRealDimensionsInCentimeters(areaBag.dto);
+        }));
+        this.toggleActivity();
+      }
     });
     this.onDecisionRejectedSubscription = this.areaDetailsService.onDecisionRejected().subscribe(() => {
       if (!this.edited) {
