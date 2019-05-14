@@ -50,6 +50,7 @@ export class SvgGroupWrapper {
   private elements: Map<ElementType, d3.selection[]> = new Map();
   private textsHidden: boolean = true;
   private readonly groupDefaultColor: string;
+  private id: number;
 
   static throwErrorTypeNull(elementType: ElementType): void {
     throw new Error(`${elementType} is null or undefined`);
@@ -68,6 +69,14 @@ export class SvgGroupWrapper {
     this.group = group;
     this.container = container;
     this.groupDefaultColor = (colored) ? colored : 'black';
+  }
+
+  setId(id: number): void {
+    this.id = id;
+  }
+
+  getId(): number {
+    return this.id;
   }
 
   addIcon(coordinates: Point, iconCode: string, iconSizeScalar?: number, transformHorizontal?: number, transformVertical?: number): SvgGroupWrapper {

@@ -10,6 +10,7 @@ export class Editable {
   private selected: Subject<Editable> = new Subject<Editable>();
   private edit: string;
   private remove: string;
+  private id: number = null;
 
   constructor(public groupWrapper: SvgGroupWrapper,
               private contextMenuService: ContextMenuService,
@@ -22,6 +23,19 @@ export class Editable {
     this.translate.get('remove').first().subscribe((value: string) => {
       this.remove = value;
     });
+  }
+
+  setId(id: number) {
+    this.id = id;
+    console.log(this.id);
+  }
+
+  getId(): number {
+    return this.id;
+  }
+
+  hasId(): boolean {
+    return this.id !== null;
   }
 
   on(callbacks: EditableCallbacks): d3.selection {
@@ -51,7 +65,6 @@ export class Editable {
   onSelected(): Observable<Editable> {
     return this.selected.asObservable();
   }
-
 }
 
 export interface EditableCallbacks {

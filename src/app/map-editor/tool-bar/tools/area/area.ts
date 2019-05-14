@@ -5,7 +5,7 @@ import {ToolbarService} from '../../toolbar.service';
 import {MapLoaderInformerService} from '../../../../shared/services/map-loader-informer/map-loader-informer.service';
 import * as d3 from 'd3';
 import {Point} from '../../../map.type';
-import {Box, DrawBuilder, ElementType, SvgGroupLayer, SvgGroupWrapper} from '../../../../shared/utils/drawing/drawing.builder';
+import {Box, DrawBuilder, ElementType, SvgGroupWrapper} from '../../../../shared/utils/drawing/drawing.builder';
 import {MapSvg} from '../../../../map/map.type';
 import {AreaDetailsService} from './details/area-details.service';
 import {Area, AreaBag} from './area.type';
@@ -182,7 +182,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
         this.currentAreaGroup = this.createBuilder().createGroup();
         this.applyContextMenu();
       }
-      if (this.areas.length < 0) {
+      if (this.areas.length > 0) {
         this.areas.forEach((areaBag: AreaBag) => {
           this.applyContextMenuToSingleArea(areaBag);
         });
@@ -198,11 +198,10 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     this.firstPointSelection = null;
     this.lastPoint = null;
     this.tempLine = null;
-    console.log(this.draggingElement);
     this.draggingElement = null;
     this.selectedEditable = null;
-
-    // this.cleanMapViewFromDrawnAreas();
+    this.cleanMapViewFromDrawnAreas();
+    this.setView();
     this.areaDetailsService.reject();
     this.container.on('contextmenu', null);
     if (this.areas.length > 0) {
@@ -210,9 +209,9 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
         this.disableContextMenuToSingleArea(areaBag);
       });
     }
-    // if (this.isCurrentAreaGroupNew()) {
-    //   this.currentAreaGroup.remove();
-    // }
+    if (this.isCurrentAreaGroupNew()) {
+      this.currentAreaGroup.remove();
+    }
   }
 
   private applyContextMenu() {
@@ -349,8 +348,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     this.tempLine.attr('x2', coordinates.x).attr('y2', coordinates.y);
   }
 
-  private drawPolygon(points: Point[], group: SvgGroupWrapper = this.currentAreaGroup): Point[] {
-    console.log(group);
+  private drawPolygon(points: Point[], group: SvgGroupWrapper): Point[] {
     const polygon: d3.selection = group.addPolygon(points)
       .getLastElement(ElementType.POLYGON);
     polygon
@@ -362,7 +360,6 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
       .on('mouseout', () => {
         polygon.style('fill', 'grey');
       });
-    this.createBuilder().createLayer(group.getGroup());
     return points;
   }
 
@@ -410,7 +407,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     this.layer.on('mousemove', null);
 
     const points: Point[] = this.getCurrentAreaPoints();
-    this.drawPolygon(points);
+    this.drawPolygon(points, this.currentAreaGroup);
     this.removeLines();
     this.removePoints();
     this.applyHover(points);
@@ -442,7 +439,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     this.draggingElement
       .attr('cx', d3.event.dx + parseInt(this.draggingElement.attr('cx'), 10))
       .attr('cy', d3.event.dy + parseInt(this.draggingElement.attr('cy'), 10));
-    this.drawPolygon(this.getCurrentAreaPoints());
+    this.drawPolygon(this.getCurrentAreaPoints(), this.currentAreaGroup);
   }
 
   private handlePolygonDrag(): void {
@@ -475,7 +472,6 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
               isInRange = false;
             }
           });
-          console.log(isInRange);
           if (!isInRange) {
             this.redrawPolygonFromBackup();
           }
@@ -494,7 +490,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
         this.areas[index].editable = new Editable(this.currentAreaGroup, this.contextMenuService, this.translateService);
       }
     }
-    this.drawPolygon(this.backupPolygonPoints);
+    this.drawPolygon(this.backupPolygonPoints, this.currentAreaGroup);
     this.applyHover(this.backupPolygonPoints);
     this.applyDrag();
   }
@@ -534,8 +530,8 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
 
   private setEditableToItemContextMenu(): void {
     const index = this.findSelectedAreaBagIndex();
-    // this.cleanMapViewFromDrawnAreas();
-    // this.setView();
+    this.cleanMapViewFromDrawnAreas();
+    this.setView();
     this.areaDetailsService.hide();
     const areaBag: AreaBag = this.areas[index];
     this.areaDetailsService.set(areaBag);
@@ -599,7 +595,20 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
   private setView() {
     let index = 0;
     this.areas.forEach((areaBag: AreaBag): void => {
-      areaBag.editable = new Editable(this.createBuilder(index).createGroup(), this.contextMenuService, this.translateService);
+      const svgGroupWrapper: SvgGroupWrapper = this.createBuilder(index).createGroup();
+      if (!areaBag.editable) {
+        areaBag.editable = new Editable(svgGroupWrapper, this.contextMenuService, this.translateService);
+      } else {
+        areaBag.editable.groupWrapper = svgGroupWrapper;
+      }
+      console.log(areaBag.editable.getId());
+      if (areaBag.editable.hasId()) {
+        this.createBuilder().updateLayer(areaBag.editable.getId(), svgGroupWrapper.getGroup());
+      } else {
+        const layersId = this.createBuilder().createLayer(svgGroupWrapper.getGroup());
+        console.log(layersId);
+        areaBag.editable.setId(layersId);
+      }
       areaBag.editable.onSelected().subscribe((selected: Editable) => {
         this.selectedEditable = selected;
       });
@@ -638,7 +647,6 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
         ]
       }
     });
-
     this.contextMenuService.setItems(labels);
   }
 
