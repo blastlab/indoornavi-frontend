@@ -10,10 +10,6 @@ export class Configuration {
   savedDraftDate: Date;
   publishedDate: Date;
   data: ConfigurationData;
-
-  static getDateFields() {
-    return ['savedDraftDate', 'publishedDate'];
-  }
 }
 
 export interface ConfigurationData {
