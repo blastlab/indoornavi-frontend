@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {Floor} from './floor.type';
 import {FloorService} from './floor.service';
 import {TranslateService} from '@ngx-translate/core';
@@ -9,13 +9,14 @@ import {ConfirmationService} from 'primeng/primeng';
 import {NgForm} from '@angular/forms';
 import {MessageServiceWrapper} from '../shared/services/message/message.service';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
+import {Subject} from 'rxjs/Subject';
 
 @Component({
   templateUrl: 'floor.html',
   styleUrls: ['floor.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class FloorComponent implements OnInit, CrudComponent {
+export class FloorComponent implements OnInit, OnDestroy, CrudComponent {
   floor: Floor;
   dialogTitle: string;
   removeDialogTitle: string;
@@ -26,6 +27,7 @@ export class FloorComponent implements OnInit, CrudComponent {
   building: Building = new Building();
   loading: boolean = true;
   displayDialog: boolean = false;
+  subscriptionDestructor: Subject<void> = new Subject<void>();
   @ViewChild('floorForm') floorForm: NgForm;
   private confirmBody: string;
 
@@ -39,10 +41,11 @@ export class FloorComponent implements OnInit, CrudComponent {
   }
 
   ngOnInit(): void {
-    this.route.params
+    this.route.params.takeUntil(this.subscriptionDestructor)
       .subscribe((params: Params) => {
         const buildingId = +params['buildingId'];
-        this.floorService.getBuildingWithFloors(buildingId).subscribe((building: Building) => {
+        this.floorService.getBuildingWithFloors(buildingId).takeUntil(this.subscriptionDestructor)
+          .subscribe((building: Building) => {
           this.building = building;
           this.active = this.building.floors.filter(floor => !floor.archived);
           this.archived = this.building.floors.filter(floor => floor.archived);
@@ -65,6 +68,11 @@ export class FloorComponent implements OnInit, CrudComponent {
     this.translate.get('floor.details.remove').subscribe((value: string) => {
       this.removeDialogTitle = value;
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptionDestructor.next();
+    this.subscriptionDestructor = null;
   }
 
   openDialog(floor?: Floor): void {

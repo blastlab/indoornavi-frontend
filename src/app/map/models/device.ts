@@ -33,6 +33,8 @@ export class DeviceInEditor {
     this.addReactionToMouseEvents();
     this.setMovable();
     this.setTranslations();
+    this.setDedicatedZoomReaction();
+    this.setDedicatedMapMouseDownReaction();
   }
 
   getPosition(): Point {
@@ -163,6 +165,18 @@ export class DeviceInEditor {
       });
   }
 
+  private setDedicatedZoomReaction (): void {
+    this.container.call(d3.zoom().on('zoom', () => {
+      this.contextMenuService.hide();
+    }));
+  }
+
+  private setDedicatedMapMouseDownReaction (): void {
+    this.devicePlacerService.onMouseOverMap.subscribe(() => {
+      this.contextMenuService.hide();
+    });
+  }
+
   private setMovable(): void {
     let element: d3.selection = this.svgGroupWrapper.getGroup();
     let coordinatesBackUp: Point;
@@ -181,6 +195,7 @@ export class DeviceInEditor {
         }
       )
       .on('start', (): void => {
+        this.contextMenuService.hide();
         element = d3.select(d3.event.sourceEvent.target);
         d3.event.sourceEvent.stopPropagation();
       })

@@ -360,7 +360,7 @@ svg text{
 }
 
 #logout {
-  margin-left: 2em;
+  white-space: nowrap;
 }
 
 #logout i {
@@ -383,7 +383,7 @@ svg text{
 
 #username-link {
   padding: .3em;
-  width: 25%;
+  margin-right: 20px;
   text-align: right;
   cursor: pointer;
   margin-left: auto;

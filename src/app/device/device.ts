@@ -95,15 +95,15 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     this.setPermissions();
     this.translate.setDefaultLang('en');
     this.deviceService.setUrl(this.deviceType + '/');
-    this.confirmBodyTranslate = this.translate.get('confirm.body').first().subscribe((value: string): void => {
+    this.confirmBodyTranslate = this.translate.get('confirm.body').subscribe((value: string): void => {
       this.confirmBody = value;
     });
-    this.translate.get(this.deviceType + '.header').first().subscribe((value: string): void => {
+    this.translate.get(this.deviceType + '.header').subscribe((value: string): void => {
       this.breadcrumbService.publishIsReady([
         {label: value, disabled: true}
       ]);
     });
-    this.translate.get(`device.details.${this.deviceType}.remove`).first().subscribe((value: string): void => {
+    this.translate.get(`device.details.${this.deviceType}.remove`).subscribe((value: string): void => {
       this.removeDialogTitle = value;
     });
     this.listenForTerminalClientRequest();

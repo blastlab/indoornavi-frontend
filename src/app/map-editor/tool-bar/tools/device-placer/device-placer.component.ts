@@ -491,6 +491,9 @@ export class DevicePlacerComponent extends KeyboardDefaultListener implements To
   private activatePlacerEvents(): void {
     if (!!this.map) {
       this.map
+        .on('selectstart', () => {
+          this.devicePlacerService.emitMapDraggingStarted();
+        })
         .on('click', (): void => {
           this.sinks.forEach((sink: SinkBag): void => {
             this.setSinkGroupOutOfScope(sink);
@@ -510,7 +513,7 @@ export class DevicePlacerComponent extends KeyboardDefaultListener implements To
 
   private deactivatePlacerEvents(): void {
     if (!!this.map) {
-      this.map.on('click', null).on('contextmenu', null);
+      this.map.on('click', null).on('contextmenu', null).on('mouseover', null);
     }
     this.sinks.forEach((sink: SinkBag): void => {
       sink.deviceInEditor.contextMenuOff();
