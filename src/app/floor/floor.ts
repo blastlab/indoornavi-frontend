@@ -46,20 +46,20 @@ export class FloorComponent implements OnInit, OnDestroy, CrudComponent {
         const buildingId = +params['buildingId'];
         this.floorService.getBuildingWithFloors(buildingId).takeUntil(this.subscriptionDestructor)
           .subscribe((building: Building) => {
-          this.building = building;
-          this.active = this.building.floors.filter(floor => !floor.archived);
-          this.archived = this.building.floors.filter(floor => floor.archived);
-          this.loading = false;
-          this.breadcrumbsService.publishIsReady([
-            {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
-            {
-              label: building.complex.name,
-              routerLink: `/complexes/${this.building.complex.id}/buildings`,
-              routerLinkActiveOptions: {exact: true}
-            },
-            {label: building.name, disabled: true}
-          ]);
-        });
+            this.building = building;
+            this.active = this.building.floors.filter(floor => !floor.archived);
+            this.archived = this.building.floors.filter(floor => floor.archived);
+            this.loading = false;
+            this.breadcrumbsService.publishIsReady([
+              {label: 'Complexes', routerLink: '/complexes', routerLinkActiveOptions: {exact: true}},
+              {
+                label: building.complex.name,
+                routerLink: `/complexes/${this.building.complex.id}/buildings`,
+                routerLinkActiveOptions: {exact: true}
+              },
+              {label: building.name, disabled: true}
+            ]);
+          });
       });
     this.translate.setDefaultLang('en');
     this.translate.get('confirm.body').subscribe((value: string) => {
