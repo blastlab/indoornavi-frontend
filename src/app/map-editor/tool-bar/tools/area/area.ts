@@ -126,13 +126,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
       }
     });
     this.onDecisionRejectedSubscription = this.areaDetailsService.onDecisionRejected().subscribe(() => {
-      // console.log(this.edited);
-      if (this.edited) {
-        this.redrawPolygonFromBackup()
-      } else {
-        this.currentAreaGroup.remove();
-        this.currentAreaGroup = null;
-      }
+      this.toggleActivity();
     });
     this.setTranslations();
   }
@@ -164,7 +158,10 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
 
       this.container.style('cursor', 'crosshair');
 
+      console.log(this.layer);
+
       this.layer.on('click', (_, i: number, nodes: d3.selection[]): void => {
+        console.log('click');
         const coordinates: Point = this.zoomService.calculateTransition({x: d3.mouse(nodes[i])[0], y: d3.mouse(nodes[i])[1]});
         const coordinatesInRange: boolean = Geometry.areCoordinatesInGivenRange(coordinates, this.containerBox);
         if (coordinatesInRange) {
@@ -205,7 +202,6 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     this.selectedEditable = null;
     this.cleanMapViewFromDrawnAreas();
     this.setView();
-    this.areaDetailsService.reject();
     this.container.on('contextmenu', null);
     if (this.areas.length > 0) {
       this.areas.forEach((areaBag: AreaBag) => {
@@ -244,6 +240,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
   }
 
   toggleActivity(): void {
+    console.log(this.active);
     if (this.active) {
       this.toolbarService.emitToolChanged(null);
     } else {
@@ -280,6 +277,8 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
   }
 
   private handleMouseClick(point: Point): void {
+    console.log('first position', this.firstPointSelection);
+    console.log('current area group', this.currentAreaGroup);
     if (!this.firstPointSelection) {
       this.firstPointSelection = this.drawPoint(point);
       this.areas.forEach((areaBag: AreaBag): void => {
@@ -314,7 +313,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     const pointSelection: d3.selection = this.currentAreaGroup
       .addCircle(point, AreaComponent.CIRCLE_R)
       .getLastElement(ElementType.CIRCLE);
-
+    console.log('point selection ', pointSelection);
     pointSelection
       .on('mouseover', (): void => {
         pointSelection.style('fill', 'red');
