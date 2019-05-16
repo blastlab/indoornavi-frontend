@@ -21,7 +21,7 @@ import {AnchorBag, DeviceCallbacks, DeviceDto, DeviceInEditorConfiguration, Devi
 import {ToolbarService} from '../../toolbar.service';
 import {ConfirmationService} from 'primeng/primeng';
 import {Subject} from 'rxjs/Subject';
-import {Box} from '../../../../shared/utils/drawing/drawing.builder';
+import {Box, DrawBuilder, SvgGroupWrapper} from '../../../../shared/utils/drawing/drawing.builder';
 import {ModelsConfig} from '../../../../map/models/models.config';
 import {KeyboardDefaultListener} from '../../shared/tool-input/keyboard-default-listener';
 
@@ -265,7 +265,6 @@ export class DevicePlacerComponent extends KeyboardDefaultListener implements To
           this.devicePlacerService.emitActivated(anchorBag.deviceInEditor);
           this.devicesToAdd = [sinkBag, anchorBag];
         }
-
         this.checkProperPlacement();
       }
     });
@@ -277,12 +276,18 @@ export class DevicePlacerComponent extends KeyboardDefaultListener implements To
     });
   }
 
-  private listenOnPositionChanged() {
-    this.devicePlacerService.onDevicePositionChanged.takeUntil(this.subscriptionDestroyer).subscribe(() => {
+  private listenOnPositionChanged(): void {
+    this.devicePlacerService.onDevicePositionChanged.takeUntil(this.subscriptionDestroyer).subscribe((): void => {
       if (!!this.activeDevice) {
         const deviceCalculatedInCentimeters: Sink | Anchor = this.updateDevicePosition(this.activeDevice);
+        console.log(deviceCalculatedInCentimeters);
         if (this.activeDevice.deviceInEditor.type === DeviceType.SINK) {
           this.configurationService.updateSink(<Sink>deviceCalculatedInCentimeters);
+          (<SinkBag>this.activeDevice).deviceInEditor.anchors.forEach((anchor: AnchorBag) => {
+            const anchorCalculatedInCentimeters: Anchor = this.updateDevicePosition(anchor);
+            console.log(anchorCalculatedInCentimeters);
+            this.configurationService.updateAnchor(anchorCalculatedInCentimeters);
+          });
         } else {
           this.configurationService.updateAnchor(<Anchor>deviceCalculatedInCentimeters);
         }
@@ -316,12 +321,21 @@ export class DevicePlacerComponent extends KeyboardDefaultListener implements To
       const sinks: SinkBag[] = [...this.sinks];
       sinks.forEach((sink: SinkBag) => {
         this.removeSinkWithAnchors(sink);
+        this.removeSinkLayer(sink);
       });
       this.drawFromConfiguration(configuration);
       this.informListOfItemsInConfiguration(configuration);
       this.toolbarService.emitToolChanged(null);
       this.setInactive();
     });
+  }
+
+  private removeSinkLayer(sinkBag: SinkBag): void {
+    new DrawBuilder(this.map, {
+      id: `sink-layer-${sinkBag.deviceInEditor.shortId}`,
+      clazz: `sink-layer`,
+      name: `sink ${sinkBag.deviceInEditor.shortId}`
+    }).removeLayer(sinkBag.deviceInEditor.getSvgWrapper().getId());
   }
 
   private informListOfItemsInConfiguration(configuration: Configuration): void {
@@ -344,6 +358,7 @@ export class DevicePlacerComponent extends KeyboardDefaultListener implements To
     const sinkOnMap: SinkInEditor = new SinkInEditor(
       sink.shortId,
       !!coordinates ? coordinates : {x: sink.xInPixels, y: sink.yInPixels},
+      {x: 0, y: 0}, // map is top component and its 0,0 coordinates are in map 0,0 point
       this.map,
       sinkDrawConfiguration,
       this.devicePlacerService,
@@ -352,6 +367,16 @@ export class DevicePlacerComponent extends KeyboardDefaultListener implements To
       this.containerBox,
       this.models
     );
+    const sinkGroup: SvgGroupWrapper = sinkOnMap.getSvgWrapper();
+    sinkGroup.hideTexts();
+    // todo: return SvgGroupWrapper from layer creator instead of id, or just set id inside in to svgGroupWrapper then to identify id pass svgGroupWrapper
+    // todo: do it in each tool component
+    const layerId = new DrawBuilder(this.map, {
+      id: `sink-layer-${sink.shortId}`,
+      clazz: `sink-layer`,
+      name: `sink ${sink.shortId}`
+    }).createLayer(sinkGroup.getGroup());
+    sinkGroup.setId(layerId);
     sinkOnMap.setOutOfGroupScope();
     sinkOnMap.contextMenuOff();
     const sinkBag: SinkBag = {
@@ -371,7 +396,8 @@ export class DevicePlacerComponent extends KeyboardDefaultListener implements To
     const anchorInEditor: AnchorInEditor = new AnchorInEditor(
       anchor.shortId,
       !!coordinates ? coordinates : {x: anchor.xInPixels, y: anchor.yInPixels},
-      this.map,
+      sinkBag.deviceInEditor.getAbsolutePosition(),
+      sinkBag.deviceInEditor.getSvgWrapper().getGroup(),
       anchorDrawConfiguration,
       this.devicePlacerService,
       this.contextMenuService,
@@ -379,12 +405,18 @@ export class DevicePlacerComponent extends KeyboardDefaultListener implements To
       this.containerBox,
       this.models
     );
+    anchorInEditor.getSvgWrapper().hideTexts();
     anchorInEditor.setOutOfGroupScope();
     anchorInEditor.contextMenuOff();
     const anchorBag: AnchorBag = {
       deviceInEditor: anchorInEditor,
       deviceInList: anchor
     };
+    new DrawBuilder(this.map, {
+      id: `sink-layer-${sinkBag.deviceInEditor.shortId}`,
+      clazz: `sink-layer`,
+      name: `sink ${sinkBag.deviceInEditor.shortId}`
+    }).updateLayer(sinkBag.deviceInEditor.getSvgWrapper().getId(), sinkBag.deviceInEditor.getSvgWrapper().getGroup());
     this.addAnchorToSink(sinkBag, anchorBag);
     return anchorBag;
   }
@@ -405,11 +437,13 @@ export class DevicePlacerComponent extends KeyboardDefaultListener implements To
               });
             });
             this.removeSinkWithAnchors(sinkBag);
+            this.removeSinkLayer(sinkBag);
             this.configurationService.removeSink(sinkBag.deviceInList);
           }
         });
       } else {
         this.removeSinkWithAnchors(sinkBag);
+        this.removeSinkLayer(sinkBag);
         this.configurationService.removeSink(sinkBag.deviceInList);
       }
     } else {
@@ -522,7 +556,7 @@ export class DevicePlacerComponent extends KeyboardDefaultListener implements To
   }
 
   private updateDevicePosition(deviceBag: SinkBag | AnchorBag): Sink | Anchor {
-    const positionInPixels: Point = deviceBag.deviceInEditor.getPosition();
+    const positionInPixels: Point = deviceBag.deviceInEditor.getAbsolutePosition();
     const positionInCentimeters: Point = Geometry.calculatePointPositionInCentimeters(
       this.scaleCalculations.scaleLengthInPixels,
       this.scaleCalculations.scaleInCentimeters,

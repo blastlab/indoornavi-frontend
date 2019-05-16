@@ -5,7 +5,7 @@ import {DevicePlacerService} from '../../map-editor/tool-bar/tools/device-placer
 import {ContextMenuService} from '../../shared/wrappers/editable/editable.service';
 import {TranslateService} from '@ngx-translate/core';
 import {AnchorBag, DeviceCallbacks, DeviceInEditorConfiguration, DeviceType} from '../../map-editor/tool-bar/tools/device-placer/device-placer.types';
-import {Box} from '../../shared/utils/drawing/drawing.builder';
+import {Box, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.builder';
 import {ModelsConfig} from './models.config';
 
 export class SinkInEditor extends DeviceInEditor {
@@ -18,6 +18,7 @@ export class SinkInEditor extends DeviceInEditor {
   constructor(
     public shortId: number,
     protected coordinates: Point,
+    protected parentPosition: Point,
     protected container: d3.selection,
     protected drawConfiguration: DeviceInEditorConfiguration,
     protected devicePlacerService: DevicePlacerService,
@@ -26,7 +27,7 @@ export class SinkInEditor extends DeviceInEditor {
     protected containerBox: Box,
     protected models: ModelsConfig
   ) {
-    super(shortId, coordinates, container, drawConfiguration, devicePlacerService, contextMenuService, translateService, containerBox, models);
+    super(shortId, coordinates, parentPosition, container, drawConfiguration, devicePlacerService, contextMenuService, translateService, containerBox, models);
     this.svgGroupWrapper = this.svgGroupWrapper.addIcon(
       {x: 18, y: 18},
       this.sinkUnicode,
@@ -37,6 +38,7 @@ export class SinkInEditor extends DeviceInEditor {
   }
 
   addAnchor(anchor: AnchorBag): void {
+    anchor.deviceInEditor.updateParentPosition(this.coordinates);
     this.anchors.push(anchor);
   }
 
@@ -83,6 +85,12 @@ export class SinkInEditor extends DeviceInEditor {
     this.anchors.forEach((anchor: AnchorBag): void => {
       anchor.deviceInEditor.contextMenuOff();
       anchor.deviceInEditor.deactivate();
+    });
+  }
+
+  protected parentCoordinatesHasChanged() {
+    this.anchors.forEach((anchor: AnchorBag): void => {
+      anchor.deviceInEditor.updateParentPosition(this.coordinates);
     });
   }
 }

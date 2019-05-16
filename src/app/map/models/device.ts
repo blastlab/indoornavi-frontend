@@ -8,11 +8,9 @@ import {DeviceAppearance, DeviceCallbacks, DeviceInEditorConfiguration} from '..
 import {Geometry} from '../../shared/utils/helper/geometry';
 import {ModelsConfig} from './models.config';
 
-
 export class DeviceInEditor {
 
   protected svgGroupWrapper: SvgGroupWrapper;
-
   private reactiveToEvents: boolean = false;
   private appearance: DeviceAppearance = DeviceAppearance.IN_SCOPE;
   private removeLabel: string;
@@ -21,6 +19,7 @@ export class DeviceInEditor {
   constructor(
     public shortId: number,
     protected coordinates: Point,
+    protected parentPosition,
     protected container: d3.selection,
     protected drawConfiguration: DeviceInEditorConfiguration,
     protected devicePlacerService: DevicePlacerService,
@@ -29,7 +28,11 @@ export class DeviceInEditor {
     protected containerBox: Box,
     protected models: ModelsConfig
   ) {
-    this.createDeviceOnMapGroup(coordinates, container, drawConfiguration);
+    const relativeToParentCoordinates =  {
+      x: coordinates.x - this.parentPosition.x,
+      y: coordinates.y - this.parentPosition.y
+    };
+    this.createDeviceOnMapGroup(relativeToParentCoordinates, container, drawConfiguration);
     this.addReactionToMouseEvents();
     this.setMovable();
     this.setTranslations();
@@ -37,8 +40,19 @@ export class DeviceInEditor {
     this.setDedicatedMapMouseDownReaction();
   }
 
-  getPosition(): Point {
-    return this.coordinates;
+  getSvgWrapper(): SvgGroupWrapper {
+    return this.svgGroupWrapper;
+  }
+
+  updateParentPosition(coordinates: Point) {
+    this.parentPosition = coordinates;
+  }
+
+  getAbsolutePosition(): Point {
+    return {
+      x: this.coordinates.x + this.parentPosition.x,
+      y: this.coordinates.y + this.parentPosition.y
+    };
   }
 
   setActive(): void {
@@ -200,7 +214,12 @@ export class DeviceInEditor {
         d3.event.sourceEvent.stopPropagation();
       })
       .on('end', (): void => {
-        const coordinatesInRange: boolean = Geometry.areCoordinatesInGivenRange(coordinates, this.containerBox);
+        if (!!coordinates && coordinates.x && coordinates.y) {
+          const coordinatesRelatedToParent: Point = {
+            x: this.parentPosition.x + coordinates.x,
+            y: this.parentPosition.y + coordinates.y
+          };
+          const coordinatesInRange: boolean = Geometry.areCoordinatesInGivenRange(coordinatesRelatedToParent, this.containerBox);
         if (!coordinatesInRange && !!coordinatesBackUp) {
           this.svgGroupWrapper.getGroup().attr('x', coordinatesBackUp.x);
           this.svgGroupWrapper.getGroup().attr('y', coordinatesBackUp.y);
@@ -211,10 +230,13 @@ export class DeviceInEditor {
           x: d3.event.dx + parseInt(this.svgGroupWrapper.getGroup().attr('x'), 10),
           y: d3.event.dy + parseInt(this.svgGroupWrapper.getGroup().attr('y'), 10)
         };
+          console.log(this.coordinates);
+          this.parentCoordinatesHasChanged();
         element = null;
         if (!!coordinates && !!coordinatesBackUp) {
           coordinatesBackUp = null;
           this.devicePlacerService.emitDevicePositionChanged();
+        }
         }
       });
     element.call(drag);
@@ -227,5 +249,8 @@ export class DeviceInEditor {
     this.translateService.get('edit.height').subscribe((value: string) => {
       this.editLabel = value;
     });
+  }
+
+  protected parentCoordinatesHasChanged() {
   }
 }

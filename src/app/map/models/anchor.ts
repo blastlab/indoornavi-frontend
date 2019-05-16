@@ -15,6 +15,7 @@ export class AnchorInEditor extends DeviceInEditor {
   constructor(
     public shortId: number,
     protected coordinates: Point,
+    protected parentPosition: Point,
     protected container: d3.selection,
     protected drawConfiguration: DeviceInEditorConfiguration,
     protected devicePlacerService: DevicePlacerService,
@@ -23,7 +24,7 @@ export class AnchorInEditor extends DeviceInEditor {
     protected containerBox: Box,
     protected models: ModelsConfig
     ) {
-    super(shortId, coordinates, container, drawConfiguration, devicePlacerService, contextMenuService, translateService, containerBox, models);
+    super(shortId, coordinates, parentPosition, container, drawConfiguration, devicePlacerService, contextMenuService, translateService, containerBox, models);
     this.svgGroupWrapper = this.svgGroupWrapper.addIcon(
       {x: 18, y: 18},
       this.models.anchorUnicode,
