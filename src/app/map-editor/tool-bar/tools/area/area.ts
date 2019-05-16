@@ -126,11 +126,12 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
       }
     });
     this.onDecisionRejectedSubscription = this.areaDetailsService.onDecisionRejected().subscribe(() => {
-      if (!this.edited) {
+      // console.log(this.edited);
+      if (this.edited) {
+        this.redrawPolygonFromBackup()
+      } else {
         this.currentAreaGroup.remove();
         this.currentAreaGroup = null;
-      } else {
-        this.redrawPolygonFromBackup();
       }
     });
     this.setTranslations();
@@ -482,19 +483,23 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
   }
 
   private redrawPolygonFromBackup(): void {
-    this.currentAreaGroup.remove();
-    this.currentAreaGroup = this.createBuilder().createGroup();
-    if (!!this.selectedEditable) {
-      const idBackUp = this.selectedEditable.groupWrapper.getGroup().attr('id');
-      this.currentAreaGroup.getGroup().attr('id', idBackUp);
-      const index = this.findSelectedAreaBagIndex();
-      if (index >= 0) {
-        this.areas[index].editable.groupWrapper = this.currentAreaGroup;
+    if (this.backupPolygonPoints.length > 0) {
+      this.currentAreaGroup.remove();
+      this.currentAreaGroup = this.createBuilder().createGroup();
+      if (!!this.selectedEditable) {
+        const idBackUp = this.selectedEditable.groupWrapper.getGroup().attr('id');
+        this.currentAreaGroup.getGroup().attr('id', idBackUp);
+        const index = this.findSelectedAreaBagIndex();
+        if (index >= 0) {
+          this.areas[index].editable.groupWrapper = this.currentAreaGroup;
+        }
       }
+      this.drawPolygon(this.backupPolygonPoints, this.currentAreaGroup);
+      this.applyHover(this.backupPolygonPoints);
     }
-    this.drawPolygon(this.backupPolygonPoints, this.currentAreaGroup);
-    this.applyHover(this.backupPolygonPoints);
-    this.applyDrag();
+    this.removePoints();
+    this.currentAreaGroup.getGroup().on('.drag', null);
+    this.backupPolygonPoints = [];
   }
 
   private applyShiftToPolygon(): Point[] {
