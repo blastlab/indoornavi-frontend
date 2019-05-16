@@ -158,7 +158,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
 
       this.container.style('cursor', 'crosshair');
 
-      console.log(this.layer);
+      console.log(this.currentAreaGroup);
 
       this.layer.on('click', (_, i: number, nodes: d3.selection[]): void => {
         console.log('click');
@@ -178,10 +178,8 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
           }
         }
       });
-      if (!this.currentAreaGroup) {
         this.currentAreaGroup = this.createBuilder().createGroup();
         this.applyContextMenu();
-      }
       if (this.areas.length > 0) {
         this.areas.forEach((areaBag: AreaBag) => {
           this.applyContextMenuToSingleArea(areaBag);
@@ -280,6 +278,7 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
     console.log('first position', this.firstPointSelection);
     console.log('current area group', this.currentAreaGroup);
     if (!this.firstPointSelection) {
+      console.log('first position', this.firstPointSelection);
       this.firstPointSelection = this.drawPoint(point);
       this.areas.forEach((areaBag: AreaBag): void => {
         areaBag.editable.off();
