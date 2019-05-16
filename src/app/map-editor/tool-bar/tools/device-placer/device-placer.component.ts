@@ -399,6 +399,7 @@ export class DevicePlacerComponent extends KeyboardDefaultListener implements To
       if (sinkBag.deviceInList.anchors.length > 0) {
         this.confirmationService.confirm({
           message: this.confirmationBody,
+          key: 'sinkRemoveConfirmation',
           accept: () => {
             sinkBag.deviceInEditor.anchors.forEach((anchorBag: AnchorBag) => {
               this.devicesOnMap = this.devicesOnMap.filter((anchor: Anchor) => {

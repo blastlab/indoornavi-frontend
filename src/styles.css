@@ -536,3 +536,7 @@ svg text{
     margin-left: -10em;
   }
 }
+
+#prePublish .ui-confirmdialog .ui-dialog-content .fa-info {
+  float: left;
+}

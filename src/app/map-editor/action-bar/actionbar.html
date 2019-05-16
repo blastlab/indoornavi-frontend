@@ -23,4 +23,13 @@
   </span>
 </div>
 
-<p-confirmDialog key="preUndo" icon="fa-question-circle" width="425"></p-confirmDialog>
+<p-confirmDialog #preUndo key="preUndo" icon="fa-question-circle" width="425">
+  <p-footer>
+    <app-confirmation-buttons [confirmationDialog]="preUndo"></app-confirmation-buttons>
+  </p-footer>
+</p-confirmDialog>
+<p-confirmDialog id="prePublish" #prePublish key="prePublish" icon="fa-info" width="625">
+  <p-footer>
+    <app-confirmation-buttons [confirmationDialog]="prePublish"></app-confirmation-buttons>
+  </p-footer>
+</p-confirmDialog>

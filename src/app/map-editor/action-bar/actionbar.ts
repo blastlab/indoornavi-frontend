@@ -5,10 +5,11 @@ import {MapLoaderInformerService} from '../../shared/services/map-loader-informe
 import {Subscription} from 'rxjs/Subscription';
 import {Timer} from '../../shared/utils/timer/timer';
 import {TranslateService} from '@ngx-translate/core';
-import {Configuration} from './actionbar.type';
+import {Configuration, PrePublishReport, PrePublishReportItem} from './actionbar.type';
 import {ConfirmationService} from 'primeng/primeng';
 import {MessageServiceWrapper} from '../../shared/services/message/message.service';
 import {animate, state, style, transition, trigger} from '@angular/animations';
+import {Subject} from 'rxjs/Subject';
 
 @Component({
   selector: 'app-actionbar',
@@ -50,6 +51,8 @@ export class ActionBarComponent implements OnInit, OnDestroy {
   public undoTooltip: string;
   private undoTooltipPrevious: string;
   private undoTooltipInitial: string;
+
+  private prePublishHeader: string;
 
   private static shouldBeDisabled(configuration: Configuration) {
     if (configuration.publishedDate === null && configuration.savedDraftDate === null) {
@@ -93,6 +96,10 @@ export class ActionBarComponent implements OnInit, OnDestroy {
 
     this.translateService.get('configuration.undoPrevious').subscribe((value: string) => {
       this.undoTooltipPrevious = value;
+    });
+
+    this.translateService.get('prePublish.header').subscribe((translated: string) => {
+      this.prePublishHeader = translated;
     });
 
     this.mapLoadedSubscription = this.mapLoaderInformer.loadCompleted().subscribe(() => {
@@ -176,9 +183,44 @@ export class ActionBarComponent implements OnInit, OnDestroy {
   }
 
   public publish(): void {
-    this.configurationService.publish().subscribe(() => {
-      this.afterPublishDone();
+    this.configurationService.prePublish(this.floor.id).then((items: PrePublishReportItem[]) => {
+      if (items.length) {
+        this.buildConfirmationMessage(items).then((message: string) => {
+          this.confirmationService.confirm({
+            header: this.prePublishHeader,
+            key: 'prePublish',
+            message: message,
+            accept: () => {
+              this.configurationService.publish().subscribe(() => {
+                this.afterPublishDone();
+              });
+            },
+            reject: () => {
+            }
+          });
+        });
+      } else {
+        this.configurationService.publish().subscribe(() => {
+          this.afterPublishDone();
+        });
+      }
     });
+  }
+
+  private buildConfirmationMessage(items: PrePublishReportItem[]): Promise<string> {
+    return new Promise<string>((resolve => {
+      let result = '';
+      items.forEach((item: PrePublishReportItem, index: number) => {
+        this.translateService.get(item.code, item.params).subscribe((translated: string) => {
+          result += '<div>';
+          result += translated;
+          result += '</div>';
+          if (index + 1 === items.length) {
+            resolve(result);
+          }
+        });
+      });
+    }));
   }
 
   private showSaving() {

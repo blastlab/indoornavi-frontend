@@ -18,3 +18,12 @@ export interface ConfigurationData {
   areas: Area[];
   paths: Line[];
 }
+
+export interface PrePublishReport {
+  items: PrePublishReportItem[];
+}
+
+export interface PrePublishReportItem {
+  code: string;
+  params: Map<string, object>;
+}
