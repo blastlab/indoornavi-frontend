@@ -11,7 +11,7 @@
         </thead>
         <tbody class="ui-datatable-data ui-widget-content">
         <tr appDevicePlacerRow
-            *ngFor="let layer of layers | allFieldsFilter: queryString: queryFields; let i = index; let last = last"
+            *ngFor="let layer of layers; let i = index; let last = last"
             [ngClass]="{'ui-datatable-odd ui-widget-content': i % 2 === 1, 'ui-datatable-even ui-widget-content': i % 2 === 0}">
           <td>{{layer.id}}</td>
           <td>{{layer.name}}</td>
@@ -24,7 +24,7 @@
             </button>
           </td>
         </tr>
-        <tr *ngIf="(layers | allFieldsFilter: queryString: queryFields).length === 0"
+        <tr *ngIf="layers.length === 0"
             class="ui-datatable-even ui-widget-content">
           <td colspan="3">
             {{'layers.noLayersSet'|translate}}

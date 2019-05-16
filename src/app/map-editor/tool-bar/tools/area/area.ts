@@ -608,9 +608,9 @@ export class AreaComponent implements Tool, OnInit, OnDestroy {
         areaBag.editable.groupWrapper = svgGroupWrapper;
       }
       if (areaBag.editable.hasId()) {
-        this.createBuilder().updateLayer(areaBag.editable.getId(), svgGroupWrapper.getGroup());
+        this.createBuilder(null, areaBag.dto.name).updateLayer(areaBag.editable.getId(), svgGroupWrapper.getGroup());
       } else {
-        const layersId = this.createBuilder().createLayer(svgGroupWrapper.getGroup());
+        const layersId = this.createBuilder(null, areaBag.dto.name).createLayer(svgGroupWrapper.getGroup());
         areaBag.editable.setId(layersId);
       }
       areaBag.editable.onSelected().subscribe((selected: Editable) => {
