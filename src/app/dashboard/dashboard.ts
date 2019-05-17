@@ -8,9 +8,10 @@ import {Timer} from '../shared/utils/timer/timer';
 import {EventComponent} from './event/event';
 import {DashboardService} from './dashboard.service';
 import {BreadcrumbService} from '../shared/services/breadcrumbs/breadcrumb.service';
-import {Router} from '@angular/router';
 import {Floor} from '../floor/floor.type';
 import {FloorService} from '../floor/floor.service';
+import {PublishedService} from '../map-viewer/publication.service';
+import {Publication} from '../map-viewer/publication.type';
 
 @Component({
   templateUrl: 'dashboard.html',
@@ -30,7 +31,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private deviceService: DeviceService,
     private dashboardService: DashboardService,
     private breadcrumbService: BreadcrumbService,
-    private floorService: FloorService) {
+    private floorService: FloorService,
+    private publishedService: PublishedService) {
   }
 
   ngOnDestroy(): void {
@@ -47,13 +49,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
         {label: 'Dashboard', disabled: true}
       ]
     );
-    this.floorService.getFloor(1).subscribe((floor: Floor) => {
-      this.floor = floor;
+    this.publishedService.getAll().subscribe((publications: Publication[]) => {
+      if (publications.length > 0) {
+        publications.forEach((publication: Publication): void => {
+          if (!this.floor) {
+            this.floor = publication.floors.find((floor: Floor): boolean => {
+              return !!floor.scale;
+            });
+          }
+        });
+      }
     });
   }
 
   private handleBatteryStatusEvents(): void {
-    const stream = this.infoSocket.connect(`${Config.WEB_SOCKET_URL}info?client`);
+    const stream = this.infoSocket.connect(`${Config.WEB_SOCKET_URL}info?${Config.WS_KEY_FRONTEND}`);
     stream.takeUntil(this.subscriptionDestroyer).subscribe((message: BatteryMessage) => {
       if (message.hasOwnProperty('batteryLevelList')) {
         this.eventComponent.addBatteryStateEvent(message.batteryLevelList);

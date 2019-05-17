@@ -9,40 +9,81 @@
   </div>
 </p-toolbar>
 
-<p-dataTable [loading]="loading" [value]="building.floors" styleClass="auto">
-  <p-column field="level" header="{{'floor.level'|translate}}"></p-column>
-  <p-column field="name" header="{{'floor.name'|translate}}"></p-column>
-  <p-column header="{{'th.actions'|translate}}" styleClass="col-button">
-    <ng-template let-floor="rowData" let-i="rowIndex" pTemplate="body">
-      <button [appHasPermission]="'PUBLICATION_READ'"
-              pTooltip="{{'go.to.map'|translate}}"
-              type="button" pButton (click)="goToMap(floor)" icon="fa-eye">
-      </button>
-      <button [appHasPermission]="'PUBLICATION_READ'"
-              pTooltip="{{'go.to.analytics.live'|translate}}"
-              type="button" pButton (click)="goToHeatMap(floor)" icon="fa-area-chart">
-      </button>
-      <button [appHasPermission]="'PUBLICATION_READ'"
-              pTooltip="{{'go.to.analytics.historical'|translate}}"
-              type="button" pButton (click)="goToReports(floor)" icon="fa-television">
-      </button>
-      <button [appHasPermission]="'FLOOR_UPDATE'"
-              pTooltip="{{'go.to.mapEditor'|translate}}" type="button" pButton
-              (click)="goToEditor(floor)" icon="fa-pencil">
-      </button>
-      <button
-        [appHasPermission]="'FLOOR_UPDATE'"
-        pTooltip="{{'edit'|translate}}" type="button" pButton
-        (click)="openDialog(floor)" class="ui-button-info" icon="fa-edit">
-      </button>
-      <button
-        [appHasPermission]="'FLOOR_DELETE'"
-        pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(i)" class="ui-button-danger"
-        icon="fa-trash">
-      </button>
-    </ng-template>
-  </p-column>
-</p-dataTable>
+<p-tabView>
+  <!-- ACTIVE FLOORS -->
+  <p-tabPanel header="{{'floor.tab.active'|translate}}">
+    <p-dataTable [loading]="loading" [value]="active" styleClass="auto">
+      <p-column field="level" header="{{'floor.level'|translate}}"></p-column>
+      <p-column field="name" header="{{'floor.name'|translate}}"></p-column>
+      <p-column header="{{'th.actions'|translate}}" styleClass="col-button">
+        <ng-template let-floor="rowData" let-i="rowIndex" pTemplate="body">
+          <button [appHasPermission]="'PUBLICATION_READ'"
+                  [disabled]="!floor.scale"pTooltip="{{'go.to.map'|translate}}"
+                  type="button" pButton (click)="goToMap(floor)" icon="fa-eye">
+          </button>
+          <button [appHasPermission]="'PUBLICATION_READ'"[disabled]="!floor.scale"
+                  pTooltip="{{'go.to.analytics.live'|translate}}"
+                  type="button" pButton (click)="goToHeatMap(floor)" icon="fa-area-chart">
+          </button>
+          <button [appHasPermission]="'PUBLICATION_READ'"[disabled]="!floor.scale"
+                  pTooltip="{{'go.to.analytics.historical'|translate}}"
+                  type="button" pButton (click)="goToReports(floor)" icon="fa-television">
+          </button>
+          <button [appHasPermission]="'FLOOR_UPDATE'"
+                  pTooltip="{{'go.to.mapEditor'|translate}}" type="button" pButton
+                  (click)="goToEditor(floor)" icon="fa-pencil">
+          </button>
+          <button
+            [appHasPermission]="'FLOOR_UPDATE'"
+            pTooltip="{{'edit'|translate}}" type="button" pButton
+            (click)="openDialog(floor)" class="ui-button-info" icon="fa-edit">
+          </button>
+          <button *ngIf="!floor.published"
+            [appHasPermission]="'FLOOR_DELETE'"
+            pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(i)" class="ui-button-danger"
+            icon="fa-trash">
+          </button>
+          <button *ngIf="floor.published"
+            [appHasPermission]="'FLOOR_DELETE'"
+            pTooltip="{{'archive'|translate}}" type="button" pButton (click)="archive(i)" class="ui-button-danger"
+            icon="fa-archive">
+          </button>
+        </ng-template>
+      </p-column>
+    </p-dataTable>
+  </p-tabPanel>
+
+  <!-- ARCHIVED FLOORS -->
+  <p-tabPanel header="{{'floor.tab.archived'|translate}}">
+    <p-dataTable [loading]="loading" [value]="archived" styleClass="auto">
+      <p-column field="name" header="{{'floor.name'|translate}}"></p-column>
+      <p-column type="datetime" header="{{'floor.creationDate'|translate}}">
+        <ng-template let-floor="rowData" let-i="rowIndex" pTemplate="body">
+          {{floor.creationDate|date:'dd-MM-yyyy HH:mm'}}
+        </ng-template>
+      </p-column>
+      <p-column field="archivedDate" header="{{'floor.archivedDate'|translate}}">
+        <ng-template let-floor="rowData" let-i="rowIndex" pTemplate="body">
+          {{floor.archivedDate|date:'dd-MM-yyyy HH:mm'}}
+        </ng-template>
+      </p-column>
+      <p-column header="{{'th.actions'|translate}}" styleClass="col-button">
+        <ng-template let-floor="rowData" let-i="rowIndex" pTemplate="body">
+          <button [appHasPermission]="'PUBLICATION_READ'"
+                  pTooltip="{{'go.to.analytics.historical'|translate}}"
+                  type="button" pButton (click)="goToReports(floor)" icon="fa-television">
+          </button>
+          <button
+            [appHasPermission]="'FLOOR_DELETE'"
+            pTooltip="{{'remove'|translate}}" type="button" pButton (click)="remove(i)" class="ui-button-danger"
+            icon="fa-trash">
+          </button>
+        </ng-template>
+      </p-column>
+    </p-dataTable>
+  </p-tabPanel>
+
+</p-tabView>
 
 <p-dialog [draggable]="false" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true"
           [contentStyle]="{ overflow: 'visible' }"

@@ -21,6 +21,7 @@ export class DevicePlacerService {
   private devicePositionChanged: Subject<void> = new Subject<void>();
   private deviceInActiveConfiguration: Subject<Sink | Anchor> = new Subject<Sink | Anchor>();
   private placementValidated: Subject<PlacementResult> = new Subject<PlacementResult>();
+  private mouseOverMap: Subject<void> = new Subject<void>();
 
   onDragStarted: Observable<DeviceDto> = this.draggedStarted.asObservable();
   onDroppedOutside: Observable<void> = this.droppedOutside.asObservable();
@@ -34,8 +35,13 @@ export class DevicePlacerService {
   onDevicePositionChanged: Observable<void> = this.devicePositionChanged.asObservable();
   onDeviceInActiveConfiguration: Observable<Sink | Anchor> = this.deviceInActiveConfiguration.asObservable();
   onPlacementValidated: Observable<PlacementResult> = this.placementValidated.asObservable();
+  onMouseOverMap: Observable<void> = this.mouseOverMap.asObservable();
 
   constructor() {
+  }
+
+  emitMapDraggingStarted(): void {
+    this.mouseOverMap.next();
   }
 
   emitDragStarted(device: DeviceDto): void {

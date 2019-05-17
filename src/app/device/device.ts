@@ -96,15 +96,15 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     this.setPermissions();
     this.translate.setDefaultLang('en');
     this.deviceService.setUrl(this.deviceType + '/');
-    this.confirmBodyTranslate = this.translate.get('confirm.body').first().subscribe((value: string): void => {
+    this.confirmBodyTranslate = this.translate.get('confirm.body').subscribe((value: string): void => {
       this.confirmBody = value;
     });
-    this.translate.get(this.deviceType + '.header').first().subscribe((value: string): void => {
+    this.translate.get(this.deviceType + '.header').subscribe((value: string): void => {
       this.breadcrumbService.publishIsReady([
         {label: value, disabled: true}
       ]);
     });
-    this.translate.get(`device.details.${this.deviceType}.remove`).first().subscribe((value: string): void => {
+    this.translate.get(`device.details.${this.deviceType}.remove`).subscribe((value: string): void => {
       this.removeDialogTitle = value;
     });
     this.translate.get('device.disabled.tooltip').subscribe(value => {
@@ -428,7 +428,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   private openInfoClientSocketConnection(): void {
-    this.socketStream = this.infoSocketService.connect(`${Config.WEB_SOCKET_URL}info?client&${this.deviceType}`);
+    this.socketStream = this.infoSocketService.connect(`${Config.WEB_SOCKET_URL}info?${Config.WS_KEY_FRONTEND}&${this.deviceType}`);
     this.firmwareSocketSubscription = this.socketStream.subscribe((message: DeviceMessage | FirmwareMessage | BatteryMessage): void => {
       switch (message.type) {
         case 'INFO':

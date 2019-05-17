@@ -1,0 +1,18 @@
+<!--workaround because angular is focusing on first element and then cancel button is displaying in blue, not in red as expected-->
+<button type="button" [hidden]="true"></button>
+<button
+  pButton
+  type="button"
+  class="ui-button-danger"
+  icon="fa-close"
+  label="{{'cancel'|translate}}"
+  (click)="confirmationDialog.reject()">
+</button>
+<button
+  pButton
+  type="submit"
+  class="ui-button-success"
+  icon="fa-check"
+  label="{{'ok'|translate}}"
+  (click)="confirmationDialog.accept()">
+</button>

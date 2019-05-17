@@ -17,16 +17,18 @@ export class MapControllerComponent implements OnInit, OnDestroy, AfterViewInit 
   imageUploaded: boolean;
   floor: Floor;
   contextMenuItems: MenuItem[] = [];
-  private subscribtionDestructor: Subject<void> = new Subject<void>();
+
+  private subscriptionsDestructor: Subject<void> = new Subject<void>();
 
   @ViewChild('contextMenu') contextMenu: ContextMenu;
 
-  constructor(private route: ActivatedRoute,
-              private floorService: FloorService,
-              private buildingService: BuildingService,
-              private breadcrumbsService: BreadcrumbService,
-              private contextMenuService: ContextMenuService) {
-  }
+  constructor(
+    private route: ActivatedRoute,
+    private floorService: FloorService,
+    private buildingService: BuildingService,
+    private breadcrumbsService: BreadcrumbService,
+    private contextMenuService: ContextMenuService
+  ) {}
 
   ngOnInit(): void {
     this.route.params
@@ -49,18 +51,18 @@ export class MapControllerComponent implements OnInit, OnDestroy, AfterViewInit 
         });
       });
 
-    this.contextMenuService.onItemsSet().takeUntil(this.subscribtionDestructor).subscribe((items: MenuItem[]) => {
+    this.contextMenuService.onItemsSet().takeUntil(this.subscriptionsDestructor).subscribe((items: MenuItem[]) => {
       this.contextMenuItems = items;
     });
   }
 
   ngOnDestroy() {
-    this.subscribtionDestructor.next();
-    this.subscribtionDestructor.unsubscribe();
+    this.subscriptionsDestructor.next();
+    this.subscriptionsDestructor.unsubscribe();
   }
 
   ngAfterViewInit(): void {
-    this.contextMenuService.onToggle().takeUntil(this.subscribtionDestructor).subscribe(() => {
+    this.contextMenuService.onToggle().takeUntil(this.subscriptionsDestructor).subscribe(() => {
       if (!!this.contextMenu) {
         this.contextMenu.toggle(d3.event);
       }

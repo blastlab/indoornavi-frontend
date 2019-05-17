@@ -8,7 +8,6 @@ import {ActionBarService} from '../../../../action-bar/actionbar.service';
 import {Configuration} from '../../../../action-bar/actionbar.type';
 import * as Collections from 'typescript-collections';
 import {Subject} from 'rxjs/Subject';
-import {TranslateService} from '@ngx-translate/core';
 import {DeviceInEditor} from '../../../../../map/models/device';
 
 @Component({
@@ -17,6 +16,7 @@ import {DeviceInEditor} from '../../../../../map/models/device';
 })
 export class DevicePlacerListComponent implements OnInit, OnDestroy {
   @ViewChild('toolDetails') private toolDetails: ToolDetailsComponent;
+  active: boolean = false;
   placementResult: PlacementResult;
   public activeList: Array<Anchor | Sink> = [];
   public queryString: string;
@@ -51,6 +51,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
     this.listenOnDeviceInActiveConfiguration();
   }
 
+
   ngOnDestroy() {
     this.subscriptionDestroyer.next();
     this.subscriptionDestroyer.unsubscribe();
@@ -76,18 +77,27 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
 
   private listenOnVisibilityChanged(): void {
     this.devicePlacerService.onListVisibilityChanged.takeUntil(this.subscriptionDestroyer).subscribe((visible: boolean): void => {
-      visible ? this.toolDetails.show() : this.toolDetails.hide();
+      if (visible) {
+        this.active = true;
+        this.toolDetails.show();
+      } else {
+        this.active = false;
+        this.toolDetails.hide();
+      }
     });
   }
 
   private listenOnDeviceDragAndDrop(): void {
     this.devicePlacerService.onDragStarted.takeUntil(this.subscriptionDestroyer).subscribe((deviceDto: DeviceDto): void => {
+      this.toolDetails.hide();
       this.draggedDevice = deviceDto.device;
     });
     this.devicePlacerService.onDroppedOutside.takeUntil(this.subscriptionDestroyer).subscribe((): void => {
+      this.toolDetails.show();
       this.draggedDevice = null;
     });
     this.devicePlacerService.onDroppedInside.takeUntil(this.subscriptionDestroyer).subscribe((): void => {
+      this.toolDetails.show();
       this.removeDraggedDevice();
       if (this.activeListType === DeviceType.SINK) {
         this.activeListType = DeviceType.ANCHOR;
@@ -160,7 +170,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
     const sinksFetched = new Promise((resolve) => {
       this.deviceService.setUrl('sinks/');
       this.deviceService.getAll().takeUntil(this.subscriptionDestroyer).subscribe((sinks: Sink[]): void => {
-        this.sinks = sinks.filter(sink => !DevicePlacerListComponent.isOnMap(sink));
+        this.sinks = sinks;
         resolve();
       });
     });
@@ -168,7 +178,7 @@ export class DevicePlacerListComponent implements OnInit, OnDestroy {
     const anchorsFetched = new Promise((resolve) => {
       this.deviceService.setUrl('anchors/');
       this.deviceService.getAll().takeUntil(this.subscriptionDestroyer).subscribe((anchors: Anchor[]): void => {
-        this.anchors = anchors.filter(anchor => !DevicePlacerListComponent.isOnMap(anchor));
+        this.anchors = anchors;
         resolve();
       });
     });

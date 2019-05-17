@@ -15,18 +15,20 @@ import {NgForm} from '@angular/forms';
 import {SelectItem} from 'primeng/primeng';
 import {Subject} from 'rxjs/Subject';
 import {TranslateService} from '@ngx-translate/core';
+import {KeyboardDefaultListener} from '../../../shared/tool-input/keyboard-default-listener';
 
 @Component({
   selector: 'app-area-details',
   templateUrl: './area-details.html',
   styleUrls: ['./area-details.css']
 })
-export class AreaDetailsComponent implements OnInit, OnDestroy {
+export class AreaDetailsComponent extends KeyboardDefaultListener implements OnInit, OnDestroy {
   @ViewChild('toolDetails') private toolDetails: ToolDetailsComponent;
   @ViewChild('areaDetailsForm') private areaDetailsForm: NgForm;
 
   @Input() floor: Floor;
   area: Area;
+  active: boolean = false;
   tags: Tag[] = [];
   tagsOnEnter: number[] = [];
   tagsOnLeave: number[] = [];
@@ -44,6 +46,7 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
               private tagService: DeviceService,
               private messageService: MessageServiceWrapper,
               private translateService: TranslateService) {
+    super();
   }
 
   ngOnInit(): void {
@@ -62,6 +65,7 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
     this.areaDetailsService.onVisibilityChange().takeUntil(this.subscriptionDestroyer).subscribe((value: boolean): void => {
       if (value) {
         this.toolDetails.show();
+        this.active = true;
       }
     });
     this.areaDetailsService.onSet().subscribe((area: AreaBag): void => {
@@ -101,7 +105,11 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
     this.subscriptionDestroyer.unsubscribe();
   }
 
-  confirm(formIsValid: boolean): void {
+  confirm() {
+    this.confirmWithForm(this.areaDetailsForm.valid);
+  }
+
+  confirmWithForm(formIsValid: boolean): void {
     if (formIsValid) {
       if (this.isHeightValid()) {
         this.area.pointsInPixels.length = 0;
@@ -156,11 +164,13 @@ export class AreaDetailsComponent implements OnInit, OnDestroy {
     } else {
       this.messageService.failed('area.form.invalid');
     }
+    this.active = false;
   }
 
   reject(): void {
     this.cleanUp();
     this.areaDetailsService.reject();
+    this.active = false;
   }
 
   private isHeightValid(): boolean {

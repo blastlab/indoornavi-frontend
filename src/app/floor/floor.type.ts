@@ -9,9 +9,16 @@ export class Floor {
   building: Building;
   imageId?: number;
   scale?: ScaleDto;
+  archived: boolean;
+  published: boolean;
+  creationDate: Date;
+  archivedDate: Date;
 
-
-  constructor(name: string, level: number, building: Building, displayName?: string, imageId?: number, scale?: ScaleDto, id?: number) {
+  constructor(name: string,
+              level: number,
+              building: Building,
+              archived: boolean,
+              isPublished: boolean, displayName?: string, imageId?: number, scale?: ScaleDto, id?: number) {
     this.id = id;
     this.level = level;
     this.name = name;
@@ -19,5 +26,7 @@ export class Floor {
     this.building = building;
     this.imageId = imageId;
     this.scale = scale;
+    this.archived = archived;
+    this.published = isPublished;
   }
 }

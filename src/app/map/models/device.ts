@@ -33,6 +33,8 @@ export class DeviceInEditor {
     this.addReactionToMouseEvents();
     this.setMovable();
     this.setTranslations();
+    this.setDedicatedZoomReaction();
+    this.setDedicatedMapMouseDownReaction();
   }
 
   getPosition(): Point {
@@ -123,7 +125,7 @@ export class DeviceInEditor {
   private addReactionToMouseEvents(): void {
     const onMouseOut = (): void => {
       if (this.reactiveToEvents) {
-        this.svgGroupWrapper.getGroup().style('cursor', 'default');
+        this.svgGroupWrapper.getGroup().style('cursor', 'inherit');
         this.svgGroupWrapper.hideElement(ElementType.TEXT);
         switch (this.appearance) {
           case 0:
@@ -154,11 +156,25 @@ export class DeviceInEditor {
       })
       .on('click', (): void => {
         // to stop map click event that deactivates selection
-        d3.event.stopPropagation();
+        if (this.appearance === DeviceAppearance.ACTIVE) {
+          d3.event.stopPropagation();
+        }
       })
       .on('mouseup', (): void => {
         this.svgGroupWrapper.getGroup().on('mouseout', onMouseOut);
       });
+  }
+
+  private setDedicatedZoomReaction (): void {
+    this.container.call(d3.zoom().on('zoom', () => {
+      this.contextMenuService.hide();
+    }));
+  }
+
+  private setDedicatedMapMouseDownReaction (): void {
+    this.devicePlacerService.onMouseOverMap.subscribe(() => {
+      this.contextMenuService.hide();
+    });
   }
 
   private setMovable(): void {
@@ -179,6 +195,7 @@ export class DeviceInEditor {
         }
       )
       .on('start', (): void => {
+        this.contextMenuService.hide();
         element = d3.select(d3.event.sourceEvent.target);
         d3.event.sourceEvent.stopPropagation();
       })

@@ -4,18 +4,18 @@ import 'rxjs/add/observable/throw';
 import {ActivatedRoute, Params} from '@angular/router';
 import {AuthGuard} from '../../../auth/auth.guard';
 import {Observable} from 'rxjs/Observable';
-import {Configuration} from '../../../map-editor/action-bar/actionbar.type';
 
 @Injectable()
 export class HttpService {
 
   private static authGuard: AuthGuard;
 
+  private static dateFields: string[] = ['savedDraftDate', 'publishedDate', 'archivedDate', 'creationDate'];
   private headers: Headers = new Headers();
   private options: RequestOptions = new RequestOptions({headers: this.headers});
 
   private static reviver(key, value): any {
-    if (!!value && Configuration.getDateFields().includes(key)) {
+    if (!!value && HttpService.dateFields.includes(key)) {
       return new Date(value);
     }
     return value;

@@ -29,7 +29,6 @@ import {UserService} from './user/user/user.service';
 import {AuthComponent} from './auth/auth';
 import {AuthGuard, CanRead} from './auth/auth.guard';
 import {AuthService} from './auth/auth.service';
-import {WizardComponent} from './map-editor/tool-bar/tools/wizard/wizard';
 import {ActionBarService} from './map-editor/action-bar/actionbar.service';
 import {ScaleService} from './shared/services/scale/scale.service';
 import {PublishedListComponent} from './map-viewer/list/publication-list';
@@ -161,6 +160,7 @@ import {HttpSolver} from './shared/services/http/http.solver';
 import {MobileDatetimeSelectComponent} from './shared/components/mobile-datetime-select/mobile-datetime-select';
 import {HeatMapService} from './report/services/heatmap.service';
 import {HeatmapFilterPropertiesComponent} from './report/heatmap-filter-properties/heatmap-filter-properties.component';
+import {ConfirmationButtonsComponent} from './map-editor/tool-bar/shared/confirmation-buttons/confirmation.buttons';
 
 const PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
@@ -189,7 +189,6 @@ export function HttpLoaderFactory(http: Http) {
     UnauthorizedComponent,
     PermissionGroupComponent,
     ActionBarComponent,
-    WizardComponent,
     AcceptButtonsComponent,
     PublishedComponent,
     PublishedListComponent,
@@ -206,7 +205,6 @@ export function HttpLoaderFactory(http: Http) {
     AppAutoFocusDirective,
     ProperNameDirective,
     MacAddressDirective,
-    ToolDetailsComponent,
     ToolDetailsComponent,
     DeviceComponent,
     BluetoothComponent,
@@ -239,7 +237,8 @@ export function HttpLoaderFactory(http: Http) {
     CounterComponent,
     EventComponent,
     MobileDatetimeSelectComponent,
-    HeatmapFilterPropertiesComponent
+    HeatmapFilterPropertiesComponent,
+    ConfirmationButtonsComponent
   ],
   entryComponents: [
     PublicationDialogComponent,
@@ -351,7 +350,6 @@ export function HttpLoaderFactory(http: Http) {
     ModelsConfig,
     ReportService,
     TerminalService,
-    NavigationController,
     ModelsConfig,
     TerminalMessageService,
     DashboardEventService,

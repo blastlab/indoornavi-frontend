@@ -9,7 +9,13 @@
       </div>
     </div>
     <div class="ui-g-7 dashboard-item-container" id="real-time-view">
-      <app-map *ngIf="!!floor" [floor]="floor" [zoom]="0.5"></app-map>
+      <app-map *ngIf="!!floor; else emptyThumbnail" [floor]="floor" [zoom]="0.5"></app-map>
     </div>
   </div>
 </div>
+
+<ng-template #emptyThumbnail>
+  <div class="empty-thumbnail">
+    <p>{{"map.not.set"|translate}}</p>
+  </div>
+</ng-template>

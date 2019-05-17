@@ -19,19 +19,21 @@ import {Line, Point} from '../../../map.type';
 import {TranslateService} from '@ngx-translate/core';
 import {Configuration} from '../../../action-bar/actionbar.type';
 import {IntersectionIdentifier, PathContextCallback, PathContextMenuLabels} from './path.type';
+import {KeyboardDefaultListener} from '../../shared/tool-input/keyboard-default-listener';
 
 @Component({
   selector: 'app-path',
   templateUrl: './path.html'
 })
-export class PathComponent implements Tool, OnInit, OnDestroy {
+export class PathComponent extends KeyboardDefaultListener implements Tool, OnInit, OnDestroy {
   private static CIRCLE_R: number = 5;
   private static HOVER_COLOR: string = '#FF0000';
   private static STANDARD_COLOR: string = '#000000';
 
   @Input() floor: Floor;
 
-  active: boolean = false;
+  active = false;
+
   disabled: boolean = true;
 
   private subscriptionDestroyer: Subject<void> = new Subject<void>();
@@ -61,6 +63,7 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
               private scaleService: ScaleService,
               private translateService: TranslateService
   ) {
+    super();
   }
 
   ngOnInit() {
@@ -75,6 +78,14 @@ export class PathComponent implements Tool, OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptionDestroyer.next();
     this.subscriptionDestroyer.unsubscribe();
+  }
+
+  confirm() {
+    this.toggleActivity();
+  }
+
+  reject() {
+    this.toggleActivity();
   }
 
   toggleActivity(): void {
