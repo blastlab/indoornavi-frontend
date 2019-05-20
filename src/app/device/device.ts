@@ -133,6 +133,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     if (this.firmwareSocketSubscription) {
       this.firmwareSocketSubscription.unsubscribe();
     }
+    this.socketStream = null;
   }
 
   save(isValid: boolean): void {
@@ -428,26 +429,28 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   private openInfoClientSocketConnection(): void {
-    this.socketStream = this.infoSocketService.connect(`${Config.WEB_SOCKET_URL}info?${Config.WS_KEY_FRONTEND}&${this.deviceType}`);
-    this.firmwareSocketSubscription = this.socketStream.subscribe((message: DeviceMessage | FirmwareMessage | BatteryMessage): void => {
-      switch (message.type) {
-        case 'INFO':
-          this.handleInfoMessage((<FirmwareMessage>message));
-          break;
-        case 'INFO_ERROR':
-          this.handleInfoErrorMessage((<FirmwareMessage>message));
-          break;
-        case 'BATTERIES_LEVELS':
-          this.handleBatteryLevelMessage((<BatteryMessage>message));
-          break;
-        case 'COMMAND_ERROR':
-          this.handleCodeErrorMessage((<DeviceMessage>message));
-          break;
-        case 'SERVER_COMMAND':
-          this.terminalMessageService.sendCommandToTerminal((<DeviceMessage>message));
-          break;
-      }
-    });
+    if (!this.socketStream) {
+      this.socketStream = this.infoSocketService.connect(`${Config.WEB_SOCKET_URL}info?${Config.WS_KEY_FRONTEND}&${this.deviceType}`);
+      this.firmwareSocketSubscription = this.socketStream.subscribe((message: DeviceMessage | FirmwareMessage | BatteryMessage): void => {
+        switch (message.type) {
+          case 'INFO':
+            this.handleInfoMessage((<FirmwareMessage>message));
+            break;
+          case 'INFO_ERROR':
+            this.handleInfoErrorMessage((<FirmwareMessage>message));
+            break;
+          case 'BATTERIES_LEVELS':
+            this.handleBatteryLevelMessage((<BatteryMessage>message));
+            break;
+          case 'COMMAND_ERROR':
+            this.handleCodeErrorMessage((<DeviceMessage>message));
+            break;
+          case 'SERVER_COMMAND':
+            this.terminalMessageService.sendCommandToTerminal((<DeviceMessage>message));
+            break;
+        }
+      });
+    }
   }
 
   private handleInfoMessage(message: FirmwareMessage): void {
