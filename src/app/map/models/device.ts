@@ -19,7 +19,7 @@ export class DeviceInEditor {
   constructor(
     public shortId: number,
     protected coordinates: Point,
-    protected parentPosition,
+    protected parentPosition: Point,
     protected container: d3.selection,
     protected drawConfiguration: DeviceInEditorConfiguration,
     protected devicePlacerService: DevicePlacerService,
@@ -28,11 +28,16 @@ export class DeviceInEditor {
     protected containerBox: Box,
     protected models: ModelsConfig
   ) {
-    const relativeToParentCoordinates =  {
+    console.log(shortId);
+    console.log('configuration coordinates ' , this.coordinates);
+    console.log('relative coordinates', {
       x: coordinates.x - this.parentPosition.x,
       y: coordinates.y - this.parentPosition.y
-    };
-    this.createDeviceOnMapGroup(relativeToParentCoordinates, container, drawConfiguration);
+    });
+    this.createDeviceOnMapGroup({
+      x: coordinates.x - this.parentPosition.x,
+      y: coordinates.y - this.parentPosition.y
+    }, container, drawConfiguration);
     this.addReactionToMouseEvents();
     this.setMovable();
     this.setTranslations();
@@ -45,10 +50,15 @@ export class DeviceInEditor {
   }
 
   updateParentPosition(coordinates: Point) {
-    this.parentPosition = coordinates;
+    this.parentPosition = Object.assign({}, coordinates);
+    console.log('parent position ', this.parentPosition);
   }
 
   getAbsolutePosition(): Point {
+    console.log('absolute position', {
+      x: this.coordinates.x + this.parentPosition.x,
+      y: this.coordinates.y + this.parentPosition.y
+    });
     return {
       x: this.coordinates.x + this.parentPosition.x,
       y: this.coordinates.y + this.parentPosition.y
@@ -230,7 +240,6 @@ export class DeviceInEditor {
           x: d3.event.dx + parseInt(this.svgGroupWrapper.getGroup().attr('x'), 10),
           y: d3.event.dy + parseInt(this.svgGroupWrapper.getGroup().attr('y'), 10)
         };
-          console.log(this.coordinates);
           this.parentCoordinatesHasChanged();
         element = null;
         if (!!coordinates && !!coordinatesBackUp) {

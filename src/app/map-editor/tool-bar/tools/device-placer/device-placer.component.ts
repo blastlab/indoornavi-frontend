@@ -285,7 +285,6 @@ export class DevicePlacerComponent extends KeyboardDefaultListener implements To
           this.configurationService.updateSink(<Sink>deviceCalculatedInCentimeters);
           (<SinkBag>this.activeDevice).deviceInEditor.anchors.forEach((anchor: AnchorBag) => {
             const anchorCalculatedInCentimeters: Anchor = this.updateDevicePosition(anchor);
-            console.log(anchorCalculatedInCentimeters);
             this.configurationService.updateAnchor(anchorCalculatedInCentimeters);
           });
         } else {
