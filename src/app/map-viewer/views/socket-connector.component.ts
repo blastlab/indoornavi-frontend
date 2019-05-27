@@ -261,7 +261,8 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
 
   protected initializeSocketConnection(): void {
     this.ngZone.runOutsideAngular((): void => {
-      const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?${Config.WS_KEY_FRONTEND}`);
+      // const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?${Config.WS_KEY_FRONTEND}`);
+      const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}${Config.WS_KEY_FRONTEND}`);
       this.setSocketConfiguration();
       this.tagToggleService.onToggleTag().takeUntil(this.subscriptionDestructor).subscribe((tagToggle: TagToggle) => {
         this.socketService.send({type: CommandType[CommandType.TOGGLE_TAG], args: tagToggle.tag.shortId});
@@ -270,20 +271,25 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
           this.removeNotVisibleTags();
         }
       });
-      this.socketSubscription = stream.takeUntil(this.subscriptionDestructor).subscribe((data: MeasureSocketData): void => {
-        this.ngZone.run(() => {
-          if (this.isCoordinatesData(data)) {
-            const coordinateSocketData: CoordinatesSocketData = (<CoordinatesSocketData>data);
-            const point2d: Point = Geometry.calculatePointPositionInPixels(Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
-              this.scale.getRealDistanceInCentimeters(),
-              coordinateSocketData.coordinates.point);
-            coordinateSocketData.coordinates.point.x = point2d.x;
-            coordinateSocketData.coordinates.point.y = point2d.y;
-            this.dataReceived.next(coordinateSocketData);
-          } else if (this.isEventData(data)) {
-            this.handleEventData(<EventSocketData> data);
-          }
-        });
+      this.socketSubscription = stream.takeUntil(this.subscriptionDestructor).subscribe((dataPackage: any): void => {
+        // console.log(dataPackage);
+        if (!!dataPackage.length && dataPackage.length > 0) {
+          dataPackage.forEach(data => {
+            this.ngZone.run(() => {
+              // if (this.isCoordinatesData(data)) {
+                const coordinateSocketData: CoordinatesSocketData = (<CoordinatesSocketData>data);
+                const point2d: Point = Geometry.calculatePointPositionInPixels(Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
+                  this.scale.getRealDistanceInCentimeters(),
+                  coordinateSocketData.coordinates.point);
+                coordinateSocketData.coordinates.point.x = point2d.x;
+                coordinateSocketData.coordinates.point.y = point2d.y;
+                this.dataReceived.next(coordinateSocketData);
+              // } else if (this.isEventData(data)) {
+              //   this.handleEventData(<EventSocketData> data);
+              // }
+            });
+          });
+        }
       });
     });
   };
