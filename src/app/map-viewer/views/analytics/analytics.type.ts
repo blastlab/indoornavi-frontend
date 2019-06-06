@@ -1,8 +1,8 @@
-import {CoordinatesSocketData} from '../../publication.type';
+import {CoordinatesSocketData, Coordinates} from '../../publication.type';
 import * as d3 from 'd3';
 
 export interface TimeStepBuffer {
-  data: CoordinatesSocketData;
+  data: Coordinates;
   timeOfDataStep: number;
 }
 
@@ -32,5 +32,5 @@ export interface HeatMap {
   temperatureTimeIntervalForCooling: number;
   create(id: string): void;
   erase (tagShortId?: number): void;
-  feedWithCoordinates(data: CoordinatesSocketData): void;
+  feedWithCoordinates(data: Coordinates): void;
 }

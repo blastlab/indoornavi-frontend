@@ -7,7 +7,7 @@ import {SocketService} from '../../../shared/services/socket/socket.service';
 import {PublishedService} from '../../publication.service';
 import {AreaService} from '../../services/area/area.service';
 import {MapLoaderInformerService} from '../../../shared/services/map-loader-informer/map-loader-informer.service';
-import {CoordinatesSocketData} from '../../publication.type';
+import {Coordinates} from '../../publication.type';
 import {HexagonalHeatMap} from './hexagonal.heatmap.service';
 import * as d3 from 'd3';
 import {MapSvg} from '../../../map/map.type';
@@ -118,13 +118,13 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       this.createHeatMapGrid(mapSvg.layer);
     });
     this.whenDataArrived().takeUntil(this.subscriptionDestructor)
-      .subscribe((data: CoordinatesSocketData): void => {
+      .subscribe((data: Coordinates): void => {
       // update
       const timeOfDataStep: number = Date.now();
-      if (this.timeStepBuffer.has(data.coordinates.tagShortId)) {
-        this.timeStepBuffer.get(data.coordinates.tagShortId).push({data: data, timeOfDataStep: timeOfDataStep});
+      if (this.timeStepBuffer.has(data.tagShortId)) {
+        this.timeStepBuffer.get(data.tagShortId).push({data: data, timeOfDataStep: timeOfDataStep});
       } else {
-        this.timeStepBuffer.set(data.coordinates.tagShortId, [{data: data, timeOfDataStep: timeOfDataStep}])
+        this.timeStepBuffer.set(data.tagShortId, [{data: data, timeOfDataStep: timeOfDataStep}])
       }
       this.handleCoordinatesData(data);
     });

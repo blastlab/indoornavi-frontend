@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HexagonalHeatMap} from './hexagonal.heatmap.service';
 import {Point} from '../../../map-editor/map.type';
-import {CoordinatesSocketData} from '../../publication.type';
+import {Coordinates} from '../../publication.type';
 
 @Injectable()
 export class PixelHeatMap extends HexagonalHeatMap {
@@ -34,8 +34,8 @@ export class PixelHeatMap extends HexagonalHeatMap {
     this.transformDistance = ((this.squareGridSize - 1) / 2 * this.heatPointSize + this.heatPointSize);
   }
 
-  protected createNewHeatPoint (data: CoordinatesSocketData, timeNow: number): void {
-    this.shapeStartPoint = this.findShapeStartPoint(data.coordinates.point);
+  protected createNewHeatPoint (data: Coordinates, timeNow: number): void {
+    this.shapeStartPoint = this.findShapeStartPoint(data.point);
 
     this.heatMap = this.svg
       .append('rect')
@@ -49,12 +49,12 @@ export class PixelHeatMap extends HexagonalHeatMap {
         this.gridTable.push({
           x: this.shapeStartPoint.x,
           y: this.shapeStartPoint.y,
-          element: nodes[index], tagShortId: data.coordinates.tagShortId,
+          element: nodes[index], tagShortId: data.tagShortId,
           heat: 0,
           timeHeated: timeNow
         });
       })
-      .attr('tagShortId', data.coordinates.tagShortId.toString())
+      .attr('tagShortId', data.tagShortId.toString())
       .attr('stroke', this.heatColors[0])
       .style('stroke-opacity', this.maxOpacity)
       .attr('stroke-width', `${this.strokeWidth}px`)
@@ -62,7 +62,7 @@ export class PixelHeatMap extends HexagonalHeatMap {
       .style('fill-opacity', this.maxOpacity);
   }
 
-  protected addRelationWithSurrounding(data: CoordinatesSocketData, time: number): void {
+  protected addRelationWithSurrounding(data: Coordinates, time: number): void {
     this.distributePlasmaOnHeatMapGrid(data, time);
   }
 
@@ -78,16 +78,16 @@ export class PixelHeatMap extends HexagonalHeatMap {
     }
   }
 
-  private distributePlasmaOnHeatMapGrid(data: CoordinatesSocketData, time: number): void {
-    this.shapeStartPoint = this.findShapeStartPoint(data.coordinates.point);
+  private distributePlasmaOnHeatMapGrid(data: Coordinates, time: number): void {
+    this.shapeStartPoint = this.findShapeStartPoint(data.point);
     const firstPixelCoordinates: Point = {
       x: this.shapeStartPoint.x -  this.transformDistance,
       y: this.shapeStartPoint.y - this.transformDistance
     };
     for (let i = 0; i < this.squareGridSize; i++) {
-      data.coordinates.point.x = firstPixelCoordinates.x + (this.heatPointSize * i);
+      data.point.x = firstPixelCoordinates.x + (this.heatPointSize * i);
       for (let j = 0; j < this.squareGridSize; j++) {
-        data.coordinates.point.y = firstPixelCoordinates.y + (this.heatPointSize * j);
+        data.point.y = firstPixelCoordinates.y + (this.heatPointSize * j);
         this.fireHeatAtLocation(this.findHeatPoint(data), data, time);
       }
     }

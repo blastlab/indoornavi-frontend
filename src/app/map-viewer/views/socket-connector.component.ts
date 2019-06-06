@@ -1,6 +1,14 @@
 import {AfterViewInit, Component, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
-import {AreaEventMode, CommandType, CoordinatesSocketData, CustomMessageEvent, EventSocketData, MeasureSocketData, MeasureSocketDataType} from '../publication.type';
+import {
+  AreaEventMode,
+  CommandType, Coordinates,
+  CoordinatesSocketData,
+  CustomMessageEvent,
+  EventSocketData,
+  MeasureSocketData,
+  MeasureSocketDataType
+} from '../publication.type';
 import {Subject} from 'rxjs/Subject';
 import Dictionary from 'typescript-collections/dist/lib/Dictionary';
 import {DrawBuilder, ElementType, SvgGroupWrapper} from '../../shared/utils/drawing/drawing.builder';
@@ -48,7 +56,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
   protected d3map: MapSvg = null;
   protected scale: Scale;
   protected tagsOnMap: Dictionary<number, TagOnMap> = new Dictionary<number, TagOnMap>();
-  private dataReceived = new Subject<CoordinatesSocketData>();
+  private dataReceived = new Subject<Coordinates>();
   private transitionEnded = new Subject<number>();
   private areasOnMap: Dictionary<number, SvgGroupWrapper> = new Dictionary<number, SvgGroupWrapper>();
   private originListeningOnEvent: Dictionary<string, MessageEvent[]> = new Dictionary<string, MessageEvent[]>();
@@ -174,21 +182,21 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   protected init(): void {
-    this.whenDataArrived().takeUntil(this.subscriptionDestructor).subscribe((data: CoordinatesSocketData): void => {
+    this.whenDataArrived().takeUntil(this.subscriptionDestructor).subscribe((data: Coordinates): void => {
       this.handleCoordinatesData(data);
     });
     this.subscribeToMapClick();
   }
 
-  protected whenDataArrived(): Observable<CoordinatesSocketData> {
+  protected whenDataArrived(): Observable<Coordinates> {
     return this.dataReceived.asObservable();
   }
 
-  protected handleCoordinatesData(data: CoordinatesSocketData): void {
-    const deviceId: number = data.coordinates.tagShortId;
+  protected handleCoordinatesData(data: Coordinates): void {
+    const deviceId: number = data.tagShortId;
     if (!this.isOnMap(deviceId) && this.visibleTags.get(deviceId)) {
       const tagOnMap: TagOnMap = new TagOnMap(
-        data.coordinates.point,
+        data.point,
         this.d3map.container,
         {id: `tag-${deviceId}`, clazz: 'tag', name: `${deviceId}`},
         this.models
@@ -196,17 +204,17 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
       SvgAnimator.startBlinking(tagOnMap.getIconElement());
       this.tagsOnMap.setValue(deviceId, tagOnMap.setShortId(deviceId));
     } else if (this.visibleTags.get(deviceId)) {
-      this.moveTagOnMap(data.coordinates.point, deviceId);
+      this.moveTagOnMap(data.point, deviceId);
     }
     if (this.originListeningOnEvent.containsKey('coordinates')) {
       this.originListeningOnEvent.getValue('coordinates').forEach((event: MessageEvent): void => {
         const point2d: Point = Geometry.calculatePointPositionInCentimeters(
           this.scaleCalculations.scaleLengthInPixels,
           this.scaleCalculations.scaleInCentimeters,
-          data.coordinates.point
+          data.point
         );
-        data.coordinates.point.x = point2d.x;
-        data.coordinates.point.y = point2d.y;
+        data.point.x = point2d.x;
+        data.point.y = point2d.y;
         // @ts-ignore
         event.source.postMessage({type: 'coordinates', coordinates: data.coordinates}, '*');
       })
@@ -261,7 +269,8 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
 
   protected initializeSocketConnection(): void {
     this.ngZone.runOutsideAngular((): void => {
-      const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?${Config.WS_KEY_FRONTEND}`);
+      // const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}measures?${Config.WS_KEY_FRONTEND}`);
+      const stream = this.socketService.connect(`${Config.WEB_SOCKET_URL}frontend`);
       this.setSocketConfiguration();
       this.tagToggleService.onToggleTag().takeUntil(this.subscriptionDestructor).subscribe((tagToggle: TagToggle) => {
         this.socketService.send({type: CommandType[CommandType.TOGGLE_TAG], args: tagToggle.tag.shortId});
@@ -272,14 +281,16 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
       });
       this.socketSubscription = stream.takeUntil(this.subscriptionDestructor).subscribe((data: MeasureSocketData): void => {
         this.ngZone.run(() => {
-          if (this.isCoordinatesData(data)) {
-            const coordinateSocketData: CoordinatesSocketData = (<CoordinatesSocketData>data);
-            const point2d: Point = Geometry.calculatePointPositionInPixels(Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
-              this.scale.getRealDistanceInCentimeters(),
-              coordinateSocketData.coordinates.point);
-            coordinateSocketData.coordinates.point.x = point2d.x;
-            coordinateSocketData.coordinates.point.y = point2d.y;
-            this.dataReceived.next(coordinateSocketData);
+          if (this.isCoordinatesData(data) && (<CoordinatesSocketData>data).coordinates.length > 0) {
+            (<CoordinatesSocketData>data).coordinates.forEach((coordinate: Coordinates) => {
+              const coordinateSocketData: Coordinates = (<Coordinates>coordinate);
+              const point2d: Point = Geometry.calculatePointPositionInPixels(Geometry.getDistanceBetweenTwoPoints(this.scale.start, this.scale.stop),
+                this.scale.getRealDistanceInCentimeters(),
+                coordinateSocketData.point);
+              coordinateSocketData.point.x = point2d.x;
+              coordinateSocketData.point.y = point2d.y;
+              this.dataReceived.next(coordinateSocketData);
+            });
           } else if (this.isEventData(data)) {
             this.handleEventData(<EventSocketData> data);
           }

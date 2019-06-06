@@ -21,7 +21,7 @@ export enum MeasureSocketDataType {
 }
 
 export interface CoordinatesSocketData extends MeasureSocketData {
-  coordinates: Coordinates;
+  coordinates: Coordinates[];
 }
 
 export interface EventSocketData extends MeasureSocketData {
@@ -44,6 +44,7 @@ export interface Coordinates {
   point: Point3d;
   floorId: number;
   tagShortId: number;
+  anchorShortId: number;
 }
 
 export enum CommandType {

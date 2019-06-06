@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import * as d3Hexbin from 'd3-hexbin';
 import {Point} from '../../../map-editor/map.type';
 import {HeatMap, HeatPoint, Margin} from './analytics.type';
-import {CoordinatesSocketData} from '../../publication.type';
+import {Coordinates} from '../../publication.type';
 
 
 export class HexagonalHeatMap implements HeatMap {
@@ -56,7 +56,7 @@ export class HexagonalHeatMap implements HeatMap {
     }
   }
 
-  feedWithCoordinates(data: CoordinatesSocketData): void {
+  feedWithCoordinates(data: Coordinates): void {
     const timeNow = Date.now();
     this.fireHeatAtLocation(this.findHeatPoint(data), data, timeNow);
     this.addRelationWithSurrounding(data, timeNow);
@@ -92,7 +92,7 @@ export class HexagonalHeatMap implements HeatMap {
     });
   }
 
-  protected fireHeatAtLocation (heatPoint: HeatPoint, data: CoordinatesSocketData, coordinatesArrivalTime: number): void {
+  protected fireHeatAtLocation (heatPoint: HeatPoint, data: Coordinates, coordinatesArrivalTime: number): void {
     if (!!heatPoint) {
       if ((heatPoint.heat < this.heatColors.length - 1) && (coordinatesArrivalTime - heatPoint.timeHeated > this.temperatureTimeStepForHeating)) {
         heatPoint.heat++;
@@ -111,9 +111,9 @@ export class HexagonalHeatMap implements HeatMap {
     this.coolDownActiveHeatPoints(coordinatesArrivalTime);
   }
 
-  protected createNewHeatPoint (data: CoordinatesSocketData, coordinatesArrivalTime: number): void {
+  protected createNewHeatPoint (data: Coordinates, coordinatesArrivalTime: number): void {
     const hexbin = d3Hexbin.hexbin().radius(this.heatPointSize);
-    this.shapeStartPoint = this.findShapeStartPoint(data.coordinates.point);
+    this.shapeStartPoint = this.findShapeStartPoint(data.point);
     this.heatMap = this.svg
       .append('path')
       .datum(hexbin([[this.shapeStartPoint.x, this.shapeStartPoint.y]])[0])
@@ -122,13 +122,13 @@ export class HexagonalHeatMap implements HeatMap {
         this.gridTable.push({
           x: this.shapeStartPoint.x,
           y: this.shapeStartPoint.y,
-          element: nodes[index], tagShortId: data.coordinates.tagShortId,
+          element: nodes[index], tagShortId: data.tagShortId,
           heat: 0,
           timeHeated: coordinatesArrivalTime
         });
         return 'M' + d.x + ',' + d.y + hexbin.hexagon();
       })
-      .attr('tagShortId', data.coordinates.tagShortId.toString())
+      .attr('tagShortId', data.tagShortId.toString())
       .attr('heat', 0)
       .attr('timeHeated', coordinatesArrivalTime.toString())
       .attr('stroke', this.heatColors[0])
@@ -138,8 +138,8 @@ export class HexagonalHeatMap implements HeatMap {
       .style('fill-opacity', this.maxOpacity);
   }
 
-  protected findHeatPoint (data: CoordinatesSocketData): HeatPoint {
-    const coordinates: Point = this.findShapeStartPoint(data.coordinates.point);
+  protected findHeatPoint (data: Coordinates): HeatPoint {
+    const coordinates: Point = this.findShapeStartPoint(data.point);
     return this.gridTable.find((hexHeatElement: HeatPoint): boolean =>
       coordinates.x === hexHeatElement.x &&
       coordinates.y === hexHeatElement.y
@@ -156,7 +156,7 @@ export class HexagonalHeatMap implements HeatMap {
     return this.points.find((point: Point): boolean => point.x > coordinates.x && point.y > coordinates.y);
   }
 
-  protected addRelationWithSurrounding(data: CoordinatesSocketData, time: number): void {
+  protected addRelationWithSurrounding(data: Coordinates, time: number): void {
   }
 
   private calculateHexPoints(): void {
