@@ -35,9 +35,8 @@ export class PixelHeatMap extends HexagonalHeatMap {
   }
 
   protected createNewHeatPoint (data: Coordinates, timeNow: number): void {
-    if (!!data.point.x && !!data.point.y) {
-      this.shapeStartPoint = this.findShapeStartPoint(data.point);
-
+    this.shapeStartPoint = this.findShapeStartPoint(data.point);
+    if (!!this.shapeStartPoint) {
       this.heatMap = this.svg
         .append('rect')
         .datum([[this.shapeStartPoint.x, this.shapeStartPoint.y]][0])
@@ -82,15 +81,17 @@ export class PixelHeatMap extends HexagonalHeatMap {
 
   private distributePlasmaOnHeatMapGrid(data: Coordinates, time: number): void {
     this.shapeStartPoint = this.findShapeStartPoint(data.point);
-    const firstPixelCoordinates: Point = {
-      x: this.shapeStartPoint.x -  this.transformDistance,
-      y: this.shapeStartPoint.y - this.transformDistance
-    };
-    for (let i = 0; i < this.squareGridSize; i++) {
-      data.point.x = firstPixelCoordinates.x + (this.heatPointSize * i);
-      for (let j = 0; j < this.squareGridSize; j++) {
-        data.point.y = firstPixelCoordinates.y + (this.heatPointSize * j);
-        this.fireHeatAtLocation(this.findHeatPoint(data), data, time);
+    if (!!this.shapeStartPoint) {
+      const firstPixelCoordinates: Point = {
+        x: this.shapeStartPoint.x -  this.transformDistance,
+        y: this.shapeStartPoint.y - this.transformDistance
+      };
+      for (let i = 0; i < this.squareGridSize; i++) {
+        data.point.x = firstPixelCoordinates.x + (this.heatPointSize * i);
+        for (let j = 0; j < this.squareGridSize; j++) {
+          data.point.y = firstPixelCoordinates.y + (this.heatPointSize * j);
+          this.fireHeatAtLocation(this.findHeatPoint(data), data, time);
+        }
       }
     }
   }
