@@ -35,31 +35,33 @@ export class PixelHeatMap extends HexagonalHeatMap {
   }
 
   protected createNewHeatPoint (data: Coordinates, timeNow: number): void {
-    this.shapeStartPoint = this.findShapeStartPoint(data.point);
+    if (!!data.point.x && !!data.point.y) {
+      this.shapeStartPoint = this.findShapeStartPoint(data.point);
 
-    this.heatMap = this.svg
-      .append('rect')
-      .datum([[this.shapeStartPoint.x, this.shapeStartPoint.y]][0])
-      .attr('x', d => d[0])
-      .attr('y', d => d[1])
-      .attr('width', this.heatPointSize)
-      .attr('height', this.heatPointSize)
-      .attr('class', this.heatElementClazz)
-      .attr('d', (d, index, nodes) => {
-        this.gridTable.push({
-          x: this.shapeStartPoint.x,
-          y: this.shapeStartPoint.y,
-          element: nodes[index], tagShortId: data.tagShortId,
-          heat: 0,
-          timeHeated: timeNow
-        });
-      })
-      .attr('tagShortId', data.tagShortId.toString())
-      .attr('stroke', this.heatColors[0])
-      .style('stroke-opacity', this.maxOpacity)
-      .attr('stroke-width', `${this.strokeWidth}px`)
-      .style('fill', this.heatColors[0])
-      .style('fill-opacity', this.maxOpacity);
+      this.heatMap = this.svg
+        .append('rect')
+        .datum([[this.shapeStartPoint.x, this.shapeStartPoint.y]][0])
+        .attr('x', d => d[0])
+        .attr('y', d => d[1])
+        .attr('width', this.heatPointSize)
+        .attr('height', this.heatPointSize)
+        .attr('class', this.heatElementClazz)
+        .attr('d', (d, index, nodes) => {
+          this.gridTable.push({
+            x: this.shapeStartPoint.x,
+            y: this.shapeStartPoint.y,
+            element: nodes[index], tagShortId: data.tagShortId,
+            heat: 0,
+            timeHeated: timeNow
+          });
+        })
+        .attr('tagShortId', data.tagShortId.toString())
+        .attr('stroke', this.heatColors[0])
+        .style('stroke-opacity', this.maxOpacity)
+        .attr('stroke-width', `${this.strokeWidth}px`)
+        .style('fill', this.heatColors[0])
+        .style('fill-opacity', this.maxOpacity);
+    }
   }
 
   protected addRelationWithSurrounding(data: Coordinates, time: number): void {
