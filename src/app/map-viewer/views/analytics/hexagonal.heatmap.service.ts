@@ -141,7 +141,7 @@ export class HexagonalHeatMap implements HeatMap {
   protected findHeatPoint (data: Coordinates): HeatPoint {
     const coordinates: Point = this.findShapeStartPoint(data.point);
     return this.gridTable.find((hexHeatElement: HeatPoint): boolean => {
-        if (!!hexHeatElement && hexHeatElement.x && hexHeatElement.y) {
+        if (!!coordinates && coordinates.x && coordinates.y) {
           return coordinates.x === hexHeatElement.x &&
           coordinates.y === hexHeatElement.y
         }
