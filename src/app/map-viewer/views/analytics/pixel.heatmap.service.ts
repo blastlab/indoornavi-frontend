@@ -35,7 +35,7 @@ export class PixelHeatMap extends HexagonalHeatMap {
   }
 
   protected createNewHeatPoint (data: Coordinates, timeNow: number): void {
-    this.shapeStartPoint = this.findShapeStartPoint(data.point);
+    this.shapeStartPoint = this.findShapeStartPoint({ x: data.x, y: data.y });
     if (!!this.shapeStartPoint) {
       this.heatMap = this.svg
         .append('rect')
@@ -49,12 +49,12 @@ export class PixelHeatMap extends HexagonalHeatMap {
           this.gridTable.push({
             x: this.shapeStartPoint.x,
             y: this.shapeStartPoint.y,
-            element: nodes[index], tagShortId: data.tagShortId,
+            element: nodes[index], tagShortId: data.tagId,
             heat: 0,
             timeHeated: timeNow
           });
         })
-        .attr('tagShortId', data.tagShortId.toString())
+        .attr('tagShortId', data.tagId.toString())
         .attr('stroke', this.heatColors[0])
         .style('stroke-opacity', this.maxOpacity)
         .attr('stroke-width', `${this.strokeWidth}px`)
@@ -80,16 +80,16 @@ export class PixelHeatMap extends HexagonalHeatMap {
   }
 
   private distributePlasmaOnHeatMapGrid(data: Coordinates, time: number): void {
-    this.shapeStartPoint = this.findShapeStartPoint(data.point);
+    this.shapeStartPoint = this.findShapeStartPoint({ x: data.x, y: data.y });
     if (!!this.shapeStartPoint) {
       const firstPixelCoordinates: Point = {
         x: this.shapeStartPoint.x -  this.transformDistance,
         y: this.shapeStartPoint.y - this.transformDistance
       };
       for (let i = 0; i < this.squareGridSize; i++) {
-        data.point.x = firstPixelCoordinates.x + (this.heatPointSize * i);
+        data.x = firstPixelCoordinates.x + (this.heatPointSize * i);
         for (let j = 0; j < this.squareGridSize; j++) {
-          data.point.y = firstPixelCoordinates.y + (this.heatPointSize * j);
+          data.y = firstPixelCoordinates.y + (this.heatPointSize * j);
           this.fireHeatAtLocation(this.findHeatPoint(data), data, time);
         }
       }

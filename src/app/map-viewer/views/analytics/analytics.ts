@@ -121,10 +121,10 @@ export class AnalyticsComponent extends SocketConnectorComponent implements OnIn
       .subscribe((data: Coordinates): void => {
       // update
       const timeOfDataStep: number = Date.now();
-      if (this.timeStepBuffer.has(data.tagShortId)) {
-        this.timeStepBuffer.get(data.tagShortId).push({data: data, timeOfDataStep: timeOfDataStep});
+      if (this.timeStepBuffer.has(data.tagId)) {
+        this.timeStepBuffer.get(data.tagId).push({data: data, timeOfDataStep: timeOfDataStep});
       } else {
-        this.timeStepBuffer.set(data.tagShortId, [{data: data, timeOfDataStep: timeOfDataStep}])
+        this.timeStepBuffer.set(data.tagId, [{data: data, timeOfDataStep: timeOfDataStep}])
       }
       this.handleCoordinatesData(data);
     });
