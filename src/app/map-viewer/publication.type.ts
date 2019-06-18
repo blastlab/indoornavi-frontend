@@ -1,6 +1,5 @@
 import {User} from '../user/user/user.type';
 import {Floor} from '../floor/floor.type';
-import {Point3d} from '../map-editor/map.type';
 import {Tag} from '../device/device.type';
 
 export interface Publication {
@@ -41,10 +40,12 @@ export enum AreaEventMode {
 }
 
 export interface Coordinates {
-  point: Point3d;
+  x: number;
+  y: number;
+  z: number;
   floorId: number;
-  tagShortId: number;
-  anchorShortId: number;
+  tagId: number;
+  anchorId: number;
 }
 
 export enum CommandType {
