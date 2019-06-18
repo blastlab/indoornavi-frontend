@@ -1,4 +1,4 @@
-import {CoordinatesSocketData, Coordinates} from '../../publication.type';
+import {Coordinates} from '../../publication.type';
 import * as d3 from 'd3';
 
 export interface TimeStepBuffer {

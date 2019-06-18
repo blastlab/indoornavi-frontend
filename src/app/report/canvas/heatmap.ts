@@ -5,7 +5,7 @@ import {Point} from '../../map-editor/map.type';
 import {HeatMapService} from '../services/heatmap.service';
 
 export class HeatMapCanvas {
-  private static MAX_RED_SATURATION = 240;
+  private static MAX_RED_SATURATION = 190;
   private static MAX_COLOUR_SATURATION = 255;
   private static NO_OPACITY = 0.0;
   private static MIN_OPACITY = 0.5;

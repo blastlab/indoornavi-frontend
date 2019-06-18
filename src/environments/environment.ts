@@ -5,8 +5,8 @@
 
 export const environment = {
   production: false,
-  solver_url: 'http://solver:8000',
+  solver_url: 'http://localhost:8080',
   base_url: 'http://localhost:90',
-  ws_url: 'ws://192.168.1.14:3000',
+  ws_url: 'ws://127.0.0.1:99',
   version: require('../../package.json').version
 };
