@@ -163,6 +163,10 @@ export class FloorComponent implements OnInit, OnDestroy, CrudComponent {
     this.router.navigate(['/reports', floor.id]);
   }
 
+  goToCanvasMap(floor: Floor) {
+    this.router.navigate(['/views', floor.id]);
+  }
+
   private getCurrentMaxLevel(): number {
     return this.active.length ? Math.max.apply(Math, this.active.map((floor: Floor) => {
       return floor.level;
@@ -174,4 +178,5 @@ export class FloorComponent implements OnInit, OnDestroy, CrudComponent {
     control.markAsTouched({onlySelf: true});
     control.markAsDirty({onlySelf: true});
   }
+
 }

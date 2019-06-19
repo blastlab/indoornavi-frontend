@@ -18,14 +18,18 @@
       <p-column header="{{'th.actions'|translate}}" styleClass="col-button">
         <ng-template let-floor="rowData" let-i="rowIndex" pTemplate="body">
           <button [appHasPermission]="'PUBLICATION_READ'"
-                  [disabled]="!floor.scale"pTooltip="{{'go.to.map'|translate}}"
-                  type="button" pButton (click)="goToMap(floor)" icon="fa-eye">
+                  [disabled]="!floor.scale" pTooltip="{{'go.to.map'|translate}}"
+                  type="button" pButton (click)="goToMap(floor)" icon="fa-eye-slash">
           </button>
-          <button [appHasPermission]="'PUBLICATION_READ'"[disabled]="!floor.scale"
+          <button [appHasPermission]="'PUBLICATION_READ'"
+                  [disabled]="!floor.scale" pTooltip="{{'go.to.map'|translate}}"
+                  type="button" pButton (click)="goToCanvasMap(floor)" icon="fa-eye">
+          </button>
+          <button [appHasPermission]="'PUBLICATION_READ'" [disabled]="!floor.scale"
                   pTooltip="{{'go.to.analytics.live'|translate}}"
                   type="button" pButton (click)="goToHeatMap(floor)" icon="fa-area-chart">
           </button>
-          <button [appHasPermission]="'PUBLICATION_READ'"[disabled]="!floor.scale"
+          <button [appHasPermission]="'PUBLICATION_READ'" [disabled]="!floor.scale"
                   pTooltip="{{'go.to.analytics.historical'|translate}}"
                   type="button" pButton (click)="goToReports(floor)" icon="fa-television">
           </button>

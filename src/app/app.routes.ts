@@ -20,6 +20,7 @@ import {TagFollowerComponent} from './map-viewer/views/tagfollower/tag-follower'
 import {DebuggerComponent} from './debug-hidden/debugger.component';
 import {GraphicalReportComponent} from './report/graphical-report.component';
 import {DashboardComponent} from './dashboard/dashboard';
+import {MapViewerComponent} from './map-viewer/views/map-viewer/map-viewer';
 
 export const appRoutes: Routes = [
   {path: '', redirectTo: '/dashboard', pathMatch: 'full'},
@@ -54,5 +55,6 @@ export const appRoutes: Routes = [
   {path: 'notSupportedBrowser', component: NotSupportedBrowserComponent},
   {path: 'debug', component: DebuggerComponent, canActivate: [CanRead], data: {permissions: 'DEBUG'}},
   {path: 'dashboard', component: DashboardComponent, canActivate: [CanRead]},
+  {path: 'views/:id', component: MapViewerComponent, canActivate: [CanRead], data: {permission: 'PUBLICATION'}},
   {path: '**', redirectTo: '/complexes'}
 ];

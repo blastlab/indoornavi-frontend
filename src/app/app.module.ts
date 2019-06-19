@@ -42,6 +42,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {
   BreadcrumbModule,
   ButtonModule,
+  CalendarModule,
   CheckboxModule,
   ConfirmationService,
   ConfirmDialogModule,
@@ -49,20 +50,19 @@ import {
   FileUploadModule,
   GrowlModule,
   InputMaskModule,
+  InputSwitchModule,
+  MessageModule,
+  MessagesModule,
   MultiSelectModule,
   PanelMenuModule,
   RadioButtonModule,
   SidebarModule,
   SliderModule,
+  SpinnerModule,
+  TabViewModule,
   TerminalModule,
   ToolbarModule,
-  TooltipModule,
-  TabViewModule,
-  SpinnerModule,
-  InputSwitchModule,
-  MessagesModule,
-  MessageModule,
-  CalendarModule
+  TooltipModule
 } from 'primeng/primeng';
 
 import {HintBarService} from './map-editor/hint-bar/hintbar.service';
@@ -143,8 +143,7 @@ import {BatteryIndicatorComponent} from './device/battery-indicator';
 import {GraphicalReportComponent} from './report/graphical-report.component';
 import {NgxEchartsModule} from 'ngx-echarts';
 import {ReportService} from './report/services/report.service';
-import {PerfectScrollbarModule} from 'ngx-perfect-scrollbar';
-import {PerfectScrollbarConfigInterface} from 'ngx-perfect-scrollbar';
+import {PerfectScrollbarConfigInterface, PerfectScrollbarModule} from 'ngx-perfect-scrollbar';
 import {DashboardComponent} from './dashboard/dashboard';
 import {CounterComponent} from './dashboard/counter/counter';
 import {EventComponent} from './dashboard/event/event';
@@ -161,6 +160,7 @@ import {MobileDatetimeSelectComponent} from './shared/components/mobile-datetime
 import {HeatMapService} from './report/services/heatmap.service';
 import {HeatmapFilterPropertiesComponent} from './report/heatmap-filter-properties/heatmap-filter-properties.component';
 import {ConfirmationButtonsComponent} from './map-editor/tool-bar/shared/confirmation-buttons/confirmation.buttons';
+import {MapViewerComponent} from './map-viewer/views/map-viewer/map-viewer';
 
 const PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
@@ -238,7 +238,8 @@ export function HttpLoaderFactory(http: Http) {
     EventComponent,
     MobileDatetimeSelectComponent,
     HeatmapFilterPropertiesComponent,
-    ConfirmationButtonsComponent
+    ConfirmationButtonsComponent,
+    MapViewerComponent
   ],
   entryComponents: [
     PublicationDialogComponent,
