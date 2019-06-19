@@ -1,5 +1,5 @@
 selenium==3.8.0
-mysql-connector==2.1.4
+mysql-connector==2.2.9
 pyquibase
 pyvirtualdisplay
 html-testRunner
