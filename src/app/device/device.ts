@@ -1,4 +1,4 @@
-import {Component, ElementRef, Inject, NgZone, OnDestroy, OnInit, ViewChild, ViewChildren, ViewEncapsulation} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Inject, NgZone, OnDestroy, OnInit, ViewChild, ViewChildren, ViewEncapsulation} from '@angular/core';
 import {Observable, Subject, Subscription} from 'rxjs/Rx';
 import {Config} from '../../config';
 import {TranslateService} from '@ngx-translate/core';
@@ -34,8 +34,8 @@ import {TerminalMessageService} from './terminal/terminal-message.service';
   styleUrls: ['./device.css'],
   encapsulation: ViewEncapsulation.None,
   providers: [
-    { provide: 'registration', useClass: SocketService },
-    { provide: 'info', useClass: SocketService }
+    {provide: 'registration', useClass: SocketService},
+    {provide: 'info', useClass: SocketService}
   ]
 })
 export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
@@ -58,12 +58,13 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   public checkBoxDisabledTooltip: string;
   public checkBoxEnabledTooltip: string = '';
   public checkBoxTooltipMap: Map<number, string> = new Map();
+  upgradeErrorText: string = '';
 
   public displayDeviceConfig: boolean = false;
   @ViewChildren('updateCheckbox') public deviceCheckboxes: Checkbox[];
   @ViewChild('firmwareInput') public firmwareInput: ElementRef;
   @ViewChild('firmwareButton') public firmwareButton: ElementRef;
-
+  @ViewChild('upgradeError') upgradeError: ElementRef;
   @ViewChild('deviceForm') deviceForm: NgForm;
 
   private firmwareSocketSubscription: Subscription;
@@ -106,13 +107,12 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     this.translate.get(`device.details.${this.deviceType}.remove`).subscribe((value: string): void => {
       this.removeDialogTitle = value;
     });
-    this.listenForTerminalClientRequest();
     this.translate.get('device.disabled.tooltip').subscribe(value => {
       this.checkBoxDisabledTooltip = value;
       // this is here for a reason (tooltip needs to be translated), don't move it down
       this.connectToRegistrationSocket();
     });
-    this.openInfoClientSocketConnection();
+    this.listenForTerminalClientRequest();
   }
 
   ngOnDestroy() {
@@ -133,6 +133,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
     if (this.firmwareSocketSubscription) {
       this.firmwareSocketSubscription.unsubscribe();
     }
+    this.socketStream = null;
   }
 
   save(isValid: boolean): void {
@@ -243,6 +244,7 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   }
 
   upload(): void {
+    this.upgradeErrorText = '';
     const files = this.firmwareInput.nativeElement.files;
 
     if (this.devicesToUpdate.length === 0 || files.length === 0) {
@@ -283,9 +285,9 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       }
     });
     const socketPayload: ClientRequest = {
-        type: CommandType[CommandType.CHECK_BATTERY_LEVEL],
-        args: noBatteryStatus
-      };
+      type: CommandType[CommandType.CHECK_BATTERY_LEVEL],
+      args: noBatteryStatus
+    };
     this.infoSocketService.send(socketPayload);
   }
 
@@ -310,8 +312,8 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
   private listenForTerminalClientRequest(): void {
     this.terminalMessageService
       .onClientRequest().takeUntil(this.subscriptionDestructor).subscribe((socketPayload: ClientRequest): void => {
-        this.infoSocketService.send(socketPayload);
-      });
+      this.infoSocketService.send(socketPayload);
+    });
   }
 
   private updateFirmwareVersion(deviceStatus: DeviceStatus): void {
@@ -351,7 +353,13 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
 
   private removeFromToUpdate(deviceStatus: DeviceStatus): void {
     this.devicesToUpdate = this.devicesToUpdate.filter((device: UWB): boolean => {
-      return device.shortId !== deviceStatus.device.shortId;
+      if (device.shortId !== deviceStatus.device.shortId) {
+        return true;
+      } else {
+        const checkbox: Checkbox = this.getCheckboxById(deviceStatus.device.shortId);
+        checkbox.checked = false;
+        return false;
+      }
     });
   }
 
@@ -413,32 +421,36 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
             this.notVerified.push(device);
           }
         });
+
+        this.openInfoClientSocketConnection();
         this.sendBatteryStatusRequest();
       });
     });
   }
 
   private openInfoClientSocketConnection(): void {
-    this.socketStream = this.infoSocketService.connect(`${Config.WEB_SOCKET_URL}info?${Config.WS_KEY_FRONTEND}&${this.deviceType}`);
-    this.firmwareSocketSubscription = this.socketStream.subscribe((message: DeviceMessage | FirmwareMessage | BatteryMessage): void => {
-      switch (message.type) {
-        case 'INFO':
-          this.handleInfoMessage((<FirmwareMessage>message));
-          break;
-        case 'INFO_ERROR':
-          this.handleInfoErrorMessage((<FirmwareMessage>message));
-          break;
-        case 'BATTERIES_LEVELS':
-          this.handleBatteryLevelMessage((<BatteryMessage>message));
-          break;
-        case 'COMMAND_ERROR':
-          this.handleCodeErrorMessage((<DeviceMessage>message));
-          break;
-        case 'SERVER_COMMAND':
-          this.terminalMessageService.sendCommandToTerminal((<DeviceMessage>message));
-          break;
-      }
-    });
+    if (!this.socketStream) {
+      this.socketStream = this.infoSocketService.connect(`${Config.WEB_SOCKET_URL}info?${Config.WS_KEY_FRONTEND}&${this.deviceType}`);
+      this.firmwareSocketSubscription = this.socketStream.subscribe((message: DeviceMessage | FirmwareMessage | BatteryMessage): void => {
+        switch (message.type) {
+          case 'INFO':
+            this.handleInfoMessage((<FirmwareMessage>message));
+            break;
+          case 'INFO_ERROR':
+            this.handleInfoErrorMessage((<FirmwareMessage>message));
+            break;
+          case 'BATTERIES_LEVELS':
+            this.handleBatteryLevelMessage((<BatteryMessage>message));
+            break;
+          case 'COMMAND_ERROR':
+            this.handleCodeErrorMessage((<DeviceMessage>message));
+            break;
+          case 'SERVER_COMMAND':
+            this.terminalMessageService.sendCommandToTerminal((<DeviceMessage>message));
+            break;
+        }
+      });
+    }
   }
 
   private handleInfoMessage(message: FirmwareMessage): void {
@@ -465,10 +477,16 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       this.removeFromUpdating(deviceStatus);
       this.removeFromToUpdate(deviceStatus);
     } else {
+      this.devicesToUpdate.forEach((device: UWB) => {
+        const checkbox: Checkbox = this.getCheckboxById(device.shortId);
+        checkbox.checked = false;
+      });
       this.devicesToUpdate.length = 0;
       this.devicesUpdating.length = 0;
     }
-    this.messageService.failed(message.code);
+    this.translate.get(message.code, {id: !!deviceStatus ? deviceStatus.device.shortId : null}).subscribe((translated: string) => {
+      this.upgradeErrorText = translated;
+    });
   }
 
   private handleBatteryLevelMessage(message: BatteryMessage): void {
@@ -496,4 +514,5 @@ export class DeviceComponent implements OnInit, OnDestroy, CrudComponent {
       event.stopPropagation();
     }
   }
+
 }
