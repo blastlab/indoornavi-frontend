@@ -1,19 +1,18 @@
-const loc = window.location;
-let ws_prefix;
-let hostname;
+const location = window.location;
+let wsPrefix;
 
-if (loc.protocol === 'https:') {
-  ws_prefix = 'wss://';
+if (location.protocol === 'https:') {
+  wsPrefix = 'wss://';
 } else {
-  ws_prefix = 'ws://';
+  wsPrefix = 'ws://';
 }
 
-hostname = loc.hostname;
+const hostname = location.hostname;
 export const environment = {
   production: true,
-  solver_url: hostname + ':8000',
+  solver_url: location.protocol + '//' + hostname + ':8000',
   base_url: '',
-  ws_url: ws_prefix + loc.host,
-  calculator_url: ws_prefix + hostname + ':99',
+  ws_url: wsPrefix + location.host,
+  calculator_url: wsPrefix + hostname + ':99',
   version: require('../../package.json').version
 };
