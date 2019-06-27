@@ -16,3 +16,4 @@ export const environment = {
   calculator_url: wsPrefix + hostname + ':99',
   version: require('../../package.json').version
 };
+window['environment'] = environment;
