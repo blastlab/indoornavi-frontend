@@ -40,7 +40,7 @@ export class HttpService {
     if (err instanceof Response && err.status === 400) {
       return Observable.throw(err.json().code);
     }
-    return Observable.throw('S_000');
+    return Observable.throw(err);
   }
 
   constructor(private http: Http, private route: ActivatedRoute, private authGuard: AuthGuard, private serverAddress: string, private useAuth: boolean) {
