@@ -27,7 +27,7 @@ services:
       HOST: db
       SCHEMA: navi
       USER: root
-      PASSWORD: ""
+      PASSWORD: "password"
     volumes:
       - ./backend/database/src/main/resources:/liquibase/changelog
     entrypoint: ["wait-for-it", "db:3306", "-t", "0", "--", "/run.sh"]
