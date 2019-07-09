@@ -6,7 +6,7 @@ COPY . /opt/app
 
 WORKDIR /opt/app
 
-RUN ng build
+RUN npm install && ng build
 
 ##### RUN
 
