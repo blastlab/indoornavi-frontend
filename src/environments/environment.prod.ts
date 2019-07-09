@@ -12,7 +12,7 @@ export const environment = {
   production: true,
   solver_url: location.protocol + '//' + hostname + ':8000',
   base_url: '',
-  // ws_url: wsPrefix + location.host,
+  ws_url: wsPrefix + location.host,
   // calculator_url: wsPrefix + hostname + ':99',
   calculator_url: `${window['__env']['calculatorUrl']}`,
   version: require('../../package.json').version
