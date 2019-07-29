@@ -199,7 +199,7 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
       SvgAnimator.startBlinking(tagOnMap.getIconElement());
       this.tagsOnMap.setValue(deviceId, tagOnMap.setShortId(deviceId));
     } else if (this.visibleTags.get(deviceId)) {
-      this.moveTagOnMap({ x: data.x, y: data.y, z: null }, deviceId);
+      this.moveTagOnMap({ x: data.x, y: data.y, z: data.z }, deviceId);
     }
     if (this.originListeningOnEvent.containsKey('coordinates')) {
       this.originListeningOnEvent.getValue('coordinates').forEach((event: MessageEvent): void => {
@@ -274,7 +274,6 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
         }
       });
       this.socketSubscription = stream.takeUntil(this.subscriptionDestructor).subscribe((data: MeasureSocketData): void => {
-        this.ngZone.run(() => {
           if (this.isCoordinatesData(data) && (<CoordinatesSocketData>data).coordinates.length > 0) {
             (<CoordinatesSocketData>data).coordinates.forEach((coordinate: Coordinates) => {
               const coordinateSocketData: Coordinates = (<Coordinates>coordinate);
@@ -289,7 +288,6 @@ export class SocketConnectorComponent implements OnInit, OnDestroy, AfterViewIni
             this.handleEventData(<EventSocketData>data);
           }
         });
-      });
     });
   };
 
